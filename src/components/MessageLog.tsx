@@ -1,0 +1,73 @@
+import React from 'react';
+import { Message } from '../types';
+import { ansiConvert } from '../utils/ansi';
+import TypewriterText from './TypewriterText';
+
+interface MessageLogProps {
+    messages: Message[];
+    activePrompt: string;
+    inCombat: boolean;
+    scrollContainerRef: React.RefObject<HTMLDivElement | null>;
+    messagesEndRef: React.RefObject<HTMLDivElement | null>;
+    onScroll: () => void;
+    onLogClick: (e: React.MouseEvent) => void;
+    onMouseUp?: (e: React.MouseEvent) => void;
+    onDoubleClick?: (e: React.MouseEvent) => void;
+    getMessageClass: (index: number, total: number) => string;
+    processMessageHtml: (html: string) => string;
+    scrollToBottom: () => void;
+}
+
+const MessageLog: React.FC<MessageLogProps> = ({
+    messages,
+    activePrompt,
+    inCombat,
+    scrollContainerRef,
+    messagesEndRef,
+    onScroll,
+    onLogClick,
+    onMouseUp,
+    onDoubleClick,
+    getMessageClass,
+    processMessageHtml,
+    scrollToBottom
+}) => {
+    return (
+        <div
+            className={`message-log${inCombat ? ' combat-mode' : ''}`}
+            ref={scrollContainerRef}
+            onScroll={onScroll}
+            onClick={onLogClick}
+            onMouseUp={onMouseUp}
+            onDoubleClick={onDoubleClick}
+        >
+            {messages.map((msg, i) => {
+                const isLatest = i === messages.length - 1;
+                return (
+                    <div
+                        key={msg.id}
+                        className={`message ${msg.type} ${getMessageClass(i, messages.length)}${inCombat && !msg.isCombat ? ' combat-dim' : ''}`}
+                    >
+                        {msg.type === 'user' ? (
+                            <span>{msg.textRaw}</span>
+                        ) : msg.type === 'prompt' ? (
+                            <span>{msg.textRaw}</span>
+                        ) : (msg.isComm && isLatest) ? (
+                            <TypewriterText html={processMessageHtml(msg.html)} onUpdate={scrollToBottom} />
+                        ) : (
+                            <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html) }} />
+                        )}
+                    </div>
+                );
+            })}
+            {activePrompt && (
+                <div className="message prompt msg-latest" style={{ transition: 'none' }}>
+                    <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt)) }} />
+                </div>
+            )}
+            <div ref={messagesEndRef} />
+        </div>
+    );
+};
+
+export default MessageLog;
