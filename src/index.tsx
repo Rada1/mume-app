@@ -140,6 +140,7 @@ const MudClient = () => {
     const isWaitingForInv = useRef(false);
 
     const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
+    const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
 
 
@@ -157,6 +158,7 @@ const MudClient = () => {
     const promptTerrainRef = useRef<string | null>(null);
     const inCombatRef = useRef(false);
     const lastViewportHeightRef = useRef<number>(window.innerHeight);
+    const baseHeightRef = useRef<number>(window.innerHeight);
 
     const isMobile = useMemo(() => {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
@@ -186,6 +188,18 @@ const MudClient = () => {
         }
 
         const isKeyboardOpening = currentHeight < lastViewportHeightRef.current - 50;
+
+        // Update base height if current is larger (meaning keyboard is likely closed)
+        if (currentHeight > baseHeightRef.current) {
+            baseHeightRef.current = currentHeight;
+        }
+
+        const isInputActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
+        // Use screen height as a stable base for mobile detection
+        const screenBase = window.screen.height;
+        const isCurrentlyOpen = isMobile && isInputActive && (currentHeight < screenBase * 0.7);
+        setIsKeyboardOpen(isCurrentlyOpen);
+
         lastViewportHeightRef.current = currentHeight;
 
         // Ensure we don't scroll away
@@ -1169,7 +1183,7 @@ const MudClient = () => {
 
         if (type === 'cluster' || type === 'cluster-resize') {
             const clusterId = id as 'joystick' | 'stats' | 'mapper';
-            const rect = (e.currentTarget as HTMLElement).parentElement!.getBoundingClientRect();
+            const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
             const pos = btn.uiPositions[clusterId];
             const startX = pos?.x ?? rect.left;
             const startY = pos?.y ?? rect.top;
@@ -1368,6 +1382,7 @@ const MudClient = () => {
     };
 
     useEffect(() => {
+        btn.setAddMessage(addMessage);
         addMessage('system', 'Welcome to GEMINI MUD Client.');
         addMessage('system', `Default Target: ${DEFAULT_URL} `);
         setTimeout(() => connect(), 1000);
@@ -1414,7 +1429,7 @@ const MudClient = () => {
 
 
     return (
-        <div className={`app-container ${btn.isEditMode ? 'edit-mode-active' : ''}`} style={{ height: 'calc(var(--vh, 1vh) * 100)' }}>
+        <div className={`app-container ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''}`} style={{ height: 'calc(var(--vh, 1vh) * 100)' }}>
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
 
                 <div className="background-layer" style={{ backgroundImage: `url(${bgImage})` }} />
@@ -1743,10 +1758,7 @@ const MudClient = () => {
                     soundTriggers={soundTriggers}
                     deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
                     resetButtons={(useUserDefault) => {
-                        import('./constants/buttons').then(({ DEFAULT_BUTTONS }) => {
-                            btn.setButtons(DEFAULT_BUTTONS);
-                            addMessage('system', 'Buttons reset to core defaults.');
-                        });
+                        btn.resetToDefaults(useUserDefault);
                     }}
                     hasUserDefaults={btn.hasUserDefaults}
                     status={status}
@@ -1777,6 +1789,7 @@ const MudClient = () => {
                     onDeleteButton={btn.deleteButton}
                     onCreateButton={btn.createButton}
                     onSaveAsDefault={btn.saveAsDefault}
+                    onSaveAsSystemDefault={btn.saveAsSystemDefault}
                     combatSet={btn.combatSet}
                     defaultSet={btn.defaultSet}
                     onSetCombatSet={btn.setCombatSet}

@@ -169,9 +169,57 @@ export const useButtons = () => {
     };
 
     const saveAsDefault = () => {
-        const toSave = buttons.map(b => ({ ...b, isVisible: undefined }));
-        localStorage.setItem('mud-buttons-user-default', JSON.stringify(toSave));
+        const toSaveButtons = buttons.map(b => ({ ...b, isVisible: undefined }));
+        localStorage.setItem('mud-buttons-user-default', JSON.stringify(toSaveButtons));
+        localStorage.setItem('mud-ui-positions-user-default', JSON.stringify(uiPositions));
         setHasUserDefaults(true);
+    };
+
+    const saveAsSystemDefault = () => {
+        const toSaveButtons = buttons.map(b => ({ ...b, isVisible: undefined }));
+        localStorage.setItem('mud-buttons-system-default', JSON.stringify(toSaveButtons));
+        localStorage.setItem('mud-ui-positions-system-default', JSON.stringify(uiPositions));
+    };
+
+    const resetToDefaults = (useUserDefault?: boolean) => {
+        if (useUserDefault) {
+            const savedBtns = localStorage.getItem('mud-buttons-user-default');
+            const savedPos = localStorage.getItem('mud-ui-positions-user-default');
+            try {
+                if (savedBtns) setButtons(JSON.parse(savedBtns));
+                if (savedPos) setUiPositions(JSON.parse(savedPos));
+                addMessageRef.current?.('system', 'Reset to your User Defaults.');
+                return;
+            } catch (e) {
+                console.error("Failed to load user defaults", e);
+            }
+        }
+
+        // Check for system defaults first
+        const systemButtons = localStorage.getItem('mud-buttons-system-default');
+        const systemPositions = localStorage.getItem('mud-ui-positions-system-default');
+
+        if (systemButtons) {
+            try {
+                setButtons(JSON.parse(systemButtons));
+            } catch (e) {
+                import('../constants/buttons').then(({ DEFAULT_BUTTONS }) => setButtons(DEFAULT_BUTTONS));
+            }
+        } else {
+            import('../constants/buttons').then(({ DEFAULT_BUTTONS }) => setButtons(DEFAULT_BUTTONS));
+        }
+
+        if (systemPositions) {
+            try {
+                setUiPositions(JSON.parse(systemPositions));
+            } catch (e) {
+                setUiPositions({});
+            }
+        } else {
+            setUiPositions({});
+        }
+
+        addMessageRef.current?.('system', systemButtons ? 'Reset to System Defaults.' : 'Reset to Core Defaults.');
     };
 
     const [selectedButtonIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -195,6 +243,9 @@ export const useButtons = () => {
         });
     };
 
+    const addMessageRef = useRef<((type: string, content: string) => void) | null>(null);
+    const setAddMessage = (fn: (type: string, content: string) => void) => { addMessageRef.current = fn; };
+
     return useMemo(() => ({
         buttons,
         setButtons,
@@ -216,12 +267,15 @@ export const useButtons = () => {
         createButton,
         deleteButton,
         saveAsDefault,
+        saveAsSystemDefault,
+        resetToDefaults,
         hasUserDefaults,
         buttonTimers,
         combatSet,
         setCombatSet,
         defaultSet,
-        setDefaultSet
+        setDefaultSet,
+        setAddMessage
     }), [
         buttons, activeSet, isEditMode, editingButtonId, selectedButtonIds,
         uiPositions, dragState, availableSets, hasUserDefaults,

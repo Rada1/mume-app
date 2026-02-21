@@ -89,11 +89,6 @@ const InputArea: React.FC<InputAreaProps & { onSwipe?: (dir: string) => void }> 
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Enter command..."
-                    onFocus={(e) => {
-                        setTimeout(() => {
-                            e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }, 300);
-                    }}
                     style={{ pointerEvents: 'auto' }}
                     autoFocus
                 />
