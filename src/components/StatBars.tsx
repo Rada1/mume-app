@@ -27,7 +27,6 @@ const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRo
                     <span className="stat-name">HP</span>
                     <span className="stat-val">{stats.hp}</span>
                 </div>
-                {/* vertical bar — height used for desktop; CSS overrides to horizontal on mobile */}
                 <div className="stat-bar-track" style={{ height: `${hpHeight}px` }}>
                     <div
                         ref={hpRowRef}
@@ -79,4 +78,4 @@ const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRo
     );
 };
 
-export default StatBars;
+export default React.memo(StatBars);

@@ -18,6 +18,42 @@ interface MessageLogProps {
     scrollToBottom: () => void;
 }
 
+const MessageItem = React.memo(({
+    msg,
+    index,
+    total,
+    isLatest,
+    inCombat,
+    getMessageClass,
+    processMessageHtml,
+    scrollToBottom
+}: {
+    msg: Message,
+    index: number,
+    total: number,
+    isLatest: boolean,
+    inCombat: boolean,
+    getMessageClass: (i: number, t: number) => string,
+    processMessageHtml: (h: string) => string,
+    scrollToBottom: () => void
+}) => {
+    return (
+        <div
+            className={`message ${msg.type} ${getMessageClass(index, total)}${inCombat && !msg.isCombat ? ' combat-dim' : ''}`}
+        >
+            {msg.type === 'user' ? (
+                <span>{msg.textRaw}</span>
+            ) : msg.type === 'prompt' ? (
+                <span>{msg.textRaw}</span>
+            ) : (msg.isComm && isLatest) ? (
+                <TypewriterText html={processMessageHtml(msg.html)} onUpdate={scrollToBottom} />
+            ) : (
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html) }} />
+            )}
+        </div>
+    );
+});
+
 const MessageLog: React.FC<MessageLogProps> = ({
     messages,
     activePrompt,
@@ -41,25 +77,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
             onMouseUp={onMouseUp}
             onDoubleClick={onDoubleClick}
         >
-            {messages.map((msg, i) => {
-                const isLatest = i === messages.length - 1;
-                return (
-                    <div
-                        key={msg.id}
-                        className={`message ${msg.type} ${getMessageClass(i, messages.length)}${inCombat && !msg.isCombat ? ' combat-dim' : ''}`}
-                    >
-                        {msg.type === 'user' ? (
-                            <span>{msg.textRaw}</span>
-                        ) : msg.type === 'prompt' ? (
-                            <span>{msg.textRaw}</span>
-                        ) : (msg.isComm && isLatest) ? (
-                            <TypewriterText html={processMessageHtml(msg.html)} onUpdate={scrollToBottom} />
-                        ) : (
-                            <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html) }} />
-                        )}
-                    </div>
-                );
-            })}
+            {messages.map((msg, i) => (
+                <MessageItem
+                    key={msg.id}
+                    msg={msg}
+                    index={i}
+                    total={messages.length}
+                    isLatest={i === messages.length - 1}
+                    inCombat={inCombat}
+                    getMessageClass={getMessageClass}
+                    processMessageHtml={processMessageHtml}
+                    scrollToBottom={scrollToBottom}
+                />
+            ))}
             {activePrompt && (
                 <div className="message prompt msg-latest" style={{ transition: 'none' }}>
                     <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt)) }} />
@@ -70,4 +100,4 @@ const MessageLog: React.FC<MessageLogProps> = ({
     );
 };
 
-export default MessageLog;
+export default React.memo(MessageLog);

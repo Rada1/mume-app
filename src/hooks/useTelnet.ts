@@ -86,7 +86,7 @@ export const useTelnet = (options: TelnetOptions) => {
         setPrompt(bufferRef.current);
     }, [processLine, detectLighting, setPrompt]);
 
-    const handleSubnegotiation = (buffer: number[], handlers: { onRoomInfo: (data: any) => void, onRoomPlayers?: (data: any) => void }) => {
+    const handleSubnegotiation = (buffer: number[], handlers: { onRoomInfo: (data: any) => void, onRoomPlayers?: (data: any) => void, onCharVitals?: (data: any) => void }) => {
         if (buffer.length === 0) return;
         const cmd = buffer[0];
 
@@ -107,6 +107,7 @@ export const useTelnet = (options: TelnetOptions) => {
             if (pkgLower === 'char.vitals') {
                 try {
                     const data = JSON.parse(json);
+                    if (handlers.onCharVitals) handlers.onCharVitals(data);
                     setStats((prev: any) => ({
                         ...prev,
                         hp: data.hp ?? prev.hp,
@@ -255,7 +256,7 @@ export const useTelnet = (options: TelnetOptions) => {
         }
     };
 
-    const connect = (handlers: { onRoomInfo: (data: any) => void, onRoomPlayers?: (data: any) => void }) => {
+    const connect = (handlers: { onRoomInfo: (data: any) => void, onRoomPlayers?: (data: any) => void, onCharVitals?: (data: any) => void }) => {
         if (socketRef.current) socketRef.current.close();
 
         // Reset state for a clean reconnection

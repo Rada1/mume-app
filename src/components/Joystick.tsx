@@ -55,4 +55,4 @@ const Joystick: React.FC<JoystickProps> = ({
     );
 };
 
-export default Joystick;
+export default React.memo(Joystick);

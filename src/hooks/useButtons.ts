@@ -145,8 +145,8 @@ export const useButtons = () => {
                 y: 50,
                 w: 120,
                 h: 40,
-                backgroundColor: '#4ade80',
-                transparent: false,
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                transparent: true,
                 shape: 'rect'
             },
             trigger: {
@@ -175,7 +175,7 @@ export const useButtons = () => {
     };
 
     const [selectedButtonIds, setSelectedIds] = useState<Set<string>>(new Set());
-    const [uiPositions, setUiPositions] = useState<{ joystick?: { x: number, y: number, scale?: number }, stats?: { x: number, y: number, scale?: number } }>(() => {
+    const [uiPositions, setUiPositions] = useState<{ joystick?: { x: number, y: number, scale?: number }, stats?: { x: number, y: number, scale?: number }, mapper?: { x: number, y: number, scale?: number, w?: number, h?: number } }>(() => {
         try {
             const saved = localStorage.getItem('mud-ui-positions');
             return saved ? JSON.parse(saved) : {};
@@ -195,7 +195,7 @@ export const useButtons = () => {
         });
     };
 
-    return {
+    return useMemo(() => ({
         buttons,
         setButtons,
         buttonsRef,
@@ -222,5 +222,9 @@ export const useButtons = () => {
         setCombatSet,
         defaultSet,
         setDefaultSet
-    };
+    }), [
+        buttons, activeSet, isEditMode, editingButtonId, selectedButtonIds,
+        uiPositions, dragState, availableSets, hasUserDefaults,
+        combatSet, defaultSet
+    ]);
 };

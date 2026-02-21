@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog, Plus, Monitor, Smartphone, Keyboard, Package, Swords, ScrollText } from 'lucide-react';
+import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog, Plus } from 'lucide-react';
 
 import './index.css';
 import {
@@ -21,12 +21,18 @@ import Rain from './components/Rain';
 import StatBars from './components/StatBars';
 import Joystick from './components/Joystick';
 import MessageLog from './components/MessageLog';
-import InputArea, { InputAreaHandle } from './components/InputArea';
+import InputArea from './components/InputArea';
 import Header from './components/Header';
 import SettingsModal from './components/SettingsModal';
 import EditButtonModal from './components/EditButtonModal';
 import SetManagerModal from './components/SetManagerModal';
-import GameDrawer from './components/GameDrawer';
+import { Mapper, MapperRef } from './components/Mapper';
+
+
+
+
+
+
 
 const numToWord = (n: number) => {
     const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
@@ -93,8 +99,13 @@ const MudClient = () => {
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound'>('general');
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
     const [lighting, setLighting] = useState<LightingType>('none');
-    const [weather, setWeather] = useState<WeatherType>('none');
+    const [weather, setWeather] = useState<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>('none');
     const [isFoggy, setIsFoggy] = useState(false);
+
+
+    // UI Layout State
+    const [isSetManagerOpen, setIsSetManagerOpen] = useState(false);
+
     const [rumble, setRumble] = useState(false);
     const [hitFlash, setHitFlash] = useState(false);
     const [inCombat, setInCombatState] = useState(false);
@@ -114,39 +125,134 @@ const MudClient = () => {
     const [joystickGlow, setJoystickGlow] = useState(false);
     const [btnGlow, setBtnGlow] = useState<{ up: boolean, down: boolean }>({ up: false, down: false });
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
-    const [isSetManagerOpen, setIsSetManagerOpen] = useState(false);
+
+    const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+    const [isCharacterOpen, setIsCharacterOpen] = useState(false);
+    const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
+    const [inventoryHtml, setInventoryHtml] = useState('');
+    const [statsHtml, setStatsHtml] = useState('');
+    const [eqHtml, setEqHtml] = useState('');
+
+    const isCapturingInventory = useRef(false);
+    const captureStage = useRef<'stat' | 'eq' | 'none'>('none');
+    const isWaitingForStats = useRef(false);
+    const isWaitingForEq = useRef(false);
+    const isWaitingForInv = useRef(false);
+
     const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
-    const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>(() => {
-        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        const isSmallScreen = window.innerWidth <= 768;
-        return (isTouch || isSmallScreen) ? 'mobile' : 'desktop';
-    });
-    const [isInputExpanded, setIsInputExpanded] = useState(false);
-    const inputAreaRef = useRef<InputAreaHandle>(null);
 
-    // --- Drawer state ---
-    const [invDrawerOpen, setInvDrawerOpen] = useState(false);
-    const [charDrawerOpen, setCharDrawerOpen] = useState(false);
-    const [invItems, setInvItems] = useState<string[]>([]);
-    const [eqItems, setEqItems] = useState<string[]>([]);
-    const [statLines, setStatLines] = useState<string[]>([]);
-    const [invLoading, setInvLoading] = useState(false);
-    const [charLoading, setCharLoading] = useState(false);
-    type DrawerAwait = 'inv' | 'stat' | 'eq' | null;
-    const awaitingDrawer = useRef<DrawerAwait>(null);
-    const drawerBuffer = useRef<{ stat: string[]; eq: string[]; inv: string[] }>({
-        stat: [], eq: [], inv: []
-    });
 
+
+
+
+
+    // --- Refs ---
     const wasDraggingRef = useRef(false);
     const longPressTimer = useRef<NodeJS.Timeout | null>(null);
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const navPathRef = useRef<string[]>([]);
     const didLongPressRef = useRef(false);
+    const mapperRef = useRef<MapperRef>(null);
     const lastCameraRoomIdRef = useRef<number | null>(null);
     const promptTerrainRef = useRef<string | null>(null);
     const inCombatRef = useRef(false);
+    const lastViewportHeightRef = useRef<number>(window.innerHeight);
 
+    const isMobile = useMemo(() => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+    }, []);
+
+    const scrollToBottom = useCallback((force = false, instant = false) => {
+        if ((focusedIndex === null || force) && messagesEndRef.current && scrollContainerRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', block: 'end' });
+        }
+    }, [focusedIndex]);
+
+    // Dynamic viewport height for mobile browsers
+    const updateHeight = useCallback(() => {
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+
+        const currentHeight = viewport.height;
+        const vh = currentHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+        // Force height on container for faster layout
+        const container = document.querySelector('.app-container') as HTMLElement;
+        if (container) {
+            container.style.height = `${currentHeight}px`;
+            // Counter-offset if the browser shifted things
+            container.style.top = `${viewport.offsetTop}px`;
+        }
+
+        const isKeyboardOpening = currentHeight < lastViewportHeightRef.current - 50;
+        lastViewportHeightRef.current = currentHeight;
+
+        // Ensure we don't scroll away
+        if (currentHeight < window.innerHeight) {
+            window.scrollTo(0, 0);
+        }
+
+        // Snap to bottom on keyboard open IF we were already at bottom
+        if (isKeyboardOpening && typeof scrollToBottom === 'function') {
+            const scrollContainer = scrollContainerRef.current;
+            const wasAtBottom = scrollContainer && (scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 150);
+
+            if (wasAtBottom || focusedIndex === null) {
+                // Multi-snap to catch reflows
+                scrollToBottom(true, true);
+                setTimeout(() => scrollToBottom(true, true), 30);
+                setTimeout(() => scrollToBottom(true, true), 100);
+            }
+        }
+    }, [scrollToBottom, focusedIndex]);
+
+    useEffect(() => {
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', updateHeight);
+            window.visualViewport.addEventListener('scroll', updateHeight);
+        }
+
+        window.addEventListener('resize', updateHeight);
+        window.addEventListener('orientationchange', updateHeight);
+        updateHeight();
+
+        return () => {
+            if (window.visualViewport) {
+                window.visualViewport.removeEventListener('resize', updateHeight);
+                window.visualViewport.removeEventListener('scroll', updateHeight);
+            }
+            window.removeEventListener('resize', updateHeight);
+            window.removeEventListener('orientationchange', updateHeight);
+        };
+    }, [updateHeight]);
+
+    useEffect(() => {
+        if (activePrompt) {
+            isCapturingInventory.current = false;
+            captureStage.current = 'none';
+            isWaitingForStats.current = false;
+            isWaitingForEq.current = false;
+            isWaitingForInv.current = false;
+        }
+    }, [activePrompt]);
+
+    useEffect(() => {
+        if (!isInventoryOpen) {
+            isCapturingInventory.current = false;
+            isWaitingForInv.current = false;
+        }
+    }, [isInventoryOpen]);
+
+    useEffect(() => {
+        if (!isCharacterOpen) {
+            captureStage.current = 'none';
+            isWaitingForStats.current = false;
+            isWaitingForEq.current = false;
+        }
+    }, [isCharacterOpen]);
+
+    const lastTapRef = useRef<number>(0);
     const extractNoun = (text: string) => {
         // Strip text in parentheses or brackets (flags like (glowing) or [magical])
         let clean = text.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
@@ -179,7 +285,7 @@ const MudClient = () => {
     const moveRatio = stats.maxMove > 0 ? stats.move / stats.maxMove : 0;
 
     // --- Derived State & Handlers ---
-    const isCombatLine = (text: string): boolean => {
+    const isCombatLine = useCallback((text: string): boolean => {
         const t = text.toLowerCase();
         return (
             t.includes(' hits ') || t.includes(' hit ') ||
@@ -214,9 +320,9 @@ const MudClient = () => {
             t.includes('your opponent') || t.includes('your foe') ||
             /^\w+ (dodges|parries|flees|rescues|disarms|bashes|kicks|bites)/.test(t)
         );
-    };
+    }, []);
 
-    const isCommunicationLine = (text: string): boolean => {
+    const isCommunicationLine = useCallback((text: string): boolean => {
         const t = text.toLowerCase();
         return (
             t.includes(' says ') || t.includes(' narrate ') || t.includes(' narrates ') ||
@@ -226,7 +332,7 @@ const MudClient = () => {
             /^you (tell|say|whisper|yell|narrate|state)\b/i.test(t) ||
             /^\w+ (says|narrates|tells|whispers|yells|states)\b/i.test(t)
         );
-    };
+    }, []);
 
     // Keep a ref so addMessage (useCallback) always sees the live combat state
     const setInCombat = (val: boolean) => {
@@ -347,13 +453,60 @@ const MudClient = () => {
     }, []);
 
 
+
+
     const processLine = useCallback((line: string) => {
         const cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
+
+        const textOnlyForCapture = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
+        const lowerCapture = textOnlyForCapture.toLowerCase();
+
+        // 1. Detect start of capture based on specific MUME response markers
+        if (isWaitingForStats.current && (lowerCapture.includes('ob:') || lowerCapture.includes('armor:') || lowerCapture.includes('mood:'))) {
+            isWaitingForStats.current = false;
+            captureStage.current = 'stat';
+        }
+        if (isWaitingForEq.current && lowerCapture.includes('you are using:')) {
+            isWaitingForEq.current = false;
+            captureStage.current = 'eq';
+        }
+        if (isWaitingForInv.current && lowerCapture.includes('you are carrying:')) {
+            isWaitingForInv.current = false;
+            isCapturingInventory.current = true;
+        }
+
+        // 2. Prompt detection (terminates capture)
+        const isPurePrompt = /^[\*\)\!oO\.\[f<%\~+WU:=O:\(]\s*[>:]\s*$/.test(textOnlyForCapture);
+        const startsWithPrompt = /^[\*\)\!oO\.\[f<%\~+WU:=O:\(]/.test(textOnlyForCapture);
+        const endsWithPromptIndicator = /[>:]\s*$/.test(textOnlyForCapture);
+        const isLikelyPrompt = (startsWithPrompt && endsWithPromptIndicator && textOnlyForCapture.length < 60);
+
+        const shouldStopCapture = isPurePrompt || (isLikelyPrompt && !lowerCapture.includes('ob:') && !lowerCapture.includes('armor:') && !lowerCapture.includes('you are using:') && !lowerCapture.includes('needed:') && !lowerCapture.includes('carrying:'));
+
+        if (shouldStopCapture) {
+            isCapturingInventory.current = false;
+            captureStage.current = 'none';
+            isWaitingForStats.current = false;
+            isWaitingForEq.current = false;
+            isWaitingForInv.current = false;
+        }
+
+        // 3. Perform capture (skip if it's the prompt that just ended it)
+        if (!shouldStopCapture) {
+            if (isCapturingInventory.current) {
+                setInventoryHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
+            }
+            if (captureStage.current === 'stat') {
+                setStatsHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
+            } else if (captureStage.current === 'eq') {
+                setEqHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
+            }
+        }
+
         const textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
         const lower = textOnly.toLowerCase();
 
-        // Stats Parsing
         try {
             const shortStats = /(?:H|HP|Health):\s*(\d+)(?:\/(\d+))?.*(?:M|Mana):\s*(\d+)(?:\/(\d+))?.*(?:V|MV|Move):\s*(\d+)(?:\/(\d+))?/i;
             let match = textOnly.match(shortStats);
@@ -380,16 +533,16 @@ const MudClient = () => {
             // Terrain Detection from Prompt
             const terrainSymbols: Record<string, string> = {
                 '[': 'building', '#': 'city', '.': 'field', 'f': 'forest',
-                '(': 'hills', '<': 'mountain', '%': 'shallow', '~': 'water',
+                '(': 'hills', '<': 'mountains', '%': 'shallows', '~': 'water',
                 '+': 'road', 'W': 'rapids', 'U': 'underwater', ':': 'brush',
-                '=': 'tunnel', '0': 'cavern'
+                '=': 'tunnel', 'O': 'cavern'
             };
 
             // 1. Check for explicit names
             const terrainPatterns = [
-                /\b(Inside|City|Field|Forest|Hills|Mountain|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\b/i,
-                /\[\s*(Inside|City|Field|Forest|Hills|Mountain|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\]/i,
-                /\(\s*(Inside|City|Field|Forest|Hills|Mountain|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\)/i
+                /\b(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\b/i,
+                /\[\s*(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\]/i,
+                /\(\s*(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\)/i
             ];
 
             let found = false;
@@ -402,19 +555,25 @@ const MudClient = () => {
                 }
             }
 
-            // 2. Check for symbols from cheat sheet
+            // 2. Extract terrain symbol directly from the beginning of the prompt string
             if (!found) {
-                // Check if any of our symbols appear in the standard prompt brackets/parentheses or as standalone
-                for (const [symbol, name] of Object.entries(terrainSymbols)) {
-                    const escaped = symbol.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    const symPattern = new RegExp(`([\\[\\(\\s])${escaped}([\\]\\)\\s]|$)`);
-                    if (symPattern.test(textOnly)) {
-                        promptTerrainRef.current = name;
-                        found = true;
-                        break;
+                // First ensure this line is actually a prompt
+                const isPrompt = /^([\*\)\!oO\.\[f<%\~+WU:=\#\?\(].*[>:])\s*/.test(textOnly);
+                if (isPrompt) {
+                    // MUME prompts always start with an optional light indicator (*, ), !, o) 
+                    // followed immediately by the terrain symbol from our list.
+                    const promptSymbolRegex = /^([\*\)\!o]?)([\.\[\#f<%\~+WU:=O:\(])/;
+                    const symMatch = textOnly.match(promptSymbolRegex);
+                    if (symMatch) {
+                        const sym = symMatch[2];
+                        if (terrainSymbols[sym]) {
+                            promptTerrainRef.current = terrainSymbols[sym];
+                            found = true;
+                        }
                     }
                 }
             }
+            if (promptTerrainRef.current) mapperRef.current?.handleTerrain(promptTerrainRef.current);
         } catch (e) { }
 
         // Environment
@@ -450,6 +609,13 @@ const MudClient = () => {
             setRumble(true);
             triggerHaptic(50);
             setTimeout(() => setRumble(false), 400);
+            mapperRef.current?.handleMoveFailure();
+        }
+
+        const darkStrings = ["pitch black", "too dark", "cannot see"];
+        if (darkStrings.some(msg => lower.includes(msg))) {
+            mapperRef.current?.handleMoveFailure();
+            addMessage('system', "[Mapper] Darkness detected. Room not mapped.");
         }
         detectLighting(textOnly);
         if (lower.includes("hits you") || lower.includes("crushes you") || lower.includes("pierces you")) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }
@@ -479,15 +645,19 @@ const MudClient = () => {
             }
         });
 
-        const mumePromptRegex = /^([\*\)\!o\.\[f<%\~+WU:=0\#\?\(].*[>:])\s*(.*)$/;
+        const mumePromptRegex = /^([\*\)\!o\.\[f<%\~+WU:=O\#\?\(].*[>:])\s*(.*)$/;
         const pMatch = cleanLine.match(mumePromptRegex);
+
+
+
+        const isCapturing = isCapturingInventory.current || captureStage.current !== 'none';
 
         if (pMatch) {
             const promptPart = pMatch[1];
             const messagePart = pMatch[2];
-            if (messagePart) addMessage('game', messagePart);
+            if (messagePart && !isCapturing) addMessage('game', messagePart);
         } else {
-            addMessage('game', cleanLine);
+            if (!isCapturing) addMessage('game', cleanLine);
         }
     }, [detectLighting, addMessage, btn]);
 
@@ -503,10 +673,8 @@ const MudClient = () => {
     const callbacksRef = useRef<any>(null);
     useEffect(() => {
         callbacksRef.current = {
-            onRoomInfo: (data: any) => {
-                // Delegate to Robust Mapper
-
-            },
+            onRoomInfo: (data: any) => mapperRef.current?.handleRoomInfo(data),
+            onCharVitals: (data: any) => { if (data.terrain) mapperRef.current?.handleTerrain(data.terrain); },
             onRoomPlayers: (data: any) => {
                 let players: string[] = [];
                 if (Array.isArray(data)) {
@@ -525,8 +693,9 @@ const MudClient = () => {
         initAudio();
 
         telnet.connect({
-            onRoomInfo: (data) => callbacksRef.current.onRoomInfo(data),
-            onRoomPlayers: (data) => callbacksRef.current.onRoomPlayers(data)
+            onRoomInfo: (data) => callbacksRef.current.onRoomInfo && callbacksRef.current.onRoomInfo(data),
+            onCharVitals: (data) => callbacksRef.current.onCharVitals && callbacksRef.current.onCharVitals(data),
+            onRoomPlayers: (data) => callbacksRef.current.onRoomPlayers && callbacksRef.current.onRoomPlayers(data)
         });
     };
 
@@ -553,14 +722,39 @@ const MudClient = () => {
         }
 
         if (!isAutoNav) {
-
             if (navIntervalRef.current) {
                 clearInterval(navIntervalRef.current);
                 navIntervalRef.current = null;
                 addMessage('system', 'Navigation stopped.');
-
             }
         }
+
+        const lowerCmd = cmd.toLowerCase().trim();
+        if (lowerCmd === 'inventory' || lowerCmd === 'inv') {
+            isWaitingForInv.current = true;
+            isCapturingInventory.current = false;
+            setInventoryHtml('');
+        } else if (lowerCmd === 'stat') {
+            isWaitingForStats.current = true;
+            captureStage.current = 'none';
+            setStatsHtml('');
+        } else if (lowerCmd === 'eq') {
+            isWaitingForEq.current = true;
+            captureStage.current = 'none';
+            setEqHtml('');
+        }
+        // If we send both at once, the first one starts the capture session
+        if (lowerCmd.includes('stat') && lowerCmd.includes('eq')) {
+            isWaitingForStats.current = true;
+            isWaitingForEq.current = true;
+            captureStage.current = 'none';
+            setStatsHtml('');
+            setEqHtml('');
+        }
+        if (lowerCmd === 'closeall') {
+            setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false);
+        }
+
         addMessage('user', finalCmd);
         const moveCmd = finalCmd.toLowerCase().trim();
         const validMoves: Direction[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw', 'u', 'd'];
@@ -571,17 +765,76 @@ const MudClient = () => {
         else if (moveCmd === 'northeast') dir = 'ne'; else if (moveCmd === 'northwest') dir = 'nw';
         else if (moveCmd === 'southeast') dir = 'se'; else if (moveCmd === 'southwest') dir = 'sw';
 
+        if (dir && ['n', 's', 'e', 'w', 'u', 'd', 'ne', 'nw', 'se', 'sw'].includes(dir)) {
+            mapperRef.current?.pushPendingMove(dir);
+        }
+
         if (status === 'connected') telnet.sendCommand(finalCmd);
         else addMessage('error', 'Not connected.');
     };
 
-    const handleSend = (e?: React.FormEvent) => {
+    const handleSend = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();
         const cmd = input.trim();
-        // Allow empty command to just send 'return'
         setInput('');
         executeCommand(cmd);
-    };
+        // User requesting snap-to-bottom on every command
+        if (typeof scrollToBottom === 'function') {
+            scrollToBottom(true, true);
+            // Slight delay too to catch the local echo / response
+            setTimeout(() => scrollToBottom(true, true), 30);
+        }
+    }, [input, executeCommand, scrollToBottom]);
+
+    const handleSendCallback = useCallback((e?: React.FormEvent) => {
+        handleSend(e);
+    }, [handleSend]);
+
+    const handleLogScroll = useCallback(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const scrollBottom = scrollTop + clientHeight;
+        // Threshold for scroll detection
+        if (scrollHeight - scrollBottom < 50) {
+            if (focusedIndex !== null) setFocusedIndex(null);
+            return;
+        }
+        const children = container.children;
+        let newFocusIndex = 0;
+        for (let i = Math.min(children.length - 2, messages.length - 1); i >= 0; i--) {
+            const child = children[i] as HTMLElement;
+            if (child.offsetTop < scrollBottom) {
+                newFocusIndex = i;
+                break;
+            }
+        }
+        setFocusedIndex(newFocusIndex);
+    }, [focusedIndex, messages.length]);
+
+    const handleInputSwipe = useCallback((dir: string) => {
+        if (!isMobile) return;
+        triggerHaptic(dir === 'up' ? 35 : 20);
+        if (dir === 'up') {
+            executeCommand('inventory');
+            setIsInventoryOpen(true);
+        } else if (dir === 'down') {
+            if (isInventoryOpen) { triggerHaptic(15); setIsInventoryOpen(false); }
+            else executeCommand('s');
+        } else if (dir === 'right') {
+            if (isRightDrawerOpen) { triggerHaptic(15); setIsRightDrawerOpen(false); }
+            else {
+                setStatsHtml(''); setEqHtml('');
+                executeCommand('stat');
+                setTimeout(() => executeCommand('eq'), 300);
+                setIsCharacterOpen(true);
+            }
+        }
+        else if (dir === 'left') {
+            if (isCharacterOpen) { triggerHaptic(15); setIsCharacterOpen(false); }
+            else setIsRightDrawerOpen(true);
+        }
+    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isRightDrawerOpen, isCharacterOpen]);
 
     // --- Stats Effects ---
     const getHeartbeatDuration = (ratio: number) => 0.4 + (ratio / FX_THRESHOLD) * 1.1;
@@ -750,13 +1003,78 @@ const MudClient = () => {
         timeoutId = setTimeout(triggerLightning, 1000); return () => clearTimeout(timeoutId);
     }, [weather]);
 
+    const getWordAtPoint = (x: number, y: number) => {
+        let range: Range | null = null;
+        if (document.caretRangeFromPoint) {
+            range = document.caretRangeFromPoint(x, y);
+        } else if ((document as any).caretPositionFromPoint) {
+            const pos = (document as any).caretPositionFromPoint(x, y);
+            if (pos) {
+                range = document.createRange();
+                range.setStart(pos.offsetNode, pos.offset);
+            }
+        }
+
+        if (range && range.startContainer.nodeType === Node.TEXT_NODE) {
+            const node = range.startContainer;
+            const content = node.textContent || '';
+            const offset = range.startOffset;
+
+            // Find start of word - handle characters/NPC names (\w plus some extras like -)
+            let start = offset;
+            while (start > 0 && /[\w-]/.test(content[start - 1])) start--;
+
+            // Find end of word
+            let end = offset;
+            while (end < content.length && /[\w-]/.test(content[end])) end++;
+
+            return content.slice(start, end).trim();
+        }
+        return null;
+    };
+
     // --- Interaction Handlers ---
-    const handleNavClick = (dir: 'up' | 'down') => { triggerHaptic(30); executeCommand(dir); setBtnGlow(prev => ({ ...prev, [dir]: true })); setTimeout(() => setBtnGlow(prev => ({ ...prev, [dir]: false })), 300); };
-    const handleLogClick = (e: React.MouseEvent) => {
+    const handleNavClick = useCallback((dir: 'up' | 'down') => {
+        triggerHaptic(30);
+        executeCommand(dir);
+        setBtnGlow(prev => ({ ...prev, [dir]: true }));
+        setTimeout(() => setBtnGlow(prev => ({ ...prev, [dir]: false })), 300);
+    }, [triggerHaptic, executeCommand]);
+    const handleLogClick = useCallback((e: React.MouseEvent) => {
+        const now = Date.now();
+        const delta = now - lastTapRef.current;
+        lastTapRef.current = now;
+
+        if (delta > 0 && delta < 400) {
+            // Double Tap Detected
+            triggerHaptic(45);
+
+            // Try coordinate-based word lookup first (fast/reliable on mobile)
+            const word = getWordAtPoint(e.clientX, e.clientY);
+            if (word && word.length > 1) {
+                setTarget(word);
+                addMessage('system', `Target set to: ${word}`);
+                window.getSelection()?.removeAllRanges();
+                return;
+            }
+
+            // Fallback to selection
+            setTimeout(() => {
+                const selection = window.getSelection();
+                const selectedText = selection?.toString().trim();
+                if (selectedText && selectedText.length > 0 && selectedText.length < 60) {
+                    setTarget(selectedText);
+                    addMessage('system', `Target set to: ${selectedText}`);
+                    window.getSelection()?.removeAllRanges();
+                }
+            }, 100);
+            return;
+        }
+
         const selection = window.getSelection();
         if (selection && selection.toString().length > 0) return;
 
-        const target = e.target as HTMLElement, btnEl = target.closest('.inline-btn') as HTMLElement;
+        const targetEl = e.target as HTMLElement, btnEl = targetEl.closest('.inline-btn') as HTMLElement;
         if (btnEl && btnEl.dataset.id) {
             e.stopPropagation();
             if (btn.isEditMode) btn.setEditingButtonId(btnEl.dataset.id);
@@ -775,37 +1093,35 @@ const MudClient = () => {
                 triggerHaptic(10);
             }
         }
-    };
-    const handleMouseUp = (e: React.MouseEvent) => {
-        // Delay to ensure selection is complete and accurate
+    }, [triggerHaptic, addMessage, btn.isEditMode, executeCommand]);
+    const handleMouseUp = useCallback((e: React.MouseEvent) => {
+        // Selection targeting handle
         setTimeout(() => {
             const selection = window.getSelection();
             const selectedText = selection?.toString().trim();
-            if (selectedText && selectedText.length > 0 && selectedText.length < 50) {
+            if (selectedText && selectedText.length > 0 && selectedText.length < 60) {
                 setTarget(selectedText);
                 addMessage('system', `Target set to: ${selectedText}`);
-                triggerHaptic(20);
-                window.getSelection()?.removeAllRanges(); // Clear selection for cleaner look
+                triggerHaptic(35);
+                window.getSelection()?.removeAllRanges();
             }
-        }, 50);
-    };
+        }, 150);
+    }, [triggerHaptic, addMessage]);
 
-    const handleDoubleClick = (e: React.MouseEvent) => {
+    const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+        // Fallback for desktop double-click event
         const selection = window.getSelection();
         const selectedText = selection?.toString().trim();
-        if (selectedText && selectedText.length > 0 && selectedText.length < 50) {
+        if (selectedText && selectedText.length > 0 && selectedText.length < 60) {
             setTarget(selectedText);
             addMessage('system', `Target set to: ${selectedText}`);
-            triggerHaptic(20);
+            triggerHaptic(40);
             window.getSelection()?.removeAllRanges();
         }
-    };
+    }, [triggerHaptic, addMessage]);
 
-    const processMessageHtml = (html: string) => {
+    const processMessageHtml = useCallback((html: string) => {
         let newHtml = html;
-        const itemMarkerRegex = /^(a|an|the|some|several|two|three|four|five|six|seven|eight|nine|ten|\d+)/i;
-
-
         // Highlight Current Target (Top priority)
         if (target) {
             try {
@@ -815,17 +1131,14 @@ const MudClient = () => {
                 newHtml = newHtml.replace(regex, (match) => `<span class="target-highlight">${match}</span>`);
             } catch (e) { }
         }
-
-
-
         return newHtml;
-    };
+    }, [target]);
 
-    const getMessageClass = (index: number, total: number) => {
+    const getMessageClass = useCallback((index: number, total: number) => {
         const anchorIndex = focusedIndex !== null ? focusedIndex : total - 1;
         const distance = anchorIndex - index;
         if (distance < 5) return 'msg-latest'; if (distance < 15) return 'msg-recent'; if (distance < 40) return 'msg-old'; return 'msg-ancient';
-    };
+    }, [focusedIndex]);
 
     const handleButtonClick = (button: CustomButton, e: React.MouseEvent, context?: string) => {
         e.stopPropagation();
@@ -850,17 +1163,25 @@ const MudClient = () => {
         }
     };
 
-    const handleDragStart = (e: React.MouseEvent, id: string, type: 'move' | 'resize' | 'cluster' | 'cluster-resize') => {
+    const handleDragStart = (e: React.PointerEvent, id: string, type: 'move' | 'resize' | 'cluster' | 'cluster-resize') => {
         if (!btn.isEditMode) return;
         e.stopPropagation(); e.preventDefault();
 
         if (type === 'cluster' || type === 'cluster-resize') {
-            const clusterId = id as 'joystick' | 'stats';
+            const clusterId = id as 'joystick' | 'stats' | 'mapper';
             const rect = (e.currentTarget as HTMLElement).parentElement!.getBoundingClientRect();
             const pos = btn.uiPositions[clusterId];
             const startX = pos?.x ?? rect.left;
             const startY = pos?.y ?? rect.top;
-            const initialScale = pos?.scale ?? 1;
+            let initialW = pos?.scale ?? 1;
+            let initialH = 0;
+
+            if (clusterId === 'mapper' && type === 'cluster-resize') {
+                const mapperPos = pos as any;
+                initialW = mapperPos?.w ?? 320;
+                initialH = mapperPos?.h ?? 320;
+            }
+
             btn.setDragState({
                 id: clusterId,
                 startX: e.clientX,
@@ -868,8 +1189,8 @@ const MudClient = () => {
                 initialX: startX,
                 initialY: startY,
                 type: type as any,
-                initialW: initialScale, // Re-purpose initialW for scale
-                initialH: 0
+                initialW: initialW,
+                initialH: initialH
             });
             return;
         }
@@ -904,11 +1225,11 @@ const MudClient = () => {
         });
     };
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
+    const handleMouseMove = useCallback((e: PointerEvent) => {
         if (btn.dragState?.type === 'cluster') {
             const dx = e.clientX - btn.dragState.startX;
             const dy = e.clientY - btn.dragState.startY;
-            const clusterId = btn.dragState.id as 'joystick' | 'stats';
+            const clusterId = btn.dragState.id as 'joystick' | 'stats' | 'mapper';
             btn.setUiPositions(prev => ({
                 ...prev,
                 [clusterId]: {
@@ -922,15 +1243,30 @@ const MudClient = () => {
 
         if (btn.dragState?.type === 'cluster-resize') {
             const dx = e.clientX - btn.dragState.startX;
-            const clusterId = btn.dragState.id as 'joystick' | 'stats';
-            const newScale = Math.max(0.5, Math.min(2.5, btn.dragState.initialW + dx / 200));
-            btn.setUiPositions(prev => ({
-                ...prev,
-                [clusterId]: {
-                    ...prev[clusterId],
-                    scale: newScale
-                }
-            }));
+            const dy = e.clientY - btn.dragState.startY;
+            const clusterId = btn.dragState.id as 'joystick' | 'stats' | 'mapper';
+
+            if (clusterId === 'mapper') {
+                const newW = Math.max(200, btn.dragState.initialW + dx);
+                const newH = Math.max(200, btn.dragState.initialH + dy);
+                btn.setUiPositions(prev => ({
+                    ...prev,
+                    [clusterId]: {
+                        ...prev[clusterId],
+                        w: newW,
+                        h: newH
+                    }
+                }));
+            } else {
+                const newScale = Math.max(0.5, Math.min(2.5, btn.dragState.initialW + dx / 200));
+                btn.setUiPositions(prev => ({
+                    ...prev,
+                    [clusterId]: {
+                        ...prev[clusterId],
+                        scale: newScale
+                    }
+                }));
+            }
             return;
         }
 
@@ -960,8 +1296,14 @@ const MudClient = () => {
         const handleMouseUp = () => {
             btn.setDragState(null);
         };
-        if (btn.dragState) { window.addEventListener('mousemove', handleMouseMove); window.addEventListener('mouseup', handleMouseUp); }
-        return () => { window.removeEventListener('mousemove', handleMouseMove); window.removeEventListener('mouseup', handleMouseUp); };
+        if (btn.dragState) {
+            window.addEventListener('pointermove', handleMouseMove);
+            window.addEventListener('pointerup', handleMouseUp);
+        }
+        return () => {
+            window.removeEventListener('pointermove', handleMouseMove);
+            window.removeEventListener('pointerup', handleMouseUp);
+        };
     }, [btn.dragState, handleMouseMove]);
 
     // --- Settings handlers ---
@@ -1032,26 +1374,14 @@ const MudClient = () => {
         return () => telnet.disconnect();
     }, []);
 
-    const scrollToBottom = useCallback((force = false) => {
-        if ((focusedIndex === null || force) && messagesEndRef.current && scrollContainerRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-    }, [focusedIndex]);
 
     useEffect(() => {
-        scrollToBottom();
+        scrollToBottom(false, false);
     }, [messages, activePrompt, focusedIndex, scrollToBottom]);
 
-    // Handle mobile keyboard and window resizing
-    useEffect(() => {
-        const handleResize = () => scrollToBottom();
-        window.visualViewport?.addEventListener('resize', handleResize);
-        window.visualViewport?.addEventListener('scroll', handleResize);
-        return () => {
-            window.visualViewport?.removeEventListener('resize', handleResize);
-            window.visualViewport?.removeEventListener('scroll', handleResize);
-        };
-    }, [scrollToBottom]);
+
+
+
 
     useEffect(() => {
         if (popoverState) {
@@ -1079,368 +1409,303 @@ const MudClient = () => {
         }
     }, [inCombat, btn.combatSet, btn.defaultSet, btn.activeSet]);
 
-    // Track last processed message index for drawer parsing
-    const lastParserIdx = useRef(-1);
 
-    // --- Parse incoming messages for drawer data ---
-    useEffect(() => {
-        if (!awaitingDrawer.current) return;
-        // Process only NEW messages since last run
-        const startIdx = lastParserIdx.current + 1;
-        const newMsgs = messages.slice(startIdx);
-        if (newMsgs.length === 0) return;
-        lastParserIdx.current = messages.length - 1;
 
-        for (const msg of newMsgs) {
-            // Skip user-echoed commands
-            if (msg.type === 'user' || msg.type === 'prompt') continue;
-            const raw = msg.textRaw.trim();
 
-            if (awaitingDrawer.current === 'inv') {
-                // Skip the header line
-                if (/^You are carrying/i.test(raw)) continue;
-                // Empty line or a prompt character signals end
-                if (raw === '' || raw === '>' || raw.startsWith('HP:')) {
-                    if (drawerBuffer.current.inv.length > 0) {
-                        setInvItems([...drawerBuffer.current.inv]);
-                        setInvLoading(false);
-                        awaitingDrawer.current = null;
-                        drawerBuffer.current.inv = [];
-                    }
-                    continue;
-                }
-                drawerBuffer.current.inv.push(raw);
-            } else if (awaitingDrawer.current === 'stat') {
-                // "You are using:" marks transition to eq section
-                if (/^You are using/i.test(raw)) {
-                    awaitingDrawer.current = 'eq';
-                    continue;
-                }
-                if (raw !== '') drawerBuffer.current.stat.push(raw);
-            } else if (awaitingDrawer.current === 'eq') {
-                if (raw === '' || raw === '>' || raw.startsWith('HP:')) {
-                    if (drawerBuffer.current.eq.length > 0) {
-                        setStatLines([...drawerBuffer.current.stat]);
-                        setEqItems([...drawerBuffer.current.eq]);
-                        setCharLoading(false);
-                        awaitingDrawer.current = null;
-                        drawerBuffer.current.stat = [];
-                        drawerBuffer.current.eq = [];
-                    }
-                    continue;
-                }
-                if (raw !== '') drawerBuffer.current.eq.push(raw);
-            }
-        }
-    }, [messages]);
-
-    const openInventoryDrawer = () => {
-        setInvDrawerOpen(true);
-        setInvLoading(true);
-        setInvItems([]);
-        drawerBuffer.current.inv = [];
-        // Stamp the watermark BEFORE sending so the parser ignores all prior messages
-        lastParserIdx.current = messages.length - 1;
-        awaitingDrawer.current = 'inv';
-        executeCommand('inv');
-    };
-
-    const openCharDrawer = () => {
-        setCharDrawerOpen(true);
-        setCharLoading(true);
-        setStatLines([]);
-        setEqItems([]);
-        drawerBuffer.current.stat = [];
-        drawerBuffer.current.eq = [];
-        // Stamp the watermark BEFORE sending so the parser ignores all prior messages
-        lastParserIdx.current = messages.length - 1;
-        awaitingDrawer.current = 'stat';
-        executeCommand('stat');
-        setTimeout(() => executeCommand('eq'), 200);
-    };
 
     return (
-        <div className={`viewport-sim-wrapper ${viewMode}`}>
-            <div className={`app-container ${btn.isEditMode ? 'edit-mode-active' : ''}`}>
-                <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`}>
-                    <div className="background-layer" style={{ backgroundImage: `url(${bgImage})` }} />
-                    <div className="overlay-layer" />
-                    <div className="screen-vignette" />
+        <div className={`app-container ${btn.isEditMode ? 'edit-mode-active' : ''}`} style={{ height: 'calc(var(--vh, 1vh) * 100)' }}>
+            <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
 
-                    <div className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                    <div className="lighting-container lighting-moon" style={{ opacity: lighting === 'moon' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                    <div className="lighting-container lighting-artificial" style={{ opacity: lighting === 'artificial' ? 1 : 0 }}><div className="lighting-inner" /></div>
-                    <div className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                <div className="background-layer" style={{ backgroundImage: `url(${bgImage})` }} />
+                <div className="overlay-layer" />
+                <div className="screen-vignette" />
 
-                    <div className={`weather-layer ${weather !== 'cloud' ? `weather-${weather}` : ''}`} />
-                    <div className="weather-layer weather-cloud" style={{ opacity: weather === 'cloud' ? 1 : 0 }} />
-                    <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />
-                    {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
-                    <div className={`combat-grayscale-filter ${inCombat ? 'active' : ''}`} />
-                    <div className={`combat-vignette ${inCombat ? 'active' : ''}`} />
-                    <div className={`combat-layer ${hitFlash ? 'combat-active' : ''}`} />
-                    <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} />
-                    <div className={`death-overlay ${deathStage !== 'none' ? 'death-active' : ''}`} style={{ opacity: deathStage === 'fade_in' ? 0 : (deathStage === 'black_hold' ? 1 : undefined) }} />
-                    <div className={`death-image-layer ${deathStage === 'flash' ? 'death-flash' : ''}`} style={{ backgroundImage: `url(${DEATH_IMG})`, opacity: deathStage === 'flash' ? 1 : 0 }} />
+                <div className="lighting-container lighting-sun" style={{ opacity: lighting === 'sun' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                <div className="lighting-container lighting-moon" style={{ opacity: lighting === 'moon' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                <div className="lighting-container lighting-artificial" style={{ opacity: lighting === 'artificial' ? 1 : 0 }}><div className="lighting-inner" /></div>
+                <div className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
 
-                    <div className="custom-buttons-layer">
-                        {btn.buttons.filter(b => b.setId === btn.activeSet && b.isVisible && b.display !== 'inline').map(button => {
-                            // Per-button gesture state stored in refs keyed by button id
-                            return (
-                                <div
-                                    key={button.id}
-                                    className={`custom-btn ${button.style.shape === 'pill' ? 'shape-pill' : button.style.shape === 'circle' ? 'shape-circle' : 'shape-rect'} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''}`}
-                                    style={{
-                                        left: `${button.style.x}%`,
-                                        top: `${button.style.y}%`,
-                                        width: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.w}px`,
-                                        height: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.h}px`,
-                                        backgroundColor: button.style.transparent ? 'rgba(0,0,0,0.2)' : button.style.backgroundColor,
-                                        border: button.style.transparent ? '1px dashed rgba(255,255,255,0.3)' : undefined
-                                    }}
-                                    onMouseDown={(e) => { if (btn.isEditMode) handleDragStart(e, button.id, 'move'); }}
-                                    onPointerDown={(e) => {
-                                        if (btn.isEditMode) return;
-                                        e.currentTarget.setPointerCapture(e.pointerId);
-                                        const startX = e.clientX, startY = e.clientY;
-                                        let didFire = false;
-                                        // Long-press timer
-                                        const lpt = setTimeout(() => {
-                                            didFire = true;
-                                            triggerHaptic(40);
-                                            const el = e.currentTarget as HTMLElement;
-                                            el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
-                                            const cmd = button.longCommand || button.command;
-                                            const actionType = button.longActionType || button.actionType || 'command';
+                <div className="weather-layer" style={{ opacity: weather === 'cloud' ? 1 : 0 }} />
+                <div className={`weather-layer ${weather !== 'cloud' ? `weather-${weather}` : ''}`} />
+                <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} />
+                {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
+                <div className={`combat-grayscale-filter ${inCombat ? 'active' : ''}`} />
+                <div className={`combat-vignette ${inCombat ? 'active' : ''}`} />
+                <div className={`combat-layer ${hitFlash ? 'combat-active' : ''}`} />
+                <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} />
+                <div className={`death-overlay ${deathStage !== 'none' ? 'death-active' : ''}`} style={{ opacity: deathStage === 'fade_in' ? 0 : (deathStage === 'black_hold' ? 1 : undefined) }} />
+                <div className={`death-image-layer ${deathStage === 'flash' ? 'death-flash' : ''}`} style={{ backgroundImage: `url(${DEATH_IMG})`, opacity: deathStage === 'flash' ? 1 : 0 }} />
 
-                                            if (actionType === 'nav') btn.setActiveSet(cmd);
-                                            else if (actionType === 'assign') {
-                                                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                                                setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label, assignSourceId: button.id });
-                                            }
-                                            else if (actionType === 'menu') {
-                                                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-                                                setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label });
-                                            }
-                                            else executeCommand(cmd);
-                                        }, 500);
-                                        // Store on element for cleanup
-                                        (e.currentTarget as any)._lpt = lpt;
-                                        (e.currentTarget as any)._startX = startX;
-                                        (e.currentTarget as any)._startY = startY;
-                                        (e.currentTarget as any)._didFire = false;
-                                    }}
-                                    onPointerMove={(e) => {
-                                        if (btn.isEditMode) return;
-                                        const el = e.currentTarget as any;
-                                        const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                                        // Cancel long-press if moved more than 8px
-                                        if ((Math.abs(dx) > 8 || Math.abs(dy) > 8) && el._lpt) {
-                                            clearTimeout(el._lpt); el._lpt = null;
-                                        }
-                                    }}
-                                    onPointerUp={(e) => {
-                                        if (btn.isEditMode) return;
-                                        const el = e.currentTarget as any;
-                                        clearTimeout(el._lpt); el._lpt = null;
-                                        if (el._didFire) { el._didFire = false; return; } // long-press already fired
-                                        const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                                        const isSwiped = Math.abs(dx) > 10 || Math.abs(dy) > 10;
-                                        let cmd = button.command;
-                                        let actionType = button.actionType || 'command';
+                <div className="custom-buttons-layer">
+                    {btn.buttons.filter(b => b.setId === btn.activeSet && b.isVisible && b.display !== 'inline').map(button => {
+                        // Per-button gesture state stored in refs keyed by button id
+                        return (
+                            <div
+                                key={button.id}
+                                className={`custom-btn ${button.style.shape === 'pill' ? 'shape-pill' : button.style.shape === 'circle' ? 'shape-circle' : 'shape-rect'} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''}`}
+                                style={{
+                                    left: `${button.style.x}%`,
+                                    top: `${button.style.y}%`,
+                                    width: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.w}px`,
+                                    height: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.h}px`,
+                                    backgroundColor: button.style.transparent ? 'rgba(0,0,0,0.2)' : button.style.backgroundColor,
+                                    border: button.style.transparent ? '1px dashed rgba(255,255,255,0.3)' : undefined
+                                }}
+                                onPointerDown={(e) => {
+                                    if (btn.isEditMode) {
+                                        handleDragStart(e, button.id, 'move');
+                                        return;
+                                    }
+                                    // Existing pointer down logic for non-edit mode
+                                    const currentTarget = e.currentTarget;
+                                    currentTarget.setPointerCapture(e.pointerId);
+                                    const startX = e.clientX, startY = e.clientY;
+                                    (currentTarget as any)._didFire = false;
+                                    (currentTarget as any)._startX = startX;
+                                    (currentTarget as any)._startY = startY;
 
-                                        if (isSwiped && button.swipeCommands) {
-                                            const absDx = Math.abs(dx), absDy = Math.abs(dy);
-                                            const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-
-                                            if (button.swipeCommands[dir]) {
-                                                cmd = button.swipeCommands[dir]!;
-                                                actionType = button.swipeActionTypes?.[dir] || 'command';
-                                            } else {
-                                                const fallback: 'up' | 'down' | 'left' | 'right' | undefined = (button.swipeCommands.up ? 'up' : button.swipeCommands.down ? 'down' : button.swipeCommands.left ? 'left' : button.swipeCommands.right ? 'right' : undefined);
-                                                if (fallback) {
-                                                    cmd = button.swipeCommands[fallback]!;
-                                                    actionType = button.swipeActionTypes?.[fallback] || 'command';
-                                                }
-                                            }
-                                        }
-
-                                        if (!cmd) return;
-                                        triggerHaptic(15);
-                                        const htmlEl = e.currentTarget as HTMLElement;
-                                        htmlEl.classList.remove('btn-glow-active'); void htmlEl.offsetWidth; htmlEl.classList.add('btn-glow-active');
+                                    // Long-press timer
+                                    const lpt = setTimeout(() => {
+                                        const el = currentTarget as any;
+                                        el._didFire = true;
+                                        triggerHaptic(60); // Stronger haptic for long-press
+                                        el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
+                                        const cmd = button.longCommand || button.command;
+                                        const actionType = button.longActionType || button.actionType || 'command';
 
                                         if (actionType === 'nav') btn.setActiveSet(cmd);
                                         else if (actionType === 'assign') {
-                                            const rect = htmlEl.getBoundingClientRect();
+                                            const rect = currentTarget.getBoundingClientRect();
                                             setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label, assignSourceId: button.id });
                                         }
                                         else if (actionType === 'menu') {
-                                            const rect = htmlEl.getBoundingClientRect();
+                                            const rect = currentTarget.getBoundingClientRect();
                                             setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label });
                                         }
                                         else executeCommand(cmd);
-                                        if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-                                    }}
-                                    onClick={(e) => {
-                                        if (btn.isEditMode) {
-                                            if (wasDraggingRef.current) return;
-                                            if (e.ctrlKey || e.metaKey) return;
-                                            btn.setEditingButtonId(button.id);
-                                            if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
-                                        } else e.stopPropagation();
-                                    }}
-                                >
-                                    {button.label} {btn.isEditMode && <div className="resize-handle" onMouseDown={(e) => handleDragStart(e, button.id, 'resize')} />}
-                                </div>
-                            );
-                        })}
-                    </div>
-
-
-                    <div className="content-layer">
-                        <Header
-                            lighting={lighting}
-                            weather={weather}
-                            isFoggy={isFoggy}
-                            inCombat={inCombat}
-                            target={target}
-                            activeSet={btn.activeSet}
-                            isEditMode={btn.isEditMode}
-                            getLightingIcon={getLightingIcon}
-                            getWeatherIcon={getWeatherIcon}
-                            setIsEditMode={btn.setIsEditMode}
-                            setIsSettingsOpen={setIsSettingsOpen}
-                            availableSets={btn.availableSets}
-                            setActiveSet={btn.setActiveSet}
-                            onOpenSetManager={() => setIsSetManagerOpen(true)}
-                            onClearTarget={() => setTarget(null)}
-                        />
-                        <MessageLog messages={messages} activePrompt={activePrompt} inCombat={inCombat} scrollContainerRef={scrollContainerRef} messagesEndRef={messagesEndRef} scrollToBottom={scrollToBottom} onScroll={() => {
-                            const container = scrollContainerRef.current; if (!container) return; const { scrollTop, scrollHeight, clientHeight } = container, scrollBottom = scrollTop + clientHeight;
-                            // Threshold lowered to 50 for mobile sensitivity
-                            if (scrollHeight - scrollBottom < 50) { if (focusedIndex !== null) setFocusedIndex(null); return; }
-                            const children = container.children; let newFocusIndex = 0;
-                            for (let i = Math.min(children.length - 2, messages.length - 1); i >= 0; i--) { const child = children[i] as HTMLElement; if (child.offsetTop < scrollBottom) { newFocusIndex = i; break; } }
-                            setFocusedIndex(newFocusIndex);
-                        }} onLogClick={handleLogClick} onMouseUp={handleMouseUp} onDoubleClick={handleDoubleClick} getMessageClass={getMessageClass} processMessageHtml={processMessageHtml} />
-                        {/* Keyboard FAB — fades out when input is expanded */}
-                        {viewMode === 'mobile' && (
-                            <div
-                                className="mobile-input-toggle"
-                                onClick={() => {
-                                    // focusInput must be called synchronously inside the
-                                    // gesture event so mobile browsers show the keyboard
-                                    inputAreaRef.current?.focusInput();
-                                    setIsInputExpanded(true);
+                                    }, 600); // Slightly longer for stability
+                                    (currentTarget as any)._lpt = lpt;
                                 }}
-                                style={{
-                                    position: 'absolute',
-                                    bottom: 'calc(8dvh + 70px + 20px)',
-                                    left: '50%',
-                                    width: '60px',
-                                    height: '60px',
-                                    background: 'none',
-                                    backdropFilter: 'none',
-                                    border: 'none',
-                                    boxShadow: 'none',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    cursor: 'pointer',
-                                    zIndex: 100,
-                                    opacity: isInputExpanded ? 0 : 0.35,
-                                    pointerEvents: isInputExpanded ? 'none' : 'auto',
-                                    transition: 'opacity 0.25s ease, transform 0.25s ease',
-                                    transform: `translateX(-50%) scale(${isInputExpanded ? 0.7 : 1})`
+                                onPointerMove={(e) => {
+                                    if (btn.isEditMode) return;
+                                    const el = e.currentTarget as any;
+                                    const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                                    // Cancel long-press if moved more than 12px
+                                    if ((Math.abs(dx) > 12 || Math.abs(dy) > 12) && el._lpt) {
+                                        clearTimeout(el._lpt); el._lpt = null;
+                                    }
+                                }}
+                                onPointerUp={(e) => {
+                                    if (btn.isEditMode) return;
+                                    const el = e.currentTarget as any;
+                                    clearTimeout(el._lpt); el._lpt = null;
+                                    if (el._didFire) { el._didFire = false; return; } // long-press already fired
+                                    const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                                    const isSwiped = Math.abs(dx) > 10 || Math.abs(dy) > 10;
+                                    let cmd = button.command;
+                                    let actionType = button.actionType || 'command';
+
+                                    if (isSwiped && button.swipeCommands) {
+                                        const absDx = Math.abs(dx), absDy = Math.abs(dy);
+                                        const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+
+                                        if (button.swipeCommands[dir]) {
+                                            cmd = button.swipeCommands[dir]!;
+                                            actionType = button.swipeActionTypes?.[dir] || 'command';
+                                        } else {
+                                            const fallback: 'up' | 'down' | 'left' | 'right' | undefined = (button.swipeCommands.up ? 'up' : button.swipeCommands.down ? 'down' : button.swipeCommands.left ? 'left' : button.swipeCommands.right ? 'right' : undefined);
+                                            if (fallback) {
+                                                cmd = button.swipeCommands[fallback]!;
+                                                actionType = button.swipeActionTypes?.[fallback] || 'command';
+                                            }
+                                        }
+                                    }
+
+                                    if (!cmd) return;
+                                    triggerHaptic(15);
+                                    const htmlEl = e.currentTarget as HTMLElement;
+                                    htmlEl.classList.remove('btn-glow-active'); void htmlEl.offsetWidth; htmlEl.classList.add('btn-glow-active');
+
+                                    if (actionType === 'nav') btn.setActiveSet(cmd);
+                                    else if (actionType === 'assign') {
+                                        const rect = htmlEl.getBoundingClientRect();
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label, assignSourceId: button.id });
+                                    }
+                                    else if (actionType === 'menu') {
+                                        const rect = htmlEl.getBoundingClientRect();
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label });
+                                    }
+                                    else executeCommand(cmd);
+                                    if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
+                                }}
+                                onClick={(e) => {
+                                    if (btn.isEditMode) {
+                                        if (wasDraggingRef.current) return;
+                                        if (e.ctrlKey || e.metaKey) return;
+                                        btn.setEditingButtonId(button.id);
+                                        if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
+                                    } else e.stopPropagation();
                                 }}
                             >
-                                <Keyboard size={32} color="white" />
+                                {button.label} {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, button.id, 'resize')} />}
                             </div>
-                        )}
-                        {/* InputArea — always rendered, animates in/out */}
-                        <InputArea
-                            ref={inputAreaRef}
-                            input={input}
-                            setInput={setInput}
-                            onSend={(val) => {
-                                handleSend(val);
-                                // keyboard stays open; only the chevron button collapses it
-                            }}
-                            target={target}
-                            onClearTarget={() => setTarget(null)}
-                            terrain={undefined}
-                            isExpanded={viewMode === 'mobile' ? isInputExpanded : undefined}
-                            onHide={viewMode === 'mobile' ? () => setIsInputExpanded(false) : undefined}
-                        />
-                    </div>
-
-
-                    <div
-                        className="stats-cluster"
-                        style={{
-                            left: btn.uiPositions.stats?.x,
-                            top: btn.uiPositions.stats?.y,
-                            bottom: btn.uiPositions.stats ? 'auto' : undefined,
-                            right: btn.uiPositions.stats ? 'auto' : undefined,
-                            transform: btn.uiPositions.stats?.scale ? `scale(${btn.uiPositions.stats.scale})` : undefined,
-                            transformOrigin: 'top left',
-                            cursor: btn.isEditMode ? 'move' : undefined,
-                            border: (btn.isEditMode && btn.dragState?.id === 'stats') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
-                            padding: btn.isEditMode ? '10px' : undefined,
-                            borderRadius: '20px'
-                        }}
-                        onMouseDown={(e) => {
-                            if (btn.isEditMode) handleDragStart(e, 'stats', 'cluster');
-                        }}
-                    >
-                        {btn.isEditMode && <div className="resize-handle" onMouseDown={(e) => handleDragStart(e, 'stats', 'cluster-resize')} />}
-                        <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} />
-                    </div>
-
-                    <div
-                        className="joystick-cluster"
-                        style={{
-                            left: btn.uiPositions.joystick?.x,
-                            top: btn.uiPositions.joystick?.y,
-                            bottom: btn.uiPositions.joystick ? 'auto' : undefined,
-                            right: btn.uiPositions.joystick ? 'auto' : undefined,
-                            transform: btn.uiPositions.joystick?.scale ? `scale(${btn.uiPositions.joystick.scale})` : undefined,
-                            transformOrigin: (btn.uiPositions.joystick?.y && btn.uiPositions.joystick.y > window.innerHeight / 2) ? 'bottom left' : 'top left',
-                            cursor: btn.isEditMode ? 'move' : undefined,
-                            border: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
-                            padding: btn.isEditMode ? '10px' : undefined,
-                            borderRadius: '20px'
-                        }}
-                        onMouseDown={(e) => {
-                            if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
-                        }}
-                    >
-                        {btn.isEditMode && <div className="resize-handle" onMouseDown={(e) => handleDragStart(e, 'joystick', 'cluster-resize')} />}
-                        <Joystick joystickKnobRef={joystick.joystickKnobRef} joystickGlow={joystickGlow} btnGlow={btnGlow} onJoystickStart={joystick.handleJoystickStart} onJoystickMove={joystick.handleJoystickMove} onJoystickEnd={(e) => joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow)} onNavClick={handleNavClick} />
-                    </div>
+                        );
+                    })}
                 </div>
 
-                {btn.isEditMode && <div className="add-btn-fab" onClick={() => btn.createButton()}><Plus size={32} /></div>}
 
-                {popoverState && (
-                    <div className="popover-menu" style={{ left: popoverState.x, top: popoverState.y }}>
-                        <div className="popover-header">
-                            {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' ? `Actions: ${popoverState.context} ` : `Set: ${popoverState.setId} `}
+                <div className="content-layer">
+                    <Header
+                        lighting={lighting}
+                        weather={weather}
+                        isFoggy={isFoggy}
+                        inCombat={inCombat}
+                        target={target}
+                        activeSet={btn.activeSet}
+                        isEditMode={btn.isEditMode}
+                        getLightingIcon={getLightingIcon}
+                        getWeatherIcon={getWeatherIcon}
+                        setIsEditMode={btn.setIsEditMode}
+                        setIsSettingsOpen={setIsSettingsOpen}
+                        availableSets={btn.availableSets}
+                        setActiveSet={btn.setActiveSet}
+                        onOpenSetManager={() => setIsSetManagerOpen(true)}
+                        onClearTarget={() => setTarget(null)}
+                    />
+
+                    <MessageLog
+                        messages={messages}
+                        activePrompt={activePrompt}
+                        inCombat={inCombat}
+                        scrollContainerRef={scrollContainerRef}
+                        messagesEndRef={messagesEndRef}
+                        scrollToBottom={scrollToBottom}
+                        onScroll={handleLogScroll}
+                        onLogClick={handleLogClick}
+                        onMouseUp={handleMouseUp}
+                        onDoubleClick={handleDoubleClick}
+                        getMessageClass={getMessageClass}
+                        processMessageHtml={processMessageHtml}
+                    />
+
+                    <InputArea
+                        input={input}
+                        setInput={setInput}
+                        onSend={handleSendCallback}
+                        target={target}
+                        onClearTarget={() => setTarget(null)}
+                        terrain={undefined}
+                        onSwipe={handleInputSwipe}
+                    />
+                </div>
+
+
+                <div
+                    className="mapper-cluster"
+                    style={{
+                        position: 'absolute',
+                        right: btn.uiPositions.mapper?.x === undefined ? '10px' : undefined,
+                        top: btn.uiPositions.mapper?.y === undefined ? '75px' : btn.uiPositions.mapper?.y,
+                        left: btn.uiPositions.mapper?.x,
+                        width: btn.uiPositions.mapper?.w ? `${btn.uiPositions.mapper.w}px` : 'min(320px, 85vw)',
+                        height: btn.uiPositions.mapper?.h ? `${btn.uiPositions.mapper.h}px` : '320px',
+                        cursor: btn.isEditMode ? 'move' : undefined,
+                        border: (btn.isEditMode && btn.dragState?.id === 'mapper') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        zIndex: 50
+                    }}
+                    onPointerDown={(e) => {
+                        if (btn.isEditMode) handleDragStart(e, 'mapper', 'cluster');
+                    }}
+                >
+                    <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} />
+                    {btn.isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
+                </div>                <div
+                    className="stats-cluster"
+                    style={{
+                        left: btn.uiPositions.stats?.x,
+                        top: btn.uiPositions.stats?.y,
+                        bottom: btn.uiPositions.stats ? 'auto' : undefined,
+                        right: btn.uiPositions.stats ? 'auto' : undefined,
+                        transform: btn.uiPositions.stats?.scale ? `scale(${btn.uiPositions.stats.scale})` : undefined,
+                        transformOrigin: 'top left',
+                        cursor: btn.isEditMode ? 'move' : undefined,
+                        border: (btn.isEditMode && btn.dragState?.id === 'stats') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+                        padding: btn.isEditMode ? '10px' : undefined,
+                        borderRadius: '20px',
+                        zIndex: 50
+                    }}
+                    onPointerDown={(e) => {
+                        if (btn.isEditMode) handleDragStart(e, 'stats', 'cluster');
+                    }}
+                >
+                    {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, 'stats', 'cluster-resize')} />}
+                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} />
+                </div>
+
+                <div
+                    className="joystick-cluster"
+                    style={{
+                        left: btn.uiPositions.joystick?.x,
+                        top: btn.uiPositions.joystick?.y,
+                        bottom: btn.uiPositions.joystick ? 'auto' : undefined,
+                        right: btn.uiPositions.joystick ? 'auto' : undefined,
+                        transform: btn.uiPositions.joystick?.scale ? `scale(${btn.uiPositions.joystick.scale})` : undefined,
+                        transformOrigin: (btn.uiPositions.joystick?.y && btn.uiPositions.joystick.y > window.innerHeight / 2) ? 'bottom left' : 'top left',
+                        cursor: btn.isEditMode ? 'move' : undefined,
+                        border: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+                        padding: btn.isEditMode ? '10px' : undefined,
+                        borderRadius: '20px',
+                        zIndex: 50
+                    }}
+                    onPointerDown={(e) => {
+                        if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
+                    }}
+                >
+                    {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, 'joystick', 'cluster-resize')} />}
+                    <Joystick joystickKnobRef={joystick.joystickKnobRef} joystickGlow={joystickGlow} btnGlow={btnGlow} onJoystickStart={joystick.handleJoystickStart} onJoystickMove={joystick.handleJoystickMove} onJoystickEnd={(e) => joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow)} onNavClick={handleNavClick} />
+                </div>
+            </div>
+
+            {btn.isEditMode && <div className="add-btn-fab" onClick={() => btn.createButton()}><Plus size={32} /></div>}
+
+            {popoverState && (
+                <div className="popover-menu" style={{ left: popoverState.x, top: popoverState.y }}>
+                    <div className="popover-header">
+                        {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' ? `Actions: ${popoverState.context} ` : `Set: ${popoverState.setId} `}
+                    </div>
+
+                    {(popoverState.setId === 'selection') && (
+                        <div className="popover-item" onClick={() => {
+                            setTarget(popoverState.context || null);
+                            setPopoverState(null);
+                            addMessage('system', `Target set to: ${popoverState.context}`);
+                        }}>
+                            Set as Target
                         </div>
+                    )}
 
-                        {(popoverState.setId === 'selection') && (
-                            <div className="popover-item" onClick={() => {
-                                setTarget(popoverState.context || null);
-                                setPopoverState(null);
-                                addMessage('system', `Target set to: ${popoverState.context}`);
-                            }}>
-                                Set as Target
-                            </div>
-                        )}
-
-                        <>
-                            {btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
+                    <>
+                        {popoverState.setId === 'setmanager' ? (
+                            // List all available button sets instead of buttons
+                            btn.availableSets.map(setName => (
+                                <div key={setName} className="popover-item" onClick={() => {
+                                    if (popoverState.assignSourceId) {
+                                        btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ?
+                                            { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' } : b
+                                        ));
+                                        setPopoverState(null);
+                                        addMessage('system', `Assigned sub-menu '${setName}' to button.`);
+                                    }
+                                }}>
+                                    Switch to: {setName}
+                                </div>
+                            ))
+                        ) : (
+                            // Default: List buttons from the target set
+                            btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
                                 <div key={button.id} className="popover-item" onClick={(e) => {
                                     if (popoverState?.assignSourceId) {
                                         btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
@@ -1450,161 +1715,231 @@ const MudClient = () => {
                                         handleButtonClick(button, e, popoverState!.context);
                                     }
                                 }}>{button.label}</div>
-                            ))}
-                            {btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>}
-                        </>
-                    </div>
-                )}
-
-                {isSettingsOpen && (
-                    <SettingsModal
-                        setIsSettingsOpen={setIsSettingsOpen}
-                        settingsTab={settingsTab}
-                        setSettingsTab={setSettingsTab}
-                        connectionUrl={connectionUrl}
-                        setConnectionUrl={setConnectionUrl}
-                        bgImage={bgImage}
-                        setBgImage={setBgImage}
-                        handleFileUpload={handleFileUpload}
-                        exportSettings={exportSettings}
-                        importSettings={importSettings}
-                        isLoading={isLoading}
-                        newSoundPattern={newSoundPattern}
-                        setNewSoundPattern={setNewSoundPattern}
-                        newSoundRegex={newSoundRegex}
-                        setNewSoundRegex={setNewSoundRegex}
-                        handleSoundUpload={handleSoundUpload}
-                        soundTriggers={soundTriggers}
-                        deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
-                        resetButtons={(useUserDefault) => {
-                            import('./constants/buttons').then(({ DEFAULT_BUTTONS }) => {
-                                btn.setButtons(DEFAULT_BUTTONS);
-                                addMessage('system', 'Buttons reset to core defaults.');
-                            });
-                        }}
-                        hasUserDefaults={btn.hasUserDefaults}
-                        status={status}
-                        connect={connect}
-                    />
-                )}
-
-                {btn.editingButtonId && (() => {
-                    const editingButton = btn.buttons.find(b => b.id === btn.editingButtonId);
-                    if (!editingButton) return null;
-                    return (
-                        <EditButtonModal
-                            editingButton={editingButton}
-                            setEditingButtonId={btn.setEditingButtonId}
-                            deleteButton={btn.deleteButton}
-                            setButtons={btn.setButtons}
-                            availableSets={btn.availableSets}
-                        />
-                    );
-                })()}
-
-
-
-                {isSetManagerOpen && (
-                    <SetManagerModal
-                        buttons={btn.buttons}
-                        availableSets={btn.availableSets}
-                        onClose={() => setIsSetManagerOpen(false)}
-                        onEditButton={(id) => { setIsSetManagerOpen(false); btn.setEditingButtonId(id); }}
-                        onDeleteButton={btn.deleteButton}
-                        onCreateButton={btn.createButton}
-                        onSaveAsDefault={btn.saveAsDefault}
-                        combatSet={btn.combatSet}
-                        defaultSet={btn.defaultSet}
-                        onSetCombatSet={btn.setCombatSet}
-                        onSetDefaultSet={btn.setDefaultSet}
-                    />
-                )}
-                {/* ── Mobile swipe zones & drawers — inside app-container so overflow:hidden clips them ── */}
-                {viewMode === 'mobile' && (
-                    <>
-                        {/* BOTTOM swipe zone — swipe up from stat bar footer → inventory */}
-                        <div
-                            className="swipe-zone-bottom"
-                            onTouchStart={(e) => {
-                                (e.currentTarget as any)._sy = e.touches[0].clientY;
-                            }}
-                            onTouchEnd={(e) => {
-                                const dy = e.changedTouches[0].clientY - (e.currentTarget as any)._sy;
-                                if (dy < -50) openInventoryDrawer();
-                            }}
-                        />
-
-                        {/* LEFT swipe zone — narrow sliver at left edge → character panel */}
-                        <div
-                            className="swipe-zone-left"
-                            onTouchStart={(e) => {
-                                (e.currentTarget as any)._sx = e.touches[0].clientX;
-                            }}
-                            onTouchEnd={(e) => {
-                                const dx = e.changedTouches[0].clientX - (e.currentTarget as any)._sx;
-                                if (dx > 50) openCharDrawer();
-                            }}
-                        />
-
-                        {/* INVENTORY DRAWER */}
-                        <GameDrawer
-                            isOpen={invDrawerOpen}
-                            onClose={() => setInvDrawerOpen(false)}
-                            side="bottom"
-                            title="Inventory"
-                            icon={<Package size={18} />}
-                            items={invItems}
-                            isLoading={invLoading}
-                        />
-
-                        {/* CHARACTER DRAWER */}
-                        <GameDrawer
-                            isOpen={charDrawerOpen}
-                            onClose={() => setCharDrawerOpen(false)}
-                            side="left"
-                            title="Character"
-                            icon={<Swords size={18} />}
-                            items={eqItems}
-                            isLoading={charLoading}
-                            topSection={statLines.length > 0 ? (
-                                <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.07)', marginBottom: '4px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px', color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                                        <ScrollText size={12} /> Statistics
-                                    </div>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                        {statLines.map((line, i) => (
-                                            <div key={i} style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.5, fontFamily: 'monospace' }}>{line}</div>
-                                        ))}
-                                    </div>
-                                    {eqItems.length > 0 && (
-                                        <div style={{ marginTop: '14px', display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.4)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                                            <Swords size={12} /> Equipment
-                                        </div>
-                                    )}
-                                </div>
-                            ) : undefined}
-                        />
+                            ))
+                        )}
+                        {popoverState.setId !== 'setmanager' && btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>}
                     </>
-                )}
-            </div>
+                </div>
+            )}
 
-            <div className="viewport-switcher">
-                <button
-                    className={`viewport-btn ${viewMode === 'desktop' ? 'active' : ''}`}
-                    onClick={() => setViewMode('desktop')}
-                    title="Desktop View"
-                >
-                    <Monitor size={18} />
-                </button>
-                <button
-                    className={`viewport-btn ${viewMode === 'mobile' ? 'active' : ''}`}
-                    onClick={() => setViewMode('mobile')}
-                    title="Mobile View"
-                >
-                    <Smartphone size={18} />
-                </button>
-            </div>
+            {isSettingsOpen && (
+                <SettingsModal
+                    setIsSettingsOpen={setIsSettingsOpen}
+                    settingsTab={settingsTab}
+                    setSettingsTab={setSettingsTab}
+                    connectionUrl={connectionUrl}
+                    setConnectionUrl={setConnectionUrl}
+                    bgImage={bgImage}
+                    setBgImage={setBgImage}
+                    handleFileUpload={handleFileUpload}
+                    exportSettings={exportSettings}
+                    importSettings={importSettings}
+                    isLoading={isLoading}
+                    newSoundPattern={newSoundPattern}
+                    setNewSoundPattern={setNewSoundPattern}
+                    newSoundRegex={newSoundRegex}
+                    setNewSoundRegex={setNewSoundRegex}
+                    handleSoundUpload={handleSoundUpload}
+                    soundTriggers={soundTriggers}
+                    deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
+                    resetButtons={(useUserDefault) => {
+                        import('./constants/buttons').then(({ DEFAULT_BUTTONS }) => {
+                            btn.setButtons(DEFAULT_BUTTONS);
+                            addMessage('system', 'Buttons reset to core defaults.');
+                        });
+                    }}
+                    hasUserDefaults={btn.hasUserDefaults}
+                    status={status}
+                    connect={connect}
+                />
+            )}
+
+            {btn.editingButtonId && (() => {
+                const editingButton = btn.buttons.find(b => b.id === btn.editingButtonId);
+                if (!editingButton) return null;
+                return (
+                    <EditButtonModal
+                        editingButton={editingButton}
+                        setEditingButtonId={btn.setEditingButtonId}
+                        deleteButton={btn.deleteButton}
+                        setButtons={btn.setButtons}
+                        availableSets={btn.availableSets}
+                    />
+                );
+            })()}
+
+            {isSetManagerOpen && (
+                <SetManagerModal
+                    buttons={btn.buttons}
+                    availableSets={btn.availableSets}
+                    onClose={() => setIsSetManagerOpen(false)}
+                    onEditButton={(id) => { setIsSetManagerOpen(false); btn.setEditingButtonId(id); }}
+                    onDeleteButton={btn.deleteButton}
+                    onCreateButton={btn.createButton}
+                    onSaveAsDefault={btn.saveAsDefault}
+                    combatSet={btn.combatSet}
+                    defaultSet={btn.defaultSet}
+                    onSetCombatSet={btn.setCombatSet}
+                    onSetDefaultSet={btn.setDefaultSet}
+                />
+            )}
+
+            {isMobile && (
+                <>
+                    <div className={`drawer-backdrop ${(isInventoryOpen || isCharacterOpen || isRightDrawerOpen) ? 'open' : ''}`} onClick={() => { setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false); }} />
+
+                    <div
+                        className={`inventory-drawer ${isInventoryOpen ? 'open' : ''}`}
+                        onPointerDown={(e) => {
+                            const target = e.target as HTMLElement;
+                            if (target.closest('button') || target.closest('a')) return;
+                            e.currentTarget.setPointerCapture(e.pointerId);
+                            (e.currentTarget as any)._startY = e.clientY;
+                            (e.currentTarget as any)._startX = e.clientX;
+                        }}
+                        onPointerUp={(e) => {
+                            const startY = (e.currentTarget as any)._startY;
+                            const startX = (e.currentTarget as any)._startX;
+
+                            if (startY !== undefined && startY !== null && startX !== undefined && startX !== null) {
+                                const deltaY = e.clientY - startY;
+                                const deltaX = e.clientX - startX;
+                                const absDeltaX = Math.abs(deltaX);
+
+                                // ENTIRE drawer is now a swipe target.
+                                // 1. Down swipe (to close like a drawer)
+                                const isDownSwipe = deltaY > 20 && deltaY > absDeltaX;
+                                if (isDownSwipe) {
+                                    const drawerContent = e.currentTarget.querySelector('.drawer-content');
+                                    const scrolled = drawerContent ? drawerContent.scrollTop : 0;
+                                    // If at top or if swipe was aggressive/on-header, close.
+                                    if (scrolled <= 5 || deltaY > 100 || (e.target as HTMLElement).closest('.drawer-header')) {
+                                        triggerHaptic(40);
+                                        setIsInventoryOpen(false);
+                                    }
+                                }
+                                // 2. Horizontal swipe dismissed (logic of side drawers)
+                                else if (absDeltaX > 30 && absDeltaX > Math.abs(deltaY)) {
+                                    triggerHaptic(40);
+                                    setIsInventoryOpen(false);
+                                }
+                            }
+                            (e.currentTarget as any)._startY = null;
+                            (e.currentTarget as any)._startX = null;
+                        }}
+                        onPointerCancel={(e) => {
+                            (e.currentTarget as any)._startY = null;
+                            (e.currentTarget as any)._startX = null;
+                        }}
+                        style={{ touchAction: 'pan-x pan-y' }}
+                    >
+                        <div className="drawer-header"
+                            style={{ cursor: 'ns-resize', touchAction: 'none', height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
+                        >
+                            <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
+                            <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory</span>
+                            <button onClick={() => { triggerHaptic(20); setIsInventoryOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
+                        </div>
+                        <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+                            <div style={{ padding: '20px' }} dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
+                        </div>
+                    </div>
+
+                    <div
+                        className={`character-drawer ${isCharacterOpen ? 'open' : ''}`}
+                        onPointerDown={(e) => {
+                            const target = e.target as HTMLElement;
+                            if (target.closest('button') || target.closest('a')) return;
+                            e.currentTarget.setPointerCapture(e.pointerId);
+                            (e.currentTarget as any)._startX = e.clientX;
+                            (e.currentTarget as any)._startY = e.clientY;
+                        }}
+                        onPointerUp={(e) => {
+                            const startX = (e.currentTarget as any)._startX;
+                            const startY = (e.currentTarget as any)._startY;
+                            if (startX !== undefined && startX !== null) {
+                                const deltaX = startX - e.clientX;
+                                const deltaY = Math.abs(e.clientY - (startY || 0));
+                                // Left swipe to close anywhere in drawer
+                                if (deltaX > 20 && deltaX > deltaY) {
+                                    triggerHaptic(40);
+                                    setIsCharacterOpen(false);
+                                }
+                            }
+                            (e.currentTarget as any)._startX = null;
+                            (e.currentTarget as any)._startY = null;
+                        }}
+                        onPointerCancel={(e) => {
+                            (e.currentTarget as any)._startX = null;
+                        }}
+                        style={{ touchAction: 'pan-y' }}
+                    >
+                        <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px', position: 'relative', touchAction: 'pan-y' }}>
+                            {/* Visual Swipe Handle Overlay */}
+                            <div className="swipe-indicator" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
+                            <div className="drawer-title-row" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px' }}>Character & Equipment</span>
+                                <button onClick={() => { triggerHaptic(20); setIsCharacterOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+                            </div>
+                            <div className="stat-section" style={{ marginBottom: '20px' }}>
+                                <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>STATUS</div>
+                                <div dangerouslySetInnerHTML={{ __html: statsHtml }} />
+                            </div>
+                            <div className="eq-section">
+                                <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>EQUIPMENT</div>
+                                <div dangerouslySetInnerHTML={{ __html: eqHtml }} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        className={`right-drawer ${isRightDrawerOpen ? 'open' : ''}`}
+                        onPointerDown={(e) => {
+                            const target = e.target as HTMLElement;
+                            if (target.closest('button') || target.closest('a')) return;
+                            e.currentTarget.setPointerCapture(e.pointerId);
+                            (e.currentTarget as any)._startX = e.clientX;
+                            (e.currentTarget as any)._startY = e.clientY;
+                        }}
+                        onPointerUp={(e) => {
+                            const startX = (e.currentTarget as any)._startX;
+                            const startY = (e.currentTarget as any)._startY;
+                            if (startX !== undefined && startX !== null) {
+                                const deltaX = e.clientX - startX;
+                                const deltaY = Math.abs(e.clientY - (startY || 0));
+                                // Right drawer is on the right, so swiping RIGHT closes it
+                                if (deltaX > 20 && deltaX > deltaY) {
+                                    triggerHaptic(40);
+                                    setIsRightDrawerOpen(false);
+                                }
+                            }
+                            (e.currentTarget as any)._startX = null;
+                            (e.currentTarget as any)._startY = null;
+                        }}
+                        onPointerCancel={(e) => {
+                            (e.currentTarget as any)._startX = null;
+                        }}
+                        style={{ touchAction: 'pan-y' }}
+                    >
+                        <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px', position: 'relative', touchAction: 'pan-y' }}>
+                            {/* Visual Swipe Handle Overlay */}
+                            <div className="swipe-indicator" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
+                            <div className="drawer-title-row" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px' }}>Utility Menu</span>
+                                <button onClick={() => { triggerHaptic(20); setIsRightDrawerOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+                            </div>
+                            <div style={{ opacity: 0.5, textAlign: 'center', marginTop: '40px' }}>
+                                <div style={{ fontSize: '2rem', marginBottom: '10px' }}>⚙️</div>
+                                <div>Future Utility content goes here...</div>
+                                <div style={{ fontSize: '0.8rem', marginTop: '10px' }}>Swipe right to close</div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
+
         </div>
+
     );
 };
 

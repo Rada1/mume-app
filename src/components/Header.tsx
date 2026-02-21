@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({
                         {getLightingIcon()}
                         {getWeatherIcon()}
                         {isFoggy && <CloudFog size={16} className="text-gray-400" />}
-                        <span className="mobile-hide">
+                        <span>
                             {lighting !== 'none' ? lighting.toUpperCase() : ''}
                             {weather !== 'none' && weather !== 'clear' ? ` | ${weather.toUpperCase().replace('-', ' ')}` : ''}
                             {isFoggy ? ' | FOG' : ''}
@@ -177,4 +177,4 @@ const Header: React.FC<HeaderProps> = ({
     );
 };
 
-export default Header;
+export default React.memo(Header);

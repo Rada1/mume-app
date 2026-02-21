@@ -21,7 +21,17 @@ export const useJoystick = () => {
 
     const handleJoystickMove = useCallback((e: React.PointerEvent) => {
         if (!joystickActive || !joystickStartPos.current || !joystickKnobRef.current) return;
-        const dx = e.clientX - joystickStartPos.current.x, dy = e.clientY - joystickStartPos.current.y, maxDist = 50;
+        let dx = e.clientX - joystickStartPos.current.x;
+        let dy = e.clientY - joystickStartPos.current.y;
+
+        // Snap visual knob to 4 directions
+        if (Math.abs(dx) > Math.abs(dy)) {
+            dy = 0;
+        } else {
+            dx = 0;
+        }
+
+        const maxDist = 50;
         const tiltX = -(dy / maxDist) * 25, tiltY = (dx / maxDist) * 25, transX = (dx / maxDist) * 15, transY = (dy / maxDist) * 15;
         joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${transX}px, ${transY}px, 0)`;
     }, [joystickActive]);
@@ -43,10 +53,10 @@ export const useJoystick = () => {
         } else {
             let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
             let dir: Direction = 'n';
-            if (angle >= 337.5 || angle < 22.5) dir = 'e'; else if (angle >= 22.5 && angle < 67.5) dir = 'se';
-            else if (angle >= 67.5 && angle < 112.5) dir = 's'; else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
-            else if (angle >= 157.5 && angle < 202.5) dir = 'w'; else if (angle >= 202.5 && angle < 247.5) dir = 'nw';
-            else if (angle >= 247.5 && angle < 292.5) dir = 'n'; else if (angle >= 292.5 && angle < 337.5) dir = 'ne';
+            if (angle >= 315 || angle < 45) dir = 'e';
+            else if (angle >= 45 && angle < 135) dir = 's';
+            else if (angle >= 135 && angle < 225) dir = 'w';
+            else dir = 'n';
 
             executeCommand(dir);
             triggerHaptic(40);
