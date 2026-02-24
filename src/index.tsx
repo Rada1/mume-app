@@ -101,6 +101,9 @@ const MudClient = () => {
     const [lighting, setLighting] = useState<LightingType>('none');
     const [weather, setWeather] = useState<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>('none');
     const [isFoggy, setIsFoggy] = useState(false);
+    const [mood, setMood] = useState('normal');
+    const [spellSpeed, setSpellSpeed] = useState('normal');
+    const [alertness, setAlertness] = useState('normal');
 
 
     // UI Layout State
@@ -128,10 +131,57 @@ const MudClient = () => {
 
     const [isInventoryOpen, setIsInventoryOpen] = useState(false);
     const [isCharacterOpen, setIsCharacterOpen] = useState(false);
-    const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
     const [inventoryHtml, setInventoryHtml] = useState('');
     const [statsHtml, setStatsHtml] = useState('');
     const [eqHtml, setEqHtml] = useState('');
+
+    const [spatButtons, setSpatButtons] = useState<{ id: string, btnId: string, label: string, command: string, action: string, startX: number, startY: number, targetX: number, targetY: number, color: string, timestamp: number }[]>([]);
+
+    const spatButtonsRef = useRef(spatButtons);
+    useEffect(() => { spatButtonsRef.current = spatButtons; }, [spatButtons]);
+
+    const triggerSpit = useCallback((el: HTMLElement) => {
+        const btnId = el.dataset.id || '';
+        // If this button type is already visible on screen/in stack, ignore new trigger
+        if (spatButtonsRef.current.some(sb => sb.btnId === btnId)) return;
+
+        const rect = el.getBoundingClientRect();
+        const id = Math.random().toString(36).substring(7);
+
+        // Find the text log edge (content-layer right boundary)
+        const contentLayer = document.querySelector('.content-layer');
+        const contentRect = contentLayer?.getBoundingClientRect();
+
+        // Find the command line position
+        const inputArea = document.querySelector('.input-area');
+        const inputRect = inputArea?.getBoundingClientRect();
+
+        // Glow the trigger text
+        el.classList.add('is-triggered');
+
+        // Use the right edge of the content layer, minus some padding for the button
+        const baseTargetX = contentRect ? (contentRect.right - 140) : (window.innerWidth - 180);
+        // Vertical target: just above the input area
+        const targetY = inputRect ? (inputRect.top - 40) : (window.innerHeight - 100);
+
+        const newSpat = {
+            id,
+            btnId: btnId,
+            label: el.innerText,
+            command: el.dataset.cmd || '',
+            action: el.dataset.action || 'command',
+            startX: rect.left + rect.width / 2,
+            startY: rect.top + rect.height / 2,
+            targetX: baseTargetX,
+            targetY: targetY,
+            color: el.style.backgroundColor || 'var(--accent)',
+            timestamp: Date.now()
+        };
+
+        setSpatButtons(prev => [...prev.slice(-9), newSpat]);
+
+        triggerHaptic(10);
+    }, []);
 
     const isCapturingInventory = useRef(false);
     const captureStage = useRef<'stat' | 'eq' | 'none'>('none');
@@ -141,6 +191,7 @@ const MudClient = () => {
 
     const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+    const [characterName, setCharacterName] = useState<string | null>(null);
 
 
 
@@ -154,19 +205,74 @@ const MudClient = () => {
     const navPathRef = useRef<string[]>([]);
     const didLongPressRef = useRef(false);
     const mapperRef = useRef<MapperRef>(null);
+    const drawerMapperRef = useRef<MapperRef>(null);
     const lastCameraRoomIdRef = useRef<number | null>(null);
     const promptTerrainRef = useRef<string | null>(null);
     const inCombatRef = useRef(false);
     const lastViewportHeightRef = useRef<number>(window.innerHeight);
     const baseHeightRef = useRef<number>(window.innerHeight);
 
-    const isMobile = useMemo(() => {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    useEffect(() => {
+        const handleResize = () => setWindowWidth(window.innerWidth);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const isMobile = useMemo(() => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || windowWidth <= 1024;
+    }, [windowWidth]);
+
+
     const scrollToBottom = useCallback((force = false, instant = false) => {
-        if ((focusedIndex === null || force) && messagesEndRef.current && scrollContainerRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: instant ? 'auto' : 'smooth', block: 'end' });
+        if (!scrollContainerRef.current) return;
+        const container = scrollContainerRef.current;
+
+        if (scrollAnimationRef.current) {
+            cancelAnimationFrame(scrollAnimationRef.current);
+            scrollAnimationRef.current = null;
+        }
+
+        // Only guard against jumping if force is false
+        if (!force) {
+            // Smaller threshold on mobile/small viewports for tighter snap control
+            const threshold = Math.min(150, container.clientHeight * 0.15);
+            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+            if (!isNearBottom || focusedIndex !== null) return;
+        }
+
+        if (instant) {
+            isAutoScrollingRef.current = true;
+            container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
+            // Small timeout to reset the flag after the scroll event has likely fired
+            setTimeout(() => { isAutoScrollingRef.current = false; }, 50);
+        } else {
+            // Slightly slower, "premium" smooth scroll
+            const start = container.scrollTop;
+            const end = container.scrollHeight - container.clientHeight;
+            if (Math.abs(start - end) < 1) return;
+
+            isAutoScrollingRef.current = true;
+            const startTime = performance.now();
+            const duration = 400; // Accelerated slightly for a snappier feel
+
+            const animateScroll = (now: number) => {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Ease out cubic
+                const ease = 1 - Math.pow(1 - progress, 3);
+
+                container.scrollTop = start + (end - start) * ease;
+
+                if (progress < 1) {
+                    scrollAnimationRef.current = requestAnimationFrame(animateScroll);
+                } else {
+                    scrollAnimationRef.current = null;
+                    isAutoScrollingRef.current = false;
+                }
+            };
+            scrollAnimationRef.current = requestAnimationFrame(animateScroll);
         }
     }, [focusedIndex]);
 
@@ -176,50 +282,64 @@ const MudClient = () => {
         if (!viewport) return;
 
         const currentHeight = viewport.height;
+        // Keep baseHeight up to date with the largest height seen (keyboard down)
+        if (currentHeight > baseHeightRef.current) baseHeightRef.current = currentHeight;
+
         const vh = currentHeight * 0.01;
         document.documentElement.style.setProperty('--vh', `${vh}px`);
+        document.documentElement.style.setProperty('--visual-height', `${currentHeight}px`);
 
         // Force height on container for faster layout
         const container = document.querySelector('.app-container') as HTMLElement;
+
+        // Use more robust detection: is the current viewport significantly smaller than the base height?
+        const isFocusableActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
+        const isKeyboardDown = currentHeight > (baseHeightRef.current * 0.85);
+        const isCurrentlyOpen = isMobile && isFocusableActive && !isKeyboardDown;
+
         if (container) {
-            container.style.height = `${currentHeight}px`;
-            // Counter-offset if the browser shifted things
-            container.style.top = `${viewport.offsetTop}px`;
+            if (isCurrentlyOpen) {
+                container.style.height = `${currentHeight}px`;
+                container.style.top = `${viewport.offsetTop}px`;
+            } else {
+                // Return to normal layout when keyboard is closed
+                container.style.height = '';
+                container.style.top = '';
+            }
         }
 
-        const isKeyboardOpening = currentHeight < lastViewportHeightRef.current - 50;
+        // Keyboard transitions usually involve > 150px height change on mobile
+        const isKeyboardOpening = isMobile && currentHeight < lastViewportHeightRef.current - 150 && isFocusableActive;
+        const isKeyboardClosing = isMobile && currentHeight > lastViewportHeightRef.current + 150;
 
-        // Update base height if current is larger (meaning keyboard is likely closed)
-        if (currentHeight > baseHeightRef.current) {
-            baseHeightRef.current = currentHeight;
+        if (isCurrentlyOpen !== isKeyboardOpen) {
+            setIsKeyboardOpen(isCurrentlyOpen);
         }
-
-        const isInputActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
-        // Use screen height as a stable base for mobile detection
-        const screenBase = window.screen.height;
-        const isCurrentlyOpen = isMobile && isInputActive && (currentHeight < screenBase * 0.7);
-        setIsKeyboardOpen(isCurrentlyOpen);
 
         lastViewportHeightRef.current = currentHeight;
 
-        // Ensure we don't scroll away
-        if (currentHeight < window.innerHeight) {
-            window.scrollTo(0, 0);
+        // Snap to bottom on keyboard transitions
+        if ((isKeyboardOpening || isKeyboardClosing) && typeof scrollToBottom === 'function') {
+            scrollToBottom(true, false);
+            // After transition, authoritative snap
+            setTimeout(() => scrollToBottom(true, true), 400);
         }
+    }, [scrollToBottom, isMobile, isKeyboardOpen]);
 
-        // Snap to bottom on keyboard open IF we were already at bottom
-        if (isKeyboardOpening && typeof scrollToBottom === 'function') {
-            const scrollContainer = scrollContainerRef.current;
-            const wasAtBottom = scrollContainer && (scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 150);
+    // Force snap and scroll when keyboard opens/closes
+    useEffect(() => {
+        if (isMobile) {
+            // Immediate snap
+            scrollToBottom(true, true);
 
-            if (wasAtBottom || focusedIndex === null) {
-                // Multi-snap to catch reflows
+            // Follow-up snap after transition completes
+            const timer = setTimeout(() => {
                 scrollToBottom(true, true);
-                setTimeout(() => scrollToBottom(true, true), 30);
-                setTimeout(() => scrollToBottom(true, true), 100);
-            }
+                updateHeight();
+            }, 400);
+            return () => clearTimeout(timer);
         }
-    }, [scrollToBottom, focusedIndex]);
+    }, [isKeyboardOpen, isMobile, scrollToBottom, updateHeight]);
 
     useEffect(() => {
         if (window.visualViewport) {
@@ -280,6 +400,9 @@ const MudClient = () => {
     // --- Refs ---
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const scrollAnimationRef = useRef<number | null>(null);
+    const isAutoScrollingRef = useRef<boolean>(false);
+    const prevMessagesLengthRef = useRef<number>(messages.length);
     const hpRowRef = useRef<HTMLDivElement>(null);
     const manaRowRef = useRef<HTMLDivElement>(null);
     const moveRowRef = useRef<HTMLDivElement>(null);
@@ -291,6 +414,13 @@ const MudClient = () => {
     const btn = useButtons();
     const { audioCtxRef, initAudio, playSound, triggerHaptic } = useSoundSystem();
     const joystick = useJoystick();
+
+    // Auto-exit design mode when keyboard opens
+    useEffect(() => {
+        if (isMobile && isKeyboardOpen && btn.isEditMode) {
+            btn.setIsEditMode(false);
+        }
+    }, [isKeyboardOpen, isMobile, btn]);
 
 
 
@@ -659,12 +789,12 @@ const MudClient = () => {
             }
         });
 
-        const mumePromptRegex = /^([\*\)\!o\.\[f<%\~+WU:=O\#\?\(].*[>:])\s*(.*)$/;
+        const mumePromptRegex = /^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*[>:])\s*(.*)$/;
         const pMatch = cleanLine.match(mumePromptRegex);
 
 
 
-        const isCapturing = isCapturingInventory.current || captureStage.current !== 'none';
+        const isCapturing = (isCapturingInventory.current && isInventoryOpen) || (captureStage.current !== 'none' && isCharacterOpen);
 
         if (pMatch) {
             const promptPart = pMatch[1];
@@ -673,7 +803,7 @@ const MudClient = () => {
         } else {
             if (!isCapturing) addMessage('game', cleanLine);
         }
-    }, [detectLighting, addMessage, btn]);
+    }, [detectLighting, addMessage, btn, isInventoryOpen, isCharacterOpen]);
 
     const telnet = useTelnet({
         connectionUrl, addMessage, setStatus, setStats, setWeather, setIsFoggy,
@@ -681,14 +811,22 @@ const MudClient = () => {
         setPrompt: setActivePrompt, setInCombat,
         onOpponentChange: (name) => {
             // Auto-targeting removed for items/objects
+        },
+        onCharNameChange: (name) => {
+            setCharacterName(name);
         }
     });
 
     const callbacksRef = useRef<any>(null);
     useEffect(() => {
+        const notifyMapper = (action: (ref: React.RefObject<MapperRef>) => void) => {
+            action(mapperRef);
+            action(drawerMapperRef);
+        };
+
         callbacksRef.current = {
-            onRoomInfo: (data: any) => mapperRef.current?.handleRoomInfo(data),
-            onCharVitals: (data: any) => { if (data.terrain) mapperRef.current?.handleTerrain(data.terrain); },
+            onRoomInfo: (data: any) => notifyMapper(ref => ref.current?.handleRoomInfo(data)),
+            onCharVitals: (data: any) => { if (data.terrain) notifyMapper(ref => ref.current?.handleTerrain(data.terrain)); },
             onRoomPlayers: (data: any) => {
                 let players: string[] = [];
                 if (Array.isArray(data)) {
@@ -766,7 +904,7 @@ const MudClient = () => {
             setEqHtml('');
         }
         if (lowerCmd === 'closeall') {
-            setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false);
+            setIsInventoryOpen(false); setIsCharacterOpen(false);
         }
 
         addMessage('user', finalCmd);
@@ -804,26 +942,44 @@ const MudClient = () => {
         handleSend(e);
     }, [handleSend]);
 
+    const scrollTaskRef = useRef<number | null>(null);
     const handleLogScroll = useCallback(() => {
-        const container = scrollContainerRef.current;
-        if (!container) return;
-        const { scrollTop, scrollHeight, clientHeight } = container;
-        const scrollBottom = scrollTop + clientHeight;
-        // Threshold for scroll detection
-        if (scrollHeight - scrollBottom < 50) {
-            if (focusedIndex !== null) setFocusedIndex(null);
-            return;
+        // Only cancel the scroll animation if it wasn't triggered by the system itself
+        if (scrollAnimationRef.current && !isAutoScrollingRef.current) {
+            cancelAnimationFrame(scrollAnimationRef.current);
+            scrollAnimationRef.current = null;
         }
-        const children = container.children;
-        let newFocusIndex = 0;
-        for (let i = Math.min(children.length - 2, messages.length - 1); i >= 0; i--) {
-            const child = children[i] as HTMLElement;
-            if (child.offsetTop < scrollBottom) {
-                newFocusIndex = i;
-                break;
+
+        if (scrollTaskRef.current) return;
+
+        scrollTaskRef.current = requestAnimationFrame(() => {
+            scrollTaskRef.current = null;
+            const container = scrollContainerRef.current;
+            if (!container) return;
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            const scrollBottom = scrollTop + clientHeight;
+
+            // Threshold for snap-back detection
+            if (scrollHeight - scrollBottom < 50) {
+                if (focusedIndex !== null) setFocusedIndex(null);
+                return;
             }
-        }
-        setFocusedIndex(newFocusIndex);
+
+            const children = container.children;
+            let newFocusIndex = 0;
+            // Scan backwards from bottom to find first visible element
+            for (let i = Math.min(children.length - 2, messages.length - 1); i >= 0; i--) {
+                const child = children[i] as HTMLElement;
+                if (child.offsetTop < scrollBottom) {
+                    newFocusIndex = i;
+                    break;
+                }
+            }
+
+            if (focusedIndex !== newFocusIndex) {
+                setFocusedIndex(newFocusIndex);
+            }
+        });
     }, [focusedIndex, messages.length]);
 
     const handleInputSwipe = useCallback((dir: string) => {
@@ -836,19 +992,15 @@ const MudClient = () => {
             if (isInventoryOpen) { triggerHaptic(15); setIsInventoryOpen(false); }
             else executeCommand('s');
         } else if (dir === 'right') {
-            if (isRightDrawerOpen) { triggerHaptic(15); setIsRightDrawerOpen(false); }
-            else {
-                setStatsHtml(''); setEqHtml('');
-                executeCommand('stat');
-                setTimeout(() => executeCommand('eq'), 300);
-                setIsCharacterOpen(true);
-            }
+            setStatsHtml(''); setEqHtml('');
+            executeCommand('stat');
+            setTimeout(() => executeCommand('eq'), 300);
+            setIsCharacterOpen(true);
         }
         else if (dir === 'left') {
             if (isCharacterOpen) { triggerHaptic(15); setIsCharacterOpen(false); }
-            else setIsRightDrawerOpen(true);
         }
-    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isRightDrawerOpen, isCharacterOpen]);
+    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isCharacterOpen]);
 
     // --- Stats Effects ---
     const getHeartbeatDuration = (ratio: number) => 0.4 + (ratio / FX_THRESHOLD) * 1.1;
@@ -1134,24 +1286,41 @@ const MudClient = () => {
         }
     }, [triggerHaptic, addMessage]);
 
-    const processMessageHtml = useCallback((html: string) => {
+    const processMessageHtml = useCallback((html: string, mid?: string) => {
         let newHtml = html;
-        // Highlight Current Target (Top priority)
+
+        // 1. Highlight Current Target (Top priority)
         if (target) {
             try {
                 const pattern = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                // Negative lookahead to avoid wrapping inside a tag
                 const regex = new RegExp(`\\b(${pattern})\\b(?![^<]*>|[^<>]*<\\/span>)`, 'gi');
                 newHtml = newHtml.replace(regex, (match) => `<span class="target-highlight">${match}</span>`);
             } catch (e) { }
         }
+
+        // 2. Inline Highlight Buttons
+        btn.buttonsRef.current.filter(b => b.display === 'inline' && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
+            try {
+                const pattern = b.trigger!.pattern!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(`\\b(${pattern})\\b(?![^<]*>|[^<>]*<\\/span>)`, 'gi');
+                newHtml = newHtml.replace(regex, (match) => {
+                    return `<span class="inline-btn" data-id="${b.id}" data-mid="${mid || ''}" data-cmd="${b.command}" data-context="${match}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" style="background-color: ${b.style.backgroundColor}">${match}</span>`;
+                });
+            } catch (e) { }
+        });
+
         return newHtml;
-    }, [target]);
+    }, [target, btn]);
 
     const getMessageClass = useCallback((index: number, total: number) => {
         const anchorIndex = focusedIndex !== null ? focusedIndex : total - 1;
         const distance = anchorIndex - index;
-        if (distance < 5) return 'msg-latest'; if (distance < 15) return 'msg-recent'; if (distance < 40) return 'msg-old'; return 'msg-ancient';
+
+        // Spread out buckets to reduce class-swap frequency (improves perf)
+        if (distance < 10) return 'msg-latest';
+        if (distance < 30) return 'msg-recent';
+        if (distance < 100) return 'msg-old';
+        return 'msg-ancient';
     }, [focusedIndex]);
 
     const handleButtonClick = (button: CustomButton, e: React.MouseEvent, context?: string) => {
@@ -1221,9 +1390,13 @@ const MudClient = () => {
         }
 
         const initialPositions: Record<string, { x: number, y: number }> = {};
+        const initialSizes: Record<string, { w: number, h: number }> = {};
         effectiveSelected.forEach(selId => {
             const b = btn.buttons.find(x => x.id === selId);
-            if (b) initialPositions[selId] = { x: b.style.x, y: b.style.y };
+            if (b) {
+                initialPositions[selId] = { x: b.style.x, y: b.style.y };
+                initialSizes[selId] = { w: b.style.w, h: b.style.h };
+            }
         });
 
         btn.setDragState({
@@ -1235,7 +1408,8 @@ const MudClient = () => {
             type,
             initialW: button.style.w,
             initialH: button.style.h,
-            initialPositions: type === 'move' ? initialPositions : undefined
+            initialPositions: type === 'move' ? initialPositions : (type === 'resize' ? initialPositions : undefined),
+            initialSizes: type === 'resize' ? initialSizes : undefined
         });
     };
 
@@ -1289,6 +1463,10 @@ const MudClient = () => {
             if (Math.abs(dx) > 5 || Math.abs(dy) > 5) wasDraggingRef.current = true;
             btn.setButtons(prev => prev.map(b => {
                 if (btn.dragState?.type === 'resize') {
+                    if (btn.dragState.initialSizes && btn.dragState.initialSizes[b.id]) {
+                        const init = btn.dragState.initialSizes[b.id];
+                        return { ...b, style: { ...b.style, w: Math.max(20, init.w + dx), h: Math.max(20, init.h + dy) } };
+                    }
                     if (b.id !== btn.dragState?.id) return b;
                     return { ...b, style: { ...b.style, w: Math.max(20, btn.dragState.initialW + dx), h: Math.max(20, btn.dragState.initialH + dy) } };
                 }
@@ -1391,12 +1569,64 @@ const MudClient = () => {
 
 
     useEffect(() => {
-        scrollToBottom(false, false);
-    }, [messages, activePrompt, focusedIndex, scrollToBottom]);
+        // Only force snap if a NEW message arrived
+        const hasNewMessage = messages.length > prevMessagesLengthRef.current;
+        prevMessagesLengthRef.current = messages.length;
+
+        // Slight delay ensures the DOM has calculated the new scrollHeight correctly.
+        const timer = setTimeout(() => {
+            // Force scroll ONLY if there's a new message. 
+            // If it's just a prompt update, use false to respect user's manual scroll position.
+            scrollToBottom(hasNewMessage, false);
+        }, 50);
+        return () => clearTimeout(timer);
+    }, [messages, activePrompt, scrollToBottom]);
 
 
+    const firedTriggerOccurrencesRef = useRef(new Set<string>());
 
+    useEffect(() => {
+        if (messages.length === 0) return;
+        const timer = setTimeout(() => {
+            if (!scrollContainerRef.current) return;
+            const spits = Array.from(scrollContainerRef.current.querySelectorAll('.inline-btn[data-spit="true"]'));
 
+            // Filter out any occurrences that have already been fired in this session
+            const validSpits = spits.filter((el: any) => {
+                const mid = el.dataset.mid || 'unknown';
+                const bid = el.dataset.id || '';
+                const context = el.dataset.context || '';
+                const occKey = `${mid}:${bid}:${context}`;
+                return !firedTriggerOccurrencesRef.current.has(occKey);
+            });
+
+            if (validSpits.length === 0) return;
+
+            // Only trigger the MOST RECENT instance of any specific trigger text/id found in this batch
+            const latestPerId: Record<string, HTMLElement> = {};
+            validSpits.forEach((el: any) => {
+                const bId = el.dataset.id || el.innerText;
+                latestPerId[bId] = el;
+                el.dataset.spit = "pending";
+            });
+
+            Object.values(latestPerId).forEach((el: any) => {
+                const mid = el.dataset.mid || 'unknown';
+                const bid = el.dataset.id || '';
+                const context = el.dataset.context || '';
+                firedTriggerOccurrencesRef.current.add(`${mid}:${bid}:${context}`);
+
+                triggerSpit(el);
+                el.dataset.spit = "triggered";
+            });
+
+            // Cleanup any that were marked pending but not latest
+            validSpits.forEach((el: any) => {
+                if (el.dataset.spit === "pending") el.dataset.spit = "skipped";
+            });
+        }, 50);
+        return () => clearTimeout(timer);
+    }, [messages, triggerSpit]);
 
     useEffect(() => {
         if (popoverState) {
@@ -1429,7 +1659,16 @@ const MudClient = () => {
 
 
     return (
-        <div className={`app-container ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''}`} style={{ height: 'calc(var(--vh, 1vh) * 100)' }}>
+        <div
+            className={`app-container ${isMobile ? 'is-mobile' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''}`}
+            style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
+            onClick={() => {
+                if (btn.isEditMode) {
+                    btn.setSelectedIds(new Set());
+                    btn.setEditingButtonId(null);
+                }
+            }}
+        >
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
 
                 <div className="background-layer" style={{ backgroundImage: `url(${bgImage})` }} />
@@ -1451,6 +1690,51 @@ const MudClient = () => {
                 <div className={`lightning-layer ${lightning ? 'lightning-active' : ''}`} />
                 <div className={`death-overlay ${deathStage !== 'none' ? 'death-active' : ''}`} style={{ opacity: deathStage === 'fade_in' ? 0 : (deathStage === 'black_hold' ? 1 : undefined) }} />
                 <div className={`death-image-layer ${deathStage === 'flash' ? 'death-flash' : ''}`} style={{ backgroundImage: `url(${DEATH_IMG})`, opacity: deathStage === 'flash' ? 1 : 0 }} />
+
+                {spatButtons.map((sb, idx) => {
+                    const hSlotWidth = 130;
+                    const vSlotSpacing = 60; // Better spacing for mobile
+
+                    let dynamicTargetX = sb.targetX;
+                    let dynamicTargetY = sb.targetY;
+
+                    if (isMobile) {
+                        // Stack vertically upward on the right
+                        // idx 0 (oldest) is at the bottom. 
+                        // Set base to 60% height to stay clear of joystick/controls
+                        dynamicTargetY = (window.innerHeight * 0.6) - (idx * vSlotSpacing);
+                        // Land 15px from the right edge.
+                        dynamicTargetX = window.innerWidth - 15;
+                    } else {
+                        // Desktop: horizontal stack from right to left
+                        dynamicTargetX = sb.targetX - (idx * hSlotWidth);
+                    }
+
+                    return (
+                        <div
+                            key={sb.id}
+                            className="spat-button"
+                            style={{
+                                '--start-x': `${Math.round(sb.startX)}px`,
+                                '--start-y': `${Math.round(sb.startY)}px`,
+                                '--target-x': `${Math.round(dynamicTargetX)}px`,
+                                '--target-y': `${Math.round(dynamicTargetY)}px`,
+                                '--target-transform': isMobile ? 'translate(-100%, -50%)' : 'translate(0, -50%)',
+                                borderColor: sb.color,
+                                boxShadow: `0 4px 15px rgba(0,0,0,0.5), 0 0 10px ${sb.color}`,
+                                '--accent': sb.color
+                            } as any}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (sb.action === 'nav') btn.setActiveSet(sb.command);
+                                else executeCommand(sb.command);
+                                setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
+                            }}
+                        >
+                            {sb.label}
+                        </div>
+                    );
+                })}
 
                 <div className="custom-buttons-layer">
                     {btn.buttons.filter(b => b.setId === btn.activeSet && b.isVisible && b.display !== 'inline').map(button => {
@@ -1555,12 +1839,13 @@ const MudClient = () => {
                                     if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
                                 }}
                                 onClick={(e) => {
+                                    e.stopPropagation();
                                     if (btn.isEditMode) {
                                         if (wasDraggingRef.current) return;
                                         if (e.ctrlKey || e.metaKey) return;
                                         btn.setEditingButtonId(button.id);
                                         if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
-                                    } else e.stopPropagation();
+                                    }
                                 }}
                             >
                                 {button.label} {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, button.id, 'resize')} />}
@@ -1587,372 +1872,465 @@ const MudClient = () => {
                         setActiveSet={btn.setActiveSet}
                         onOpenSetManager={() => setIsSetManagerOpen(true)}
                         onClearTarget={() => setTarget(null)}
+                        onResetMap={() => {
+                            triggerHaptic(20);
+                            btn.setUiPositions(prev => ({ ...prev, mapper: { x: undefined, y: 75, w: 320, h: 320, scale: 1 } }));
+                        }}
                     />
 
-                    <MessageLog
-                        messages={messages}
-                        activePrompt={activePrompt}
-                        inCombat={inCombat}
-                        scrollContainerRef={scrollContainerRef}
-                        messagesEndRef={messagesEndRef}
-                        scrollToBottom={scrollToBottom}
-                        onScroll={handleLogScroll}
-                        onLogClick={handleLogClick}
-                        onMouseUp={handleMouseUp}
-                        onDoubleClick={handleDoubleClick}
-                        getMessageClass={getMessageClass}
-                        processMessageHtml={processMessageHtml}
-                    />
+                    <div className="message-log-container">
+                        <MessageLog
+                            messages={messages}
+                            activePrompt={activePrompt}
+                            inCombat={inCombat}
+                            scrollContainerRef={scrollContainerRef}
+                            messagesEndRef={messagesEndRef}
+                            scrollToBottom={scrollToBottom}
+                            onScroll={handleLogScroll}
+                            onLogClick={handleLogClick}
+                            onMouseUp={handleMouseUp}
+                            onDoubleClick={handleDoubleClick}
+                            getMessageClass={getMessageClass}
+                            processMessageHtml={processMessageHtml}
+                        />
+                    </div>
 
                     <InputArea
                         input={input}
                         setInput={setInput}
                         onSend={handleSendCallback}
+                        onSwipe={handleInputSwipe}
+                        isMobile={isMobile}
                         target={target}
                         onClearTarget={() => setTarget(null)}
                         terrain={undefined}
-                        onSwipe={handleInputSwipe}
                     />
                 </div>
 
 
+                {!isMobile && (
+                    <div
+                        className="mapper-cluster"
+                        style={{
+                            position: 'absolute',
+                            left: (btn.uiPositions.mapper?.x !== undefined && btn.uiPositions.mapper.x < window.innerWidth - 100) ? btn.uiPositions.mapper.x : '50px',
+                            top: btn.uiPositions.mapper?.y ?? (btn.uiPositions.mapper?.x === undefined ? '150px' : undefined),
+                            bottom: (btn.uiPositions.mapper?.x !== undefined || btn.uiPositions.mapper?.y !== undefined) ? 'auto' : undefined,
+                            right: (btn.uiPositions.mapper?.x !== undefined && btn.uiPositions.mapper.x < window.innerWidth - 100) ? 'auto' : undefined,
+                            transform: btn.uiPositions.mapper?.scale ? `scale(${btn.uiPositions.mapper.scale})` : undefined,
+                            transformOrigin: 'top left',
+                            width: btn.uiPositions.mapper?.w ? `${btn.uiPositions.mapper.w}px` : '320px',
+                            height: btn.uiPositions.mapper?.h ? `${btn.uiPositions.mapper.h}px` : '320px',
+                            cursor: btn.isEditMode ? 'move' : undefined,
+                            border: (btn.isEditMode && btn.dragState?.id === 'mapper') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+                            borderRadius: '12px',
+                            overflow: 'visible',
+                            zIndex: 300
+                        }}
+                        onPointerDown={(e) => {
+                            if (btn.isEditMode) handleDragStart(e, 'mapper', 'cluster');
+                        }}
+                    >
+                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} />
+                        {btn.isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
+                    </div>
+                )}
                 <div
-                    className="mapper-cluster"
-                    style={{
-                        position: 'absolute',
-                        right: btn.uiPositions.mapper?.x === undefined ? '10px' : undefined,
-                        top: btn.uiPositions.mapper?.y === undefined ? '75px' : btn.uiPositions.mapper?.y,
-                        left: btn.uiPositions.mapper?.x,
-                        width: btn.uiPositions.mapper?.w ? `${btn.uiPositions.mapper.w}px` : 'min(320px, 85vw)',
-                        height: btn.uiPositions.mapper?.h ? `${btn.uiPositions.mapper.h}px` : '320px',
-                        cursor: btn.isEditMode ? 'move' : undefined,
-                        border: (btn.isEditMode && btn.dragState?.id === 'mapper') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
-                        borderRadius: '12px',
-                        overflow: 'hidden',
-                        zIndex: 50
-                    }}
-                    onPointerDown={(e) => {
-                        if (btn.isEditMode) handleDragStart(e, 'mapper', 'cluster');
-                    }}
-                >
-                    <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} />
-                    {btn.isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
-                </div>                <div
                     className="stats-cluster"
                     style={{
+                        position: 'absolute',
                         left: btn.uiPositions.stats?.x,
-                        top: btn.uiPositions.stats?.y,
-                        bottom: btn.uiPositions.stats ? 'auto' : undefined,
-                        right: btn.uiPositions.stats ? 'auto' : undefined,
+                        top: btn.uiPositions.stats?.y ?? (btn.uiPositions.stats?.x === undefined ? '80px' : undefined),
+                        bottom: (btn.uiPositions.stats?.x !== undefined || btn.uiPositions.stats?.y !== undefined) ? 'auto' : undefined,
+                        right: (btn.uiPositions.stats?.x !== undefined || btn.uiPositions.stats?.y !== undefined) ? 'auto' : '10px',
                         transform: btn.uiPositions.stats?.scale ? `scale(${btn.uiPositions.stats.scale})` : undefined,
                         transformOrigin: 'top left',
                         cursor: btn.isEditMode ? 'move' : undefined,
                         border: (btn.isEditMode && btn.dragState?.id === 'stats') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
                         padding: btn.isEditMode ? '10px' : undefined,
                         borderRadius: '20px',
-                        zIndex: 50
+                        zIndex: 50,
+                        display: isMobile ? 'none' : 'flex'
                     }}
                     onPointerDown={(e) => {
                         if (btn.isEditMode) handleDragStart(e, 'stats', 'cluster');
                     }}
                 >
                     {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, 'stats', 'cluster-resize')} />}
-                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} />
+                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} onClick={() => executeCommand('score')} />
                 </div>
 
-                <div
-                    className="joystick-cluster"
-                    style={{
-                        left: btn.uiPositions.joystick?.x,
-                        top: btn.uiPositions.joystick?.y,
-                        bottom: btn.uiPositions.joystick ? 'auto' : undefined,
-                        right: btn.uiPositions.joystick ? 'auto' : undefined,
-                        transform: btn.uiPositions.joystick?.scale ? `scale(${btn.uiPositions.joystick.scale})` : undefined,
-                        transformOrigin: (btn.uiPositions.joystick?.y && btn.uiPositions.joystick.y > window.innerHeight / 2) ? 'bottom left' : 'top left',
-                        cursor: btn.isEditMode ? 'move' : undefined,
-                        border: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
-                        padding: btn.isEditMode ? '10px' : undefined,
-                        borderRadius: '20px',
-                        zIndex: 50
-                    }}
-                    onPointerDown={(e) => {
-                        if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
-                    }}
-                >
-                    {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, 'joystick', 'cluster-resize')} />}
-                    <Joystick joystickKnobRef={joystick.joystickKnobRef} joystickGlow={joystickGlow} btnGlow={btnGlow} onJoystickStart={joystick.handleJoystickStart} onJoystickMove={joystick.handleJoystickMove} onJoystickEnd={(e) => joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow)} onNavClick={handleNavClick} />
+            </div> {/* Closes app-content-shaker */}
+
+            <div className={`mobile-bottom-gutter ${isKeyboardOpen ? 'hidden' : ''}`}>
+                <div className="mobile-controls-row">
+                    <div
+                        className="joystick-cluster"
+                        style={{
+                            left: (btn.uiPositions.joystick?.x ?? '0'),
+                            top: (btn.uiPositions.joystick?.y ?? '50%'),
+                            transform: `translateY(-50%) ${btn.uiPositions.joystick?.scale ? `scale(${btn.uiPositions.joystick.scale})` : ''}`,
+                            transformOrigin: 'center left',
+                            zIndex: 100,
+                            position: 'absolute'
+                        }}
+                    >
+                        <Joystick joystickKnobRef={joystick.joystickKnobRef} joystickGlow={joystickGlow} btnGlow={btnGlow} onJoystickStart={joystick.handleJoystickStart} onJoystickMove={joystick.handleJoystickMove} onJoystickEnd={(e) => joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow)} onNavClick={handleNavClick} />
+                    </div>
+
+                    <div className="xbox-cluster">
+                        <button className="xbox-btn top" style={{ borderColor: '#fbbf24', color: '#fbbf24' }} onClick={() => { triggerHaptic(20); executeCommand('score'); }}>Y</button>
+                        <button className="xbox-btn left" style={{ borderColor: '#3b82f6', color: '#3b82f6' }} onClick={() => { triggerHaptic(20); executeCommand('look'); }}>X</button>
+                        <button className="xbox-btn right" style={{ borderColor: '#ef4444', color: '#ef4444' }} onClick={() => { triggerHaptic(20); executeCommand('inventory'); }}>B</button>
+                        <button className="xbox-btn bottom" style={{ borderColor: '#22c55e', color: '#22c55e' }} onClick={() => { triggerHaptic(20); executeCommand('score'); }}>A</button>
+                    </div>
                 </div>
+
+                {isMobile && (
+                    <div className="mobile-mini-map">
+                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} />
+                    </div>
+                )}
             </div>
 
             {btn.isEditMode && <div className="add-btn-fab" onClick={() => btn.createButton()}><Plus size={32} /></div>}
 
-            {popoverState && (
-                <div className="popover-menu" style={{ left: popoverState.x, top: popoverState.y }}>
-                    <div className="popover-header">
-                        {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' ? `Actions: ${popoverState.context} ` : `Set: ${popoverState.setId} `}
-                    </div>
-
-                    {(popoverState.setId === 'selection') && (
-                        <div className="popover-item" onClick={() => {
-                            setTarget(popoverState.context || null);
-                            setPopoverState(null);
-                            addMessage('system', `Target set to: ${popoverState.context}`);
-                        }}>
-                            Set as Target
+            {
+                popoverState && (
+                    <div className="popover-menu" style={{ left: popoverState.x, top: popoverState.y }}>
+                        <div className="popover-header">
+                            {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' ? `Actions: ${popoverState.context} ` : `Set: ${popoverState.setId} `}
                         </div>
-                    )}
 
-                    <>
-                        {popoverState.setId === 'setmanager' ? (
-                            // List all available button sets instead of buttons
-                            btn.availableSets.map(setName => (
-                                <div key={setName} className="popover-item" onClick={() => {
-                                    if (popoverState.assignSourceId) {
-                                        btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ?
-                                            { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' } : b
-                                        ));
-                                        setPopoverState(null);
-                                        addMessage('system', `Assigned sub-menu '${setName}' to button.`);
-                                    }
-                                }}>
-                                    Switch to: {setName}
-                                </div>
-                            ))
-                        ) : (
-                            // Default: List buttons from the target set
-                            btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
-                                <div key={button.id} className="popover-item" onClick={(e) => {
-                                    if (popoverState?.assignSourceId) {
-                                        btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
-                                        setPopoverState(null);
-                                        addMessage('system', `Assigned '${button.label}' to button.`);
-                                    } else {
-                                        handleButtonClick(button, e, popoverState!.context);
-                                    }
-                                }}>{button.label}</div>
-                            ))
+                        {(popoverState.setId === 'selection') && (
+                            <div className="popover-item" onClick={() => {
+                                setTarget(popoverState.context || null);
+                                setPopoverState(null);
+                                addMessage('system', `Target set to: ${popoverState.context}`);
+                            }}>
+                                Set as Target
+                            </div>
                         )}
-                        {popoverState.setId !== 'setmanager' && btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>}
-                    </>
-                </div>
-            )}
 
-            {isSettingsOpen && (
-                <SettingsModal
-                    setIsSettingsOpen={setIsSettingsOpen}
-                    settingsTab={settingsTab}
-                    setSettingsTab={setSettingsTab}
-                    connectionUrl={connectionUrl}
-                    setConnectionUrl={setConnectionUrl}
-                    bgImage={bgImage}
-                    setBgImage={setBgImage}
-                    handleFileUpload={handleFileUpload}
-                    exportSettings={exportSettings}
-                    importSettings={importSettings}
-                    isLoading={isLoading}
-                    newSoundPattern={newSoundPattern}
-                    setNewSoundPattern={setNewSoundPattern}
-                    newSoundRegex={newSoundRegex}
-                    setNewSoundRegex={setNewSoundRegex}
-                    handleSoundUpload={handleSoundUpload}
-                    soundTriggers={soundTriggers}
-                    deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
-                    resetButtons={(useUserDefault) => {
-                        btn.resetToDefaults(useUserDefault);
-                    }}
-                    hasUserDefaults={btn.hasUserDefaults}
-                    status={status}
-                    connect={connect}
-                />
-            )}
+                        <>
+                            {popoverState.setId === 'setmanager' ? (
+                                // List all available button sets instead of buttons
+                                btn.availableSets.map(setName => (
+                                    <div key={setName} className="popover-item" onClick={() => {
+                                        if (popoverState.assignSourceId) {
+                                            btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ?
+                                                { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' } : b
+                                            ));
+                                            setPopoverState(null);
+                                            addMessage('system', `Assigned sub-menu '${setName}' to button.`);
+                                        }
+                                    }}>
+                                        Switch to: {setName}
+                                    </div>
+                                ))
+                            ) : (
+                                // Default: List buttons from the target set
+                                btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
+                                    <div key={button.id} className="popover-item" onClick={(e) => {
+                                        if (popoverState?.assignSourceId) {
+                                            btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
+                                            setPopoverState(null);
+                                            addMessage('system', `Assigned '${button.label}' to button.`);
+                                        } else {
+                                            handleButtonClick(button, e, popoverState!.context);
+                                        }
+                                    }}>{button.label}</div>
+                                ))
+                            )}
+                            {popoverState.setId !== 'setmanager' && btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>}
+                        </>
+                    </div>
+                )
+            }
 
-            {btn.editingButtonId && (() => {
-                const editingButton = btn.buttons.find(b => b.id === btn.editingButtonId);
-                if (!editingButton) return null;
-                return (
-                    <EditButtonModal
-                        editingButton={editingButton}
-                        setEditingButtonId={btn.setEditingButtonId}
-                        deleteButton={btn.deleteButton}
-                        setButtons={btn.setButtons}
-                        availableSets={btn.availableSets}
-                    />
-                );
-            })()}
-
-            {isSetManagerOpen && (
-                <SetManagerModal
-                    buttons={btn.buttons}
-                    availableSets={btn.availableSets}
-                    onClose={() => setIsSetManagerOpen(false)}
-                    onEditButton={(id) => { setIsSetManagerOpen(false); btn.setEditingButtonId(id); }}
-                    onDeleteButton={btn.deleteButton}
-                    onCreateButton={btn.createButton}
-                    onSaveAsDefault={btn.saveAsDefault}
-                    onSaveAsSystemDefault={btn.saveAsSystemDefault}
-                    combatSet={btn.combatSet}
-                    defaultSet={btn.defaultSet}
-                    onSetCombatSet={btn.setCombatSet}
-                    onSetDefaultSet={btn.setDefaultSet}
-                />
-            )}
-
-            {isMobile && (
-                <>
-                    <div className={`drawer-backdrop ${(isInventoryOpen || isCharacterOpen || isRightDrawerOpen) ? 'open' : ''}`} onClick={() => { setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false); }} />
-
-                    <div
-                        className={`inventory-drawer ${isInventoryOpen ? 'open' : ''}`}
-                        onPointerDown={(e) => {
-                            const target = e.target as HTMLElement;
-                            if (target.closest('button') || target.closest('a')) return;
-                            e.currentTarget.setPointerCapture(e.pointerId);
-                            (e.currentTarget as any)._startY = e.clientY;
-                            (e.currentTarget as any)._startX = e.clientX;
+            {
+                isSettingsOpen && (
+                    <SettingsModal
+                        setIsSettingsOpen={setIsSettingsOpen}
+                        settingsTab={settingsTab}
+                        setSettingsTab={setSettingsTab}
+                        connectionUrl={connectionUrl}
+                        setConnectionUrl={setConnectionUrl}
+                        bgImage={bgImage}
+                        setBgImage={setBgImage}
+                        handleFileUpload={handleFileUpload}
+                        exportSettings={exportSettings}
+                        importSettings={importSettings}
+                        isLoading={isLoading}
+                        newSoundPattern={newSoundPattern}
+                        setNewSoundPattern={setNewSoundPattern}
+                        newSoundRegex={newSoundRegex}
+                        setNewSoundRegex={setNewSoundRegex}
+                        handleSoundUpload={handleSoundUpload}
+                        soundTriggers={soundTriggers}
+                        deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
+                        resetButtons={(mode) => {
+                            btn.resetToDefaults(mode);
                         }}
-                        onPointerUp={(e) => {
-                            const startY = (e.currentTarget as any)._startY;
-                            const startX = (e.currentTarget as any)._startX;
+                        hasUserDefaults={btn.hasUserDefaults}
+                        status={status}
+                        connect={connect}
+                    />
+                )
+            }
 
-                            if (startY !== undefined && startY !== null && startX !== undefined && startX !== null) {
-                                const deltaY = e.clientY - startY;
-                                const deltaX = e.clientX - startX;
-                                const absDeltaX = Math.abs(deltaX);
+            {
+                btn.editingButtonId && (() => {
+                    const editingButton = btn.buttons.find(b => b.id === btn.editingButtonId);
+                    if (!editingButton) return null;
+                    return (
+                        <EditButtonModal
+                            editingButton={editingButton}
+                            setEditingButtonId={btn.setEditingButtonId}
+                            deleteButton={btn.deleteButton}
+                            setButtons={btn.setButtons}
+                            availableSets={btn.availableSets}
+                            selectedButtonIds={btn.selectedButtonIds}
+                        />
+                    );
+                })()
+            }
 
-                                // ENTIRE drawer is now a swipe target.
-                                // 1. Down swipe (to close like a drawer)
-                                const isDownSwipe = deltaY > 20 && deltaY > absDeltaX;
-                                if (isDownSwipe) {
-                                    const drawerContent = e.currentTarget.querySelector('.drawer-content');
-                                    const scrolled = drawerContent ? drawerContent.scrollTop : 0;
-                                    // If at top or if swipe was aggressive/on-header, close.
-                                    if (scrolled <= 5 || deltaY > 100 || (e.target as HTMLElement).closest('.drawer-header')) {
+            {
+                isSetManagerOpen && (
+                    <SetManagerModal
+                        buttons={btn.buttons}
+                        availableSets={btn.availableSets}
+                        onClose={() => setIsSetManagerOpen(false)}
+                        onEditButton={(id) => { setIsSetManagerOpen(false); btn.setEditingButtonId(id); }}
+                        onDeleteButton={btn.deleteButton}
+                        onCreateButton={btn.createButton}
+                        onSaveAsDefault={btn.saveAsDefault}
+                        onSaveAsCoreDefault={btn.saveAsCoreDefault}
+                        combatSet={btn.combatSet}
+                        defaultSet={btn.defaultSet}
+                        onSetCombatSet={btn.setCombatSet}
+                        onSetDefaultSet={btn.setDefaultSet}
+                    />
+                )
+            }
+
+            {
+                isMobile && (
+                    <>
+                        <div className={`drawer-backdrop ${(isInventoryOpen || isCharacterOpen) ? 'open' : ''}`} onClick={() => { setIsInventoryOpen(false); setIsCharacterOpen(false); }} />
+
+                        <div
+                            className={`inventory-drawer ${isInventoryOpen ? 'open' : ''}`}
+                            onPointerDown={(e) => {
+                                const target = e.target as HTMLElement;
+                                if (target.closest('button') || target.closest('a')) return;
+                                e.currentTarget.setPointerCapture(e.pointerId);
+                                (e.currentTarget as any)._startY = e.clientY;
+                                (e.currentTarget as any)._startX = e.clientX;
+                            }}
+                            onPointerUp={(e) => {
+                                const startY = (e.currentTarget as any)._startY;
+                                const startX = (e.currentTarget as any)._startX;
+
+                                if (startY !== undefined && startY !== null && startX !== undefined && startX !== null) {
+                                    const deltaY = e.clientY - startY;
+                                    const deltaX = e.clientX - startX;
+                                    const absDeltaX = Math.abs(deltaX);
+
+                                    // ENTIRE drawer is now a swipe target.
+                                    // 1. Down swipe (to close like a drawer)
+                                    const isDownSwipe = deltaY > 20 && deltaY > absDeltaX;
+                                    if (isDownSwipe) {
+                                        const drawerContent = e.currentTarget.querySelector('.drawer-content');
+                                        const scrolled = drawerContent ? drawerContent.scrollTop : 0;
+                                        // If at top or if swipe was aggressive/on-header, close.
+                                        if (scrolled <= 5 || deltaY > 100 || (e.target as HTMLElement).closest('.drawer-header')) {
+                                            triggerHaptic(40);
+                                            setIsInventoryOpen(false);
+                                        }
+                                    }
+                                    // 2. Horizontal swipe dismissed (logic of side drawers)
+                                    else if (absDeltaX > 30 && absDeltaX > Math.abs(deltaY)) {
                                         triggerHaptic(40);
                                         setIsInventoryOpen(false);
                                     }
                                 }
-                                // 2. Horizontal swipe dismissed (logic of side drawers)
-                                else if (absDeltaX > 30 && absDeltaX > Math.abs(deltaY)) {
-                                    triggerHaptic(40);
-                                    setIsInventoryOpen(false);
-                                }
-                            }
-                            (e.currentTarget as any)._startY = null;
-                            (e.currentTarget as any)._startX = null;
-                        }}
-                        onPointerCancel={(e) => {
-                            (e.currentTarget as any)._startY = null;
-                            (e.currentTarget as any)._startX = null;
-                        }}
-                        style={{ touchAction: 'pan-x pan-y' }}
-                    >
-                        <div className="drawer-header"
-                            style={{ cursor: 'ns-resize', touchAction: 'none', height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
+                                (e.currentTarget as any)._startY = null;
+                                (e.currentTarget as any)._startX = null;
+                            }}
+                            onPointerCancel={(e) => {
+                                (e.currentTarget as any)._startY = null;
+                                (e.currentTarget as any)._startX = null;
+                            }}
+                            style={{ touchAction: 'pan-x pan-y' }}
                         >
-                            <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
-                            <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory</span>
-                            <button onClick={() => { triggerHaptic(20); setIsInventoryOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
+                            <div className="drawer-header"
+                                style={{ cursor: 'ns-resize', touchAction: 'none', height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
+                            >
+                                <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
+                                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Equipment & Inventory</span>
+                                <button onClick={() => { triggerHaptic(20); setIsInventoryOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
+                            </div>
+                            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', display: 'flex', flexDirection: isMobile && windowWidth < 600 ? 'column' : 'row' }}>
+                                <div style={{ flex: 1, padding: '20px', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>EQUIPMENT</div>
+                                    <div dangerouslySetInnerHTML={{ __html: eqHtml }} />
+                                </div>
+                                <div style={{ flex: 1, padding: '20px' }}>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>INVENTORY</div>
+                                    <div dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
+                                </div>
+                            </div>
                         </div>
-                        <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
-                            <div style={{ padding: '20px' }} dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
-                        </div>
-                    </div>
 
-                    <div
-                        className={`character-drawer ${isCharacterOpen ? 'open' : ''}`}
-                        onPointerDown={(e) => {
-                            const target = e.target as HTMLElement;
-                            if (target.closest('button') || target.closest('a')) return;
-                            e.currentTarget.setPointerCapture(e.pointerId);
-                            (e.currentTarget as any)._startX = e.clientX;
-                            (e.currentTarget as any)._startY = e.clientY;
-                        }}
-                        onPointerUp={(e) => {
-                            const startX = (e.currentTarget as any)._startX;
-                            const startY = (e.currentTarget as any)._startY;
-                            if (startX !== undefined && startX !== null) {
-                                const deltaX = startX - e.clientX;
-                                const deltaY = Math.abs(e.clientY - (startY || 0));
-                                // Left swipe to close anywhere in drawer
-                                if (deltaX > 20 && deltaX > deltaY) {
-                                    triggerHaptic(40);
-                                    setIsCharacterOpen(false);
+                        <div
+                            className={`character-drawer ${isCharacterOpen ? 'open' : ''}`}
+                            onPointerDown={(e) => {
+                                const target = e.target as HTMLElement;
+                                if (target.closest('button') || target.closest('a')) return;
+                                e.currentTarget.setPointerCapture(e.pointerId);
+                                (e.currentTarget as any)._startX = e.clientX;
+                                (e.currentTarget as any)._startY = e.clientY;
+                            }}
+                            onPointerUp={(e) => {
+                                const startX = (e.currentTarget as any)._startX;
+                                const startY = (e.currentTarget as any)._startY;
+                                if (startX !== undefined && startX !== null) {
+                                    const deltaX = startX - e.clientX;
+                                    const deltaY = Math.abs(e.clientY - (startY || 0));
+                                    // Left swipe to close anywhere in drawer
+                                    if (deltaX > 20 && deltaX > deltaY) {
+                                        triggerHaptic(40);
+                                        setIsCharacterOpen(false);
+                                    }
                                 }
-                            }
-                            (e.currentTarget as any)._startX = null;
-                            (e.currentTarget as any)._startY = null;
-                        }}
-                        onPointerCancel={(e) => {
-                            (e.currentTarget as any)._startX = null;
-                        }}
-                        style={{ touchAction: 'pan-y' }}
-                    >
-                        <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px', position: 'relative', touchAction: 'pan-y' }}>
-                            {/* Visual Swipe Handle Overlay */}
-                            <div className="swipe-indicator" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
-                            <div className="drawer-title-row" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px' }}>Character & Equipment</span>
-                                <button onClick={() => { triggerHaptic(20); setIsCharacterOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
-                            </div>
-                            <div className="stat-section" style={{ marginBottom: '20px' }}>
-                                <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>STATUS</div>
-                                <div dangerouslySetInnerHTML={{ __html: statsHtml }} />
-                            </div>
-                            <div className="eq-section">
-                                <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>EQUIPMENT</div>
-                                <div dangerouslySetInnerHTML={{ __html: eqHtml }} />
+                                (e.currentTarget as any)._startX = null;
+                                (e.currentTarget as any)._startY = null;
+                            }}
+                            onPointerCancel={(e) => {
+                                (e.currentTarget as any)._startX = null;
+                            }}
+                            style={{ touchAction: 'pan-y' }}
+                        >
+                            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px', position: 'relative', touchAction: 'pan-y' }}>
+                                {/* Visual Swipe Handle Overlay */}
+                                <div className="swipe-indicator" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
+                                <div className="drawer-title-row" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
+                                    <span style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px' }}>Character</span>
+                                    <button onClick={() => { triggerHaptic(20); setIsCharacterOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+                                </div>
+
+                                <div style={{ marginBottom: '25px', background: 'rgba(0,0,0,0.2)', padding: '15px', borderRadius: '12px' }}>
+                                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} onClick={() => executeCommand('score')} orientation="horizontal" />
+                                </div>
+
+                                <div className="controls-section" style={{ marginBottom: '25px' }}>
+                                    {/* MOOD SLIDER */}
+                                    <div style={{ marginBottom: '20px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '8px' }}>
+                                            <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '2px' }}>MOOD</div>
+                                            <div style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{mood === 'berserk' ? 'Berserk' : mood}</div>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="4"
+                                                step="1"
+                                                value={['wimpy', 'prudent', 'normal', 'brave', 'aggressive'].indexOf(mood === 'berserk' ? 'aggressive' : mood)}
+                                                onChange={(e) => {
+                                                    const options = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive'];
+                                                    const val = options[parseInt(e.target.value)];
+                                                    setMood(val);
+                                                    executeCommand(`change mood ${val}`);
+                                                    triggerHaptic(15);
+                                                }}
+                                                className="mobile-slider"
+                                                style={{ flex: 1 }}
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const newVal = mood === 'berserk' ? 'aggressive' : 'berserk';
+                                                    setMood(newVal);
+                                                    executeCommand(`change mood ${newVal}`);
+                                                    triggerHaptic(30);
+                                                }}
+                                                style={{
+                                                    padding: '6px 12px',
+                                                    borderRadius: '6px',
+                                                    border: mood === 'berserk' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.2)',
+                                                    background: mood === 'berserk' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
+                                                    color: mood === 'berserk' ? 'var(--accent)' : '#fff',
+                                                    fontSize: '0.7rem',
+                                                    fontWeight: 'bold',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                BERSERK
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* SPELL SPEED SLIDER */}
+                                    <div style={{ marginBottom: '20px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '8px' }}>
+                                            <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '2px' }}>SPELL SPEED</div>
+                                            <div style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{spellSpeed}</div>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="4"
+                                            step="1"
+                                            value={['quick', 'fast', 'normal', 'careful', 'thorough'].indexOf(spellSpeed)}
+                                            onChange={(e) => {
+                                                const options = ['quick', 'fast', 'normal', 'careful', 'thorough'];
+                                                const val = options[parseInt(e.target.value)];
+                                                setSpellSpeed(val);
+                                                executeCommand(`change spell ${val}`);
+                                                triggerHaptic(15);
+                                            }}
+                                            className="mobile-slider"
+                                            style={{ width: '100%' }}
+                                        />
+                                    </div>
+
+                                    {/* ALERTNESS SLIDER */}
+                                    <div style={{ marginBottom: '10px' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '8px' }}>
+                                            <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '2px' }}>ALERTNESS</div>
+                                            <div style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{alertness}</div>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="4"
+                                            step="1"
+                                            value={['normal', 'careful', 'attentive', 'vigilant', 'paranoid'].indexOf(alertness)}
+                                            onChange={(e) => {
+                                                const options = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
+                                                const val = options[parseInt(e.target.value)];
+                                                setAlertness(val);
+                                                executeCommand(`change alert ${val}`);
+                                                triggerHaptic(15);
+                                            }}
+                                            className="mobile-slider"
+                                            style={{ width: '100%' }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="stat-section">
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>STATUS</div>
+                                    <div dangerouslySetInnerHTML={{ __html: statsHtml }} />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div
-                        className={`right-drawer ${isRightDrawerOpen ? 'open' : ''}`}
-                        onPointerDown={(e) => {
-                            const target = e.target as HTMLElement;
-                            if (target.closest('button') || target.closest('a')) return;
-                            e.currentTarget.setPointerCapture(e.pointerId);
-                            (e.currentTarget as any)._startX = e.clientX;
-                            (e.currentTarget as any)._startY = e.clientY;
-                        }}
-                        onPointerUp={(e) => {
-                            const startX = (e.currentTarget as any)._startX;
-                            const startY = (e.currentTarget as any)._startY;
-                            if (startX !== undefined && startX !== null) {
-                                const deltaX = e.clientX - startX;
-                                const deltaY = Math.abs(e.clientY - (startY || 0));
-                                // Right drawer is on the right, so swiping RIGHT closes it
-                                if (deltaX > 20 && deltaX > deltaY) {
-                                    triggerHaptic(40);
-                                    setIsRightDrawerOpen(false);
-                                }
-                            }
-                            (e.currentTarget as any)._startX = null;
-                            (e.currentTarget as any)._startY = null;
-                        }}
-                        onPointerCancel={(e) => {
-                            (e.currentTarget as any)._startX = null;
-                        }}
-                        style={{ touchAction: 'pan-y' }}
-                    >
-                        <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px', position: 'relative', touchAction: 'pan-y' }}>
-                            {/* Visual Swipe Handle Overlay */}
-                            <div className="swipe-indicator" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
-                            <div className="drawer-title-row" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                                <span style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px' }}>Utility Menu</span>
-                                <button onClick={() => { triggerHaptic(20); setIsRightDrawerOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
-                            </div>
-                            <div style={{ opacity: 0.5, textAlign: 'center', marginTop: '40px' }}>
-                                <div style={{ fontSize: '2rem', marginBottom: '10px' }}>⚙️</div>
-                                <div>Future Utility content goes here...</div>
-                                <div style={{ fontSize: '0.8rem', marginTop: '10px' }}>Swipe right to close</div>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )}
-
+                    </>
+                )
+            }
         </div>
-
     );
 };
 

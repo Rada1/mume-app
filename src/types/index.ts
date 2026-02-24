@@ -60,6 +60,7 @@ export interface CustomButton {
         isRegex: boolean;
         autoHide: boolean; // hide after clicking (floating only)
         duration: number; // seconds to auto-disappear (floating only)
+        spit?: boolean; // animate flying from text to sidebar
         type?: TriggerAction;
         targetSet?: string;
     };

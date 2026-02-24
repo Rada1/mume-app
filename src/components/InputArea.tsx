@@ -7,6 +7,8 @@ interface InputAreaProps {
     target?: string | null;
     onClearTarget?: () => void;
     terrain?: string;
+    onSwipe?: (dir: string) => void;
+    isMobile?: boolean;
 }
 
 const normalizeTerrain = (t: string): string => {
@@ -23,8 +25,8 @@ const normalizeTerrain = (t: string): string => {
     return t.replace(/\s+/g, '-');
 };
 
-const InputArea: React.FC<InputAreaProps & { onSwipe?: (dir: string) => void }> = ({
-    input, setInput, onSend, target, onClearTarget, terrain, onSwipe
+const InputArea: React.FC<InputAreaProps> = ({
+    input, setInput, onSend, target, onClearTarget, terrain, onSwipe, isMobile
 }) => {
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLInputElement>(null);
@@ -53,8 +55,8 @@ const InputArea: React.FC<InputAreaProps & { onSwipe?: (dir: string) => void }> 
                     const absX = Math.abs(deltaX);
                     const absY = Math.abs(deltaY);
 
-                    // High sensitivity threshold (10px) for quick flicks
-                    if (Math.max(absX, absY) > 10) {
+                    // High sensitivity threshold (35px) for quick flicks
+                    if (Math.max(absX, absY) > 35) {
                         if (absY > absX) {
                             onSwipe?.(deltaY < 0 ? 'up' : 'down');
                         } else {
@@ -88,6 +90,11 @@ const InputArea: React.FC<InputAreaProps & { onSwipe?: (dir: string) => void }> 
                     className="input-field"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
+                    onFocus={() => {
+                        // Clear startPos on focus to prevent the 'keyboard pop-up' 
+                        // from being detected as a swipe-up.
+                        startPos.current = null;
+                    }}
                     placeholder="Enter command..."
                     style={{ pointerEvents: 'auto' }}
                     autoFocus

@@ -17,6 +17,7 @@ interface TelnetOptions {
     setPrompt: (prompt: string) => void;
     setInCombat: (inCombat: boolean) => void;
     onOpponentChange?: (name: string | null) => void;
+    onCharNameChange?: (name: string) => void;
 }
 
 export const useTelnet = (options: TelnetOptions) => {
@@ -156,6 +157,12 @@ export const useTelnet = (options: TelnetOptions) => {
                 try {
                     const data = JSON.parse(json);
                     if (handlers.onRoomPlayers) handlers.onRoomPlayers(data);
+                } catch (e) { }
+            } else if (pkgLower === 'char.name') {
+                try {
+                    // MUME sends name as a quoted string, like "Rada"
+                    const name = json.replace(/"/g, '').trim();
+                    if (name && options.onCharNameChange) options.onCharNameChange(name);
                 } catch (e) { }
             }
         } else if (cmd === TELNET_TTYPE && buffer[1] === TTYPE_SEND) {

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Wifi, WifiOff, Layers, Edit3, Settings, CloudFog, Swords, Crosshair, MoreVertical, FolderOpen } from 'lucide-react';
+import { Wifi, WifiOff, Layers, Edit3, Settings, CloudFog, Swords, Crosshair, MoreVertical, FolderOpen, RotateCcw } from 'lucide-react';
 import { LightingType, WeatherType } from '../types';
 
 interface HeaderProps {
@@ -18,6 +18,7 @@ interface HeaderProps {
     onOpenSetManager: () => void;
     target?: string | null;
     onClearTarget?: () => void;
+    onResetMap?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -35,7 +36,8 @@ const Header: React.FC<HeaderProps> = ({
     setActiveSet,
     onOpenSetManager,
     target,
-    onClearTarget
+    onClearTarget,
+    onResetMap
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -146,16 +148,28 @@ const Header: React.FC<HeaderProps> = ({
                                 </div>
 
                                 {isEditMode && (
-                                    <div
-                                        className="dropdown-item"
-                                        onClick={() => {
-                                            onOpenSetManager();
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <FolderOpen size={16} />
-                                        <span>Manage Button Sets</span>
-                                    </div>
+                                    <>
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={() => {
+                                                onOpenSetManager();
+                                                setIsMenuOpen(false);
+                                            }}
+                                        >
+                                            <FolderOpen size={16} />
+                                            <span>Manage Button Sets</span>
+                                        </div>
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={() => {
+                                                if (onResetMap) onResetMap();
+                                                setIsMenuOpen(false);
+                                            }}
+                                        >
+                                            <RotateCcw size={16} />
+                                            <span>Reset Map Position</span>
+                                        </div>
+                                    </>
                                 )}
 
                                 <div

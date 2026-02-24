@@ -22,7 +22,7 @@ interface SettingsModalProps {
     handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     soundTriggers: SoundTrigger[];
     deleteSound: (id: string) => void;
-    resetButtons: (useUserDefault?: boolean) => void;
+    resetButtons: (mode: 'user' | 'core' | 'factory') => void;
     hasUserDefaults?: boolean;
     status: 'connected' | 'disconnected' | 'connecting';
     connect: () => void;
@@ -211,12 +211,15 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                             {hasUserDefaults && (
-                                                <button className="btn-secondary" onClick={() => { if (confirm('Reset all buttons to your saved User Defaults?')) resetButtons(true); }} style={{ width: '100%', borderColor: 'var(--accent)', color: 'var(--accent)' }}>
-                                                    Reset to User Defaults
+                                                <button className="btn-secondary" onClick={() => { if (confirm('Reset all buttons to your saved User Defaults?')) resetButtons('user'); }} style={{ width: '100%', borderColor: 'var(--accent)', color: 'var(--accent)' }}>
+                                                    Reset to My Defaults
                                                 </button>
                                             )}
-                                            <button className="btn-secondary" onClick={() => { if (confirm('Reset all buttons to core defaults? This will erase your custom layout.')) resetButtons(false); }} style={{ width: '100%', borderColor: '#f59e0b', color: '#f59e0b' }}>
+                                            <button className="btn-secondary" onClick={() => { if (confirm('Reset to the Core App layout? This uses any broad systemic updates.')) resetButtons('core'); }} style={{ width: '100%', borderColor: '#f59e0b', color: '#f59e0b' }}>
                                                 Reset to Core Defaults
+                                            </button>
+                                            <button className="btn-secondary" onClick={() => { if (confirm('WIPE ALL SAVED DATA and reset to factory settings? This cannot be undone.')) resetButtons('factory'); }} style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444', opacity: 0.6 }}>
+                                                Factory Reset
                                             </button>
                                         </div>
                                     </div>

@@ -8,6 +8,7 @@ interface EditButtonModalProps {
     deleteButton: (id: string) => void;
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
     availableSets: string[];
+    selectedButtonIds: Set<string>;
 }
 
 const EditButtonModal: React.FC<EditButtonModalProps> = ({
@@ -15,7 +16,8 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
     setEditingButtonId,
     deleteButton,
     setButtons,
-    availableSets
+    availableSets,
+    selectedButtonIds
 }) => {
     const [activeTab, setActiveTab] = useState<'main' | 'gestures' | 'style' | 'triggers'>('main');
 
@@ -36,7 +38,17 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
     };
 
     const updateButton = (id: string, updates: Partial<CustomButton>) => {
-        setButtons(prev => prev.map(b => b.id === id ? { ...b, ...updates } : b));
+        setButtons(prev => prev.map(b => {
+            if (selectedButtonIds.has(b.id) || b.id === id) {
+                const merged = { ...b, ...updates };
+                // Deep merge style if present
+                if (updates.style) merged.style = { ...b.style, ...updates.style };
+                // Deep merge trigger if present
+                if (updates.trigger) merged.trigger = { ...b.trigger, ...updates.trigger };
+                return merged;
+            }
+            return b;
+        }));
     };
 
     const renderActionConfig = (label: string, field: 'command' | 'longCommand', typeField: 'actionType' | 'longActionType') => {
@@ -248,6 +260,10 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                 <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                                     <input type="checkbox" checked={editingButton.trigger?.autoHide} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, autoHide: e.target.checked } })} />
                                     Hide Button on Click
+                                </label>
+                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={editingButton.trigger?.spit} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, spit: e.target.checked } })} />
+                                    Spit Animation
                                 </label>
                             </div>
                             <div className="setting-group">

@@ -10,7 +10,7 @@ interface SetManagerModalProps {
     onDeleteButton: (id: string) => void;
     onCreateButton: (defaults?: Partial<CustomButton>) => void;
     onSaveAsDefault?: () => void;
-    onSaveAsSystemDefault?: () => void;
+    onSaveAsCoreDefault?: () => void;
     combatSet?: string;
     defaultSet?: string;
     onSetCombatSet?: (set: string) => void;
@@ -25,7 +25,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     onDeleteButton,
     onCreateButton,
     onSaveAsDefault,
-    onSaveAsSystemDefault,
+    onSaveAsCoreDefault,
     combatSet,
     defaultSet,
     onSetCombatSet,
@@ -166,18 +166,18 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                             Save as User Default
                         </button>
                     )}
-                    {onSaveAsSystemDefault && (
+                    {onSaveAsCoreDefault && (
                         <button
                             className="btn-secondary"
                             style={{ flex: 1, margin: 0, borderColor: '#f59e0b', color: '#f59e0b' }}
                             onClick={() => {
-                                if (confirm('Save this configuration as the SYSTEM default? This will be used when resetting to defaults.')) {
-                                    onSaveAsSystemDefault();
-                                    alert('Current configuration saved as system default!');
+                                if (confirm('Save this configuration as the Core default for all users? This will be used when resetting to Core defaults.')) {
+                                    onSaveAsCoreDefault();
+                                    alert('Current configuration saved as Core default!');
                                 }
                             }}
                         >
-                            Save as System Default
+                            Save as Core Default
                         </button>
                     )}
                 </div>

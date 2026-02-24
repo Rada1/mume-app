@@ -16,7 +16,7 @@ export const TTYPE_IS = 0;
 export const TTYPE_SEND = 1;
 
 // --- Configuration ---
-export const DEFAULT_BG = "https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=2574&auto=format&fit=crop";
+export const DEFAULT_BG = "/assets/default_bg.jpeg";
 export const DEATH_IMG = "https://images.unsplash.com/photo-1605806616949-1e87b487bc2a?q=80&w=2574&auto=format&fit=crop";
 export const LOGO_URL = "https://cdn-icons-png.flaticon.com/512/3062/3062634.png";
 export const DEFAULT_URL = "wss://mume.org/ws-play/";

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { CustomButton } from '../types';
-import { DEFAULT_BUTTONS } from '../constants/buttons';
+import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS } from '../constants/buttons';
 import { MAGE_SPELLS, CLERIC_SPELLS } from '../utils/spellLists';
 
 export const useButtons = () => {
@@ -32,7 +32,7 @@ export const useButtons = () => {
     const [activeSet, setActiveSet] = useState('main');
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
-    const [dragState, setDragState] = useState<{ id: string, startX: number, startY: number, initialX: number, initialY: number, type: 'move' | 'resize' | 'cluster' | 'cluster-resize', initialW: number, initialH: number, initialPositions?: Record<string, { x: number, y: number }> } | null>(null);
+    const [dragState, setDragState] = useState<{ id: string, startX: number, startY: number, initialX: number, initialY: number, type: 'move' | 'resize' | 'cluster' | 'cluster-resize', initialW: number, initialH: number, initialPositions?: Record<string, { x: number, y: number }>, initialSizes?: Record<string, { w: number, h: number }> } | null>(null);
     const buttonTimers = useRef<{ [key: string]: ReturnType<typeof setTimeout> }>({});
     const buttonsRef = useRef(buttons);
 
@@ -59,66 +59,21 @@ export const useButtons = () => {
     }, [defaultSet]);
 
     useEffect(() => {
-        if (!localStorage.getItem('mud-default-spells-v1')) {
-            const newButtons: CustomButton[] = [];
+        const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist'];
+        const missingSets = coreSets.filter(setName => !buttons.some(b => b.setId === setName));
 
-            MAGE_SPELLS.forEach((spell, i) => {
-                newButtons.push({
-                    id: `mage-${spell.replace(/\s+/g, '-').toLowerCase()}-${i}`,
-                    label: spell,
-                    command: `cast '${spell}' target`,
-                    setId: 'magespelllist',
-                    display: 'floating',
-                    actionType: 'command',
-                    isVisible: true,
-                    trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 },
-                    style: {
-                        x: 5 + (i % 6) * 16,
-                        y: 10 + Math.floor(i / 6) * 8,
-                        w: 120, h: 40,
-                        backgroundColor: 'rgba(100, 50, 180, 0.6)',
-                        shape: 'pill'
-                    }
+        if (missingSets.length > 0) {
+            const buttonsToRestore = DEFAULT_BUTTONS.filter(b => missingSets.includes(b.setId || ''));
+            if (buttonsToRestore.length > 0) {
+                setButtons(prev => {
+                    // Avoid duplicates if somehow some remained
+                    const existingIds = new Set(prev.map(b => b.id));
+                    const uniqueNew = buttonsToRestore.filter(b => !existingIds.has(b.id));
+                    return [...prev, ...uniqueNew];
                 });
-            });
-
-            CLERIC_SPELLS.forEach((spell, i) => {
-                newButtons.push({
-                    id: `cleric-${spell.replace(/\s+/g, '-').toLowerCase()}-${i}`,
-                    label: spell,
-                    command: `cast '${spell}' target`,
-                    setId: 'clericspelllist',
-                    display: 'floating',
-                    actionType: 'command',
-                    isVisible: true,
-                    trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 },
-                    style: {
-                        x: 5 + (i % 6) * 16,
-                        y: 10 + Math.floor(i / 6) * 8,
-                        w: 120, h: 40,
-                        backgroundColor: 'rgba(180, 160, 50, 0.6)',
-                        shape: 'pill'
-                    }
-                });
-            });
-
-            if (newButtons.length > 0) {
-                setButtons(prev => [...prev, ...newButtons]);
-                localStorage.setItem('mud-default-spells-v1', 'true');
             }
         }
-
-        // Inject new skill lists (Thief, Warrior, Ranger)
-        if (!localStorage.getItem('mud-default-skills-v1')) {
-            const skillButtons = DEFAULT_BUTTONS.filter(b =>
-                ['thiefskilllist', 'warriorskilllist', 'rangerskilllist'].includes(b.setId)
-            );
-            if (skillButtons.length > 0) {
-                setButtons(prev => [...prev, ...skillButtons]);
-                localStorage.setItem('mud-default-skills-v1', 'true');
-            }
-        }
-    }, []);
+    }, [buttons.length]); // Re-check if length changes
 
     const availableSets = useMemo(() => {
         const sets = new Set<string>();
@@ -175,14 +130,14 @@ export const useButtons = () => {
         setHasUserDefaults(true);
     };
 
-    const saveAsSystemDefault = () => {
+    const saveAsCoreDefault = () => {
         const toSaveButtons = buttons.map(b => ({ ...b, isVisible: undefined }));
-        localStorage.setItem('mud-buttons-system-default', JSON.stringify(toSaveButtons));
-        localStorage.setItem('mud-ui-positions-system-default', JSON.stringify(uiPositions));
+        localStorage.setItem('mud-buttons-core-default', JSON.stringify(toSaveButtons));
+        localStorage.setItem('mud-ui-positions-core-default', JSON.stringify(uiPositions));
     };
 
-    const resetToDefaults = (useUserDefault?: boolean) => {
-        if (useUserDefault) {
+    const resetToDefaults = (mode: 'user' | 'core' | 'factory') => {
+        if (mode === 'user') {
             const savedBtns = localStorage.getItem('mud-buttons-user-default');
             const savedPos = localStorage.getItem('mud-ui-positions-user-default');
             try {
@@ -190,44 +145,39 @@ export const useButtons = () => {
                 if (savedPos) setUiPositions(JSON.parse(savedPos));
                 addMessageRef.current?.('system', 'Reset to your User Defaults.');
                 return;
-            } catch (e) {
-                console.error("Failed to load user defaults", e);
+            } catch (e) { console.error("Failed to load user defaults", e); }
+        }
+
+        if (mode === 'core') {
+            const coreButtons = localStorage.getItem('mud-buttons-core-default');
+            const corePositions = localStorage.getItem('mud-ui-positions-core-default');
+            if (coreButtons) {
+                try {
+                    setButtons(JSON.parse(coreButtons));
+                    if (corePositions) setUiPositions(JSON.parse(corePositions));
+                    addMessageRef.current?.('system', 'Reset to Core App Defaults.');
+                    return;
+                } catch (e) { console.error("Failed to load core defaults", e); }
             }
         }
 
-        // Check for system defaults first
-        const systemButtons = localStorage.getItem('mud-buttons-system-default');
-        const systemPositions = localStorage.getItem('mud-ui-positions-system-default');
-
-        if (systemButtons) {
-            try {
-                setButtons(JSON.parse(systemButtons));
-            } catch (e) {
-                import('../constants/buttons').then(({ DEFAULT_BUTTONS }) => setButtons(DEFAULT_BUTTONS));
-            }
-        } else {
-            import('../constants/buttons').then(({ DEFAULT_BUTTONS }) => setButtons(DEFAULT_BUTTONS));
-        }
-
-        if (systemPositions) {
-            try {
-                setUiPositions(JSON.parse(systemPositions));
-            } catch (e) {
-                setUiPositions({});
-            }
-        } else {
-            setUiPositions({});
-        }
-
-        addMessageRef.current?.('system', systemButtons ? 'Reset to System Defaults.' : 'Reset to Core Defaults.');
+        // Factory Reset (Hardcoded)
+        setButtons(DEFAULT_BUTTONS);
+        setUiPositions(DEFAULT_UI_POSITIONS);
+        addMessageRef.current?.('system', 'Reset to Factory Defaults.');
     };
 
     const [selectedButtonIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [uiPositions, setUiPositions] = useState<{ joystick?: { x: number, y: number, scale?: number }, stats?: { x: number, y: number, scale?: number }, mapper?: { x: number, y: number, scale?: number, w?: number, h?: number } }>(() => {
         try {
             const saved = localStorage.getItem('mud-ui-positions');
-            return saved ? JSON.parse(saved) : {};
-        } catch { return {}; }
+            if (saved) return JSON.parse(saved);
+
+            const coreSaved = localStorage.getItem('mud-ui-positions-core-default');
+            if (coreSaved) return JSON.parse(coreSaved);
+
+            return DEFAULT_UI_POSITIONS;
+        } catch { return DEFAULT_UI_POSITIONS; }
     });
 
     useEffect(() => {
@@ -267,7 +217,7 @@ export const useButtons = () => {
         createButton,
         deleteButton,
         saveAsDefault,
-        saveAsSystemDefault,
+        saveAsCoreDefault,
         resetToDefaults,
         hasUserDefaults,
         buttonTimers,

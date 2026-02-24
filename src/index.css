@@ -1,4 +1,5 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.cdnfonts.com/css/aniron');
 
 :root {
   --bg-overlay: rgba(0, 0, 0, 0.65);
@@ -70,21 +71,229 @@ html {
 
 .app-container {
   position: fixed;
-  /* Fixed helps with visualViewport on some browsers */
   top: 0;
   left: 0;
   right: 0;
   width: 100vw;
+  height: 100vh;
   height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #000;
+  perspective: 1200px;
 }
 
-/* Keyboard open (Mobile shrink mode) */
-.kb-open {
-  font-size: 0.55rem !important;
+.mobile-bottom-gutter {
+  display: none;
+  width: 100%;
+  height: 200px;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  flex-shrink: 0;
+  z-index: 60;
+}
+
+@media (max-width: 600px) {
+  .mobile-bottom-gutter {
+    display: flex;
+    flex-direction: column;
+    height: 220px;
+    background: #000;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    transform: translateY(0);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .input-area {
+    padding: 10px 15px;
+  }
+
+  .kb-open .mobile-bottom-gutter {
+    height: 0;
+    opacity: 0;
+    border-top: none;
+    padding: 0;
+    transform: translateY(100%);
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1), display 0s linear 0.4s;
+    /* Added transition for display */
+  }
+
+  .kb-open .mobile-bottom-gutter.hidden {
+    display: none;
+    /* Added to hide cleanly */
+  }
+
+  .mobile-controls-row {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    pointer-events: none;
+    /* Allow clicks through to map if not on a button */
+  }
+
+  .mobile-controls-row>* {
+    pointer-events: auto;
+    /* Buttons and joystick should still catch clicks */
+  }
+
+  .xbox-cluster {
+    position: relative;
+    width: 150px;
+    height: 150px;
+  }
+
+  .xbox-btn {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .xbox-btn:active {
+    transform: scale(0.9) translate(-50%, 0);
+    /* Need to keep the absolute center transform if necessary */
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--accent);
+  }
+
+  /* Fixed positioning for buttons in cluster */
+  .xbox-btn.top {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .xbox-btn.top:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+
+  .xbox-btn.bottom {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .xbox-btn.bottom:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+
+  .xbox-btn.left {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .xbox-btn.left:active {
+    transform: translateY(-50%) scale(0.9);
+  }
+
+  .xbox-btn.right {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .xbox-btn.right:active {
+    transform: translateY(-50%) scale(0.9);
+  }
+
+  .mobile-mini-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    opacity: 0.8;
+    pointer-events: auto;
+  }
+
+  /* Add a dark vignette over the map in the gutter to keep buttons poppy */
+  .mobile-mini-map::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.8) 100%);
+    pointer-events: none;
+  }
+
+  .joystick-cluster {
+    position: absolute !important;
+    left: calc(15px + env(safe-area-inset-left, 0px)) !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    bottom: auto !important;
+    right: auto !important;
+    margin: 0 !important;
+  }
+
+  .xbox-cluster {
+    position: absolute !important;
+    right: calc(15px + env(safe-area-inset-right, 0px)) !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    left: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+  }
+
+  .joystick-cluster,
+  .xbox-cluster {
+    z-index: 100 !important;
+  }
+}
+
+.kb-open .app-content-shaker {
+  /* Dramatic 3D Camera Zoom Out: Pushed back much further to keep top in frame */
+  /* scale(1.6) combined with deep translateZ creates a net \"zoom out\" that fits everything */
+  transform: rotateX(6deg) translateZ(-800px) scale(1.6);
+  transform-origin: center bottom;
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.2, 1);
+}
+
+.kb-open .content-layer {
+  /* Inherits 3D zoom from shaker, ensuring input bar stays fixed */
+  height: 100% !important;
+  width: 100% !important;
+  left: 0 !important;
+  position: relative;
+}
+
+.kb-open .background-layer {
+  /* Expand massively to fill the frame during the deep pull-back */
+  transform: scale(2.2) translateZ(-100px);
+  filter: brightness(0.05) contrast(0.7) blur(4px);
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.2, 1), filter 0.4s ease;
 }
 
 .kb-open .header {
@@ -108,53 +317,62 @@ html {
   height: 10px !important;
 }
 
-.kb-open .message-log {
-  padding: 1px !important;
-}
 
-.kb-open .message {
-  padding: 0px 4px !important;
-  min-height: auto !important;
-  font-size: 0.55rem !important;
-  margin-bottom: 0px !important;
-  line-height: 1.0 !important;
+.kb-open .mapper-cluster {
+  transform: scale(0.6) !important;
+  transform-origin: top right !important;
+  pointer-events: none !important;
+  opacity: 0.3 !important;
 }
 
 .kb-open .input-area {
   padding: 1px 4px !important;
   min-height: 34px !important;
+  border-top: none !important;
+  /* Sync with shaker for zero-jitter transition */
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.2, 1) !important;
 }
 
 .kb-open .input-field {
-  font-size: 0.7rem !important;
-  padding: 1px 4px !important;
+  font-size: 16px !important;
+  /* Prevent iOS browser zoom by keeping it 16px */
+  padding: 2px 4px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.xbox-btn.top {
+  border-color: rgba(251, 191, 36, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+.xbox-btn.left {
+  border-color: rgba(59, 130, 246, 0.3) !important;
+  color: #3b82f6 !important;
+}
+
+.xbox-btn.right {
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+}
+
+.xbox-btn.bottom {
+  border-color: rgba(34, 197, 94, 0.3) !important;
+  color: #22c55e !important;
 }
 
 .kb-open .joystick-cluster {
   transform: scale(0.4) !important;
   transform-origin: bottom right !important;
-  bottom: 2px !important;
-  right: 10px !important;
-  top: auto !important;
-  left: auto !important;
 }
 
 .kb-open .stats-cluster {
   transform: scale(0.4) !important;
   transform-origin: top right !important;
-  top: 30px !important;
-  right: 10px !important;
-  bottom: auto !important;
-  left: auto !important;
 }
 
 .kb-open .mapper-cluster {
   transform: scale(0.3) !important;
   transform-origin: top right !important;
-  top: 30px !important;
-  right: 10px !important;
-  bottom: auto !important;
-  left: auto !important;
 }
 
 .kb-open .custom-buttons-layer {
@@ -171,11 +389,34 @@ html {
 .stats-cluster,
 .mapper-cluster,
 .header,
-.message-log,
-.message,
 .input-area,
 .custom-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+.msg-latest {
+  opacity: 1;
+}
+
+.msg-recent {
+  opacity: 0.95;
+}
+
+.msg-old {
+  opacity: 0.85;
+}
+
+.msg-ancient {
+  opacity: 0.7;
+}
+
+.app-container {
+  transition: font-size 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.content-layer {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .edit-mode-active .joystick-cluster,
@@ -195,12 +436,13 @@ html {
 
 .app-content-shaker {
   width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
+  flex: 1;
+  min-height: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.1, 0, 0.2, 1);
 }
 
 .rumble-active {
@@ -210,15 +452,15 @@ html {
 
 .background-layer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
   background-size: cover;
   background-position: center;
   z-index: 0;
-  transition: background-image 0.5s ease-in-out;
-  transform: scale(0.92);
+  transition: background-image 0.5s ease-in-out, transform 0.4s cubic-bezier(0.1, 0, 0.2, 1), filter 0.4s ease;
+  transform: scale(1.1) translateZ(-100px);
   border-radius: 12px;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
   filter: brightness(0.4);
@@ -231,8 +473,8 @@ html {
   right: 20px;
   width: 220px;
   height: 220px;
-  z-index: 50;
-  /* Above overlay and content layer */
+  z-index: 300;
+  /* High z-index for dragability */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -241,6 +483,7 @@ html {
   background: rgba(0, 0, 0, 0.85);
   border: 2px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  pointer-events: auto !important;
 }
 
 canvas.map-canvas {
@@ -255,32 +498,35 @@ canvas.map-canvas {
 
 .overlay-layer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
   background: var(--bg-overlay);
-  z-index: 2;
+  z-index: 1;
   backdrop-filter: blur(2px);
   transition: background 0.5s ease;
+  transform: translateZ(-100px);
 }
 
 .screen-vignette {
   position: absolute;
-  inset: 0;
+  inset: -20%;
   background: radial-gradient(circle at center, transparent 45%, rgba(0, 0, 0, 0.7) 100%);
   pointer-events: none;
-  z-index: 5;
+  z-index: 1;
   mix-blend-mode: multiply;
+  transform: translateZ(-1px) scale(1.1);
 }
 
 .lighting-container {
   position: absolute;
-  inset: 0;
-  z-index: 3;
+  inset: -20%;
+  z-index: 2;
   pointer-events: none;
   transition: opacity 1s ease-in-out;
   mix-blend-mode: screen;
+  transform: translateZ(-50px) scale(1.2);
 }
 
 .weather-layer,
@@ -291,14 +537,15 @@ canvas.map-canvas {
 .death-overlay,
 .death-image-layer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 4;
+  top: -10%;
+  left: -10%;
+  width: 120%;
+  height: 120%;
+  z-index: 3;
   pointer-events: none;
   transition: opacity 1.5s ease-in-out;
   overflow: hidden;
+  transform: translateZ(-50px) scale(1.2);
 }
 
 .weather-layer,
@@ -498,9 +745,9 @@ canvas.map-canvas {
 }
 
 .lighting-sun .lighting-inner {
-  /* Brighter, lighter yellow sunlight */
-  background: radial-gradient(circle at 50% 10%, rgba(255, 240, 150, 0.3), transparent 75%);
-  box-shadow: inset 0 0 160px rgba(255, 220, 100, 0.12);
+  /* Golden, warm sunlight */
+  background: radial-gradient(circle at 50% 10%, rgba(255, 230, 90, 0.22), transparent 75%);
+  box-shadow: inset 0 0 160px rgba(255, 210, 50, 0.1);
 }
 
 .lighting-artificial .lighting-inner {
@@ -511,8 +758,8 @@ canvas.map-canvas {
 }
 
 .lighting-moon .lighting-inner {
-  background: radial-gradient(circle at 50% 10%, rgba(100, 150, 255, 0.35), transparent 75%);
-  box-shadow: inset 0 0 200px rgba(80, 120, 255, 0.15);
+  background: radial-gradient(circle at 50% 10%, rgba(100, 150, 255, 0.2), transparent 75%);
+  box-shadow: inset 0 0 200px rgba(80, 120, 255, 0.1);
 }
 
 .lighting-moon {
@@ -670,67 +917,54 @@ canvas.map-canvas {
 @keyframes flicker {
   0% {
     opacity: 0.9;
-    transform: scale(1);
   }
 
   5% {
     opacity: 0.8;
-    transform: scale(0.99);
   }
 
   10% {
     opacity: 0.95;
-    transform: scale(1.01);
   }
 
   15% {
     opacity: 0.85;
-    transform: scale(0.98);
   }
 
   20% {
     opacity: 0.9;
-    transform: scale(1);
   }
 
   30% {
     opacity: 0.75;
-    transform: scale(0.97);
   }
 
   40% {
     opacity: 0.9;
-    transform: scale(1.01);
   }
 
   50% {
     opacity: 0.8;
-    transform: scale(0.98);
   }
 
   60% {
     opacity: 0.95;
-    transform: scale(1);
   }
 
   70% {
     opacity: 0.85;
-    transform: scale(0.99);
   }
 
   80% {
     opacity: 0.9;
-    transform: scale(1);
   }
 
   90% {
     opacity: 0.8;
-    transform: scale(0.98);
   }
 
   100% {
     opacity: 0.9;
-    transform: scale(1);
   }
 }
 
@@ -889,15 +1123,20 @@ canvas.map-canvas {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  height: auto;
+  min-height: 0;
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
   padding: 20px;
   padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   overflow: hidden;
-  transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  /* Bring UI above environmental lighting */
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 
 @media (max-width: 600px) {
   .content-layer {
@@ -1125,24 +1364,44 @@ canvas.map-canvas {
 
 
 
+.message-log-container {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
 .message-log {
   flex: 1;
   z-index: 30;
   overflow-y: auto;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+  /* Changed to auto for better mobile responsiveness */
   overflow-anchor: none;
   display: flex;
   flex-direction: column;
-  gap: 0px;
-  padding-bottom: 10px;
+  padding-bottom: 20px;
+  padding-top: 60px;
   scrollbar-width: thin;
   scrollbar-color: var(--text-faded) transparent;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 100%);
+
+  /* Gradual fade at the top of the overall viewport */
+  mask-image: linear-gradient(to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.1) 10%,
+      rgba(0, 0, 0, 0.5) 25%,
+      black 75%,
+      black 100%);
+
   position: relative;
   user-select: text;
   cursor: text;
   min-height: 0;
-  transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
 }
 
 .message-log::-webkit-scrollbar {
@@ -1155,12 +1414,56 @@ canvas.map-canvas {
 }
 
 .message {
-  transition: opacity 0.6s ease-out, filter 0.6s ease-out, font-size 0.4s cubic-bezier(0.4, 0, 0.2, 1), line-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   line-height: 1.4;
   max-width: 100%;
   word-wrap: break-word;
   white-space: pre-wrap;
   padding: 2px 0;
+
+  /* Scroll-Driven Animation: Precision 3D Scroll */
+  view-timeline-name: --message-scroll;
+  view-timeline-axis: block;
+  animation: shrink-and-fade linear;
+  animation-timeline: --message-scroll;
+  animation-range: cover;
+
+  /* Anchor to left for a straight vertical margin */
+  transform-origin: left center;
+  will-change: transform, opacity;
+
+  /* Sharpness hints */
+  image-rendering: pixelated;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+@keyframes shrink-and-fade {
+
+  /* 0% is when the line starts entering from the BOTTOM */
+  0%,
+  45% {
+    transform: scale(1) translateZ(0) rotateX(0deg);
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  /* Gentler transition into the distance */
+  65% {
+    transform: scale(0.95) translateZ(-25px) rotateX(3deg);
+    opacity: 0.9;
+    filter: blur(0);
+  }
+
+  85% {
+    transform: scale(0.8) translateZ(-80px) rotateX(8deg);
+    opacity: 0.6;
+    filter: blur(0.2px);
+  }
+
+  100% {
+    transform: scale(0.5) translateZ(-180px) rotateX(15deg);
+    opacity: 0;
+    filter: blur(1px);
+  }
 }
 
 /* Combat dimming: non-combat messages fade back during a fight */
@@ -1217,27 +1520,33 @@ canvas.map-canvas {
 
 .msg-latest {
   opacity: 1;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  filter: brightness(1.2);
-  font-size: 1.1rem;
+  filter: brightness(1.25) drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
+  transform: scale(1.02) translateZ(0);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .msg-recent {
-  opacity: 0.9;
+  opacity: 0.85;
   color: #e5e7eb;
-  font-size: 1rem;
+  transform: scale(1) translateZ(-50px);
+  filter: brightness(0.9);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .msg-old {
-  opacity: 0.6;
+  opacity: 0.55;
   color: var(--text-dim);
-  font-size: 0.9rem;
+  transform: scale(0.92) translateZ(-150px);
+  filter: brightness(0.7) blur(0.5px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .msg-ancient {
-  opacity: 0.4;
+  opacity: 0.3;
   color: var(--text-faded);
-  font-size: 0.8rem;
+  transform: scale(0.85) translateZ(-300px);
+  filter: brightness(0.4) blur(1.5px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .input-area {
@@ -1492,6 +1801,7 @@ select.setting-input {
   align-items: center;
   gap: 15px;
   touch-action: none;
+  transform: translateZ(100px);
 }
 
 .stats-cluster {
@@ -1503,6 +1813,7 @@ select.setting-input {
   flex-direction: column;
   align-items: center;
   touch-action: none;
+  transform: translateZ(100px);
 }
 
 .cluster-row {
@@ -1667,6 +1978,8 @@ select.setting-input {
   height: 100%;
   z-index: 55;
   pointer-events: none;
+  transform: translateZ(105px);
+  transform-style: preserve-3d;
 }
 
 .custom-btn {
@@ -1900,13 +2213,11 @@ select.setting-input {
 @keyframes lantern-flicker {
   0% {
     opacity: 0.7;
-    transform: translate(-50%, -50%) scale(1);
     filter: brightness(1);
   }
 
   10% {
     opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.02);
     filter: brightness(1.1);
   }
 
@@ -1990,8 +2301,7 @@ select.setting-input {
 /* Blur main content but keep Header accessible */
 .edit-mode-active .message-log,
 .edit-mode-active .input-area {
-  filter: blur(3px) opacity(0.5);
-  pointer-events: none;
+  filter: blur(1.5px) opacity(0.8);
   transition: all 0.3s ease-in-out;
 }
 
@@ -2183,4 +2493,173 @@ select.setting-input {
   margin: 0;
   white-space: pre-wrap;
   word-break: break-all;
+}
+
+@keyframes spat-trigger-glow {
+  0% {
+    filter: brightness(1);
+    box-shadow: 0 0 0px var(--accent);
+  }
+
+  30% {
+    filter: brightness(2.5);
+    box-shadow: 0 0 15px var(--accent);
+    transform: scale(1.1);
+  }
+
+  100% {
+    filter: brightness(1.2);
+    box-shadow: 0 0 4px var(--accent);
+    transform: scale(1);
+  }
+}
+
+.inline-btn.is-triggered {
+  animation: spat-trigger-glow 0.8s ease-out forwards !important;
+  z-index: 100;
+}
+
+@keyframes spit-across {
+  0% {
+    transform: translate(-50%, -50%) scale(0.1) rotate(-25deg);
+    opacity: 0;
+    left: var(--start-x);
+    top: var(--start-y);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+  }
+
+  100% {
+    transform: var(--target-transform, translate(0, -50%)) scale(1) rotate(0deg);
+    opacity: 1;
+    left: var(--target-x);
+    top: var(--target-y);
+  }
+}
+
+@keyframes spat-finish-shimmer {
+  0% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent);
+  }
+
+  50% {
+    box-shadow: 0 4px 25px var(--accent), 0 0 30px var(--accent);
+    filter: brightness(1.7);
+  }
+
+  100% {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent);
+  }
+}
+
+.spat-button {
+  position: fixed;
+  z-index: 1000;
+  padding: 8px 16px;
+  background: rgba(10, 10, 15, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--accent);
+  animation:
+    spit-across 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards,
+    spat-finish-shimmer 0.5s ease-out 0.65s 1;
+  user-select: none;
+  left: var(--target-x);
+  top: var(--target-y);
+  transform: var(--target-transform, translate(0, -50%));
+  transition:
+    filter 0.2s,
+    transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28),
+    left 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+    top 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.spat-button:active {
+  transform: scale(0.95);
+  filter: brightness(1.2);
+}
+
+.mobile-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  margin: 10px 0;
+}
+
+.mobile-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  border: 4px solid rgba(15, 23, 42, 0.9);
+}
+
+.mobile-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+  border: 4px solid rgba(15, 23, 42, 0.9);
+}
+
+
+.reset-pos-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 102;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-pos-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.1);
+}
+
+.reset-pos-btn:active {
+  transform: scale(0.9);
+}
+
+/* FINAL SAFETY OVERRIDES - Optimized for 3D Zoom */
+.kb-open .app-container {
+  background: #000 !important;
+}
+
+/* Ensure shaker is visible during transition */
+.kb-open .app-content-shaker {
+  opacity: 1 !important;
+  visibility: visible !important;
 }

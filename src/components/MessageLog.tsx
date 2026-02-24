@@ -14,7 +14,7 @@ interface MessageLogProps {
     onMouseUp?: (e: React.MouseEvent) => void;
     onDoubleClick?: (e: React.MouseEvent) => void;
     getMessageClass: (index: number, total: number) => string;
-    processMessageHtml: (html: string) => string;
+    processMessageHtml: (html: string, mid?: string) => string;
     scrollToBottom: () => void;
 }
 
@@ -34,7 +34,7 @@ const MessageItem = React.memo(({
     isLatest: boolean,
     inCombat: boolean,
     getMessageClass: (i: number, t: number) => string,
-    processMessageHtml: (h: string) => string,
+    processMessageHtml: (h: string, mid?: string) => string,
     scrollToBottom: () => void
 }) => {
     return (
@@ -46,9 +46,9 @@ const MessageItem = React.memo(({
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
             ) : (msg.isComm && isLatest) ? (
-                <TypewriterText html={processMessageHtml(msg.html)} onUpdate={scrollToBottom} />
+                <TypewriterText html={processMessageHtml(msg.html, msg.id)} onUpdate={scrollToBottom} />
             ) : (
-                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html) }} />
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html, msg.id) }} />
             )}
         </div>
     );
@@ -92,7 +92,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             ))}
             {activePrompt && (
                 <div className="message prompt msg-latest" style={{ transition: 'none' }}>
-                    <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt)) }} />
+                    <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt), 'prompt') }} />
                 </div>
             )}
             <div ref={messagesEndRef} />
