@@ -13,6 +13,7 @@ interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
     onMouseUp?: (e: React.MouseEvent) => void;
     onDoubleClick?: (e: React.MouseEvent) => void;
+    onPointerDown?: (e: React.PointerEvent) => void;
     getMessageClass: (index: number, total: number) => string;
     processMessageHtml: (html: string, mid?: string) => string;
     scrollToBottom: () => void;
@@ -64,6 +65,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,
     onMouseUp,
     onDoubleClick,
+    onPointerDown,
     getMessageClass,
     processMessageHtml,
     scrollToBottom
@@ -73,6 +75,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             className={`message-log${inCombat ? ' combat-mode' : ''}`}
             ref={scrollContainerRef}
             onScroll={onScroll}
+            onPointerDown={onPointerDown}
             onClick={onLogClick}
             onMouseUp={onMouseUp}
             onDoubleClick={onDoubleClick}

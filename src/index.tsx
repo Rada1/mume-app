@@ -131,6 +131,7 @@ const MudClient = () => {
 
     const [isInventoryOpen, setIsInventoryOpen] = useState(false);
     const [isCharacterOpen, setIsCharacterOpen] = useState(false);
+    const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
     const [inventoryHtml, setInventoryHtml] = useState('');
     const [statsHtml, setStatsHtml] = useState('');
     const [eqHtml, setEqHtml] = useState('');
@@ -222,6 +223,7 @@ const MudClient = () => {
     const inCombatRef = useRef(false);
     const lastViewportHeightRef = useRef<number>(window.innerHeight);
     const baseHeightRef = useRef<number>(window.innerHeight);
+    const isLockedToBottomRef = useRef(true);
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     useEffect(() => {
@@ -246,10 +248,10 @@ const MudClient = () => {
 
         // Only guard against jumping if force is false
         if (!force) {
-            // Smaller threshold on mobile/small viewports for tighter snap control
-            const threshold = Math.min(150, container.clientHeight * 0.15);
+            // Much tighter threshold on mobile to prevent "magnetic" snaps while scrolling
+            const threshold = isMobile ? 30 : Math.min(100, container.clientHeight * 0.1);
             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
-            if (!isNearBottom || focusedIndex !== null) return;
+            if (!isNearBottom) return;
         }
 
         if (instant) {
@@ -337,13 +339,12 @@ const MudClient = () => {
         }
     }, [scrollToBottom, isMobile, isKeyboardOpen]);
 
-    // Force snap and scroll when keyboard opens/closes
+    // Force snap and scroll strictly when keyboard state or mobile status changes
     useEffect(() => {
         if (isMobile) {
-            // Immediate snap
+            // Force snap on keyboard state changes - this is a "hard" snap
             scrollToBottom(true, true);
 
-            // Follow-up snap after transition completes
             const timer = setTimeout(() => {
                 scrollToBottom(true, true);
                 updateHeight();
@@ -442,38 +443,32 @@ const MudClient = () => {
     // --- Derived State & Handlers ---
     const isCombatLine = useCallback((text: string): boolean => {
         const t = text.toLowerCase();
+        // Check for general combat verbs
+        const combatVerbs = [
+            'hit', 'miss', 'wound', 'slay', 'kill', 'scratch', 'bruise', 'maul', 'decimate',
+            'devastate', 'obliterate', 'massacre', 'mutilate', 'eviscerate', 'pierce',
+            'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'shoot', 'blast', 'burn',
+            'freeze', 'choke', 'strike'
+        ];
+
+        const hasCombatVerb = combatVerbs.some(v => t.includes(` ${v}s `) || t.includes(` ${v} `) || t.includes(`${v}s you`) || t.includes(`${v} you`));
+
         return (
-            t.includes(' hits ') || t.includes(' hit ') ||
-            t.includes(' misses ') || t.includes(' miss ') ||
-            t.includes(' wounds ') || t.includes(' wound ') ||
-            t.includes(' slays ') || t.includes(' slay ') ||
-            t.includes(' kills ') || t.includes(' kill ') ||
-            t.includes(' scratches ') || t.includes(' scratch ') ||
-            t.includes(' bruises ') || t.includes(' bruise ') ||
-            t.includes(' mauls ') || t.includes(' maul ') ||
-            t.includes(' decimates ') || t.includes(' decimate ') ||
-            t.includes(' devastates ') || t.includes(' devastate ') ||
-            t.includes(' obliterates ') || t.includes(' obliterate ') ||
-            t.includes(' massacres ') || t.includes(' massacre ') ||
-            t.includes(' mutilates ') || t.includes(' mutilate ') ||
-            t.includes(' eviscerates ') || t.includes(' eviscerate ') ||
+            hasCombatVerb ||
+            ((t.includes('cast a spell') || t.includes('casts a spell') || t.includes('strange incantations')) && inCombatRef.current) ||
             t.includes('you dodge') || t.includes('you parry') ||
             t.includes('you flee') || t.includes('you rescue') ||
             t.includes('you disarm') || t.includes('you bash') ||
             t.includes('you kick') || t.includes('you bite') ||
-            t.includes('hits you') || t.includes('misses you') ||
-            t.includes('wounds you') || t.includes('slays you') ||
-            t.includes('crushes you') || t.includes('pierces you') ||
-            t.includes('scratches you') || t.includes('bruises you') ||
-            t.includes('mauls you') || t.includes('decimates you') ||
-            t.includes('devastates you') || t.includes('obliterates you') ||
-            t.includes('massacres you') || t.includes('mutilates you') ||
-            t.includes('eviscerates you') ||
+            t.includes('your arm') || t.includes('your head') ||
+            t.includes('your leg') || t.includes('your body') ||
+            t.includes('your chest') || t.includes('your neck') ||
             t.includes('is dead!') || t.includes('is slain') ||
             t.includes('you have been killed') || t.includes('you are dead') ||
             t.includes('you feel less protected') ||
             t.includes('your opponent') || t.includes('your foe') ||
-            /^\w+ (dodges|parries|flees|rescues|disarms|bashes|kicks|bites)/.test(t)
+            /^\s*(k|kill|f|flee|b|bash|c|cast|u|use|rescue|disarm|kick|bite)\b/i.test(t) ||
+            /^\w+ (dodges|parries|flees|rescues|disarms|bashes|kicks|bites|hits|stabs|cleaves|slashes|pounds|crushes|smites|shoots)/.test(t)
         );
     }, []);
 
@@ -588,7 +583,7 @@ const MudClient = () => {
             }
             return [...nextMessages, msg];
         });
-    }, []);
+    }, [isCombatLine, isCommunicationLine]);
 
     const detectLighting = useCallback((line: string) => {
         const cleanLine = line.trim();
@@ -805,7 +800,7 @@ const MudClient = () => {
 
 
 
-        const isCapturing = (isCapturingInventory.current && isInventoryOpen) || (captureStage.current !== 'none' && isCharacterOpen);
+        const isCapturing = (isCapturingInventory.current && isRightDrawerOpen) || (captureStage.current === 'eq' && isRightDrawerOpen) || (captureStage.current === 'stat' && isCharacterOpen);
 
         if (pMatch) {
             const promptPart = pMatch[1];
@@ -915,7 +910,7 @@ const MudClient = () => {
             setEqHtml('');
         }
         if (lowerCmd === 'closeall') {
-            setIsInventoryOpen(false); setIsCharacterOpen(false);
+            setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false);
         }
 
         addMessage('user', finalCmd);
@@ -970,8 +965,15 @@ const MudClient = () => {
             const { scrollTop, scrollHeight, clientHeight } = container;
             const scrollBottom = scrollTop + clientHeight;
 
-            // Threshold for snap-back detection
-            if (scrollHeight - scrollBottom < 50) {
+            const isActuallyAtBottom = scrollHeight - scrollBottom < (isMobile ? 15 : 40);
+
+            // If the user isn't currently being auto-scrolled, update the lock state
+            if (!isAutoScrollingRef.current) {
+                isLockedToBottomRef.current = isActuallyAtBottom;
+            }
+
+            // Threshold for clearing focus
+            if (isActuallyAtBottom) {
                 if (focusedIndex !== null) setFocusedIndex(null);
                 return;
             }
@@ -995,23 +997,34 @@ const MudClient = () => {
 
     const handleInputSwipe = useCallback((dir: string) => {
         if (!isMobile) return;
-        triggerHaptic(dir === 'up' ? 35 : 20);
+        triggerHaptic(20);
         if (dir === 'up') {
+            // Swiping up no longer opens drawers
             executeCommand('inventory');
-            setIsInventoryOpen(true);
         } else if (dir === 'down') {
-            if (isInventoryOpen) { triggerHaptic(15); setIsInventoryOpen(false); }
+            // Closing all drawers on swipe down
+            if (isInventoryOpen || isRightDrawerOpen || isCharacterOpen) {
+                triggerHaptic(15);
+                setIsInventoryOpen(false);
+                setIsRightDrawerOpen(false);
+                setIsCharacterOpen(false);
+            }
             else executeCommand('s');
         } else if (dir === 'right') {
+            // Swipe right (left to right) opens character
             setStatsHtml(''); setEqHtml('');
             executeCommand('stat');
             setTimeout(() => executeCommand('eq'), 300);
             setIsCharacterOpen(true);
         }
         else if (dir === 'left') {
-            if (isCharacterOpen) { triggerHaptic(15); setIsCharacterOpen(false); }
+            // Swipe left (right to left) opens inventory/equipment
+            setInventoryHtml(''); setEqHtml('');
+            executeCommand('inventory');
+            setTimeout(() => executeCommand('equipment'), 300);
+            setIsRightDrawerOpen(true);
         }
-    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isCharacterOpen]);
+    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isCharacterOpen, isRightDrawerOpen]);
 
     // --- Stats Effects ---
     const getHeartbeatDuration = (ratio: number) => 0.4 + (ratio / FX_THRESHOLD) * 1.1;
@@ -1217,6 +1230,20 @@ const MudClient = () => {
         setBtnGlow(prev => ({ ...prev, [dir]: true }));
         setTimeout(() => setBtnGlow(prev => ({ ...prev, [dir]: false })), 300);
     }, [triggerHaptic, executeCommand]);
+
+    const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
+        // The user is touching/clicking the log. 
+        // We MUST unlock immediately so heartbeat messages don't snap them back while they try to move.
+        isLockedToBottomRef.current = false;
+
+        // Also kill any active smooth-scroll animation so it doesn't fight the user's focus
+        if (scrollAnimationRef.current) {
+            cancelAnimationFrame(scrollAnimationRef.current);
+            scrollAnimationRef.current = null;
+        }
+        isAutoScrollingRef.current = false;
+    }, []);
+
     const handleLogClick = useCallback((e: React.MouseEvent) => {
         const now = Date.now();
         const delta = now - lastTapRef.current;
@@ -1580,18 +1607,33 @@ const MudClient = () => {
 
 
     useEffect(() => {
-        // Only force snap if a NEW message arrived
-        const hasNewMessage = messages.length > prevMessagesLengthRef.current;
+        const lastIdx = prevMessagesLengthRef.current;
+        const newMessages = messages.slice(lastIdx);
+        const hasNewMessage = newMessages.length > 0;
+
         prevMessagesLengthRef.current = messages.length;
+
+        if (!hasNewMessage) return;
 
         // Slight delay ensures the DOM has calculated the new scrollHeight correctly.
         const timer = setTimeout(() => {
-            // Force scroll ONLY if there's a new message. 
-            // If it's just a prompt update, use false to respect user's manual scroll position.
-            scrollToBottom(hasNewMessage, false);
-        }, 50);
+            const container = scrollContainerRef.current;
+            if (!container) return;
+
+            // SNAP LOGIC:
+            // We should auto-scroll if:
+            // 1. We were already at the bottom when the message arrived (isLockedToBottomRef)
+            // 2. We are already mid-animation scrolling (Latching burst)
+            // 3. The keyboard is actively open or opening (Ensures prompt focus)
+            const shouldSnap = isLockedToBottomRef.current || isAutoScrollingRef.current || isKeyboardOpen;
+
+            if (shouldSnap) {
+                // Force snap to new content
+                scrollToBottom(true, false);
+            }
+        }, 35); // Lowered delay for more immediate response to bursts
         return () => clearTimeout(timer);
-    }, [messages, activePrompt, scrollToBottom]);
+    }, [messages, activePrompt, scrollToBottom, isKeyboardOpen]);
 
 
     const firedTriggerOccurrencesRef = useRef(new Set<string>());
@@ -1732,7 +1774,7 @@ const MudClient = () => {
                                 '--target-y': `${Math.round(dynamicTargetY)}px`,
                                 '--target-transform': isMobile ? 'translate(-100%, -50%)' : 'translate(0, -50%)',
                                 borderColor: sb.color,
-                                boxShadow: `0 4px 15px rgba(0,0,0,0.5), 0 0 10px ${sb.color}`,
+                                boxShadow: `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
                                 '--accent': sb.color
                             } as any}
                             onClick={(e) => {
@@ -1753,10 +1795,10 @@ const MudClient = () => {
                         return (
                             <div
                                 key={button.id}
-                                className={`custom-btn ${button.style.shape === 'pill' ? 'shape-pill' : button.style.shape === 'circle' ? 'shape-circle' : 'shape-rect'} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''}`}
+                                className={`custom - btn ${button.style.shape === 'pill' ? 'shape-pill' : button.style.shape === 'circle' ? 'shape-circle' : 'shape-rect'} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''} `}
                                 style={{
-                                    left: `${button.style.x}%`,
-                                    top: `${button.style.y}%`,
+                                    left: `${button.style.x}% `,
+                                    top: `${button.style.y}% `,
                                     width: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.w}px`,
                                     height: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.h}px`,
                                     backgroundColor: button.style.transparent ? 'rgba(0,0,0,0.2)' : button.style.backgroundColor,
@@ -1898,6 +1940,7 @@ const MudClient = () => {
                             messagesEndRef={messagesEndRef}
                             scrollToBottom={scrollToBottom}
                             onScroll={handleLogScroll}
+                            onPointerDown={handleLogPointerDown}
                             onLogClick={handleLogClick}
                             onMouseUp={handleMouseUp}
                             onDoubleClick={handleDoubleClick}
@@ -2025,7 +2068,7 @@ const MudClient = () => {
                             <div className="popover-item" onClick={() => {
                                 setTarget(popoverState.context || null);
                                 setPopoverState(null);
-                                addMessage('system', `Target set to: ${popoverState.context}`);
+                                addMessage('system', `Target set to: ${popoverState.context} `);
                             }}>
                                 Set as Target
                             </div>
@@ -2138,7 +2181,7 @@ const MudClient = () => {
             {
                 isMobile && (
                     <>
-                        <div className={`drawer-backdrop ${(isInventoryOpen || isCharacterOpen) ? 'open' : ''}`} onClick={() => { setIsInventoryOpen(false); setIsCharacterOpen(false); }} />
+                        <div className={`drawer-backdrop ${(isInventoryOpen || isCharacterOpen || isRightDrawerOpen) ? 'open' : ''}`} onClick={() => { setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false); }} />
 
                         <div
                             className={`inventory-drawer ${isInventoryOpen ? 'open' : ''}`}
@@ -2189,18 +2232,11 @@ const MudClient = () => {
                                 style={{ cursor: 'ns-resize', touchAction: 'none', height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
                             >
                                 <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
-                                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Equipment & Inventory</span>
+                                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Empty Drawer</span>
                                 <button onClick={() => { triggerHaptic(20); setIsInventoryOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
                             </div>
-                            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', display: 'flex', flexDirection: isMobile && windowWidth < 600 ? 'column' : 'row' }}>
-                                <div style={{ flex: 1, padding: '20px', borderRight: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>EQUIPMENT</div>
-                                    <div dangerouslySetInnerHTML={{ __html: eqHtml }} />
-                                </div>
-                                <div style={{ flex: 1, padding: '20px' }}>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>INVENTORY</div>
-                                    <div dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
-                                </div>
+                            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3 }}>
+                                <span>Bottom Drawer is currently empty</span>
                             </div>
                         </div>
 
@@ -2263,7 +2299,7 @@ const MudClient = () => {
                                                     const options = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive'];
                                                     const val = options[parseInt(e.target.value)];
                                                     setMood(val);
-                                                    executeCommand(`change mood ${val}`);
+                                                    executeCommand(`change mood ${val} `);
                                                     triggerHaptic(15);
                                                 }}
                                                 className="mobile-slider"
@@ -2273,7 +2309,7 @@ const MudClient = () => {
                                                 onClick={() => {
                                                     const newVal = mood === 'berserk' ? 'aggressive' : 'berserk';
                                                     setMood(newVal);
-                                                    executeCommand(`change mood ${newVal}`);
+                                                    executeCommand(`change mood ${newVal} `);
                                                     triggerHaptic(30);
                                                 }}
                                                 style={{
@@ -2308,7 +2344,7 @@ const MudClient = () => {
                                                 const options = ['quick', 'fast', 'normal', 'careful', 'thorough'];
                                                 const val = options[parseInt(e.target.value)];
                                                 setSpellSpeed(val);
-                                                executeCommand(`change spell ${val}`);
+                                                executeCommand(`change spell ${val} `);
                                                 triggerHaptic(15);
                                             }}
                                             className="mobile-slider"
@@ -2332,7 +2368,7 @@ const MudClient = () => {
                                                 const options = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
                                                 const val = options[parseInt(e.target.value)];
                                                 setAlertness(val);
-                                                executeCommand(`change alert ${val}`);
+                                                executeCommand(`change alert ${val} `);
                                                 triggerHaptic(15);
                                             }}
                                             className="mobile-slider"
@@ -2347,6 +2383,54 @@ const MudClient = () => {
                             </div>
                         </div>
 
+                        <div
+                            className={`right-drawer ${isRightDrawerOpen ? 'open' : ''}`}
+                            onPointerDown={(e) => {
+                                const target = e.target as HTMLElement;
+                                if (target.closest('button') || target.closest('a')) return;
+                                e.currentTarget.setPointerCapture(e.pointerId);
+                                (e.currentTarget as any)._startX = e.clientX;
+                                (e.currentTarget as any)._startY = e.clientY;
+                            }}
+                            onPointerUp={(e) => {
+                                const startX = (e.currentTarget as any)._startX;
+                                const startY = (e.currentTarget as any)._startY;
+                                if (startX !== undefined && startX !== null) {
+                                    const deltaX = e.clientX - startX;
+                                    const deltaY = Math.abs(e.clientY - (startY || 0));
+                                    // Right swipe to close anywhere in drawer
+                                    if (deltaX > 20 && deltaX > deltaY) {
+                                        triggerHaptic(40);
+                                        setIsRightDrawerOpen(false);
+                                    }
+                                }
+                                (e.currentTarget as any)._startX = null;
+                                (e.currentTarget as any)._startY = null;
+                            }}
+                            onPointerCancel={(e) => {
+                                (e.currentTarget as any)._startX = null;
+                                (e.currentTarget as any)._startY = null;
+                            }}
+                            style={{ touchAction: 'pan-y' }}
+                        >
+                            <div className="drawer-header">
+                                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory & Equipment</span>
+                                <button onClick={() => { triggerHaptic(20); setIsRightDrawerOpen(false); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
+                            </div>
+                            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
+                                {/* Visual Swipe Handle Overlay */}
+                                <div className="swipe-indicator" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
+
+                                <div style={{ marginBottom: '30px' }}>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>EQUIPMENT</div>
+                                    <div dangerouslySetInnerHTML={{ __html: eqHtml }} />
+                                </div>
+                                <div>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>INVENTORY</div>
+                                    <div dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
+                                </div>
+                            </div>
+                        </div>
                     </>
                 )
             }
