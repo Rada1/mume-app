@@ -1925,7 +1925,8 @@ const MudClient = () => {
                             border: (btn.isEditMode && btn.dragState?.id === 'mapper') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
                             borderRadius: '12px',
                             overflow: 'visible',
-                            zIndex: 300
+                            zIndex: 300,
+                            boxShadow: (btn.isEditMode && btn.dragState?.id === 'mapper') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
                         }}
                         onPointerDown={(e) => {
                             if (btn.isEditMode) handleDragStart(e, 'mapper', 'cluster');
@@ -1972,7 +1973,14 @@ const MudClient = () => {
                             transform: `translateY(-50%) ${btn.uiPositions.joystick?.scale ? `scale(${btn.uiPositions.joystick.scale})` : ''}`,
                             transformOrigin: 'center left',
                             zIndex: 100,
-                            position: 'absolute'
+                            position: 'absolute',
+                            cursor: btn.isEditMode ? 'move' : undefined,
+                            border: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '2px dashed #ffff00' : undefined,
+                            borderRadius: '50%',
+                            boxShadow: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
+                        }}
+                        onPointerDown={(e) => {
+                            if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
                         }}
                     >
                         <Joystick joystickKnobRef={joystick.joystickKnobRef} joystickGlow={joystickGlow} btnGlow={btnGlow} onJoystickStart={joystick.handleJoystickStart} onJoystickMove={joystick.handleJoystickMove} onJoystickEnd={(e) => joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow)} onNavClick={handleNavClick} />

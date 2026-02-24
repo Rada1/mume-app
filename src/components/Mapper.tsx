@@ -551,12 +551,22 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
             }
             scrollLockRef.current = false;
 
-            e.preventDefault();
-            e.stopPropagation();
-
             const rect = cvs.getBoundingClientRect();
             const mx = e.clientX - rect.left;
             const my = e.clientY - rect.top;
+            const world = screenToWorld(mx, my);
+            const clickedMarkerId = getMarkerAt(world.x, world.y);
+            const clickedRoomId = getRoomAt(world.x, world.y, true);
+
+            // In Design Mode, if we are not clicking a specific map element (room or marker),
+            // and NOT holding Alt (for marquee/pan), we let the event bubble.
+            // This allows the parent 'mapper-cluster' to handle moving the entire map window.
+            if (isDesignMode && !clickedMarkerId && !clickedRoomId && !e.altKey) {
+                return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
 
             activePointersRef.current.set(e.pointerId, { x: mx, y: my });
             cvs.setPointerCapture(e.pointerId);
@@ -568,9 +578,6 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
             if (pointers.length === 1) {
                 if (e.button !== 0) return; // Only drag/select on left click
                 hasDraggedRef.current = false;
-                const world = screenToWorld(mx, my);
-                const clickedMarkerId = getMarkerAt(world.x, world.y);
-                const clickedRoomId = getRoomAt(world.x, world.y, true);
 
                 if (mode === 'edit') {
                     longPressTimerRef.current = setTimeout(() => {

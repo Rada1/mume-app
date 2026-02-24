@@ -1132,8 +1132,7 @@ canvas.map-canvas {
   padding: 20px;
   padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   overflow: hidden;
-  z-index: 10;
-  /* Bring UI above environmental lighting */
+  /* Removed z-index to avoid creating a stacking context that traps children like the header menu */
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1162,7 +1161,7 @@ canvas.map-canvas {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 10px;
   position: relative;
-  z-index: 60;
+  z-index: 500;
   flex-shrink: 0;
 }
 
