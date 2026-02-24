@@ -26,7 +26,8 @@ interface SettingsModalProps {
     hasUserDefaults?: boolean;
     status: 'connected' | 'disconnected' | 'connecting';
     connect: () => void;
-
+    isMmapperMode: boolean;
+    setIsMmapperMode: (val: boolean) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -52,6 +53,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     hasUserDefaults,
     status,
     connect,
+    isMmapperMode,
+    setIsMmapperMode,
 }) => {
     return (
         <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>
@@ -170,6 +173,61 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                         />
                                         <span className="setting-helper">Note: Browser clients require a WebSocket (ws/wss) bridge.</span>
                                     </div>
+                                </div>
+
+                                <div className="setting-group" style={{ border: '1px solid rgba(59, 130, 246, 0.3)', background: 'rgba(59, 130, 246, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <label className="setting-label" style={{ color: '#60a5fa', fontWeight: 'bold', margin: 0 }}>mMapper Integration</label>
+                                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Use the external mMapper application.</div>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ fontSize: '0.8rem', color: isMmapperMode ? '#60a5fa' : '#64748b' }}>{isMmapperMode ? 'ACTIVE' : 'OFF'}</span>
+                                            <div
+                                                onClick={() => setIsMmapperMode(!isMmapperMode)}
+                                                style={{
+                                                    width: '40px',
+                                                    height: '20px',
+                                                    background: isMmapperMode ? '#3b82f6' : '#334155',
+                                                    borderRadius: '20px',
+                                                    position: 'relative',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s'
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    background: '#fff',
+                                                    borderRadius: '50%',
+                                                    position: 'absolute',
+                                                    top: '2px',
+                                                    left: isMmapperMode ? '22px' : '2px',
+                                                    transition: 'all 0.3s'
+                                                }} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {isMmapperMode && (
+                                        <div style={{ marginTop: '12px', padding: '12px', background: 'rgba(0,0,0,0.4)', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid rgba(255,255,255,0.1)' }}>
+                                            <div style={{ color: '#fff', marginBottom: '10px', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '5px' }}>Setup Instructions:</div>
+
+                                            <div style={{ marginBottom: '12px' }}>
+                                                <div style={{ color: 'var(--accent)', fontWeight: 'bold' }}>1. Start the Bridge</div>
+                                                <div style={{ color: '#94a3b8' }}>Run this in your project terminal (keep it open):</div>
+                                                <code style={{ display: 'block', background: '#000', padding: '6px', borderRadius: '4px', color: '#60a5fa', marginTop: '4px', border: '1px solid #222' }}>node mmapper-bridge.js</code>
+                                            </div>
+
+                                            <div style={{ marginBottom: '0' }}>
+                                                <div style={{ color: 'var(--accent)', fontWeight: 'bold' }}>2. Connect App</div>
+                                                <div style={{ color: '#94a3b8' }}>Ensure mMapper is running, then click "Connect" at the top.</div>
+                                            </div>
+
+                                            <div style={{ marginTop: '12px', fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', borderTop: '1px solid #333', paddingTop: '8px' }}>
+                                                Note: The bridge will auto-detect mMapper on Port 900 or 4242.
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="setting-group">

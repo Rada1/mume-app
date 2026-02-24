@@ -140,6 +140,17 @@ const MudClient = () => {
     const spatButtonsRef = useRef(spatButtons);
     useEffect(() => { spatButtonsRef.current = spatButtons; }, [spatButtons]);
 
+    const [isMmapperMode, setIsMmapperMode] = useState(() => localStorage.getItem('mud-mmapper-mode') === 'true');
+
+    useEffect(() => {
+        localStorage.setItem('mud-mmapper-mode', isMmapperMode.toString());
+        if (isMmapperMode) {
+            setConnectionUrl('ws://localhost:8080');
+        } else if (connectionUrl === 'ws://localhost:8080') {
+            setConnectionUrl(DEFAULT_URL);
+        }
+    }, [isMmapperMode]);
+
     const triggerSpit = useCallback((el: HTMLElement) => {
         const btnId = el.dataset.id || '';
         // If this button type is already visible on screen/in stack, ignore new trigger
@@ -2077,12 +2088,12 @@ const MudClient = () => {
                         handleSoundUpload={handleSoundUpload}
                         soundTriggers={soundTriggers}
                         deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
-                        resetButtons={(mode) => {
-                            btn.resetToDefaults(mode);
-                        }}
+                        resetButtons={btn.resetToDefaults}
                         hasUserDefaults={btn.hasUserDefaults}
                         status={status}
                         connect={connect}
+                        isMmapperMode={isMmapperMode}
+                        setIsMmapperMode={setIsMmapperMode}
                     />
                 )
             }

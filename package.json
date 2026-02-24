@@ -6,14 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "mmapper": "node mmapper-bridge.js"
   },
   "dependencies": {
     "@google/genai": "^1.41.0",
     "ansi-to-html": "^0.7.2",
     "lucide-react": "^0.564.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
