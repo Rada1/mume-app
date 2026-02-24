@@ -9,6 +9,7 @@ interface SetManagerModalProps {
     onEditButton: (id: string) => void;
     onDeleteButton: (id: string) => void;
     onCreateButton: (defaults?: Partial<CustomButton>) => void;
+    onDeleteSet: (setName: string) => void;
     onSaveAsDefault?: () => void;
     onSaveAsCoreDefault?: () => void;
     combatSet?: string;
@@ -24,6 +25,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     onEditButton,
     onDeleteButton,
     onCreateButton,
+    onDeleteSet,
     onSaveAsDefault,
     onSaveAsCoreDefault,
     combatSet,
@@ -89,9 +91,25 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                                 const newSet = prompt('Enter new set name:');
                                 if (newSet) setSelectedSet(newSet);
                             }}
+                            title="Create New Set"
                         >
                             <Plus size={18} />
                         </button>
+                        {selectedSet !== 'main' && (
+                            <button
+                                className="btn-secondary"
+                                style={{ width: 'auto', padding: '0 15px', borderColor: '#ef4444', color: '#ef4444', margin: 0 }}
+                                onClick={() => {
+                                    if (confirm(`Are you SURE you want to delete the "${selectedSet}" set and ALL its buttons?`)) {
+                                        onDeleteSet(selectedSet);
+                                        setSelectedSet('main');
+                                    }
+                                }}
+                                title="Delete Current Set"
+                            >
+                                <Trash2 size={18} />
+                            </button>
+                        )}
                     </div>
                 </div>
 

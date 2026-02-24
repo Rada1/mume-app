@@ -123,6 +123,42 @@ export const useButtons = () => {
         setEditingButtonId(null);
     };
 
+    const deleteSet = (setName: string) => {
+        if (setName === 'main') return; // Cannot delete main set
+
+        setButtons(prev => {
+            // Remove buttons in this set
+            let next = prev.filter(b => b.setId !== setName);
+
+            // Cleanup references in other buttons (nav commands or targetSets)
+            next = next.map(b => {
+                let updated = false;
+                let bClone = { ...b };
+
+                if (b.actionType === 'nav' && b.command === setName) {
+                    bClone.command = 'main';
+                    bClone.label = 'MAIN';
+                    updated = true;
+                }
+
+                if (b.trigger?.type === 'switch_set' && b.trigger.targetSet === setName) {
+                    bClone.trigger = { ...b.trigger, targetSet: 'main' };
+                    updated = true;
+                }
+
+                return updated ? bClone : b;
+            });
+
+            return next;
+        });
+
+        if (activeSet === setName) setActiveSet('main');
+        if (combatSet === setName) setCombatSet(undefined);
+        if (defaultSet === setName) setDefaultSet('main');
+
+        addMessageRef.current?.('system', `Deleted button set: ${setName}`);
+    };
+
     const saveAsDefault = () => {
         const toSaveButtons = buttons.map(b => ({ ...b, isVisible: undefined }));
         localStorage.setItem('mud-buttons-user-default', JSON.stringify(toSaveButtons));
@@ -216,6 +252,7 @@ export const useButtons = () => {
         availableSets,
         createButton,
         deleteButton,
+        deleteSet,
         saveAsDefault,
         saveAsCoreDefault,
         resetToDefaults,

@@ -2112,6 +2112,7 @@ const MudClient = () => {
                         onClose={() => setIsSetManagerOpen(false)}
                         onEditButton={(id) => { setIsSetManagerOpen(false); btn.setEditingButtonId(id); }}
                         onDeleteButton={btn.deleteButton}
+                        onDeleteSet={btn.deleteSet}
                         onCreateButton={btn.createButton}
                         onSaveAsDefault={btn.saveAsDefault}
                         onSaveAsCoreDefault={btn.saveAsCoreDefault}
