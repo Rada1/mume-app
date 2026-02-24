@@ -1943,7 +1943,7 @@ const MudClient = () => {
                             if (btn.isEditMode) handleDragStart(e, 'mapper', 'cluster');
                         }}
                     >
-                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} />
+                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} />
                         {btn.isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
                     </div>
                 )}
@@ -2007,7 +2007,7 @@ const MudClient = () => {
 
                 {isMobile && (
                     <div className="mobile-mini-map">
-                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} />
+                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} />
                     </div>
                 )}
             </div>

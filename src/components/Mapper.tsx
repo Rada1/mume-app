@@ -51,9 +51,10 @@ export interface MapperRef {
 export interface MapperProps {
     isDesignMode?: boolean;
     characterName?: string | null;
+    isMmapperMode?: boolean;
 }
 
-export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, characterName }, ref) => {
+export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, characterName, isMmapperMode }, ref) => {
     // --- STATE ---
     const [mode, setMode] = useState<'edit' | 'play'>(isDesignMode ? 'edit' : 'play');
     const longPressTimerRef = useRef<any>(null);
@@ -244,6 +245,12 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
     useEffect(() => {
         localStorage.setItem('mume_mapper_minimized', String(isMinimized));
     }, [isMinimized]);
+
+    useEffect(() => {
+        if (isMmapperMode) {
+            setIsMinimized(true);
+        }
+    }, [isMmapperMode]);
 
     const exportMap = () => {
         const data = JSON.stringify(rooms, null, 2);
@@ -821,7 +828,7 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
             window.removeEventListener('pointercancel', onUp);
             cvs.removeEventListener('wheel', onWheel);
         };
-    }, [mode, rooms, markers, selectedRoomIds, infoRoomId, currentRoomId, isDesignMode, marqueeStart, marqueeEnd, selectedMarkerId]);
+    }, [mode, rooms, markers, selectedRoomIds, infoRoomId, currentRoomId, isDesignMode, marqueeStart, marqueeEnd, selectedMarkerId, isMinimized]);
 
     const sortedRooms = useMemo(() => {
         try {
@@ -1484,7 +1491,7 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
         const initW = Math.round(parent.clientWidth * dpr), initH = Math.round(parent.clientHeight * dpr);
         if (initW > 0 && initH > 0) { cvs.width = initW; cvs.height = initH; }
         return () => resizeObserver.disconnect();
-    }, [autoCenter, currentRoomId, rooms, centerCameraOn]);
+    }, [autoCenter, currentRoomId, rooms, centerCameraOn, isMinimized]);
 
     if (isMinimized) {
         return (
