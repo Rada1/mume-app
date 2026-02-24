@@ -47,7 +47,7 @@ export const useJoystick = () => {
             setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
         }
 
-        if (dist < 10) {
+        if (dist < 20) {
             executeCommand('look');
             triggerHaptic(10);
         } else {

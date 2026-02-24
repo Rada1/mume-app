@@ -84,6 +84,10 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
         return saved !== 'false'; // Default to true
     });
     const [isMinimized, setIsMinimized] = useState(() => localStorage.getItem('mume_mapper_minimized') === 'true');
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const saved = localStorage.getItem('mume_mapper_dark_mode');
+        return saved !== 'false'; // Default to true
+    });
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [contextMenu, setContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
@@ -245,6 +249,10 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
     useEffect(() => {
         localStorage.setItem('mume_mapper_minimized', String(isMinimized));
     }, [isMinimized]);
+
+    useEffect(() => {
+        localStorage.setItem('mume_mapper_dark_mode', String(isDarkMode));
+    }, [isDarkMode]);
 
     useEffect(() => {
         if (isMmapperMode) {
@@ -1434,11 +1442,11 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
             const centerY = height / 2;
             const radius = Math.sqrt(centerX * centerX + centerY * centerY);
             const vignette = ctx.createRadialGradient(centerX, centerY, radius * 0.1, centerX, centerY, radius * 1.1);
-            vignette.addColorStop(0, 'rgba(0,0,0,0)');
-            vignette.addColorStop(0.4, 'rgba(0,0,0,0.1)');
-            vignette.addColorStop(0.7, 'rgba(0,0,0,0.4)');
-            vignette.addColorStop(0.9, 'rgba(0,0,0,0.7)');
-            vignette.addColorStop(1, 'rgba(0,0,0,0.9)');
+            vignette.addColorStop(0, isDarkMode ? 'rgba(255,255,255,0)' : 'rgba(0,0,0,0)');
+            vignette.addColorStop(0.4, isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)');
+            vignette.addColorStop(0.7, isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)');
+            vignette.addColorStop(0.9, isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)');
+            vignette.addColorStop(1, isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)');
             ctx.fillStyle = vignette;
             ctx.fillRect(0, 0, width, height);
             ctx.restore();
@@ -1588,6 +1596,16 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
                                     style={{ cursor: 'pointer', accentColor: '#a6e3a1', width: '16px', height: '16px' }}
                                 />
                                 <span style={{ fontSize: '13px', color: allowPersistence ? '#a6e3a1' : '#f38ba8', fontWeight: 'bold' }}>Session Saving</span>
+                            </label>
+
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', cursor: 'pointer', userSelect: 'none', borderRadius: '4px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                <input
+                                    type="checkbox"
+                                    checked={isDarkMode}
+                                    onChange={(e) => setIsDarkMode(e.target.checked)}
+                                    style={{ cursor: 'pointer', accentColor: '#cba6f7', width: '16px', height: '16px' }}
+                                />
+                                <span style={{ fontSize: '13px', color: isDarkMode ? '#cba6f7' : '#fab387', fontWeight: 'bold' }}>Dark Mode (Inverted)</span>
                             </label>
 
                             <div style={{ height: '1px', backgroundColor: '#313244', margin: '4px 8px' }} />
@@ -1845,7 +1863,14 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
                 <canvas
                     ref={canvasRef}
                     className="block touch-none"
-                    style={{ width: '100%', height: '100%', cursor: isDragging ? 'grabbing' : 'grab', touchAction: 'none' }}
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        cursor: isDragging ? 'grabbing' : 'grab',
+                        touchAction: 'none',
+                        filter: isDarkMode ? 'invert(1) hue-rotate(180deg)' : 'none',
+                        backgroundColor: '#ffffff'
+                    }}
                     onContextMenu={(e) => {
                         if (mode !== 'edit') return;
                         e.preventDefault();

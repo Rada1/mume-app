@@ -132,6 +132,7 @@ const MudClient = () => {
     const [isInventoryOpen, setIsInventoryOpen] = useState(false);
     const [isCharacterOpen, setIsCharacterOpen] = useState(false);
     const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
+    const [isMapExpanded, setIsMapExpanded] = useState(false);
     const [inventoryHtml, setInventoryHtml] = useState('');
     const [statsHtml, setStatsHtml] = useState('');
     const [eqHtml, setEqHtml] = useState('');
@@ -999,17 +1000,17 @@ const MudClient = () => {
         if (!isMobile) return;
         triggerHaptic(20);
         if (dir === 'up') {
-            // Swiping up no longer opens drawers
+            setIsMapExpanded(true);
             executeCommand('inventory');
         } else if (dir === 'down') {
             // Closing all drawers on swipe down
-            if (isInventoryOpen || isRightDrawerOpen || isCharacterOpen) {
+            if (isInventoryOpen || isRightDrawerOpen || isCharacterOpen || isMapExpanded) {
                 triggerHaptic(15);
                 setIsInventoryOpen(false);
                 setIsRightDrawerOpen(false);
                 setIsCharacterOpen(false);
-            }
-            else executeCommand('s');
+                setIsMapExpanded(false);
+            } else executeCommand('s');
         } else if (dir === 'right') {
             // Swipe right (left to right) opens character
             setStatsHtml(''); setEqHtml('');
@@ -2017,7 +2018,13 @@ const MudClient = () => {
 
             </div> {/* Closes app-content-shaker */}
 
-            <div className={`mobile-bottom-gutter ${isKeyboardOpen ? 'hidden' : ''}`}>
+            <div
+                className={`mobile-bottom-gutter ${isKeyboardOpen ? 'hidden' : ''}`}
+                style={{
+                    height: isMapExpanded ? '65vh' : undefined,
+                    transition: 'height 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+            >
                 <div className="mobile-controls-row">
                     <div
                         className="joystick-cluster"
