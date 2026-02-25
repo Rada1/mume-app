@@ -6,7 +6,7 @@ interface SetManagerModalProps {
     buttons: CustomButton[];
     availableSets: string[];
     onClose: () => void;
-    onEditButton: (id: string) => void;
+    onEditButton: (id: string, currentSet: string) => void;
     onDeleteButton: (id: string) => void;
     onCreateButton: (defaults?: Partial<CustomButton>) => void;
     onDeleteSet: (setName: string) => void;
@@ -16,6 +16,12 @@ interface SetManagerModalProps {
     defaultSet?: string;
     onSetCombatSet?: (set: string) => void;
     onSetDefaultSet?: (set: string) => void;
+    lastSelectedSet?: string | null;
+    onSelectedSetChange?: (set: string) => void;
+    isGridEnabled: boolean;
+    onToggleGrid: (enabled: boolean) => void;
+    gridSize: number;
+    onGridSizeChange: (size: number) => void;
 }
 
 const SetManagerModal: React.FC<SetManagerModalProps> = ({
@@ -31,9 +37,20 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     combatSet,
     defaultSet,
     onSetCombatSet,
-    onSetDefaultSet
+    onSetDefaultSet,
+    lastSelectedSet,
+    onSelectedSetChange,
+    isGridEnabled,
+    onToggleGrid,
+    gridSize,
+    onGridSizeChange
 }) => {
-    const [selectedSet, setSelectedSet] = useState(availableSets[0] || 'main');
+    const [selectedSet, setSelectedSet] = useState(lastSelectedSet || availableSets[0] || 'main');
+
+    const handleSetChange = (set: string) => {
+        setSelectedSet(set);
+        onSelectedSetChange?.(set);
+    };
 
     const filteredButtons = buttons.filter(b => b.setId === selectedSet);
 
@@ -45,6 +62,40 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                     <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
                         <X size={20} />
                     </button>
+                </div>
+
+                <div className="setting-group" style={{
+                    padding: '12px',
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    marginBottom: '15px'
+                }}>
+                    <div className="modal-title" style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>GRID SETTINGS</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                            <input
+                                type="checkbox"
+                                checked={isGridEnabled}
+                                onChange={e => onToggleGrid(e.target.checked)}
+                            />
+                            Snap to Grid
+                        </label>
+
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>Size:</span>
+                            <input
+                                type="range"
+                                min="2"
+                                max="20"
+                                step="1"
+                                value={gridSize}
+                                onChange={e => onGridSizeChange(parseInt(e.target.value))}
+                                style={{ flex: 1 }}
+                            />
+                            <span style={{ fontSize: '0.8rem', minWidth: '30px' }}>{gridSize}%</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="setting-group" style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
@@ -77,7 +128,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                         <select
                             className="setting-input"
                             value={selectedSet}
-                            onChange={e => setSelectedSet(e.target.value)}
+                            onChange={e => handleSetChange(e.target.value)}
                             style={{ flex: 1 }}
                         >
                             {availableSets.map(set => (
@@ -89,7 +140,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                             style={{ width: 'auto', padding: '0 15px' }}
                             onClick={() => {
                                 const newSet = prompt('Enter new set name:');
-                                if (newSet) setSelectedSet(newSet);
+                                if (newSet) handleSetChange(newSet);
                             }}
                             title="Create New Set"
                         >
@@ -145,7 +196,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                                 </div>
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <button
-                                        onClick={() => onEditButton(button.id)}
+                                        onClick={() => onEditButton(button.id, selectedSet)}
                                         style={{ background: '#333', border: 'none', color: '#fff', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
                                         title="Edit Layout/Details"
                                     >

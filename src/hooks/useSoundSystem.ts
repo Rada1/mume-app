@@ -23,7 +23,8 @@ export const useSoundSystem = () => {
 
     const triggerHaptic = useCallback((duration: number = 20) => {
         if (navigator && typeof navigator.vibrate === 'function') {
-            navigator.vibrate(duration);
+            // Reduce overall strength by scaling duration (common for simple vibrate hardware)
+            navigator.vibrate(duration * 0.6);
         }
     }, []);
 

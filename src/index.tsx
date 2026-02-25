@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog, Plus } from 'lucide-react';
 
 import './index.css';
 import {
     MessageType, LightingType, WeatherType, Direction, DeathStage,
-    Message, GameStats, CustomButton, SoundTrigger, PopoverState, SavedSettings
+    Message, GameStats, CustomButton, SoundTrigger, PopoverState, SavedSettings, TeleportTarget
 } from './types';
 import {
     DEFAULT_BG, DEATH_IMG, DEFAULT_URL, FX_THRESHOLD
@@ -104,10 +104,42 @@ const MudClient = () => {
     const [mood, setMood] = useState('normal');
     const [spellSpeed, setSpellSpeed] = useState('normal');
     const [alertness, setAlertness] = useState('normal');
+    const [loginName, setLoginName] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
+    const [playerPosition, setPlayerPosition] = useState('standing');
+    const [teleportTargets, setTeleportTargets] = useState<TeleportTarget[]>(() => {
+        const saved = localStorage.getItem('mud-teleport-targets');
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) { console.error("Failed to load teleport targets", e); }
+        }
+        return [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('mud-teleport-targets', JSON.stringify(teleportTargets));
+    }, [teleportTargets]);
+
+    // Periodically clean up expired targets
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = Date.now();
+            setTeleportTargets(prev => {
+                const filtered = prev.filter(t => t.expiresAt > now);
+                if (filtered.length !== prev.length) return filtered;
+                return prev;
+            });
+        }, 60000); // Check every minute
+        return () => clearInterval(interval);
+    }, []);
+
 
 
     // UI Layout State
     const [isSetManagerOpen, setIsSetManagerOpen] = useState(false);
+    const [returnToManager, setReturnToManager] = useState(false);
+    const [managerSelectedSet, setManagerSelectedSet] = useState<string | null>(null);
 
     const [rumble, setRumble] = useState(false);
     const [hitFlash, setHitFlash] = useState(false);
@@ -117,14 +149,19 @@ const MudClient = () => {
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
     const [deathStage, setDeathStage] = useState<DeathStage>('none');
     const [stats, setStats] = useState<GameStats>({
-        hp: 100, maxHp: 100,
-        mana: 100, maxMana: 100,
-        move: 100, maxMove: 100
+        hp: 0, maxHp: 1,
+        mana: 0, maxMana: 1,
+        move: 0, maxMove: 1,
+        wimpy: 0
     });
     const [isLoading, setIsLoading] = useState(false);
     const [soundTriggers, setSoundTriggers] = useState<SoundTrigger[]>([]);
     const [newSoundPattern, setNewSoundPattern] = useState('');
     const [newSoundRegex, setNewSoundRegex] = useState(false);
+    const [isSoundEnabled, setIsSoundEnabled] = useState(() => localStorage.getItem('mud-sound-enabled') === 'true');
+    useEffect(() => { localStorage.setItem('mud-sound-enabled', isSoundEnabled.toString()); }, [isSoundEnabled]);
+    const isSoundEnabledRef = useRef(isSoundEnabled);
+    useEffect(() => { isSoundEnabledRef.current = isSoundEnabled; }, [isSoundEnabled]);
     const [joystickGlow, setJoystickGlow] = useState(false);
     const [btnGlow, setBtnGlow] = useState<{ up: boolean, down: boolean }>({ up: false, down: false });
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
@@ -137,10 +174,49 @@ const MudClient = () => {
     const [statsHtml, setStatsHtml] = useState('');
     const [eqHtml, setEqHtml] = useState('');
 
+    const [heldButton, setHeldButton] = useState<{ id: string, baseCommand: string, modifiers: string[] } | null>(null);
+    const [commandPreview, setCommandPreview] = useState<string | null>(null);
     const [spatButtons, setSpatButtons] = useState<{ id: string, btnId: string, label: string, command: string, action: string, startX: number, startY: number, targetX: number, targetY: number, color: string, timestamp: number }[]>([]);
 
     const spatButtonsRef = useRef(spatButtons);
     useEffect(() => { spatButtonsRef.current = spatButtons; }, [spatButtons]);
+
+    const popoverRef = useRef<HTMLDivElement>(null);
+    useLayoutEffect(() => {
+        if (popoverState && popoverRef.current) {
+            const el = popoverRef.current;
+            const rect = el.getBoundingClientRect();
+            const winH = window.innerHeight;
+            const winW = window.innerWidth;
+
+            let top = popoverState.y;
+            let left = popoverState.x;
+
+            // If we have sourceHeight, it means we can try to flip direction
+            if (popoverState.sourceHeight && top > winH / 2) {
+                // If in bottom half, align bottom of menu with bottom of button
+                const potentialTop = top + popoverState.sourceHeight - rect.height;
+                if (potentialTop >= 10) {
+                    top = potentialTop;
+                }
+            }
+
+            // Boundary enforcement
+            if (top + rect.height > winH - 10) {
+                top = Math.max(10, winH - rect.height - 10);
+            }
+            if (top < 10) top = 10;
+
+            if (left + rect.width > winW - 10) {
+                left = Math.max(10, winW - rect.width - 10);
+            }
+            if (left < 10) left = 10;
+
+            el.style.top = `${top}px`;
+            el.style.left = `${left}px`;
+            el.style.opacity = '1';
+        }
+    }, [popoverState]);
 
     const [isMmapperMode, setIsMmapperMode] = useState(() => localStorage.getItem('mud-mmapper-mode') === 'true');
 
@@ -196,15 +272,17 @@ const MudClient = () => {
         triggerHaptic(10);
     }, []);
 
-    const isCapturingInventory = useRef(false);
-    const captureStage = useRef<'stat' | 'eq' | 'none'>('none');
+    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'none'>('none');
+    const isDrawerCapture = useRef(false);
     const isWaitingForStats = useRef(false);
     const isWaitingForEq = useRef(false);
     const isWaitingForInv = useRef(false);
+    const hasAttemptedLogin = useRef(false);
 
     const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
     const [characterName, setCharacterName] = useState<string | null>(null);
+    const [roomItems, setRoomItems] = useState<string[]>([]);
 
 
 
@@ -249,8 +327,8 @@ const MudClient = () => {
 
         // Only guard against jumping if force is false
         if (!force) {
-            // Much tighter threshold on mobile to prevent "magnetic" snaps while scrolling
-            const threshold = isMobile ? 30 : Math.min(100, container.clientHeight * 0.1);
+            // Tighter threshold on mobile to prevent "magnetic" snaps while scrolling
+            const threshold = isMobile ? 25 : Math.min(100, container.clientHeight * 0.1);
             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
             if (!isNearBottom) return;
         }
@@ -288,7 +366,7 @@ const MudClient = () => {
             };
             scrollAnimationRef.current = requestAnimationFrame(animateScroll);
         }
-    }, [focusedIndex]);
+    }, [isMobile]);
 
     // Dynamic viewport height for mobile browsers
     const updateHeight = useCallback(() => {
@@ -311,6 +389,12 @@ const MudClient = () => {
         const isKeyboardDown = currentHeight > (baseHeightRef.current * 0.85);
         const isCurrentlyOpen = isMobile && isFocusableActive && !isKeyboardDown;
 
+        const scrollContainer = scrollContainerRef.current;
+        let distFromBottom = 0;
+        if (scrollContainer) {
+            distFromBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight;
+        }
+
         if (container) {
             if (isCurrentlyOpen) {
                 container.style.height = `${currentHeight}px`;
@@ -322,6 +406,17 @@ const MudClient = () => {
             }
         }
 
+        if (scrollContainer && Math.abs(currentHeight - lastViewportHeightRef.current) > 2) {
+            // Force synchronous layout recalculation so scroll height updates instantly
+            void scrollContainer.clientHeight;
+
+            if (isLockedToBottomRef.current) {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            } else {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight - scrollContainer.clientHeight - distFromBottom;
+            }
+        }
+
         // Keyboard transitions usually involve > 150px height change on mobile
         const isKeyboardOpening = isMobile && currentHeight < lastViewportHeightRef.current - 150 && isFocusableActive;
         const isKeyboardClosing = isMobile && currentHeight > lastViewportHeightRef.current + 150;
@@ -330,24 +425,37 @@ const MudClient = () => {
             setIsKeyboardOpen(isCurrentlyOpen);
         }
 
+        // Dynamic log font size to precisely fit 80 characters without wrapping
+        if (isMobile) {
+            const logContainer = document.querySelector('.message-log-container');
+            if (logContainer) {
+                const width = logContainer.clientWidth;
+                // Ratio for Space Mono is approx 0.6. 
+                // To fit 80 chars: 80 * fontSize * 0.6 = width
+                // fontSize = width / 48
+                // We use 48.5 for a tighter fit while still allowing tiny padding
+                const fontSize = width / 48.5;
+                document.documentElement.style.setProperty('--dynamic-log-size', `${Math.max(6, fontSize)}px`);
+            }
+        } else {
+            document.documentElement.style.setProperty('--dynamic-log-size', '16px');
+        }
+
         lastViewportHeightRef.current = currentHeight;
 
-        // Snap to bottom on keyboard transitions
-        if ((isKeyboardOpening || isKeyboardClosing) && typeof scrollToBottom === 'function') {
-            scrollToBottom(true, false);
-            // After transition, authoritative snap
-            setTimeout(() => scrollToBottom(true, true), 400);
-        }
+        // Synchronous distance-from-bottom restoration handles keyboard transitions now.
     }, [scrollToBottom, isMobile, isKeyboardOpen]);
 
     // Force snap and scroll strictly when keyboard state or mobile status changes
     useEffect(() => {
         if (isMobile) {
             // Force snap on keyboard state changes - this is a "hard" snap
-            scrollToBottom(true, true);
+            if (isLockedToBottomRef.current) {
+                scrollToBottom(true, true);
+            }
 
             const timer = setTimeout(() => {
-                scrollToBottom(true, true);
+                if (isLockedToBottomRef.current) scrollToBottom(true, true);
                 updateHeight();
             }, 400);
             return () => clearTimeout(timer);
@@ -376,7 +484,6 @@ const MudClient = () => {
 
     useEffect(() => {
         if (activePrompt) {
-            isCapturingInventory.current = false;
             captureStage.current = 'none';
             isWaitingForStats.current = false;
             isWaitingForEq.current = false;
@@ -386,14 +493,18 @@ const MudClient = () => {
 
     useEffect(() => {
         if (!isInventoryOpen) {
-            isCapturingInventory.current = false;
+            if (captureStage.current === 'inv') {
+                captureStage.current = 'none';
+            }
             isWaitingForInv.current = false;
         }
     }, [isInventoryOpen]);
 
     useEffect(() => {
         if (!isCharacterOpen) {
-            captureStage.current = 'none';
+            if (captureStage.current === 'stat' || captureStage.current === 'eq') {
+                captureStage.current = 'none';
+            }
             isWaitingForStats.current = false;
             isWaitingForEq.current = false;
         }
@@ -425,15 +536,34 @@ const MudClient = () => {
     // --- Custom Hooks ---
 
     const btn = useButtons();
+
+    // Toggle onKeyboard buttons when keyboard state changes
+    useEffect(() => {
+        let changed = false;
+        const next = btn.buttonsRef.current.map(b => {
+            if (b.trigger?.onKeyboard) {
+                const shouldBeVisible = isKeyboardOpen;
+                if (b.isVisible !== shouldBeVisible) { changed = true; return { ...b, isVisible: shouldBeVisible }; }
+            }
+            return b;
+        });
+        if (changed) btn.setButtons(next);
+    }, [isKeyboardOpen, btn]);
+
+
+
+    // Auto-return to manager logic
+    useEffect(() => {
+        if (btn.editingButtonId === null && returnToManager) {
+            setIsSetManagerOpen(true);
+            setReturnToManager(false);
+        }
+    }, [btn.editingButtonId, returnToManager]);
     const { audioCtxRef, initAudio, playSound, triggerHaptic } = useSoundSystem();
     const joystick = useJoystick();
 
-    // Auto-exit design mode when keyboard opens
-    useEffect(() => {
-        if (isMobile && isKeyboardOpen && btn.isEditMode) {
-            btn.setIsEditMode(false);
-        }
-    }, [isKeyboardOpen, isMobile, btn]);
+
+
 
 
 
@@ -566,9 +696,23 @@ const MudClient = () => {
                 }
             }
 
+            let html = ansiConvert.toHtml(text);
+            if (type === 'game' && text.toLowerCase().includes("key: '")) {
+                const keyMatch = textOnly.match(/key:\s*'([^']*)'/i);
+                if (keyMatch) {
+                    const roomId = keyMatch[1];
+                    // Handle potential XML escaping from ansiConvert
+                    const escapedKey = roomId.replace(/'/g, '(&apos;|&#39;|\')');
+                    const pattern = new RegExp(`key:\\s*(&apos;|&#39;|')(${escapedKey})(&apos;|&#39;|')`, 'i');
+                    html = html.replace(pattern, (match, p1, p2, p3) => {
+                        return `<span class="inline-btn teleport-key" data-teleport-id="${roomId}" data-action="save-teleport" style="background-color: rgba(255, 255, 100, 0.2); border-bottom: 1px dashed gold; padding: 0 4px; border-radius: 2px; cursor: pointer; display: inline-block;">key: '${roomId}'</span>`;
+                    });
+                }
+            }
+
             const msg: Message = {
                 id: Math.random().toString(36).substring(7),
-                html: ansiConvert.toHtml(text),
+                html,
                 textRaw: text,
                 type,
                 timestamp: Date.now(),
@@ -590,7 +734,7 @@ const MudClient = () => {
         const cleanLine = line.trim();
         if (cleanLine.includes('!')) { setLighting('artificial'); }
         else if (cleanLine.includes(')')) { setLighting('moon'); }
-        else if (/\bo\b/.test(cleanLine)) { setLighting('dark'); }
+        else if (/\boo\b/.test(cleanLine)) { setLighting('dark'); }
         else if (cleanLine.includes('*')) { setLighting('sun'); }
 
         // Clouds: only when ~ is present AND not in artificial light
@@ -614,17 +758,17 @@ const MudClient = () => {
         const lowerCapture = textOnlyForCapture.toLowerCase();
 
         // 1. Detect start of capture based on specific MUME response markers
-        if (isWaitingForStats.current && (lowerCapture.includes('ob:') || lowerCapture.includes('armor:') || lowerCapture.includes('mood:'))) {
+        if (isWaitingForStats.current && (lowerCapture.includes('ob:') || lowerCapture.includes('armor:') || lowerCapture.includes('mood:') || lowerCapture.includes('str:') || lowerCapture.includes('exp:') || lowerCapture.includes('level:'))) {
             isWaitingForStats.current = false;
             captureStage.current = 'stat';
         }
-        if (isWaitingForEq.current && lowerCapture.includes('you are using:')) {
+        if ((isWaitingForEq.current || captureStage.current !== 'none') && lowerCapture.includes('you are using:')) {
             isWaitingForEq.current = false;
             captureStage.current = 'eq';
         }
-        if (isWaitingForInv.current && lowerCapture.includes('you are carrying:')) {
+        if ((isWaitingForInv.current || captureStage.current !== 'none') && lowerCapture.includes('you are carrying:')) {
             isWaitingForInv.current = false;
-            isCapturingInventory.current = true;
+            captureStage.current = 'inv';
         }
 
         // 2. Prompt detection (terminates capture)
@@ -633,10 +777,9 @@ const MudClient = () => {
         const endsWithPromptIndicator = /[>:]\s*$/.test(textOnlyForCapture);
         const isLikelyPrompt = (startsWithPrompt && endsWithPromptIndicator && textOnlyForCapture.length < 60);
 
-        const shouldStopCapture = isPurePrompt || (isLikelyPrompt && !lowerCapture.includes('ob:') && !lowerCapture.includes('armor:') && !lowerCapture.includes('you are using:') && !lowerCapture.includes('needed:') && !lowerCapture.includes('carrying:'));
+        const shouldStopCapture = isPurePrompt || (isLikelyPrompt && !lowerCapture.includes('ob:') && !lowerCapture.includes('armor:') && !lowerCapture.includes('str:') && !lowerCapture.includes('exp:') && !lowerCapture.includes('level:') && !lowerCapture.includes('you are using:') && !lowerCapture.includes('needed:') && !lowerCapture.includes('carrying:'));
 
         if (shouldStopCapture) {
-            isCapturingInventory.current = false;
             captureStage.current = 'none';
             isWaitingForStats.current = false;
             isWaitingForEq.current = false;
@@ -645,13 +788,39 @@ const MudClient = () => {
 
         // 3. Perform capture (skip if it's the prompt that just ended it)
         if (!shouldStopCapture) {
-            if (isCapturingInventory.current) {
-                setInventoryHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
-            }
-            if (captureStage.current === 'stat') {
+            const wrapDrawerItem = (line: string, setName: string) => {
+                // Remove prompt characters if they were prepended to a line
+                const textOnly = line.replace(/\x1b\[[0-9;]*m/g, '').replace(/^.*?([a-zA-Z<>\[(])/, '$1').trimRight();
+                const trimmed = textOnly.trim();
+                const lowerTrimmed = trimmed.toLowerCase();
+
+                const html = ansiConvert.toHtml(line);
+
+                // Header lines (not clickable items)
+                if (!trimmed || lowerTrimmed.includes('you are carrying') || lowerTrimmed.includes('you are using') || lowerTrimmed.includes('nothing.')) {
+                    return `<div style="padding: 4px 0; opacity: 0.7; white-space: pre-wrap;">${ansiConvert.toHtml(line.replace(/^.*?([a-zA-Z<>\[(])/, '$1'))}</div>`;
+                }
+
+                let itemMatch = textOnly;
+                const eqMatch = textOnly.match(/^(<[^>]+>\s+|\[[^\]]+\]:?\s+)(.*)$/);
+                if (eqMatch) {
+                    itemMatch = eqMatch[2];
+                } else {
+                    itemMatch = textOnly.trimStart();
+                }
+
+                // Strip trailing conditions like (satisfactory) to get cleaner noun
+                let contextName = extractNoun(itemMatch);
+
+                return `<div class="inline-btn auto-item" data-cmd="${setName}" data-context="${contextName.replace(/"/g, '&quot;')}" data-action="menu" style="background-color: rgba(100, 255, 100, 0.08); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; margin-bottom: 4px; cursor: pointer;">${html}</div>`;
+            };
+
+            if (captureStage.current === 'inv') {
+                setInventoryHtml(prev => prev + wrapDrawerItem(cleanLine, 'inventorylist'));
+            } else if (captureStage.current === 'stat') {
                 setStatsHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
             } else if (captureStage.current === 'eq') {
-                setEqHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
+                setEqHtml(prev => prev + wrapDrawerItem(cleanLine, 'equipmentlist'));
             }
         }
 
@@ -675,7 +844,7 @@ const MudClient = () => {
                     const newMove = parseInt(match![5]);
                     const newMaxMove = match![6] ? parseInt(match![6]) : prev.maxMove;
                     if (newHp !== prev.hp || newMove !== prev.move || newMana !== prev.mana) {
-                        return { hp: newHp, maxHp: newMaxHp, mana: newMana, maxMana: newMaxMana, move: newMove, maxMove: newMaxMove };
+                        return { ...prev, hp: newHp, maxHp: newMaxHp, mana: newMana, maxMana: newMaxMana, move: newMove, maxMove: newMaxMove };
                     }
                     return prev;
                 });
@@ -772,11 +941,23 @@ const MudClient = () => {
         if (lower.includes("hits you") || lower.includes("crushes you") || lower.includes("pierces you")) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }
         if (lower.includes("you have been killed") || lower.includes("you are dead")) { setDeathStage('fade_to_black'); setTimeout(() => setDeathStage('flash'), 2000); }
 
+        // Teleport Key Detection
+        if (lower.includes("key: '")) {
+            const keyMatch = cleanLine.match(/key:\s*'([^']*)'/i);
+            if (keyMatch) {
+                const roomId = keyMatch[1];
+                // Since addMessage uses ansiConvert.toHtml, we'll mark this line for post-processing or 
+                // handle it in addMessage. Actually, let's wrap it in processLine's cleanLine 
+                // but it might get escaped. 
+                // Alternative: Add a special trigger check in addMessage.
+            }
+        }
+
         // Triggers
         soundTriggersRef.current.forEach(trig => {
             if (!trig.pattern || !trig.buffer) return;
             let match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.includes(trig.pattern);
-            if (match) playSound(trig.buffer);
+            if (match && isSoundEnabledRef.current) playSound(trig.buffer);
         });
 
         btn.buttonsRef.current.forEach(b => {
@@ -796,12 +977,21 @@ const MudClient = () => {
             }
         });
 
+        // Wimpy Detection
+        if (lower.includes("wimpy")) {
+            const wimpyMatch = textOnly.match(/wimpy\s+(?:is|set to)?\s*(\d+)/i);
+            if (wimpyMatch) {
+                const w = parseInt(wimpyMatch[1]);
+                setStats(prev => ({ ...prev, wimpy: w }));
+            }
+        }
+
         const mumePromptRegex = /^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*[>:])\s*(.*)$/;
         const pMatch = cleanLine.match(mumePromptRegex);
 
 
 
-        const isCapturing = (isCapturingInventory.current && isRightDrawerOpen) || (captureStage.current === 'eq' && isRightDrawerOpen) || (captureStage.current === 'stat' && isCharacterOpen);
+        const isCapturing = captureStage.current !== 'none' && isDrawerCapture.current;
 
         if (pMatch) {
             const promptPart = pMatch[1];
@@ -810,19 +1000,34 @@ const MudClient = () => {
         } else {
             if (!isCapturing) addMessage('game', cleanLine);
         }
-    }, [detectLighting, addMessage, btn, isInventoryOpen, isCharacterOpen]);
+    }, [detectLighting, addMessage, btn, isInventoryOpen, isCharacterOpen, playerPosition]);
 
     const telnet = useTelnet({
         connectionUrl, addMessage, setStatus, setStats, setWeather, setIsFoggy,
         setRumble, setHitFlash, setDeathStage, detectLighting, processLine,
         setPrompt: setActivePrompt, setInCombat,
-        onOpponentChange: (name) => {
-            // Auto-targeting removed for items/objects
-        },
         onCharNameChange: (name) => {
             setCharacterName(name);
-        }
+        },
+        onPositionChange: (pos) => setPlayerPosition(pos)
     });
+
+    useEffect(() => {
+        if (status === 'connected' && loginName && !hasAttemptedLogin.current) {
+            hasAttemptedLogin.current = true;
+            const timer = setTimeout(() => {
+                telnet.sendCommand(loginName);
+                if (loginPassword) {
+                    setTimeout(() => {
+                        telnet.sendCommand(loginPassword);
+                    }, 500);
+                }
+            }, 500);
+            return () => clearTimeout(timer);
+        } else if (status === 'disconnected') {
+            hasAttemptedLogin.current = false;
+        }
+    }, [status, loginName, loginPassword, telnet.sendCommand]);
 
     const callbacksRef = useRef<any>(null);
     useEffect(() => {
@@ -836,17 +1041,59 @@ const MudClient = () => {
             onCharVitals: (data: any) => { if (data.terrain) notifyMapper(ref => ref.current?.handleTerrain(data.terrain)); },
             onRoomPlayers: (data: any) => {
                 let players: string[] = [];
+                const parseOccupant = (p: any): string[] => {
+                    if (typeof p === 'string') return [p];
+                    const names = [];
+                    if (p.name) names.push(p.name);
+                    if (p.short) names.push(p.short);
+                    if (p.shortdesc) names.push(p.shortdesc);
+                    if (p.keyword) names.push(p.keyword);
+                    return names;
+                };
+
                 if (Array.isArray(data)) {
-                    players = data.map(p => typeof p === 'string' ? p : p.name).filter(Boolean);
+                    players = data.flatMap(parseOccupant).filter(Boolean);
                 } else if (data.players && Array.isArray(data.players)) {
-                    players = data.players.map((p: any) => typeof p === 'string' ? p : p.name).filter(Boolean);
+                    players = data.players.flatMap(parseOccupant).filter(Boolean);
+                } else if (data.chars && Array.isArray(data.chars)) {
+                    players = data.chars.flatMap(parseOccupant).filter(Boolean);
                 } else if (data.members && Array.isArray(data.members)) {
-                    players = data.members.map((p: any) => typeof p === 'string' ? p : p.name).filter(Boolean);
+                    players = data.members.flatMap(parseOccupant).filter(Boolean);
                 }
+                console.log("[Occupants List]", players);
+                if (players.length > 0) addMessage('system', `[GMCP] Room updated: ${players.length} occupants identified.`);
                 setRoomPlayers(players);
+            },
+            onRoomItems: (data: any) => {
+                let items: string[] = [];
+                const parseItem = (i: any): string[] => {
+                    if (typeof i === 'string') return [i];
+                    const names = [];
+                    if (i.name) names.push(i.name);
+                    if (i.short) names.push(i.short);
+                    if (i.shortdesc) names.push(i.shortdesc);
+                    return names;
+                };
+
+                if (Array.isArray(data)) {
+                    items = data.flatMap(parseItem).filter(Boolean);
+                } else if (data.items && Array.isArray(data.items)) {
+                    items = data.items.flatMap(parseItem).filter(Boolean);
+                }
+                console.log("[Items List]", items);
+                if (items.length > 0) addMessage('system', `[GMCP] Room items: ${items.length} objects identified.`);
+                setRoomItems(items);
+            },
+            onAddPlayer: (data: any) => {
+                const name = typeof data === 'string' ? data : data.name;
+                if (name) setRoomPlayers(prev => prev.includes(name) ? prev : [...prev, name]);
+            },
+            onRemovePlayer: (data: any) => {
+                const name = typeof data === 'string' ? data : data.name;
+                if (name) setRoomPlayers(prev => prev.filter(p => p !== name));
             }
         };
-    }, [setRoomPlayers]);
+    }, [setRoomPlayers, setRoomItems, addMessage, btn]);
 
     const connect = () => {
         initAudio();
@@ -854,11 +1101,14 @@ const MudClient = () => {
         telnet.connect({
             onRoomInfo: (data) => callbacksRef.current.onRoomInfo && callbacksRef.current.onRoomInfo(data),
             onCharVitals: (data) => callbacksRef.current.onCharVitals && callbacksRef.current.onCharVitals(data),
-            onRoomPlayers: (data) => callbacksRef.current.onRoomPlayers && callbacksRef.current.onRoomPlayers(data)
+            onRoomPlayers: (data) => callbacksRef.current.onRoomPlayers && callbacksRef.current.onRoomPlayers(data),
+            onAddPlayer: (data) => callbacksRef.current.onAddPlayer && callbacksRef.current.onAddPlayer(data),
+            onRemovePlayer: (data) => callbacksRef.current.onRemovePlayer && callbacksRef.current.onRemovePlayer(data),
+            onRoomItems: (data: any) => callbacksRef.current.onRoomItems && callbacksRef.current.onRoomItems(data),
         });
     };
 
-    const executeCommand = (cmd: string, isAutoNav = false) => {
+    const executeCommand = (cmd: string, isAutoNav = false, updateInput = true, fromDrawer = false) => {
         initAudio();
 
         // Local Target Setting
@@ -889,18 +1139,73 @@ const MudClient = () => {
         }
 
         const lowerCmd = cmd.toLowerCase().trim();
+
+        // Teleport Spell Interception
+        if (teleportTargets.length > 0) {
+            const teleportMatch = lowerCmd.match(/^(cast\s+['"]?(teleport|portal|scry)['"]?)$/i);
+            if (teleportMatch) {
+                const spell = teleportMatch[1];
+                setPopoverState({
+                    x: window.innerWidth / 2 - 100,
+                    y: window.innerHeight / 2 - 100,
+                    type: 'teleport-select',
+                    setId: 'teleport',
+                    spellCommand: spell
+                });
+                return;
+            }
+        }
+
+        // Teleport Manage/Select Command
+        if (lowerCmd.startsWith('#teleport') || lowerCmd.startsWith('#tp') || lowerCmd.startsWith('#targets')) {
+            if (teleportTargets.length > 0 && !lowerCmd.includes('manage') && !lowerCmd.includes('list')) {
+                setPopoverState({
+                    x: window.innerWidth / 2 - 100,
+                    y: window.innerHeight / 2 - 100,
+                    type: 'teleport-select',
+                    setId: 'teleport',
+                    spellCommand: "cast 'teleport'"
+                });
+            } else {
+                setPopoverState({
+                    x: window.innerWidth / 2 - 150,
+                    y: window.innerHeight / 2 - 150,
+                    type: 'teleport-manage',
+                    setId: 'teleport'
+                });
+            }
+            return;
+        }
+        if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'stat' || lowerCmd === 'eq' || lowerCmd === 'equipment') {
+            isDrawerCapture.current = fromDrawer;
+        }
+
         if (lowerCmd === 'inventory' || lowerCmd === 'inv') {
             isWaitingForInv.current = true;
-            isCapturingInventory.current = false;
+            captureStage.current = 'none'; // Ensure no other capture is active
             setInventoryHtml('');
         } else if (lowerCmd === 'stat') {
             isWaitingForStats.current = true;
-            captureStage.current = 'none';
+            captureStage.current = 'none'; // Ensure no other capture is active
             setStatsHtml('');
-        } else if (lowerCmd === 'eq') {
+        } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
             isWaitingForEq.current = true;
-            captureStage.current = 'none';
+            captureStage.current = 'none'; // Ensure no other capture is active
             setEqHtml('');
+        }
+
+        // Failsafe: Hard-stop any captures triggered here after 1000ms. 
+        // This ensures the drawer UI takes a "static snapshot" and doesn't get flooded 
+        // with newer, unrelated log messages if the server's prompt fails to trigger a clean stop.
+        if (['inventory', 'inv', 'stat', 'eq', 'equipment'].includes(lowerCmd)) {
+            setTimeout(() => {
+                if (captureStage.current !== 'none') {
+                    captureStage.current = 'none';
+                    isWaitingForStats.current = false;
+                    isWaitingForEq.current = false;
+                    isWaitingForInv.current = false;
+                }
+            }, 1000);
         }
         // If we send both at once, the first one starts the capture session
         if (lowerCmd.includes('stat') && lowerCmd.includes('eq')) {
@@ -928,15 +1233,22 @@ const MudClient = () => {
             mapperRef.current?.pushPendingMove(dir);
         }
 
-        if (status === 'connected') telnet.sendCommand(finalCmd);
+        if (status === 'connected') {
+            telnet.sendCommand(finalCmd);
+        }
         else addMessage('error', 'Not connected.');
     };
+
+    const handleWimpyChange = useCallback((val: number) => {
+        executeCommand(`change wimpy ${val}`);
+        setStats(prev => ({ ...prev, wimpy: val }));
+    }, [executeCommand]);
 
     const handleSend = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();
         const cmd = input.trim();
         setInput('');
-        executeCommand(cmd);
+        executeCommand(cmd, false, false);
         // User requesting snap-to-bottom on every command
         if (typeof scrollToBottom === 'function') {
             scrollToBottom(true, true);
@@ -951,6 +1263,14 @@ const MudClient = () => {
 
     const scrollTaskRef = useRef<number | null>(null);
     const handleLogScroll = useCallback(() => {
+        const container = scrollContainerRef.current;
+        if (container && !isAutoScrollingRef.current) {
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            const scrollBottom = scrollTop + clientHeight;
+            const isActuallyAtBottom = scrollHeight - scrollBottom < (isMobile ? 30 : 50);
+            isLockedToBottomRef.current = isActuallyAtBottom;
+        }
+
         // Only cancel the scroll animation if it wasn't triggered by the system itself
         if (scrollAnimationRef.current && !isAutoScrollingRef.current) {
             cancelAnimationFrame(scrollAnimationRef.current);
@@ -961,17 +1281,9 @@ const MudClient = () => {
 
         scrollTaskRef.current = requestAnimationFrame(() => {
             scrollTaskRef.current = null;
-            const container = scrollContainerRef.current;
             if (!container) return;
             const { scrollTop, scrollHeight, clientHeight } = container;
-            const scrollBottom = scrollTop + clientHeight;
-
-            const isActuallyAtBottom = scrollHeight - scrollBottom < (isMobile ? 15 : 40);
-
-            // If the user isn't currently being auto-scrolled, update the lock state
-            if (!isAutoScrollingRef.current) {
-                isLockedToBottomRef.current = isActuallyAtBottom;
-            }
+            const isActuallyAtBottom = scrollHeight - (scrollTop + clientHeight) < (isMobile ? 30 : 50);
 
             // Threshold for clearing focus
             if (isActuallyAtBottom) {
@@ -980,6 +1292,7 @@ const MudClient = () => {
             }
 
             const children = container.children;
+            const scrollBottom = scrollTop + clientHeight;
             let newFocusIndex = 0;
             // Scan backwards from bottom to find first visible element
             for (let i = Math.min(children.length - 2, messages.length - 1); i >= 0; i--) {
@@ -1001,7 +1314,6 @@ const MudClient = () => {
         triggerHaptic(20);
         if (dir === 'up') {
             setIsMapExpanded(true);
-            executeCommand('inventory');
         } else if (dir === 'down') {
             // Closing all drawers on swipe down
             if (isInventoryOpen || isRightDrawerOpen || isCharacterOpen || isMapExpanded) {
@@ -1013,19 +1325,18 @@ const MudClient = () => {
             } else executeCommand('s');
         } else if (dir === 'right') {
             // Swipe right (left to right) opens character
-            setStatsHtml(''); setEqHtml('');
-            executeCommand('stat');
-            setTimeout(() => executeCommand('eq'), 300);
+            setStatsHtml('');
+            executeCommand('stat', false, true, true);
             setIsCharacterOpen(true);
         }
         else if (dir === 'left') {
             // Swipe left (right to left) opens inventory/equipment
             setInventoryHtml(''); setEqHtml('');
-            executeCommand('inventory');
-            setTimeout(() => executeCommand('equipment'), 300);
+            executeCommand('inventory', false, true, true);
+            setTimeout(() => executeCommand('eq', false, true, true), 300);
             setIsRightDrawerOpen(true);
         }
-    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isCharacterOpen, isRightDrawerOpen]);
+    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isCharacterOpen, isRightDrawerOpen, isMapExpanded, setStatsHtml, setInventoryHtml, setEqHtml]);
 
     // --- Stats Effects ---
     const getHeartbeatDuration = (ratio: number) => 0.4 + (ratio / FX_THRESHOLD) * 1.1;
@@ -1058,27 +1369,30 @@ const MudClient = () => {
                 hpRowRef.current.style.animation = `heartbeat-pulse ${duration}s ease-in-out`;
             }
 
-            // Lub (First beat)
-            const osc = ctx.createOscillator(); const gain = ctx.createGain();
-            osc.type = 'sine'; osc.frequency.setValueAtTime(42, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.4 * intensity, ctx.currentTime); // Scale volume with intensity
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(); osc.stop(ctx.currentTime + 0.25);
+            // Audio Sync: Only play sound if enabled
+            if (isSoundEnabledRef.current) {
+                // Lub (First beat)
+                const osc = ctx.createOscillator(); const gain = ctx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(42, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(28, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.4 * intensity, ctx.currentTime); // Scale volume with intensity
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + 0.25);
 
-            // Dub (Second beat) - Offset matches the 30% gap in CSS keyframes
-            const dubDelay = duration * 0.3 * 1000;
-            setTimeout(() => {
-                if (!audioCtxRef.current) return;
-                const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
-                osc2.type = 'sine'; osc2.frequency.setValueAtTime(35, ctx.currentTime);
-                osc2.frequency.exponentialRampToValueAtTime(22, ctx.currentTime + 0.1);
-                gain2.gain.setValueAtTime(0.3 * intensity, ctx.currentTime);
-                gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-                osc2.connect(gain2); gain2.connect(ctx.destination);
-                osc2.start(); osc2.stop(ctx.currentTime + 0.25);
-            }, dubDelay);
+                // Dub (Second beat) - Offset matches the 30% gap in CSS keyframes
+                const dubDelay = duration * 0.3 * 1000;
+                setTimeout(() => {
+                    if (!audioCtxRef.current) return;
+                    const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
+                    osc2.type = 'sine'; osc2.frequency.setValueAtTime(35, ctx.currentTime);
+                    osc2.frequency.exponentialRampToValueAtTime(22, ctx.currentTime + 0.1);
+                    gain2.gain.setValueAtTime(0.3 * intensity, ctx.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+                    osc2.connect(gain2); gain2.connect(ctx.destination);
+                    osc2.start(); osc2.stop(ctx.currentTime + 0.25);
+                }, dubDelay);
+            }
 
             timeoutId = setTimeout(playHeartbeat, duration * 1000);
         };
@@ -1116,9 +1430,9 @@ const MudClient = () => {
                 b3 = 0.86650 * b3 + white * 0.3104856;
                 b4 = 0.55000 * b4 + white * 0.5329522;
                 b5 = -0.7616 * b5 - white * 0.0168980;
+                b6 = white * 0.115926;
                 data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
                 data[i] *= 0.11;
-                b6 = white * 0.115926;
             }
 
             const playHalfBreath = (startTime: number, len: number, isExhale: boolean) => {
@@ -1163,8 +1477,12 @@ const MudClient = () => {
 
             const breathCycle = duration; // Cycle reflects the CSS animation duration
             const now = ctx.currentTime;
-            playHalfBreath(now, breathCycle * 0.4, false); // Inhale
-            playHalfBreath(now + breathCycle * 0.45, breathCycle * 0.5, true); // Exhale
+
+            // Audio Sync: Only play sound if enabled
+            if (isSoundEnabledRef.current) {
+                playHalfBreath(now, breathCycle * 0.4, false); // Inhale
+                playHalfBreath(now + breathCycle * 0.45, breathCycle * 0.5, true); // Exhale
+            }
 
             timeoutId = setTimeout(playBreath, breathCycle * 1000);
         };
@@ -1225,12 +1543,7 @@ const MudClient = () => {
     };
 
     // --- Interaction Handlers ---
-    const handleNavClick = useCallback((dir: 'up' | 'down') => {
-        triggerHaptic(30);
-        executeCommand(dir);
-        setBtnGlow(prev => ({ ...prev, [dir]: true }));
-        setTimeout(() => setBtnGlow(prev => ({ ...prev, [dir]: false })), 300);
-    }, [triggerHaptic, executeCommand]);
+
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
         // The user is touching/clicking the log. 
@@ -1280,16 +1593,32 @@ const MudClient = () => {
         if (selection && selection.toString().length > 0) return;
 
         const targetEl = e.target as HTMLElement, btnEl = targetEl.closest('.inline-btn') as HTMLElement;
-        if (btnEl && btnEl.dataset.id) {
+        if (btnEl && (btnEl.dataset.id || btnEl.dataset.cmd || btnEl.dataset.teleportId)) {
             e.stopPropagation();
             if (btn.isEditMode) btn.setEditingButtonId(btnEl.dataset.id);
             else {
                 const action = btnEl.dataset.action;
-                if (action === 'menu' && btnEl.dataset.cmd) {
+                if (action === 'save-teleport' && btnEl.dataset.teleportId) {
                     const rect = btnEl.getBoundingClientRect();
                     setPopoverState({
-                        x: rect.right + 10,
-                        y: rect.top,
+                        x: Math.min(window.innerWidth - 220, Math.max(10, rect.left)),
+                        y: Math.min(window.innerHeight - 300, rect.top + 25),
+                        type: 'teleport-save',
+                        setId: 'teleport',
+                        teleportId: btnEl.dataset.teleportId
+                    });
+                    return;
+                }
+                if (action === 'menu' && btnEl.dataset.cmd) {
+                    const rect = btnEl.getBoundingClientRect();
+                    let popX = e.clientX || rect.left + 20;
+                    if (popX > window.innerWidth - 220) popX = Math.max(10, window.innerWidth - 220);
+                    let popY = e.clientY || rect.top;
+                    if (popY > window.innerHeight - 350) popY = Math.max(10, window.innerHeight - 350);
+
+                    setPopoverState({
+                        x: popX,
+                        y: popY,
                         setId: btnEl.dataset.cmd,
                         context: btnEl.dataset.context
                     });
@@ -1328,28 +1657,52 @@ const MudClient = () => {
     const processMessageHtml = useCallback((html: string, mid?: string) => {
         let newHtml = html;
 
+        const safeHighlight = (currentHtml: string, patternStr: string, replacer: (match: string) => string) => {
+            try {
+                const pattern = patternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                // Match tags OR the word pattern. Tags are group 1, pattern is group 2.
+                const regex = new RegExp(`(<[^>]+>)|(\\b${pattern}\\b)`, 'gi');
+                return currentHtml.replace(regex, (m, g1, g2) => {
+                    if (g1) return g1; // Return tag unchanged
+                    return replacer(g2);
+                });
+            } catch (e) { return currentHtml; }
+        };
+
         // 1. Highlight Current Target (Top priority)
         if (target) {
-            try {
-                const pattern = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const regex = new RegExp(`\\b(${pattern})\\b(?![^<]*>|[^<>]*<\\/span>)`, 'gi');
-                newHtml = newHtml.replace(regex, (match) => `<span class="target-highlight">${match}</span>`);
-            } catch (e) { }
+            newHtml = safeHighlight(newHtml, target, (m) =>
+                `<span class="inline-btn target-highlight" data-id="target-hl" data-mid="${mid || ''}" data-cmd="target" data-context="${m}" data-action="menu">${m}</span>`
+            );
         }
 
         // 2. Inline Highlight Buttons
         btn.buttonsRef.current.filter(b => b.display === 'inline' && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
-            try {
-                const pattern = b.trigger!.pattern!.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                const regex = new RegExp(`\\b(${pattern})\\b(?![^<]*>|[^<>]*<\\/span>)`, 'gi');
-                newHtml = newHtml.replace(regex, (match) => {
-                    return `<span class="inline-btn" data-id="${b.id}" data-mid="${mid || ''}" data-cmd="${b.command}" data-context="${match}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" style="background-color: ${b.style.backgroundColor}">${match}</span>`;
-                });
-            } catch (e) { }
+            newHtml = safeHighlight(newHtml, b.trigger!.pattern!, (m) => {
+                return `<span class="inline-btn" data-id="${b.id}" data-mid="${mid || ''}" data-cmd="${b.command}" data-context="${m}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" style="background-color: ${b.style.backgroundColor}">${m}</span>`;
+            });
         });
 
+        // 3. Room Occupants (Auto-acquired highlights)
+        // Sort by length longest-first so "Morgundul orc-guard" matches before "orc-guard"
+        [...roomPlayers].filter(name => name !== characterName)
+            .sort((a, b) => b.length - a.length)
+            .forEach(name => {
+                newHtml = safeHighlight(newHtml, name, (m) => {
+                    return `<span class="inline-btn auto-occupant" data-id="auto-${name}" data-mid="${mid || ''}" data-cmd="inlineplayer" data-context="${m}" data-action="menu" style="background-color: rgba(100, 100, 255, 0.3); border-bottom: 1px dashed rgba(255,255,255,0.4)">${m}</span>`;
+                });
+            });
+
+        // 4. Room Items
+        [...roomItems].sort((a, b) => b.length - a.length)
+            .forEach(name => {
+                newHtml = safeHighlight(newHtml, name, (m) => {
+                    return `<span class="inline-btn auto-item" data-id="auto-item-${name}" data-mid="${mid || ''}" data-cmd="selection" data-context="${m}" data-action="menu" style="background-color: rgba(100, 255, 100, 0.15); border-bottom: 1px dotted rgba(255,255,255,0.3)">${m}</span>`;
+                });
+            });
+
         return newHtml;
-    }, [target, btn]);
+    }, [target, btn, roomPlayers, characterName, roomItems]);
 
     const getMessageClass = useCallback((index: number, total: number) => {
         const anchorIndex = focusedIndex !== null ? focusedIndex : total - 1;
@@ -1361,6 +1714,48 @@ const MudClient = () => {
         if (distance < 100) return 'msg-old';
         return 'msg-ancient';
     }, [focusedIndex]);
+
+    const getButtonCommand = (button: CustomButton, dx: number, dy: number, context?: string, maxDist?: number, modifiers: string[] = []) => {
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const isSwiped = dist > 15;
+
+        // Cancellation logic: if we moved significantly out (>30px) and now we are back in (<15px)
+        if (maxDist && maxDist > 25 && dist < 12) {
+            return null;
+        }
+
+        let cmd = button.command;
+        let actionType = button.actionType || 'command';
+
+        if (isSwiped && button.swipeCommands) {
+            const absDx = Math.abs(dx), absDy = Math.abs(dy);
+            const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+            if (button.swipeCommands[dir]) {
+                cmd = button.swipeCommands[dir]!;
+                actionType = button.swipeActionTypes?.[dir] || 'command';
+            }
+        }
+
+        if (context) {
+            if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, context);
+            else cmd = `${cmd} ${context}`;
+        }
+
+        if (!cmd && !joystick.currentDir) return null;
+
+        const finalMods: string[] = [];
+        if (joystick.currentDir) {
+            const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
+            finalMods.push(dirMap[joystick.currentDir] || joystick.currentDir);
+        } else if (joystick.isTargetModifierActive && target) {
+            finalMods.push(target);
+        }
+
+        if (actionType === 'command') {
+            return [cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ');
+        }
+        return null;
+    };
 
     const handleButtonClick = (button: CustomButton, e: React.MouseEvent, context?: string) => {
         e.stopPropagation();
@@ -1380,7 +1775,61 @@ const MudClient = () => {
                 else cmd = `${cmd} ${context}`;
             }
 
-            if (button.actionType === 'nav') btn.setActiveSet(button.command); else executeCommand(cmd);
+            let finalCmd = cmd;
+            if (joystick.currentDir) {
+                const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
+                const fullDir = dirMap[joystick.currentDir] || joystick.currentDir;
+                finalCmd = `${finalCmd} ${fullDir}`;
+                joystick.setIsJoystickConsumed(true);
+            } else if (joystick.isTargetModifierActive && target) {
+                finalCmd = `${finalCmd} ${target}`;
+                joystick.setIsJoystickConsumed(true);
+            }
+
+            if (button.actionType === 'nav') btn.setActiveSet(button.command);
+            else if (button.actionType === 'teleport-manage') {
+                setPopoverState({
+                    x: window.innerWidth / 2 - 150,
+                    y: window.innerHeight / 2 - 150,
+                    type: 'teleport-manage',
+                    setId: 'teleport'
+                });
+            } else if (button.actionType === 'select-recipient') {
+                const rect = target.getBoundingClientRect();
+                setPopoverState({
+                    x: rect.right + 10,
+                    y: rect.top,
+                    sourceHeight: rect.height,
+                    type: 'give-recipient-select',
+                    setId: button.setId || 'main',
+                    context: finalCmd
+                });
+            } else if (button.actionType === 'preload') {
+                // Preload: put only the button's command into the input, never append context
+                setInput(button.command + ' ');
+                const el = document.querySelector('input');
+                if (el) el.focus();
+            } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
+                setTarget(null);
+                addMessage('system', 'Target cleared.');
+            } else {
+                setCommandPreview(finalCmd);
+                executeCommand(finalCmd, false, false);
+                setTimeout(() => setCommandPreview(null), 150);
+
+                // Auto-refresh drawers if interacting with inventory/equipment buttons
+                if (button.setId === 'inventorylist' || button.setId === 'equipmentlist') {
+                    // Slight delay to allow MUD to process the change
+                    setTimeout(() => {
+                        if (button.setId === 'inventorylist' || button.command.includes('remove')) {
+                            executeCommand('inv', false, false, true);
+                        }
+                        if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold') || button.command.includes('wield')) {
+                            executeCommand('eq', false, false, true);
+                        }
+                    }, 500);
+                }
+            }
             if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
         }
     };
@@ -1390,10 +1839,10 @@ const MudClient = () => {
         e.stopPropagation(); e.preventDefault();
 
         if (type === 'cluster' || type === 'cluster-resize') {
-            const clusterId = id as 'joystick' | 'stats' | 'mapper';
+            const clusterId = id as 'joystick' | 'xbox' | 'stats' | 'mapper';
             const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
             const pos = btn.uiPositions[clusterId];
-            const startX = pos?.x ?? rect.left;
+            const startX = pos?.x ?? (clusterId === 'xbox' ? (window.innerWidth - rect.right) : rect.left);
             const startY = pos?.y ?? rect.top;
             let initialW = pos?.scale ?? 1;
             let initialH = 0;
@@ -1456,13 +1905,24 @@ const MudClient = () => {
         if (btn.dragState?.type === 'cluster') {
             const dx = e.clientX - btn.dragState.startX;
             const dy = e.clientY - btn.dragState.startY;
-            const clusterId = btn.dragState.id as 'joystick' | 'stats' | 'mapper';
+            const clusterId = btn.dragState.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
+
+            let newX = clusterId === 'xbox' ? btn.dragState!.initialX - dx : btn.dragState!.initialX + dx;
+            let newY = btn.dragState!.initialY + dy;
+
+            if (btn.isGridEnabled) {
+                const snapX = (btn.gridSize / 100) * window.innerWidth;
+                const snapY = (btn.gridSize / 100) * window.innerHeight;
+                newX = Math.round(newX / snapX) * snapX;
+                newY = Math.round(newY / snapY) * snapY;
+            }
+
             btn.setUiPositions(prev => ({
                 ...prev,
                 [clusterId]: {
                     ...prev[clusterId],
-                    x: btn.dragState!.initialX + dx,
-                    y: btn.dragState!.initialY + dy
+                    x: newX,
+                    y: newY
                 }
             }));
             return;
@@ -1471,17 +1931,25 @@ const MudClient = () => {
         if (btn.dragState?.type === 'cluster-resize') {
             const dx = e.clientX - btn.dragState.startX;
             const dy = e.clientY - btn.dragState.startY;
-            const clusterId = btn.dragState.id as 'joystick' | 'stats' | 'mapper';
+            const clusterId = btn.dragState.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
 
             if (clusterId === 'mapper') {
-                const newW = Math.max(200, btn.dragState.initialW + dx);
-                const newH = Math.max(200, btn.dragState.initialH + dy);
+                let newW = btn.dragState.initialW + dx;
+                let newH = btn.dragState.initialH + dy;
+
+                if (btn.isGridEnabled) {
+                    const snapX = (btn.gridSize / 100) * window.innerWidth;
+                    const snapY = (btn.gridSize / 100) * window.innerHeight;
+                    newW = Math.round(newW / snapX) * snapX;
+                    newH = Math.round(newH / snapY) * snapY;
+                }
+
                 btn.setUiPositions(prev => ({
                     ...prev,
                     [clusterId]: {
                         ...prev[clusterId],
-                        w: newW,
-                        h: newH
+                        w: Math.max(200, newW),
+                        h: Math.max(200, newH)
                     }
                 }));
             } else {
@@ -1504,21 +1972,61 @@ const MudClient = () => {
                 if (btn.dragState?.type === 'resize') {
                     if (btn.dragState.initialSizes && btn.dragState.initialSizes[b.id]) {
                         const init = btn.dragState.initialSizes[b.id];
-                        return { ...b, style: { ...b.style, w: Math.max(20, init.w + dx), h: Math.max(20, init.h + dy) } };
+                        let newW = init.w + dx;
+                        let newH = init.h + dy;
+
+                        if (btn.isGridEnabled) {
+                            // Convert pixels to percentage of viewport to find snap point, then back to pixels?
+                            // Or just simplify: snap to multiples of 10px if grid size is 1-20
+                            const pixSnapX = (btn.gridSize / 100) * window.innerWidth;
+                            const pixSnapY = (btn.gridSize / 100) * window.innerHeight;
+                            newW = Math.round(newW / pixSnapX) * pixSnapX;
+                            newH = Math.round(newH / pixSnapY) * pixSnapY;
+                        }
+
+                        return { ...b, style: { ...b.style, w: Math.max(20, newW), h: Math.max(20, newH) } };
                     }
                     if (b.id !== btn.dragState?.id) return b;
-                    return { ...b, style: { ...b.style, w: Math.max(20, btn.dragState.initialW + dx), h: Math.max(20, btn.dragState.initialH + dy) } };
+                    let newW = btn.dragState.initialW + dx;
+                    let newH = btn.dragState.initialH + dy;
+
+                    if (btn.isGridEnabled) {
+                        const pixSnapX = (btn.gridSize / 100) * window.innerWidth;
+                        const pixSnapY = (btn.gridSize / 100) * window.innerHeight;
+                        newW = Math.round(newW / pixSnapX) * pixSnapX;
+                        newH = Math.round(newH / pixSnapY) * pixSnapY;
+                    }
+
+                    return { ...b, style: { ...b.style, w: Math.max(20, newW), h: Math.max(20, newH) } };
                 }
 
                 if (btn.dragState?.initialPositions && btn.dragState.initialPositions[b.id]) {
                     const init = btn.dragState.initialPositions[b.id];
-                    const dXPercent = (dx / window.innerWidth) * 100;
-                    const dYPercent = (dy / window.innerHeight) * 100;
-                    return { ...b, style: { ...b.style, x: Math.min(100, Math.max(0, init.x + dXPercent)), y: Math.min(100, Math.max(0, init.y + dYPercent)) } };
+                    let dXPercent = (dx / window.innerWidth) * 100;
+                    let dYPercent = (dy / window.innerHeight) * 100;
+
+                    let finalX = init.x + dXPercent;
+                    let finalY = init.y + dYPercent;
+
+                    if (btn.isGridEnabled) {
+                        finalX = Math.round(finalX / btn.gridSize) * btn.gridSize;
+                        finalY = Math.round(finalY / btn.gridSize) * btn.gridSize;
+                    }
+
+                    return { ...b, style: { ...b.style, x: Math.min(100, Math.max(0, finalX)), y: Math.min(100, Math.max(0, finalY)) } };
                 }
 
                 if (b.id !== btn.dragState?.id) return b;
-                return { ...b, style: { ...b.style, x: Math.min(100, Math.max(0, btn.dragState.initialX + (dx / window.innerWidth) * 100)), y: Math.min(100, Math.max(0, btn.dragState.initialY + (dy / window.innerHeight) * 100)) } };
+
+                let finalX = btn.dragState.initialX + (dx / window.innerWidth) * 100;
+                let finalY = btn.dragState.initialY + (dy / window.innerHeight) * 100;
+
+                if (btn.isGridEnabled) {
+                    finalX = Math.round(finalX / btn.gridSize) * btn.gridSize;
+                    finalY = Math.round(finalY / btn.gridSize) * btn.gridSize;
+                }
+
+                return { ...b, style: { ...b.style, x: Math.min(100, Math.max(0, finalX)), y: Math.min(100, Math.max(0, finalY)) } };
             }));
         }
     }, [btn]);
@@ -1539,7 +2047,7 @@ const MudClient = () => {
 
     // --- Settings handlers ---
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = (ev) => { if (typeof ev.target?.result === 'string') setBgImage(ev.target.result); }; reader.readAsDataURL(file); } };
-    const exportSettings = () => { const settings: SavedSettings = { version: 3, connectionUrl, bgImage, buttons: btn.buttons.map(b => ({ ...b, isVisible: undefined } as any)), soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest) }; const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `mume - settings - ${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); };
+    const exportSettings = () => { const settings: SavedSettings = { version: 3, connectionUrl, bgImage, loginName, loginPassword, isSoundEnabled, buttons: btn.buttons.map(b => ({ ...b, isVisible: undefined } as any)), soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest) }; const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `mume - settings - ${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); };
     const importSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]; if (!file) return; setIsLoading(true); initAudio(); const reader = new FileReader();
         reader.onload = async (ev) => {
@@ -1548,6 +2056,9 @@ const MudClient = () => {
                     const settings: SavedSettings = JSON.parse(ev.target.result);
                     if (settings.connectionUrl) setConnectionUrl(settings.connectionUrl);
                     if (settings.bgImage) setBgImage(settings.bgImage);
+                    if (settings.loginName) setLoginName(settings.loginName);
+                    if (settings.loginPassword) setLoginPassword(settings.loginPassword);
+                    if (settings.isSoundEnabled !== undefined) setIsSoundEnabled(settings.isSoundEnabled);
                     if (settings.buttons) btn.setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -1625,8 +2136,9 @@ const MudClient = () => {
             // We should auto-scroll if:
             // 1. We were already at the bottom when the message arrived (isLockedToBottomRef)
             // 2. We are already mid-animation scrolling (Latching burst)
-            // 3. The keyboard is actively open or opening (Ensures prompt focus)
-            const shouldSnap = isLockedToBottomRef.current || isAutoScrollingRef.current || isKeyboardOpen;
+            // 3. The keyboard state just CHANGED (handled by separate effect)
+            // Note: We remove isKeyboardOpen from here because it fights user manual scroll while they play.
+            const shouldSnap = isLockedToBottomRef.current || isAutoScrollingRef.current;
 
             if (shouldSnap) {
                 // Force snap to new content
@@ -1745,168 +2257,7 @@ const MudClient = () => {
                 <div className={`death-overlay ${deathStage !== 'none' ? 'death-active' : ''}`} style={{ opacity: deathStage === 'fade_in' ? 0 : (deathStage === 'black_hold' ? 1 : undefined) }} />
                 <div className={`death-image-layer ${deathStage === 'flash' ? 'death-flash' : ''}`} style={{ backgroundImage: `url(${DEATH_IMG})`, opacity: deathStage === 'flash' ? 1 : 0 }} />
 
-                {spatButtons.map((sb, idx) => {
-                    const hSlotWidth = 130;
-                    const vSlotSpacing = 60; // Better spacing for mobile
 
-                    let dynamicTargetX = sb.targetX;
-                    let dynamicTargetY = sb.targetY;
-
-                    if (isMobile) {
-                        // Stack vertically upward on the right
-                        // idx 0 (oldest) is at the bottom. 
-                        // Set base to 60% height to stay clear of joystick/controls
-                        dynamicTargetY = (window.innerHeight * 0.6) - (idx * vSlotSpacing);
-                        // Land 15px from the right edge.
-                        dynamicTargetX = window.innerWidth - 15;
-                    } else {
-                        // Desktop: horizontal stack from right to left
-                        dynamicTargetX = sb.targetX - (idx * hSlotWidth);
-                    }
-
-                    return (
-                        <div
-                            key={sb.id}
-                            className="spat-button"
-                            style={{
-                                '--start-x': `${Math.round(sb.startX)}px`,
-                                '--start-y': `${Math.round(sb.startY)}px`,
-                                '--target-x': `${Math.round(dynamicTargetX)}px`,
-                                '--target-y': `${Math.round(dynamicTargetY)}px`,
-                                '--target-transform': isMobile ? 'translate(-100%, -50%)' : 'translate(0, -50%)',
-                                borderColor: sb.color,
-                                boxShadow: `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
-                                '--accent': sb.color
-                            } as any}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                if (sb.action === 'nav') btn.setActiveSet(sb.command);
-                                else executeCommand(sb.command);
-                                setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
-                            }}
-                        >
-                            {sb.label}
-                        </div>
-                    );
-                })}
-
-                <div className="custom-buttons-layer">
-                    {btn.buttons.filter(b => b.setId === btn.activeSet && b.isVisible && b.display !== 'inline').map(button => {
-                        // Per-button gesture state stored in refs keyed by button id
-                        return (
-                            <div
-                                key={button.id}
-                                className={`custom - btn ${button.style.shape === 'pill' ? 'shape-pill' : button.style.shape === 'circle' ? 'shape-circle' : 'shape-rect'} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''} `}
-                                style={{
-                                    left: `${button.style.x}% `,
-                                    top: `${button.style.y}% `,
-                                    width: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.w}px`,
-                                    height: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.h}px`,
-                                    backgroundColor: button.style.transparent ? 'rgba(0,0,0,0.2)' : button.style.backgroundColor,
-                                    border: button.style.transparent ? '1px dashed rgba(255,255,255,0.3)' : undefined
-                                }}
-                                onPointerDown={(e) => {
-                                    if (btn.isEditMode) {
-                                        handleDragStart(e, button.id, 'move');
-                                        return;
-                                    }
-                                    // Existing pointer down logic for non-edit mode
-                                    const currentTarget = e.currentTarget;
-                                    currentTarget.setPointerCapture(e.pointerId);
-                                    const startX = e.clientX, startY = e.clientY;
-                                    (currentTarget as any)._didFire = false;
-                                    (currentTarget as any)._startX = startX;
-                                    (currentTarget as any)._startY = startY;
-
-                                    // Long-press timer
-                                    const lpt = setTimeout(() => {
-                                        const el = currentTarget as any;
-                                        el._didFire = true;
-                                        triggerHaptic(60); // Stronger haptic for long-press
-                                        el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
-                                        const cmd = button.longCommand || button.command;
-                                        const actionType = button.longActionType || button.actionType || 'command';
-
-                                        if (actionType === 'nav') btn.setActiveSet(cmd);
-                                        else if (actionType === 'assign') {
-                                            const rect = currentTarget.getBoundingClientRect();
-                                            setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label, assignSourceId: button.id });
-                                        }
-                                        else if (actionType === 'menu') {
-                                            const rect = currentTarget.getBoundingClientRect();
-                                            setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label });
-                                        }
-                                        else executeCommand(cmd);
-                                    }, 600); // Slightly longer for stability
-                                    (currentTarget as any)._lpt = lpt;
-                                }}
-                                onPointerMove={(e) => {
-                                    if (btn.isEditMode) return;
-                                    const el = e.currentTarget as any;
-                                    const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                                    // Cancel long-press if moved more than 12px
-                                    if ((Math.abs(dx) > 12 || Math.abs(dy) > 12) && el._lpt) {
-                                        clearTimeout(el._lpt); el._lpt = null;
-                                    }
-                                }}
-                                onPointerUp={(e) => {
-                                    if (btn.isEditMode) return;
-                                    const el = e.currentTarget as any;
-                                    clearTimeout(el._lpt); el._lpt = null;
-                                    if (el._didFire) { el._didFire = false; return; } // long-press already fired
-                                    const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                                    const isSwiped = Math.abs(dx) > 10 || Math.abs(dy) > 10;
-                                    let cmd = button.command;
-                                    let actionType = button.actionType || 'command';
-
-                                    if (isSwiped && button.swipeCommands) {
-                                        const absDx = Math.abs(dx), absDy = Math.abs(dy);
-                                        const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
-
-                                        if (button.swipeCommands[dir]) {
-                                            cmd = button.swipeCommands[dir]!;
-                                            actionType = button.swipeActionTypes?.[dir] || 'command';
-                                        } else {
-                                            const fallback: 'up' | 'down' | 'left' | 'right' | undefined = (button.swipeCommands.up ? 'up' : button.swipeCommands.down ? 'down' : button.swipeCommands.left ? 'left' : button.swipeCommands.right ? 'right' : undefined);
-                                            if (fallback) {
-                                                cmd = button.swipeCommands[fallback]!;
-                                                actionType = button.swipeActionTypes?.[fallback] || 'command';
-                                            }
-                                        }
-                                    }
-
-                                    if (!cmd) return;
-                                    triggerHaptic(15);
-                                    const htmlEl = e.currentTarget as HTMLElement;
-                                    htmlEl.classList.remove('btn-glow-active'); void htmlEl.offsetWidth; htmlEl.classList.add('btn-glow-active');
-
-                                    if (actionType === 'nav') btn.setActiveSet(cmd);
-                                    else if (actionType === 'assign') {
-                                        const rect = htmlEl.getBoundingClientRect();
-                                        setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label, assignSourceId: button.id });
-                                    }
-                                    else if (actionType === 'menu') {
-                                        const rect = htmlEl.getBoundingClientRect();
-                                        setPopoverState({ x: rect.right + 10, y: rect.top, setId: cmd, context: button.label });
-                                    }
-                                    else executeCommand(cmd);
-                                    if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (btn.isEditMode) {
-                                        if (wasDraggingRef.current) return;
-                                        if (e.ctrlKey || e.metaKey) return;
-                                        btn.setEditingButtonId(button.id);
-                                        if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
-                                    }
-                                }}
-                            >
-                                {button.label} {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, button.id, 'resize')} />}
-                            </div>
-                        );
-                    })}
-                </div>
 
 
                 <div className="content-layer">
@@ -1930,6 +2281,13 @@ const MudClient = () => {
                             triggerHaptic(20);
                             btn.setUiPositions(prev => ({ ...prev, mapper: { x: undefined, y: 75, w: 320, h: 320, scale: 1 } }));
                         }}
+                        teleportTargetsCount={teleportTargets.length}
+                        onTeleportClick={() => setPopoverState({
+                            x: window.innerWidth / 2 - 150,
+                            y: window.innerHeight / 2 - 150,
+                            type: 'teleport-manage',
+                            setId: 'teleport'
+                        })}
                     />
 
                     <div className="message-log-container">
@@ -1956,8 +2314,21 @@ const MudClient = () => {
                         onSend={handleSendCallback}
                         onSwipe={handleInputSwipe}
                         isMobile={isMobile}
+                        commandPreview={commandPreview}
                         target={target}
-                        onClearTarget={() => setTarget(null)}
+                        onTargetClick={() => {
+                            if (target) {
+                                if (heldButton) {
+                                    const hbtn = btn.buttons.find(b => b.id === heldButton.id); const newMods = [...heldButton.modifiers, target]; setHeldButton(prev => prev ? { ...prev, modifiers: newMods } : null); if (hbtn) setCommandPreview(getButtonCommand(hbtn, 0, 0, undefined, 0, newMods));
+                                    triggerHaptic(20);
+                                } else {
+                                    setInput(prev => {
+                                        const trimmed = prev.trim();
+                                        return trimmed ? `${trimmed} ${target}` : target;
+                                    });
+                                }
+                            }
+                        }}
                         terrain={undefined}
                     />
                 </div>
@@ -1987,7 +2358,7 @@ const MudClient = () => {
                             if (btn.isEditMode) handleDragStart(e, 'mapper', 'cluster');
                         }}
                     >
-                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} />
+                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} isMobile={isMobile} isExpanded={isMapExpanded} />
                         {btn.isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
                     </div>
                 )}
@@ -1997,7 +2368,7 @@ const MudClient = () => {
                         position: 'absolute',
                         left: btn.uiPositions.stats?.x,
                         top: btn.uiPositions.stats?.y ?? (btn.uiPositions.stats?.x === undefined ? '80px' : undefined),
-                        bottom: (btn.uiPositions.stats?.x !== undefined || btn.uiPositions.stats?.y !== undefined) ? 'auto' : undefined,
+                        bottom: (btn.uiPositions.stats?.x !== undefined || btn.uiPositions.stats?.y !== undefined) ? 'auto' : '10px',
                         right: (btn.uiPositions.stats?.x !== undefined || btn.uiPositions.stats?.y !== undefined) ? 'auto' : '10px',
                         transform: btn.uiPositions.stats?.scale ? `scale(${btn.uiPositions.stats.scale})` : undefined,
                         transformOrigin: 'top left',
@@ -2005,26 +2376,21 @@ const MudClient = () => {
                         border: (btn.isEditMode && btn.dragState?.id === 'stats') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
                         padding: btn.isEditMode ? '10px' : undefined,
                         borderRadius: '20px',
-                        zIndex: 50,
-                        display: isMobile ? 'none' : 'flex'
+                        zIndex: 500,
+                        display: isMobile ? 'none' : 'flex',
+                        pointerEvents: 'auto'
                     }}
                     onPointerDown={(e) => {
                         if (btn.isEditMode) handleDragStart(e, 'stats', 'cluster');
                     }}
                 >
                     {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, 'stats', 'cluster-resize')} />}
-                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} onClick={() => executeCommand('score')} />
+                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} onClick={() => executeCommand('score')} onWimpyChange={handleWimpyChange} />
                 </div>
 
             </div> {/* Closes app-content-shaker */}
 
-            <div
-                className={`mobile-bottom-gutter ${isKeyboardOpen ? 'hidden' : ''}`}
-                style={{
-                    height: isMapExpanded ? '65vh' : undefined,
-                    transition: 'height 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-                }}
-            >
+            <div className={`mobile-bottom-gutter ${isKeyboardOpen ? 'hidden' : ''} ${isMapExpanded ? 'map-expanded' : ''}`}>
                 <div className="mobile-controls-row">
                     <div
                         className="joystick-cluster"
@@ -2044,75 +2410,686 @@ const MudClient = () => {
                             if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
                         }}
                     >
-                        <Joystick joystickKnobRef={joystick.joystickKnobRef} joystickGlow={joystickGlow} btnGlow={btnGlow} onJoystickStart={joystick.handleJoystickStart} onJoystickMove={joystick.handleJoystickMove} onJoystickEnd={(e) => joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow)} onNavClick={handleNavClick} />
+                        <Joystick
+                            joystickKnobRef={joystick.joystickKnobRef}
+                            joystickGlow={joystickGlow}
+                            btnGlow={btnGlow}
+                            onJoystickStart={joystick.handleJoystickStart}
+                            onJoystickMove={joystick.handleJoystickMove}
+                            onJoystickEnd={(e) => joystick.handleJoystickEnd(e, (cmd) => executeCommand(cmd), triggerHaptic, setJoystickGlow)}
+                            onNavStart={joystick.handleNavStart}
+                            onNavEnd={(dir) => joystick.handleNavEnd(dir, executeCommand, triggerHaptic, setBtnGlow)}
+                            isTargetModifierActive={joystick.isTargetModifierActive}
+                        />
                     </div>
 
-                    <div className="xbox-cluster">
-                        <button className="xbox-btn top" style={{ borderColor: '#fbbf24', color: '#fbbf24' }} onClick={() => { triggerHaptic(20); executeCommand('score'); }}>Y</button>
-                        <button className="xbox-btn left" style={{ borderColor: '#3b82f6', color: '#3b82f6' }} onClick={() => { triggerHaptic(20); executeCommand('look'); }}>X</button>
-                        <button className="xbox-btn right" style={{ borderColor: '#ef4444', color: '#ef4444' }} onClick={() => { triggerHaptic(20); executeCommand('inventory'); }}>B</button>
-                        <button className="xbox-btn bottom" style={{ borderColor: '#22c55e', color: '#22c55e' }} onClick={() => { triggerHaptic(20); executeCommand('score'); }}>A</button>
+                    <div
+                        className="xbox-cluster"
+                        style={{
+                            right: (btn.uiPositions.xbox?.x ?? '0'),
+                            top: (btn.uiPositions.xbox?.y ?? '50%'),
+                            transform: `translateY(-50%) ${btn.uiPositions.xbox?.scale ? `scale(${btn.uiPositions.xbox.scale})` : ''}`,
+                            transformOrigin: 'center right',
+                            zIndex: 100,
+                            position: 'absolute',
+                            cursor: btn.isEditMode ? 'move' : undefined,
+                            border: (btn.isEditMode && btn.dragState?.id === 'xbox') ? '2px dashed #ffff00' : undefined,
+                            borderRadius: '50%',
+                            boxShadow: (btn.isEditMode && btn.dragState?.id === 'xbox') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
+                        }}
+                        onPointerDown={(e) => {
+                            if (btn.isEditMode) handleDragStart(e, 'xbox', 'cluster');
+                        }}
+                    >
+                        {btn.isEditMode && <div className="resize-handle" style={{ top: '-10px', right: '-10px' }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'xbox', 'cluster-resize'); }} />}
+                        {['xbox-y', 'xbox-b', 'xbox-a', 'xbox-x', 'xbox-z'].map(id => {
+                            const button = btn.buttons.find(b => b.id === id);
+                            if (!button) return null;
+                            const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-b' ? 'right' : id === 'xbox-a' ? 'bottom' : id === 'xbox-x' ? 'left' : 'center';
+                            return (
+                                <div
+                                    key={id}
+                                    className={`xbox-btn ${posClass} ${heldButton?.id === button.id ? 'is-held' : ''} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''}`}
+                                    onPointerDown={(e) => {
+                                        if (btn.isEditMode) {
+                                            e.stopPropagation();
+                                            if (!btn.selectedButtonIds.has(button.id)) {
+                                                if (!e.ctrlKey && !e.metaKey) btn.setSelectedIds(new Set([button.id]));
+                                                else btn.setSelectedIds(new Set([...btn.selectedButtonIds, button.id]));
+                                            }
+                                            return;
+                                        }
+                                        const currentTarget = e.currentTarget;
+                                        currentTarget.setPointerCapture(e.pointerId);
+                                        const startX = e.clientX, startY = e.clientY;
+                                        (currentTarget as any)._didFire = false;
+                                        (currentTarget as any)._startX = startX;
+                                        (currentTarget as any)._startY = startY;
+                                        (currentTarget as any)._maxDist = 0;
+                                        (currentTarget as any)._lst = null;
+                                        (currentTarget as any)._currentDir = null;
+
+                                        setHeldButton({ id: button.id, baseCommand: button.command, modifiers: [] });
+                                        setCommandPreview(getButtonCommand(button, 0, 0));
+
+                                        const lpt = setTimeout(() => {
+                                            const el = currentTarget as any;
+                                            const longActionType = button.longActionType || 'command';
+                                            const longCmd = button.longCommand || button.command;
+                                            el._didFire = true;
+                                            triggerHaptic(60);
+                                            el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
+
+                                            if (longActionType === 'nav') btn.setActiveSet(longCmd);
+                                            else if (longActionType === 'assign') {
+                                                const rect = currentTarget.getBoundingClientRect();
+                                                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label, assignSourceId: button.id });
+                                            } else if (longActionType === 'menu') {
+                                                const rect = currentTarget.getBoundingClientRect();
+                                                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label });
+                                            } else if (longActionType === 'select-recipient') {
+                                                const rect = currentTarget.getBoundingClientRect();
+                                                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, type: 'give-recipient-select', setId: button.setId || 'main', context: longCmd });
+                                            } else if (longActionType === 'teleport-manage') {
+                                                setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' });
+                                            } else {
+                                                executeCommand(longCmd, false, false);
+                                            }
+                                            setHeldButton(null);
+                                            setCommandPreview(null);
+                                        }, 600);
+                                        (currentTarget as any)._lpt = lpt;
+                                    }}
+                                    onPointerMove={(e) => {
+                                        if (btn.isEditMode) return;
+                                        const el = e.currentTarget as any;
+                                        const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                                        const dist = Math.sqrt(dx * dx + dy * dy);
+                                        el._maxDist = Math.max(el._maxDist || 0, dist);
+
+                                        if (el._lpt && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) { clearTimeout(el._lpt); el._lpt = null; }
+
+                                        if (dist > 25) {
+                                            const absDx = Math.abs(dx), absDy = Math.abs(dy);
+                                            const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+
+                                            if (el._currentDir !== dir) {
+                                                el._currentDir = dir;
+                                                clearTimeout(el._lst);
+                                                el._lst = setTimeout(() => {
+                                                    el._didFire = true;
+                                                    triggerHaptic(60);
+                                                    el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
+                                                    const rect = el.getBoundingClientRect();
+                                                    const longAction = button.longSwipeActionTypes?.[dir] || 'assign';
+                                                    const longCmd = button.longSwipeCommands?.[dir] || button.swipeSets?.[dir] || 'main';
+
+                                                    if (longAction === 'assign') {
+                                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, assignSourceId: button.id, assignSwipeDir: dir });
+                                                    } else if (longAction === 'nav') btn.setActiveSet(longCmd);
+                                                    else if (longAction === 'menu') {
+                                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label });
+                                                    } else if (longAction === 'select-recipient') {
+                                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, type: 'give-recipient-select', setId: longCmd, context: longCmd });
+                                                    } else if (longAction === 'teleport-manage') {
+                                                        setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' });
+                                                    } else {
+                                                        setCommandPreview(longCmd);
+                                                        executeCommand(longCmd, false, false);
+                                                        setTimeout(() => setCommandPreview(null), 150);
+                                                    }
+                                                    setHeldButton(null);
+                                                    setCommandPreview(null);
+                                                }, 700);
+                                            }
+                                        } else if (el._currentDir) { el._currentDir = null; clearTimeout(el._lst); el._lst = null; }
+
+                                        const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []));
+                                        setCommandPreview(preview);
+                                    }}
+                                    onPointerUp={(e) => {
+                                        if (btn.isEditMode) return;
+                                        const el = e.currentTarget as any;
+                                        clearTimeout(el._lpt); el._lpt = null;
+                                        clearTimeout(el._lst); el._lst = null;
+                                        setHeldButton(null);
+                                        if (el._didFire) { el._didFire = false; setCommandPreview(null); return; }
+
+                                        const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                                        const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []));
+
+                                        if (preview) {
+                                            executeCommand(preview, false, false);
+                                            if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
+                                            triggerHaptic(15);
+                                            const htmlEl = e.currentTarget as HTMLElement;
+                                            htmlEl.classList.remove('btn-glow-active'); void htmlEl.offsetWidth; htmlEl.classList.add('btn-glow-active');
+                                        } else {
+                                            const isSwiped = Math.abs(dx) > 15 || Math.abs(dy) > 15;
+                                            let cmd = button.command;
+                                            let actionType = button.actionType || 'command';
+                                            if (isSwiped && button.swipeCommands) {
+                                                const absDx = Math.abs(dx), absDy = Math.abs(dy);
+                                                const dir = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+                                                if (button.swipeCommands[dir]) {
+                                                    cmd = button.swipeCommands[dir]!;
+                                                    actionType = button.swipeActionTypes?.[dir] || 'command';
+                                                }
+                                            }
+                                            if (actionType === 'nav') btn.setActiveSet(cmd);
+                                            else if (actionType === 'assign') {
+                                                const rect = el.getBoundingClientRect();
+                                                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd, context: button.label, assignSourceId: button.id });
+                                            } else if (actionType === 'menu') {
+                                                const rect = el.getBoundingClientRect();
+                                                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd });
+                                            }
+                                        }
+                                        setCommandPreview(null);
+                                        if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
+                                    }}
+                                    onClick={(e) => {
+                                        if (btn.isEditMode) {
+                                            e.stopPropagation();
+                                            btn.setEditingButtonId(button.id);
+                                        }
+                                    }}
+                                >
+                                    {button.label}
+                                </div>
+                            );
+                        })}
                     </div>
+
                 </div>
 
                 {isMobile && (
-                    <div className="mobile-mini-map">
-                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} />
+                    <div className={`mobile-mini-map ${isMapExpanded ? 'expanded' : ''}`}>
+                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} isMobile={isMobile} isExpanded={isMapExpanded} />
                     </div>
                 )}
+            </div>
+
+            {spatButtons.map((sb, idx) => {
+                const hSlotWidth = 130;
+                const vSlotSpacing = 60; // Better spacing for mobile
+
+                let dynamicTargetX = sb.targetX;
+                let dynamicTargetY = sb.targetY;
+
+                if (isMobile) {
+                    // Stack vertically upward on the right
+                    // idx 0 (oldest) is at the bottom. 
+                    // Set base to 60% height to stay clear of joystick/controls
+                    dynamicTargetY = (window.innerHeight * 0.6) - (idx * vSlotSpacing);
+                    // Land 15px from the right edge.
+                    dynamicTargetX = window.innerWidth - 15;
+                } else {
+                    // Desktop: horizontal stack from right to left
+                    dynamicTargetX = sb.targetX - (idx * hSlotWidth);
+                }
+
+                return (
+                    <div
+                        key={sb.id}
+                        className="spat-button"
+                        style={{
+                            '--start-x': `${Math.round(sb.startX)}px`,
+                            '--start-y': `${Math.round(sb.startY)}px`,
+                            '--target-x': `${Math.round(dynamicTargetX)}px`,
+                            '--target-y': `${Math.round(dynamicTargetY)}px`,
+                            '--target-transform': isMobile ? 'translate(-100%, -50%)' : 'translate(0, -50%)',
+                            borderColor: sb.color,
+                            boxShadow: `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
+                            '--accent': sb.color
+                        } as any}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (sb.action === 'nav') btn.setActiveSet(sb.command);
+                            else executeCommand(sb.command);
+                            setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
+                        }}
+                    >
+                        {sb.label}
+                    </div>
+                );
+            })}
+
+            <div className="custom-buttons-layer">
+                {btn.buttons.filter(b => (b.setId === btn.activeSet) && b.setId !== 'Xbox' && b.isVisible && b.display !== 'inline').map(button => {
+                    // Per-button gesture state stored in refs keyed by button id
+                    return (
+                        <div
+                            key={button.id}
+                            className={`custom-btn ${button.style.shape === 'pill' ? 'shape-pill' : button.style.shape === 'circle' ? 'shape-circle' : 'shape-rect'} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''} ${heldButton?.id === button.id ? 'is-held' : ''}`}
+                            style={{
+                                left: `${button.style.x}%`,
+                                top: `${button.style.y}%`,
+                                width: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.w}px`,
+                                height: `${button.style.shape === 'circle' ? Math.max(button.style.w, button.style.h) : button.style.h}px`,
+                                backgroundColor: button.style.transparent ? 'rgba(0,0,0,0.2)' : button.style.backgroundColor,
+                                border: button.style.transparent ? (button.style.borderColor ? `2px solid ${button.style.borderColor}` : '1px dashed rgba(255,255,255,0.3)') : (button.style.borderColor ? `2px solid ${button.style.borderColor}` : undefined),
+                                boxShadow: heldButton?.id === button.id ? `0 0 15px 2px ${button.style.borderColor || button.style.backgroundColor || 'var(--accent)'}` : undefined
+                            }}
+                            onPointerDown={(e) => {
+                                if (btn.isEditMode) {
+                                    handleDragStart(e, button.id, 'move');
+                                    return;
+                                }
+                                const currentTarget = e.currentTarget;
+                                currentTarget.setPointerCapture(e.pointerId);
+                                const startX = e.clientX, startY = e.clientY;
+                                (currentTarget as any)._didFire = false;
+                                (currentTarget as any)._startX = startX;
+                                (currentTarget as any)._startY = startY;
+                                (currentTarget as any)._maxDist = 0;
+                                (currentTarget as any)._lst = null;
+                                (currentTarget as any)._currentDir = null;
+
+                                setHeldButton({ id: button.id, baseCommand: button.command, modifiers: [] });
+                                setCommandPreview(getButtonCommand(button, 0, 0));
+
+                                const lpt = setTimeout(() => {
+                                    const el = currentTarget as any;
+                                    const longActionType = button.longActionType || 'command';
+                                    const longCmd = button.longCommand || button.command;
+
+                                    // Only trigger if we actually HAVE a long action or assigned command, 
+                                    // or if we're explicitly trying to open a menu/assign.
+                                    // If longCommand is missing, we usually want it to fall back to 'assign' 
+                                    // for flexibility, unless it's a specific action type.
+
+                                    el._didFire = true;
+                                    triggerHaptic(60);
+                                    el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
+
+                                    if (longActionType === 'nav') {
+                                        btn.setActiveSet(longCmd);
+                                    } else if (longActionType === 'assign') {
+                                        const rect = currentTarget.getBoundingClientRect();
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label, assignSourceId: button.id });
+                                    } else if (longActionType === 'menu') {
+                                        const rect = currentTarget.getBoundingClientRect();
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label });
+                                    } else if (longActionType === 'select-recipient') {
+                                        const rect = currentTarget.getBoundingClientRect();
+                                        setPopoverState({
+                                            x: rect.right + 10,
+                                            y: rect.top,
+                                            sourceHeight: rect.height,
+                                            type: 'give-recipient-select',
+                                            setId: button.setId || 'main',
+                                            context: longCmd
+                                        });
+                                    } else if (longActionType === 'teleport-manage') {
+                                        setPopoverState({
+                                            x: window.innerWidth / 2 - 150,
+                                            y: window.innerHeight / 2 - 150,
+                                            type: 'teleport-manage',
+                                            setId: 'teleport'
+                                        });
+                                    } else {
+                                        // Default: 'command'
+                                        executeCommand(longCmd, false, false);
+                                    }
+
+                                    setHeldButton(null);
+                                    setCommandPreview(null);
+                                }, 600);
+                                (currentTarget as any)._lpt = lpt;
+                            }}
+                            onPointerMove={(e) => {
+                                if (btn.isEditMode) return;
+                                const el = e.currentTarget as any;
+                                const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                                const dist = Math.sqrt(dx * dx + dy * dy);
+                                el._maxDist = Math.max(el._maxDist || 0, dist);
+
+                                if (el._lpt) {
+                                    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) { clearTimeout(el._lpt); el._lpt = null; }
+                                }
+
+                                if (dist > 25) {
+                                    const absDx = Math.abs(dx), absDy = Math.abs(dy);
+                                    const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+
+                                    if (el._currentDir !== dir) {
+                                        el._currentDir = dir;
+                                        clearTimeout(el._lst);
+                                        el._lst = setTimeout(() => {
+                                            el._didFire = true;
+                                            triggerHaptic(60);
+                                            el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
+                                            const rect = el.getBoundingClientRect();
+                                            const longAction = button.longSwipeActionTypes?.[dir] || 'assign';
+                                            const longCmd = button.longSwipeCommands?.[dir] || button.swipeSets?.[dir] || 'main'; // fallback
+
+                                            if (longAction === 'assign') {
+                                                setPopoverState({
+                                                    x: rect.right + 10,
+                                                    y: rect.top,
+                                                    sourceHeight: rect.height,
+                                                    setId: longCmd,
+                                                    assignSourceId: button.id,
+                                                    assignSwipeDir: dir
+                                                });
+                                            } else if (longAction === 'nav') {
+                                                btn.setActiveSet(longCmd);
+                                            } else if (longAction === 'menu') {
+                                                setPopoverState({
+                                                    x: rect.right + 10,
+                                                    y: rect.top,
+                                                    sourceHeight: rect.height,
+                                                    setId: longCmd,
+                                                    context: button.label
+                                                });
+                                            } else if (longAction === 'select-recipient') {
+                                                setPopoverState({
+                                                    x: rect.right + 10,
+                                                    y: rect.top,
+                                                    sourceHeight: rect.height,
+                                                    type: 'give-recipient-select',
+                                                    setId: longCmd,
+                                                    context: longCmd
+                                                });
+                                            } else if (longAction === 'teleport-manage') {
+                                                setPopoverState({
+                                                    x: window.innerWidth / 2 - 150,
+                                                    y: window.innerHeight / 2 - 150,
+                                                    type: 'teleport-manage',
+                                                    setId: 'teleport'
+                                                });
+                                            } else {
+                                                setCommandPreview(longCmd);
+                                                executeCommand(longCmd, false, false);
+                                                setTimeout(() => setCommandPreview(null), 150);
+                                            }
+                                            setHeldButton(null);
+                                            setCommandPreview(null);
+                                        }, 700);
+                                    }
+                                } else {
+                                    if (el._currentDir) {
+                                        el._currentDir = null;
+                                        clearTimeout(el._lst);
+                                        el._lst = null;
+                                    }
+                                }
+
+                                const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []));
+                                setCommandPreview(preview);
+                            }}
+                            onPointerUp={(e) => {
+                                if (btn.isEditMode) return;
+                                const el = e.currentTarget as any;
+
+                                clearTimeout(el._lpt); el._lpt = null;
+                                clearTimeout(el._lst); el._lst = null;
+                                setHeldButton(null);
+
+                                if (el._didFire) { el._didFire = false; setCommandPreview(null); return; }
+
+                                const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                                const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []));
+
+                                if (preview) {
+                                    executeCommand(preview, false, false);
+                                    if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
+                                    triggerHaptic(15);
+                                    const htmlEl = e.currentTarget as HTMLElement;
+                                    htmlEl.classList.remove('btn-glow-active'); void htmlEl.offsetWidth; htmlEl.classList.add('btn-glow-active');
+                                } else {
+                                    // Not a command or cancelled (no preview)
+                                    // Check for navigation etc.
+                                    const isSwiped = Math.abs(dx) > 15 || Math.abs(dy) > 15;
+                                    let cmd = button.command;
+                                    let actionType = button.actionType || 'command';
+                                    if (isSwiped && button.swipeCommands) {
+                                        const absDx = Math.abs(dx), absDy = Math.abs(dy);
+                                        const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+                                        if (button.swipeCommands[dir]) {
+                                            cmd = button.swipeCommands[dir]!;
+                                            actionType = button.swipeActionTypes?.[dir] || 'command';
+                                        }
+                                    }
+
+                                    if (actionType === 'nav') btn.setActiveSet(cmd);
+                                    else if (actionType === 'assign') {
+                                        const rect = el.getBoundingClientRect();
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd, context: button.label, assignSourceId: button.id });
+                                    }
+                                    else if (actionType === 'menu') {
+                                        const rect = el.getBoundingClientRect();
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd });
+                                    }
+                                }
+
+                                setCommandPreview(null);
+
+                                if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (btn.isEditMode) {
+                                    if (wasDraggingRef.current) return;
+                                    if (e.ctrlKey || e.metaKey) return;
+                                    btn.setEditingButtonId(button.id);
+                                    if (!btn.selectedButtonIds.has(button.id)) btn.setSelectedIds(new Set([button.id]));
+                                }
+                            }}
+                        >
+
+                            {button.label} {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, button.id, 'resize')} />}
+                        </div>
+                    );
+                })}
             </div>
 
             {btn.isEditMode && <div className="add-btn-fab" onClick={() => btn.createButton()}><Plus size={32} /></div>}
 
             {
                 popoverState && (
-                    <div className="popover-menu" style={{ left: popoverState.x, top: popoverState.y }}>
-                        <div className="popover-header">
-                            {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' ? `Actions: ${popoverState.context} ` : `Set: ${popoverState.setId} `}
-                        </div>
+                    <div className="popover-menu" ref={popoverRef} style={{ position: 'fixed', left: popoverState.x, top: popoverState.y, zIndex: 9999 }}>
+                        {popoverState.type === 'teleport-save' && (() => {
+                            let labelInputRef: HTMLInputElement | null = null;
+                            const doSave = () => {
+                                const label = labelInputRef?.value.trim();
+                                if (label) {
+                                    const newTarget: TeleportTarget = {
+                                        id: popoverState.teleportId!,
+                                        label,
+                                        expiresAt: Date.now() + 24 * 60 * 60 * 1000
+                                    };
+                                    setTeleportTargets(prev => [...prev.filter(t => t.label !== label), newTarget]);
+                                    addMessage('system', `Stored room '${label}' (${popoverState.teleportId}) for 24 hours.`);
+                                    setPopoverState(null);
+                                }
+                            };
+                            return (
+                                <div style={{ padding: '12px', minWidth: '200px' }}>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--accent)', marginBottom: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>📍 STORE TELEPORT ROOM</div>
+                                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', fontFamily: 'monospace' }}>{popoverState.teleportId}</div>
+                                    <input
+                                        type="text"
+                                        placeholder="Label (e.g. Bree)"
+                                        autoFocus
+                                        ref={el => { labelInputRef = el; }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+                                            else if (e.key === 'Escape') setPopoverState(null);
+                                        }}
+                                        style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 10px', borderRadius: '6px', outline: 'none', fontSize: '0.9rem', boxSizing: 'border-box', marginBottom: '10px' }}
+                                    />
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            onClick={doSave}
+                                            style={{ flex: 1, background: 'var(--accent)', border: 'none', color: '#000', padding: '8px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer' }}
+                                        >Save</button>
+                                        <button
+                                            onClick={() => setPopoverState(null)}
+                                            style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '8px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer' }}
+                                        >Cancel</button>
+                                    </div>
+                                </div>
+                            );
+                        })()}
 
-                        {(popoverState.setId === 'selection') && (
-                            <div className="popover-item" onClick={() => {
-                                setTarget(popoverState.context || null);
-                                setPopoverState(null);
-                                addMessage('system', `Target set to: ${popoverState.context} `);
-                            }}>
-                                Set as Target
-                            </div>
+                        {popoverState.type === 'teleport-select' && (
+                            <>
+                                <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>TARGET FOR {popoverState.spellCommand?.toUpperCase()}</div>
+                                <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                    {teleportTargets.map(target => (
+                                        <div key={target.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={() => {
+                                            executeCommand(`${popoverState.spellCommand} ${target.id}`);
+                                            setPopoverState(null);
+                                        }}>
+                                            <span>{target.label}</span>
+                                            <span style={{ fontSize: '0.6rem', opacity: 0.5, marginLeft: '10px' }}>{Math.round((target.expiresAt - Date.now()) / 3600000)}h</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                    <div className="popover-item" style={{ flex: 1, textAlign: 'center', opacity: 0.6, fontSize: '0.7rem' }} onClick={() => setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' })}>Manage Rooms</div>
+                                    <div className="popover-item" style={{ flex: 1, color: '#ff5555', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
+                                </div>
+                            </>
                         )}
 
-                        <>
-                            {popoverState.setId === 'setmanager' ? (
-                                // List all available button sets instead of buttons
-                                btn.availableSets.map(setName => (
-                                    <div key={setName} className="popover-item" onClick={() => {
-                                        if (popoverState.assignSourceId) {
-                                            btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ?
-                                                { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' } : b
-                                            ));
+                        {popoverState.type === 'teleport-manage' && (
+                            <>
+                                <div className="popover-header" style={{ padding: '10px 12px', fontSize: '0.8rem', color: 'var(--accent)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>STORED ROOMS</div>
+                                <div className="popover-scroll" style={{ maxHeight: '250px', overflowY: 'auto', minWidth: '220px' }}>
+                                    {teleportTargets.length === 0 && <div style={{ padding: '20px', fontSize: '0.8rem', opacity: 0.4, textAlign: 'center' }}>No rooms stored.</div>}
+                                    {teleportTargets.map(target => (
+                                        <div key={target.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'default' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <div style={{ fontSize: '0.9rem' }}>{target.label}</div>
+                                                <div style={{ fontSize: '0.6rem', opacity: 0.4 }}>{target.id} • {Math.round((target.expiresAt - Date.now()) / 3600000)}h left</div>
+                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setTeleportTargets(prev => prev.filter(t => t.label !== target.label));
+                                                }}
+                                                style={{ background: 'rgba(255,0,0,0.1)', border: 'none', color: '#ff5555', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}
+                                            >✕</button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Close</div>
+                            </>
+                        )}
+
+                        {popoverState.type === 'give-recipient-select' && (
+                            <>
+                                <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>SELECT RECIPIENT</div>
+                                <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto', minWidth: '150px' }}>
+                                    {[...new Set(roomPlayers)].length === 0 && <div className="popover-empty">No one here.</div>}
+                                    {[...new Set(roomPlayers)].map(name => (
+                                        <div key={name} className="popover-item" onClick={() => {
+                                            executeCommand(`${popoverState.context} ${extractNoun(name)}`);
+                                            // Refresh inventory after giving
+                                            setTimeout(() => executeCommand('inv', false, false, true), 500);
                                             setPopoverState(null);
-                                            addMessage('system', `Assigned sub-menu '${setName}' to button.`);
+                                        }}>
+                                            {name}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', color: '#ff5555', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Cancel</div>
+                            </>
+                        )}
+
+                        {!popoverState.type && (
+                            <>
+                                <div className="popover-header"
+                                    style={{ cursor: popoverState.setId !== 'setmanager' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '4px', paddingBottom: '4px' }}
+                                    onClick={() => {
+                                        if (popoverState.setId !== 'setmanager') {
+                                            setPopoverState({ ...popoverState, setId: 'setmanager' });
                                         }
                                     }}>
-                                        Switch to: {setName}
+                                    {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist' || popoverState.setId === 'target' || popoverState.setId === 'inlineplayer' ? `Actions: ${popoverState.context} ▾` : (popoverState.setId === 'setmanager' ? 'Select Button Set' : `Set: ${popoverState.setId} ▾`)}
+                                </div>
+
+                                {(popoverState.setId === 'selection' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist') && (
+                                    <div className="popover-item" onClick={() => {
+                                        setTarget(popoverState.context || null);
+                                        setPopoverState(null);
+                                        addMessage('system', `Target set to: ${popoverState.context} `);
+                                    }}>
+                                        Set as Target
                                     </div>
-                                ))
-                            ) : (
-                                // Default: List buttons from the target set
-                                btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
-                                    <div key={button.id} className="popover-item" onClick={(e) => {
-                                        if (popoverState?.assignSourceId) {
-                                            btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
-                                            setPopoverState(null);
-                                            addMessage('system', `Assigned '${button.label}' to button.`);
-                                        } else {
-                                            handleButtonClick(button, e, popoverState!.context);
-                                        }
-                                    }}>{button.label}</div>
-                                ))
-                            )}
-                            {popoverState.setId !== 'setmanager' && btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>}
-                        </>
+                                )}
+
+                                <>
+                                    {popoverState.setId === 'setmanager' ? (
+                                        // List all available button sets instead of buttons
+                                        btn.availableSets.map(setName => (
+                                            <div key={setName} className="popover-item" onClick={() => {
+                                                setPopoverState({ ...popoverState, setId: setName });
+                                            }}>
+                                                {setName}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        // Default: List buttons from the target set
+                                        <>
+                                            {popoverState.assignSourceId && (
+                                                <div className="popover-item" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => {
+                                                    const setName = popoverState.setId;
+                                                    if (popoverState.assignSwipeDir) {
+                                                        const dir = popoverState.assignSwipeDir;
+                                                        btn.setButtons(prev => prev.map(b => {
+                                                            if (b.id !== popoverState.assignSourceId) return b;
+                                                            const swipeCommands = { ...b.swipeCommands, [dir]: setName };
+                                                            const swipeActionTypes = { ...b.swipeActionTypes, [dir]: 'nav' };
+                                                            const swipeSets = { ...b.swipeSets, [dir]: 'main' };
+                                                            return { ...b, swipeCommands, swipeActionTypes, swipeSets };
+                                                        }));
+                                                        setPopoverState(null);
+                                                        addMessage('system', `Assigned sub-menu '${setName}' to swipe ${dir}.`);
+                                                    } else {
+                                                        btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' } : b));
+                                                        setPopoverState(null);
+                                                        addMessage('system', `Assigned sub-menu '${setName}' to button.`);
+                                                    }
+                                                }}>
+                                                    Assign {popoverState.setId.toUpperCase()} as Menu
+                                                </div>
+                                            )}
+                                            {btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
+                                                <div key={button.id} className="popover-item" onClick={(e) => {
+                                                    if (popoverState?.assignSourceId) {
+                                                        if (popoverState.assignSwipeDir) {
+                                                            const dir = popoverState.assignSwipeDir;
+                                                            btn.setButtons(prev => prev.map(b => {
+                                                                if (b.id !== popoverState.assignSourceId) return b;
+                                                                const swipeCommands = { ...b.swipeCommands, [dir]: button.command };
+                                                                const swipeActionTypes = { ...b.swipeActionTypes, [dir]: button.actionType || 'command' };
+                                                                const swipeSets = { ...b.swipeSets, [dir]: button.setId || 'main' };
+                                                                return { ...b, swipeCommands, swipeActionTypes, swipeSets };
+                                                            }));
+                                                            setPopoverState(null);
+                                                            addMessage('system', `Assigned '${button.label}' to swipe ${dir}.`);
+                                                        } else {
+                                                            btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
+                                                            setPopoverState(null);
+                                                            addMessage('system', `Assigned '${button.label}' to button.`);
+                                                        }
+                                                    } else {
+                                                        handleButtonClick(button, e, popoverState!.context);
+                                                    }
+                                                }}>{button.label}</div>
+                                            ))}
+                                        </>
+                                    )}
+                                    {popoverState.setId !== 'setmanager' && btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && (
+                                        <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>
+                                    )}
+                                </>
+                            </>
+                        )}
                     </div>
                 )
             }
@@ -2130,6 +3107,8 @@ const MudClient = () => {
                         handleFileUpload={handleFileUpload}
                         exportSettings={exportSettings}
                         importSettings={importSettings}
+                        isSoundEnabled={isSoundEnabled}
+                        setIsSoundEnabled={setIsSoundEnabled}
                         isLoading={isLoading}
                         newSoundPattern={newSoundPattern}
                         setNewSoundPattern={setNewSoundPattern}
@@ -2144,6 +3123,10 @@ const MudClient = () => {
                         connect={connect}
                         isMmapperMode={isMmapperMode}
                         setIsMmapperMode={setIsMmapperMode}
+                        loginName={loginName}
+                        setLoginName={setLoginName}
+                        loginPassword={loginPassword}
+                        setLoginPassword={setLoginPassword}
                     />
                 )
             }
@@ -2166,12 +3149,36 @@ const MudClient = () => {
             }
 
             {
+                btn.isEditMode && btn.isGridEnabled && (
+                    <div style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        pointerEvents: 'none',
+                        zIndex: 5,
+                        backgroundImage: `
+                            linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px)
+                        `,
+                        backgroundSize: `${btn.gridSize}% ${btn.gridSize}%`
+                    }} />
+                )
+            }
+
+            {
                 isSetManagerOpen && (
                     <SetManagerModal
                         buttons={btn.buttons}
                         availableSets={btn.availableSets}
                         onClose={() => setIsSetManagerOpen(false)}
-                        onEditButton={(id) => { setIsSetManagerOpen(false); btn.setEditingButtonId(id); }}
+                        onEditButton={(id, currentSet) => {
+                            setManagerSelectedSet(currentSet);
+                            setReturnToManager(true);
+                            setIsSetManagerOpen(false);
+                            btn.setEditingButtonId(id);
+                        }}
                         onDeleteButton={btn.deleteButton}
                         onDeleteSet={btn.deleteSet}
                         onCreateButton={btn.createButton}
@@ -2181,6 +3188,12 @@ const MudClient = () => {
                         defaultSet={btn.defaultSet}
                         onSetCombatSet={btn.setCombatSet}
                         onSetDefaultSet={btn.setDefaultSet}
+                        lastSelectedSet={managerSelectedSet}
+                        onSelectedSetChange={setManagerSelectedSet}
+                        isGridEnabled={btn.isGridEnabled}
+                        onToggleGrid={btn.setIsGridEnabled}
+                        gridSize={btn.gridSize}
+                        onGridSizeChange={btn.setGridSize}
                     />
                 )
             }
@@ -2251,7 +3264,7 @@ const MudClient = () => {
                             className={`character-drawer ${isCharacterOpen ? 'open' : ''}`}
                             onPointerDown={(e) => {
                                 const target = e.target as HTMLElement;
-                                if (target.closest('button') || target.closest('a')) return;
+                                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
                                 e.currentTarget.setPointerCapture(e.pointerId);
                                 (e.currentTarget as any)._startX = e.clientX;
                                 (e.currentTarget as any)._startY = e.clientY;
@@ -2277,15 +3290,18 @@ const MudClient = () => {
                             style={{ touchAction: 'pan-y' }}
                         >
                             <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', padding: '20px', position: 'relative', touchAction: 'pan-y' }}>
-                                {/* Visual Swipe Handle Overlay */}
-                                <div className="swipe-indicator" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
+                                {/* Defined Swipe-to-Close Zone */}
+                                <div style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: '10px', zIndex: 100 }}>
+                                    <div style={{ width: '6px', height: '80px', background: 'rgba(255,255,255,0.4)', borderRadius: '3px' }} />
+                                </div>
                                 <div className="drawer-title-row" style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
                                     <span style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px' }}>Character</span>
                                     <button onClick={() => { triggerHaptic(20); setIsCharacterOpen(false); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
                                 </div>
 
-                                <div style={{ marginBottom: '25px', background: 'rgba(0,0,0,0.2)', padding: '15px', borderRadius: '12px' }}>
-                                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} onClick={() => executeCommand('score')} orientation="horizontal" />
+                                <div className="stat-section" style={{ marginBottom: '25px' }}>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>STATUS</div>
+                                    <div style={{ whiteSpace: 'pre', overflowX: 'auto', fontSize: '0.85rem', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '15px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }} dangerouslySetInnerHTML={{ __html: statsHtml }} />
                                 </div>
 
                                 <div className="controls-section" style={{ marginBottom: '25px' }}>
@@ -2383,10 +3399,74 @@ const MudClient = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="stat-section">
-                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>STATUS</div>
-                                    <div dangerouslySetInnerHTML={{ __html: statsHtml }} />
+
+                                <div className="position-section" style={{ marginBottom: '25px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '8px' }}>
+                                        <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '2px' }}>PLAYER POSITION</div>
+                                    </div>
+                                    <div style={{ display: 'flex', gap: '5px', justifyContent: 'space-between', width: '100%', flexWrap: 'nowrap' }}>
+                                        {[
+                                            { label: 'sleep', cmd: 'sleep', isHighlighted: playerPosition === 'sleeping' },
+                                            { label: 'wake', cmd: 'wake', isHighlighted: playerPosition !== 'sleeping' },
+                                            { label: 'rest', cmd: 'rest', isHighlighted: playerPosition === 'resting' },
+                                            { label: 'sit', cmd: 'sit', isHighlighted: playerPosition === 'sitting' },
+                                            { label: 'stand', cmd: 'stand', isHighlighted: playerPosition === 'standing' },
+                                        ].map(item => (
+                                            <button
+                                                key={item.label}
+                                                onClick={() => {
+                                                    triggerHaptic(20);
+                                                    executeCommand(item.cmd);
+                                                    if (item.cmd === 'sleep') setPlayerPosition('sleeping');
+                                                    else if (item.cmd === 'wake' && playerPosition === 'sleeping') setPlayerPosition('resting');
+                                                    else if (['rest', 'sit', 'stand'].includes(item.cmd)) {
+                                                        const posMap: Record<string, string> = { 'rest': 'resting', 'sit': 'sitting', 'stand': 'standing' };
+                                                        setPlayerPosition(posMap[item.cmd]);
+                                                    }
+                                                }}
+                                                style={{
+                                                    height: '34px',
+                                                    padding: '0 4px',
+                                                    borderRadius: '6px',
+                                                    border: item.isHighlighted ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                                                    background: item.isHighlighted ? 'rgba(74, 222, 128, 0.2)' : 'rgba(255,255,255,0.05)',
+                                                    color: item.isHighlighted ? 'var(--accent)' : '#fff',
+                                                    fontSize: '0.65rem',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    flex: 1,
+                                                    minWidth: '0'
+                                                }}
+                                            >
+                                                {item.label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
+
+                                <button
+                                    className="stat-bars-btn"
+                                    onClick={() => {
+                                        triggerHaptic(20);
+                                        executeCommand('score', false, true, true);
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        background: 'rgba(0,0,0,0.2)',
+                                        padding: '15px',
+                                        borderRadius: '12px',
+                                        border: '1px solid rgba(255,255,255,0.05)',
+                                        cursor: 'pointer',
+                                        textAlign: 'left'
+                                    }}
+                                >
+                                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} orientation="horizontal" onWimpyChange={handleWimpyChange} />
+                                </button>
+
                             </div>
                         </div>
 
@@ -2394,7 +3474,7 @@ const MudClient = () => {
                             className={`right-drawer ${isRightDrawerOpen ? 'open' : ''}`}
                             onPointerDown={(e) => {
                                 const target = e.target as HTMLElement;
-                                if (target.closest('button') || target.closest('a')) return;
+                                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
                                 e.currentTarget.setPointerCapture(e.pointerId);
                                 (e.currentTarget as any)._startX = e.clientX;
                                 (e.currentTarget as any)._startY = e.clientY;
@@ -2421,20 +3501,22 @@ const MudClient = () => {
                             style={{ touchAction: 'pan-y' }}
                         >
                             <div className="drawer-header">
-                                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory & Equipment</span>
+                                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Equipment & Inventory</span>
                                 <button onClick={() => { triggerHaptic(20); setIsRightDrawerOpen(false); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
                             </div>
-                            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y' }}>
-                                {/* Visual Swipe Handle Overlay */}
-                                <div className="swipe-indicator" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', width: '6px', height: '80px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px', pointerEvents: 'none' }} />
-
-                                <div style={{ marginBottom: '30px' }}>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>EQUIPMENT</div>
-                                    <div dangerouslySetInnerHTML={{ __html: eqHtml }} />
+                            <div className="drawer-content" style={{ display: 'flex', flexDirection: 'column', gap: '15px', flex: 1, overflow: 'hidden' }}>
+                                {/* Defined Swipe-to-Close Zone */}
+                                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '10px', zIndex: 100 }}>
+                                    <div style={{ width: '6px', height: '80px', background: 'rgba(255,255,255,0.4)', borderRadius: '3px' }} />
                                 </div>
-                                <div>
-                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>INVENTORY</div>
-                                    <div dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
+
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px' }}>EQUIPMENT</div>
+                                    <div className="drawer-section-content" onClick={handleLogClick} style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }} dangerouslySetInnerHTML={{ __html: eqHtml }} />
+                                </div>
+                                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                                    <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px' }}>INVENTORY</div>
+                                    <div className="drawer-section-content" onClick={handleLogClick} style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }} dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
                                 </div>
                             </div>
                         </div>
@@ -2447,4 +3529,3 @@ const MudClient = () => {
 
 const root = createRoot(document.getElementById('root')!);
 root.render(<MudClient />);
-

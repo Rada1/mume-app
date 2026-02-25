@@ -52,9 +52,11 @@ export interface MapperProps {
     isDesignMode?: boolean;
     characterName?: string | null;
     isMmapperMode?: boolean;
+    isExpanded?: boolean;
+    isMobile?: boolean;
 }
 
-export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, characterName, isMmapperMode }, ref) => {
+export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, characterName, isMmapperMode, isExpanded, isMobile }, ref) => {
     // --- STATE ---
     const [mode, setMode] = useState<'edit' | 'play'>(isDesignMode ? 'edit' : 'play');
     const longPressTimerRef = useRef<any>(null);
@@ -93,6 +95,7 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
     const terrainCacheRef = useRef<Record<string, HTMLCanvasElement>>({});
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
+    const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
 
     const processMountainImage = (img: HTMLImageElement): Promise<HTMLImageElement> => {
         return new Promise((resolve) => {
@@ -886,21 +889,49 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
                     playerPosRef.current = { x: currentRoom.x, y: currentRoom.y, z: currentRoom.z || 0 };
                 } else {
                     const lerpSpeed = 0.12;
-                    playerPosRef.current.x += (currentRoom.x - playerPosRef.current.x) * lerpSpeed;
-                    playerPosRef.current.y += (currentRoom.y - playerPosRef.current.y) * lerpSpeed;
-                    playerPosRef.current.z += ((currentRoom.z || 0) - playerPosRef.current.z) * lerpSpeed;
+                    const diffX = currentRoom.x - playerPosRef.current.x;
+                    const diffY = currentRoom.y - playerPosRef.current.y;
+                    const diffZ = (currentRoom.z || 0) - playerPosRef.current.z;
+
+                    if (Math.abs(diffX) > 0.001 || Math.abs(diffY) > 0.001) {
+                        const len = playerTrailRef.current.length;
+                        const lastCrumb = len > 0 ? playerTrailRef.current[len - 1] : null;
+                        if (!lastCrumb || Math.hypot(playerPosRef.current.x - lastCrumb.x, playerPosRef.current.y - lastCrumb.y) > 0.1) {
+                            playerTrailRef.current.push({ x: playerPosRef.current.x, y: playerPosRef.current.y, z: playerPosRef.current.z, alpha: 1.0 });
+                        }
+                    }
+
+                    playerPosRef.current.x += diffX * lerpSpeed;
+                    playerPosRef.current.y += diffY * lerpSpeed;
+                    playerPosRef.current.z += diffZ * lerpSpeed;
                 }
             }
 
+            // Decay trail breadcrumbs
+            playerTrailRef.current.forEach(t => t.alpha -= 0.02);
+            playerTrailRef.current = playerTrailRef.current.filter(t => t.alpha > 0);
+
             if (autoCenter && playerPosRef.current) {
-                const targetCamX = playerPosRef.current.x * GRID_SIZE - (width / dpr / cam.zoom) / 2 + GRID_SIZE / 2;
-                const targetCamY = playerPosRef.current.y * GRID_SIZE - (height / dpr / cam.zoom) / 2 + GRID_SIZE / 2;
+                const viewWidth = width / dpr;
+                const viewHeight = height / dpr;
+                const targetCamX = playerPosRef.current.x * GRID_SIZE - (viewWidth / cam.zoom) / 2 + GRID_SIZE / 2;
+                const targetCamY = playerPosRef.current.y * GRID_SIZE - (viewHeight / cam.zoom) / 2 + GRID_SIZE / 2;
+
                 cam.x += (targetCamX - cam.x) * 0.1;
                 cam.y += (targetCamY - cam.y) * 0.1;
             }
 
             const zoom = cam.zoom;
             const invZoom = 1 / zoom;
+
+            // Viewport clipping bounds in world coordinates
+            const viewportW = width / dpr / zoom;
+            const viewportH = height / dpr / zoom;
+            const viewX1 = cam.x - GRID_SIZE;
+            const viewX2 = cam.x + viewportW + GRID_SIZE;
+            const viewY1 = cam.y - GRID_SIZE;
+            const viewY2 = cam.y + viewportH + GRID_SIZE;
+
             // Grid rendering removed for cleaner aesthetic
 
             const drawLine = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2, dashed = false) => {
@@ -925,6 +956,12 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
                 if (!room || !room.exits) return;
                 const rz = room.z || 0;
                 if (Math.abs(rz - currentZ) > 4) return;
+
+                const rx_center = room.x * GRID_SIZE + GRID_SIZE / 2;
+                const ry_center = room.y * GRID_SIZE + GRID_SIZE / 2;
+
+                // X/Y Clip check
+                if (rx_center < viewX1 || rx_center > viewX2 || ry_center < viewY1 || ry_center > viewY2) return;
 
                 const age = now - (room.createdAt || 0);
                 const isAnimating = age < ANIM_DUR;
@@ -1303,6 +1340,27 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
                 }
             });
 
+            // --- DRAW PLAYER TRAIL ---
+            if (playerTrailRef.current.length > 0) {
+                ctx.save();
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
+                playerTrailRef.current.forEach(t => {
+                    const zDist = Math.abs(t.z - currentZ);
+                    if (zDist < 1.5) {
+                        ctx.globalAlpha = Math.max(0, t.alpha * (1 - zDist));
+                        ctx.fillStyle = '#3b82f6';
+                        ctx.beginPath();
+                        const tx = t.x * GRID_SIZE + GRID_SIZE / 2;
+                        const ty = t.y * GRID_SIZE + GRID_SIZE / 2;
+                        // Trail drops shrink as they fade out
+                        ctx.arc(tx, ty, 1 + (t.alpha * 4), 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+                ctx.restore();
+            }
+
             // --- DRAW PLAYER ---
             if (playerPosRef.current && Math.abs(playerPosRef.current.z - currentZ) < 1.5) {
                 const px = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2;
@@ -1335,7 +1393,12 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
                 // Player name label in Aniron
                 // Player name label in Aniron
                 if (characterName) {
-                    const displayName = characterName.replace(/^\{FULLNAME:/i, '').replace(/\}$/, '').split(' ')[0];
+                    const cleanName = characterName.replace(/\x1b\[[0-9;]*m/g, '');
+                    let displayName = cleanName.replace(/^\{FULLNAME:/i, '').replace(/\}$/, '').split(' ')[0];
+                    // If we have JSON artifacts left, clean them
+                    if (displayName.includes('{') || displayName.includes('"') || displayName.includes(':')) {
+                        displayName = displayName.replace(/[{}"']/g, '').split(':').pop()?.trim() || displayName;
+                    }
                     ctx.font = `bold 13px "Aniron"`;
                     ctx.fillStyle = '#1e40af';
                     ctx.textAlign = 'center';
@@ -1482,24 +1545,48 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
     useEffect(() => {
         const cvs = canvasRef.current, parent = cvs?.parentElement;
         if (!cvs || !parent) return;
-        const resizeObserver = new ResizeObserver(() => {
-            const dpr = getDPR();
-            const w = Math.round(parent.clientWidth * dpr), h = Math.round(parent.clientHeight * dpr);
-            if (w > 0 && h > 0 && (cvs.width !== w || cvs.height !== h)) {
-                cvs.width = w; cvs.height = h;
-                // Re-center on resize if auto-center is on (crucial for mobile layout shifts)
-                if (autoCenter && currentRoomId && rooms[currentRoomId]) {
-                    const r = rooms[currentRoomId];
-                    centerCameraOn(r.x, r.y);
+
+        let resizeRaf: number | null = null;
+        const handleResizeAction = () => {
+            if (resizeRaf) cancelAnimationFrame(resizeRaf);
+            resizeRaf = requestAnimationFrame(() => {
+                const canvas = canvasRef.current;
+                const cam = cameraRef.current;
+                if (canvas && parent) {
+                    const dpr = getDPR();
+                    const zoom = cam.zoom;
+
+                    // 1. Capture world coordinate of the current center point
+                    const oldW = canvas.width / dpr;
+                    const oldH = canvas.height / dpr;
+                    const worldCenterX = cam.x + (oldW / zoom) / 2;
+                    const worldCenterY = cam.y + (oldH / zoom) / 2;
+
+                    // 2. Update physical dimensions
+                    const newW = parent.clientWidth;
+                    const newH = parent.clientHeight;
+                    canvas.width = newW * dpr;
+                    canvas.height = newH * dpr;
+
+                    // 3. Update camera to keep the same world point in the new center
+                    cam.x = worldCenterX - (newW / zoom) / 2;
+                    cam.y = worldCenterY - (newH / zoom) / 2;
+
+                    drawMap();
                 }
-            }
-        });
+            });
+        };
+
+        const resizeObserver = new ResizeObserver(handleResizeAction);
         resizeObserver.observe(parent);
-        const dpr = getDPR();
-        const initW = Math.round(parent.clientWidth * dpr), initH = Math.round(parent.clientHeight * dpr);
-        if (initW > 0 && initH > 0) { cvs.width = initW; cvs.height = initH; }
-        return () => resizeObserver.disconnect();
-    }, [autoCenter, currentRoomId, rooms, centerCameraOn, isMinimized]);
+        window.addEventListener('resize', handleResizeAction);
+
+        return () => {
+            if (resizeRaf) cancelAnimationFrame(resizeRaf);
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', handleResizeAction);
+        };
+    }, [currentRoomId, rooms, centerCameraOn, drawMap]);
 
     if (isMinimized) {
         return (
@@ -1531,113 +1618,117 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
     }
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', width: '100%', height: '100%', backgroundColor: '#ffffff', borderLeft: '1px solid #d1cfc8', color: '#1e1e2e', fontFamily: 'serif', borderRadius: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', position: 'relative', width: '100%', height: '100%', backgroundColor: 'transparent', color: '#1e1e2e', fontFamily: 'serif', borderRadius: '12px', overflow: 'hidden' }}>
             {/* Top Left Toolbar */}
-            <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 10, backgroundColor: 'rgba(30, 30, 46, 0.9)', padding: '4px', borderRadius: '4px', border: '1px solid #313244', display: 'flex', gap: '8px', alignItems: 'center', backdropFilter: 'blur(4px)', fontSize: '12px' }}>
-                <div style={{ display: 'flex', backgroundColor: '#313244', borderRadius: '4px', overflow: 'hidden' }}>
-                    <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal' }} onClick={() => setMode('edit')}>Edit</button>
-                    <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal' }} onClick={() => setMode('play')}>Play</button>
+            {(!isMobile || isExpanded) && (
+                <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 10, backgroundColor: 'rgba(30, 30, 46, 0.9)', padding: '4px', borderRadius: '4px', border: '1px solid #313244', display: 'flex', gap: '8px', alignItems: 'center', backdropFilter: 'blur(4px)', fontSize: '12px' }}>
+                    <div style={{ display: 'flex', backgroundColor: '#313244', borderRadius: '4px', overflow: 'hidden' }}>
+                        <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal' }} onClick={() => setMode('edit')}>Edit</button>
+                        <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal' }} onClick={() => setMode('play')}>Play</button>
+                    </div>
+                    <button
+                        style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: autoCenter ? '#f9e2af' : '#313244', color: autoCenter ? '#11111b' : '#cdd6f4', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => { setAutoCenter(!autoCenter); if (!autoCenter && currentRoomId && rooms[currentRoomId]) centerCameraOn(rooms[currentRoomId].x, rooms[currentRoomId].y); }}
+                        title="Center on player"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
+                        Center
+                    </button>
+                    <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '0 2px' }} />
+                    <button
+                        style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: '#313244', color: '#f38ba8', display: 'flex', alignItems: 'center' }}
+                        onClick={() => setIsMinimized(true)}
+                        title="Minimize"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </button>
                 </div>
-                <button
-                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: autoCenter ? '#f9e2af' : '#313244', color: autoCenter ? '#11111b' : '#cdd6f4', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    onClick={() => { setAutoCenter(!autoCenter); if (!autoCenter && currentRoomId && rooms[currentRoomId]) centerCameraOn(rooms[currentRoomId].x, rooms[currentRoomId].y); }}
-                    title="Center on player"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
-                    Center
-                </button>
-                <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '0 2px' }} />
-                <button
-                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: '#313244', color: '#f38ba8', display: 'flex', alignItems: 'center' }}
-                    onClick={() => setIsMinimized(true)}
-                    title="Minimize"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-            </div>
+            )}
 
             {/* Top Right Menu */}
-            <div style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 20 }}>
-                <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    style={{
-                        padding: '6px',
-                        backgroundColor: 'rgba(30, 30, 46, 0.9)',
-                        border: '1px solid #313244',
-                        borderRadius: '4px',
-                        color: '#cdd6f4',
-                        cursor: 'pointer',
-                        backdropFilter: 'blur(4px)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(49, 50, 68, 0.9)'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 30, 46, 0.9)'}
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                </button>
+            {(!isMobile || isExpanded) && (
+                <div style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 20 }}>
+                    <button
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        style={{
+                            padding: '6px',
+                            backgroundColor: 'rgba(30, 30, 46, 0.9)',
+                            border: '1px solid #313244',
+                            borderRadius: '4px',
+                            color: '#cdd6f4',
+                            cursor: 'pointer',
+                            backdropFilter: 'blur(4px)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(49, 50, 68, 0.9)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 30, 46, 0.9)'}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                    </button>
 
-                {isDropdownOpen && (
-                    <>
-                        <div
-                            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}
-                            onClick={() => setIsDropdownOpen(false)}
-                        />
-                        <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', backgroundColor: '#1e1e2e', border: '1px solid #313244', borderRadius: '8px', padding: '8px', minWidth: '180px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                            <div style={{ padding: '6px 12px', fontSize: '11px', color: '#585b70', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Settings</div>
+                    {isDropdownOpen && (
+                        <>
+                            <div
+                                style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }}
+                                onClick={() => setIsDropdownOpen(false)}
+                            />
+                            <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', backgroundColor: '#1e1e2e', border: '1px solid #313244', borderRadius: '8px', padding: '8px', minWidth: '180px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <div style={{ padding: '6px 12px', fontSize: '11px', color: '#585b70', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Settings</div>
 
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', cursor: 'pointer', userSelect: 'none', borderRadius: '4px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                                <input
-                                    type="checkbox"
-                                    checked={allowPersistence}
-                                    onChange={(e) => setAllowPersistence(e.target.checked)}
-                                    style={{ cursor: 'pointer', accentColor: '#a6e3a1', width: '16px', height: '16px' }}
-                                />
-                                <span style={{ fontSize: '13px', color: allowPersistence ? '#a6e3a1' : '#f38ba8', fontWeight: 'bold' }}>Session Saving</span>
-                            </label>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', cursor: 'pointer', userSelect: 'none', borderRadius: '4px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                    <input
+                                        type="checkbox"
+                                        checked={allowPersistence}
+                                        onChange={(e) => setAllowPersistence(e.target.checked)}
+                                        style={{ cursor: 'pointer', accentColor: '#a6e3a1', width: '16px', height: '16px' }}
+                                    />
+                                    <span style={{ fontSize: '13px', color: allowPersistence ? '#a6e3a1' : '#f38ba8', fontWeight: 'bold' }}>Session Saving</span>
+                                </label>
 
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', cursor: 'pointer', userSelect: 'none', borderRadius: '4px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                                <input
-                                    type="checkbox"
-                                    checked={isDarkMode}
-                                    onChange={(e) => setIsDarkMode(e.target.checked)}
-                                    style={{ cursor: 'pointer', accentColor: '#cba6f7', width: '16px', height: '16px' }}
-                                />
-                                <span style={{ fontSize: '13px', color: isDarkMode ? '#cba6f7' : '#fab387', fontWeight: 'bold' }}>Dark Mode (Inverted)</span>
-                            </label>
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', cursor: 'pointer', userSelect: 'none', borderRadius: '4px', transition: 'background 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                    <input
+                                        type="checkbox"
+                                        checked={isDarkMode}
+                                        onChange={(e) => setIsDarkMode(e.target.checked)}
+                                        style={{ cursor: 'pointer', accentColor: '#cba6f7', width: '16px', height: '16px' }}
+                                    />
+                                    <span style={{ fontSize: '13px', color: isDarkMode ? '#cba6f7' : '#fab387', fontWeight: 'bold' }}>Dark Mode (Inverted)</span>
+                                </label>
 
-                            <div style={{ height: '1px', backgroundColor: '#313244', margin: '4px 8px' }} />
+                                <div style={{ height: '1px', backgroundColor: '#313244', margin: '4px 8px' }} />
 
-                            <div style={{ padding: '6px 12px', fontSize: '11px', color: '#585b70', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Management</div>
+                                <div style={{ padding: '6px 12px', fontSize: '11px', color: '#585b70', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Management</div>
 
-                            <button style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#89b4fa', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => { exportMap(); setIsDropdownOpen(false); }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(137, 180, 250, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                                Export Map
-                            </button>
+                                <button style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#89b4fa', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => { exportMap(); setIsDropdownOpen(false); }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(137, 180, 250, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                    Export Map
+                                </button>
 
-                            <label style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#a6e3a1', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(166, 227, 161, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                                Import Map
-                                <input type="file" onChange={(e) => { importMap(e); setIsDropdownOpen(false); }} style={{ display: 'none' }} accept=".json" />
-                            </label>
+                                <label style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#a6e3a1', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(166, 227, 161, 0.1)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                                    Import Map
+                                    <input type="file" onChange={(e) => { importMap(e); setIsDropdownOpen(false); }} style={{ display: 'none' }} accept=".json" />
+                                </label>
 
-                            <div style={{ height: '1px', backgroundColor: '#313244', margin: '4px 8px' }} />
+                                <div style={{ height: '1px', backgroundColor: '#313244', margin: '4px 8px' }} />
 
-                            <button
-                                onClick={() => { clearMap(); setIsDropdownOpen(false); }}
-                                style={{ padding: '8px 12px', backgroundColor: 'rgba(243, 139, 168, 0.05)', border: 'none', color: '#f38ba8', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}
-                                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(243, 139, 168, 0.15)'}
-                                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(243, 139, 168, 0.05)'}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                                Clear Entire Map
-                            </button>
-                        </div>
-                    </>
-                )}
-            </div>
+                                <button
+                                    onClick={() => { clearMap(); setIsDropdownOpen(false); }}
+                                    style={{ padding: '8px 12px', backgroundColor: 'rgba(243, 139, 168, 0.05)', border: 'none', color: '#f38ba8', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(243, 139, 168, 0.15)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(243, 139, 168, 0.05)'}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                    Clear Entire Map
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </div>
+            )}
 
             {infoRoomId && rooms[infoRoomId] && (
                 <div

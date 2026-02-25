@@ -27,9 +27,10 @@ export interface GameStats {
     maxMana: number;
     move: number;
     maxMove: number;
+    wimpy?: number;
 }
 
-export type ActionType = 'command' | 'nav' | 'menu' | 'assign';
+export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'teleport-manage' | 'select-recipient' | 'preload';
 
 export interface CustomButton {
     id: string;
@@ -44,6 +45,12 @@ export interface CustomButton {
         left?: ActionType;
         right?: ActionType;
     };
+    longSwipeActionTypes?: {
+        up?: ActionType;
+        down?: ActionType;
+        left?: ActionType;
+        right?: ActionType;
+    };
     display: 'floating' | 'inline'; // How the button is shown
     style: {
         x: number; // percentage of viewport width
@@ -51,6 +58,7 @@ export interface CustomButton {
         w: number; // px
         h: number; // px
         backgroundColor: string;
+        borderColor?: string; // Optional border color
         transparent?: boolean; // New transparent flag
         shape: 'rect' | 'pill' | 'circle';
     };
@@ -63,10 +71,13 @@ export interface CustomButton {
         spit?: boolean; // animate flying from text to sidebar
         type?: TriggerAction;
         targetSet?: string;
+        onKeyboard?: boolean; // Show when mobile keyboard opens
     };
     isVisible: boolean; // Runtime state
     longCommand?: string; // Command sent on long-press
     swipeCommands?: { up?: string; down?: string; left?: string; right?: string }; // Commands sent on swipe
+    swipeSets?: { up?: string; down?: string; left?: string; right?: string }; // Sets the swipe commands belong to
+    longSwipeCommands?: { up?: string; down?: string; left?: string; right?: string }; // Commands sent on long swipe
 }
 
 export interface SoundTrigger {
@@ -78,12 +89,23 @@ export interface SoundTrigger {
     fileName: string;
 }
 
+export interface TeleportTarget {
+    id: string; // The room key
+    label: string;
+    expiresAt: number;
+}
+
 export interface PopoverState {
     x: number;
     y: number;
+    sourceHeight?: number;
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select';
     setId: string;
     context?: string;
     assignSourceId?: string;
+    assignSwipeDir?: 'up' | 'down' | 'left' | 'right';
+    teleportId?: string; // For saving
+    spellCommand?: string; // e.g. "cast 'teleport'"
 }
 
 export interface SavedSettings {
@@ -94,6 +116,9 @@ export interface SavedSettings {
     soundTriggers: Omit<SoundTrigger, 'buffer'>[];
     combatSet?: string;
     defaultSet?: string;
+    loginName?: string;
+    loginPassword?: string;
+    isSoundEnabled?: boolean;
 }
 
 export interface RoomNode {

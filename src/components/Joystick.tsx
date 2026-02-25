@@ -8,7 +8,9 @@ interface JoystickProps {
     onJoystickStart: (e: React.PointerEvent) => void;
     onJoystickMove: (e: React.PointerEvent) => void;
     onJoystickEnd: (e: React.PointerEvent) => void;
-    onNavClick: (dir: 'up' | 'down') => void;
+    onNavStart: (dir: 'up' | 'down') => void;
+    onNavEnd: (dir: 'up' | 'down') => void;
+    isTargetModifierActive?: boolean;
 }
 
 const Joystick: React.FC<JoystickProps> = ({
@@ -18,20 +20,26 @@ const Joystick: React.FC<JoystickProps> = ({
     onJoystickStart,
     onJoystickMove,
     onJoystickEnd,
-    onNavClick
+    onNavStart,
+    onNavEnd,
+    isTargetModifierActive
 }) => {
     return (
         <div className="cluster-row">
             <div className="nav-buttons-col">
                 <div
                     className={`nav-btn ${btnGlow.up ? 'glow-active' : ''}`}
-                    onClick={() => onNavClick('up')}
+                    onPointerDown={() => onNavStart('up')}
+                    onPointerUp={() => onNavEnd('up')}
+                    onPointerCancel={() => onNavEnd('up')}
                 >
                     <ArrowUp size={24} />
                 </div>
                 <div
                     className={`nav-btn ${btnGlow.down ? 'glow-active' : ''}`}
-                    onClick={() => onNavClick('down')}
+                    onPointerDown={() => onNavStart('down')}
+                    onPointerUp={() => onNavEnd('down')}
+                    onPointerCancel={() => onNavEnd('down')}
                 >
                     <ArrowDown size={24} />
                 </div>
@@ -47,7 +55,7 @@ const Joystick: React.FC<JoystickProps> = ({
                 <div className="joystick-base">
                     <div
                         ref={joystickKnobRef}
-                        className={`joystick-knob ${joystickGlow ? 'active-glow' : ''}`}
+                        className={`joystick-knob ${joystickGlow ? 'active-glow' : ''} ${isTargetModifierActive ? 'target-active' : ''}`}
                     />
                 </div>
             </div>

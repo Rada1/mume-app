@@ -5,12 +5,26 @@
   <meta charset="UTF-8">
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="A premium web client for MUME (Multi-Users in Middle-earth) — the classic MUD.">
+
+  <!-- Apple PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#000000">
-  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="apple-mobile-web-app-title" content="MUME">
   <link rel="apple-touch-icon" href="/icon-192.png">
-  <title>Gemini MUD</title>
+  <link rel="apple-touch-startup-image" href="/icon-512.png">
+
+  <!-- Microsoft PWA -->
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="msapplication-TileImage" content="/icon-192.png">
+
+  <!-- Web App Manifest (auto-injected by vite-plugin-pwa in production, kept for dev fallback) -->
+  <link rel="manifest" href="/manifest.webmanifest">
+
+  <title>MUME - Multi-Users in Middle-earth</title>
   <script type="importmap">
     {
       "imports": {

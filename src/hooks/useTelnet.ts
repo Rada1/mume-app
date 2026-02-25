@@ -18,6 +18,10 @@ interface TelnetOptions {
     setInCombat: (inCombat: boolean) => void;
     onOpponentChange?: (name: string | null) => void;
     onCharNameChange?: (name: string) => void;
+    onAddPlayer?: (data: any) => void;
+    onRemovePlayer?: (data: any) => void;
+    onRoomItems?: (data: any) => void;
+    onPositionChange?: (position: string) => void;
 }
 
 export const useTelnet = (options: TelnetOptions) => {
@@ -93,8 +97,7 @@ export const useTelnet = (options: TelnetOptions) => {
 
         if (cmd === TELNET_GMCP) {
             const raw = new TextDecoder().decode(new Uint8Array(buffer.slice(1)));
-            // Robustly split pkg from json: find first space OR first '{' OR first '['
-            // Many MUDs (including MUME) omit the space: Room.Info{"id":123}
+            console.log("[GMCP Raw]", raw);
             let splitIdx = raw.search(/[\s\{\[]/);
             const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
             const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
@@ -120,7 +123,11 @@ export const useTelnet = (options: TelnetOptions) => {
                     }));
 
                     // Partial updates: merge into ref to persist state
-                    if (data.position !== undefined) charVitalsRef.current.position = data.position;
+                    if (data.position !== undefined) {
+                        const pos = data.position.toLowerCase();
+                        charVitalsRef.current.position = pos;
+                        if (options.onPositionChange) options.onPositionChange(pos);
+                    }
                     if (data.opponent !== undefined) {
                         charVitalsRef.current.opponent = data.opponent;
                         if (options.onOpponentChange) options.onOpponentChange(data.opponent);
@@ -153,15 +160,41 @@ export const useTelnet = (options: TelnetOptions) => {
                     const data = JSON.parse(json);
                     handlers.onRoomInfo(data);
                 } catch (e) { }
-            } else if (pkgLower === 'room.players' || pkgLower === 'room.chars') {
+            } else if (pkgLower === 'room.players' || pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
                 try {
                     const data = JSON.parse(json);
+                    console.log("[GMCP Occupants]", data);
                     if (handlers.onRoomPlayers) handlers.onRoomPlayers(data);
+                } catch (e) { console.error("[GMCP Error] Failed to parse room.chars", e); }
+            } else if (pkgLower === 'room.addplayer' || pkgLower === 'room.addchar' || pkgLower === 'room.chars.add') {
+                try {
+                    const data = JSON.parse(json);
+                    if ((handlers as any).onAddPlayer) (handlers as any).onAddPlayer(data);
+                } catch (e) { }
+            } else if (pkgLower === 'room.removeplayer' || pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove') {
+                try {
+                    const data = JSON.parse(json);
+                    if ((handlers as any).onRemovePlayer) (handlers as any).onRemovePlayer(data);
+                } catch (e) { }
+            } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set') {
+                try {
+                    const data = JSON.parse(json);
+                    if ((handlers as any).onRoomItems) (handlers as any).onRoomItems(data);
                 } catch (e) { }
             } else if (pkgLower === 'char.name') {
                 try {
                     // MUME sends name as a quoted string, like "Rada"
-                    const name = json.replace(/"/g, '').trim();
+                    // But handle potential JSON or complex strings as well
+                    let name = json.trim();
+                    if (name.startsWith('"') && name.endsWith('"')) {
+                        name = name.substring(1, name.length - 1);
+                    } else if (name.startsWith('{')) {
+                        try {
+                            const parsed = JSON.parse(name);
+                            name = parsed.name || parsed.fullname || name;
+                        } catch (e) { }
+                    }
+                    name = name.replace(/\x1b\[[0-9;]*m/g, '').trim();
                     if (name && options.onCharNameChange) options.onCharNameChange(name);
                 } catch (e) { }
             }
@@ -215,7 +248,7 @@ export const useTelnet = (options: TelnetOptions) => {
                         if (!gmcpReadyRef.current) {
                             gmcpReadyRef.current = true;
                             addMessage('system', 'GMCP negotiated (server WILL). Requesting room data...');
-                            sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Char.Vitals 1", "Room 1", "Room.Info 1", "Comm 1", "Room.Players 1", "External.Room 1"]);
+                            sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Room 1", "Room.Info 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1"]);
                         }
                     } else if (cmd === DO && option === TELNET_GMCP) {
                         // Server requests us to enable GMCP — we comply
@@ -223,7 +256,7 @@ export const useTelnet = (options: TelnetOptions) => {
                         if (!gmcpReadyRef.current) {
                             gmcpReadyRef.current = true;
                             addMessage('system', 'GMCP negotiated (server DO). Requesting room data...');
-                            sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Char.Vitals 1", "Room 1", "Room.Info 1", "Comm 1", "Room.Players 1", "External.Room 1"]);
+                            sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Room 1", "Room.Info 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1"]);
                         }
                     } else if (cmd === DO && option === TELNET_NAWS) {
                         sendBytes([IAC, WILL, TELNET_NAWS]);
@@ -263,7 +296,14 @@ export const useTelnet = (options: TelnetOptions) => {
         }
     };
 
-    const connect = (handlers: { onRoomInfo: (data: any) => void, onRoomPlayers?: (data: any) => void, onCharVitals?: (data: any) => void }) => {
+    const connect = (handlers: {
+        onRoomInfo: (data: any) => void,
+        onRoomPlayers?: (data: any) => void,
+        onCharVitals?: (data: any) => void,
+        onAddPlayer?: (data: any) => void,
+        onRemovePlayer?: (data: any) => void,
+        onRoomItems?: (data: any) => void
+    }) => {
         if (socketRef.current) socketRef.current.close();
 
         // Reset state for a clean reconnection
@@ -324,13 +364,13 @@ export const useTelnet = (options: TelnetOptions) => {
         if (socketRef.current) socketRef.current.close();
     };
 
-    const sendCommand = (cmd: string) => {
+    const sendCommand = useCallback((cmd: string) => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             const encoder = new TextEncoder();
             const data = encoder.encode(cmd + '\r\n');
             socketRef.current.send(data);
         }
-    };
+    }, []);
 
     return {
         connect,

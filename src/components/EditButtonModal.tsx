@@ -86,6 +86,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <option value="nav">Switch Set</option>
                         <option value="menu">Menu</option>
                         <option value="assign">Assign</option>
+                        <option value="teleport-manage">Teleport List</option>
                     </select>
                 </div>
             </div>
@@ -138,6 +139,61 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <option value="nav">Switch Set</option>
                         <option value="menu">Menu</option>
                         <option value="assign">Assign</option>
+                        <option value="teleport-manage">Teleport List</option>
+                    </select>
+                </div>
+            </div>
+        );
+    };
+
+    const renderLongSwipeConfig = (dir: 'up' | 'down' | 'left' | 'right') => {
+        const actionType = editingButton.longSwipeActionTypes?.[dir] || 'assign';
+        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign';
+
+        return (
+            <div className="setting-group" style={{ marginBottom: '10px' }}>
+                <label className="setting-label" style={{ fontSize: '0.85em', color: '#aaa', textTransform: 'uppercase' }}>Long Swipe {dir}</label>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                    {isSetAction ? (
+                        <select
+                            className="setting-input"
+                            value={editingButton.longSwipeCommands?.[dir] || editingButton.swipeSets?.[dir] || ''}
+                            onChange={e => {
+                                const newCmds = { ...editingButton.longSwipeCommands, [dir]: e.target.value };
+                                if (!e.target.value) delete newCmds[dir as keyof typeof newCmds];
+                                updateButton(editingButton.id, { longSwipeCommands: newCmds });
+                            }}
+                        >
+                            <option value="">Select Set...</option>
+                            {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                    ) : (
+                        <input
+                            className="setting-input"
+                            value={editingButton.longSwipeCommands?.[dir] || ''}
+                            onChange={e => {
+                                const newCmds = { ...editingButton.longSwipeCommands, [dir]: e.target.value };
+                                if (!e.target.value) delete newCmds[dir as keyof typeof newCmds];
+                                updateButton(editingButton.id, { longSwipeCommands: newCmds });
+                            }}
+                            placeholder={`Command (${dir})...`}
+                        />
+                    )}
+                    <select
+                        className="setting-input"
+                        style={{ width: '130px' }}
+                        value={editingButton.longSwipeActionTypes?.[dir] || 'assign'}
+                        onChange={e => {
+                            const newTypes = { ...editingButton.longSwipeActionTypes, [dir]: e.target.value as ActionType };
+                            updateButton(editingButton.id, { longSwipeActionTypes: newTypes });
+                        }}
+                    >
+                        <option value="command">Command</option>
+                        <option value="nav">Switch Set</option>
+                        <option value="menu">Menu</option>
+                        <option value="assign">Assign</option>
+                        <option value="teleport-manage">Teleport List</option>
+                        <option value="select-recipient">Select Recipient</option>
                     </select>
                 </div>
             </div>
@@ -205,11 +261,18 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <>
                             {renderActionConfig('Long Press Action', 'longCommand', 'longActionType')}
                             <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
-                                <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Swipe Gestures</label>
+                                <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Short Swipe Gestures</label>
                                 {renderSwipeConfig('up')}
                                 {renderSwipeConfig('down')}
                                 {renderSwipeConfig('left')}
                                 {renderSwipeConfig('right')}
+                            </div>
+                            <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
+                                <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Long Swipe Gestures</label>
+                                {renderLongSwipeConfig('up')}
+                                {renderLongSwipeConfig('down')}
+                                {renderLongSwipeConfig('left')}
+                                {renderLongSwipeConfig('right')}
                             </div>
                         </>
                     )}

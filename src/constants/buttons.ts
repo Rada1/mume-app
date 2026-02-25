@@ -2,6 +2,7 @@ import { CustomButton } from '../types';
 
 export const DEFAULT_UI_POSITIONS = {
     joystick: { x: undefined, y: undefined, scale: 1 },
+    xbox: { x: undefined, y: undefined, scale: 1 },
     stats: { x: undefined, y: undefined, scale: 1 },
     mapper: { x: undefined, y: 75, w: 320, h: 320, scale: 1 }
 };
@@ -112,18 +113,46 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "isVisible": true
     },
     {
-        "id": "8e04ek",
+        "id": "xbox-y",
+        "label": "Y",
+        "command": "score",
+        "setId": "Xbox",
+        "actionType": "command",
+        "display": "floating",
+        "style": {
+            "x": 84,
+            "y": 66,
+            "w": 50,
+            "h": 50,
+            "backgroundColor": "rgba(255, 255, 255, 0.05)",
+            "borderColor": "#fbbf24",
+            "transparent": true,
+            "shape": "circle"
+        },
+        "trigger": {
+            "enabled": false,
+            "pattern": "",
+            "isRegex": false,
+            "autoHide": false,
+            "duration": 0,
+            "type": "show"
+        },
+        "isVisible": true
+    },
+    {
+        "id": "xbox-x",
         "label": "X",
         "command": "look",
-        "setId": "Combat",
+        "setId": "Xbox",
         "actionType": "command",
         "display": "floating",
         "style": {
-            "x": 68.1640625,
-            "y": 69.25925925925927,
-            "w": 49,
-            "h": 20,
-            "backgroundColor": "rgba(255, 255, 255, 0.1)",
+            "x": 76,
+            "y": 74,
+            "w": 50,
+            "h": 50,
+            "backgroundColor": "rgba(255, 255, 255, 0.05)",
+            "borderColor": "#3b82f6",
             "transparent": true,
             "shape": "circle"
         },
@@ -131,58 +160,26 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
             "enabled": false,
             "pattern": "",
             "isRegex": false,
-            "autoHide": true,
+            "autoHide": false,
             "duration": 0,
             "type": "show"
         },
-        "isVisible": true,
-        "longActionType": "assign",
-        "longCommand": "magespelllist"
+        "isVisible": true
     },
     {
-        "id": "b6rd5",
-        "label": "Y",
-        "command": "look",
-        "setId": "Combat",
-        "actionType": "command",
-        "display": "floating",
-        "style": {
-            "x": 71.171875,
-            "y": 64.81481481481482,
-            "w": 45,
-            "h": 20,
-            "backgroundColor": "rgba(255, 255, 255, 0.1)",
-            "transparent": true,
-            "shape": "circle"
-        },
-        "trigger": {
-            "enabled": false,
-            "pattern": "",
-            "isRegex": false,
-            "autoHide": true,
-            "duration": 0,
-            "type": "show"
-        },
-        "isVisible": true,
-        "longActionType": "assign",
-        "longCommand": "clericspelllist",
-        "swipeActionTypes": {
-            "up": "assign"
-        }
-    },
-    {
-        "id": "xv1ycf",
+        "id": "xbox-b",
         "label": "B",
-        "command": "look",
-        "setId": "Combat",
+        "command": "inventory",
+        "setId": "Xbox",
         "actionType": "command",
         "display": "floating",
         "style": {
-            "x": 67.109375,
-            "y": 78.25396825396825,
-            "w": 48,
-            "h": 20,
-            "backgroundColor": "rgba(255, 255, 255, 0.1)",
+            "x": 92,
+            "y": 74,
+            "w": 50,
+            "h": 50,
+            "backgroundColor": "rgba(255, 255, 255, 0.05)",
+            "borderColor": "#ef4444",
             "transparent": true,
             "shape": "circle"
         },
@@ -190,27 +187,26 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
             "enabled": false,
             "pattern": "",
             "isRegex": false,
-            "autoHide": true,
+            "autoHide": false,
             "duration": 0,
             "type": "show"
         },
-        "isVisible": true,
-        "longActionType": "assign",
-        "longCommand": "warriorskilllist"
+        "isVisible": true
     },
     {
-        "id": "0hiqdj",
+        "id": "xbox-a",
         "label": "A",
         "command": "kill target",
-        "setId": "Combat",
+        "setId": "Xbox",
         "actionType": "command",
         "display": "floating",
         "style": {
-            "x": 70.078125,
-            "y": 72.96296296296298,
-            "w": 90,
-            "h": 20,
-            "backgroundColor": "rgba(255, 255, 255, 0.1)",
+            "x": 84,
+            "y": 82,
+            "w": 50,
+            "h": 50,
+            "backgroundColor": "rgba(255, 255, 255, 0.05)",
+            "borderColor": "#22c55e",
             "transparent": true,
             "shape": "circle"
         },
@@ -218,7 +214,34 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
             "enabled": false,
             "pattern": "",
             "isRegex": false,
-            "autoHide": true,
+            "autoHide": false,
+            "duration": 0,
+            "type": "show"
+        },
+        "isVisible": true
+    },
+    {
+        "id": "xbox-z",
+        "label": "Z",
+        "command": "look",
+        "setId": "Xbox",
+        "actionType": "command",
+        "display": "floating",
+        "style": {
+            "x": 84,
+            "y": 74,
+            "w": 50,
+            "h": 50,
+            "backgroundColor": "rgba(255, 255, 255, 0.05)",
+            "borderColor": "#ffffff",
+            "transparent": true,
+            "shape": "circle"
+        },
+        "trigger": {
+            "enabled": false,
+            "pattern": "",
+            "isRegex": false,
+            "autoHide": false,
             "duration": 0,
             "type": "show"
         },
@@ -2147,5 +2170,98 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
             "type": "show"
         },
         "isVisible": true
-    }
+    },
+    {
+        "id": "inv-drop",
+        "label": "Drop",
+        "command": "drop %n",
+        "setId": "inventorylist",
+        "actionType": "command",
+        "display": "floating",
+        "style": { "x": 0, "y": 0, "w": 0, "h": 0, "backgroundColor": "#ff4444", "shape": "rect" },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true
+    },
+    {
+        "id": "inv-wear",
+        "label": "Wear",
+        "command": "wear %n",
+        "setId": "inventorylist",
+        "actionType": "command",
+        "display": "floating",
+        "style": { "x": 0, "y": 0, "w": 0, "h": 0, "backgroundColor": "#44ff44", "shape": "rect" },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true
+    },
+    {
+        "id": "inv-put",
+        "label": "Put Target",
+        "command": "put %n target",
+        "setId": "inventorylist",
+        "actionType": "command",
+        "display": "floating",
+        "style": { "x": 0, "y": 0, "w": 0, "h": 0, "backgroundColor": "#4444ff", "shape": "rect" },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true
+    },
+    {
+        "id": "inv-hold",
+        "label": "Hold",
+        "command": "hold %n",
+        "setId": "inventorylist",
+        "actionType": "command",
+        "display": "floating",
+        "style": { "x": 0, "y": 0, "w": 0, "h": 0, "backgroundColor": "#ffff44", "shape": "rect" },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true
+    },
+    {
+        "id": "inv-give",
+        "label": "Give",
+        "command": "give %n",
+        "setId": "inventorylist",
+        "actionType": "select-recipient",
+        "display": "floating",
+        "style": { "x": 0, "y": 0, "w": 0, "h": 0, "backgroundColor": "#aa44ff", "shape": "rect" },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true
+    },
+    {
+        "id": "eq-remove",
+        "label": "Remove",
+        "command": "remove %n",
+        "setId": "equipmentlist",
+        "actionType": "command",
+        "display": "floating",
+        "style": { "x": 0, "y": 0, "w": 0, "h": 0, "backgroundColor": "#ffaa44", "shape": "rect" },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true
+    },
+    {
+        "id": "kb-comm",
+        "label": "Communicate",
+        "command": "communicate",
+        "setId": "main",
+        "actionType": "menu",
+        "display": "floating",
+        "style": { "x": 50, "y": 85, "w": 130, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill" },
+        "trigger": { "enabled": true, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show", "onKeyboard": true },
+        "isVisible": false
+    },
+    { "id": "comm-say", "label": "Say", "command": "say", "setId": "communicate", "actionType": "preload", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "comm-yell", "label": "Yell", "command": "yell", "setId": "communicate", "actionType": "preload", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#dc2626", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "comm-narrate", "label": "Narrate", "command": "narrate", "setId": "communicate", "actionType": "preload", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#2563eb", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "comm-pray", "label": "Pray", "command": "pray", "setId": "communicate", "actionType": "preload", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#eab308", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "comm-tell", "label": "Tell", "command": "tell", "setId": "communicate", "actionType": "preload", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#64748b", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "comm-whisper", "label": "Whisper", "command": "whisper", "setId": "communicate", "actionType": "preload", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#14b8a6", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+
+    { "id": "inlp-ex", "label": "Examine", "command": "examine %n", "setId": "inlineplayer", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#2563eb", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "inlp-whois", "label": "Whois", "command": "whois %n", "setId": "inlineplayer", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#0ea5e9", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "inlp-soc", "label": "Social", "command": "social list", "setId": "inlineplayer", "actionType": "nav", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+
+    { "id": "tgt-examine", "label": "Examine", "command": "examine %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#facc15", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "tgt-get", "label": "Get", "command": "get %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#22c55e", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "tgt-kill", "label": "Kill", "command": "kill %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#dc2626", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "tgt-look", "label": "Look", "command": "look %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#3b82f6", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "tgt-clear", "label": "Clear Target", "command": "__clear_target__", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 110, "h": 40, "backgroundColor": "rgba(100,100,100,0.6)", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true }
 ];

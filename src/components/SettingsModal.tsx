@@ -28,6 +28,12 @@ interface SettingsModalProps {
     connect: () => void;
     isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
+    loginName: string;
+    setLoginName: (val: string) => void;
+    loginPassword: string;
+    setLoginPassword: (val: string) => void;
+    isSoundEnabled: boolean;
+    setIsSoundEnabled: (val: boolean) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -55,6 +61,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     connect,
     isMmapperMode,
     setIsMmapperMode,
+    loginName,
+    setLoginName,
+    loginPassword,
+    setLoginPassword,
+    isSoundEnabled,
+    setIsSoundEnabled,
 }) => {
     return (
         <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>
@@ -159,6 +171,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                                 value={path}
                                                 placeholder="/ws-play/"
                                                 onChange={e => updateUrl({ path: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                                        <div style={{ flex: 1 }}>
+                                            <label className="setting-label">Character Name</label>
+                                            <input
+                                                className="setting-input"
+                                                value={loginName}
+                                                placeholder="Rada"
+                                                onChange={e => setLoginName(e.target.value)}
+                                            />
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <label className="setting-label">Password</label>
+                                            <input
+                                                type="password"
+                                                className="setting-input"
+                                                value={loginPassword}
+                                                placeholder="********"
+                                                onChange={e => setLoginPassword(e.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -290,7 +324,42 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
                     {settingsTab === 'sound' && (
                         <>
-                            <div className="setting-group">
+                            <div className="setting-group" style={{ border: '1px solid rgba(139, 92, 246, 0.3)', background: 'rgba(139, 92, 246, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div>
+                                        <label className="setting-label" style={{ color: '#c4b5fd', fontWeight: 'bold', margin: 0 }}>Enable Sound</label>
+                                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Play audio triggers when patterns match.</div>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span style={{ fontSize: '0.8rem', color: isSoundEnabled ? '#c4b5fd' : '#64748b' }}>{isSoundEnabled ? 'ON' : 'OFF'}</span>
+                                        <div
+                                            onClick={() => setIsSoundEnabled(!isSoundEnabled)}
+                                            style={{
+                                                width: '40px',
+                                                height: '20px',
+                                                background: isSoundEnabled ? '#8b5cf6' : '#334155',
+                                                borderRadius: '20px',
+                                                position: 'relative',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.3s'
+                                            }}
+                                        >
+                                            <div style={{
+                                                width: '16px',
+                                                height: '16px',
+                                                background: '#fff',
+                                                borderRadius: '50%',
+                                                position: 'absolute',
+                                                top: '2px',
+                                                left: isSoundEnabled ? '22px' : '2px',
+                                                transition: 'all 0.3s'
+                                            }} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
                                 <label className="setting-label">Add Sound Trigger</label>
                                 <input
                                     className="setting-input"
@@ -319,7 +388,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 </label>
                             </div>
 
-                            <div style={{ marginTop: '20px' }}>
+                            <div style={{ marginTop: '20px', opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
                                 <label className="setting-label">Active Triggers</label>
                                 {soundTriggers.length === 0 && <span className="text-gray-500 italic">No triggers yet.</span>}
                                 {soundTriggers.map(s => (

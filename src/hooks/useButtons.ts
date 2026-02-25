@@ -9,7 +9,10 @@ export const useButtons = () => {
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                return parsed.map((b: CustomButton) => ({
+                const loadedIds = new Set(parsed.map((b: any) => b.id));
+                const missingDefaults = DEFAULT_BUTTONS.filter(b => !loadedIds.has(b.id)).map(b => ({ ...b, isVisible: !b.trigger?.enabled }));
+
+                return [...parsed.map((b: CustomButton) => ({
                     ...b,
                     isVisible: !b.trigger?.enabled,
                     setId: b.setId || 'main',
@@ -23,7 +26,7 @@ export const useButtons = () => {
                         ...b.trigger,
                         type: b.trigger?.type || 'show'
                     }
-                }));
+                })), ...missingDefaults];
             } catch (e) { console.error("Failed to load buttons", e); }
         }
         return DEFAULT_BUTTONS;
@@ -40,6 +43,17 @@ export const useButtons = () => {
 
     const [combatSet, setCombatSet] = useState<string | undefined>(() => localStorage.getItem('mud-combat-set') || undefined);
     const [defaultSet, setDefaultSet] = useState<string | undefined>(() => localStorage.getItem('mud-default-set') || 'main');
+
+    const [isGridEnabled, setIsGridEnabled] = useState(() => localStorage.getItem('mud-grid-enabled') === 'true');
+    const [gridSize, setGridSize] = useState(() => parseInt(localStorage.getItem('mud-grid-size') || '5'));
+
+    useEffect(() => {
+        localStorage.setItem('mud-grid-enabled', isGridEnabled.toString());
+    }, [isGridEnabled]);
+
+    useEffect(() => {
+        localStorage.setItem('mud-grid-size', gridSize.toString());
+    }, [gridSize]);
 
     useEffect(() => { buttonsRef.current = buttons; }, [buttons]);
 
@@ -59,21 +73,33 @@ export const useButtons = () => {
     }, [defaultSet]);
 
     useEffect(() => {
-        const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist'];
+        const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist', 'Xbox', 'inventorylist', 'equipmentlist'];
         const missingSets = coreSets.filter(setName => !buttons.some(b => b.setId === setName));
+
+        let buttonsToAdd: CustomButton[] = [];
 
         if (missingSets.length > 0) {
             const buttonsToRestore = DEFAULT_BUTTONS.filter(b => missingSets.includes(b.setId || ''));
-            if (buttonsToRestore.length > 0) {
-                setButtons(prev => {
-                    // Avoid duplicates if somehow some remained
-                    const existingIds = new Set(prev.map(b => b.id));
-                    const uniqueNew = buttonsToRestore.filter(b => !existingIds.has(b.id));
-                    return [...prev, ...uniqueNew];
-                });
-            }
+            buttonsToAdd = [...buttonsToAdd, ...buttonsToRestore];
         }
-    }, [buttons.length]); // Re-check if length changes
+
+        // Specifically check for new core buttons that existing users might be missing
+        const requiredCoreButtons = ['inv-give', 'xbox-z'];
+        requiredCoreButtons.forEach(reqId => {
+            if (!buttons.some(b => b.id === reqId)) {
+                const reqBtn = DEFAULT_BUTTONS.find(b => b.id === reqId);
+                if (reqBtn) buttonsToAdd.push(reqBtn);
+            }
+        });
+
+        if (buttonsToAdd.length > 0) {
+            setButtons(prev => {
+                const existingIds = new Set(prev.map(b => b.id));
+                const uniqueNew = buttonsToAdd.filter(b => !existingIds.has(b.id));
+                return uniqueNew.length > 0 ? [...prev, ...uniqueNew] : prev;
+            });
+        }
+    }, [buttons.length, buttons]); // Re-check if length changes or buttons structure changes
 
     const availableSets = useMemo(() => {
         const sets = new Set<string>();
@@ -96,8 +122,8 @@ export const useButtons = () => {
             actionType: 'command',
             display: 'floating',
             style: {
-                x: 50,
-                y: 50,
+                x: isGridEnabled ? Math.round(50 / gridSize) * gridSize : 50,
+                y: isGridEnabled ? Math.round(50 / gridSize) * gridSize : 50,
                 w: 120,
                 h: 40,
                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -204,7 +230,7 @@ export const useButtons = () => {
     };
 
     const [selectedButtonIds, setSelectedIds] = useState<Set<string>>(new Set());
-    const [uiPositions, setUiPositions] = useState<{ joystick?: { x: number, y: number, scale?: number }, stats?: { x: number, y: number, scale?: number }, mapper?: { x: number, y: number, scale?: number, w?: number, h?: number } }>(() => {
+    const [uiPositions, setUiPositions] = useState<{ joystick?: { x: number, y: number, scale?: number }, xbox?: { x: number, y: number, scale?: number }, stats?: { x: number, y: number, scale?: number }, mapper?: { x: number, y: number, scale?: number, w?: number, h?: number } }>(() => {
         try {
             const saved = localStorage.getItem('mud-ui-positions');
             if (saved) return JSON.parse(saved);
@@ -262,10 +288,14 @@ export const useButtons = () => {
         setCombatSet,
         defaultSet,
         setDefaultSet,
+        isGridEnabled,
+        setIsGridEnabled,
+        gridSize,
+        setGridSize,
         setAddMessage
     }), [
         buttons, activeSet, isEditMode, editingButtonId, selectedButtonIds,
         uiPositions, dragState, availableSets, hasUserDefaults,
-        combatSet, defaultSet
+        combatSet, defaultSet, isGridEnabled, gridSize
     ]);
 };

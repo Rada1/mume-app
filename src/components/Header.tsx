@@ -19,6 +19,8 @@ interface HeaderProps {
     target?: string | null;
     onClearTarget?: () => void;
     onResetMap?: () => void;
+    onTeleportClick?: () => void;
+    teleportTargetsCount?: number;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -37,7 +39,9 @@ const Header: React.FC<HeaderProps> = ({
     onOpenSetManager,
     target,
     onClearTarget,
-    onResetMap
+    onResetMap,
+    onTeleportClick,
+    teleportTargetsCount
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -54,7 +58,7 @@ const Header: React.FC<HeaderProps> = ({
     }, []);
 
     return (
-        <header className="header">
+        <header className="header" onPointerDown={e => e.preventDefault()}>
             <div className="title">
                 MUME Client
             </div>
@@ -102,11 +106,28 @@ const Header: React.FC<HeaderProps> = ({
                     <span style={{ fontWeight: 'bold', letterSpacing: '0.05em' }}>{target ? `TARGET: ${target.toUpperCase()}` : 'NO TARGET'}</span>
                 </div>
 
+                <div
+                    className="status-indicator"
+                    style={{
+                        color: teleportTargetsCount && teleportTargetsCount > 0 ? 'var(--accent)' : 'var(--text-faded)',
+                        gap: 6,
+                        cursor: 'pointer',
+                        opacity: teleportTargetsCount && teleportTargetsCount > 0 ? 1 : 0.6,
+                        border: '1px solid rgba(255,255,255,0.1)'
+                    }}
+                    title="Stored Teleport Rooms"
+                    onClick={() => onTeleportClick && onTeleportClick()}
+                >
+                    <Crosshair size={14} style={{ transform: 'rotate(45deg)' }} />
+                    <span style={{ fontWeight: 'bold', letterSpacing: '0.05em' }}>ROOMS: {teleportTargetsCount || 0}</span>
+                </div>
+
                 <div className="controls">
                     <div className="action-menu-wrapper" ref={menuRef}>
                         <button
                             className={`menu-toggle-btn ${isMenuOpen ? 'active' : ''}`}
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            onPointerDown={e => e.preventDefault()}
                             title="More Actions"
                         >
                             <MoreVertical size={20} />
