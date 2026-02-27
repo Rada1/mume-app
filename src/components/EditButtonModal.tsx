@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, Copy } from 'lucide-react';
-import { CustomButton, ActionType } from '../types';
+import { CustomButton, ActionType, SwipeDirection } from '../types';
 
 interface EditButtonModalProps {
     editingButton: CustomButton;
@@ -87,13 +87,15 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <option value="menu">Menu</option>
                         <option value="assign">Assign</option>
                         <option value="teleport-manage">Teleport List</option>
+                        <option value="select-recipient">Select Recipient</option>
+                        <option value="preload">Preload Input</option>
                     </select>
                 </div>
             </div>
         );
     };
 
-    const renderSwipeConfig = (dir: 'up' | 'down' | 'left' | 'right') => {
+    const renderSwipeConfig = (dir: SwipeDirection) => {
         const actionType = editingButton.swipeActionTypes?.[dir] || 'command';
         const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign';
 
@@ -140,13 +142,15 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <option value="menu">Menu</option>
                         <option value="assign">Assign</option>
                         <option value="teleport-manage">Teleport List</option>
+                        <option value="select-recipient">Select Recipient</option>
+                        <option value="preload">Preload Input</option>
                     </select>
                 </div>
             </div>
         );
     };
 
-    const renderLongSwipeConfig = (dir: 'up' | 'down' | 'left' | 'right') => {
+    const renderLongSwipeConfig = (dir: SwipeDirection) => {
         const actionType = editingButton.longSwipeActionTypes?.[dir] || 'assign';
         const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign';
 
@@ -194,6 +198,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <option value="assign">Assign</option>
                         <option value="teleport-manage">Teleport List</option>
                         <option value="select-recipient">Select Recipient</option>
+                        <option value="preload">Preload Input</option>
                     </select>
                 </div>
             </div>
@@ -246,7 +251,6 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                 <label className="setting-label">Assigned Set ID</label>
                                 <input className="setting-input" value={editingButton.setId || 'main'} onChange={e => updateButton(editingButton.id, { setId: e.target.value })} />
                             </div>
-                            {renderActionConfig('Primary Action (Tap)', 'command', 'actionType')}
                             <div className="setting-group">
                                 <label className="setting-label">Display Mode</label>
                                 <select className="setting-input" value={editingButton.display} onChange={e => updateButton(editingButton.id, { display: e.target.value as any })}>
@@ -254,25 +258,108 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                     <option value="inline">Inline Highlight</option>
                                 </select>
                             </div>
+                            {(editingButton.actionType === 'menu' || editingButton.longActionType === 'menu') && (
+                                <div className="setting-group">
+                                    <label className="setting-label">Menu Display Style</label>
+                                    <select className="setting-input" value={editingButton.menuDisplay || 'list'} onChange={e => updateButton(editingButton.id, { menuDisplay: e.target.value as any })}>
+                                        <option value="list">List (Vertical)</option>
+                                        <option value="dial">Dial (Radial)</option>
+                                    </select>
+                                    <span className="setting-helper">Dial menus allow swiping around and firing on lift.</span>
+                                </div>
+                            )}
                         </>
                     )}
 
                     {activeTab === 'gestures' && (
                         <>
+                            {renderActionConfig('Short Press Action', 'command', 'actionType')}
                             {renderActionConfig('Long Press Action', 'longCommand', 'longActionType')}
                             <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
                                 <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Short Swipe Gestures</label>
-                                {renderSwipeConfig('up')}
-                                {renderSwipeConfig('down')}
-                                {renderSwipeConfig('left')}
-                                {renderSwipeConfig('right')}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                    {[
+                                        { id: 'up', label: 'North' }, { id: 'down', label: 'South' },
+                                        { id: 'left', label: 'West' }, { id: 'right', label: 'East' },
+                                        { id: 'ne', label: 'NE' }, { id: 'nw', label: 'NW' },
+                                        { id: 'se', label: 'SE' }, { id: 'sw', label: 'SW' }
+                                    ].map(d => (
+                                        <div key={d.id} style={{ marginBottom: '10px' }}>
+                                            <label className="setting-label" style={{ fontSize: '0.75em', color: '#aaa', textTransform: 'uppercase' }}>{d.label}</label>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <input
+                                                    className="setting-input"
+                                                    value={editingButton.swipeCommands?.[d.id as SwipeDirection] || ''}
+                                                    onChange={e => {
+                                                        const newSwipes = { ...editingButton.swipeCommands, [d.id]: e.target.value };
+                                                        if (!e.target.value) delete newSwipes[d.id as SwipeDirection];
+                                                        updateButton(editingButton.id, { swipeCommands: newSwipes });
+                                                    }}
+                                                    placeholder="Cmd..."
+                                                />
+                                                <select
+                                                    className="setting-input"
+                                                    style={{ width: '100px' }}
+                                                    value={editingButton.swipeActionTypes?.[d.id as SwipeDirection] || 'command'}
+                                                    onChange={e => {
+                                                        const newTypes = { ...editingButton.swipeActionTypes, [d.id]: e.target.value as ActionType };
+                                                        updateButton(editingButton.id, { swipeActionTypes: newTypes });
+                                                    }}
+                                                >
+                                                    <option value="command">Cmd</option>
+                                                    <option value="nav">Set</option>
+                                                    <option value="menu">Menu</option>
+                                                    <option value="assign">Assign</option>
+                                                    <option value="select-recipient">Recip</option>
+                                                    <option value="teleport-manage">Tele</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                             <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
                                 <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Long Swipe Gestures</label>
-                                {renderLongSwipeConfig('up')}
-                                {renderLongSwipeConfig('down')}
-                                {renderLongSwipeConfig('left')}
-                                {renderLongSwipeConfig('right')}
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                    {[
+                                        { id: 'up', label: 'North' }, { id: 'down', label: 'South' },
+                                        { id: 'left', label: 'West' }, { id: 'right', label: 'East' },
+                                        { id: 'ne', label: 'NE' }, { id: 'nw', label: 'NW' },
+                                        { id: 'se', label: 'SE' }, { id: 'sw', label: 'SW' }
+                                    ].map(d => (
+                                        <div key={d.id} style={{ marginBottom: '10px' }}>
+                                            <label className="setting-label" style={{ fontSize: '0.75em', color: '#aaa', textTransform: 'uppercase' }}>{d.label}</label>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <input
+                                                    className="setting-input"
+                                                    value={editingButton.longSwipeCommands?.[d.id as SwipeDirection] || ''}
+                                                    onChange={e => {
+                                                        const newCmds = { ...editingButton.longSwipeCommands, [d.id]: e.target.value };
+                                                        if (!e.target.value) delete newCmds[d.id as SwipeDirection];
+                                                        updateButton(editingButton.id, { longSwipeCommands: newCmds });
+                                                    }}
+                                                    placeholder="Cmd..."
+                                                />
+                                                <select
+                                                    className="setting-input"
+                                                    style={{ width: '100px' }}
+                                                    value={editingButton.longSwipeActionTypes?.[d.id as SwipeDirection] || 'assign'}
+                                                    onChange={e => {
+                                                        const newTypes = { ...editingButton.longSwipeActionTypes, [d.id]: e.target.value as ActionType };
+                                                        updateButton(editingButton.id, { longSwipeActionTypes: newTypes });
+                                                    }}
+                                                >
+                                                    <option value="command">Cmd</option>
+                                                    <option value="nav">Set</option>
+                                                    <option value="menu">Menu</option>
+                                                    <option value="assign">Assign</option>
+                                                    <option value="select-recipient">Recip</option>
+                                                    <option value="teleport-manage">Tele</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </>
                     )}
@@ -328,6 +415,16 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                     <input type="checkbox" checked={editingButton.trigger?.spit} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, spit: e.target.checked } })} />
                                     Spit Animation
                                 </label>
+                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                    <input type="checkbox" checked={editingButton.trigger?.onKeyboard} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, onKeyboard: e.target.checked } })} />
+                                    Show on Keyboard (Mobile)
+                                </label>
+                                {editingButton.trigger?.onKeyboard && (
+                                    <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <input type="checkbox" checked={editingButton.trigger?.closeKeyboard} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, closeKeyboard: e.target.checked } })} />
+                                        Close Keyboard on Tap
+                                    </label>
+                                )}
                             </div>
                             <div className="setting-group">
                                 <label className="setting-label">Auto-Hide Timer (seconds)</label>

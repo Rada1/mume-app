@@ -34,6 +34,8 @@ interface SettingsModalProps {
     setLoginPassword: (val: string) => void;
     isSoundEnabled: boolean;
     setIsSoundEnabled: (val: boolean) => void;
+    isNoviceMode: boolean;
+    setIsNoviceMode: (val: boolean) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -67,6 +69,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setLoginPassword,
     isSoundEnabled,
     setIsSoundEnabled,
+    isNoviceMode,
+    setIsNoviceMode,
 }) => {
     return (
         <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>
@@ -262,6 +266,43 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                             </div>
                                         </div>
                                     )}
+                                </div>
+                                <div className="setting-group" style={{ border: '1px solid rgba(139, 92, 246, 0.3)', background: 'rgba(139, 92, 246, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <label className="setting-label" style={{ color: '#c4b5fd', fontWeight: 'bold', margin: 0 }}>Novice Mode</label>
+                                                <span style={{ fontSize: '0.65rem', background: '#8b5cf6', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>NEW</span>
+                                            </div>
+                                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Smart command parsing for easier inputs.</div>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ fontSize: '0.8rem', color: isNoviceMode ? '#c4b5fd' : '#64748b' }}>{isNoviceMode ? 'ACTIVE' : 'OFF'}</span>
+                                            <div
+                                                onClick={() => setIsNoviceMode(!isNoviceMode)}
+                                                style={{
+                                                    width: '40px',
+                                                    height: '20px',
+                                                    background: isNoviceMode ? '#8b5cf6' : '#334155',
+                                                    borderRadius: '20px',
+                                                    position: 'relative',
+                                                    cursor: 'pointer',
+                                                    transition: 'all 0.3s'
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    background: '#fff',
+                                                    borderRadius: '50%',
+                                                    position: 'absolute',
+                                                    top: '2px',
+                                                    left: isNoviceMode ? '22px' : '2px',
+                                                    transition: 'all 0.3s'
+                                                }} />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="setting-group">

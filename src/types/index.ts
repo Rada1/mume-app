@@ -4,6 +4,7 @@ export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
+export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 'se' | 'sw';
 export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in';
 export type TriggerAction = 'show' | 'switch_set';
 
@@ -39,18 +40,8 @@ export interface CustomButton {
     setId?: string; // The menu set this button belongs to (default 'main')
     actionType?: ActionType; // What the button does
     longActionType?: ActionType;
-    swipeActionTypes?: {
-        up?: ActionType;
-        down?: ActionType;
-        left?: ActionType;
-        right?: ActionType;
-    };
-    longSwipeActionTypes?: {
-        up?: ActionType;
-        down?: ActionType;
-        left?: ActionType;
-        right?: ActionType;
-    };
+    swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
+    longSwipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
     display: 'floating' | 'inline'; // How the button is shown
     style: {
         x: number; // percentage of viewport width
@@ -72,12 +63,14 @@ export interface CustomButton {
         type?: TriggerAction;
         targetSet?: string;
         onKeyboard?: boolean; // Show when mobile keyboard opens
+        closeKeyboard?: boolean; // Close keyboard after clicking
     };
     isVisible: boolean; // Runtime state
     longCommand?: string; // Command sent on long-press
-    swipeCommands?: { up?: string; down?: string; left?: string; right?: string }; // Commands sent on swipe
-    swipeSets?: { up?: string; down?: string; left?: string; right?: string }; // Sets the swipe commands belong to
-    longSwipeCommands?: { up?: string; down?: string; left?: string; right?: string }; // Commands sent on long swipe
+    swipeCommands?: Partial<Record<SwipeDirection, string>>;
+    swipeSets?: Partial<Record<SwipeDirection, string>>;
+    longSwipeCommands?: Partial<Record<SwipeDirection, string>>;
+    menuDisplay?: 'list' | 'dial';
 }
 
 export interface SoundTrigger {
@@ -103,7 +96,10 @@ export interface PopoverState {
     setId: string;
     context?: string;
     assignSourceId?: string;
-    assignSwipeDir?: 'up' | 'down' | 'left' | 'right';
+    assignSwipeDir?: SwipeDirection;
+    menuDisplay?: 'list' | 'dial';
+    initialPointerX?: number;
+    initialPointerY?: number;
     teleportId?: string; // For saving
     spellCommand?: string; // e.g. "cast 'teleport'"
 }
@@ -119,6 +115,7 @@ export interface SavedSettings {
     loginName?: string;
     loginPassword?: string;
     isSoundEnabled?: boolean;
+    isNoviceMode?: boolean;
 }
 
 export interface RoomNode {

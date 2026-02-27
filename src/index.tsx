@@ -5,7 +5,7 @@ import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog,
 import './index.css';
 import {
     MessageType, LightingType, WeatherType, Direction, DeathStage,
-    Message, GameStats, CustomButton, SoundTrigger, PopoverState, SavedSettings, TeleportTarget
+    Message, GameStats, CustomButton, SoundTrigger, PopoverState, SavedSettings, TeleportTarget, SwipeDirection
 } from './types';
 import {
     DEFAULT_BG, DEATH_IMG, DEFAULT_URL, FX_THRESHOLD
@@ -27,6 +27,8 @@ import SettingsModal from './components/SettingsModal';
 import EditButtonModal from './components/EditButtonModal';
 import SetManagerModal from './components/SetManagerModal';
 import { Mapper, MapperRef } from './components/Mapper';
+import { mudParser } from './services/parser/services/mudParser';
+import SwipeFeedbackOverlay, { triggerSwipeFeedback } from './components/SwipeFeedbackOverlay';
 
 
 
@@ -97,6 +99,7 @@ const MudClient = () => {
     const [connectionUrl, setConnectionUrl] = useState(DEFAULT_URL);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound'>('general');
+    const [isNoviceMode, setIsNoviceMode] = useState(() => localStorage.getItem('mud-novice-mode') === 'true');
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
     const [lighting, setLighting] = useState<LightingType>('none');
     const [weather, setWeather] = useState<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>('none');
@@ -106,6 +109,10 @@ const MudClient = () => {
     const [alertness, setAlertness] = useState('normal');
     const [loginName, setLoginName] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
+
+    useEffect(() => {
+        localStorage.setItem('mud-novice-mode', isNoviceMode.toString());
+    }, [isNoviceMode]);
     const [playerPosition, setPlayerPosition] = useState('standing');
     const [teleportTargets, setTeleportTargets] = useState<TeleportTarget[]>(() => {
         const saved = localStorage.getItem('mud-teleport-targets');
@@ -561,6 +568,122 @@ const MudClient = () => {
     }, [btn.editingButtonId, returnToManager]);
     const { audioCtxRef, initAudio, playSound, triggerHaptic } = useSoundSystem();
     const joystick = useJoystick();
+
+    const DialMenu = useCallback(({
+        setId,
+        initialX,
+        initialY,
+        onClose,
+        onExecute
+    }: {
+        setId: string;
+        initialX: number;
+        initialY: number;
+        onClose: () => void;
+        onExecute: (button: CustomButton, e: PointerEvent) => void;
+    }) => {
+        const menuButtons = useMemo(() => btn.buttons.filter(b => b.setId === setId && b.isVisible), [btn.buttons, setId]);
+        const [activeIndex, setActiveIndex] = useState<number | null>(null);
+        const activeIndexRef = useRef<number | null>(null);
+        const center = useMemo(() => ({ x: initialX, y: initialY }), [initialX, initialY]);
+        const lastHapticIndex = useRef<number | null>(null);
+
+        useEffect(() => {
+            const handleGlobalMove = (e: PointerEvent) => {
+                if (e.cancelable) e.preventDefault();
+                e.stopPropagation();
+
+                const dx = e.clientX - center.x;
+                const dy = e.clientY - center.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 40) {
+                    if (activeIndexRef.current !== null) {
+                        setActiveIndex(null);
+                        activeIndexRef.current = null;
+                        lastHapticIndex.current = null;
+                    }
+                    return;
+                }
+
+                let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                if (angle < 0) angle += 360;
+
+                const sliceSize = 360 / menuButtons.length;
+                const index = Math.floor(angle / sliceSize);
+
+                if (index !== activeIndexRef.current) {
+                    setActiveIndex(index);
+                    activeIndexRef.current = index;
+                    if (lastHapticIndex.current !== index) {
+                        triggerHaptic(10);
+                        lastHapticIndex.current = index;
+                    }
+                }
+            };
+
+            const handleGlobalUp = (e: PointerEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (activeIndexRef.current !== null && menuButtons[activeIndexRef.current]) {
+                    onExecute(menuButtons[activeIndexRef.current], e as any);
+                }
+                onClose();
+            };
+
+            window.addEventListener('pointermove', handleGlobalMove, true);
+            window.addEventListener('pointerup', handleGlobalUp, true);
+
+            return () => {
+                window.removeEventListener('pointermove', handleGlobalMove, true);
+                window.removeEventListener('pointerup', handleGlobalUp, true);
+            };
+        }, [center, menuButtons, onClose, onExecute, triggerHaptic]);
+
+        return (
+            <div
+                className="dial-menu-overlay"
+                onPointerDown={(e) => e.stopPropagation()}
+            >
+                <div className="dial-menu-center" style={{ left: center.x, top: center.y }}>
+                    <div className="dial-selection-center" style={{ '--accent': activeIndex !== null ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || 'var(--accent)') : 'rgba(255,255,255,0.2)' } as any}>
+                        <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', marginBottom: '4px' }}>
+                            {activeIndex !== null ? 'Selected' : 'Select'}
+                        </div>
+                        <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: activeIndex !== null ? 'var(--accent)' : '#fff' }}>
+                            {activeIndex !== null ? menuButtons[activeIndex].label : '...'}
+                        </div>
+                    </div>
+                    <div className="dial-menu-ring">
+                        {menuButtons.map((button, i) => {
+                            const sliceSize = 360 / menuButtons.length;
+                            const angle = i * sliceSize;
+                            const rad = (angle * Math.PI) / 180;
+                            const radius = 110;
+                            const x = Math.cos(rad) * radius;
+                            const y = Math.sin(rad) * radius;
+
+                            return (
+                                <div
+                                    key={button.id}
+                                    className={`dial-item ${activeIndex === i ? 'active' : ''}`}
+                                    style={{
+                                        transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
+                                        '--accent': button.style.borderColor || button.style.backgroundColor || 'var(--accent)'
+                                    } as any}
+                                >
+                                    <div className="dial-item-icon">
+                                        {button.label.length <= 3 ? button.label : button.label.substring(0, 2)}
+                                    </div>
+                                    <div className="dial-item-label">{button.label}</div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    }, [btn.buttons, triggerHaptic]);
 
 
 
@@ -1248,14 +1371,24 @@ const MudClient = () => {
         e?.preventDefault();
         const cmd = input.trim();
         setInput('');
-        executeCommand(cmd, false, false);
+
+        if (isNoviceMode) {
+            const result = mudParser.parse(cmd);
+            if (result.finalOutput && result.finalOutput.length > 0) {
+                result.finalOutput.forEach(c => executeCommand(c, false, false));
+            } else {
+                executeCommand(cmd, false, false);
+            }
+        } else {
+            executeCommand(cmd, false, false);
+        }
         // User requesting snap-to-bottom on every command
         if (typeof scrollToBottom === 'function') {
             scrollToBottom(true, true);
             // Slight delay too to catch the local echo / response
             setTimeout(() => scrollToBottom(true, true), 30);
         }
-    }, [input, executeCommand, scrollToBottom]);
+    }, [input, executeCommand, scrollToBottom, isNoviceMode]);
 
     const handleSendCallback = useCallback((e?: React.FormEvent) => {
         handleSend(e);
@@ -1728,8 +1861,18 @@ const MudClient = () => {
         let actionType = button.actionType || 'command';
 
         if (isSwiped && button.swipeCommands) {
-            const absDx = Math.abs(dx), absDy = Math.abs(dy);
-            const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            let dir: SwipeDirection;
+
+            if (angle >= -22.5 && angle < 22.5) dir = 'right';
+            else if (angle >= 22.5 && angle < 67.5) dir = 'se';
+            else if (angle >= 67.5 && angle < 112.5) dir = 'down';
+            else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
+            else if (angle >= 157.5 || angle < -157.5) dir = 'left';
+            else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
+            else if (angle >= -112.5 && angle < -67.5) dir = 'up';
+            else dir = 'ne';
+
             if (button.swipeCommands[dir]) {
                 cmd = button.swipeCommands[dir]!;
                 actionType = button.swipeActionTypes?.[dir] || 'command';
@@ -1787,7 +1930,13 @@ const MudClient = () => {
             }
 
             if (button.actionType === 'nav') btn.setActiveSet(button.command);
-            else if (button.actionType === 'teleport-manage') {
+            else if (button.actionType === 'assign') {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: button.command, context: button.label, assignSourceId: button.id });
+            } else if (button.actionType === 'menu') {
+                const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: button.command, context: button.label, menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2 });
+            } else if (button.actionType === 'teleport-manage') {
                 setPopoverState({
                     x: window.innerWidth / 2 - 150,
                     y: window.innerHeight / 2 - 150,
@@ -1831,6 +1980,9 @@ const MudClient = () => {
                 }
             }
             if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
+            if (button.trigger?.closeKeyboard) {
+                (document.activeElement as HTMLElement)?.blur();
+            }
         }
     };
 
@@ -2047,7 +2199,7 @@ const MudClient = () => {
 
     // --- Settings handlers ---
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = (ev) => { if (typeof ev.target?.result === 'string') setBgImage(ev.target.result); }; reader.readAsDataURL(file); } };
-    const exportSettings = () => { const settings: SavedSettings = { version: 3, connectionUrl, bgImage, loginName, loginPassword, isSoundEnabled, buttons: btn.buttons.map(b => ({ ...b, isVisible: undefined } as any)), soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest) }; const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `mume - settings - ${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); };
+    const exportSettings = () => { const settings: SavedSettings = { version: 3, connectionUrl, bgImage, loginName, loginPassword, isSoundEnabled, isNoviceMode, buttons: btn.buttons.map(b => ({ ...b, isVisible: undefined } as any)), soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest) }; const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `mume - settings - ${Date.now()}.json`; a.click(); URL.revokeObjectURL(url); };
     const importSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]; if (!file) return; setIsLoading(true); initAudio(); const reader = new FileReader();
         reader.onload = async (ev) => {
@@ -2059,6 +2211,7 @@ const MudClient = () => {
                     if (settings.loginName) setLoginName(settings.loginName);
                     if (settings.loginPassword) setLoginPassword(settings.loginPassword);
                     if (settings.isSoundEnabled !== undefined) setIsSoundEnabled(settings.isSoundEnabled);
+                    if (settings.isNoviceMode !== undefined) setIsNoviceMode(settings.isNoviceMode);
                     if (settings.buttons) btn.setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -2450,6 +2603,7 @@ const MudClient = () => {
                                 <div
                                     key={id}
                                     className={`xbox-btn ${posClass} ${heldButton?.id === button.id ? 'is-held' : ''} ${btn.isEditMode && btn.editingButtonId === button.id ? 'is-editing' : ''} ${btn.isEditMode && btn.selectedButtonIds.has(button.id) ? 'is-selected' : ''}`}
+                                    onMouseDown={(e) => { if (!button.trigger?.closeKeyboard) e.preventDefault(); }}
                                     onPointerDown={(e) => {
                                         if (btn.isEditMode) {
                                             e.stopPropagation();
@@ -2510,8 +2664,17 @@ const MudClient = () => {
                                         if (el._lpt && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) { clearTimeout(el._lpt); el._lpt = null; }
 
                                         if (dist > 25) {
-                                            const absDx = Math.abs(dx), absDy = Math.abs(dy);
-                                            const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+                                            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                                            let dir: SwipeDirection;
+
+                                            if (angle >= -22.5 && angle < 22.5) dir = 'right';
+                                            else if (angle >= 22.5 && angle < 67.5) dir = 'se';
+                                            else if (angle >= 67.5 && angle < 112.5) dir = 'down';
+                                            else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
+                                            else if (angle >= 157.5 || angle < -157.5) dir = 'left';
+                                            else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
+                                            else if (angle >= -112.5 && angle < -67.5) dir = 'up';
+                                            else dir = 'ne';
 
                                             if (el._currentDir !== dir) {
                                                 el._currentDir = dir;
@@ -2521,6 +2684,7 @@ const MudClient = () => {
                                                     triggerHaptic(60);
                                                     el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
                                                     const rect = el.getBoundingClientRect();
+                                                    triggerSwipeFeedback(e.clientX, e.clientY, angle, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
                                                     const longAction = button.longSwipeActionTypes?.[dir] || 'assign';
                                                     const longCmd = button.longSwipeCommands?.[dir] || button.swipeSets?.[dir] || 'main';
 
@@ -2569,11 +2733,22 @@ const MudClient = () => {
                                             let cmd = button.command;
                                             let actionType = button.actionType || 'command';
                                             if (isSwiped && button.swipeCommands) {
-                                                const absDx = Math.abs(dx), absDy = Math.abs(dy);
-                                                const dir = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+                                                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                                                let dir: SwipeDirection;
+
+                                                if (angle >= -22.5 && angle < 22.5) dir = 'right';
+                                                else if (angle >= 22.5 && angle < 67.5) dir = 'se';
+                                                else if (angle >= 67.5 && angle < 112.5) dir = 'down';
+                                                else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
+                                                else if (angle >= 157.5 || angle < -157.5) dir = 'left';
+                                                else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
+                                                else if (angle >= -112.5 && angle < -67.5) dir = 'up';
+                                                else dir = 'ne';
+
                                                 if (button.swipeCommands[dir]) {
                                                     cmd = button.swipeCommands[dir]!;
                                                     actionType = button.swipeActionTypes?.[dir] || 'command';
+                                                    triggerSwipeFeedback(e.clientX, e.clientY, angle, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
                                                 }
                                             }
                                             if (actionType === 'nav') btn.setActiveSet(cmd);
@@ -2582,7 +2757,7 @@ const MudClient = () => {
                                                 setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd, context: button.label, assignSourceId: button.id });
                                             } else if (actionType === 'menu') {
                                                 const rect = el.getBoundingClientRect();
-                                                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd });
+                                                setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd, menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2 });
                                             }
                                         }
                                         setCommandPreview(null);
@@ -2604,7 +2779,7 @@ const MudClient = () => {
                 </div>
 
                 {isMobile && (
-                    <div className={`mobile-mini-map ${isMapExpanded ? 'expanded' : ''}`}>
+                    <div className={`mobile-mini-map ${isMapExpanded ? 'expanded' : ''}`} onClick={() => { if (popoverState) setPopoverState(null); }}>
                         <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} isMobile={isMobile} isExpanded={isMapExpanded} />
                     </div>
                 )}
@@ -2671,6 +2846,7 @@ const MudClient = () => {
                                 border: button.style.transparent ? (button.style.borderColor ? `2px solid ${button.style.borderColor}` : '1px dashed rgba(255,255,255,0.3)') : (button.style.borderColor ? `2px solid ${button.style.borderColor}` : undefined),
                                 boxShadow: heldButton?.id === button.id ? `0 0 15px 2px ${button.style.borderColor || button.style.backgroundColor || 'var(--accent)'}` : undefined
                             }}
+                            onMouseDown={(e) => { if (!button.trigger?.closeKeyboard) e.preventDefault(); }}
                             onPointerDown={(e) => {
                                 if (btn.isEditMode) {
                                     handleDragStart(e, button.id, 'move');
@@ -2710,7 +2886,7 @@ const MudClient = () => {
                                         setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label, assignSourceId: button.id });
                                     } else if (longActionType === 'menu') {
                                         const rect = currentTarget.getBoundingClientRect();
-                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label });
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label, menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2 });
                                     } else if (longActionType === 'select-recipient') {
                                         const rect = currentTarget.getBoundingClientRect();
                                         setPopoverState({
@@ -2750,8 +2926,17 @@ const MudClient = () => {
                                 }
 
                                 if (dist > 25) {
-                                    const absDx = Math.abs(dx), absDy = Math.abs(dy);
-                                    const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+                                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                                    let dir: SwipeDirection;
+
+                                    if (angle >= -22.5 && angle < 22.5) dir = 'right';
+                                    else if (angle >= 22.5 && angle < 67.5) dir = 'se';
+                                    else if (angle >= 67.5 && angle < 112.5) dir = 'down';
+                                    else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
+                                    else if (angle >= 157.5 || angle < -157.5) dir = 'left';
+                                    else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
+                                    else if (angle >= -112.5 && angle < -67.5) dir = 'up';
+                                    else dir = 'ne';
 
                                     if (el._currentDir !== dir) {
                                         el._currentDir = dir;
@@ -2761,6 +2946,7 @@ const MudClient = () => {
                                             triggerHaptic(60);
                                             el?.classList.remove('btn-glow-active'); void el?.offsetWidth; el?.classList.add('btn-glow-active');
                                             const rect = el.getBoundingClientRect();
+                                            triggerSwipeFeedback(e.clientX, e.clientY, angle, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
                                             const longAction = button.longSwipeActionTypes?.[dir] || 'assign';
                                             const longCmd = button.longSwipeCommands?.[dir] || button.swipeSets?.[dir] || 'main'; // fallback
 
@@ -2781,7 +2967,10 @@ const MudClient = () => {
                                                     y: rect.top,
                                                     sourceHeight: rect.height,
                                                     setId: longCmd,
-                                                    context: button.label
+                                                    context: button.label,
+                                                    menuDisplay: button.menuDisplay,
+                                                    initialPointerX: rect.left + rect.width / 2,
+                                                    initialPointerY: rect.top + rect.height / 2
                                                 });
                                             } else if (longAction === 'select-recipient') {
                                                 setPopoverState({
@@ -2845,11 +3034,21 @@ const MudClient = () => {
                                     let cmd = button.command;
                                     let actionType = button.actionType || 'command';
                                     if (isSwiped && button.swipeCommands) {
-                                        const absDx = Math.abs(dx), absDy = Math.abs(dy);
-                                        const dir: 'up' | 'down' | 'left' | 'right' = absDx > absDy ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+                                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                                        let dir: SwipeDirection;
+                                        if (angle >= -22.5 && angle < 22.5) dir = 'right';
+                                        else if (angle >= 22.5 && angle < 67.5) dir = 'se';
+                                        else if (angle >= 67.5 && angle < 112.5) dir = 'down';
+                                        else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
+                                        else if (angle >= 157.5 || angle < -157.5) dir = 'left';
+                                        else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
+                                        else if (angle >= -112.5 && angle < -67.5) dir = 'up';
+                                        else dir = 'ne';
+
                                         if (button.swipeCommands[dir]) {
                                             cmd = button.swipeCommands[dir]!;
                                             actionType = button.swipeActionTypes?.[dir] || 'command';
+                                            triggerSwipeFeedback(e.clientX, e.clientY, angle, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
                                         }
                                     }
 
@@ -2860,7 +3059,7 @@ const MudClient = () => {
                                     }
                                     else if (actionType === 'menu') {
                                         const rect = el.getBoundingClientRect();
-                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd });
+                                        setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd, menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2 });
                                     }
                                 }
 
@@ -2889,208 +3088,218 @@ const MudClient = () => {
 
             {
                 popoverState && (
-                    <div className="popover-menu" ref={popoverRef} style={{ position: 'fixed', left: popoverState.x, top: popoverState.y, zIndex: 9999 }}>
-                        {popoverState.type === 'teleport-save' && (() => {
-                            let labelInputRef: HTMLInputElement | null = null;
-                            const doSave = () => {
-                                const label = labelInputRef?.value.trim();
-                                if (label) {
-                                    const newTarget: TeleportTarget = {
-                                        id: popoverState.teleportId!,
-                                        label,
-                                        expiresAt: Date.now() + 24 * 60 * 60 * 1000
-                                    };
-                                    setTeleportTargets(prev => [...prev.filter(t => t.label !== label), newTarget]);
-                                    addMessage('system', `Stored room '${label}' (${popoverState.teleportId}) for 24 hours.`);
-                                    setPopoverState(null);
-                                }
-                            };
-                            return (
-                                <div style={{ padding: '12px', minWidth: '200px' }}>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--accent)', marginBottom: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>📍 STORE TELEPORT ROOM</div>
-                                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', fontFamily: 'monospace' }}>{popoverState.teleportId}</div>
-                                    <input
-                                        type="text"
-                                        placeholder="Label (e.g. Bree)"
-                                        autoFocus
-                                        ref={el => { labelInputRef = el; }}
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter') { e.preventDefault(); doSave(); }
-                                            else if (e.key === 'Escape') setPopoverState(null);
-                                        }}
-                                        style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 10px', borderRadius: '6px', outline: 'none', fontSize: '0.9rem', boxSizing: 'border-box', marginBottom: '10px' }}
-                                    />
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            onClick={doSave}
-                                            style={{ flex: 1, background: 'var(--accent)', border: 'none', color: '#000', padding: '8px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer' }}
-                                        >Save</button>
-                                        <button
-                                            onClick={() => setPopoverState(null)}
-                                            style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '8px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer' }}
-                                        >Cancel</button>
-                                    </div>
-                                </div>
-                            );
-                        })()}
-
-                        {popoverState.type === 'teleport-select' && (
-                            <>
-                                <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>TARGET FOR {popoverState.spellCommand?.toUpperCase()}</div>
-                                <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                                    {teleportTargets.map(target => (
-                                        <div key={target.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={() => {
-                                            executeCommand(`${popoverState.spellCommand} ${target.id}`);
-                                            setPopoverState(null);
-                                        }}>
-                                            <span>{target.label}</span>
-                                            <span style={{ fontSize: '0.6rem', opacity: 0.5, marginLeft: '10px' }}>{Math.round((target.expiresAt - Date.now()) / 3600000)}h</span>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                                    <div className="popover-item" style={{ flex: 1, textAlign: 'center', opacity: 0.6, fontSize: '0.7rem' }} onClick={() => setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' })}>Manage Rooms</div>
-                                    <div className="popover-item" style={{ flex: 1, color: '#ff5555', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
-                                </div>
-                            </>
-                        )}
-
-                        {popoverState.type === 'teleport-manage' && (
-                            <>
-                                <div className="popover-header" style={{ padding: '10px 12px', fontSize: '0.8rem', color: 'var(--accent)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>STORED ROOMS</div>
-                                <div className="popover-scroll" style={{ maxHeight: '250px', overflowY: 'auto', minWidth: '220px' }}>
-                                    {teleportTargets.length === 0 && <div style={{ padding: '20px', fontSize: '0.8rem', opacity: 0.4, textAlign: 'center' }}>No rooms stored.</div>}
-                                    {teleportTargets.map(target => (
-                                        <div key={target.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'default' }}>
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontSize: '0.9rem' }}>{target.label}</div>
-                                                <div style={{ fontSize: '0.6rem', opacity: 0.4 }}>{target.id} • {Math.round((target.expiresAt - Date.now()) / 3600000)}h left</div>
-                                            </div>
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    setTeleportTargets(prev => prev.filter(t => t.label !== target.label));
-                                                }}
-                                                style={{ background: 'rgba(255,0,0,0.1)', border: 'none', color: '#ff5555', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}
-                                            >✕</button>
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Close</div>
-                            </>
-                        )}
-
-                        {popoverState.type === 'give-recipient-select' && (
-                            <>
-                                <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>SELECT RECIPIENT</div>
-                                <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto', minWidth: '150px' }}>
-                                    {[...new Set(roomPlayers)].length === 0 && <div className="popover-empty">No one here.</div>}
-                                    {[...new Set(roomPlayers)].map(name => (
-                                        <div key={name} className="popover-item" onClick={() => {
-                                            executeCommand(`${popoverState.context} ${extractNoun(name)}`);
-                                            // Refresh inventory after giving
-                                            setTimeout(() => executeCommand('inv', false, false, true), 500);
-                                            setPopoverState(null);
-                                        }}>
-                                            {name}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', color: '#ff5555', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Cancel</div>
-                            </>
-                        )}
-
-                        {!popoverState.type && (
-                            <>
-                                <div className="popover-header"
-                                    style={{ cursor: popoverState.setId !== 'setmanager' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '4px', paddingBottom: '4px' }}
-                                    onClick={() => {
-                                        if (popoverState.setId !== 'setmanager') {
-                                            setPopoverState({ ...popoverState, setId: 'setmanager' });
-                                        }
-                                    }}>
-                                    {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist' || popoverState.setId === 'target' || popoverState.setId === 'inlineplayer' ? `Actions: ${popoverState.context} ▾` : (popoverState.setId === 'setmanager' ? 'Select Button Set' : `Set: ${popoverState.setId} ▾`)}
-                                </div>
-
-                                {(popoverState.setId === 'selection' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist') && (
-                                    <div className="popover-item" onClick={() => {
-                                        setTarget(popoverState.context || null);
+                    popoverState.menuDisplay === 'dial' ? (
+                        <DialMenu
+                            setId={popoverState.setId}
+                            initialX={popoverState.initialPointerX ?? popoverState.x}
+                            initialY={popoverState.initialPointerY ?? popoverState.y}
+                            onClose={() => setPopoverState(null)}
+                            onExecute={(btn, e) => handleButtonClick(btn, e as any)}
+                        />
+                    ) : (
+                        <div className="popover-menu" ref={popoverRef} style={{ position: 'fixed', left: popoverState.x, top: popoverState.y, zIndex: 9999 }}>
+                            {popoverState.type === 'teleport-save' && (() => {
+                                let labelInputRef: HTMLInputElement | null = null;
+                                const doSave = () => {
+                                    const label = labelInputRef?.value.trim();
+                                    if (label) {
+                                        const newTarget: TeleportTarget = {
+                                            id: popoverState.teleportId!,
+                                            label,
+                                            expiresAt: Date.now() + 24 * 60 * 60 * 1000
+                                        };
+                                        setTeleportTargets(prev => [...prev.filter(t => t.label !== label), newTarget]);
+                                        addMessage('system', `Stored room '${label}' (${popoverState.teleportId}) for 24 hours.`);
                                         setPopoverState(null);
-                                        addMessage('system', `Target set to: ${popoverState.context} `);
-                                    }}>
-                                        Set as Target
+                                    }
+                                };
+                                return (
+                                    <div style={{ padding: '12px', minWidth: '200px' }}>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--accent)', marginBottom: '10px', fontWeight: 'bold', letterSpacing: '1px' }}>📍 STORE TELEPORT ROOM</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', fontFamily: 'monospace' }}>{popoverState.teleportId}</div>
+                                        <input
+                                            type="text"
+                                            placeholder="Label (e.g. Bree)"
+                                            autoFocus
+                                            ref={el => { labelInputRef = el; }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') { e.preventDefault(); doSave(); }
+                                                else if (e.key === 'Escape') setPopoverState(null);
+                                            }}
+                                            style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px 10px', borderRadius: '6px', outline: 'none', fontSize: '0.9rem', boxSizing: 'border-box', marginBottom: '10px' }}
+                                        />
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                onClick={doSave}
+                                                style={{ flex: 1, background: 'var(--accent)', border: 'none', color: '#000', padding: '8px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer' }}
+                                            >Save</button>
+                                            <button
+                                                onClick={() => setPopoverState(null)}
+                                                style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '8px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer' }}
+                                            >Cancel</button>
+                                        </div>
                                     </div>
-                                )}
+                                );
+                            })()}
 
+                            {popoverState.type === 'teleport-select' && (
                                 <>
-                                    {popoverState.setId === 'setmanager' ? (
-                                        // List all available button sets instead of buttons
-                                        btn.availableSets.map(setName => (
-                                            <div key={setName} className="popover-item" onClick={() => {
-                                                setPopoverState({ ...popoverState, setId: setName });
+                                    <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>TARGET FOR {popoverState.spellCommand?.toUpperCase()}</div>
+                                    <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                                        {teleportTargets.map(target => (
+                                            <div key={target.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={() => {
+                                                executeCommand(`${popoverState.spellCommand} ${target.id}`);
+                                                setPopoverState(null);
                                             }}>
-                                                {setName}
+                                                <span>{target.label}</span>
+                                                <span style={{ fontSize: '0.6rem', opacity: 0.5, marginLeft: '10px' }}>{Math.round((target.expiresAt - Date.now()) / 3600000)}h</span>
                                             </div>
-                                        ))
-                                    ) : (
-                                        // Default: List buttons from the target set
-                                        <>
-                                            {popoverState.assignSourceId && (
-                                                <div className="popover-item" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => {
-                                                    const setName = popoverState.setId;
-                                                    if (popoverState.assignSwipeDir) {
-                                                        const dir = popoverState.assignSwipeDir;
-                                                        btn.setButtons(prev => prev.map(b => {
-                                                            if (b.id !== popoverState.assignSourceId) return b;
-                                                            const swipeCommands = { ...b.swipeCommands, [dir]: setName };
-                                                            const swipeActionTypes = { ...b.swipeActionTypes, [dir]: 'nav' };
-                                                            const swipeSets = { ...b.swipeSets, [dir]: 'main' };
-                                                            return { ...b, swipeCommands, swipeActionTypes, swipeSets };
-                                                        }));
-                                                        setPopoverState(null);
-                                                        addMessage('system', `Assigned sub-menu '${setName}' to swipe ${dir}.`);
-                                                    } else {
-                                                        btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' } : b));
-                                                        setPopoverState(null);
-                                                        addMessage('system', `Assigned sub-menu '${setName}' to button.`);
-                                                    }
-                                                }}>
-                                                    Assign {popoverState.setId.toUpperCase()} as Menu
+                                        ))}
+                                    </div>
+                                    <div style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                        <div className="popover-item" style={{ flex: 1, textAlign: 'center', opacity: 0.6, fontSize: '0.7rem' }} onClick={() => setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' })}>Manage Rooms</div>
+                                        <div className="popover-item" style={{ flex: 1, color: '#ff5555', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
+                                    </div>
+                                </>
+                            )}
+
+                            {popoverState.type === 'teleport-manage' && (
+                                <>
+                                    <div className="popover-header" style={{ padding: '10px 12px', fontSize: '0.8rem', color: 'var(--accent)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>STORED ROOMS</div>
+                                    <div className="popover-scroll" style={{ maxHeight: '250px', overflowY: 'auto', minWidth: '220px' }}>
+                                        {teleportTargets.length === 0 && <div style={{ padding: '20px', fontSize: '0.8rem', opacity: 0.4, textAlign: 'center' }}>No rooms stored.</div>}
+                                        {teleportTargets.map(target => (
+                                            <div key={target.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'default' }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '0.9rem' }}>{target.label}</div>
+                                                    <div style={{ fontSize: '0.6rem', opacity: 0.4 }}>{target.id} • {Math.round((target.expiresAt - Date.now()) / 3600000)}h left</div>
                                                 </div>
-                                            )}
-                                            {btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
-                                                <div key={button.id} className="popover-item" onClick={(e) => {
-                                                    if (popoverState?.assignSourceId) {
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setTeleportTargets(prev => prev.filter(t => t.label !== target.label));
+                                                    }}
+                                                    style={{ background: 'rgba(255,0,0,0.1)', border: 'none', color: '#ff5555', cursor: 'pointer', width: '28px', height: '28px', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}
+                                                >✕</button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Close</div>
+                                </>
+                            )}
+
+                            {popoverState.type === 'give-recipient-select' && (
+                                <>
+                                    <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>SELECT RECIPIENT</div>
+                                    <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto', minWidth: '150px' }}>
+                                        {[...new Set(roomPlayers)].length === 0 && <div className="popover-empty">No one here.</div>}
+                                        {[...new Set(roomPlayers)].map(name => (
+                                            <div key={name} className="popover-item" onClick={() => {
+                                                executeCommand(`${popoverState.context} ${extractNoun(name)}`);
+                                                // Refresh inventory after giving
+                                                setTimeout(() => executeCommand('inv', false, false, true), 500);
+                                                setPopoverState(null);
+                                            }}>
+                                                {name}
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', color: '#ff5555', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Cancel</div>
+                                </>
+                            )}
+
+                            {!popoverState.type && (
+                                <>
+                                    <div className="popover-header"
+                                        style={{ cursor: popoverState.setId !== 'setmanager' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '4px', paddingBottom: '4px' }}
+                                        onClick={() => {
+                                            if (popoverState.setId !== 'setmanager') {
+                                                setPopoverState({ ...popoverState, setId: 'setmanager' });
+                                            }
+                                        }}>
+                                        {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist' || popoverState.setId === 'target' || popoverState.setId === 'inlineplayer' ? `Actions: ${popoverState.context} ▾` : (popoverState.setId === 'setmanager' ? 'Select Button Set' : `Set: ${popoverState.setId} ▾`)}
+                                    </div>
+
+                                    {(popoverState.setId === 'selection' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist') && (
+                                        <div className="popover-item" onClick={() => {
+                                            setTarget(popoverState.context || null);
+                                            setPopoverState(null);
+                                            addMessage('system', `Target set to: ${popoverState.context} `);
+                                        }}>
+                                            Set as Target
+                                        </div>
+                                    )}
+
+                                    <>
+                                        {popoverState.setId === 'setmanager' ? (
+                                            // List all available button sets instead of buttons
+                                            btn.availableSets.map(setName => (
+                                                <div key={setName} className="popover-item" onClick={() => {
+                                                    setPopoverState({ ...popoverState, setId: setName });
+                                                }}>
+                                                    {setName}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            // Default: List buttons from the target set
+                                            <>
+                                                {popoverState.assignSourceId && (
+                                                    <div className="popover-item" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => {
+                                                        const setName = popoverState.setId;
                                                         if (popoverState.assignSwipeDir) {
                                                             const dir = popoverState.assignSwipeDir;
                                                             btn.setButtons(prev => prev.map(b => {
                                                                 if (b.id !== popoverState.assignSourceId) return b;
-                                                                const swipeCommands = { ...b.swipeCommands, [dir]: button.command };
-                                                                const swipeActionTypes = { ...b.swipeActionTypes, [dir]: button.actionType || 'command' };
-                                                                const swipeSets = { ...b.swipeSets, [dir]: button.setId || 'main' };
+                                                                const swipeCommands = { ...b.swipeCommands, [dir]: setName };
+                                                                const swipeActionTypes = { ...b.swipeActionTypes, [dir]: 'nav' };
+                                                                const swipeSets = { ...b.swipeSets, [dir]: 'main' };
                                                                 return { ...b, swipeCommands, swipeActionTypes, swipeSets };
                                                             }));
                                                             setPopoverState(null);
-                                                            addMessage('system', `Assigned '${button.label}' to swipe ${dir}.`);
+                                                            addMessage('system', `Assigned sub-menu '${setName}' to swipe ${dir}.`);
                                                         } else {
-                                                            btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
+                                                            btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' } : b));
                                                             setPopoverState(null);
-                                                            addMessage('system', `Assigned '${button.label}' to button.`);
+                                                            addMessage('system', `Assigned sub-menu '${setName}' to button.`);
                                                         }
-                                                    } else {
-                                                        handleButtonClick(button, e, popoverState!.context);
-                                                    }
-                                                }}>{button.label}</div>
-                                            ))}
-                                        </>
-                                    )}
-                                    {popoverState.setId !== 'setmanager' && btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && (
-                                        <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>
-                                    )}
+                                                    }}>
+                                                        Assign {popoverState.setId.toUpperCase()} as Menu
+                                                    </div>
+                                                )}
+                                                {btn.buttons.filter(b => b.setId === popoverState!.setId).map(button => (
+                                                    <div key={button.id} className="popover-item" onClick={(e) => {
+                                                        if (popoverState?.assignSourceId) {
+                                                            if (popoverState.assignSwipeDir) {
+                                                                const dir = popoverState.assignSwipeDir;
+                                                                btn.setButtons(prev => prev.map(b => {
+                                                                    if (b.id !== popoverState.assignSourceId) return b;
+                                                                    const swipeCommands = { ...b.swipeCommands, [dir]: button.command };
+                                                                    const swipeActionTypes = { ...b.swipeActionTypes, [dir]: button.actionType || 'command' };
+                                                                    const swipeSets = { ...b.swipeSets, [dir]: button.setId || 'main' };
+                                                                    return { ...b, swipeCommands, swipeActionTypes, swipeSets };
+                                                                }));
+                                                                setPopoverState(null);
+                                                                addMessage('system', `Assigned '${button.label}' to swipe ${dir}.`);
+                                                            } else {
+                                                                btn.setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
+                                                                setPopoverState(null);
+                                                                addMessage('system', `Assigned '${button.label}' to button.`);
+                                                            }
+                                                        } else {
+                                                            handleButtonClick(button, e, popoverState!.context);
+                                                        }
+                                                    }}>{button.label}</div>
+                                                ))}
+                                            </>
+                                        )}
+                                        {popoverState.setId !== 'setmanager' && btn.buttons.filter(b => b.setId === popoverState!.setId).length === 0 && (
+                                            <div className="popover-empty">No buttons in set '{popoverState.setId}'</div>
+                                        )}
+                                    </>
                                 </>
-                            </>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )
                 )
             }
 
@@ -3127,6 +3336,8 @@ const MudClient = () => {
                         setLoginName={setLoginName}
                         loginPassword={loginPassword}
                         setLoginPassword={setLoginPassword}
+                        isNoviceMode={isNoviceMode}
+                        setIsNoviceMode={setIsNoviceMode}
                     />
                 )
             }
@@ -3523,6 +3734,7 @@ const MudClient = () => {
                     </>
                 )
             }
+            <SwipeFeedbackOverlay />
         </div>
     );
 };
