@@ -86,7 +86,7 @@ export const useTelnet = (options: TelnetOptions) => {
             processLine(line);
         }
         if (bufferRef.current) {
-            detectLighting(bufferRef.current.replace(/\x1b\[[0-9;]*m/g, ''));
+            // detectLighting removed - relying on GMCP
         }
         setPrompt(bufferRef.current);
     }, [processLine, detectLighting, setPrompt]);

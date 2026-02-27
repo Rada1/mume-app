@@ -2,11 +2,9 @@ import React from 'react';
 import { X, Upload, Download, Music, Trash2, Wifi, WifiOff } from 'lucide-react';
 import { SoundTrigger } from '../types';
 import { DEFAULT_BG } from '../constants';
+import { useGame } from '../context/GameContext';
 
 interface SettingsModalProps {
-    setIsSettingsOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound';
-    setSettingsTab: (val: 'general' | 'sound') => void;
     connectionUrl: string;
     setConnectionUrl: (val: string) => void;
     bgImage: string;
@@ -24,24 +22,14 @@ interface SettingsModalProps {
     deleteSound: (id: string) => void;
     resetButtons: (mode: 'user' | 'core' | 'factory') => void;
     hasUserDefaults?: boolean;
-    status: 'connected' | 'disconnected' | 'connecting';
     connect: () => void;
-    isMmapperMode: boolean;
-    setIsMmapperMode: (val: boolean) => void;
     loginName: string;
     setLoginName: (val: string) => void;
     loginPassword: string;
     setLoginPassword: (val: string) => void;
-    isSoundEnabled: boolean;
-    setIsSoundEnabled: (val: boolean) => void;
-    isNoviceMode: boolean;
-    setIsNoviceMode: (val: boolean) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
-    setIsSettingsOpen,
-    settingsTab,
-    setSettingsTab,
     connectionUrl,
     setConnectionUrl,
     bgImage,
@@ -59,19 +47,19 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     deleteSound,
     resetButtons,
     hasUserDefaults,
-    status,
     connect,
-    isMmapperMode,
-    setIsMmapperMode,
     loginName,
     setLoginName,
     loginPassword,
     setLoginPassword,
-    isSoundEnabled,
-    setIsSoundEnabled,
-    isNoviceMode,
-    setIsNoviceMode,
 }) => {
+    const {
+        setIsSettingsOpen, settingsTab, setSettingsTab,
+        isMmapperMode, setIsMmapperMode,
+        isSoundEnabled, setIsSoundEnabled,
+        isNoviceMode, setIsNoviceMode,
+        status
+    } = useGame();
     return (
         <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>
             <div className="modal" onClick={e => e.stopPropagation()}>

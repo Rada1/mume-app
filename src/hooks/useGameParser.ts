@@ -1,0 +1,323 @@
+import { useState, useRef, useCallback, RefObject } from 'react';
+import { GameStats, MessageType, SoundTrigger, CustomButton } from '../types';
+import { ansiConvert } from '../utils/ansi';
+import { extractNoun } from '../utils/gameUtils';
+
+
+// ------------------------------------------------------------------
+// Deps injected from MudClient
+// ------------------------------------------------------------------
+interface UseGameParserDeps {
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean) => void;
+    playSound: (buffer: AudioBuffer) => void;
+    triggerHaptic: (ms: number) => void;
+    detectLighting: (line: string) => void;
+    setWeather: React.Dispatch<React.SetStateAction<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>>;
+    setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
+    setStats: React.Dispatch<React.SetStateAction<GameStats>>;
+    setRumble: React.Dispatch<React.SetStateAction<boolean>>;
+    setHitFlash: React.Dispatch<React.SetStateAction<boolean>>;
+    setDeathStage: React.Dispatch<React.SetStateAction<any>>;
+    setPlayerPosition: React.Dispatch<React.SetStateAction<string>>;
+    isInventoryOpen: boolean;
+    isCharacterOpen: boolean;
+    soundTriggersRef: RefObject<SoundTrigger[]>;
+    isSoundEnabledRef: RefObject<boolean>;
+    mapperRef: RefObject<any>;
+    // Button trigger access  (via ref to avoid stale closures)
+    btn: {
+        buttonsRef: RefObject<CustomButton[]>;
+        setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
+        buttonTimers: RefObject<Record<string, ReturnType<typeof setTimeout>>>;
+        setActiveSet: (setId: string) => void;
+    };
+}
+
+// ------------------------------------------------------------------
+// Hook
+// ------------------------------------------------------------------
+export function useGameParser({
+    addMessage,
+    playSound,
+    triggerHaptic,
+    detectLighting,
+    setWeather,
+    setIsFoggy,
+    setStats,
+    setRumble,
+    setHitFlash,
+    setDeathStage,
+    setPlayerPosition,
+    isInventoryOpen,
+    isCharacterOpen,
+    soundTriggersRef,
+    isSoundEnabledRef,
+    mapperRef,
+    btn,
+}: UseGameParserDeps) {
+    // Drawer capture state
+    const [inventoryHtml, setInventoryHtml] = useState('');
+    const [statsHtml, setStatsHtml] = useState('');
+    const [eqHtml, setEqHtml] = useState('');
+    const promptTerrainRef = useRef<string | null>(null);
+
+    // Capture flow refs
+    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'none'>('none');
+    const isDrawerCapture = useRef(false);
+    const isWaitingForStats = useRef(false);
+    const isWaitingForEq = useRef(false);
+    const isWaitingForInv = useRef(false);
+
+    // Helper: extract meaningful noun from item description (for drawer buttons)
+    const extractNoun = (text: string) => {
+        let clean = text.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
+        clean = clean.replace(/[.,:;!]+$/, '');
+        const words = clean.split(/[\s,.-]+/).filter(w => w.length > 1 && !/^(a|an|the|of|in|on|at|to|some|several)$/i.test(w));
+        return words.length > 0 ? words[words.length - 1].toLowerCase().replace(/[^\w]/g, '') : '';
+    };
+
+    const processLine = useCallback((line: string) => {
+        const cleanLine = line.replace(/\r$/, '');
+        if (!cleanLine) return;
+
+        const textOnlyForCapture = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
+        const lowerCapture = textOnlyForCapture.toLowerCase();
+
+        // 1. Detect start of capture based on specific MUME response markers
+        if (isWaitingForStats.current && (lowerCapture.includes('ob:') || lowerCapture.includes('armor:') || lowerCapture.includes('mood:') || lowerCapture.includes('str:') || lowerCapture.includes('exp:') || lowerCapture.includes('level:'))) {
+            isWaitingForStats.current = false;
+            captureStage.current = 'stat';
+        }
+        if ((isWaitingForEq.current || captureStage.current !== 'none') && lowerCapture.includes('you are using:')) {
+            isWaitingForEq.current = false;
+            captureStage.current = 'eq';
+        }
+        if ((isWaitingForInv.current || captureStage.current !== 'none') && lowerCapture.includes('you are carrying:')) {
+            isWaitingForInv.current = false;
+            captureStage.current = 'inv';
+        }
+
+        // 2. Prompt detection (terminates capture)
+        const isPurePrompt = /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(]\s*[>:]\s*$/.test(textOnlyForCapture);
+        const startsWithPrompt = /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(]/.test(textOnlyForCapture);
+        const endsWithPromptIndicator = /[>:]\s*$/.test(textOnlyForCapture);
+        const isLikelyPrompt = (startsWithPrompt && endsWithPromptIndicator && textOnlyForCapture.length < 60);
+
+        const shouldStopCapture = isPurePrompt || (isLikelyPrompt && !lowerCapture.includes('ob:') && !lowerCapture.includes('armor:') && !lowerCapture.includes('str:') && !lowerCapture.includes('exp:') && !lowerCapture.includes('level:') && !lowerCapture.includes('you are using:') && !lowerCapture.includes('needed:') && !lowerCapture.includes('carrying:'));
+
+        if (shouldStopCapture) {
+            captureStage.current = 'none';
+            isWaitingForStats.current = false;
+            isWaitingForEq.current = false;
+            isWaitingForInv.current = false;
+        }
+
+        // 3. Perform capture (skip if it's the prompt that just ended it)
+        if (!shouldStopCapture) {
+            const wrapDrawerItem = (line: string, setName: string) => {
+                const textOnly = line.replace(/\x1b\[[0-9;]*m/g, '').replace(/^.*?([a-zA-Z<>\[(])/, '$1').trimRight();
+                const trimmed = textOnly.trim();
+                const lowerTrimmed = trimmed.toLowerCase();
+
+                const html = ansiConvert.toHtml(line);
+
+                if (!trimmed || lowerTrimmed.includes('you are carrying') || lowerTrimmed.includes('you are using') || lowerTrimmed.includes('nothing.')) {
+                    return `<div style="padding: 4px 0; opacity: 0.7; white-space: pre-wrap;">${ansiConvert.toHtml(line.replace(/^.*?([a-zA-Z<>\[(])/, '$1'))}</div>`;
+                }
+
+                let itemMatch = textOnly;
+                const eqMatch = textOnly.match(/^(<[^>]+>\s+|\[[^\]]+\]:?\s+)(.*)$/);
+                if (eqMatch) {
+                    itemMatch = eqMatch[2];
+                } else {
+                    itemMatch = textOnly.trimStart();
+                }
+
+                let contextName = extractNoun(itemMatch);
+
+                return `<div class="inline-btn auto-item" data-cmd="${setName}" data-context="${contextName.replace(/"/g, '&quot;')}" data-action="menu" style="background-color: rgba(100, 255, 100, 0.08); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 4px; margin-bottom: 4px; cursor: pointer;">${html}</div>`;
+            };
+
+            if (captureStage.current === 'inv') {
+                setInventoryHtml(prev => prev + wrapDrawerItem(cleanLine, 'inventorylist'));
+            } else if (captureStage.current === 'stat') {
+                setStatsHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
+            } else if (captureStage.current === 'eq') {
+                setEqHtml(prev => prev + wrapDrawerItem(cleanLine, 'equipmentlist'));
+            }
+        }
+
+        const textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
+        const lower = textOnly.toLowerCase();
+
+        try {
+            const shortStats = /(?:H|HP|Health):\s*(\d+)(?:\/(\d+))?.*(?:M|Mana):\s*(\d+)(?:\/(\d+))?.*(?:V|MV|Move):\s*(\d+)(?:\/(\d+))?/i;
+            let match = textOnly.match(shortStats);
+            if (!match) {
+                const verboseStats = /(\d+)\/(\d+)\s+hits,?\s+(\d+)\/(\d+)\s+mana,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
+                const vMatch = textOnly.match(verboseStats);
+                if (vMatch) match = [vMatch[0], vMatch[1], vMatch[2], vMatch[3], vMatch[4], vMatch[5], vMatch[6]];
+            }
+            if (match) {
+                setStats(prev => {
+                    const newHp = parseInt(match![1]);
+                    const newMaxHp = match![2] ? parseInt(match![2]) : prev.maxHp;
+                    const newMana = parseInt(match![3]);
+                    const newMaxMana = match![4] ? parseInt(match![4]) : prev.maxMana;
+                    const newMove = parseInt(match![5]);
+                    const newMaxMove = match![6] ? parseInt(match![6]) : prev.maxMove;
+                    if (newHp !== prev.hp || newMove !== prev.move || newMana !== prev.mana) {
+                        return { ...prev, hp: newHp, maxHp: newMaxHp, mana: newMana, maxMana: newMaxMana, move: newMove, maxMove: newMaxMove };
+                    }
+                    return prev;
+                });
+            }
+
+            // Terrain Detection from Prompt
+            const terrainSymbols: Record<string, string> = {
+                '[': 'building', '#': 'city', '.': 'field', 'f': 'forest',
+                '(': 'hills', '<': 'mountains', '%': 'shallows', '~': 'water',
+                '+': 'road', 'W': 'rapids', 'U': 'underwater', ':': 'brush',
+                '=': 'tunnel', 'O': 'cavern'
+            };
+            const terrainPatterns = [
+                /\b(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\b/i,
+                /\[\s*(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\]/i,
+                /\(\s*(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\)/i
+            ];
+            let found = false;
+            for (const pattern of terrainPatterns) {
+                const tMatch = textOnly.match(pattern);
+                if (tMatch) {
+                    promptTerrainRef.current = tMatch[1].toLowerCase();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                const isPrompt = /^([\*\)\!oO\.\[f<%\~+WU:=\#\?\(].*[>:])/.test(textOnly);
+                if (isPrompt) {
+                    const promptSymbolRegex = /^([\*\)\!o]?)([\.\[\#f<%\~+WU:=O:\(])/;
+                    const symMatch = textOnly.match(promptSymbolRegex);
+                    if (symMatch) {
+                        const sym = symMatch[2];
+                        if (terrainSymbols[sym]) {
+                            promptTerrainRef.current = terrainSymbols[sym];
+                            found = true;
+                        }
+                    }
+                }
+            }
+            if (promptTerrainRef.current) mapperRef.current?.handleTerrain(promptTerrainRef.current);
+        } catch (e) { }
+
+        // Environment
+        if (lower.includes("it starts to rain")) setWeather('rain');
+        else if (lower.includes("the rain stops")) setWeather('none');
+        else if (lower.includes("snow starts to fall")) setWeather('snow');
+        else if (lower.includes("the snow stops")) setWeather('none');
+        else if (lower.includes("the sky clouds over") || lower.includes("clouds fill the sky")) setWeather('cloud');
+        else if (lower.includes("the clouds disappear") || lower.includes("the sky clears")) setWeather('none');
+        else if (lower.includes("thick fog")) setIsFoggy(true);
+        else if (lower.includes("fog clears")) setIsFoggy(false);
+
+        // Movement failures → rumble + mapper notification
+        if (lower.includes("alas, you cannot go that way") ||
+            lower.includes("no exit that way") ||
+            lower.includes("is closed") ||
+            lower.includes("you are too exhausted") ||
+            lower.includes("too tired") ||
+            lower.includes("cannot go there") ||
+            lower.includes("must be standing") ||
+            lower.includes("blocks your way") ||
+            lower.includes("blocks your path") ||
+            lower.includes("blocks your exit") ||
+            lower.includes("caught in") ||
+            lower.includes("locked") ||
+            lower.includes("need a boat") ||
+            lower.includes("would drown") ||
+            lower.includes("too deep") ||
+            lower.includes("cannot climb") ||
+            lower.includes("not allowed") ||
+            lower.includes("need a light") ||
+            lower.includes("already there") ||
+            lower.includes("mount is too exhausted")) {
+            setRumble(true);
+            triggerHaptic(50);
+            setTimeout(() => setRumble(false), 400);
+            mapperRef.current?.handleMoveFailure();
+        }
+
+        const darkStrings = ["pitch black", "too dark", "cannot see"];
+        if (darkStrings.some(msg => lower.includes(msg))) {
+            mapperRef.current?.handleMoveFailure();
+            addMessage('system', "[Mapper] Darkness detected. Room not mapped.");
+        }
+        // detectLighting removed - relying on GMCP
+        if (lower.includes("hits you") || lower.includes("crushes you") || lower.includes("pierces you")) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }
+        if (lower.includes("you have been killed") || lower.includes("you are dead")) { setDeathStage('fade_to_black'); setTimeout(() => setDeathStage('flash'), 2000); }
+
+        // Sound Triggers
+        soundTriggersRef.current?.forEach(trig => {
+            if (!trig.pattern || !trig.buffer) return;
+            const match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.includes(trig.pattern);
+            if (match && isSoundEnabledRef.current) playSound(trig.buffer);
+        });
+
+        // Button Triggers
+        btn.buttonsRef.current?.forEach(b => {
+            if (!b.trigger?.enabled || !b.trigger.pattern) return;
+            const match = b.trigger.isRegex ? new RegExp(b.trigger.pattern).test(textOnly) : textOnly.includes(b.trigger.pattern);
+            if (match) {
+                if (b.display === 'floating') {
+                    btn.setButtons(prev => prev.map(x => x.id === b.id ? { ...x, isVisible: true } : x));
+                    if (b.trigger.duration > 0) {
+                        if (btn.buttonTimers.current[b.id]) clearTimeout(btn.buttonTimers.current[b.id]);
+                        btn.buttonTimers.current[b.id] = setTimeout(() => {
+                            btn.setButtons(prev => prev.map(x => x.id === b.id ? { ...x, isVisible: false } : x));
+                        }, b.trigger.duration * 1000);
+                    }
+                }
+                if (b.trigger.type === 'switch_set' && b.trigger.targetSet) btn.setActiveSet(b.trigger.targetSet);
+            }
+        });
+
+        // Wimpy Detection
+        if (lower.includes("wimpy")) {
+            const wimpyMatch = textOnly.match(/wimpy\s+(?:is|set to)?\s*(\d+)/i);
+            if (wimpyMatch) {
+                const w = parseInt(wimpyMatch[1]);
+                setStats(prev => ({ ...prev, wimpy: w }));
+            }
+        }
+
+        const mumePromptRegex = /^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*[>:]\s*)(.*)$/;
+        const pMatch = cleanLine.match(mumePromptRegex);
+
+        const isCapturing = captureStage.current !== 'none' && isDrawerCapture.current;
+
+        if (pMatch) {
+            const messagePart = pMatch[2];
+            if (messagePart && !isCapturing) addMessage('game', messagePart);
+        } else {
+            if (!isCapturing) addMessage('game', cleanLine);
+        }
+    }, [detectLighting, addMessage, btn, isInventoryOpen, isCharacterOpen,
+        setWeather, setIsFoggy, setStats, setRumble, setHitFlash, setDeathStage,
+        playSound, triggerHaptic, soundTriggersRef, isSoundEnabledRef, promptTerrainRef, mapperRef]);
+
+    return {
+        // Drawer state
+        inventoryHtml, setInventoryHtml,
+        statsHtml, setStatsHtml,
+        eqHtml, setEqHtml,
+        // Capture refs (still needed by effects in MudClient that reset them on drawer close)
+        captureStage,
+        isDrawerCapture,
+        isWaitingForStats,
+        isWaitingForEq,
+        isWaitingForInv,
+        // The main callback
+        processLine,
+    };
+}

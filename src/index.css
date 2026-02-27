@@ -2889,6 +2889,7 @@ input:checked+.switch-slider .switch-label.off {
 .has-popover .popover-menu,
 .has-popover .dial-menu-overlay {
   pointer-events: auto !important;
+  opacity: 1;
 }
 
 .dial-menu-center {
@@ -2972,7 +2973,7 @@ input:checked+.switch-slider .switch-label.off {
 }
 
 .dial-item.active {
-  transform: translate(-50%, -50%) scale(1.3) !important;
+  scale: 1.3 !important;
   background: rgba(255, 255, 255, 0.15);
   border-color: var(--accent);
   box-shadow: 0 0 25px var(--accent);

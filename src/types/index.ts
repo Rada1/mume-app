@@ -50,8 +50,12 @@ export interface CustomButton {
         h: number; // px
         backgroundColor: string;
         borderColor?: string; // Optional border color
+        color?: string; // Optional text color
+        fontSize?: number; // Optional font size in rem
+        borderRadius?: number; // Optional border radius in px
         transparent?: boolean; // New transparent flag
         shape: 'rect' | 'pill' | 'circle';
+
     };
     trigger: {
         enabled: boolean;
@@ -130,4 +134,18 @@ export interface RoomNode {
     customColor?: string;
     notes?: string;
     zone?: string; // Zone/Area name
+}
+
+export interface SpatButton {
+    id: string;
+    btnId: string;
+    label: string;
+    command: string;
+    action: string;
+    startX: number;
+    startY: number;
+    targetX: number;
+    targetY: number;
+    color: string;
+    timestamp: number;
 }

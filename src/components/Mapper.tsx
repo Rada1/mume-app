@@ -56,7 +56,7 @@ export interface MapperProps {
     isMobile?: boolean;
 }
 
-export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, characterName, isMmapperMode, isExpanded, isMobile }, ref) => {
+export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignMode, characterName, isMmapperMode, isExpanded, isMobile }, ref) => {
     // --- STATE ---
     const [mode, setMode] = useState<'edit' | 'play'>(isDesignMode ? 'edit' : 'play');
     const longPressTimerRef = useRef<any>(null);
@@ -2076,4 +2076,4 @@ export const Mapper = forwardRef<MapperRef, MapperProps>(({ isDesignMode, charac
             )}
         </div>
     );
-});
+}));
