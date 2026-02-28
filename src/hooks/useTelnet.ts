@@ -122,17 +122,43 @@ export const useTelnet = (options: TelnetOptions) => {
 
             if (pkgLower === 'char.vitals') {
                 try {
-                    const data = JSON.parse(json) as GmcpCharVitals;
-                    if (handlers.onCharVitals) handlers.onCharVitals(data);
-                    setStats((prev: GameStats) => ({
-                        ...prev,
-                        hp: data.hp ?? prev.hp,
-                        maxHp: data.maxhp ?? prev.maxHp,
-                        mana: data.mana ?? prev.mana,
-                        maxMana: data.maxmana ?? prev.maxMana,
-                        move: data.move ?? prev.move,
-                        maxMove: data.maxmove ?? prev.maxMove
-                    }));
+                    const data = JSON.parse(json) as Record<string, any>;
+                    if (handlers.onCharVitals) handlers.onCharVitals(data as any);
+
+                    setStats((prev: GameStats) => {
+                        const next = { ...prev };
+                        // Case-insensitive lookup for stats
+                        const findKey = (keys: string[]) => {
+                            for (const k of keys) {
+                                const found = Object.keys(data).find(dk => dk.toLowerCase() === k.toLowerCase());
+                                if (found !== undefined && data[found] !== undefined) {
+                                    const val = parseInt(data[found]);
+                                    if (!isNaN(val)) return val;
+                                }
+                            }
+                            return undefined;
+                        };
+
+                        const newHp = findKey(['hp', 'hits', 'health']);
+                        if (newHp !== undefined) next.hp = newHp;
+                        const newMaxHp = findKey(['maxhp', 'maxhits', 'maxhealth']);
+                        if (newMaxHp !== undefined) next.maxHp = newMaxHp;
+
+                        const newMana = findKey(['mana', 'sp', 'spirit']);
+                        if (newMana !== undefined) next.mana = newMana;
+                        const newMaxMana = findKey(['maxmana', 'maxsp', 'maxspirit']);
+                        if (newMaxMana !== undefined) next.maxMana = newMaxMana;
+
+                        const newMove = findKey(['mp', 'mv', 'move', 'moves', 'stamina', 'st']);
+                        if (newMove !== undefined) next.move = newMove;
+                        const newMaxMove = findKey(['maxmp', 'maxmv', 'maxmove', 'maxmoves', 'maxstamina', 'maxst']);
+                        if (newMaxMove !== undefined) next.maxMove = newMaxMove;
+
+                        const newWimpy = findKey(['wimpy']);
+                        if (newWimpy !== undefined) next.wimpy = newWimpy;
+
+                        return next;
+                    });
 
                     // Partial updates: merge into ref to persist state
                     if (data.position !== undefined) {

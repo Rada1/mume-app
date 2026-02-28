@@ -25,7 +25,7 @@ const Joystick: React.FC<JoystickProps> = ({
     isTargetModifierActive
 }) => {
     return (
-        <div className="cluster-row">
+        <div className="cluster-row" onPointerDown={(e) => e.preventDefault()}>
             <div className="nav-buttons-col">
                 <div
                     className={`nav-btn ${btnGlow.up ? 'glow-active' : ''}`}

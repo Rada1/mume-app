@@ -107,7 +107,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 pointerEvents: 'none'
             }} />
             <form className="input-form" onSubmit={onSend} style={{ pointerEvents: 'none', position: 'relative' }}>
-                <span className="cmd-prompt" style={{ pointerEvents: 'auto' }}>{'>'}</span>
+                <span className="cmd-prompt" onPointerDown={(e) => e.preventDefault()} style={{ pointerEvents: 'auto' }}>{'>'}</span>
                 <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
                     {commandPreview && !input && (
                         <div style={{
@@ -142,6 +142,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 {target && (
                     <div
                         className="target-badge"
+                        onPointerDown={(e) => e.preventDefault()}
                         onClick={() => {
                             onTargetClick?.();
                             inputRef.current?.focus();

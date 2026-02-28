@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Wifi, WifiOff, Layers, Edit3, Settings, CloudFog, Swords, Crosshair, MoreVertical, FolderOpen, RotateCcw } from 'lucide-react';
+import { Wifi, WifiOff, Layers, Edit3, Settings, CloudFog, Swords, Crosshair, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft } from 'lucide-react';
 import { LightingType, WeatherType } from '../types';
 
 interface HeaderProps {
@@ -44,13 +44,20 @@ const Header: React.FC<HeaderProps> = ({
     teleportTargetsCount
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isSetMenuOpen, setIsSetMenuOpen] = useState(false);
+    const [menuView, setMenuView] = useState<'main' | 'sets'>('main');
     const menuRef = useRef<HTMLDivElement>(null);
+    const setMenuRef = useRef<HTMLDivElement>(null);
 
-    // Close menu when clicking outside
+    // Close menus when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
                 setIsMenuOpen(false);
+                setMenuView('main'); // Reset view on close
+            }
+            if (setMenuRef.current && !setMenuRef.current.contains(event.target as Node)) {
+                setIsSetMenuOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -58,7 +65,7 @@ const Header: React.FC<HeaderProps> = ({
     }, []);
 
     return (
-        <header className="header" onPointerDown={e => e.preventDefault()}>
+        <header className="header">
             <div className="title">
                 MUME Client
             </div>
@@ -123,11 +130,47 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 <div className="controls">
-                    <div className="action-menu-wrapper" ref={menuRef}>
+                    {isEditMode && (
+                        <div className="action-menu-wrapper" ref={setMenuRef}>
+                            <div
+                                className={`set-switcher ${isSetMenuOpen ? 'active' : ''}`}
+                                onClick={() => setIsSetMenuOpen(!isSetMenuOpen)}
+                            >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                                    <Layers size={14} style={{ flexShrink: 0 }} />
+                                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{activeSet}</span>
+                                </div>
+                                <ChevronDown size={14} style={{ flexShrink: 0, transform: isSetMenuOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
+                            </div>
+
+                            {isSetMenuOpen && (
+                                <div className="header-dropdown-menu" style={{ minWidth: '200px', maxHeight: '350px', overflowY: 'auto' }}>
+                                    <div className="menu-group" style={{ padding: '4px' }}>
+                                        <label style={{ margin: '8px 0 10px 8px' }}>Button Set</label>
+                                        {availableSets.map(set => (
+                                            <div
+                                                key={set}
+                                                className={`dropdown-item ${activeSet === set ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    setActiveSet(set);
+                                                    setIsSetMenuOpen(false);
+                                                }}
+                                                style={{ padding: '8px 10px', gap: '10px' }}
+                                            >
+                                                <Layers size={14} style={{ opacity: activeSet === set ? 1 : 0.4 }} />
+                                                <span style={{ flex: 1 }}>{set}</span>
+                                                {activeSet === set && <Check size={14} />}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    <div className="action-menu-wrapper main-menu-dots" ref={menuRef} style={{ flexShrink: 0 }}>
                         <button
                             className={`menu-toggle-btn ${isMenuOpen ? 'active' : ''}`}
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            onPointerDown={e => e.preventDefault()}
                             title="More Actions"
                         >
                             <MoreVertical size={20} />
@@ -135,74 +178,107 @@ const Header: React.FC<HeaderProps> = ({
 
                         {isMenuOpen && (
                             <div className="header-dropdown-menu">
-                                <div className="menu-group">
-                                    <label>Button Set</label>
-                                    <div className="dropdown-item">
-                                        <Layers size={14} />
-                                        <select
-                                            value={activeSet}
-                                            onChange={(e) => {
-                                                setActiveSet(e.target.value);
-                                                setIsMenuOpen(false);
-                                            }}
-                                        >
-                                            {availableSets.map(set => (
-                                                <option key={set} value={set}>
-                                                    {set}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="menu-divider" />
-
-                                <div
-                                    className={`dropdown-item ${isEditMode ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setIsEditMode(!isEditMode);
-                                        setIsMenuOpen(false);
-                                    }}
-                                >
-                                    <Edit3 size={16} />
-                                    <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
-                                </div>
-
-                                {isEditMode && (
+                                {menuView === 'main' ? (
                                     <>
-                                        <div
-                                            className="dropdown-item"
-                                            onClick={() => {
-                                                onOpenSetManager();
-                                                setIsMenuOpen(false);
-                                            }}
-                                        >
-                                            <FolderOpen size={16} />
-                                            <span>Manage Button Sets</span>
+                                        <div className="menu-group">
+                                            <label>Button Set</label>
+                                            <div
+                                                className="dropdown-item"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setMenuView('sets');
+                                                }}
+                                                style={{ border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}
+                                            >
+                                                <Layers size={14} />
+                                                <span style={{ flex: 1 }}>{activeSet}</span>
+                                                <ChevronDown size={14} opacity={0.5} style={{ transform: 'rotate(-90deg)' }} />
+                                            </div>
                                         </div>
+
+                                        <div className="menu-divider" />
+
                                         <div
-                                            className="dropdown-item"
+                                            className={`dropdown-item ${isEditMode ? 'active' : ''}`}
                                             onClick={() => {
-                                                if (onResetMap) onResetMap();
+                                                setIsEditMode(!isEditMode);
                                                 setIsMenuOpen(false);
                                             }}
                                         >
-                                            <RotateCcw size={16} />
-                                            <span>Reset Map Position</span>
+                                            <Edit3 size={16} />
+                                            <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
+                                        </div>
+
+                                        {isEditMode && (
+                                            <>
+                                                <div
+                                                    className="dropdown-item"
+                                                    onClick={() => {
+                                                        onOpenSetManager();
+                                                        setIsMenuOpen(false);
+                                                    }}
+                                                >
+                                                    <FolderOpen size={16} />
+                                                    <span>Manage Button Sets</span>
+                                                </div>
+                                                <div
+                                                    className="dropdown-item"
+                                                    onClick={() => {
+                                                        if (onResetMap) onResetMap();
+                                                        setIsMenuOpen(false);
+                                                    }}
+                                                >
+                                                    <RotateCcw size={16} />
+                                                    <span>Reset Map Position</span>
+                                                </div>
+                                            </>
+                                        )}
+
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={() => {
+                                                setIsSettingsOpen(true);
+                                                setIsMenuOpen(false);
+                                            }}
+                                        >
+                                            <Settings size={16} />
+                                            <span>Settings</span>
                                         </div>
                                     </>
+                                ) : (
+                                    <div className="menu-group" style={{ padding: '4px' }}>
+                                        <div
+                                            className="dropdown-item"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setMenuView('main');
+                                            }}
+                                            style={{ marginBottom: '8px', opacity: 0.8 }}
+                                        >
+                                            <ChevronLeft size={16} />
+                                            <span style={{ fontWeight: 'bold' }}>Back to Menu</span>
+                                        </div>
+                                        <label style={{ margin: '4px 0 8px 10px' }}>SELECT SET</label>
+                                        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                            {availableSets.map(set => (
+                                                <div
+                                                    key={set}
+                                                    className={`dropdown-item ${activeSet === set ? 'active' : ''}`}
+                                                    onClick={() => {
+                                                        setActiveSet(set);
+                                                        setIsMenuOpen(false);
+                                                        setMenuView('main');
+                                                    }}
+                                                    style={{ padding: '8px 10px', gap: '10px' }}
+                                                >
+                                                    <Layers size={14} style={{ opacity: activeSet === set ? 1 : 0.4 }} />
+                                                    <span style={{ flex: 1 }}>{set}</span>
+                                                    {activeSet === set && <Check size={14} />}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
                                 )}
-
-                                <div
-                                    className="dropdown-item"
-                                    onClick={() => {
-                                        setIsSettingsOpen(true);
-                                        setIsMenuOpen(false);
-                                    }}
-                                >
-                                    <Settings size={16} />
-                                    <span>Settings</span>
-                                </div>
                             </div>
                         )}
                     </div>

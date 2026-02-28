@@ -31,7 +31,7 @@ export interface GameStats {
     wimpy?: number;
 }
 
-export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'teleport-manage' | 'select-recipient' | 'preload';
+export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign' | 'teleport-manage' | 'select-recipient' | 'preload';
 
 export interface CustomButton {
     id: string;
@@ -72,7 +72,6 @@ export interface CustomButton {
     isVisible: boolean; // Runtime state
     longCommand?: string; // Command sent on long-press
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
-    swipeSets?: Partial<Record<SwipeDirection, string>>;
     longSwipeCommands?: Partial<Record<SwipeDirection, string>>;
     menuDisplay?: 'list' | 'dial';
     requirement?: {
@@ -106,6 +105,7 @@ export interface PopoverState {
     context?: string;
     assignSourceId?: string;
     assignSwipeDir?: SwipeDirection;
+    executeAndAssign?: boolean;
     menuDisplay?: 'list' | 'dial';
     initialPointerX?: number;
     initialPointerY?: number;
@@ -164,8 +164,16 @@ export interface GmcpCharVitals {
     maxhp?: number;
     mana?: number;
     maxmana?: number;
+    sp?: number;          // MUME Spirit/Mana
+    maxsp?: number;
     move?: number;
     maxmove?: number;
+    moves?: number;       // Alternate plural
+    maxmoves?: number;
+    mv?: number;          // Common short
+    maxmv?: number;
+    stamina?: number;     // Another common name
+    maxstamina?: number;
     position?: string;
     opponent?: string | null;
     weather?: string | null;

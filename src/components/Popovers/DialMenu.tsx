@@ -81,7 +81,10 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     return (
         <div
             className="dial-menu-overlay"
-            onPointerDown={(e) => e.stopPropagation()}
+            onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
         >
             <div className="dial-menu-center" style={{ left: center.x, top: center.y }}>
                 <div className="dial-selection-center" style={{ '--accent': activeIndex !== null ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || 'var(--accent)') : 'rgba(255,255,255,0.2)' } as any}>

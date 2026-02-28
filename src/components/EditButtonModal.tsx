@@ -53,7 +53,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
 
     const renderActionConfig = (label: string, field: 'command' | 'longCommand', typeField: 'actionType' | 'longActionType') => {
         const actionType = editingButton[typeField] || 'command';
-        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign';
+        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign' || actionType === 'select-assign';
 
         return (
             <div className="setting-group" style={{ marginBottom: '15px' }}>
@@ -86,6 +86,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <option value="nav">Switch Set</option>
                         <option value="menu">Menu</option>
                         <option value="assign">Assign</option>
+                        <option value="select-assign">Select & Assign</option>
                         <option value="teleport-manage">Teleport List</option>
                         <option value="select-recipient">Select Recipient</option>
                         <option value="preload">Preload Input</option>
@@ -97,7 +98,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
 
     const renderSwipeConfig = (dir: SwipeDirection) => {
         const actionType = editingButton.swipeActionTypes?.[dir] || 'command';
-        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign';
+        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign' || actionType === 'select-assign';
 
         return (
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -139,6 +140,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                     <option value="nav">Set</option>
                     <option value="menu">Menu</option>
                     <option value="assign">Assign</option>
+                    <option value="select-assign">S&A</option>
                     <option value="select-recipient">Recip</option>
                     <option value="teleport-manage">Tele</option>
                 </select>
@@ -148,7 +150,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
 
     const renderLongSwipeConfig = (dir: SwipeDirection) => {
         const actionType = editingButton.longSwipeActionTypes?.[dir] || 'assign';
-        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign';
+        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign' || actionType === 'select-assign';
 
         return (
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -190,6 +192,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                     <option value="nav">Set</option>
                     <option value="menu">Menu</option>
                     <option value="assign">Assign</option>
+                    <option value="select-assign">S&A</option>
                     <option value="select-recipient">Recip</option>
                     <option value="teleport-manage">Tele</option>
                 </select>

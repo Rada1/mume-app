@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Plus, User, Backpack } from 'lucide-react';
+import { Plus, User, Backpack, X } from 'lucide-react';
 
 import './index.css';
 import {
@@ -39,7 +39,6 @@ import EditButtonModal from './components/EditButtonModal';
 import SetManagerModal from './components/SetManagerModal';
 import { Mapper, MapperRef } from './components/Mapper';
 import { mudParser } from './services/parser/services/mudParser';
-import SwipeFeedbackOverlay, { triggerSwipeFeedback } from './components/SwipeFeedbackOverlay';
 import { PopoverManager } from './components/Popovers/PopoverManager';
 import { GameButton } from './components/GameButton';
 import { getButtonCommand } from './utils/buttonUtils';
@@ -1019,14 +1018,16 @@ const MudClient = () => {
                                             if (el) el._didFire = true;
 
                                             if (result.actionType === 'nav') btn.setActiveSet(result.cmd);
-                                            else if (result.actionType === 'assign' || result.actionType === 'menu') {
+                                            else if (result.actionType === 'assign' || result.actionType === 'menu' || result.actionType === 'select-assign') {
                                                 const rect = el?.getBoundingClientRect();
                                                 setPopoverState({
                                                     x: rect ? rect.right + 10 : window.innerWidth / 2,
                                                     y: rect ? rect.top : window.innerHeight / 2,
                                                     setId: result.cmd,
-                                                    context: button.label,
+                                                    context: result.actionType === 'select-assign' ? result.modifiers : button.label,
                                                     assignSourceId: button.id,
+                                                    assignSwipeDir: result.dir,
+                                                    executeAndAssign: result.actionType === 'select-assign',
                                                     menuDisplay: button.menuDisplay,
                                                     initialPointerX: rect ? (rect.left + rect.width / 2) : 0,
                                                     initialPointerY: rect ? (rect.top + rect.height / 2) : 0
@@ -1131,6 +1132,15 @@ const MudClient = () => {
 
 
             {btn.isEditMode && <div className="add-btn-fab" onClick={() => btn.createButton()}><Plus size={32} /></div>}
+            {btn.isEditMode && (
+                <div
+                    className="exit-design-mode-fab"
+                    onClick={() => btn.setIsEditMode(false)}
+                    title="Exit Design Mode"
+                >
+                    <X size={32} />
+                </div>
+            )}
 
             <PopoverManager
                 popoverState={popoverState}
@@ -1318,7 +1328,6 @@ const MudClient = () => {
                 inventoryHtml={inventoryHtml}
                 handleLogClick={handleLogClick}
             />
-            <SwipeFeedbackOverlay />
         </div>
     );
 };

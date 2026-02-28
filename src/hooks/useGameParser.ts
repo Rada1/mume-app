@@ -110,7 +110,10 @@ export function useGameParser({
             isWaitingForInv.current = false;
             captureStage.current = 'inv';
         }
-        if (lowerCapture.includes('you have the following') || lowerCapture.includes('you can practice the following')) {
+        if (lowerCapture.includes('you have the following') ||
+            lowerCapture.includes('you can practice the following') ||
+            lowerCapture.includes('practice sessions left') ||
+            lowerCapture.includes('skill / spell     knowledge')) {
             captureStage.current = 'practice';
             const classMatch = lowerCapture.match(/(ranger|warrior|mage|cleric|thief)\s+(skills|spells)/i);
             if (classMatch) {
@@ -166,35 +169,66 @@ export function useGameParser({
             } else if (captureStage.current === 'eq') {
                 setEqHtml(prev => prev + wrapDrawerItem(cleanLine, 'equipmentlist'));
             } else if (captureStage.current === 'practice') {
-                // Parse skill/spell line: "bash ........................................ very good"
-                const practiceMatch = textOnlyForCapture.match(/^([a-zA-Z\s\-]+)\s+\.{3,}\s+([a-zA-Z\s%\d\(\)]+)$/);
-                if (practiceMatch) {
-                    const ability = practiceMatch[1].trim().toLowerCase();
-                    const valuePart = practiceMatch[2].trim().toLowerCase();
+                // Skip headers and separators
+                if (lowerCapture.includes('skill / spell') || lowerCapture.includes('---')) return;
 
-                    let proficiency = 0;
-                    // Check if there's a percentage in parentheses first: "(85%)"
-                    const pctMatch = valuePart.match(/\((\d+)%\)/);
+                let ability = '';
+                let proficiency = 0;
+                let detectedClass = '';
+
+                // 1. Try Dotted Format: "bash ........................................ very good"
+                const dottedMatch = textOnlyForCapture.match(/^([a-zA-Z\s\-]+)\s+\.{3,}\s+([a-zA-Z\s%\d\(\)]+)$/);
+                if (dottedMatch) {
+                    ability = dottedMatch[1].trim().toLowerCase();
+                    const valuePart = dottedMatch[2].trim().toLowerCase();
+
+                    // Check if there's a percentage in parentheses or directly
+                    const pctMatch = valuePart.match(/(\d+)%/);
                     if (pctMatch) {
                         proficiency = parseInt(pctMatch[1]);
                     } else {
-                        // Check if it's just a percentage: "85%"
-                        const directPctMatch = valuePart.match(/(\d+)%/);
-                        if (directPctMatch) {
-                            proficiency = parseInt(directPctMatch[1]);
+                        // Look for literals
+                        for (const [lit, val] of Object.entries(PROFICIENCY_MAP)) {
+                            if (valuePart.includes(lit)) {
+                                proficiency = val;
+                                break;
+                            }
+                        }
+                    }
+                }
+                // 2. Try Table Format: "Bandage           Fair       Easy        None"
+                else {
+                    const parts = textOnlyForCapture.trim().split(/\s{2,}/);
+                    if (parts.length >= 2) {
+                        ability = parts[0].trim().toLowerCase();
+                        const knowledge = parts[1].trim().toLowerCase();
+
+                        // Detect proficiency from knowledge column
+                        if (knowledge.includes('%')) {
+                            proficiency = parseInt(knowledge) || 0;
                         } else {
-                            // Look for literals
                             for (const [lit, val] of Object.entries(PROFICIENCY_MAP)) {
-                                if (valuePart.includes(lit)) {
+                                if (knowledge === lit || knowledge.startsWith(lit)) {
                                     proficiency = val;
                                     break;
                                 }
                             }
                         }
-                    }
 
-                    if (ability && proficiency > 0) {
-                        setAbilities(prev => ({ ...prev, [ability]: proficiency }));
+                        // Detect class if present (usually 4th column)
+                        if (parts.length >= 4) {
+                            const cls = parts[3].trim().toLowerCase();
+                            if (['ranger', 'warrior', 'mage', 'cleric', 'thief'].includes(cls)) {
+                                detectedClass = cls;
+                            }
+                        }
+                    }
+                }
+
+                if (ability && proficiency > 0) {
+                    setAbilities(prev => ({ ...prev, [ability]: proficiency }));
+                    if (detectedClass) {
+                        setCharacterClass(detectedClass as any);
                     }
                 }
             }
@@ -204,6 +238,19 @@ export function useGameParser({
         const lower = textOnly.toLowerCase();
 
         // Stats, Terrain, and Environment parsing removed in favor of GMCP handling in useTelnet.ts
+        // BUT: Re-adding a fallback for the "score" command to handle cases where GMCP might be incomplete
+        const scoreMatch = textOnly.match(/(\d+)\/(\d+)\s+hits\s*,?\s+(\d+)\/(\d+)\s+mana\s*,?\s+and\s+(\d+)\/(\d+)\s+moves/i);
+        if (scoreMatch) {
+            setStats(prev => ({
+                ...prev,
+                hp: parseInt(scoreMatch[1]),
+                maxHp: parseInt(scoreMatch[2]),
+                mana: parseInt(scoreMatch[3]),
+                maxMana: parseInt(scoreMatch[4]),
+                move: parseInt(scoreMatch[5]),
+                maxMove: parseInt(scoreMatch[6])
+            }));
+        }
 
         // Movement failures → rumble + mapper notification
         if (lower.includes("alas, you cannot go that way") ||

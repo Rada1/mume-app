@@ -82,7 +82,31 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 initialY={popoverState.initialPointerY ?? popoverState.y}
                 buttons={buttons}
                 onClose={() => setPopoverState(null)}
-                onExecute={(btn, e) => handleButtonClick(btn, e as any)}
+                onExecute={(btn, e) => {
+                    if (popoverState.assignSourceId) {
+                        const isExecute = popoverState.executeAndAssign;
+                        const dir = popoverState.assignSwipeDir;
+                        setButtons(prev => prev.map(b => {
+                            if (b.id !== popoverState.assignSourceId) return b;
+                            if (dir) {
+                                return {
+                                    ...b,
+                                    swipeCommands: { ...b.swipeCommands, [dir]: btn.command },
+                                    swipeActionTypes: { ...b.swipeActionTypes, [dir]: btn.actionType || 'command' }
+                                };
+                            } else {
+                                return { ...b, command: btn.command, label: btn.label, actionType: btn.actionType || 'command' };
+                            }
+                        }));
+                        if (isExecute) {
+                            handleButtonClick(btn, e as any, popoverState.context);
+                        }
+                        setPopoverState(null);
+                        addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${btn.label}'${dir ? ` to swipe ${dir}` : ''}.`);
+                    } else {
+                        handleButtonClick(btn, e as any, popoverState.context);
+                    }
+                }}
                 triggerHaptic={triggerHaptic}
             />
         );
@@ -122,10 +146,12 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                         />
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <button
+                                onPointerDown={(e) => e.preventDefault()}
                                 onClick={doSave}
                                 style={{ flex: 1, background: 'var(--accent)', border: 'none', color: '#000', padding: '8px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.85rem', cursor: 'pointer' }}
                             >Save</button>
                             <button
+                                onPointerDown={(e) => e.preventDefault()}
                                 onClick={() => setPopoverState(null)}
                                 style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', padding: '8px', borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer' }}
                             >Cancel</button>
@@ -139,7 +165,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     <div className="popover-header" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 'bold' }}>TARGET FOR {popoverState.spellCommand?.toUpperCase()}</div>
                     <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto' }}>
                         {teleportTargets.map(target => (
-                            <div key={target.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={() => {
+                            <div key={target.label} className="popover-item" onPointerDown={(e) => e.preventDefault()} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} onClick={() => {
                                 executeCommand(`${popoverState.spellCommand} ${target.id}`);
                                 setPopoverState(null);
                             }}>
@@ -149,8 +175,8 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                         ))}
                     </div>
                     <div style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div className="popover-item" style={{ flex: 1, textAlign: 'center', opacity: 0.6, fontSize: '0.7rem' }} onClick={() => setPopoverState({ ...popoverState, x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' })}>Manage Rooms</div>
-                        <div className="popover-item" style={{ flex: 1, color: '#ff5555', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
+                        <div className="popover-item" onPointerDown={(e) => e.preventDefault()} style={{ flex: 1, textAlign: 'center', opacity: 0.6, fontSize: '0.7rem' }} onClick={() => setPopoverState({ ...popoverState, x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' })}>Manage Rooms</div>
+                        <div className="popover-item" onPointerDown={(e) => e.preventDefault()} style={{ flex: 1, color: '#ff5555', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
                     </div>
                 </>
             )}
@@ -167,6 +193,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                                     <div style={{ fontSize: '0.6rem', opacity: 0.4 }}>{target.id} • {Math.round((target.expiresAt - Date.now()) / 3600000)}h left</div>
                                 </div>
                                 <button
+                                    onPointerDown={(e) => e.preventDefault()}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         setTeleportTargets(prev => prev.filter(t => t.label !== target.label));
@@ -176,7 +203,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                             </div>
                         ))}
                     </div>
-                    <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Close</div>
+                    <div className="popover-item" onPointerDown={(e) => e.preventDefault()} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Close</div>
                 </>
             )}
 
@@ -186,7 +213,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     <div className="popover-scroll" style={{ maxHeight: '200px', overflowY: 'auto', minWidth: '150px' }}>
                         {[...new Set(roomPlayers)].length === 0 && <div className="popover-empty">No one here.</div>}
                         {[...new Set(roomPlayers)].map(name => (
-                            <div key={name} className="popover-item" onClick={() => {
+                            <div key={name} className="popover-item" onPointerDown={(e) => e.preventDefault()} onClick={() => {
                                 executeCommand(`${popoverState.context} ${extractNoun(name)}`);
                                 // Refresh inventory after giving
                                 setTimeout(() => executeCommand('inv', false, false, true), 500);
@@ -196,7 +223,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                             </div>
                         ))}
                     </div>
-                    <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', color: '#ff5555', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Cancel</div>
+                    <div className="popover-item" onPointerDown={(e) => e.preventDefault()} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', color: '#ff5555', textAlign: 'center', fontWeight: 'bold' }} onClick={() => setPopoverState(null)}>Cancel</div>
                 </>
             )}
 
@@ -204,6 +231,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             {!popoverState.type && (
                 <>
                     <div className="popover-header"
+                        onPointerDown={(e) => e.preventDefault()}
                         style={{ cursor: popoverState.setId !== 'setmanager' ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '4px', paddingBottom: '4px' }}
                         onClick={() => {
                             if (popoverState.setId !== 'setmanager') {
@@ -214,7 +242,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     </div>
 
                     {(popoverState.setId === 'selection' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist') && (
-                        <div className="popover-item" onClick={() => {
+                        <div className="popover-item" onPointerDown={(e) => e.preventDefault()} onClick={() => {
                             setTarget(popoverState.context || null);
                             setPopoverState(null);
                             addMessage('system', `Target set to: ${popoverState.context} `);
@@ -226,7 +254,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     <>
                         {popoverState.setId === 'setmanager' ? (
                             availableSets.map(setName => (
-                                <div key={setName} className="popover-item" onClick={() => {
+                                <div key={setName} className="popover-item" onPointerDown={(e) => e.preventDefault()} onClick={() => {
                                     setPopoverState({ ...popoverState, setId: setName });
                                 }}>
                                     {setName}
@@ -235,7 +263,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                         ) : (
                             <>
                                 {popoverState.assignSourceId && (
-                                    <div className="popover-item" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => {
+                                    <div className="popover-item" onPointerDown={(e) => e.preventDefault()} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => {
                                         const setName = popoverState.setId;
                                         if (popoverState.assignSwipeDir) {
                                             const dir = popoverState.assignSwipeDir;
@@ -243,8 +271,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                                                 if (b.id !== popoverState.assignSourceId) return b;
                                                 const swipeCommands = { ...b.swipeCommands, [dir]: setName };
                                                 const swipeActionTypes = { ...b.swipeActionTypes, [dir]: 'nav' };
-                                                const swipeSets = { ...b.swipeSets, [dir]: 'main' };
-                                                return { ...b, swipeCommands, swipeActionTypes, swipeSets };
+                                                return { ...b, swipeCommands, swipeActionTypes };
                                             }));
                                             setPopoverState(null);
                                             addMessage('system', `Assigned sub-menu '${setName}' to swipe ${dir}.`);
@@ -258,24 +285,27 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                                     </div>
                                 )}
                                 {buttons.filter(b => b.setId === popoverState!.setId).map(button => (
-                                    <div key={button.id} className="popover-item" onClick={(e) => {
+                                    <div key={button.id} className="popover-item" onPointerDown={(e) => e.preventDefault()} onClick={(e) => {
                                         if (popoverState?.assignSourceId) {
-                                            if (popoverState.assignSwipeDir) {
-                                                const dir = popoverState.assignSwipeDir;
-                                                setButtons(prev => prev.map(b => {
-                                                    if (b.id !== popoverState.assignSourceId) return b;
-                                                    const swipeCommands = { ...b.swipeCommands, [dir]: button.command };
-                                                    const swipeActionTypes = { ...b.swipeActionTypes, [dir]: button.actionType || 'command' };
-                                                    const swipeSets = { ...b.swipeSets, [dir]: button.setId || 'main' };
-                                                    return { ...b, swipeCommands, swipeActionTypes, swipeSets };
-                                                }));
-                                                setPopoverState(null);
-                                                addMessage('system', `Assigned '${button.label}' to swipe ${dir}.`);
-                                            } else {
-                                                setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' } : b));
-                                                setPopoverState(null);
-                                                addMessage('system', `Assigned '${button.label}' to button.`);
+                                            const isExecute = popoverState.executeAndAssign;
+                                            const dir = popoverState.assignSwipeDir;
+                                            setButtons(prev => prev.map(b => {
+                                                if (b.id !== popoverState.assignSourceId) return b;
+                                                if (dir) {
+                                                    return {
+                                                        ...b,
+                                                        swipeCommands: { ...b.swipeCommands, [dir]: button.command },
+                                                        swipeActionTypes: { ...b.swipeActionTypes, [dir]: button.actionType || 'command' }
+                                                    };
+                                                } else {
+                                                    return { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' };
+                                                }
+                                            }));
+                                            if (isExecute) {
+                                                handleButtonClick(button, e, popoverState!.context);
                                             }
+                                            setPopoverState(null);
+                                            addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
                                         } else {
                                             handleButtonClick(button, e, popoverState!.context);
                                         }

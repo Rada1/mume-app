@@ -250,18 +250,22 @@ export function useCommandController(deps: CommandControllerDeps) {
             }
 
             if (button.actionType === 'nav') btn.setActiveSet(button.command);
-            else if (button.actionType === 'assign' || button.actionType === 'menu') {
+            else if (button.actionType === 'assign' || button.actionType === 'menu' || button.actionType === 'select-assign') {
                 const rect = targetEl ? targetEl.getBoundingClientRect() : null;
                 const x = rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2;
                 const y = rect ? rect.top : (e as any).clientY || window.innerHeight / 2;
+
+                const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
+                const modifierStr = joystick.currentDir ? (dirMap[joystick.currentDir] || joystick.currentDir) : (joystick.isTargetModifierActive && target ? target : '');
 
                 setPopoverState({
                     x,
                     y,
                     sourceHeight: rect?.height,
                     setId: button.command,
-                    context: button.label,
-                    assignSourceId: button.actionType === 'assign' ? button.id : undefined,
+                    context: button.actionType === 'select-assign' ? modifierStr : (context || button.label),
+                    assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
+                    executeAndAssign: button.actionType === 'select-assign',
                     menuDisplay: button.menuDisplay,
                     initialPointerX: rect ? (rect.left + rect.width / 2) : (e as any).clientX,
                     initialPointerY: rect ? (rect.top + rect.height / 2) : (e as any).clientY

@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { CustomButton, PopoverState, SwipeDirection } from '../types';
 import { getButtonCommand } from '../utils/buttonUtils';
-import { triggerSwipeFeedback } from './SwipeFeedbackOverlay';
 
 interface GameButtonProps {
     button: CustomButton;
@@ -101,6 +100,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 if (isEditMode) {
                     handleDragStart(e, button.id, 'move');
                 } else {
+                    // Prevent focus loss from input when tapping buttons
+                    if (e.cancelable) e.preventDefault();
+
                     const el = e.currentTarget as any;
                     el._startX = e.clientX;
                     el._startY = e.clientY;
@@ -206,11 +208,13 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     // Unified release: Execute whatever direction/command was being previewed
                     if (previewCmd.actionType === 'nav') {
                         setActiveSet(previewCmd.cmd);
-                    } else if (previewCmd.actionType === 'assign' || previewCmd.actionType === 'menu') {
+                    } else if (previewCmd.actionType === 'assign' || previewCmd.actionType === 'menu' || previewCmd.actionType === 'select-assign') {
                         const rect = el.getBoundingClientRect();
                         setPopoverState({
                             x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: previewCmd.cmd,
-                            context: button.label, assignSourceId: button.id, assignSwipeDir: undefined,
+                            context: previewCmd.actionType === 'select-assign' ? previewCmd.modifiers : button.label,
+                            assignSourceId: button.id, assignSwipeDir: previewCmd.dir,
+                            executeAndAssign: previewCmd.actionType === 'select-assign',
                             menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2
                         });
                     } else {
@@ -219,10 +223,6 @@ export const GameButton: React.FC<GameButtonProps> = ({
                         triggerHaptic(15);
                         el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
 
-                        // Swipe feedback
-                        if (previewCmd.isSwipe) {
-                            triggerSwipeFeedback(e.clientX, e.clientY, previewCmd.angle || 0, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
-                        }
                     }
                 } else {
                     // No preview (cancelled or static tap)
