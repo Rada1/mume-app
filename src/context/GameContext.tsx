@@ -15,6 +15,16 @@ interface GameContextType {
     setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
     target: string | null;
     setTarget: (val: string | null) => void;
+    stats: GameStats;
+    setStats: React.Dispatch<React.SetStateAction<GameStats>>;
+    inCombat: boolean;
+    setInCombat: (val: boolean) => void;
+    lightning: boolean;
+    setLightning: (val: boolean) => void;
+    weather: 'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow';
+    setWeather: React.Dispatch<React.SetStateAction<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>>;
+    isFoggy: boolean;
+    setIsFoggy: (val: boolean) => void;
 
     // Shared UI state
     popoverState: PopoverState | null;
@@ -35,6 +45,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [isMmapperMode, setIsMmapperMode] = useState(() => localStorage.getItem('mud-mmapper-mode') === 'true');
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
     const [target, setTarget] = useState<string | null>(null);
+    const [stats, setStats] = useState<GameStats>({
+        hp: 0, maxHp: 1,
+        mana: 0, maxMana: 1,
+        move: 0, maxMove: 1,
+        wimpy: 0
+    });
+    const [inCombat, setInCombat] = useState(false);
+    const [lightning, setLightning] = useState(false);
+    const [weather, setWeather] = useState<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>('none');
+    const [isFoggy, setIsFoggy] = useState(false);
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound'>('general');
@@ -59,6 +79,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isMmapperMode, setIsMmapperMode,
             status, setStatus,
             target, setTarget,
+            stats, setStats,
+            inCombat, setInCombat,
+            lightning, setLightning,
+            weather, setWeather,
+            isFoggy, setIsFoggy,
             popoverState, setPopoverState,
             isSettingsOpen, setIsSettingsOpen,
             settingsTab, setSettingsTab,

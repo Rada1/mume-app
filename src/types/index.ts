@@ -149,3 +149,50 @@ export interface SpatButton {
     color: string;
     timestamp: number;
 }
+
+// --- GMCP INTERFACES ---
+
+export interface GmcpCharVitals {
+    hp?: number;
+    maxhp?: number;
+    mana?: number;
+    maxmana?: number;
+    move?: number;
+    maxmove?: number;
+    position?: string;
+    opponent?: string | null;
+    weather?: string | null;
+    fog?: string | null;
+    light?: string | null;
+    terrain?: string | null;
+}
+
+export interface GmcpRoomInfo {
+    num?: number;
+    id?: number;
+    vnum?: number;
+    name?: string;
+    desc?: string;
+    area?: string;
+    zone?: string;
+    terrain?: string | null;
+    exits?: Record<string, any>;
+}
+
+export interface GmcpOccupant {
+    name?: string;
+    short?: string;
+    shortdesc?: string;
+    keyword?: string;
+}
+
+export interface GmcpRoomPlayers {
+    players?: (string | GmcpOccupant)[];
+    chars?: (string | GmcpOccupant)[];
+    members?: (string | GmcpOccupant)[];
+}
+
+export interface GmcpRoomItems {
+    items?: (string | GmcpOccupant)[];
+    objects?: (string | GmcpOccupant)[];
+}

@@ -1,26 +1,38 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { IAC, SB, SE, WILL, WONT, DO, DONT, TELNET_GMCP, TELNET_TTYPE, TELNET_NAWS, TTYPE_IS, TTYPE_SEND } from '../constants';
-import { MessageType, RoomNode } from '../types';
+import {
+    MessageType, RoomNode, GameStats, WeatherType, DeathStage,
+    GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant
+} from '../types';
+
+interface TelnetHandlers {
+    onRoomInfo: (data: GmcpRoomInfo) => void;
+    onCharVitals?: (data: GmcpCharVitals) => void;
+    onRoomPlayers?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
+    onAddPlayer?: (data: string | GmcpOccupant) => void;
+    onRemovePlayer?: (data: string | GmcpOccupant) => void;
+    onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
+}
 
 interface TelnetOptions {
     connectionUrl: string;
     addMessage: (type: MessageType, text: string) => void;
     setStatus: (status: 'connected' | 'disconnected' | 'connecting') => void;
-    setStats: React.Dispatch<React.SetStateAction<any>>;
-    setWeather: (weather: any) => void;
+    setStats: React.Dispatch<React.SetStateAction<GameStats>>;
+    setWeather: React.Dispatch<React.SetStateAction<WeatherType>>;
     setIsFoggy: (foggy: boolean) => void;
     setRumble: (rumble: boolean) => void;
     setHitFlash: (flash: boolean) => void;
-    setDeathStage: (stage: any) => void;
+    setDeathStage: React.Dispatch<React.SetStateAction<DeathStage>>;
     detectLighting: (line: string) => void;
     processLine: (line: string) => void;
     setPrompt: (prompt: string) => void;
     setInCombat: (inCombat: boolean) => void;
     onOpponentChange?: (name: string | null) => void;
     onCharNameChange?: (name: string) => void;
-    onAddPlayer?: (data: any) => void;
-    onRemovePlayer?: (data: any) => void;
-    onRoomItems?: (data: any) => void;
+    onAddPlayer?: (data: string | GmcpOccupant) => void;
+    onRemovePlayer?: (data: string | GmcpOccupant) => void;
+    onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
     onPositionChange?: (position: string) => void;
 }
 
@@ -91,7 +103,7 @@ export const useTelnet = (options: TelnetOptions) => {
         setPrompt(bufferRef.current);
     }, [processLine, detectLighting, setPrompt]);
 
-    const handleSubnegotiation = (buffer: number[], handlers: { onRoomInfo: (data: any) => void, onRoomPlayers?: (data: any) => void, onCharVitals?: (data: any) => void }) => {
+    const handleSubnegotiation = (buffer: number[], handlers: TelnetHandlers) => {
         if (buffer.length === 0) return;
         const cmd = buffer[0];
 
@@ -110,9 +122,9 @@ export const useTelnet = (options: TelnetOptions) => {
 
             if (pkgLower === 'char.vitals') {
                 try {
-                    const data = JSON.parse(json);
+                    const data = JSON.parse(json) as GmcpCharVitals;
                     if (handlers.onCharVitals) handlers.onCharVitals(data);
-                    setStats((prev: any) => ({
+                    setStats((prev: GameStats) => ({
                         ...prev,
                         hp: data.hp ?? prev.hp,
                         maxHp: data.maxhp ?? prev.maxHp,
@@ -138,50 +150,51 @@ export const useTelnet = (options: TelnetOptions) => {
                     setInCombat(fighting);
 
                     // Weather from GMCP (more reliable than text parsing)
-                    if ('weather' in data) {
+                    if (data.weather !== undefined) {
                         const w = data.weather;
                         if (w === '~') setWeather('cloud');
                         else if (w === "'") setWeather('rain');
                         else if (w === '"') setWeather('rain');
                         else if (w === '*') setWeather('heavy-rain');
-                        else if (w === ' ' || w === null) setWeather((prev: any) => prev === 'cloud' || prev === 'rain' || prev === 'heavy-rain' || prev === 'snow' ? 'none' : prev);
+                        else if (w === ' ' || w === null) setWeather((prev: WeatherType) => prev === 'cloud' || prev === 'rain' || prev === 'heavy-rain' || prev === 'snow' ? 'none' : prev);
                     }
                     // Fog from GMCP: '-' = light fog, '=' = heavy fog
-                    if ('fog' in data) {
+                    if (data.fog !== undefined) {
                         setIsFoggy(data.fog === '-' || data.fog === '=');
                     }
                     // Lighting from GMCP
-                    if ('light' in data && data.light) {
+                    if (data.light) {
                         detectLighting(data.light);
                     }
                 } catch (e) { }
             } else if (pkgLower === 'room.info' || pkgLower === 'external.room.info' || pkgLower.endsWith('.room.info')) {
                 try {
-                    const data = JSON.parse(json);
+                    const data = JSON.parse(json) as GmcpRoomInfo;
                     handlers.onRoomInfo(data);
                 } catch (e) { }
             } else if (pkgLower === 'room.players' || pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
                 try {
-                    const data = JSON.parse(json);
+                    const data = JSON.parse(json) as GmcpRoomPlayers | (string | GmcpOccupant)[];
                     console.log("[GMCP Occupants]", data);
                     if (handlers.onRoomPlayers) handlers.onRoomPlayers(data);
                 } catch (e) { console.error("[GMCP Error] Failed to parse room.chars", e); }
             } else if (pkgLower === 'room.addplayer' || pkgLower === 'room.addchar' || pkgLower === 'room.chars.add') {
                 try {
-                    const data = JSON.parse(json);
-                    if ((handlers as any).onAddPlayer) (handlers as any).onAddPlayer(data);
+                    const data = JSON.parse(json) as string | GmcpOccupant;
+                    if (handlers.onAddPlayer) handlers.onAddPlayer(data);
                 } catch (e) { }
             } else if (pkgLower === 'room.removeplayer' || pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove') {
                 try {
-                    const data = JSON.parse(json);
-                    if ((handlers as any).onRemovePlayer) (handlers as any).onRemovePlayer(data);
+                    const data = JSON.parse(json) as string | GmcpOccupant;
+                    if (handlers.onRemovePlayer) handlers.onRemovePlayer(data);
                 } catch (e) { }
             } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set') {
                 try {
-                    const data = JSON.parse(json);
-                    if ((handlers as any).onRoomItems) (handlers as any).onRoomItems(data);
+                    const data = JSON.parse(json) as GmcpRoomItems | (string | GmcpOccupant)[];
+                    if (handlers.onRoomItems) handlers.onRoomItems(data);
                 } catch (e) { }
-            } else if (pkgLower === 'char.name') {
+            }
+            else if (pkgLower === 'char.name') {
                 try {
                     // MUME sends name as a quoted string, like "Rada"
                     // But handle potential JSON or complex strings as well
@@ -206,7 +219,7 @@ export const useTelnet = (options: TelnetOptions) => {
         }
     };
 
-    const handleRawData = (data: Uint8Array, handlers: { onRoomInfo: (data: any) => void }) => {
+    const handleRawData = (data: Uint8Array, handlers: TelnetHandlers) => {
         const textBytes: number[] = [];
         const state = telnetState.current;
 
@@ -296,14 +309,7 @@ export const useTelnet = (options: TelnetOptions) => {
         }
     };
 
-    const connect = (handlers: {
-        onRoomInfo: (data: any) => void,
-        onRoomPlayers?: (data: any) => void,
-        onCharVitals?: (data: any) => void,
-        onAddPlayer?: (data: any) => void,
-        onRemovePlayer?: (data: any) => void,
-        onRoomItems?: (data: any) => void
-    }) => {
+    const connect = (handlers: TelnetHandlers) => {
         if (socketRef.current) socketRef.current.close();
 
         // Reset state for a clean reconnection

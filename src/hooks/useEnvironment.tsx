@@ -1,23 +1,36 @@
 import React, { useState, useCallback } from 'react';
 import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog } from 'lucide-react';
 import { LightingType } from '../types';
+import { useGame } from '../context/GameContext';
 
 export function useEnvironment() {
+    const {
+        lightning: lightingEnabled, setLightning,
+        weather, setWeather,
+        isFoggy, setIsFoggy
+    } = useGame();
+
+    // The 'lightning' state in GameContext refers to the darkness/light toggle effect (for detection)
+    // Here we map it to LightingType ('artificial' | 'moon' | 'dark' | 'sun' | 'none')
     const [lighting, setLighting] = useState<LightingType>('none');
-    const [weather, setWeather] = useState<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>('none');
-    const [isFoggy, setIsFoggy] = useState(false);
+
     const [mood, setMood] = useState('normal');
     const [spellSpeed, setSpellSpeed] = useState('normal');
     const [alertness, setAlertness] = useState('normal');
 
     const detectLighting = useCallback((symbol: string) => {
         const s = symbol.trim();
-        if (s.includes('!')) setLighting('artificial');
-        else if (s.includes(')')) setLighting('moon');
-        else if (/o/i.test(s)) setLighting('dark'); // 'oo', 'oO', etc
-        else if (s.includes('*')) setLighting('sun');
-        else if (s === '.') setLighting('none');
-    }, []);
+        let type: LightingType = 'none';
+        if (s.includes('!')) type = 'artificial';
+        else if (s.includes(')')) type = 'moon';
+        else if (/o/i.test(s)) type = 'dark';
+        else if (s.includes('*')) type = 'sun';
+        else if (s === '.') type = 'none';
+
+        setLighting(type);
+        // Sync with the boolean 'lightning' state in context for detection logic elsewhere
+        setLightning(type !== 'dark' && type !== 'none');
+    }, [setLightning]);
 
     const getLightingIcon = () => {
         switch (lighting) {

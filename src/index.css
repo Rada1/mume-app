@@ -2,7 +2,7 @@
 @import url('https://fonts.cdnfonts.com/css/aniron');
 
 :root {
-  --bg-overlay: rgba(0, 0, 0, 0.65);
+  --bg-overlay: rgba(0, 0, 0, 0.75);
   /* Darker default overlay */
   --accent: #4ade80;
   --map-accent: #fcd34d;
@@ -429,6 +429,7 @@ html {
   left: -10%;
   width: 120%;
   height: 120%;
+  /* Ensures lighting only blends with the image, not the terminal */
   background-size: cover;
   background-position: center;
   z-index: 0;
@@ -436,8 +437,7 @@ html {
   transform: scale(1.1) translateZ(-100px);
   border-radius: 12px;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
-  filter: brightness(0.4);
-  /* Make background significantly darker */
+  filter: brightness(0.55) contrast(1.1);
 }
 
 .mini-map-container {
@@ -469,247 +469,74 @@ canvas.map-canvas {
   /* Increased opacity for better readability */
 }
 
+/* ==========================================================================
+   ATMOSPHERIC SYSTEM (CLEAN SLATE REBUILD)
+   Stacking: Background(0) -> Effects(5) -> Grounding Overlay(10) -> Content(50)
+   ========================================================================== */
+
+.environment-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* 1. Grounding Overlay - Ensures deep blacks and text readability */
 .overlay-layer {
   position: absolute;
-  top: -10%;
-  left: -10%;
-  width: 120%;
-  height: 120%;
+  inset: 0;
   background: var(--bg-overlay);
-  z-index: 1;
+  z-index: 10;
+  /* Above atmosphere (5) but below content (50) */
+  backdrop-filter: blur(1px);
+  transition: all 1s ease-in-out;
+  pointer-events: none;
+}
+
+/* State-specific overlays */
+.lighting-state-artificial .overlay-layer {
+  background: rgba(0, 0, 0, 0.82);
+  /* Deep darkness for torch effect */
   backdrop-filter: blur(2px);
-  transition: background 0.5s ease;
-  transform: translateZ(-100px);
+}
+
+.lighting-state-dark .overlay-layer {
+  background: rgba(0, 0, 0, 0.9);
+  /* Near pitch black */
 }
 
 .screen-vignette {
   position: absolute;
-  inset: -20%;
-  background: radial-gradient(circle at center, transparent 45%, rgba(0, 0, 0, 0.7) 100%);
+  inset: -10%;
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+  z-index: 11;
+  /* Slightly above overlay */
   pointer-events: none;
-  z-index: 1;
   mix-blend-mode: multiply;
-  transform: translateZ(-1px) scale(1.1);
+  transition: all 1s ease-in-out;
+}
+
+.lighting-state-artificial .screen-vignette {
+  background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(0, 0, 0, 0.95) 80%);
+}
+
+/* 2. Atmospheric Effects Base */
+.lighting-container,
+.weather-layer,
+.fog-layer,
+.lightning-layer {
+  position: absolute;
+  inset: -5%;
+  z-index: 5;
+  /* Below Grounding Overlay */
+  pointer-events: none;
+  transition: opacity 1s ease-in-out;
 }
 
 .lighting-container {
-  position: absolute;
-  inset: -20%;
-  z-index: 2;
-  pointer-events: none;
-  transition: opacity 1s ease-in-out;
   mix-blend-mode: screen;
-  transform: translateZ(-50px) scale(1.2);
-}
-
-.weather-layer,
-.fog-layer,
-.combat-layer,
-.lightning-layer,
-.rain-container,
-.death-overlay,
-.death-image-layer {
-  position: absolute;
-  top: -10%;
-  left: -10%;
-  width: 120%;
-  height: 120%;
-  z-index: 3;
-  pointer-events: none;
-  transition: opacity 1.5s ease-in-out;
-  overflow: hidden;
-  transform: translateZ(-50px) scale(1.2);
-}
-
-.weather-layer,
-.rain-container {
-  z-index: 4;
-}
-
-.fog-layer {
-  z-index: 4;
-  opacity: 0;
-  transition: opacity 3s ease-in-out;
-  /* Restrict to bottom ~half */
-  top: auto;
-  bottom: 0;
-  height: 45%;
-  mask-image: linear-gradient(to top, black 30%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to top, black 30%, transparent 100%);
-
-  background:
-    radial-gradient(ellipse at 50% 50%, rgba(200, 210, 220, 0.1) 0%, transparent 60%),
-    radial-gradient(ellipse at 20% 60%, rgba(180, 190, 200, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 40%, rgba(190, 200, 210, 0.15) 0%, transparent 50%),
-    linear-gradient(to bottom, transparent, rgba(150, 160, 170, 0.15));
-  background-size: 200% 200%;
-  animation: fog-flow 25s ease-in-out infinite alternate;
-  mix-blend-mode: screen;
-}
-
-.fog-active {
-  opacity: 1;
-}
-
-.fog-layer::after {
-  content: '';
-  position: absolute;
-  inset: -50%;
-  background:
-    radial-gradient(ellipse at 40% 40%, rgba(220, 230, 240, 0.1) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 70%, rgba(200, 210, 220, 0.12) 0%, transparent 60%);
-  background-size: 150% 150%;
-  animation: fog-drift 40s linear infinite reverse;
-  mix-blend-mode: screen;
-  filter: blur(20px);
-}
-
-@keyframes fog-drift {
-  0% {
-    transform: translate(-10%, -10%);
-  }
-
-  50% {
-    transform: translate(10%, 10%);
-  }
-
-  100% {
-    transform: translate(-10%, -10%);
-  }
-}
-
-.combat-layer {
-  z-index: 20;
-  transition: opacity 2.5s ease-out;
-  opacity: 0;
-}
-
-.combat-active {
-  background: radial-gradient(circle, transparent 40%, rgba(220, 20, 20, 0.4) 100%);
-  box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.3);
-  opacity: 1;
-  transition: opacity 0.05s ease-in;
-}
-
-.combat-grayscale-filter {
-  position: absolute;
-  inset: 0;
-  z-index: 9;
-  pointer-events: none;
-  backdrop-filter: grayscale(0);
-  transition: backdrop-filter 0.8s ease-in-out;
-}
-
-.combat-grayscale-filter.active {
-  backdrop-filter: grayscale(1) contrast(1.2);
-  /* High contrast gritty combat look */
-}
-
-.combat-vignette {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 18;
-  /* Below hit flash (20) but above weather/fog */
-  background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.5) 85%, rgba(0, 0, 0, 0.8) 100%);
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-  pointer-events: none;
-}
-
-.combat-vignette.active {
-  opacity: 1;
-  animation: combat-vignette-pulse 4s infinite ease-in-out;
-}
-
-@keyframes combat-vignette-pulse {
-
-  0%,
-  100% {
-    background: radial-gradient(circle at center, transparent 30%, rgba(0, 0, 0, 0.5) 85%, rgba(0, 0, 0, 0.8) 100%);
-  }
-
-  50% {
-    background: radial-gradient(circle at center, transparent 35%, rgba(0, 0, 0, 0.4) 90%, rgba(0, 0, 0, 0.75) 100%);
-  }
-}
-
-.lightning-layer {
-  z-index: 25;
-  background: rgba(255, 255, 255, 0.15);
-  mix-blend-mode: screen;
-  opacity: 0;
-  transition: opacity 0.1s ease-out;
-}
-
-.lightning-active {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.4);
-  transition: opacity 0.05s ease-in;
-}
-
-.death-overlay {
-  z-index: 2000;
-  background: #000;
-  opacity: 0;
-  transition: opacity 2s ease-in;
-}
-
-.death-image-layer {
-  z-index: 2001;
-  opacity: 0;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.death-active .death-overlay {
-  opacity: 1;
-}
-
-.death-image-layer.death-flash {
-  opacity: 1;
-  transition: none;
-  animation: death-flicker 1s steps(10) infinite;
-}
-
-@keyframes death-flicker {
-  0% {
-    opacity: 1;
-    filter: brightness(1);
-  }
-
-  10% {
-    opacity: 0.8;
-    filter: brightness(1.5);
-  }
-
-  30% {
-    opacity: 1;
-    filter: brightness(0.8);
-  }
-
-  50% {
-    opacity: 0.6;
-    filter: brightness(2);
-  }
-
-  60% {
-    opacity: 1;
-    filter: brightness(0.5);
-  }
-
-  80% {
-    opacity: 0.9;
-    filter: brightness(1.2);
-  }
-
-  100% {
-    opacity: 1;
-    filter: brightness(1);
-  }
+  /* Now safe to use screen as it's isolated to the image! */
 }
 
 .lighting-inner {
@@ -717,36 +544,168 @@ canvas.map-canvas {
   height: 100%;
 }
 
+/* Specific Lighting Profiles */
 .lighting-sun .lighting-inner {
-  /* Golden, warm sunlight */
-  background: radial-gradient(circle at 50% 10%, rgba(255, 230, 90, 0.22), transparent 75%);
-  box-shadow: inset 0 0 160px rgba(255, 210, 50, 0.1);
-}
-
-.lighting-artificial .lighting-inner {
-  /* Warmer orange/yellow for torch vibe - slightly dimmed */
-  background: radial-gradient(circle at 50% 50%, rgba(255, 175, 60, 0.12), transparent 85%);
-  box-shadow: inset 0 0 100px rgba(255, 145, 30, 0.08);
-  animation: flicker 4s infinite linear;
+  background: radial-gradient(circle at 50% 10%, rgba(255, 210, 50, 0.15), transparent 75%);
 }
 
 .lighting-moon .lighting-inner {
-  background: radial-gradient(circle at 50% 10%, rgba(100, 150, 255, 0.2), transparent 75%);
-  box-shadow: inset 0 0 200px rgba(80, 120, 255, 0.1);
+  background: radial-gradient(circle at 50% 15%, rgba(100, 150, 255, 0.12), transparent 75%);
 }
 
-.lighting-moon {
-  z-index: 5;
-  /* Above weather-cloud (z-index 4) */
+.lighting-artificial .lighting-inner {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 120, 0, 0.15), transparent 60%);
+  animation: torch-flicker 3.5s infinite alternate ease-in-out;
 }
 
 .lighting-dark .lighting-inner {
   background: #000;
+  mix-blend-mode: multiply;
 }
 
-.lighting-dark {
-  mix-blend-mode: multiply !important;
-  box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.9);
+@keyframes torch-flicker {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+/* Weather & Fog */
+.weather-layer {
+  mix-blend-mode: soft-light;
+}
+
+.weather-cloud {
+  background: rgba(100, 110, 130, 0.1);
+}
+
+.fog-layer {
+  background: linear-gradient(to top, rgba(160, 170, 180, 0.12), transparent 85%);
+  mix-blend-mode: soft-light;
+  bottom: 0;
+  top: auto;
+  height: 60%;
+  animation: fog-drift-new 30s linear infinite alternate;
+}
+
+@keyframes fog-drift-new {
+  from {
+    transform: translateX(-5%);
+  }
+
+  to {
+    transform: translateX(5%);
+  }
+}
+
+/* Combat & Alert Layers */
+.lightning-layer {
+  background: rgba(255, 255, 255, 0.15);
+  mix-blend-mode: soft-light;
+  z-index: 60;
+  opacity: 0;
+  transition: opacity 0.05s ease-out;
+}
+
+.lightning-active {
+  opacity: 1;
+}
+
+.combat-grayscale-filter {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  /* Just below overlay */
+  backdrop-filter: grayscale(0);
+  transition: backdrop-filter 0.5s ease;
+  pointer-events: none;
+}
+
+.combat-grayscale-filter.active {
+  backdrop-filter: grayscale(0.8) contrast(1.1);
+}
+
+.combat-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 30%, rgba(180, 0, 0, 0.2) 100%);
+  z-index: 12;
+  /* Above grounding overlay */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+
+.combat-vignette.active {
+  opacity: 1;
+}
+
+/* 3. Alert & Transition Layers (High Z-Index) */
+.death-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2000;
+  background: #000;
+  opacity: 0;
+  transition: opacity 2s ease-in;
+  pointer-events: none;
+}
+
+.death-active .death-overlay {
+  opacity: 1;
+}
+
+.death-image-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2001;
+  opacity: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+.death-image-layer.death-flash {
+  opacity: 1;
+  animation: death-flicker 1s steps(10) infinite;
+}
+
+@keyframes death-flicker {
+
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    filter: brightness(2);
+  }
+}
+
+.combat-layer-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: radial-gradient(circle, transparent 40%, rgba(220, 20, 20, 0.4) 100%);
+  box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 2.5s ease-out;
+  pointer-events: none;
+}
+
+.combat-layer-flash.active {
+  opacity: 1;
+  transition: opacity 0.05s ease-in;
 }
 
 .rain-drop {
@@ -1103,8 +1062,14 @@ canvas.map-canvas {
   padding: 20px;
   padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   overflow: hidden;
-  /* Removed z-index to avoid creating a stacking context that traps children like the header menu */
+  z-index: 50;
+  /* Ensure text is above atmospheric blends (z:1-4) */
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.content-layer>* {
+  pointer-events: auto;
 }
 
 
@@ -1345,20 +1310,12 @@ canvas.map-canvas {
   flex-direction: column;
   perspective: 1200px;
   transform-style: preserve-3d;
+  background: transparent;
+  border-radius: 8px;
 }
 
-.content-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  pointer-events: none;
-}
+/* Consolidated duplicate content-layer above */
 
-.content-layer>* {
-  pointer-events: auto;
-}
 
 
 .message-log {
@@ -2013,6 +1970,28 @@ select.setting-input {
   border: 1px solid rgba(255, 255, 255, 0.15);
   transition: transform 0.1s, box-shadow 0.2s;
   touch-action: none;
+  transform-style: preserve-3d;
+}
+
+.swipe-ray {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--ray-length, 100px);
+  height: 3px;
+  background: linear-gradient(to right,
+      var(--ray-color, var(--accent)) 0%,
+      var(--ray-color, var(--accent)) 70%,
+      transparent 100%);
+  transform-origin: left center;
+  transform: translateY(-50%) rotate(var(--ray-angle, 0deg));
+  opacity: var(--ray-opacity, 0);
+  pointer-events: none;
+  z-index: -1;
+  /* Behind the label but visible over the button body */
+  box-shadow: 0 0 15px var(--ray-color, var(--accent));
+  transition: opacity 0.1s ease, transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
+  border-radius: 99px;
 }
 
 .custom-btn:active {
@@ -2234,7 +2213,8 @@ select.setting-input {
   border-radius: 50%;
   background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, rgba(255, 69, 0, 0.2) 40%, transparent 70%);
   box-shadow: 0 0 20px 5px rgba(255, 140, 0, 0.1);
-  z-index: 15;
+  z-index: 4;
+  /* Behind overlay (z:5) */
   pointer-events: none;
   animation: lantern-flicker 3s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
   mix-blend-mode: screen;

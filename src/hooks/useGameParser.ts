@@ -11,7 +11,6 @@ interface UseGameParserDeps {
     addMessage: (type: MessageType, text: string, combatOverride?: boolean) => void;
     playSound: (buffer: AudioBuffer) => void;
     triggerHaptic: (ms: number) => void;
-    detectLighting: (line: string) => void;
     setWeather: React.Dispatch<React.SetStateAction<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>>;
     setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
     setStats: React.Dispatch<React.SetStateAction<GameStats>>;
@@ -40,7 +39,6 @@ export function useGameParser({
     addMessage,
     playSound,
     triggerHaptic,
-    detectLighting,
     setWeather,
     setIsFoggy,
     setStats,
@@ -150,76 +148,7 @@ export function useGameParser({
         const textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
         const lower = textOnly.toLowerCase();
 
-        try {
-            const shortStats = /(?:H|HP|Health):\s*(\d+)(?:\/(\d+))?.*(?:M|Mana):\s*(\d+)(?:\/(\d+))?.*(?:V|MV|Move):\s*(\d+)(?:\/(\d+))?/i;
-            let match = textOnly.match(shortStats);
-            if (!match) {
-                const verboseStats = /(\d+)\/(\d+)\s+hits,?\s+(\d+)\/(\d+)\s+mana,?\s+and\s+(\d+)\/(\d+)\s+moves/i;
-                const vMatch = textOnly.match(verboseStats);
-                if (vMatch) match = [vMatch[0], vMatch[1], vMatch[2], vMatch[3], vMatch[4], vMatch[5], vMatch[6]];
-            }
-            if (match) {
-                setStats(prev => {
-                    const newHp = parseInt(match![1]);
-                    const newMaxHp = match![2] ? parseInt(match![2]) : prev.maxHp;
-                    const newMana = parseInt(match![3]);
-                    const newMaxMana = match![4] ? parseInt(match![4]) : prev.maxMana;
-                    const newMove = parseInt(match![5]);
-                    const newMaxMove = match![6] ? parseInt(match![6]) : prev.maxMove;
-                    if (newHp !== prev.hp || newMove !== prev.move || newMana !== prev.mana) {
-                        return { ...prev, hp: newHp, maxHp: newMaxHp, mana: newMana, maxMana: newMaxMana, move: newMove, maxMove: newMaxMove };
-                    }
-                    return prev;
-                });
-            }
-
-            // Terrain Detection from Prompt
-            const terrainSymbols: Record<string, string> = {
-                '[': 'building', '#': 'city', '.': 'field', 'f': 'forest',
-                '(': 'hills', '<': 'mountains', '%': 'shallows', '~': 'water',
-                '+': 'road', 'W': 'rapids', 'U': 'underwater', ':': 'brush',
-                '=': 'tunnel', 'O': 'cavern'
-            };
-            const terrainPatterns = [
-                /\b(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\b/i,
-                /\[\s*(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\]/i,
-                /\(\s*(Inside|City|Field|Forest|Hills|Mountain|Mountains|Swimming|Underwater|Air|Desert|Road|Underground|Rapids|Brush|Tunnel|Cavern)\s*\)/i
-            ];
-            let found = false;
-            for (const pattern of terrainPatterns) {
-                const tMatch = textOnly.match(pattern);
-                if (tMatch) {
-                    promptTerrainRef.current = tMatch[1].toLowerCase();
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                const isPrompt = /^([\*\)\!oO\.\[f<%\~+WU:=\#\?\(].*[>:])/.test(textOnly);
-                if (isPrompt) {
-                    const promptSymbolRegex = /^([\*\)\!o]?)([\.\[\#f<%\~+WU:=O:\(])/;
-                    const symMatch = textOnly.match(promptSymbolRegex);
-                    if (symMatch) {
-                        const sym = symMatch[2];
-                        if (terrainSymbols[sym]) {
-                            promptTerrainRef.current = terrainSymbols[sym];
-                            found = true;
-                        }
-                    }
-                }
-            }
-            if (promptTerrainRef.current) mapperRef.current?.handleTerrain(promptTerrainRef.current);
-        } catch (e) { }
-
-        // Environment
-        if (lower.includes("it starts to rain")) setWeather('rain');
-        else if (lower.includes("the rain stops")) setWeather('none');
-        else if (lower.includes("snow starts to fall")) setWeather('snow');
-        else if (lower.includes("the snow stops")) setWeather('none');
-        else if (lower.includes("the sky clouds over") || lower.includes("clouds fill the sky")) setWeather('cloud');
-        else if (lower.includes("the clouds disappear") || lower.includes("the sky clears")) setWeather('none');
-        else if (lower.includes("thick fog")) setIsFoggy(true);
-        else if (lower.includes("fog clears")) setIsFoggy(false);
+        // Stats, Terrain, and Environment parsing removed in favor of GMCP handling in useTelnet.ts
 
         // Movement failures → rumble + mapper notification
         if (lower.includes("alas, you cannot go that way") ||
@@ -302,7 +231,7 @@ export function useGameParser({
         } else {
             if (!isCapturing) addMessage('game', cleanLine);
         }
-    }, [detectLighting, addMessage, btn, isInventoryOpen, isCharacterOpen,
+    }, [addMessage, btn, isInventoryOpen, isCharacterOpen,
         setWeather, setIsFoggy, setStats, setRumble, setHitFlash, setDeathStage,
         playSound, triggerHaptic, soundTriggersRef, isSoundEnabledRef, promptTerrainRef, mapperRef]);
 

@@ -70,7 +70,7 @@ export const useJoystick = () => {
         }
     }, [joystickActive, isTargetModifierActive]);
 
-    const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, setJoystickGlow: (g: boolean) => void) => {
+    const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, setJoystickGlow: (g: boolean) => void, suppressDefault?: boolean) => {
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
             longPressTimer.current = null;
@@ -97,8 +97,10 @@ export const useJoystick = () => {
         // Only execute command if NOT consumed by another button
         if (!wasConsumed) {
             if (dist < 20) {
-                executeCommand('look');
+                if (!suppressDefault) executeCommand('look');
                 triggerHaptic(10);
+                joystickStartPos.current = null;
+                return true; // Center tap
             } else {
                 let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
                 let dir: Direction = 'n';
@@ -115,6 +117,7 @@ export const useJoystick = () => {
         }
 
         joystickStartPos.current = null;
+        return false;
     }, [joystickActive, isJoystickConsumed, isTargetModifierActive]);
 
     const handleNavStart = useCallback((dir: 'up' | 'down') => {

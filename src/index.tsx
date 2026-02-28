@@ -5,7 +5,8 @@ import { Plus } from 'lucide-react';
 import './index.css';
 import {
     MessageType, LightingType, WeatherType, Direction, DeathStage,
-    Message, GameStats, CustomButton, SoundTrigger, PopoverState, SavedSettings, TeleportTarget, SwipeDirection
+    Message, GameStats, CustomButton, SoundTrigger, PopoverState, SavedSettings, TeleportTarget, SwipeDirection,
+    GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant
 } from './types';
 import {
     DEFAULT_BG, DEATH_IMG, DEFAULT_URL, FX_THRESHOLD
@@ -26,6 +27,7 @@ import { extractNoun } from './utils/gameUtils';
 import { useCommandController } from './hooks/useCommandController';
 import { useAtmosphereAudio } from './hooks/useAtmosphereAudio';
 import { useSpatButtons } from './hooks/useSpatButtons';
+import { useMessageHighlighter } from './hooks/useMessageHighlighter';
 
 import StatBars from './components/StatBars';
 import Joystick from './components/Joystick';
@@ -79,7 +81,12 @@ const MudClient = () => {
         popoverState, setPopoverState,
         isSettingsOpen, setIsSettingsOpen,
         settingsTab, setSettingsTab,
-        accentColor, setAccentColor
+        accentColor, setAccentColor,
+        stats, setStats,
+        inCombat, setInCombat,
+        lightning, setLightning,
+        weather, setWeather,
+        isFoggy, setIsFoggy
     } = useGame();
 
     useEffect(() => {
@@ -120,37 +127,48 @@ const MudClient = () => {
 
 
     // UI Layout State
-    const [isSetManagerOpen, setIsSetManagerOpen] = useState(false);
+    const [ui, setUI] = useState({
+        drawer: 'none' as 'none' | 'inventory' | 'character' | 'right',
+        setManagerOpen: false,
+        mapExpanded: false
+    });
+
+    // Backward compatibility helpers
+    const isInventoryOpen = ui.drawer === 'inventory';
+    const isCharacterOpen = ui.drawer === 'character';
+    const isRightDrawerOpen = ui.drawer === 'right';
+    const isMapExpanded = ui.mapExpanded;
+    const isSetManagerOpen = ui.setManagerOpen;
+
+    const setIsInventoryOpen = (open: boolean | ((p: boolean) => boolean)) =>
+        setUI(prev => ({ ...prev, drawer: (typeof open === 'function' ? open(prev.drawer === 'inventory') : open) ? 'inventory' : 'none' }));
+    const setIsCharacterOpen = (open: boolean | ((p: boolean) => boolean)) =>
+        setUI(prev => ({ ...prev, drawer: (typeof open === 'function' ? open(prev.drawer === 'character') : open) ? 'character' : 'none' }));
+    const setIsRightDrawerOpen = (open: boolean | ((p: boolean) => boolean)) =>
+        setUI(prev => ({ ...prev, drawer: (typeof open === 'function' ? open(prev.drawer === 'right') : open) ? 'right' : 'none' }));
+    const setIsMapExpanded = (open: boolean | ((p: boolean) => boolean)) =>
+        setUI(prev => ({ ...prev, mapExpanded: typeof open === 'function' ? open(prev.mapExpanded) : open }));
+    const setIsSetManagerOpen = (open: boolean | ((p: boolean) => boolean)) =>
+        setUI(prev => ({ ...prev, setManagerOpen: typeof open === 'function' ? open(prev.setManagerOpen) : open }));
     const [returnToManager, setReturnToManager] = useState(false);
     const [managerSelectedSet, setManagerSelectedSet] = useState<string | null>(null);
 
     const [rumble, setRumble] = useState(false);
     const [hitFlash, setHitFlash] = useState(false);
-    const [inCombat, setInCombatState] = useState(false);
-    const [lightning, setLightning] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
     const [deathStage, setDeathStage] = useState<DeathStage>('none');
-    const [stats, setStats] = useState<GameStats>({
-        hp: 0, maxHp: 1,
-        mana: 0, maxMana: 1,
-        move: 0, maxMove: 1,
-        wimpy: 0
-    });
     const [isLoading, setIsLoading] = useState(false);
     // soundTriggers, newSoundPattern, newSoundRegex, isSoundEnabled → useSettings hook below
     // isSoundEnabledRef → useSettings hook below
     const [joystickGlow, setJoystickGlow] = useState(false);
     const [btnGlow, setBtnGlow] = useState<{ up: boolean, down: boolean }>({ up: false, down: false });
 
-    const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-    const [isCharacterOpen, setIsCharacterOpen] = useState(false);
-    const [isRightDrawerOpen, setIsRightDrawerOpen] = useState(false);
-    const [isMapExpanded, setIsMapExpanded] = useState(false);
     // inventoryHtml, statsHtml, eqHtml → useGameParser hook below
 
-    const [heldButton, setHeldButton] = useState<{ id: string, baseCommand: string, modifiers: string[] } | null>(null);
+    const [heldButton, setHeldButton] = useState<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean } | null>(null);
+    const heldButtonRef = useRef(heldButton);
+    useEffect(() => { heldButtonRef.current = heldButton; }, [heldButton]);
     const [commandPreview, setCommandPreview] = useState<string | null>(null);
-
     const popoverRef = useRef<HTMLDivElement>(null);
     // useLayoutEffect positioning moved to PopoverManager.tsx
 
@@ -199,10 +217,9 @@ const MudClient = () => {
 
     // --- Custom Message Hook (must be before prevMessagesLengthRef which references messages) ---
     // Keep a ref so addMessage (useCallback) always sees the live combat state
-    const setInCombat = (val: boolean) => {
-        inCombatRef.current = val;
-        setInCombatState(val);
-    };
+    // inCombat state is now managed directly in GameContext via setInCombat.
+    // The previous setInCombat helper in index.tsx is removed as inCombatRef.current 
+    // is also no longer needed (setInCombat in context updates all listeners).
 
     const { messages, setMessages, addMessage, isCombatLine, isCommunicationLine } = useMessageLog(inCombatRef);
 
@@ -213,8 +230,9 @@ const MudClient = () => {
 
     // --- Environment & Settings Hooks ---
     const env = useEnvironment();
-    const { lighting, weather, isFoggy, setWeather, setIsFoggy, detectLighting, getLightingIcon, getWeatherIcon,
-        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness } = env;
+    const { lighting, getLightingIcon, getWeatherIcon,
+        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
+        detectLighting } = env;
 
     // --- Refs ---
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -274,7 +292,6 @@ const MudClient = () => {
         addMessage,
         playSound,
         triggerHaptic,
-        detectLighting,
         setWeather,
         setIsFoggy,
         setStats,
@@ -297,6 +314,8 @@ const MudClient = () => {
     const { inventoryHtml, setInventoryHtml, statsHtml, setStatsHtml, eqHtml, setEqHtml,
         captureStage, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         processLine } = parser;
+
+    const { processMessageHtml } = useMessageHighlighter(target, btn.buttonsRef, roomPlayers, characterName, roomItems);
 
     // DialMenu moved to src/components/Popovers/DialMenu.tsx
 
@@ -351,11 +370,11 @@ const MudClient = () => {
         };
 
         callbacksRef.current = {
-            onRoomInfo: (data: any) => notifyMapper(ref => ref.current?.handleRoomInfo(data)),
-            onCharVitals: (data: any) => { if (data.terrain) notifyMapper(ref => ref.current?.handleTerrain(data.terrain)); },
-            onRoomPlayers: (data: any) => {
+            onRoomInfo: (data: GmcpRoomInfo) => notifyMapper(ref => ref.current?.handleRoomInfo(data)),
+            onCharVitals: (data: GmcpCharVitals) => { if (data.terrain) notifyMapper(ref => ref.current?.handleTerrain(data.terrain)); },
+            onRoomPlayers: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => {
                 let players: string[] = [];
-                const parseOccupant = (p: any): string[] => {
+                const parseOccupant = (p: string | GmcpOccupant): string[] => {
                     if (typeof p === 'string') return [p];
                     const names = [];
                     if (p.name) names.push(p.name);
@@ -367,20 +386,17 @@ const MudClient = () => {
 
                 if (Array.isArray(data)) {
                     players = data.flatMap(parseOccupant).filter(Boolean);
-                } else if (data.players && Array.isArray(data.players)) {
-                    players = data.players.flatMap(parseOccupant).filter(Boolean);
-                } else if (data.chars && Array.isArray(data.chars)) {
-                    players = data.chars.flatMap(parseOccupant).filter(Boolean);
-                } else if (data.members && Array.isArray(data.members)) {
-                    players = data.members.flatMap(parseOccupant).filter(Boolean);
+                } else {
+                    const list = data.players || data.chars || data.members || [];
+                    players = list.flatMap(parseOccupant).filter(Boolean);
                 }
                 console.log("[Occupants List]", players);
                 if (players.length > 0) addMessage('system', `[GMCP] Room updated: ${players.length} occupants identified.`);
                 setRoomPlayers(players);
             },
-            onRoomItems: (data: any) => {
+            onRoomItems: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => {
                 let items: string[] = [];
-                const parseItem = (i: any): string[] => {
+                const parseItem = (i: string | GmcpOccupant): string[] => {
                     if (typeof i === 'string') return [i];
                     const names = [];
                     if (i.name) names.push(i.name);
@@ -391,18 +407,19 @@ const MudClient = () => {
 
                 if (Array.isArray(data)) {
                     items = data.flatMap(parseItem).filter(Boolean);
-                } else if (data.items && Array.isArray(data.items)) {
-                    items = data.items.flatMap(parseItem).filter(Boolean);
+                } else {
+                    const list = data.items || data.objects || [];
+                    items = list.flatMap(parseItem).filter(Boolean);
                 }
                 console.log("[Items List]", items);
                 if (items.length > 0) addMessage('system', `[GMCP] Room items: ${items.length} objects identified.`);
                 setRoomItems(items);
             },
-            onAddPlayer: (data: any) => {
+            onAddPlayer: (data: string | GmcpOccupant) => {
                 const name = typeof data === 'string' ? data : data.name;
                 if (name) setRoomPlayers(prev => prev.includes(name) ? prev : [...prev, name]);
             },
-            onRemovePlayer: (data: any) => {
+            onRemovePlayer: (data: string | GmcpOccupant) => {
                 const name = typeof data === 'string' ? data : data.name;
                 if (name) setRoomPlayers(prev => prev.filter(p => p !== name));
             }
@@ -416,17 +433,18 @@ const MudClient = () => {
             onRoomInfo: (data) => callbacksRef.current.onRoomInfo && callbacksRef.current.onRoomInfo(data),
             onCharVitals: (data) => callbacksRef.current.onCharVitals && callbacksRef.current.onCharVitals(data),
             onRoomPlayers: (data) => callbacksRef.current.onRoomPlayers && callbacksRef.current.onRoomPlayers(data),
-            onAddPlayer: (data) => callbacksRef.current.onAddPlayer && callbacksRef.current.onAddPlayer(data),
-            onRemovePlayer: (data) => callbacksRef.current.onRemovePlayer && callbacksRef.current.onRemovePlayer(data),
-            onRoomItems: (data: any) => callbacksRef.current.onRoomItems && callbacksRef.current.onRoomItems(data),
+            onAddPlayer: (data) => callbacksRef.current?.onAddPlayer && callbacksRef.current.onAddPlayer(data),
+            onRemovePlayer: (data) => callbacksRef.current?.onRemovePlayer && callbacksRef.current.onRemovePlayer(data),
+            onRoomItems: (data) => callbacksRef.current?.onRoomItems && callbacksRef.current.onRoomItems(data),
         });
     };
 
-    const { executeCommand } = useCommandController({
+    const { executeCommand, handleButtonClick, handleInputSwipe } = useCommandController({
         telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets,
         isDrawerCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        setInventoryHtml, setStatsHtml, setEqHtml,
-        setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen
+        setInventoryHtml, setStatsHtml, setEqHtml, setCommandPreview, setInput, setTarget,
+        setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen, setIsMapExpanded,
+        isMobile, triggerHaptic, btn, joystick, wasDraggingRef
     });
 
     const handleWimpyChange = useCallback((val: number) => {
@@ -509,34 +527,6 @@ const MudClient = () => {
         });
     }, [focusedIndex, messages.length]);
 
-    const handleInputSwipe = useCallback((dir: string) => {
-        if (!isMobile) return;
-        triggerHaptic(20);
-        if (dir === 'up') {
-            setIsMapExpanded(true);
-        } else if (dir === 'down') {
-            // Closing all drawers on swipe down
-            if (isInventoryOpen || isRightDrawerOpen || isCharacterOpen || isMapExpanded) {
-                triggerHaptic(15);
-                setIsInventoryOpen(false);
-                setIsRightDrawerOpen(false);
-                setIsCharacterOpen(false);
-                setIsMapExpanded(false);
-            } else executeCommand('s');
-        } else if (dir === 'right') {
-            // Swipe right (left to right) opens character
-            setStatsHtml('');
-            executeCommand('stat', false, true, true);
-            setIsCharacterOpen(true);
-        }
-        else if (dir === 'left') {
-            // Swipe left (right to left) opens inventory/equipment
-            setInventoryHtml(''); setEqHtml('');
-            executeCommand('inventory', false, true, true);
-            setTimeout(() => executeCommand('eq', false, true, true), 300);
-            setIsRightDrawerOpen(true);
-        }
-    }, [isMobile, triggerHaptic, executeCommand, isInventoryOpen, isCharacterOpen, isRightDrawerOpen, isMapExpanded, setStatsHtml, setInventoryHtml, setEqHtml]);
 
     useAtmosphereAudio({
         hpRatio, manaRatio, moveRatio,
@@ -693,55 +683,6 @@ const MudClient = () => {
         }
     }, [triggerHaptic, addMessage]);
 
-    const processMessageHtml = useCallback((html: string, mid?: string) => {
-        let newHtml = html;
-
-        const safeHighlight = (currentHtml: string, patternStr: string, replacer: (match: string) => string) => {
-            try {
-                const pattern = patternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                // Match tags OR the word pattern. Tags are group 1, pattern is group 2.
-                const regex = new RegExp(`(<[^>]+>)|(\\b${pattern}\\b)`, 'gi');
-                return currentHtml.replace(regex, (m, g1, g2) => {
-                    if (g1) return g1; // Return tag unchanged
-                    return replacer(g2);
-                });
-            } catch (e) { return currentHtml; }
-        };
-
-        // 1. Highlight Current Target (Top priority)
-        if (target) {
-            newHtml = safeHighlight(newHtml, target, (m) =>
-                `<span class="inline-btn target-highlight" data-id="target-hl" data-mid="${mid || ''}" data-cmd="target" data-context="${m}" data-action="menu">${m}</span>`
-            );
-        }
-
-        // 2. Inline Highlight Buttons
-        btn.buttonsRef.current.filter(b => b.display === 'inline' && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
-            newHtml = safeHighlight(newHtml, b.trigger!.pattern!, (m) => {
-                return `<span class="inline-btn" data-id="${b.id}" data-mid="${mid || ''}" data-cmd="${b.command}" data-context="${m}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" style="background-color: ${b.style.backgroundColor}">${m}</span>`;
-            });
-        });
-
-        // 3. Room Occupants (Auto-acquired highlights)
-        // Sort by length longest-first so "Morgundul orc-guard" matches before "orc-guard"
-        [...roomPlayers].filter(name => name !== characterName)
-            .sort((a, b) => b.length - a.length)
-            .forEach(name => {
-                newHtml = safeHighlight(newHtml, name, (m) => {
-                    return `<span class="inline-btn auto-occupant" data-id="auto-${name}" data-mid="${mid || ''}" data-cmd="inlineplayer" data-context="${m}" data-action="menu" style="background-color: rgba(100, 100, 255, 0.3); border-bottom: 1px dashed rgba(255,255,255,0.4)">${m}</span>`;
-                });
-            });
-
-        // 4. Room Items
-        [...roomItems].sort((a, b) => b.length - a.length)
-            .forEach(name => {
-                newHtml = safeHighlight(newHtml, name, (m) => {
-                    return `<span class="inline-btn auto-item" data-id="auto-item-${name}" data-mid="${mid || ''}" data-cmd="selection" data-context="${m}" data-action="menu" style="background-color: rgba(100, 255, 100, 0.15); border-bottom: 1px dotted rgba(255,255,255,0.3)">${m}</span>`;
-                });
-            });
-
-        return newHtml;
-    }, [target, btn, roomPlayers, characterName, roomItems]);
 
     const getMessageClass = useCallback((index: number, total: number) => {
         const anchorIndex = focusedIndex !== null ? focusedIndex : total - 1;
@@ -757,106 +698,6 @@ const MudClient = () => {
     // getButtonCommand moved to src/utils/buttonUtils.ts
 
 
-    const handleButtonClick = (button: CustomButton, e: React.MouseEvent, context?: string) => {
-        e.stopPropagation();
-        if (btn.isEditMode) {
-            if (wasDraggingRef.current) return;
-            btn.setEditingButtonId(button.id);
-        }
-        else {
-            if (popoverState) setPopoverState(null);
-            const target = (e.currentTarget && (e.currentTarget as any).classList) ? (e.currentTarget as HTMLElement) : null;
-            if (target) {
-                target.classList.remove('btn-glow-active');
-                void target.offsetWidth;
-                target.classList.add('btn-glow-active');
-            }
-            triggerHaptic(15);
-
-            let cmd = button.command;
-            if (context) {
-                // If command contains %n, replace it, otherwise append with space
-                if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, context);
-                else cmd = `${cmd} ${context}`;
-            }
-
-            let finalCmd = cmd;
-            if (joystick.currentDir) {
-                const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
-                const fullDir = dirMap[joystick.currentDir] || joystick.currentDir;
-                finalCmd = `${finalCmd} ${fullDir}`;
-                joystick.setIsJoystickConsumed(true);
-            } else if (joystick.isTargetModifierActive && target) {
-                finalCmd = `${finalCmd} ${target}`;
-                joystick.setIsJoystickConsumed(true);
-            }
-
-            if (button.actionType === 'nav') btn.setActiveSet(button.command);
-            else if (button.actionType === 'assign' || button.actionType === 'menu') {
-                const rect = target ? target.getBoundingClientRect() : null;
-                const x = rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2;
-                const y = rect ? rect.top : (e as any).clientY || window.innerHeight / 2;
-
-                setPopoverState({
-                    x,
-                    y,
-                    sourceHeight: rect?.height,
-                    setId: button.command,
-                    context: button.label,
-                    assignSourceId: button.actionType === 'assign' ? button.id : undefined,
-                    menuDisplay: button.menuDisplay,
-                    initialPointerX: rect ? (rect.left + rect.width / 2) : (e as any).clientX,
-                    initialPointerY: rect ? (rect.top + rect.height / 2) : (e as any).clientY
-                });
-            } else if (button.actionType === 'teleport-manage') {
-                setPopoverState({
-                    x: window.innerWidth / 2 - 150,
-                    y: window.innerHeight / 2 - 150,
-                    type: 'teleport-manage',
-                    setId: 'teleport'
-                });
-            } else if (button.actionType === 'select-recipient') {
-                const rect = target ? target.getBoundingClientRect() : null;
-                setPopoverState({
-                    x: rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2,
-                    y: rect ? rect.top : (e as any).clientY || window.innerHeight / 2,
-                    sourceHeight: rect?.height,
-                    type: 'give-recipient-select',
-                    setId: button.setId || 'main',
-                    context: finalCmd
-                });
-            } else if (button.actionType === 'preload') {
-                // Preload: put only the button's command into the input, never append context
-                setInput(button.command + ' ');
-                const el = document.querySelector('input');
-                if (el) el.focus();
-            } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
-                setTarget(null);
-                addMessage('system', 'Target cleared.');
-            } else {
-                setCommandPreview(finalCmd);
-                executeCommand(finalCmd, false, false);
-                setTimeout(() => setCommandPreview(null), 150);
-
-                // Auto-refresh drawers if interacting with inventory/equipment buttons
-                if (button.setId === 'inventorylist' || button.setId === 'equipmentlist') {
-                    // Slight delay to allow MUD to process the change
-                    setTimeout(() => {
-                        if (button.setId === 'inventorylist' || button.command.includes('remove')) {
-                            executeCommand('inv', false, false, true);
-                        }
-                        if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold') || button.command.includes('wield')) {
-                            executeCommand('eq', false, false, true);
-                        }
-                    }, 500);
-                }
-            }
-            if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-            if (button.trigger?.closeKeyboard) {
-                (document.activeElement as HTMLElement)?.blur();
-            }
-        }
-    };
 
 
 
@@ -1027,7 +868,7 @@ const MudClient = () => {
                         onTargetClick={() => {
                             if (target) {
                                 if (heldButton) {
-                                    const hbtn = btn.buttons.find(b => b.id === heldButton.id); const newMods = [...heldButton.modifiers, target]; setHeldButton(prev => prev ? { ...prev, modifiers: newMods } : null); if (hbtn) setCommandPreview(getButtonCommand(hbtn, 0, 0, undefined, 0, newMods));
+                                    const hbtn = btn.buttons.find(b => b.id === heldButton.id); const newMods = [...heldButton.modifiers, target]; setHeldButton(prev => prev ? { ...prev, modifiers: newMods } : null); if (hbtn) setCommandPreview(getButtonCommand(hbtn, 0, 0, undefined, 0, newMods)?.cmd || null);
                                     triggerHaptic(20);
                                 } else {
                                     setInput(prev => {
@@ -1121,6 +962,7 @@ const MudClient = () => {
                             setHeldButton={setHeldButton}
                             heldButton={heldButton}
                             joystick={{
+                                isActive: joystick.joystickActive,
                                 currentDir: joystick.currentDir,
                                 isTargetModifierActive: joystick.isTargetModifierActive,
                                 setIsJoystickConsumed: joystick.setIsJoystickConsumed
@@ -1160,7 +1002,42 @@ const MudClient = () => {
                             btnGlow={btnGlow}
                             onJoystickStart={joystick.handleJoystickStart}
                             onJoystickMove={joystick.handleJoystickMove}
-                            onJoystickEnd={(e) => joystick.handleJoystickEnd(e, (cmd) => executeCommand(cmd), triggerHaptic, setJoystickGlow)}
+                            onJoystickEnd={(e) => {
+                                const currentHeld = heldButtonRef.current;
+                                const isCenterTap = joystick.handleJoystickEnd(e, (cmd) => executeCommand(cmd), triggerHaptic, setJoystickGlow, !!currentHeld);
+                                if (isCenterTap && currentHeld && currentHeld.dx !== undefined && currentHeld.dy !== undefined) {
+                                    const button = btn.buttons.find(b => b.id === currentHeld.id);
+                                    if (button) {
+                                        const result = getButtonCommand(button, currentHeld.dx, currentHeld.dy, undefined, undefined, currentHeld.modifiers, joystick, target, true);
+                                        if (result) {
+                                            // Defuse the button so it doesn't fire again on release
+                                            const el = document.querySelector(`[data-id="${button.id}"]`) as any;
+                                            if (el) el._didFire = true;
+
+                                            if (result.actionType === 'nav') btn.setActiveSet(result.cmd);
+                                            else if (result.actionType === 'assign' || result.actionType === 'menu') {
+                                                const rect = el?.getBoundingClientRect();
+                                                setPopoverState({
+                                                    x: rect ? rect.right + 10 : window.innerWidth / 2,
+                                                    y: rect ? rect.top : window.innerHeight / 2,
+                                                    setId: result.cmd,
+                                                    context: button.label,
+                                                    assignSourceId: button.id,
+                                                    menuDisplay: button.menuDisplay,
+                                                    initialPointerX: rect ? (rect.left + rect.width / 2) : 0,
+                                                    initialPointerY: rect ? (rect.top + rect.height / 2) : 0
+                                                });
+                                            } else {
+                                                executeCommand(result.cmd);
+                                            }
+
+                                            setHeldButton(null);
+                                            setCommandPreview(null);
+                                            triggerHaptic(50);
+                                        }
+                                    }
+                                }
+                            }}
                             onNavStart={joystick.handleNavStart}
                             onNavEnd={(dir) => joystick.handleNavEnd(dir, executeCommand, triggerHaptic, setBtnGlow)}
                             isTargetModifierActive={joystick.isTargetModifierActive}
@@ -1216,6 +1093,7 @@ const MudClient = () => {
                                     setHeldButton={setHeldButton}
                                     heldButton={heldButton}
                                     joystick={{
+                                        isActive: joystick.joystickActive,
                                         currentDir: joystick.currentDir,
                                         isTargetModifierActive: joystick.isTargetModifierActive,
                                         setIsJoystickConsumed: joystick.setIsJoystickConsumed

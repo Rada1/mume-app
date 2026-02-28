@@ -11,7 +11,8 @@ export const getButtonCommand = (
     maxDist?: number,
     modifiers: string[] = [],
     joystickState?: { currentDir: string | null, isTargetModifierActive: boolean },
-    target?: string | null
+    target?: string | null,
+    isLong?: boolean
 ) => {
     const dist = Math.sqrt(dx * dx + dy * dy);
     const isSwiped = dist > 15;
@@ -23,21 +24,20 @@ export const getButtonCommand = (
 
     let cmd = button.command;
     let actionType = button.actionType || 'command';
+    let angle = 0;
 
     if (isSwiped && button.swipeCommands) {
-        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-        let dir: SwipeDirection;
+        angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-        if (angle >= -22.5 && angle < 22.5) dir = 'right';
-        else if (angle >= 22.5 && angle < 67.5) dir = 'se';
-        else if (angle >= 67.5 && angle < 112.5) dir = 'down';
-        else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
-        else if (angle >= 157.5 || angle < -157.5) dir = 'left';
-        else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
-        else if (angle >= -112.5 && angle < -67.5) dir = 'up';
-        else dir = 'ne';
+        // Unified Direction Logic (Geared)
+        const directions: SwipeDirection[] = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
+        const index = (Math.round(angle / 45) + 8) % 8;
+        const dir = directions[index];
 
-        if (button.swipeCommands[dir]) {
+        if (isLong && button.longSwipeCommands?.[dir]) {
+            cmd = button.longSwipeCommands[dir]!;
+            actionType = button.longSwipeActionTypes?.[dir] || 'command';
+        } else if (button.swipeCommands[dir]) {
             cmd = button.swipeCommands[dir]!;
             actionType = button.swipeActionTypes?.[dir] || 'command';
         }
@@ -48,7 +48,9 @@ export const getButtonCommand = (
         else cmd = `${cmd} ${context}`;
     }
 
-    if (!cmd && (!joystickState || !joystickState.currentDir)) return null;
+    if (!cmd && (!joystickState || !joystickState.currentDir)) {
+        return null;
+    }
 
     const finalMods: string[] = [];
     if (joystickState) {
@@ -60,8 +62,12 @@ export const getButtonCommand = (
         }
     }
 
-    if (actionType === 'command') {
-        return [cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ');
-    }
-    return null;
+    const finalCmd = actionType === 'command' ? [cmd, ...finalMods, ...modifiers].filter(Boolean).join(' ') : cmd;
+
+    return {
+        cmd: finalCmd,
+        actionType,
+        isSwipe: isSwiped,
+        angle
+    };
 };

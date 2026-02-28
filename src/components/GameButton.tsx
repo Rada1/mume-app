@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { CustomButton, PopoverState, SwipeDirection } from '../types';
 import { getButtonCommand } from '../utils/buttonUtils';
 import { triggerSwipeFeedback } from './SwipeFeedbackOverlay';
@@ -19,9 +19,9 @@ interface GameButtonProps {
     activePrompt: string | null;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean) => void;
     setCommandPreview: (cmd: string | null) => void;
-    setHeldButton: (held: { id: string, baseCommand: string, modifiers: string[] } | null) => void;
-    heldButton: { id: string, baseCommand: string, modifiers: string[] } | null;
-    joystick: { currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void };
+    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean } | null>>;
+    heldButton: { id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean } | null;
+    joystick: { isActive: boolean, currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void };
     target: string | null;
     setActiveSet: (setId: string) => void;
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
@@ -58,6 +58,14 @@ export const GameButton: React.FC<GameButtonProps> = ({
     const buttonRef = useRef<HTMLDivElement>(null);
 
     if (button.display === 'inline') return null;
+
+    // Update preview when joystick becomes active (for Long Swipe combos)
+    useEffect(() => {
+        if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
+            const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, target, joystick.isActive);
+            setCommandPreview(preview?.cmd || null);
+        }
+    }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target]);
     if (!button.isVisible && !isEditMode) return null;
 
     const isFloating = button.display === 'floating';
@@ -134,10 +142,13 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                     // Continuous trigger logic for swipe/modifiers
                     el._lst = setTimeout(() => {
-                        if (!el._didLong && el._maxDist < 20) {
-                            setHeldButton({ id: button.id, baseCommand: button.command, modifiers: [] });
+                        if (!el._didLong) {
+                            setHeldButton(prev => prev || { id: button.id, baseCommand: button.command, modifiers: [] });
                         }
                     }, 200);
+
+                    // Set initial ray color
+                    el.style.setProperty('--ray-color', button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
                 }
             }}
             onPointerMove={(e) => {
@@ -151,44 +162,30 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                 if (dist > 10) wasDraggingRef.current = true;
 
-                // Long swipe detection (assignment or navigation)
-                if (dist > 60 && !el._didFire && !el._didLong) {
-                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                    let dir: SwipeDirection;
-                    if (angle >= -22.5 && angle < 22.5) dir = 'right';
-                    else if (angle >= 22.5 && angle < 67.5) dir = 'se';
-                    else if (angle >= 67.5 && angle < 112.5) dir = 'down';
-                    else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
-                    else if (angle >= 157.5 || angle < -157.5) dir = 'left';
-                    else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
-                    else if (angle >= -112.5 && angle < -67.5) dir = 'up';
-                    else dir = 'ne';
-
-                    if (button.swipeCommands?.[dir]) {
-                        const longCmd = button.swipeCommands[dir]!;
-                        const longAction = button.swipeActionTypes?.[dir] || 'command';
-                        const rect = el.getBoundingClientRect();
-                        el._didFire = true;
-                        triggerHaptic(30);
-
-                        if (longAction === 'assign') {
-                            setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, assignSourceId: button.id, assignSwipeDir: dir });
-                        } else if (longAction === 'nav') {
-                            setActiveSet(longCmd);
-                        } else if (longAction === 'menu') {
-                            setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: longCmd, context: button.label, menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2 });
-                        } else if (longAction === 'select-recipient') {
-                            setPopoverState({ x: rect.right + 10, y: rect.top, sourceHeight: rect.height, type: 'give-recipient-select', setId: longCmd, context: longCmd });
-                        } else {
-                            executeCommand(longCmd, false, false);
-                        }
-                        setHeldButton(null);
-                        setCommandPreview(null);
+                // Track finger for combos. If we're already swiping (>15px), ensure we're the held button
+                if (dist > 15) {
+                    if (!heldButton || heldButton.id !== button.id) {
+                        setHeldButton({ id: button.id, baseCommand: button.command, modifiers: heldButton?.modifiers || [], dx, dy });
+                    } else if (heldButton.dx !== dx || heldButton.dy !== dy) {
+                        setHeldButton(prev => prev ? { ...prev, dx, dy } : null);
                     }
                 }
 
-                const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target);
-                setCommandPreview(preview);
+                const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, joystick.isActive);
+                setCommandPreview(preview?.cmd || null);
+
+                // Update the Dynamic Compass Ray
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                const snappedAngle = Math.round(angle / 45) * 45;
+
+                if (dist > 20 && snappedAngle !== el._lastSnappedAngle) {
+                    triggerHaptic(5); // Very light "tick" as it snaps
+                    el._lastSnappedAngle = snappedAngle;
+                }
+
+                el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
+                el.style.setProperty('--ray-length', `${dist + 50}px`);
+                el.style.setProperty('--ray-opacity', dist > 20 ? '1' : '0');
             }}
             onPointerUp={(e) => {
                 const el = e.currentTarget as any;
@@ -198,50 +195,38 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 clearTimeout(el._lst); el._lst = null;
                 setHeldButton(null);
                 setCommandPreview(null);
+                el.style.setProperty('--ray-opacity', '0');
 
                 if (el._didFire) { el._didFire = false; return; }
 
                 const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target);
+                const previewCmd = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target);
 
-                if (preview) {
-                    executeCommand(preview, false, false);
-                    if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
-                    triggerHaptic(15);
-                    el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
-                } else {
-                    const isSwiped = Math.abs(dx) > 15 || Math.abs(dy) > 15;
-                    let cmd = button.command;
-                    let actionType = button.actionType || 'command';
-
-                    if (isSwiped && button.swipeCommands) {
-                        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                        let dir: SwipeDirection;
-                        if (angle >= -22.5 && angle < 22.5) dir = 'right';
-                        else if (angle >= 22.5 && angle < 67.5) dir = 'se';
-                        else if (angle >= 67.5 && angle < 112.5) dir = 'down';
-                        else if (angle >= 112.5 && angle < 157.5) dir = 'sw';
-                        else if (angle >= 157.5 || angle < -157.5) dir = 'left';
-                        else if (angle >= -157.5 && angle < -112.5) dir = 'nw';
-                        else if (angle >= -112.5 && angle < -67.5) dir = 'up';
-                        else dir = 'ne';
-
-                        if (button.swipeCommands[dir]) {
-                            cmd = button.swipeCommands[dir]!;
-                            actionType = button.swipeActionTypes?.[dir] || 'command';
-                            triggerSwipeFeedback(e.clientX, e.clientY, angle, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
-                        }
-                    }
-
-                    if (actionType === 'nav') setActiveSet(cmd);
-                    else if (actionType === 'assign' || actionType === 'menu') {
+                if (previewCmd) {
+                    // Unified release: Execute whatever direction/command was being previewed
+                    if (previewCmd.actionType === 'nav') {
+                        setActiveSet(previewCmd.cmd);
+                    } else if (previewCmd.actionType === 'assign' || previewCmd.actionType === 'menu') {
                         const rect = el.getBoundingClientRect();
                         setPopoverState({
-                            x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: cmd,
+                            x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: previewCmd.cmd,
                             context: button.label, assignSourceId: button.id, assignSwipeDir: undefined,
                             menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2
                         });
-                    } else if (!isSwiped) {
+                    } else {
+                        executeCommand(previewCmd.cmd, false, false);
+                        if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
+                        triggerHaptic(15);
+                        el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
+
+                        // Swipe feedback
+                        if (previewCmd.isSwipe) {
+                            triggerSwipeFeedback(e.clientX, e.clientY, previewCmd.angle || 0, button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
+                        }
+                    }
+                } else {
+                    // No preview (cancelled or static tap)
+                    if (el._maxDist < 15) {
                         handleButtonClick(button, e);
                     }
                 }
@@ -258,6 +243,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 }
             }}
         >
+            <div className="swipe-ray" />
             <div className="button-label">{button.label}</div>
 
             {isEditMode && (
