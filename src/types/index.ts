@@ -75,6 +75,11 @@ export interface CustomButton {
     swipeSets?: Partial<Record<SwipeDirection, string>>;
     longSwipeCommands?: Partial<Record<SwipeDirection, string>>;
     menuDisplay?: 'list' | 'dial';
+    requirement?: {
+        ability?: string;
+        minProficiency?: number;
+        characterClass?: string[]; // Allowed classes
+    };
 }
 
 export interface SoundTrigger {
@@ -120,6 +125,8 @@ export interface SavedSettings {
     loginPassword?: string;
     isSoundEnabled?: boolean;
     isNoviceMode?: boolean;
+    abilities?: Record<string, number>;
+    characterClass?: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
 }
 
 export interface RoomNode {

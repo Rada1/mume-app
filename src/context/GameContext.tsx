@@ -35,6 +35,10 @@ interface GameContextType {
     setSettingsTab: (val: 'general' | 'sound') => void;
     accentColor: string;
     setAccentColor: (val: string) => void;
+    abilities: Record<string, number>;
+    setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+    characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
+    setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -59,6 +63,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound'>('general');
     const [accentColor, setAccentColor] = useState('#4a90e2'); // Default accent
+    const [abilities, setAbilities] = useState<Record<string, number>>(() => {
+        const saved = localStorage.getItem('mud-abilities');
+        return saved ? JSON.parse(saved) : {};
+    });
+    const [characterClass, setCharacterClass] = useState<'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none'>(() => {
+        return (localStorage.getItem('mud-character-class') as any) || 'none';
+    });
 
     useEffect(() => {
         localStorage.setItem('mud-novice-mode', isNoviceMode.toString());
@@ -71,6 +82,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         localStorage.setItem('mud-mmapper-mode', isMmapperMode.toString());
     }, [isMmapperMode]);
+
+    useEffect(() => {
+        localStorage.setItem('mud-abilities', JSON.stringify(abilities));
+    }, [abilities]);
+
+    useEffect(() => {
+        localStorage.setItem('mud-character-class', characterClass);
+    }, [characterClass]);
 
     return (
         <GameContext.Provider value={{
@@ -87,7 +106,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             popoverState, setPopoverState,
             isSettingsOpen, setIsSettingsOpen,
             settingsTab, setSettingsTab,
-            accentColor, setAccentColor
+            accentColor, setAccentColor,
+            abilities, setAbilities,
+            characterClass, setCharacterClass
         }}>
             {children}
         </GameContext.Provider>

@@ -19,7 +19,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
     availableSets,
     selectedButtonIds
 }) => {
-    const [activeTab, setActiveTab] = useState<'main' | 'gestures' | 'style' | 'triggers'>('main');
+    const [activeTab, setActiveTab] = useState<'main' | 'gestures' | 'style' | 'triggers' | 'requirements'>('main');
 
     const handleDuplicate = () => {
         const newId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2);
@@ -213,7 +213,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                 </div>
 
                 <div className="modal-tabs" style={{ display: 'flex', gap: '5px', borderBottom: '1px solid #444', marginBottom: '15px' }}>
-                    {['main', 'gestures', 'style', 'triggers'].map(tab => (
+                    {['main', 'gestures', 'style', 'triggers', 'requirements'].map(tab => (
                         <div
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
@@ -370,6 +370,66 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                 <label className="setting-label">Auto-Hide Timer (seconds)</label>
                                 <input type="number" className="setting-input" value={editingButton.trigger?.duration || 0} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, duration: parseInt(e.target.value) || 0 } })} />
                                 <span className="setting-helper">Set to 0 to disable auto-hide.</span>
+                            </div>
+                        </>
+                    )}
+
+                    {activeTab === 'requirements' && (
+                        <>
+                            <div className="setting-group">
+                                <label className="setting-label">Required Ability (Skill/Spell)</label>
+                                <input
+                                    className="setting-input"
+                                    placeholder="e.g. bash, fireball"
+                                    value={editingButton.requirement?.ability || ''}
+                                    onChange={e => updateButton(editingButton.id, {
+                                        requirement: { ...(editingButton.requirement || {}), ability: e.target.value }
+                                    })}
+                                />
+                                <span className="setting-helper">Case-insensitive. Leave empty for no ability requirement.</span>
+                            </div>
+
+                            <div className="setting-group">
+                                <label className="setting-label">Minimum Proficiency (%)</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <input
+                                        type="range"
+                                        min="0" max="100" step="5"
+                                        className="setting-input"
+                                        style={{ flex: 1 }}
+                                        value={editingButton.requirement?.minProficiency || 0}
+                                        onChange={e => updateButton(editingButton.id, {
+                                            requirement: { ...(editingButton.requirement || {}), minProficiency: parseInt(e.target.value) }
+                                        })}
+                                    />
+                                    <span style={{ width: '40px', textAlign: 'right', color: '#fff' }}>{editingButton.requirement?.minProficiency || 0}%</span>
+                                </div>
+                                <span className="setting-helper">Button only shows if proficiency is ≥ this value.</span>
+                            </div>
+
+                            <div className="setting-group">
+                                <label className="setting-label">Allowed Character Classes</label>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                                    {['ranger', 'warrior', 'mage', 'cleric', 'thief'].map(cls => (
+                                        <label key={cls} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#fff' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={editingButton.requirement?.characterClass?.includes(cls as any) || false}
+                                                onChange={e => {
+                                                    const current = editingButton.requirement?.characterClass || [];
+                                                    const next = e.target.checked
+                                                        ? [...current, cls]
+                                                        : current.filter(c => c !== cls);
+                                                    updateButton(editingButton.id, {
+                                                        requirement: { ...(editingButton.requirement || {}), characterClass: next as any }
+                                                    });
+                                                }}
+                                            />
+                                            {cls.charAt(0).toUpperCase() + cls.slice(1)}
+                                        </label>
+                                    ))}
+                                </div>
+                                <span className="setting-helper">If none selected, button shows for all classes.</span>
                             </div>
                         </>
                     )}

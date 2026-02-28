@@ -10,6 +10,12 @@
     "scope": "/",
     "icons": [
         {
+            "src": "icon-1.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
             "src": "icon-192.png",
             "sizes": "192x192",
             "type": "image/png",

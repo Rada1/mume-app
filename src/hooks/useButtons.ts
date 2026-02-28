@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { CustomButton } from '../types';
+import { CustomButton, MessageType } from '../types';
 import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS } from '../constants/buttons';
-import { MAGE_SPELLS, CLERIC_SPELLS } from '../utils/spellLists';
+import { MAGE_SPELLS, CLERIC_SPELLS, CLASS_MAPPINGS } from '../utils/spellLists';
+import { useGame } from '../context/GameContext';
 
 export const useButtons = () => {
-    const [buttons, setButtons] = useState<CustomButton[]>(() => {
+    const { abilities, characterClass } = useGame();
+    const [activeSet, setActiveSet] = useState('main');
+    const [rawButtons, setRawButtons] = useState<CustomButton[]>(() => {
         const saved = localStorage.getItem('mud-buttons');
         if (saved) {
             try {
@@ -32,7 +35,75 @@ export const useButtons = () => {
         return DEFAULT_BUTTONS;
     });
 
-    const [activeSet, setActiveSet] = useState('main');
+    const buttons = useMemo(() => {
+        // Core sets and dynamic smart sets logic
+        const classNames = ['ranger', 'warrior', 'mage', 'cleric', 'thief'];
+        const activeSetLower = activeSet.toLowerCase();
+
+        // 1. Static filtering
+        const filtered = rawButtons.filter(b => {
+            if (b.setId && ['inventorylist', 'equipmentlist', 'Xbox'].includes(b.setId)) return true;
+            if (!b.requirement) return true;
+
+            if (b.requirement.characterClass && b.requirement.characterClass.length > 0) {
+                if (characterClass !== 'none' && !b.requirement.characterClass.includes(characterClass)) return false;
+            }
+
+            if (b.requirement.ability) {
+                const prof = abilities[b.requirement.ability.toLowerCase()] || 0;
+                if (prof < (b.requirement.minProficiency || 1)) return false;
+            }
+
+            return true;
+        });
+
+        // 2. Dynamic generation for Smart Sets
+        if (activeSetLower === 'spellbook' || classNames.includes(activeSetLower)) {
+            const generated: CustomButton[] = [];
+            const relevantAbilities = Object.entries(abilities).filter(([name, prof]) => {
+                if (prof <= 0) return false;
+                const abilityName = name.toLowerCase();
+
+                if (activeSetLower === 'spellbook') {
+                    return MAGE_SPELLS.some(s => s.toLowerCase() === abilityName) ||
+                        CLERIC_SPELLS.some(s => s.toLowerCase() === abilityName);
+                }
+
+                const classAbilities = CLASS_MAPPINGS[activeSetLower];
+                return classAbilities?.some(s => s.toLowerCase() === abilityName);
+            });
+
+            relevantAbilities.forEach(([name, prof], idx) => {
+                const cols = 2;
+                const row = Math.floor(idx / cols);
+                const col = idx % cols;
+
+                generated.push({
+                    id: `dynamic-${activeSetLower}-${name}`,
+                    label: name.charAt(0).toUpperCase() + name.slice(1),
+                    command: name.toLowerCase() === 'teleport' ? "cast 'teleport'" : name.toLowerCase(),
+                    setId: activeSet,
+                    actionType: 'command',
+                    display: 'floating',
+                    isVisible: true,
+                    style: {
+                        x: 10 + col * 40,
+                        y: 10 + row * 10,
+                        w: 120,
+                        h: 40,
+                        backgroundColor: 'rgba(74, 144, 226, 0.3)',
+                        shape: 'pill',
+                        transparent: false
+                    },
+                    trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0, type: 'show' }
+                });
+            });
+            return [...filtered, ...generated];
+        }
+
+        return filtered;
+    }, [rawButtons, activeSet, abilities, characterClass]);
+
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
     const [dragState, setDragState] = useState<{ id: string, startX: number, startY: number, initialX: number, initialY: number, type: 'move' | 'resize' | 'cluster' | 'cluster-resize', initialW: number, initialH: number, initialPositions?: Record<string, { x: number, y: number }>, initialSizes?: Record<string, { w: number, h: number }> } | null>(null);
@@ -55,12 +126,12 @@ export const useButtons = () => {
         localStorage.setItem('mud-grid-size', gridSize.toString());
     }, [gridSize]);
 
-    useEffect(() => { buttonsRef.current = buttons; }, [buttons]);
+    useEffect(() => { buttonsRef.current = rawButtons; }, [rawButtons]);
 
     useEffect(() => {
-        const toSave = buttons.map(b => ({ ...b, isVisible: undefined }));
+        const toSave = rawButtons.map(b => ({ ...b, isVisible: undefined }));
         localStorage.setItem('mud-buttons', JSON.stringify(toSave));
-    }, [buttons]);
+    }, [rawButtons]);
 
     useEffect(() => {
         if (combatSet) localStorage.setItem('mud-combat-set', combatSet);
@@ -74,7 +145,7 @@ export const useButtons = () => {
 
     useEffect(() => {
         const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist', 'Xbox', 'inventorylist', 'equipmentlist'];
-        const missingSets = coreSets.filter(setName => !buttons.some(b => b.setId === setName));
+        const missingSets = coreSets.filter(setName => !rawButtons.some(b => b.setId === setName));
 
         let buttonsToAdd: CustomButton[] = [];
 
@@ -86,32 +157,35 @@ export const useButtons = () => {
         // Specifically check for new core buttons that existing users might be missing
         const requiredCoreButtons = ['inv-give', 'xbox-z'];
         requiredCoreButtons.forEach(reqId => {
-            if (!buttons.some(b => b.id === reqId)) {
+            if (!rawButtons.some(b => b.id === reqId)) {
                 const reqBtn = DEFAULT_BUTTONS.find(b => b.id === reqId);
                 if (reqBtn) buttonsToAdd.push(reqBtn);
             }
         });
 
         if (buttonsToAdd.length > 0) {
-            setButtons(prev => {
+            setRawButtons(prev => {
                 const existingIds = new Set(prev.map(b => b.id));
                 const uniqueNew = buttonsToAdd.filter(b => !existingIds.has(b.id));
                 return uniqueNew.length > 0 ? [...prev, ...uniqueNew] : prev;
             });
         }
-    }, [buttons.length, buttons]); // Re-check if length changes or buttons structure changes
+    }, [rawButtons.length, rawButtons]); // Re-check if length changes or buttons structure changes
 
     const availableSets = useMemo(() => {
         const sets = new Set<string>();
         sets.add('main');
-        buttons.forEach(b => {
+        sets.add('spellbook');
+        ['ranger', 'warrior', 'mage', 'cleric', 'thief'].forEach(s => sets.add(s));
+
+        rawButtons.forEach(b => {
             if (b.setId) sets.add(b.setId);
             if (b.trigger?.type === 'switch_set' && b.trigger.targetSet) {
                 sets.add(b.trigger.targetSet);
             }
         });
         return Array.from(sets);
-    }, [buttons]);
+    }, [rawButtons]);
 
     const createButton = (defaults?: Partial<CustomButton>) => {
         const newBtn: CustomButton = {
@@ -141,18 +215,18 @@ export const useButtons = () => {
             isVisible: true,
             ...defaults
         };
-        setButtons(prev => [...prev, newBtn]);
+        setRawButtons(prev => [...prev, newBtn]);
     };
 
     const deleteButton = (id: string) => {
-        setButtons(prev => prev.filter(b => b.id !== id));
+        setRawButtons(prev => prev.filter(b => b.id !== id));
         setEditingButtonId(null);
     };
 
     const deleteSet = (setName: string) => {
         if (setName === 'main') return; // Cannot delete main set
 
-        setButtons(prev => {
+        setRawButtons(prev => {
             // Remove buttons in this set
             let next = prev.filter(b => b.setId !== setName);
 
@@ -186,14 +260,14 @@ export const useButtons = () => {
     };
 
     const saveAsDefault = () => {
-        const toSaveButtons = buttons.map(b => ({ ...b, isVisible: undefined }));
+        const toSaveButtons = rawButtons.map(b => ({ ...b, isVisible: undefined }));
         localStorage.setItem('mud-buttons-user-default', JSON.stringify(toSaveButtons));
         localStorage.setItem('mud-ui-positions-user-default', JSON.stringify(uiPositions));
         setHasUserDefaults(true);
     };
 
     const saveAsCoreDefault = () => {
-        const toSaveButtons = buttons.map(b => ({ ...b, isVisible: undefined }));
+        const toSaveButtons = rawButtons.map(b => ({ ...b, isVisible: undefined }));
         localStorage.setItem('mud-buttons-core-default', JSON.stringify(toSaveButtons));
         localStorage.setItem('mud-ui-positions-core-default', JSON.stringify(uiPositions));
     };
@@ -203,7 +277,7 @@ export const useButtons = () => {
             const savedBtns = localStorage.getItem('mud-buttons-user-default');
             const savedPos = localStorage.getItem('mud-ui-positions-user-default');
             try {
-                if (savedBtns) setButtons(JSON.parse(savedBtns));
+                if (savedBtns) setRawButtons(JSON.parse(savedBtns));
                 if (savedPos) setUiPositions(JSON.parse(savedPos));
                 addMessageRef.current?.('system', 'Reset to your User Defaults.');
                 return;
@@ -215,7 +289,7 @@ export const useButtons = () => {
             const corePositions = localStorage.getItem('mud-ui-positions-core-default');
             if (coreButtons) {
                 try {
-                    setButtons(JSON.parse(coreButtons));
+                    setRawButtons(JSON.parse(coreButtons));
                     if (corePositions) setUiPositions(JSON.parse(corePositions));
                     addMessageRef.current?.('system', 'Reset to Core App Defaults.');
                     return;
@@ -224,7 +298,7 @@ export const useButtons = () => {
         }
 
         // Factory Reset (Hardcoded)
-        setButtons(DEFAULT_BUTTONS);
+        setRawButtons(DEFAULT_BUTTONS);
         setUiPositions(DEFAULT_UI_POSITIONS);
         addMessageRef.current?.('system', 'Reset to Factory Defaults.');
     };
@@ -260,7 +334,8 @@ export const useButtons = () => {
 
     return useMemo(() => ({
         buttons,
-        setButtons,
+        setButtons: setRawButtons,
+        rawButtons,
         buttonsRef,
         activeSet,
         setActiveSet,

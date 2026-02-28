@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback, useLayoutEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Plus } from 'lucide-react';
+import { Plus, User, Backpack } from 'lucide-react';
 
 import './index.css';
 import {
@@ -86,7 +86,9 @@ const MudClient = () => {
         inCombat, setInCombat,
         lightning, setLightning,
         weather, setWeather,
-        isFoggy, setIsFoggy
+        isFoggy, setIsFoggy,
+        abilities, setAbilities,
+        characterClass, setCharacterClass
     } = useGame();
 
     useEffect(() => {
@@ -283,7 +285,7 @@ const MudClient = () => {
         soundTriggers, setSoundTriggers, newSoundPattern, setNewSoundPattern,
         newSoundRegex, setNewSoundRegex,
         handleFileUpload, exportSettingsFile, handleSoundUpload } = settingsHook;
-    const exportSettings = () => exportSettingsFile(btn.buttons);
+    const exportSettings = () => exportSettingsFile(btn.rawButtons);
     const importSettings = (e: React.ChangeEvent<HTMLInputElement>) => settingsHook.importSettings(e, setIsSettingsOpen);
     useEffect(() => { soundTriggersRef.current = soundTriggers; }, [soundTriggers]);
 
@@ -295,6 +297,8 @@ const MudClient = () => {
         setWeather,
         setIsFoggy,
         setStats,
+        setAbilities,
+        setCharacterClass,
         setRumble,
         setHitFlash,
         setDeathStage,
@@ -1146,6 +1150,51 @@ const MudClient = () => {
             />
 
 
+            {/* Desktop Edge Tabs */}
+            {!isMobile && (
+                <>
+                    <div
+                        className={`desktop-edge-tab left ${isCharacterOpen ? 'active' : ''}`}
+                        style={{ zIndex: 2100, pointerEvents: 'auto' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            console.log("Left Tab Clicked, isCharacterOpen:", isCharacterOpen);
+                            triggerHaptic(20);
+                            if (!isCharacterOpen) {
+                                setStatsHtml(''); // Clear old
+                                executeCommand('stat', false, true, true);
+                            }
+                            setIsCharacterOpen(!isCharacterOpen);
+                        }}
+                        title="Character Panel"
+                    >
+                        <User className="tab-icon" />
+                        <span className="tab-text">Character</span>
+                    </div>
+                    <div
+                        className={`desktop-edge-tab right ${isRightDrawerOpen ? 'active' : ''}`}
+                        style={{ zIndex: 2100, pointerEvents: 'auto' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            console.log("Right Tab Clicked, Open state:", isRightDrawerOpen);
+                            triggerHaptic(20);
+                            if (isRightDrawerOpen) {
+                                setIsRightDrawerOpen(false);
+                            } else {
+                                setInventoryHtml(''); setEqHtml('');
+                                executeCommand('inventory', false, true, true);
+                                setTimeout(() => executeCommand('eq', false, true, true), 300);
+                                setIsRightDrawerOpen(true);
+                            }
+                        }}
+                        title="Inventory & Equipment"
+                    >
+                        <Backpack className="tab-icon" />
+                        <span className="tab-text">Inventory</span>
+                    </div>
+                </>
+            )}
+
             {
                 isSettingsOpen && (
                     <SettingsModal
@@ -1177,7 +1226,7 @@ const MudClient = () => {
 
             {
                 btn.editingButtonId && (() => {
-                    const editingButton = btn.buttons.find(b => b.id === btn.editingButtonId);
+                    const editingButton = btn.rawButtons.find(b => b.id === btn.editingButtonId);
                     if (!editingButton) return null;
                     return (
                         <EditButtonModal
@@ -1214,7 +1263,7 @@ const MudClient = () => {
             {
                 isSetManagerOpen && (
                     <SetManagerModal
-                        buttons={btn.buttons}
+                        buttons={btn.rawButtons}
                         availableSets={btn.availableSets}
                         onClose={() => setIsSetManagerOpen(false)}
                         onEditButton={(id, currentSet) => {

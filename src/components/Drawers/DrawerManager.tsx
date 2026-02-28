@@ -54,7 +54,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     inventoryHtml,
     handleLogClick
 }) => {
-    if (!isMobile) return null;
 
     const anyOpen = drawers.inventory.isOpen || drawers.character.isOpen || drawers.right.isOpen;
 

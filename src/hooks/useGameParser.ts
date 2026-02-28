@@ -14,6 +14,8 @@ interface UseGameParserDeps {
     setWeather: React.Dispatch<React.SetStateAction<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>>;
     setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
     setStats: React.Dispatch<React.SetStateAction<GameStats>>;
+    setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
+    setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
     setRumble: React.Dispatch<React.SetStateAction<boolean>>;
     setHitFlash: React.Dispatch<React.SetStateAction<boolean>>;
     setDeathStage: React.Dispatch<React.SetStateAction<any>>;
@@ -42,6 +44,8 @@ export function useGameParser({
     setWeather,
     setIsFoggy,
     setStats,
+    setAbilities,
+    setCharacterClass,
     setRumble,
     setHitFlash,
     setDeathStage,
@@ -60,11 +64,23 @@ export function useGameParser({
     const promptTerrainRef = useRef<string | null>(null);
 
     // Capture flow refs
-    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'none'>('none');
+    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'none'>('none');
     const isDrawerCapture = useRef(false);
     const isWaitingForStats = useRef(false);
     const isWaitingForEq = useRef(false);
     const isWaitingForInv = useRef(false);
+
+    const PROFICIENCY_MAP: Record<string, number> = {
+        'awful': 15,
+        'bad': 30,
+        'poor': 45,
+        'average': 60,
+        'fair': 70,
+        'good': 80,
+        'very good': 90,
+        'excellent': 100,
+        'superb': 101,
+    };
 
     // Helper: extract meaningful noun from item description (for drawer buttons)
     const extractNoun = (text: string) => {
@@ -93,6 +109,13 @@ export function useGameParser({
         if ((isWaitingForInv.current || captureStage.current !== 'none') && lowerCapture.includes('you are carrying:')) {
             isWaitingForInv.current = false;
             captureStage.current = 'inv';
+        }
+        if (lowerCapture.includes('you have the following') || lowerCapture.includes('you can practice the following')) {
+            captureStage.current = 'practice';
+            const classMatch = lowerCapture.match(/(ranger|warrior|mage|cleric|thief)\s+(skills|spells)/i);
+            if (classMatch) {
+                setCharacterClass(classMatch[1].toLowerCase() as 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief');
+            }
         }
 
         // 2. Prompt detection (terminates capture)
@@ -142,6 +165,38 @@ export function useGameParser({
                 setStatsHtml(prev => prev + (prev ? '<br/>' : '') + ansiConvert.toHtml(cleanLine));
             } else if (captureStage.current === 'eq') {
                 setEqHtml(prev => prev + wrapDrawerItem(cleanLine, 'equipmentlist'));
+            } else if (captureStage.current === 'practice') {
+                // Parse skill/spell line: "bash ........................................ very good"
+                const practiceMatch = textOnlyForCapture.match(/^([a-zA-Z\s\-]+)\s+\.{3,}\s+([a-zA-Z\s%\d\(\)]+)$/);
+                if (practiceMatch) {
+                    const ability = practiceMatch[1].trim().toLowerCase();
+                    const valuePart = practiceMatch[2].trim().toLowerCase();
+
+                    let proficiency = 0;
+                    // Check if there's a percentage in parentheses first: "(85%)"
+                    const pctMatch = valuePart.match(/\((\d+)%\)/);
+                    if (pctMatch) {
+                        proficiency = parseInt(pctMatch[1]);
+                    } else {
+                        // Check if it's just a percentage: "85%"
+                        const directPctMatch = valuePart.match(/(\d+)%/);
+                        if (directPctMatch) {
+                            proficiency = parseInt(directPctMatch[1]);
+                        } else {
+                            // Look for literals
+                            for (const [lit, val] of Object.entries(PROFICIENCY_MAP)) {
+                                if (valuePart.includes(lit)) {
+                                    proficiency = val;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (ability && proficiency > 0) {
+                        setAbilities(prev => ({ ...prev, [ability]: proficiency }));
+                    }
+                }
             }
         }
 

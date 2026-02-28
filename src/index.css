@@ -2382,10 +2382,17 @@ select.setting-input {
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: 3000;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  .drawer-backdrop {
+    backdrop-filter: none;
+    background: transparent;
+  }
 }
 
 .drawer-backdrop.open {
@@ -2402,12 +2409,11 @@ select.setting-input {
   background: rgba(15, 23, 42, 0.95);
   border-top: 2px solid var(--accent);
   border-radius: 20px 20px 0 0;
-  z-index: 1001;
+  z-index: 3001;
   transform: translateY(101%);
   visibility: hidden;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
   display: flex;
-
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   touch-action: none;
@@ -2430,17 +2436,23 @@ select.setting-input {
   max-width: 650px;
   background: rgba(15, 23, 42, 0.95);
   border-right: 2px solid var(--accent);
-  z-index: 1001;
+  z-index: 3001;
   transform: translateX(-101%);
   visibility: hidden;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
   display: flex;
   flex-direction: column;
-
   box-shadow: 10px 0 40px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   touch-action: pan-y;
   /* Allow vertical scroll, but capture horizontal swipes */
+}
+
+@media (min-width: 1024px) {
+  .character-drawer {
+    width: 40%;
+    max-width: 480px;
+  }
 }
 
 .character-drawer.open {
@@ -2459,17 +2471,23 @@ select.setting-input {
   max-width: 650px;
   background: rgba(15, 23, 42, 0.95);
   border-left: 2px solid var(--accent);
-  z-index: 1001;
+  z-index: 3001;
   transform: translateX(101%);
   visibility: hidden;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
   display: flex;
   flex-direction: column;
-
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   touch-action: pan-y;
   /* Allow vertical scroll, but capture horizontal swipes */
+}
+
+@media (min-width: 1024px) {
+  .right-drawer {
+    width: 40%;
+    max-width: 480px;
+  }
 }
 
 .right-drawer.open {
@@ -2994,4 +3012,87 @@ input:checked+.switch-slider .switch-label.off {
 
 .active .dial-item-label {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Desktop Edge Tabs (Drawer Handles) */
+.desktop-edge-tab {
+  display: none;
+  /* Hidden on mobile by default */
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 140px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 2000;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-dim);
+  gap: 14px;
+  user-select: none;
+}
+
+.desktop-edge-tab:hover {
+  background: rgba(0, 0, 0, 0.65);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.15);
+}
+
+.desktop-edge-tab.left {
+  left: 0;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+
+.desktop-edge-tab.right {
+  right: 0;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+}
+
+.desktop-edge-tab.active {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+  width: 32px;
+}
+
+.desktop-edge-tab .tab-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.8;
+  transition: transform 0.3s ease;
+}
+
+.desktop-edge-tab:hover .tab-icon {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+.desktop-edge-tab .tab-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  opacity: 0.7;
+}
+
+.desktop-edge-tab:hover .tab-text {
+  opacity: 1;
+}
+
+@media (min-width: 1024px) {
+  .desktop-edge-tab {
+    display: flex;
+  }
 }

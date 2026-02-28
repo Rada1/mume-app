@@ -12,7 +12,7 @@ interface UseSettingsDeps {
 }
 
 export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: UseSettingsDeps) {
-    const { isNoviceMode, setIsNoviceMode, isSoundEnabled, setIsSoundEnabled } = useGame();
+    const { isNoviceMode, setIsNoviceMode, isSoundEnabled, setIsSoundEnabled, abilities, setAbilities, characterClass, setCharacterClass } = useGame();
     const [bgImage, setBgImage] = useState(DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState(DEFAULT_URL);
     const [loginName, setLoginName] = useState('');
@@ -58,7 +58,9 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
             isSoundEnabled,
             isNoviceMode,
             buttons: [] as any, // filled by caller via onExport
-            soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest)
+            soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest),
+            abilities,
+            characterClass
         };
         // Note: buttons array is injected by the caller — see MudClient.exportSettings wrapper
         return settings;
@@ -69,7 +71,9 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
             version: 3, connectionUrl, bgImage, loginName, loginPassword,
             isSoundEnabled, isNoviceMode,
             buttons: buttons.map(b => ({ ...b, isVisible: undefined } as any)),
-            soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest)
+            soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest),
+            abilities,
+            characterClass
         };
         const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -96,6 +100,8 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
                     if (settings.loginPassword) setLoginPassword(settings.loginPassword);
                     if (settings.isSoundEnabled !== undefined) setIsSoundEnabled(settings.isSoundEnabled);
                     if (settings.isNoviceMode !== undefined) setIsNoviceMode(settings.isNoviceMode);
+                    if (settings.abilities) setAbilities(settings.abilities);
+                    if (settings.characterClass) setCharacterClass(settings.characterClass);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
