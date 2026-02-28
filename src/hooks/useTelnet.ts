@@ -2,11 +2,12 @@ import React, { useRef, useState, useCallback } from 'react';
 import { IAC, SB, SE, WILL, WONT, DO, DONT, TELNET_GMCP, TELNET_TTYPE, TELNET_NAWS, TTYPE_IS, TTYPE_SEND } from '../constants';
 import {
     MessageType, RoomNode, GameStats, WeatherType, DeathStage,
-    GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant
+    GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo
 } from '../types';
 
 interface TelnetHandlers {
     onRoomInfo: (data: GmcpRoomInfo) => void;
+    onRoomUpdateExits?: (data: Record<string, GmcpExitInfo | false>) => void;
     onCharVitals?: (data: GmcpCharVitals) => void;
     onRoomPlayers?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
     onAddPlayer?: (data: string | GmcpOccupant) => void;
@@ -197,6 +198,11 @@ export const useTelnet = (options: TelnetOptions) => {
                 try {
                     const data = JSON.parse(json) as GmcpRoomInfo;
                     handlers.onRoomInfo(data);
+                } catch (e) { }
+            } else if (pkgLower === 'room.updateexits') {
+                try {
+                    const data = JSON.parse(json) as Record<string, GmcpExitInfo | false>;
+                    if (handlers.onRoomUpdateExits) handlers.onRoomUpdateExits(data);
                 } catch (e) { }
             } else if (pkgLower === 'room.players' || pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
                 try {

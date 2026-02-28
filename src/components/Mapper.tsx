@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, forwardRef, useImperativeHandle, useMemo } from 'react';
+import { GmcpRoomInfo, GmcpExitInfo } from '../types';
 
 const GRID_SIZE = 50;
 const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string }> = {
@@ -22,6 +23,30 @@ const TERRAIN_MAP: Record<string, string> = {
 };
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
+const normalizeTerrain = (t: string | null): string => {
+    if (!t) return 'Field';
+    const low = t.toLowerCase().trim();
+    if (low.includes('city') || low.includes('town')) return 'City';
+    if (low.includes('build')) return 'Building';
+    if (low.includes('forest') || low.includes('thick')) return 'Forest';
+    if (low.includes('field') || low.includes('plain') || low.includes('grass')) return 'Field';
+    if (low.includes('hill')) return 'Hills';
+    if (low.includes('mountain')) return 'Mountains';
+    if (low.includes('water') || low.includes('sea') || low.includes('ocean')) return 'Water';
+    if (low.includes('shallow')) return 'Shallows';
+    if (low.includes('rapid')) return 'Rapids';
+    if (low.includes('river')) return 'Water';
+    if (low.includes('road') || low.includes('trail') || low.includes('path')) return 'Road';
+    if (low.includes('tunnel')) return 'Tunnel';
+    if (low.includes('cavern')) return 'Cavern';
+    if (low.includes('underwater')) return 'Underwater';
+    if (low.includes('brush') || low.includes('swamp') || low.includes('shrub')) return 'Brush';
+    // Match symbols
+    for (const [sym, val] of Object.entries(TERRAIN_MAP)) {
+        if (t === sym) return val;
+    }
+    return t.charAt(0).toUpperCase() + t.slice(1);
+};
 
 const DRAG_SENSITIVITY = 0.95; // Slight dampening to feel less "slippery"
 const ZOOM_SENSITIVITY = 0.85; // Calibrate pinch speed
@@ -42,7 +67,8 @@ const HILL_IMAGES = [
 ];
 
 export interface MapperRef {
-    handleRoomInfo: (data: any) => void;
+    handleRoomInfo: (data: GmcpRoomInfo) => void;
+    handleUpdateExits: (data: Record<string, GmcpExitInfo | number | false>) => void;
     handleTerrain: (terrain: string) => void;
     pushPendingMove: (dir: string) => void;
     handleMoveFailure: () => void;
@@ -96,6 +122,7 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
     const terrainCacheRef = useRef<Record<string, HTMLCanvasElement>>({});
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
+    const currentRoomIdRef = useRef<string | null>(null);
 
     const processMountainImage = (img: HTMLImageElement): Promise<HTMLImageElement> => {
         return new Promise((resolve) => {
@@ -297,42 +324,50 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
 
     // Handle incoming data
     useImperativeHandle(ref, () => ({
-        handleRoomInfo: (data: any) => {
+        handleRoomInfo: (data: GmcpRoomInfo) => {
             const gmcpId = data.num || data.id || data.vnum;
             if (gmcpId === undefined || gmcpId === null) return;
 
             const name = data.name || 'Unknown Room';
             const desc = data.desc || '';
             const zone = data.area || data.zone || 'Unknown Zone';
-            const freshTerrain = data.terrain || null;
+            const freshTerrain = normalizeTerrain(data.terrain || data.environment || null);
 
-            // Robust target ID tracking to prevent race conditions during discovery
-            let discoveryTargetId: string | null = null;
+            // 1. Determine Target Room ID and Direction Used
+            let targetId = null;
+            for (const key in rooms) {
+                if (rooms[key].gmcpId == gmcpId) {
+                    targetId = key;
+                    break;
+                }
+            }
 
+            const activeRoomId = currentRoomId;
+            let dirUsed: string | null = null;
+
+            // Clean expired moves
+            const now = Date.now();
+            while (pendingMovesRef.current.length > 0 && now - pendingMovesRef.current[0].time > 1500) {
+                pendingMovesRef.current.shift();
+            }
+
+            // Determine if we used a direction to get here
+            const currentRoom = activeRoomId ? rooms[activeRoomId] : null;
+            if (!currentRoom || currentRoom.gmcpId != gmcpId) {
+                const nextMove = pendingMovesRef.current.shift();
+                if (nextMove) dirUsed = nextMove.dir;
+            }
+
+            if (!targetId) {
+                targetId = generateId();
+            }
+
+            // 2. Update Rooms State
             setRooms(prevRooms => {
                 const newRooms = { ...prevRooms };
-                let existingId = null;
-                for (const key in newRooms) {
-                    if (newRooms[key].gmcpId == gmcpId) { existingId = key; break; }
-                }
+                const existingRoom = newRooms[targetId!];
 
-                const activeRoomId = currentRoomId;
-                let dirUsed = null;
-
-                const now = Date.now();
-                while (pendingMovesRef.current.length > 0 && now - pendingMovesRef.current[0].time > 1500) {
-                    pendingMovesRef.current.shift();
-                }
-
-                if (!activeRoomId || !newRooms[activeRoomId] || newRooms[activeRoomId].gmcpId != gmcpId) {
-                    const nextMove = pendingMovesRef.current.shift();
-                    if (nextMove) dirUsed = nextMove.dir;
-                }
-
-                if (!existingId) {
-                    const newId = generateId();
-                    discoveryTargetId = newId;
-
+                if (!existingRoom) {
                     let nx = 0, ny = 0, nz = 0;
                     const prevRoom = activeRoomId ? newRooms[activeRoomId] : null;
 
@@ -344,15 +379,15 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                             nz = (prevRoom.z || 0) + (d.dz || 0);
                             newRooms[prevRoom.id] = {
                                 ...prevRoom,
-                                exits: { ...prevRoom.exits, [dirUsed]: { target: newId, closed: false } }
+                                exits: { ...prevRoom.exits, [dirUsed]: { ...prevRoom.exits[dirUsed], target: targetId!, closed: false } }
                             };
                         }
                     } else if (prevRoom) {
                         nx = prevRoom.x + 0.5; ny = prevRoom.y + 0.5; nz = prevRoom.z || 0;
                     }
 
-                    newRooms[newId] = {
-                        id: newId, gmcpId, name, desc,
+                    newRooms[targetId!] = {
+                        id: targetId!, gmcpId, name, desc,
                         x: Number.isFinite(nx) ? nx : 0,
                         y: Number.isFinite(ny) ? ny : 0,
                         z: Number.isFinite(nz) ? nz : 0,
@@ -362,41 +397,109 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
 
                     if (prevRoom && dirUsed) {
                         const d = DIRS[dirUsed];
-                        if (d && d.opp) newRooms[newId].exits[d.opp] = { target: prevRoom.id, closed: false };
+                        if (d && d.opp) newRooms[targetId!].exits[d.opp] = { ...newRooms[targetId!].exits[d.opp], target: prevRoom.id, closed: false };
                     }
                 } else {
-                    discoveryTargetId = existingId;
-                    // HARDEN TERRAIN: Only update terrain if fresh data specifically for this GMCP ID came in.
-                    // This prevents prompt-detected terrain for room B from bleeding into mapped room A.
-                    const finalTerrain = (data.terrain && data.terrain !== 'Unknown Terrain') ? data.terrain : newRooms[existingId].terrain;
-                    newRooms[existingId] = { ...newRooms[existingId], name, desc, zone, terrain: finalTerrain };
+                    // Update existing room info
+                    const finalTerrain = (data.terrain || data.environment) ? normalizeTerrain(data.terrain || data.environment) : existingRoom.terrain;
+                    newRooms[targetId!] = { ...existingRoom, name, desc, zone, terrain: finalTerrain };
 
                     const prevRoom = activeRoomId ? newRooms[activeRoomId] : null;
-                    if (prevRoom && dirUsed && activeRoomId !== existingId) {
+                    if (prevRoom && dirUsed && activeRoomId !== targetId) {
                         newRooms[prevRoom.id] = {
                             ...prevRoom,
-                            exits: { ...prevRoom.exits, [dirUsed]: { target: existingId, closed: false } }
+                            exits: { ...prevRoom.exits, [dirUsed]: { ...prevRoom.exits[dirUsed], target: targetId!, closed: false } }
                         };
                         const d = DIRS[dirUsed];
                         if (d && d.opp) {
-                            newRooms[existingId] = {
-                                ...newRooms[existingId],
-                                exits: { ...newRooms[existingId].exits, [d.opp]: { target: prevRoom.id, closed: false } }
+                            newRooms[targetId!] = {
+                                ...newRooms[targetId!],
+                                exits: { ...newRooms[targetId!].exits, [d.opp]: { ...newRooms[targetId!].exits[d.opp], target: prevRoom.id, closed: false } }
                             };
                         }
                     }
                 }
+
+                // Sync GMCP Exits detailed info
+                if (data.exits) {
+                    const room = newRooms[targetId!];
+                    const updatedExits = { ...room.exits };
+                    for (const dir in data.exits) {
+                        const gmcpExit = data.exits[dir];
+                        if (gmcpExit === false) {
+                            delete updatedExits[dir];
+                            continue;
+                        }
+
+                        const gmcpDestId = typeof gmcpExit === 'number' ? gmcpExit : gmcpExit.id;
+                        let name = undefined;
+                        let flags = undefined;
+                        if (typeof gmcpExit === 'object') {
+                            name = gmcpExit.name;
+                            flags = gmcpExit.flags;
+                        }
+
+                        // Use existing internal target if we have it, otherwise look up by GMCP ID
+                        let internalTarget = updatedExits[dir]?.target;
+                        if (!internalTarget && gmcpDestId) {
+                            for (const key in newRooms) {
+                                if (newRooms[key].gmcpId == gmcpDestId) {
+                                    internalTarget = key;
+                                    break;
+                                }
+                            }
+                        }
+
+                        updatedExits[dir] = {
+                            ...updatedExits[dir],
+                            target: internalTarget,
+                            gmcpDestId,
+                            name,
+                            flags,
+                            closed: flags?.includes('closed') || false
+                        };
+                    }
+                    newRooms[targetId!] = { ...room, exits: updatedExits };
+                }
+
                 return newRooms;
             });
 
-            setTimeout(() => {
-                if (discoveryTargetId) {
-                    setCurrentRoomId(discoveryTargetId);
-                    setAutoCenter(true);
-                }
-            }, 0);
+            // 3. Update Current Room Position
+            setCurrentRoomId(targetId);
+            currentRoomIdRef.current = targetId;
+            setAutoCenter(true);
         },
-        handleTerrain: (terrain: string) => {
+        handleUpdateExits: (data: Record<string, GmcpExitInfo | number | false>) => {
+            const activeId = currentRoomIdRef.current;
+            if (!activeId) return;
+            setRooms(prev => {
+                const room = prev[activeId];
+                if (!room) return prev;
+                const newExits = { ...room.exits };
+                for (const dir in data) {
+                    const update = data[dir];
+                    if (update === false) {
+                        delete newExits[dir];
+                    } else {
+                        const gmcpDestId = typeof update === 'number' ? update : (update.id || newExits[dir]?.gmcpDestId);
+                        let name = typeof update === 'object' ? update.name : undefined;
+                        let flags = typeof update === 'object' ? update.flags : undefined;
+
+                        newExits[dir] = {
+                            ...newExits[dir],
+                            name: name || newExits[dir]?.name,
+                            flags: flags || (typeof update === 'number' ? undefined : newExits[dir]?.flags),
+                            gmcpDestId: gmcpDestId,
+                            closed: flags?.includes('closed') || false
+                        };
+                    }
+                }
+                return { ...prev, [activeId]: { ...room, exits: newExits } };
+            });
+        },
+        handleTerrain: (t: string) => {
+            const terrain = normalizeTerrain(t);
             lastDetectedTerrainRef.current = terrain;
             if (currentRoomId) {
                 setRooms(prev => {
@@ -1103,9 +1206,17 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                         });
                     }
 
-                    if (isMtn || isFor || isHil || isRiv || isRod || isCit) {
-                        const terrType = isMtn ? 'mtn' : isFor ? 'for' : isHil ? 'hil' : isRiv ? 'riv' : isRod ? 'rod' : 'cit';
-                        const cacheKey = `${room.id}_${terrType}_${s}_${neighborState}`;
+                    // --- Road / Path Connectivity (For Overlays) ---
+                    let roadState = "";
+                    [[0, -1], [0, 1], [-1, 0], [1, 0]].forEach(([dx, dy]) => {
+                        const n = rAt(dx, dy);
+                        roadState += (isRoad(n) || isCityTerrain(n)) ? "r" : "x";
+                    });
+                    const hasRoadOverlay = isRod || isCit || roadState.includes('r');
+
+                    if (isMtn || isFor || isHil || isRiv || isRod || isCit || hasRoadOverlay) {
+                        const terrType = isMtn ? 'mtn' : isFor ? 'for' : isHil ? 'hil' : isRiv ? 'riv' : isRod ? 'rod' : isCit ? 'cit' : 'std';
+                        const cacheKey = `${room.id}_${terrType}_${s}_${neighborState}_${roadState}`;
                         let cachedCvs = terrainCacheRef.current[cacheKey];
 
                         if (!cachedCvs) {
@@ -1259,12 +1370,14 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                                         }
                                         offCtx.restore();
                                     }
-                                } else if (isRod || isCit) {
+                                }
+                                if (hasRoadOverlay) {
                                     const isCobble = isCit;
-                                    const rHasN = neighborState[0] === (isCobble ? 'c' : 'o');
-                                    const rHasS = neighborState[1] === (isCobble ? 'c' : 'o');
-                                    const rHasW = neighborState[2] === (isCobble ? 'c' : 'o');
-                                    const rHasE = neighborState[3] === (isCobble ? 'c' : 'o');
+                                    const rHasN = roadState[0] === 'r';
+                                    const rHasS = roadState[1] === 'r';
+                                    const rHasW = roadState[2] === 'r';
+                                    const rHasE = roadState[3] === 'r';
+
                                     const drawP = (x1: number, y1: number, x2: number, y2: number, fCX?: number, fCY?: number) => {
                                         const dSp = isCobble ? 6 : 18;
                                         const driftX = (getSeed(room.x * 0.91, room.y * 0.73) - 0.5) * (s * 0.1);
@@ -1315,9 +1428,78 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                         const rS = getSeed(room.x, room.y); const lSides = [!hasN, !hasE, !hasS, !hasW]; const cPts = [pts.ne, pts.se, pts.sw, pts.nw];
                         ctx.strokeStyle = 'rgba(160, 160, 160, 0.6)'; ctx.lineWidth = 1.2; ctx.lineCap = 'round';
                         for (let i = 0; i < 4; i++) {
-                            if (!lSides[i]) continue;
+                            const dir = ['n', 'e', 's', 'w'][i];
+                            const exit = room.exits[dir];
+                            const doorFlags = exit?.flags || [];
+                            const doorStatus = exit?.closed ? 'closed' : (doorFlags.includes('broken') ? 'broken' : (exit?.name ? 'open' : null));
+
                             const pS = cPts[(i + 3) % 4], pE = cPts[i];
-                            ctx.beginPath(); ctx.moveTo(rx + pS.x, ry + pS.y); ctx.lineTo(rx + pE.x, ry + pE.y); ctx.stroke();
+                            if (lSides[i]) {
+                                // NO EXIT: Draw wall
+                                ctx.beginPath(); ctx.moveTo(rx + pS.x, ry + pS.y); ctx.lineTo(rx + pE.x, ry + pE.y); ctx.stroke();
+                            } else if (doorStatus) {
+                                // EXIT WITH DOOR: Draw sliding-door thematic marker
+                                ctx.save();
+                                const mx = (pS.x + pE.x) / 2, my = (pS.y + pE.y) / 2;
+                                const hx = (pE.x - pS.x) / 2, hy = (pE.y - pS.y) / 2; // Half-leaf vector
+
+                                if (doorStatus === 'closed') {
+                                    // Two panels meeting at the center
+                                    ctx.strokeStyle = '#2d3436'; ctx.lineWidth = 3.5;
+                                    ctx.beginPath();
+                                    ctx.moveTo(rx + pS.x, ry + pS.y); ctx.lineTo(rx + mx, ry + my);
+                                    ctx.moveTo(rx + pE.x, ry + pE.y); ctx.lineTo(rx + mx, ry + my);
+                                    ctx.stroke();
+
+                                    // Center Latch/Knobs
+                                    ctx.fillStyle = '#636e72'; ctx.beginPath(); ctx.arc(rx + mx - 1.5, ry + my, 1.5, 0, Math.PI * 2); ctx.fill();
+                                    ctx.beginPath(); ctx.arc(rx + mx + 1.5, ry + my, 1.5, 0, Math.PI * 2); ctx.fill();
+                                } else if (doorStatus === 'open') {
+                                    // Sliding doors: panels retracted into the walls
+                                    ctx.strokeStyle = '#636e72'; ctx.lineWidth = 2.5;
+
+                                    // Draw the panels slightly offset into the "wall" area
+                                    const offset = 1; // Pushed back into the wall
+                                    const length = 0.35; // How much of the panel is still visible/peeking out
+
+                                    ctx.beginPath();
+                                    // Panel 1 (retracted towards pS)
+                                    ctx.moveTo(rx + pS.x, ry + pS.y);
+                                    ctx.lineTo(rx + pS.x + hx * length, ry + pS.y + hy * length);
+
+                                    // Panel 2 (retracted towards pE)
+                                    ctx.moveTo(rx + pE.x, ry + pE.y);
+                                    ctx.lineTo(rx + pE.x - hx * length, ry + pE.y - hy * length);
+                                    ctx.stroke();
+
+                                    // Guide rail / Threshold
+                                    ctx.strokeStyle = 'rgba(120, 120, 120, 0.15)'; ctx.lineWidth = 1;
+                                    ctx.beginPath(); ctx.moveTo(rx + pS.x, ry + pS.y); ctx.lineTo(rx + pE.x, ry + pE.y); ctx.stroke();
+                                } else if (doorStatus === 'broken') {
+                                    // Jammed/Shattered sliding panels
+                                    ctx.strokeStyle = '#ff7675'; ctx.lineWidth = 2;
+                                    const drawJammed = (x1: number, y1: number, x2: number, y2: number) => {
+                                        ctx.beginPath(); ctx.moveTo(rx + x1, ry + y1);
+                                        const segments = 3;
+                                        for (let j = 1; j <= segments; j++) {
+                                            const t = j / segments;
+                                            const oj = (getSeed(room.x, i + j) - 0.5) * 4;
+                                            ctx.lineTo(rx + x1 + (x2 - x1) * t + oj, ry + y1 + (y2 - y1) * t + oj);
+                                        }
+                                        ctx.stroke();
+                                    };
+                                    // Panels stuck halfway/jagged
+                                    drawJammed(pS.x, pS.y, pS.x + hx * 0.6, pS.y + hy * 0.6);
+                                    drawJammed(pE.x, pE.y, pE.x - hx * 0.4, pE.y - hy * 0.4);
+
+                                    // Debris
+                                    ctx.fillStyle = 'rgba(255, 118, 117, 0.3)';
+                                    for (let d = 0; d < 5; d++) {
+                                        ctx.beginPath(); ctx.arc(rx + mx + (getSeed(room.x, d) - 0.5) * 12, ry + my + (getSeed(room.y, d) - 0.5) * 12, 1, 0, Math.PI * 2); ctx.fill();
+                                    }
+                                }
+                                ctx.restore();
+                            }
                         }
 
                         if (selectedRoomIds.has(room.id)) {
@@ -1581,12 +1763,15 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
         resizeObserver.observe(parent);
         window.addEventListener('resize', handleResizeAction);
 
+        // Immediate sync upon mount/unminimize
+        handleResizeAction();
+
         return () => {
             if (resizeRaf) cancelAnimationFrame(resizeRaf);
             resizeObserver.disconnect();
             window.removeEventListener('resize', handleResizeAction);
         };
-    }, [currentRoomId, rooms, centerCameraOn, drawMap]);
+    }, [currentRoomId, rooms, centerCameraOn, drawMap, isMinimized]);
 
     if (isMinimized) {
         return (

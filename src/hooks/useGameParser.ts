@@ -326,12 +326,14 @@ export function useGameParser({
         const pMatch = cleanLine.match(mumePromptRegex);
 
         const isCapturing = captureStage.current !== 'none' && isDrawerCapture.current;
+        const isHeaderLine = lower.includes('you are carrying:') || lower.includes('you are using:');
+        const shouldShowInLog = !isCapturing || isHeaderLine;
 
         if (pMatch) {
             const messagePart = pMatch[2];
-            if (messagePart && !isCapturing) addMessage('game', messagePart);
+            if (messagePart && shouldShowInLog) addMessage('game', messagePart);
         } else {
-            if (!isCapturing) addMessage('game', cleanLine);
+            if (shouldShowInLog) addMessage('game', cleanLine);
         }
     }, [addMessage, btn, isInventoryOpen, isCharacterOpen,
         setWeather, setIsFoggy, setStats, setRumble, setHitFlash, setDeathStage,

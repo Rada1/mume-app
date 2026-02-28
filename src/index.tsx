@@ -6,7 +6,7 @@ import './index.css';
 import {
     MessageType, LightingType, WeatherType, Direction, DeathStage,
     Message, GameStats, CustomButton, SoundTrigger, PopoverState, SavedSettings, TeleportTarget, SwipeDirection,
-    GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant
+    GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo
 } from './types';
 import {
     DEFAULT_BG, DEATH_IMG, DEFAULT_URL, FX_THRESHOLD
@@ -59,6 +59,7 @@ import { SpatButtons } from './components/SpatButtons';
 
 interface TelnetCallbacks {
     onRoomInfo: (data: any) => void;
+    onRoomUpdateExits: (data: any) => void;
     onCharVitals: (data: any) => void;
     onRoomPlayers: (data: any) => void;
     onRoomItems: (data: any) => void;
@@ -374,6 +375,7 @@ const MudClient = () => {
 
         callbacksRef.current = {
             onRoomInfo: (data: GmcpRoomInfo) => notifyMapper(ref => ref.current?.handleRoomInfo(data)),
+            onRoomUpdateExits: (data: Record<string, GmcpExitInfo | false>) => notifyMapper(ref => ref.current?.handleUpdateExits(data)),
             onCharVitals: (data: GmcpCharVitals) => { if (data.terrain) notifyMapper(ref => ref.current?.handleTerrain(data.terrain)); },
             onRoomPlayers: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => {
                 let players: string[] = [];
@@ -433,9 +435,10 @@ const MudClient = () => {
         initAudio();
 
         telnet.connect({
-            onRoomInfo: (data) => callbacksRef.current.onRoomInfo && callbacksRef.current.onRoomInfo(data),
-            onCharVitals: (data) => callbacksRef.current.onCharVitals && callbacksRef.current.onCharVitals(data),
-            onRoomPlayers: (data) => callbacksRef.current.onRoomPlayers && callbacksRef.current.onRoomPlayers(data),
+            onRoomInfo: (data) => callbacksRef.current?.onRoomInfo && callbacksRef.current.onRoomInfo(data),
+            onRoomUpdateExits: (data) => callbacksRef.current?.onRoomUpdateExits && callbacksRef.current.onRoomUpdateExits(data),
+            onCharVitals: (data) => callbacksRef.current?.onCharVitals && callbacksRef.current.onCharVitals(data),
+            onRoomPlayers: (data) => callbacksRef.current?.onRoomPlayers && callbacksRef.current.onRoomPlayers(data),
             onAddPlayer: (data) => callbacksRef.current?.onAddPlayer && callbacksRef.current.onAddPlayer(data),
             onRemovePlayer: (data) => callbacksRef.current?.onRemovePlayer && callbacksRef.current.onRemovePlayer(data),
             onRoomItems: (data) => callbacksRef.current?.onRoomItems && callbacksRef.current.onRoomItems(data),
@@ -903,7 +906,7 @@ const MudClient = () => {
                             border: (btn.isEditMode && btn.dragState?.id === 'mapper') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
                             borderRadius: '12px',
                             overflow: 'visible',
-                            zIndex: 300,
+                            zIndex: 1600,
                             boxShadow: (btn.isEditMode && btn.dragState?.id === 'mapper') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
                         }}
                         onPointerDown={(e) => {
@@ -928,7 +931,7 @@ const MudClient = () => {
                         border: (btn.isEditMode && btn.dragState?.id === 'stats') ? '2px dashed #ffff00' : (btn.isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
                         padding: btn.isEditMode ? '10px' : undefined,
                         borderRadius: '20px',
-                        zIndex: 500,
+                        zIndex: 1600,
                         display: isMobile ? 'none' : 'flex',
                         pointerEvents: 'auto'
                     }}
@@ -1172,7 +1175,7 @@ const MudClient = () => {
                             triggerHaptic(20);
                             if (!isCharacterOpen) {
                                 setStatsHtml(''); // Clear old
-                                executeCommand('stat', false, true, true);
+                                executeCommand('stat', false, true, true, true);
                             }
                             setIsCharacterOpen(!isCharacterOpen);
                         }}
@@ -1192,8 +1195,8 @@ const MudClient = () => {
                                 setIsRightDrawerOpen(false);
                             } else {
                                 setInventoryHtml(''); setEqHtml('');
-                                executeCommand('inventory', false, true, true);
-                                setTimeout(() => executeCommand('eq', false, true, true), 300);
+                                executeCommand('inventory', false, true, true, true);
+                                setTimeout(() => executeCommand('eq', false, true, true, true), 300);
                                 setIsRightDrawerOpen(true);
                             }
                         }}

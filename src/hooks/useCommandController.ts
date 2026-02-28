@@ -139,15 +139,17 @@ export function useCommandController(deps: CommandControllerDeps) {
             return;
         }
 
-        if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'stat' || lowerCmd === 'eq' || lowerCmd === 'equipment') {
-            isDrawerCapture.current = fromDrawer;
+        isDrawerCapture.current = fromDrawer;
+
+        if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i' || lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'eq' || lowerCmd === 'equipment') {
+            // isDrawerCapture already set above
         }
 
-        if (lowerCmd === 'inventory' || lowerCmd === 'inv') {
+        if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
             isWaitingForInv.current = true;
             captureStage.current = 'none';
             setInventoryHtml('');
-        } else if (lowerCmd === 'stat') {
+        } else if (lowerCmd === 'stat' || lowerCmd === 'st') {
             isWaitingForStats.current = true;
             captureStage.current = 'none';
             setStatsHtml('');
@@ -305,10 +307,10 @@ export function useCommandController(deps: CommandControllerDeps) {
                     // Slight delay to allow MUD to process the change
                     setTimeout(() => {
                         if (button.setId === 'inventorylist' || button.command.includes('remove')) {
-                            executeCommand('inv', false, true, true);
+                            executeCommand('inv', false, true, true, true);
                         }
                         if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold') || button.command.includes('wield')) {
-                            executeCommand('eq', false, true, true);
+                            executeCommand('eq', false, true, true, true);
                         }
                     }, 500);
                 }
@@ -344,8 +346,8 @@ export function useCommandController(deps: CommandControllerDeps) {
         else if (dir === 'left') {
             // Swipe left (right to left) opens inventory/equipment
             setInventoryHtml(''); setEqHtml('');
-            executeCommand('inventory', false, true, true);
-            setTimeout(() => executeCommand('eq', false, true, true), 300);
+            executeCommand('inventory', false, true, true, true);
+            setTimeout(() => executeCommand('eq', false, true, true, true), 300);
             setIsRightDrawerOpen(true);
         }
     }, [isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen, executeCommand, setStatsHtml, setInventoryHtml, setEqHtml]);

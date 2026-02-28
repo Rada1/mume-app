@@ -200,7 +200,8 @@ const Header: React.FC<HeaderProps> = ({
 
                                         <div
                                             className={`dropdown-item ${isEditMode ? 'active' : ''}`}
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 setIsEditMode(!isEditMode);
                                                 setIsMenuOpen(false);
                                             }}
@@ -213,7 +214,8 @@ const Header: React.FC<HeaderProps> = ({
                                             <>
                                                 <div
                                                     className="dropdown-item"
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
                                                         onOpenSetManager();
                                                         setIsMenuOpen(false);
                                                     }}
@@ -223,7 +225,8 @@ const Header: React.FC<HeaderProps> = ({
                                                 </div>
                                                 <div
                                                     className="dropdown-item"
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
                                                         if (onResetMap) onResetMap();
                                                         setIsMenuOpen(false);
                                                     }}
@@ -236,7 +239,8 @@ const Header: React.FC<HeaderProps> = ({
 
                                         <div
                                             className="dropdown-item"
-                                            onClick={() => {
+                                            onClick={(e) => {
+                                                e.stopPropagation();
                                                 setIsSettingsOpen(true);
                                                 setIsMenuOpen(false);
                                             }}

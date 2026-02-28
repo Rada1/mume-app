@@ -182,6 +182,12 @@ export interface GmcpCharVitals {
     terrain?: string | null;
 }
 
+export interface GmcpExitInfo {
+    name?: string;
+    flags?: string[];
+    id?: number;
+}
+
 export interface GmcpRoomInfo {
     num?: number;
     id?: number;
@@ -191,7 +197,8 @@ export interface GmcpRoomInfo {
     area?: string;
     zone?: string;
     terrain?: string | null;
-    exits?: Record<string, any>;
+    environment?: string | null;
+    exits?: Record<string, GmcpExitInfo | number | false>;
 }
 
 export interface GmcpOccupant {

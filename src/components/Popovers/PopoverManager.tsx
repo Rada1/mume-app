@@ -113,7 +113,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }
 
     return (
-        <div className="popover-menu" ref={popoverRef} style={{ position: 'fixed', left: popoverState.x, top: popoverState.y, zIndex: 9999 }}>
+        <div className="popover-menu" ref={popoverRef} style={{ position: 'fixed', left: popoverState.x, top: popoverState.y, zIndex: 25000 }}>
             {popoverState.type === 'teleport-save' && (() => {
                 let labelInput: HTMLInputElement | null = null;
                 const doSave = () => {
