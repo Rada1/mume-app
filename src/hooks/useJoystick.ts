@@ -17,6 +17,7 @@ export const useJoystick = () => {
     const longPressTimer = useRef<NodeJS.Timeout | null>(null);
 
     const handleJoystickStart = useCallback((e: React.PointerEvent) => {
+        if (e.cancelable) e.preventDefault();
         setJoystickActive(true);
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
@@ -56,6 +57,14 @@ export const useJoystick = () => {
         const tiltX = -(dy / maxDist) * 25, tiltY = (dx / maxDist) * 25, transX = (dx / maxDist) * 15, transY = (dy / maxDist) * 15;
         joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${transX}px, ${transY}px, 0)`;
 
+        // Update CSS variables for perimeter highlighting
+        const container = joystickKnobRef.current.closest('.joystick-container') as HTMLElement;
+        if (container) {
+            let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+            container.style.setProperty('--joy-angle', `${angle}deg`);
+            container.style.setProperty('--joy-dist', `${Math.min(1, dist / maxDist)}`);
+        }
+
         // Update current direction state
         if (dist < 20) {
             setCurrentDir(null);
@@ -91,6 +100,12 @@ export const useJoystick = () => {
         if (joystickKnobRef.current) {
             joystickKnobRef.current.classList.add('resetting');
             joystickKnobRef.current.style.transform = '';
+
+            const container = joystickKnobRef.current.closest('.joystick-container') as HTMLElement;
+            if (container) {
+                container.style.setProperty('--joy-dist', '0');
+            }
+
             setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
         }
 
@@ -120,7 +135,8 @@ export const useJoystick = () => {
         return false;
     }, [joystickActive, isJoystickConsumed, isTargetModifierActive]);
 
-    const handleNavStart = useCallback((dir: 'up' | 'down') => {
+    const handleNavStart = useCallback((dir: 'up' | 'down', e: React.PointerEvent) => {
+        if (e.cancelable) e.preventDefault();
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
         setCurrentDir(dir === 'up' ? 'u' : 'd');

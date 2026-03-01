@@ -224,8 +224,10 @@ export function useCommandController(deps: CommandControllerDeps) {
             btn.setEditingButtonId(button.id);
         }
         else {
-            if (popoverState) setPopoverState(null);
             const targetEl = (e.currentTarget && (e.currentTarget as any).classList) ? (e.currentTarget as HTMLElement) : null;
+            if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'teleport-manage'].includes(button.actionType || '')) {
+                setPopoverState(null);
+            }
             if (targetEl) {
                 targetEl.classList.remove('btn-glow-active');
                 void targetEl.offsetWidth;

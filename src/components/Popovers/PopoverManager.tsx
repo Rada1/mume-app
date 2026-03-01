@@ -238,7 +238,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                                 setPopoverState({ ...popoverState, setId: 'setmanager' });
                             }
                         }}>
-                        {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist' || popoverState.setId === 'target' || popoverState.setId === 'inlineplayer' ? `Actions: ${popoverState.context} ▾` : (popoverState.setId === 'setmanager' ? 'Select Button Set' : `Set: ${popoverState.setId} ▾`)}
+                        {popoverState.setId === 'player' || popoverState.setId === 'selection' || popoverState.setId === 'object' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist' || popoverState.setId === 'target' || popoverState.setId === 'inlineplayer' || popoverState.setId === 'social list' ? `Actions: ${popoverState.context} ▾` : (popoverState.setId === 'setmanager' ? 'Select Button Set' : `Set: ${popoverState.setId} ▾`)}
                     </div>
 
                     {(popoverState.setId === 'selection' || popoverState.setId === 'inventorylist' || popoverState.setId === 'equipmentlist') && (

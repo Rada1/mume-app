@@ -75,6 +75,7 @@ const MudClient = () => {
     // isNoviceMode → GameContext
     const {
         isNoviceMode, setIsNoviceMode,
+        theme, setTheme,
         isMmapperMode, setIsMmapperMode,
         status, setStatus,
         target, setTarget,
@@ -585,6 +586,11 @@ const MudClient = () => {
         // We MUST unlock immediately so heartbeat messages don't snap them back while they try to move.
         isLockedToBottomRef.current = false;
 
+        // If tapping an interactive element in the log, prevent focus shift to avoid opening keyboard
+        if ((e.target as HTMLElement).closest('.inline-btn') && e.cancelable) {
+            e.preventDefault();
+        }
+
         // Also kill any active smooth-scroll animation so it doesn't fight the user's focus
         if (scrollAnimationRef.current) {
             cancelAnimationFrame(scrollAnimationRef.current);
@@ -790,7 +796,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${isMobile ? 'is-mobile' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''}`}
             style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
             onClick={() => {
                 if (btn.isEditMode) {
@@ -801,7 +807,10 @@ const MudClient = () => {
         >
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
 
-                <div className="background-layer" style={{ backgroundImage: `url(${bgImage})` }} />
+                <div className="background-layer" style={{
+                    backgroundImage: bgImage ? `url(${bgImage})` : 'none',
+                    display: bgImage ? 'block' : 'none'
+                }} />
                 <EnvironmentEffects
                     lighting={lighting}
                     weather={weather}
@@ -940,7 +949,17 @@ const MudClient = () => {
                     }}
                 >
                     {btn.isEditMode && <div className="resize-handle" onPointerDown={(e) => handleDragStart(e, 'stats', 'cluster-resize')} />}
-                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} onClick={() => executeCommand('score')} onWimpyChange={handleWimpyChange} />
+                    <StatBars
+                        stats={stats}
+                        hpRowRef={hpRowRef}
+                        manaRowRef={manaRowRef}
+                        moveRowRef={moveRowRef}
+                        onPointerDown={(e) => {
+                            if (e.cancelable) e.preventDefault();
+                        }}
+                        onClick={() => executeCommand('score')}
+                        onWimpyChange={handleWimpyChange}
+                    />
                 </div>
 
                 <div className="custom-buttons-layer" ref={customButtonsLayerRef}>
@@ -1000,6 +1019,7 @@ const MudClient = () => {
                         }}
                         onPointerDown={(e) => {
                             if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
+                            else if (e.cancelable) e.preventDefault();
                         }}
                     >
                         <Joystick
@@ -1068,6 +1088,7 @@ const MudClient = () => {
                         }}
                         onPointerDown={(e) => {
                             if (btn.isEditMode) handleDragStart(e, 'xbox', 'cluster');
+                            else if (e.cancelable) e.preventDefault();
                         }}
                     >
                         {btn.isEditMode && <div className="resize-handle" style={{ top: '-10px', right: '-10px' }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'xbox', 'cluster-resize'); }} />}

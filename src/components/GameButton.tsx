@@ -53,6 +53,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     className = '',
     useDefaultPositioning = true
 }) => {
+    const [activeDir, setActiveDir] = React.useState<SwipeDirection | null>(null);
     // We use some internal state pointers on the element to avoid complex React state for high-frequency events
     const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +80,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     return (
         <div
             ref={buttonRef}
-            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${className}`}
+            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${className}`}
             data-id={button.id}
             style={{
                 left: useDefaultPositioning ? `${button.style.x}%` : undefined,
@@ -94,39 +95,62 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 opacity: (button.isVisible || isEditMode) ? 1 : 0,
                 pointerEvents: (button.isVisible || isEditMode) ? 'auto' : 'none',
                 boxShadow: button.trigger?.enabled && button.isVisible ? `0 0 20px ${getGlowColor()}` : 'none',
-                zIndex: isSelected ? 1001 : (isFloating ? 1000 : 100)
+                zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100))
             } as any}
             onPointerDown={(e) => {
                 if (isEditMode) {
                     handleDragStart(e, button.id, 'move');
                 } else {
                     // Prevent focus loss from input when tapping buttons
-                    if (e.cancelable) e.preventDefault();
+                    if (e.cancelable) {
+                        e.preventDefault();
+                    }
 
                     const el = e.currentTarget as any;
                     el._startX = e.clientX;
                     el._startY = e.clientY;
+                    el._startTime = Date.now();
                     el._maxDist = 0;
                     el._didFire = false;
                     el._didLong = false;
                     wasDraggingRef.current = false;
 
-                    // Long press for submenu/assignment
+                    // Long press for submenu/assignment or auto-repeat
                     el._lpt = setTimeout(() => {
                         if (el._maxDist < 15) {
-                            el._didFire = true;
-                            el._didLong = true;
-                            triggerHaptic(50);
-                            const rect = el.getBoundingClientRect();
-
                             const action = button.longActionType || 'menu';
                             const targetSetId = button.longCommand || button.setId || 'main';
 
-                            if (action === 'command' && button.longCommand) {
-                                executeCommand(button.longCommand);
+                            if (action === 'command') {
+                                // For 'command' long-press, we start auto-repeat
+                                el._repeatInterval = setInterval(() => {
+                                    const preview = getButtonCommand(button, 0, 0, undefined, 0, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, true);
+                                    if (preview?.cmd) {
+                                        executeCommand(preview.cmd);
+                                        if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
+                                        triggerHaptic(10);
+                                    }
+                                }, 350);
+
+                                // Fire the first one immediately
+                                const firstPreview = getButtonCommand(button, 0, 0, undefined, 0, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, true);
+                                if (firstPreview?.cmd) {
+                                    executeCommand(firstPreview.cmd);
+                                    if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
+                                    triggerHaptic(50);
+                                }
+                                el._didFire = true;
+                                el._didLong = true;
                             } else if (action === 'nav' && button.longCommand) {
                                 setActiveSet(button.longCommand);
+                                el._didFire = true;
+                                el._didLong = true;
+                                triggerHaptic(50);
                             } else {
+                                el._didFire = true;
+                                el._didLong = true;
+                                triggerHaptic(50);
+                                const rect = el.getBoundingClientRect();
                                 setPopoverState({
                                     x: rect.left,
                                     y: rect.top,
@@ -149,8 +173,10 @@ export const GameButton: React.FC<GameButtonProps> = ({
                         }
                     }, 200);
 
-                    // Set initial ray color
+                    // Set initial ray and cancel states
                     el.style.setProperty('--ray-color', button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
+                    el.style.setProperty('--cancel-opacity', '0');
+                    el.style.setProperty('--cancel-scale', '0');
                 }
             }}
             onPointerMove={(e) => {
@@ -161,6 +187,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 el._maxDist = Math.max(el._maxDist || 0, dist);
+
+                if (dist > 15 && el._repeatInterval) {
+                    clearInterval(el._repeatInterval);
+                    el._repeatInterval = null;
+                }
 
                 if (dist > 10) wasDraggingRef.current = true;
 
@@ -173,8 +204,10 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     }
                 }
 
-                const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, joystick.isActive);
+                const isLong = (Date.now() - el._startTime) > 500;
+                const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
                 setCommandPreview(preview?.cmd || null);
+                setActiveDir(preview?.dir || null);
 
                 // Update the Dynamic Compass Ray
                 const angle = Math.atan2(dy, dx) * 180 / Math.PI;
@@ -188,6 +221,21 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
                 el.style.setProperty('--ray-length', `${dist + 50}px`);
                 el.style.setProperty('--ray-opacity', dist > 20 ? '1' : '0');
+
+                // Cancel Indicator Logic
+                if (el._maxDist > 20) {
+                    el.style.setProperty('--cancel-opacity', '1');
+                    if (dist < 18) {
+                        el.style.setProperty('--cancel-scale', '1.2');
+                        el.style.setProperty('--ray-opacity', '0.3');
+                    } else {
+                        el.style.setProperty('--cancel-scale', '1');
+                        el.style.setProperty('--ray-opacity', '1');
+                    }
+                } else {
+                    el.style.setProperty('--cancel-opacity', '0');
+                    el.style.setProperty('--cancel-scale', '0.5');
+                }
             }}
             onPointerUp={(e) => {
                 const el = e.currentTarget as any;
@@ -195,14 +243,19 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                 clearTimeout(el._lpt); el._lpt = null;
                 clearTimeout(el._lst); el._lst = null;
+                if (el._repeatInterval) { clearInterval(el._repeatInterval); el._repeatInterval = null; }
                 setHeldButton(null);
                 setCommandPreview(null);
+                setActiveDir(null);
                 el.style.setProperty('--ray-opacity', '0');
+                el.style.setProperty('--cancel-opacity', '0');
+                el.style.setProperty('--cancel-scale', '0');
 
                 if (el._didFire) { el._didFire = false; return; }
 
                 const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                const previewCmd = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target);
+                const isLong = (Date.now() - el._startTime) > 500;
+                const previewCmd = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
 
                 if (previewCmd) {
                     // Unified release: Execute whatever direction/command was being previewed
@@ -235,6 +288,18 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
                 }
             }}
+            onPointerCancel={(e) => {
+                const el = e.currentTarget as any;
+                clearTimeout(el._lpt); el._lpt = null;
+                clearTimeout(el._lst); el._lst = null;
+                if (el._repeatInterval) { clearInterval(el._repeatInterval); el._repeatInterval = null; }
+                setHeldButton(null);
+                setCommandPreview(null);
+                setActiveDir(null);
+                el.style.setProperty('--ray-opacity', '0');
+                el.style.setProperty('--cancel-opacity', '0');
+                el.style.setProperty('--cancel-scale', '0');
+            }}
             onClick={(e) => {
                 e.stopPropagation();
                 if (isEditMode) {
@@ -243,7 +308,24 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 }
             }}
         >
+            <div className="swipe-wheel-container">
+                {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
+                    const cmd = button.swipeCommands?.[d as SwipeDirection] || button.longSwipeCommands?.[d as SwipeDirection];
+                    return (
+                        <div
+                            key={d}
+                            className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
+                            style={{ transform: `rotate(${i * 45}deg)`, opacity: cmd ? 1 : 0.35 }}
+                        >
+                            <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
+                                {cmd || d.toUpperCase()}
+                            </span>
+                        </div>
+                    );
+                })}
+            </div>
             <div className="swipe-ray" />
+            <div className="cancel-indicator">Cancel</div>
             <div className="button-label">{button.label}</div>
 
             {isEditMode && (

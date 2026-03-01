@@ -2,15 +2,75 @@
 @import url('https://fonts.cdnfonts.com/css/aniron');
 
 :root {
-  --bg-overlay: rgba(0, 0, 0, 0.75);
-  /* Darker default overlay */
+  /* Common variables */
   --accent: #4ade80;
+  --accent-rgb: 74, 222, 128;
   --map-accent: #fcd34d;
-  /* Yellow */
+  --font-main: 'Space Mono', monospace;
+
+  /* Dark Mode (Default) */
+  --bg-app: #000000;
+  --bg-panel: rgba(20, 20, 25, 0.85);
+  --bg-overlay: rgba(0, 0, 0, 0.75);
   --text-primary: #f0f0f0;
   --text-dim: #9ca3af;
   --text-faded: #4b5563;
-  --font-main: 'Space Mono', monospace;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --input-bg: rgba(0, 0, 0, 0.4);
+  --header-bg: rgba(0, 0, 0, 0.6);
+
+  /* ANSI Colors (Dark Mode Defaults) */
+  --ansi-black: #000000;
+  --ansi-red: #ff5555;
+  --ansi-green: #55ff55;
+  --ansi-yellow: #ffff55;
+  --ansi-blue: #5555ff;
+  --ansi-magenta: #ff55ff;
+  --ansi-cyan: #55ffff;
+  --ansi-white: #bbbbbb;
+  --ansi-bright-black: #555555;
+  --ansi-bright-red: #ff5555;
+  --ansi-bright-green: #55ff55;
+  --ansi-bright-yellow: #ffff55;
+  --ansi-bright-blue: #5555ff;
+  --ansi-bright-magenta: #ff55ff;
+  --ansi-bright-cyan: #55ffff;
+  --ansi-bright-white: #ffffff;
+}
+
+.light-mode {
+  --bg-app: #f5f5f7;
+  --bg-panel: rgba(255, 255, 255, 0.9);
+  --bg-overlay: rgba(255, 255, 255, 0.6);
+  --text-primary: #1d1d1f;
+  --text-dim: #424245;
+  --text-faded: #86868b;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --header-bg: rgba(255, 255, 255, 0.7);
+  --accent: #007aff;
+  /* Blue accent for light mode looks more premium */
+  --accent-rgb: 0, 122, 128;
+  --map-accent: #0066cc;
+
+  /* ANSI Colors Override for Light Mode */
+  --ansi-black: #000000;
+  --ansi-red: #d70000;
+  --ansi-green: #008700;
+  --ansi-yellow: #875f00;
+  --ansi-blue: #0000ee;
+  --ansi-magenta: #af00af;
+  --ansi-cyan: #0087af;
+  --ansi-white: #444444;
+  /* Dark grey for white text on light bg */
+  --ansi-bright-black: #666666;
+  --ansi-bright-red: #ff0000;
+  --ansi-bright-green: #00d700;
+  --ansi-bright-yellow: #af8700;
+  --ansi-bright-blue: #5fafff;
+  --ansi-bright-magenta: #d700d7;
+  --ansi-bright-cyan: #00afff;
+  --ansi-bright-white: #000000;
 }
 
 * {
@@ -63,7 +123,7 @@ html {
   width: 100%;
   overflow: hidden;
   font-family: var(--font-main);
-  background: #000;
+  background: var(--bg-app);
   color: var(--text-primary);
   user-select: none;
   overscroll-behavior: none;
@@ -79,7 +139,7 @@ html {
   height: calc(var(--vh, 1vh) * 100);
   display: flex;
   flex-direction: column;
-  background: #000;
+  background: var(--bg-app);
   perspective: 1200px;
 }
 
@@ -87,8 +147,8 @@ html {
   display: none;
   width: 100%;
   height: 200px;
-  background: rgba(0, 0, 0, 0.4);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--header-bg);
+  border-top: 1px solid var(--border-color);
   position: relative;
   flex-shrink: 0;
   z-index: 60;
@@ -99,8 +159,8 @@ html {
     display: flex;
     flex-direction: column;
     height: 220px;
-    background: #000;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-app);
+    border-top: 1px solid var(--border-color);
     padding-bottom: env(safe-area-inset-bottom, 0px);
     transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: height, transform;
@@ -108,6 +168,7 @@ html {
     transform: translateY(0);
     position: relative;
     overflow: visible;
+    touch-action: none;
   }
 
   .input-area {
@@ -173,11 +234,11 @@ html {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+    background: var(--bg-panel);
     backdrop-filter: blur(1px);
     -webkit-backdrop-filter: blur(1px);
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-dim);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -191,7 +252,7 @@ html {
   }
 
   .xbox-btn:active {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(var(--accent-rgb), 0.2);
     transform: scale(0.92);
   }
 
@@ -239,8 +300,8 @@ html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
     /* Same as others */
   }
 
@@ -253,8 +314,8 @@ html {
       display: flex;
       flex-direction: column;
       height: 220px;
-      background: #000;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: var(--bg-app);
+      border-top: 1px solid var(--border-color);
       padding-bottom: env(safe-area-inset-bottom, 0px);
       transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       will-change: height, transform;
@@ -357,6 +418,7 @@ html {
 .input-area,
 .custom-btn {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  touch-action: none;
 }
 
 
@@ -402,6 +464,7 @@ html {
 
 .custom-btn {
   transition: transform 0.2s ease, filter 0.2s ease, opacity 0.5s ease, left 0.3s ease, top 0.3s ease;
+  touch-action: none;
 }
 
 
@@ -1346,11 +1409,13 @@ canvas.map-canvas {
 
 .message-log {
   flex: 1;
-  z-index: 30;
   overflow-y: auto;
-  scroll-behavior: auto;
-  /* Changed to auto for better mobile responsiveness */
-  overflow-anchor: auto !important;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-primary);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
   touch-action: pan-y;
@@ -1819,6 +1884,34 @@ select.setting-input {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(1px);
   -webkit-backdrop-filter: blur(1px);
+  overflow: hidden;
+}
+
+.joystick-base-highlight {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: conic-gradient(from calc(var(--joy-angle, 0deg) + 90deg - 25deg),
+      transparent 0deg,
+      var(--accent) 25deg,
+      transparent 50deg);
+  opacity: calc(var(--joy-dist, 0) * 0.9);
+  filter: blur(2px);
+  mix-blend-mode: screen;
+  transition: opacity 0.15s ease;
+  z-index: 1;
+}
+
+.joystick-base::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: rgba(10, 10, 10, 0.4);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .joystick-knob {
@@ -2014,6 +2107,33 @@ select.setting-input {
   box-shadow: 0 0 15px var(--ray-color, var(--accent));
   transition: opacity 0.1s ease, transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
   border-radius: 99px;
+}
+
+.cancel-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  background: rgba(220, 38, 38, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transform: translate(-50%, -50%) scale(var(--cancel-scale, 0));
+  opacity: var(--cancel-opacity, 0);
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 25px rgba(220, 38, 38, 0.6);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .custom-btn:active {
@@ -2992,10 +3112,8 @@ input:checked+.switch-slider .switch-label.off {
   position: absolute;
   width: 0;
   height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   pointer-events: none;
+  z-index: 10;
 }
 
 .dial-menu-ring {
@@ -3008,9 +3126,9 @@ input:checked+.switch-slider .switch-label.off {
 .dial-selection-center {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
-  background: rgba(0, 0, 0, 0.6);
+  width: 110px;
+  height: 110px;
+  background: rgba(10, 10, 10, 0.85);
   border: 2px solid var(--accent, rgba(255, 255, 255, 0.2));
   border-radius: 50%;
   display: flex;
@@ -3021,9 +3139,58 @@ input:checked+.switch-slider .switch-label.off {
   padding: 10px;
   box-sizing: border-box;
   animation: dial-center-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.05);
   pointer-events: none;
   z-index: 5;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.dial-center-highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: dial-content-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dial-center-icon {
+  width: 52px;
+  height: 52px;
+  background: var(--accent);
+  color: #111;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  box-shadow: 0 0 25px var(--accent);
+  margin-bottom: 6px;
+  border: 4px solid rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.dial-center-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 0 10px var(--accent);
+}
+
+.dial-center-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+  animation: dial-content-pop 0.3s ease-out;
 }
 
 @keyframes dial-radiate {
@@ -3040,12 +3207,24 @@ input:checked+.switch-slider .switch-label.off {
 
 @keyframes dial-center-pop {
   from {
-    transform: translate(-50%, -50%) scale(0.5);
+    transform: translate(-50%, -50%) scale(0.8);
     opacity: 0;
   }
 
   to {
     transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes dial-content-pop {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
     opacity: 1;
   }
 }
@@ -3193,4 +3372,98 @@ input:checked+.switch-slider .switch-label.off {
   .desktop-edge-tab {
     display: flex;
   }
+}
+
+.swipe-wheel-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 220px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  scale: 0.7;
+  border-radius: 50%;
+  background: rgba(8, 8, 8, 0.85);
+  /* Darker and more opaque */
+  backdrop-filter: blur(80px);
+  /* Massive blur to obscure legibility */
+  -webkit-backdrop-filter: blur(80px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 60px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.05);
+}
+
+.custom-btn.is-swiping .swipe-wheel-container,
+.spat-button.is-swiping .swipe-wheel-container {
+  opacity: 1;
+  scale: 1;
+}
+
+.swipe-slice {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: center center;
+  border-radius: 50%;
+  clip-path: polygon(50% 50%, 100% 30%, 100% 70%);
+  background: transparent;
+  /* Rely on container background */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 15px;
+  transition: all 0.2s ease;
+}
+
+.swipe-slice.active {
+  background: radial-gradient(circle at 100% 50%, rgba(var(--accent-rgb), 0.45) 0%, rgba(18, 18, 18, 0.6) 85%);
+  border-color: rgba(var(--accent-rgb), 0.5);
+  z-index: 20;
+  scale: 1.05;
+  box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.2);
+}
+
+.swipe-slice-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  white-space: nowrap;
+  transform: rotate(var(--self-rotation, 0deg));
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  transition: all 0.2s;
+}
+
+.swipe-slice.active .swipe-slice-label {
+  color: #fff;
+  opacity: 1;
+  text-shadow: 0 0 15px var(--accent);
+  scale: 1.15;
+}
+
+.button-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  pointer-events: none;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  width: 90%;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.spat-button {
+  touch-action: none;
+  overflow: visible !important;
 }

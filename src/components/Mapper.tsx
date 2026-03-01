@@ -1777,6 +1777,7 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
         return (
             <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <button
+                    onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                     onClick={() => setIsMinimized(false)}
                     style={{
                         padding: '12px',
@@ -1808,11 +1809,12 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
             {(!isMobile || isExpanded) && (
                 <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 10, backgroundColor: 'rgba(30, 30, 46, 0.9)', padding: '4px', borderRadius: '4px', border: '1px solid #313244', display: 'flex', gap: '8px', alignItems: 'center', backdropFilter: 'blur(4px)', fontSize: '12px' }}>
                     <div style={{ display: 'flex', backgroundColor: '#313244', borderRadius: '4px', overflow: 'hidden' }}>
-                        <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal' }} onClick={() => setMode('edit')}>Edit</button>
-                        <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal' }} onClick={() => setMode('play')}>Play</button>
+                        <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal' }} onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }} onClick={() => setMode('edit')}>Edit</button>
+                        <button style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal' }} onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }} onClick={() => setMode('play')}>Play</button>
                     </div>
                     <button
                         style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: autoCenter ? '#f9e2af' : '#313244', color: autoCenter ? '#11111b' : '#cdd6f4', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                         onClick={() => { setAutoCenter(!autoCenter); if (!autoCenter && currentRoomId && rooms[currentRoomId]) centerCameraOn(rooms[currentRoomId].x, rooms[currentRoomId].y); }}
                         title="Center on player"
                     >
@@ -1822,6 +1824,7 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                     <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '0 2px' }} />
                     <button
                         style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: '#313244', color: '#f38ba8', display: 'flex', alignItems: 'center' }}
+                        onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                         onClick={() => setIsMinimized(true)}
                         title="Minimize"
                     >
@@ -2135,7 +2138,31 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                 </div>
             )}
 
-            <div style={{ flex: 1, width: '100%', height: '100%', overflow: 'hidden' }}>
+            <div
+                style={{
+                    flex: 1,
+                    width: '100%',
+                    height: '100%',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    /* Advanced masking for soft organic edges */
+                    maskImage: 'radial-gradient(ellipse at center, black 65%, transparent 100%)',
+                    WebkitMaskImage: 'radial-gradient(ellipse at center, black 65%, transparent 100%)',
+                    /* Fallback background if the canvas clears */
+                    backgroundColor: '#181825',
+                    borderRadius: '12px'
+                }}
+            >
+                {/* Soft Vignette Overlay - Fades the edges into the background color */}
+                <div style={{
+                    position: 'absolute',
+                    inset: '-5px', /* Slight bleed to avoid edge artifacts */
+                    pointerEvents: 'none',
+                    background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.5) 100%)',
+                    zIndex: 2,
+                    borderRadius: '12px'
+                }} />
+
                 <canvas
                     ref={canvasRef}
                     className="block touch-none"

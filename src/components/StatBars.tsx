@@ -9,9 +9,10 @@ interface StatBarsProps {
     onClick?: () => void;
     orientation?: 'vertical' | 'horizontal';
     onWimpyChange?: (val: number) => void;
+    onPointerDown?: (e: React.PointerEvent) => void;
 }
 
-const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRowRef, onClick, orientation = 'vertical', onWimpyChange }) => {
+const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRowRef, onClick, orientation = 'vertical', onWimpyChange, onPointerDown }) => {
     const isVertical = orientation === 'vertical';
     const hpRatio = stats.maxHp > 0 ? stats.hp / stats.maxHp : 0;
     const manaRatio = stats.maxMana > 0 ? stats.mana / stats.maxMana : 0;
@@ -70,6 +71,7 @@ const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRo
         <div
             className={`stats-container ${orientation}`}
             onClick={onClick}
+            onPointerDown={onPointerDown}
             style={{
                 cursor: onClick ? 'pointer' : 'default',
                 flexDirection: isVertical ? 'row' : 'column',

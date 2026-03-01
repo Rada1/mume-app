@@ -58,6 +58,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         isMmapperMode, setIsMmapperMode,
         isSoundEnabled, setIsSoundEnabled,
         isNoviceMode, setIsNoviceMode,
+        theme, setTheme,
         status
     } = useGame();
     return (
@@ -65,7 +66,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="modal-title">Settings</div>
-                    <button onClick={() => setIsSettingsOpen(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>
+                    <button onClick={() => setIsSettingsOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
                         <X size={24} />
                     </button>
                 </div>
@@ -293,6 +294,35 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                     </div>
                                 </div>
 
+                                <div className="setting-group" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between Light and Dark visual modes.</div>
+                                        </div>
+                                        <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-color)' }}>
+                                            <button
+                                                onClick={() => setTheme('dark')}
+                                                style={{
+                                                    padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
+                                                    backgroundColor: theme === 'dark' ? 'var(--accent)' : 'transparent',
+                                                    color: theme === 'dark' ? '#000' : 'var(--text-primary)',
+                                                    fontSize: '0.8rem', fontWeight: 'bold'
+                                                }}
+                                            >Dark</button>
+                                            <button
+                                                onClick={() => setTheme('light')}
+                                                style={{
+                                                    padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
+                                                    backgroundColor: theme === 'light' ? 'var(--accent)' : 'transparent',
+                                                    color: theme === 'light' ? '#fff' : 'var(--text-primary)',
+                                                    fontSize: '0.8rem', fontWeight: 'bold'
+                                                }}
+                                            >Light</button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="setting-group">
                                     <label className="setting-label">Background Image</label>
                                     <div style={{ display: 'flex', gap: '10px' }}>
@@ -306,6 +336,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                         <label htmlFor="bg-upload" className="btn-secondary" style={{ marginTop: 0, width: 'auto' }}>
                                             <Upload size={16} /> Upload
                                         </label>
+                                        <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage("")}>
+                                            Clear
+                                        </button>
                                         <button className="btn-secondary" style={{ marginTop: 0, width: 'auto' }} onClick={() => setBgImage(DEFAULT_BG)}>
                                             Reset
                                         </button>

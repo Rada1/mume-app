@@ -102,11 +102,11 @@ export function useGameParser({
             isWaitingForStats.current = false;
             captureStage.current = 'stat';
         }
-        if ((isWaitingForEq.current || captureStage.current !== 'none') && lowerCapture.includes('you are using:')) {
+        if ((isWaitingForEq.current || captureStage.current !== 'none') && (lowerCapture.includes('you are using') || lowerCapture.includes('you are equipped with'))) {
             isWaitingForEq.current = false;
             captureStage.current = 'eq';
         }
-        if ((isWaitingForInv.current || captureStage.current !== 'none') && lowerCapture.includes('you are carrying:')) {
+        if ((isWaitingForInv.current || captureStage.current !== 'none') && (lowerCapture.includes('you are carrying') || lowerCapture.includes('your inventory contains'))) {
             isWaitingForInv.current = false;
             captureStage.current = 'inv';
         }
@@ -127,7 +127,7 @@ export function useGameParser({
         const endsWithPromptIndicator = /[>:]\s*$/.test(textOnlyForCapture);
         const isLikelyPrompt = (startsWithPrompt && endsWithPromptIndicator && textOnlyForCapture.length < 60);
 
-        const shouldStopCapture = isPurePrompt || (isLikelyPrompt && !lowerCapture.includes('ob:') && !lowerCapture.includes('armor:') && !lowerCapture.includes('str:') && !lowerCapture.includes('exp:') && !lowerCapture.includes('level:') && !lowerCapture.includes('you are using:') && !lowerCapture.includes('needed:') && !lowerCapture.includes('carrying:'));
+        const shouldStopCapture = isPurePrompt || (isLikelyPrompt && !lowerCapture.includes('ob:') && !lowerCapture.includes('armor:') && !lowerCapture.includes('str:') && !lowerCapture.includes('exp:') && !lowerCapture.includes('level:') && !lowerCapture.includes('you are using') && !lowerCapture.includes('needed:') && !lowerCapture.includes('carrying'));
 
         if (shouldStopCapture) {
             captureStage.current = 'none';
@@ -326,7 +326,7 @@ export function useGameParser({
         const pMatch = cleanLine.match(mumePromptRegex);
 
         const isCapturing = captureStage.current !== 'none' && isDrawerCapture.current;
-        const isHeaderLine = lower.includes('you are carrying:') || lower.includes('you are using:');
+        const isHeaderLine = lower.includes('you are carrying') || lower.includes('you are using') || lower.includes('you have the following');
         const shouldShowInLog = !isCapturing || isHeaderLine;
 
         if (pMatch) {

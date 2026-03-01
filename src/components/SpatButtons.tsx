@@ -16,9 +16,12 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
     executeCommand,
     setSpatButtons
 }) => {
+    const [activeDirMap, setActiveDirMap] = React.useState<Record<string, string | null>>({});
+
     return (
         <>
             {spatButtons.map((sb, idx) => {
+                const activeDir = activeDirMap[sb.id] || null;
                 const hSlotWidth = 130;
                 const vSlotSpacing = 60; // Better spacing for mobile
 
@@ -40,7 +43,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                 return (
                     <div
                         key={sb.id}
-                        className="spat-button"
+                        className={`spat-button ${activeDir ? 'is-swiping' : ''}`}
                         style={{
                             '--start-x': `${Math.round(sb.startX)}px`,
                             '--start-y': `${Math.round(sb.startY)}px`,
@@ -51,14 +54,104 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                             boxShadow: `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
                             '--accent': sb.color
                         } as any}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (sb.action === 'nav') setActiveSet(sb.command);
-                            else executeCommand(sb.command);
-                            setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
+                        onPointerDown={(e) => {
+                            if (e.cancelable) e.preventDefault();
+                            const el = e.currentTarget as any;
+                            el._startX = e.clientX;
+                            el._startY = e.clientY;
+                            el._maxDist = 0;
+                        }}
+                        onPointerMove={(e) => {
+                            const el = e.currentTarget as any;
+                            if (!el._startX) return;
+                            const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            el._maxDist = Math.max(el._maxDist || 0, dist);
+
+                            if (dist > 15) {
+                                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                                const index = (Math.round(angle / 45) + 8) % 8;
+                                const directions = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
+                                const dir = directions[index];
+                                if (activeDirMap[sb.id] !== dir) {
+                                    setActiveDirMap(prev => ({ ...prev, [sb.id]: dir }));
+                                }
+                                // Update Ray for visual feedback
+                                const snappedAngle = Math.round(angle / 45) * 45;
+                                el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
+                                el.style.setProperty('--ray-length', `${dist + 50}px`);
+                                el.style.setProperty('--ray-opacity', dist > 25 ? '1' : '0');
+
+                                // Cancel logic
+                                if (el._maxDist > 20) {
+                                    el.style.setProperty('--cancel-opacity', '1');
+                                    if (dist < 18) {
+                                        el.style.setProperty('--cancel-scale', '1.2');
+                                        el.style.setProperty('--ray-opacity', '0.3');
+                                    } else {
+                                        el.style.setProperty('--cancel-scale', '1');
+                                    }
+                                }
+                            } else {
+                                if (activeDirMap[sb.id] !== null) {
+                                    setActiveDirMap(prev => ({ ...prev, [sb.id]: null }));
+                                }
+                                el.style.setProperty('--ray-opacity', '0');
+                                el.style.setProperty('--cancel-opacity', '0');
+                                el.style.setProperty('--cancel-scale', '0.5');
+                            }
+                        }}
+                        onPointerUp={(e) => {
+                            const el = e.currentTarget as any;
+                            const maxDist = el._maxDist || 0;
+                            const startX = el._startX;
+
+                            if (startX === null) return;
+                            const dx = e.clientX - startX, dy = e.clientY - el._startY;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+
+                            el._startX = null;
+                            setActiveDirMap(prev => ({ ...prev, [sb.id]: null }));
+                            el.style.setProperty('--ray-opacity', '0');
+                            el.style.setProperty('--cancel-opacity', '0');
+                            el.style.setProperty('--cancel-scale', '0');
+
+                            if (maxDist > 20 && dist < 18) {
+                                return;
+                            }
+
+                            // Execute logic: tap or swipe in any direction
+                            if (maxDist < 10 || (activeDir && maxDist > 20)) {
+                                e.stopPropagation();
+                                if (sb.action === 'nav') setActiveSet(sb.command);
+                                else executeCommand(sb.command);
+                                setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
+                            }
+                        }}
+                        onPointerCancel={(e) => {
+                            const el = e.currentTarget as any;
+                            el._startX = null;
+                            setActiveDirMap(prev => ({ ...prev, [sb.id]: null }));
+                            el.style.setProperty('--ray-opacity', '0');
+                            el.style.setProperty('--cancel-opacity', '0');
                         }}
                     >
-                        {sb.label}
+                        <div className="swipe-wheel-container">
+                            {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => (
+                                <div
+                                    key={d}
+                                    className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
+                                    style={{ transform: `rotate(${i * 45}deg)`, opacity: 0.35 }}
+                                >
+                                    <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
+                                        {d === 'up' ? sb.label : d.toUpperCase()}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="swipe-ray" />
+                        <div className="cancel-indicator">Cancel</div>
+                        <div className="button-label">{sb.label}</div>
                     </div>
                 );
             })}

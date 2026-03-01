@@ -144,30 +144,43 @@ export const useButtons = () => {
     }, [defaultSet]);
 
     useEffect(() => {
-        const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist', 'Xbox', 'inventorylist', 'equipmentlist'];
+        const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist', 'Xbox', 'inventorylist', 'equipmentlist', 'social list'];
         const missingSets = coreSets.filter(setName => !rawButtons.some(b => b.setId === setName));
+        const requiredCoreButtons = ['inv-give', 'xbox-z', 'inlp-soc'];
 
-        let buttonsToAdd: CustomButton[] = [];
+        const buttonsToAdd = missingSets.length > 0
+            ? DEFAULT_BUTTONS.filter(b => missingSets.includes(b.setId || ''))
+            : [];
 
-        if (missingSets.length > 0) {
-            const buttonsToRestore = DEFAULT_BUTTONS.filter(b => missingSets.includes(b.setId || ''));
-            buttonsToAdd = [...buttonsToAdd, ...buttonsToRestore];
-        }
-
-        // Specifically check for new core buttons that existing users might be missing
-        const requiredCoreButtons = ['inv-give', 'xbox-z'];
+        // Check for missing specific buttons
         requiredCoreButtons.forEach(reqId => {
             if (!rawButtons.some(b => b.id === reqId)) {
                 const reqBtn = DEFAULT_BUTTONS.find(b => b.id === reqId);
-                if (reqBtn) buttonsToAdd.push(reqBtn);
+                if (reqBtn && !buttonsToAdd.some(b => b.id === reqId)) buttonsToAdd.push(reqBtn);
             }
         });
 
-        if (buttonsToAdd.length > 0) {
+        // Check for outdated core buttons that need property updates
+        let hasPropUpdates = false;
+        const updatedButtons = rawButtons.map(b => {
+            if (requiredCoreButtons.includes(b.id)) {
+                const defaultBtn = DEFAULT_BUTTONS.find(db => db.id === b.id);
+                if (defaultBtn && (b.actionType !== defaultBtn.actionType || b.command !== defaultBtn.command)) {
+                    hasPropUpdates = true;
+                    return { ...b, actionType: defaultBtn.actionType, command: defaultBtn.command };
+                }
+            }
+            return b;
+        });
+
+        if (buttonsToAdd.length > 0 || hasPropUpdates) {
             setRawButtons(prev => {
                 const existingIds = new Set(prev.map(b => b.id));
                 const uniqueNew = buttonsToAdd.filter(b => !existingIds.has(b.id));
-                return uniqueNew.length > 0 ? [...prev, ...uniqueNew] : prev;
+
+                // If we also had property updates, we must merge them
+                const base = hasPropUpdates ? updatedButtons : prev;
+                return uniqueNew.length > 0 ? [...base, ...uniqueNew] : base;
             });
         }
     }, [rawButtons.length, rawButtons]); // Re-check if length changes or buttons structure changes

@@ -9,6 +9,8 @@ interface GameContextType {
     setIsSoundEnabled: (val: boolean) => void;
     isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
+    theme: 'light' | 'dark';
+    setTheme: (val: 'light' | 'dark') => void;
 
     // Game State
     status: 'connected' | 'disconnected' | 'connecting';
@@ -47,6 +49,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [isNoviceMode, setIsNoviceMode] = useState(() => localStorage.getItem('mud-novice-mode') === 'true');
     const [isSoundEnabled, setIsSoundEnabled] = useState(() => localStorage.getItem('mud-sound-enabled') === 'true');
     const [isMmapperMode, setIsMmapperMode] = useState(() => localStorage.getItem('mud-mmapper-mode') === 'true');
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('mud-theme') as 'light' | 'dark') || 'dark');
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
     const [target, setTarget] = useState<string | null>(null);
     const [stats, setStats] = useState<GameStats>({
@@ -84,6 +87,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }, [isMmapperMode]);
 
     useEffect(() => {
+        localStorage.setItem('mud-theme', theme);
+    }, [theme]);
+
+    useEffect(() => {
         localStorage.setItem('mud-abilities', JSON.stringify(abilities));
     }, [abilities]);
 
@@ -96,6 +103,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             isNoviceMode, setIsNoviceMode,
             isSoundEnabled, setIsSoundEnabled,
             isMmapperMode, setIsMmapperMode,
+            theme, setTheme,
             status, setStatus,
             target, setTarget,
             stats, setStats,

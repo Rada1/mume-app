@@ -113,7 +113,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                         <div style={{
                             position: 'absolute',
                             left: '0',
-                            color: 'rgba(255, 255, 255, 0.3)',
+                            color: 'var(--text-faded)',
+                            opacity: 0.5,
                             pointerEvents: 'none',
                             fontFamily: 'inherit',
                             fontSize: 'inherit',
@@ -136,7 +137,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                         }}
                         placeholder={commandPreview ? "" : "Enter command..."}
                         style={{ pointerEvents: 'auto', background: 'transparent', width: '100%', position: 'relative', zIndex: 1 }}
-                        autoFocus
                     />
                 </div>
                 {target && (
@@ -150,8 +150,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                         style={{
                             marginLeft: '10px',
                             padding: '2px 8px',
-                            background: 'rgba(250, 204, 21, 0.1)',
-                            border: '1px solid rgba(250, 204, 21, 0.3)',
+                            background: 'rgba(var(--accent-rgb), 0.1)',
+                            border: '1px solid var(--border-color)',
                             borderRadius: '4px',
                             color: '#facc15',
                             fontSize: '0.8rem',

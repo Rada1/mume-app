@@ -8,7 +8,7 @@ interface JoystickProps {
     onJoystickStart: (e: React.PointerEvent) => void;
     onJoystickMove: (e: React.PointerEvent) => void;
     onJoystickEnd: (e: React.PointerEvent) => void;
-    onNavStart: (dir: 'up' | 'down') => void;
+    onNavStart: (dir: 'up' | 'down', e: React.PointerEvent) => void;
     onNavEnd: (dir: 'up' | 'down') => void;
     isTargetModifierActive?: boolean;
 }
@@ -29,7 +29,10 @@ const Joystick: React.FC<JoystickProps> = ({
             <div className="nav-buttons-col">
                 <div
                     className={`nav-btn ${btnGlow.up ? 'glow-active' : ''}`}
-                    onPointerDown={() => onNavStart('up')}
+                    onPointerDown={(e) => {
+                        if (e.cancelable) e.preventDefault();
+                        onNavStart('up', e);
+                    }}
                     onPointerUp={() => onNavEnd('up')}
                     onPointerCancel={() => onNavEnd('up')}
                 >
@@ -37,7 +40,10 @@ const Joystick: React.FC<JoystickProps> = ({
                 </div>
                 <div
                     className={`nav-btn ${btnGlow.down ? 'glow-active' : ''}`}
-                    onPointerDown={() => onNavStart('down')}
+                    onPointerDown={(e) => {
+                        if (e.cancelable) e.preventDefault();
+                        onNavStart('down', e);
+                    }}
                     onPointerUp={() => onNavEnd('down')}
                     onPointerCancel={() => onNavEnd('down')}
                 >
@@ -53,6 +59,7 @@ const Joystick: React.FC<JoystickProps> = ({
                 onPointerCancel={onJoystickEnd}
             >
                 <div className="joystick-base">
+                    <div className="joystick-base-highlight" />
                     <div
                         ref={joystickKnobRef}
                         className={`joystick-knob ${joystickGlow ? 'active-glow' : ''} ${isTargetModifierActive ? 'target-active' : ''}`}

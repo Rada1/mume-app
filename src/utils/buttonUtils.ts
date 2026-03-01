@@ -17,13 +17,13 @@ export const getButtonCommand = (
     const dist = Math.sqrt(dx * dx + dy * dy);
     const isSwiped = dist > 15;
 
-    // Cancellation logic: if we moved significantly out (>30px) and now we are back in (<15px)
-    if (maxDist && maxDist > 25 && dist < 12) {
+    // Cancellation logic: if we moved significantly out (>20px) and now we are back in (<18px)
+    if (maxDist && maxDist > 20 && dist < 18) {
         return null;
     }
 
-    let cmd = button.command;
-    let actionType = button.actionType || 'command';
+    let cmd = (isLong && !isSwiped && button.longCommand) ? button.longCommand : button.command;
+    let actionType = (isLong && !isSwiped && button.longCommand) ? (button.longActionType || 'command') : (button.actionType || 'command');
     let angle = 0;
     let dir: SwipeDirection | undefined = undefined;
 
@@ -49,7 +49,7 @@ export const getButtonCommand = (
         else cmd = `${cmd} ${context}`;
     }
 
-    if (!cmd && (!joystickState || !joystickState.currentDir)) {
+    if (!cmd && (!joystickState || !joystickState.currentDir) && !isSwiped) {
         return null;
     }
 
