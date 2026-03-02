@@ -114,6 +114,10 @@ export function useGameParser({
             lowerCapture.includes('you can practice the following') ||
             lowerCapture.includes('practice sessions left') ||
             lowerCapture.includes('skill / spell     knowledge')) {
+
+            if (captureStage.current !== 'practice') {
+                setAbilities({}); // Clear old abilities when starting a new practice capture
+            }
             captureStage.current = 'practice';
             const classMatch = lowerCapture.match(/(ranger|warrior|mage|cleric|thief)\s+(skills|spells)/i);
             if (classMatch) {

@@ -434,6 +434,17 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                 </div>
                                 <span className="setting-helper">If none selected, button shows for all classes.</span>
                             </div>
+                            <div className="setting-group" style={{ borderTop: '1px solid #333', paddingTop: '15px' }}>
+                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'var(--accent)' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={editingButton.hideIfUnknown !== false}
+                                        onChange={e => updateButton(editingButton.id, { hideIfUnknown: e.target.checked })}
+                                    />
+                                    Hide if Unknown
+                                </label>
+                                <span className="setting-helper">Smart hiding based on your character's known spells and skills.</span>
+                            </div>
                         </>
                     )}
                 </div>

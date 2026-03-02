@@ -21,6 +21,7 @@ interface HeaderProps {
     onResetMap?: () => void;
     onTeleportClick?: () => void;
     teleportTargetsCount?: number;
+    isLandscape?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -41,7 +42,8 @@ const Header: React.FC<HeaderProps> = ({
     onClearTarget,
     onResetMap,
     onTeleportClick,
-    teleportTargetsCount
+    teleportTargetsCount,
+    isLandscape
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSetMenuOpen, setIsSetMenuOpen] = useState(false);
@@ -66,12 +68,14 @@ const Header: React.FC<HeaderProps> = ({
 
     return (
         <header className="header">
-            <div className="title">
-                MUME Client
-            </div>
+            {!isLandscape && (
+                <div className="title">
+                    MUME Client
+                </div>
+            )}
 
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
+                {!isLandscape && (lighting !== 'none' || weather !== 'none' || isFoggy) && (
                     <div
                         className="status-indicator"
                         style={{ color: 'var(--text-primary)', gap: 8 }}
@@ -87,7 +91,7 @@ const Header: React.FC<HeaderProps> = ({
                         </span>
                     </div>
                 )}
-                {inCombat && (
+                {!isLandscape && inCombat && (
                     <div
                         className="status-indicator"
                         style={{ color: '#ef4444', gap: 6, animation: 'combat-pulse 1s ease-in-out infinite' }}
@@ -97,42 +101,46 @@ const Header: React.FC<HeaderProps> = ({
                         <span style={{ fontWeight: 'bold', letterSpacing: '0.05em' }}>COMBAT</span>
                     </div>
                 )}
-                <div
-                    className="status-indicator"
-                    style={{
-                        color: target ? 'var(--map-accent)' : 'var(--text-faded)',
-                        gap: 6,
-                        cursor: 'pointer',
-                        opacity: target ? 1 : 0.6,
-                        border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)'
-                    }}
-                    title={target ? "Current Target (Click to clear)" : "No Target Set (Type 'target <name>' or click a char)"}
-                    onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
-                    onClick={() => target && onClearTarget && onClearTarget()}
-                >
-                    <Crosshair size={14} />
-                    <span style={{ fontWeight: 'bold', letterSpacing: '0.05em' }}>{target ? `TARGET: ${target.toUpperCase()}` : 'NO TARGET'}</span>
-                </div>
+                {!isLandscape && (
+                    <div
+                        className="status-indicator"
+                        style={{
+                            color: target ? 'var(--map-accent)' : 'var(--text-faded)',
+                            gap: 6,
+                            cursor: 'pointer',
+                            opacity: target ? 1 : 0.6,
+                            border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)'
+                        }}
+                        title={target ? "Current Target (Click to clear)" : "No Target Set (Type 'target <name>' or click a char)"}
+                        onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
+                        onClick={() => target && onClearTarget && onClearTarget()}
+                    >
+                        <Crosshair size={14} />
+                        <span style={{ fontWeight: 'bold', letterSpacing: '0.05em' }}>{target ? `TARGET: ${target.toUpperCase()}` : 'NO TARGET'}</span>
+                    </div>
+                )}
 
-                <div
-                    className="status-indicator"
-                    style={{
-                        color: teleportTargetsCount && teleportTargetsCount > 0 ? 'var(--accent)' : 'var(--text-faded)',
-                        gap: 6,
-                        cursor: 'pointer',
-                        opacity: teleportTargetsCount && teleportTargetsCount > 0 ? 1 : 0.6,
-                        border: '1px solid var(--border-color)'
-                    }}
-                    title="Stored Teleport Rooms"
-                    onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
-                    onClick={() => onTeleportClick && onTeleportClick()}
-                >
-                    <Crosshair size={14} style={{ transform: 'rotate(45deg)' }} />
-                    <span style={{ fontWeight: 'bold', letterSpacing: '0.05em' }}>ROOMS: {teleportTargetsCount || 0}</span>
-                </div>
+                {!isLandscape && (
+                    <div
+                        className="status-indicator"
+                        style={{
+                            color: teleportTargetsCount && teleportTargetsCount > 0 ? 'var(--accent)' : 'var(--text-faded)',
+                            gap: 6,
+                            cursor: 'pointer',
+                            opacity: teleportTargetsCount && teleportTargetsCount > 0 ? 1 : 0.6,
+                            border: '1px solid var(--border-color)'
+                        }}
+                        title="Stored Teleport Rooms"
+                        onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
+                        onClick={() => onTeleportClick && onTeleportClick()}
+                    >
+                        <Crosshair size={14} style={{ transform: 'rotate(45deg)' }} />
+                        <span style={{ fontWeight: 'bold', letterSpacing: '0.05em' }}>ROOMS: {teleportTargetsCount || 0}</span>
+                    </div>
+                )}
 
                 <div className="controls">
-                    {isEditMode && (
+                    {isEditMode && !isLandscape && (
                         <div className="action-menu-wrapper" ref={setMenuRef}>
                             <div
                                 className={`set-switcher ${isSetMenuOpen ? 'active' : ''}`}

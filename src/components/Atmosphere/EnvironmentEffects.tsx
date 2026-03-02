@@ -36,6 +36,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
             {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
 
             {/* --- LAYER 2: MIDDLE (Grounding Overlay) [z-index: 10] --- */}
+            <div className="dust-layer" />
             <div className="overlay-layer" />
             <div className="screen-vignette" />
 

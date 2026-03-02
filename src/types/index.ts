@@ -79,6 +79,7 @@ export interface CustomButton {
         minProficiency?: number;
         characterClass?: string[]; // Allowed classes
     };
+    hideIfUnknown?: boolean;
 }
 
 export interface SoundTrigger {

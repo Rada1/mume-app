@@ -24,6 +24,10 @@ export function useViewport() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || windowWidth <= 1024;
     }, [windowWidth]);
 
+    const isLandscape = useMemo(() => {
+        return isMobile && windowWidth > window.innerHeight;
+    }, [isMobile, windowWidth]);
+
     const scrollToBottom = useCallback((force = false, instant = false) => {
         if (!scrollContainerRef.current) return;
         const container = scrollContainerRef.current;
@@ -193,6 +197,7 @@ export function useViewport() {
 
     return {
         isMobile,
+        isLandscape,
         isKeyboardOpen,
         scrollContainerRef,
         scrollAnimationRef,

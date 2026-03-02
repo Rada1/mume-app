@@ -220,17 +220,20 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                 el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
                 el.style.setProperty('--ray-length', `${dist + 50}px`);
-                el.style.setProperty('--ray-opacity', dist > 20 ? '1' : '0');
+
+                const timePassed = Date.now() - el._startTime;
+                const isHeld = timePassed > 150 || dist > 60;
+
+                el.style.setProperty('--ray-opacity', (dist > 20 && isHeld) ? '1' : '0');
 
                 // Cancel Indicator Logic
-                if (el._maxDist > 20) {
+                if (el._maxDist > 20 && isHeld) {
                     el.style.setProperty('--cancel-opacity', '1');
                     if (dist < 18) {
                         el.style.setProperty('--cancel-scale', '1.2');
-                        el.style.setProperty('--ray-opacity', '0.3');
+                        el.style.setProperty('--ray-opacity', isHeld ? '0.3' : '0');
                     } else {
                         el.style.setProperty('--cancel-scale', '1');
-                        el.style.setProperty('--ray-opacity', '1');
                     }
                 } else {
                     el.style.setProperty('--cancel-opacity', '0');
@@ -240,6 +243,10 @@ export const GameButton: React.FC<GameButtonProps> = ({
             onPointerUp={(e) => {
                 const el = e.currentTarget as any;
                 if (isEditMode) return;
+
+                const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                const isLong = (Date.now() - el._startTime) > 500;
+                const previewCmd = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
 
                 clearTimeout(el._lpt); el._lpt = null;
                 clearTimeout(el._lst); el._lst = null;
@@ -251,11 +258,13 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 el.style.setProperty('--cancel-opacity', '0');
                 el.style.setProperty('--cancel-scale', '0');
 
-                if (el._didFire) { el._didFire = false; return; }
+                // Clear lingering pointer state
+                el._startX = null;
+                el._startY = null;
+                el._startTime = null;
+                el._maxDist = 0;
 
-                const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                const isLong = (Date.now() - el._startTime) > 500;
-                const previewCmd = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
+                if (el._didFire) { el._didFire = false; return; }
 
                 if (previewCmd) {
                     // Unified release: Execute whatever direction/command was being previewed
@@ -275,7 +284,6 @@ export const GameButton: React.FC<GameButtonProps> = ({
                         if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
                         triggerHaptic(15);
                         el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
-
                     }
                 } else {
                     // No preview (cancelled or static tap)
@@ -299,6 +307,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 el.style.setProperty('--ray-opacity', '0');
                 el.style.setProperty('--cancel-opacity', '0');
                 el.style.setProperty('--cancel-scale', '0');
+                // Clear lingering pointer state
+                el._startX = null;
+                el._startY = null;
+                el._startTime = null;
+                el._maxDist = 0;
             }}
             onClick={(e) => {
                 e.stopPropagation();

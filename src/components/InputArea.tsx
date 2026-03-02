@@ -13,17 +13,21 @@ interface InputAreaProps {
 }
 
 const normalizeTerrain = (t: string): string => {
-    t = t.toLowerCase();
-    if (t.includes('forest') || t.includes('jungle') || t.includes('wood')) return 'forest';
-    if (t.includes('field') || t.includes('plain') || t.includes('grass') || t.includes('meadow')) return 'field';
-    if (t.includes('brush') || t.includes('bush') || t.includes('scrub')) return 'brush';
-    if (t.includes('water') || t.includes('river') || t.includes('lake') || t.includes('ocean') || t.includes('swim')) return 'water';
-    if (t.includes('road') || t.includes('trail') || t.includes('path') || t.includes('bridge')) return 'road';
-    if (t.includes('mountain') || t.includes('rock') || t.includes('cliff') || t.includes('peak')) return 'mountain';
-    if (t.includes('hill')) return 'hills';
-    if (t.includes('tunnel') || t.includes('cave') || t.includes('underground') || t.includes('mine')) return 'underground';
-    if (t.includes('city') || t.includes('town') || t.includes('street') || t.includes('shop') || t.includes('inside') || t.includes('inn')) return 'city';
-    return t.replace(/\s+/g, '-');
+    t = t.trim();
+    const low = t.toLowerCase();
+
+    // MUME GMCP Symbols & Keywords
+    if (t === 'f' || low.includes('forest') || low.includes('jungle') || low.includes('wood') || low.includes('tree') || low.includes('leaf') || low.includes('thicket')) return 'forest';
+    if (t === '.' || low.includes('field') || low.includes('plain') || low.includes('grass') || low.includes('meadow') || low.includes('heath') || low.includes('tundra')) return 'field';
+    if (t === ':' || low.includes('brush') || low.includes('bush') || low.includes('scrub') || low.includes('shrub') || low.includes('swamp')) return 'brush';
+    if (t === '~' || t === '%' || t === 'W' || t === 'U' || low.includes('water') || low.includes('river') || low.includes('lake') || low.includes('ocean') || low.includes('swim') || low.includes('sea') || low.includes('bog') || low.includes('shallow') || low.includes('rapid') || low.includes('underwater')) return 'water';
+    if (t === '+' || low.includes('road') || low.includes('trail') || low.includes('path') || low.includes('bridge') || low.includes('cobble')) return 'road';
+    if (t === '<' || low.includes('mountain') || low.includes('rock') || low.includes('cliff') || low.includes('peak') || low.includes('glacier')) return 'mountain';
+    if (t === '(' || low.includes('hill')) return 'hills';
+    if (t === '=' || t === '0' || low.includes('tunnel') || low.includes('cave') || low.includes('underground') || low.includes('mine') || low.includes('dark') || low.includes('crypt') || low.includes('cavern')) return 'underground';
+    if (t === '[' || t === '#' || low.includes('city') || low.includes('town') || low.includes('street') || low.includes('shop') || low.includes('inside') || low.includes('inn') || low.includes('building') || low.includes('room')) return 'city';
+
+    return low.replace(/\s+/g, '-');
 };
 
 const InputArea: React.FC<InputAreaProps> = ({

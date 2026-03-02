@@ -254,6 +254,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 10,
@@ -280,6 +281,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 10,
@@ -306,6 +308,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 10,
@@ -332,6 +335,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 10,
@@ -358,6 +362,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 10,
@@ -384,6 +389,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 10,
@@ -410,6 +416,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 18,
@@ -436,6 +443,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 18,
@@ -462,6 +470,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 18,
@@ -488,6 +497,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 18,
@@ -514,6 +524,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 18,
@@ -540,6 +551,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 18,
@@ -566,6 +578,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 26,
@@ -592,6 +605,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 26,
@@ -618,6 +632,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 26,
@@ -644,6 +659,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 26,
@@ -670,6 +686,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 26,
@@ -696,6 +713,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 26,
@@ -722,6 +740,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 34,
@@ -748,6 +767,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 34,
@@ -774,6 +794,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 34,
@@ -800,6 +821,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 34,
@@ -826,6 +848,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 34,
@@ -852,6 +875,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 34,
@@ -878,6 +902,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 42,
@@ -904,6 +929,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 42,
@@ -930,6 +956,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 42,
@@ -956,6 +983,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 42,
@@ -982,6 +1010,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 42,
@@ -1008,6 +1037,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 42,
@@ -1034,6 +1064,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 50,
@@ -1060,6 +1091,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 50,
@@ -1086,6 +1118,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 50,
@@ -1112,6 +1145,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 50,
@@ -1138,6 +1172,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 50,
@@ -1164,6 +1199,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 50,
@@ -1190,6 +1226,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 10,
@@ -1216,6 +1253,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 10,
@@ -1242,6 +1280,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 10,
@@ -1268,6 +1307,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 10,
@@ -1294,6 +1334,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 10,
@@ -1320,6 +1361,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 10,
@@ -1346,6 +1388,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 18,
@@ -1372,6 +1415,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 18,
@@ -1398,6 +1442,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 18,
@@ -1424,6 +1469,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 18,
@@ -1450,6 +1496,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 18,
@@ -1476,6 +1523,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 18,
@@ -1502,6 +1550,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 26,
@@ -1528,6 +1577,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 26,
@@ -1554,6 +1604,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 26,
@@ -1580,6 +1631,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 26,
@@ -1606,6 +1658,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 26,
@@ -1632,6 +1685,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 26,
@@ -1658,6 +1712,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 5,
             "y": 34,
@@ -1684,6 +1739,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 21,
             "y": 34,
@@ -1710,6 +1766,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 37,
             "y": 34,
@@ -1736,6 +1793,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 53,
             "y": 34,
@@ -1762,6 +1820,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 69,
             "y": 34,
@@ -1788,6 +1847,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 34,
@@ -1814,6 +1874,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 60,
@@ -1840,6 +1901,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 75,
             "y": 60,
@@ -1866,6 +1928,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 65,
             "y": 60,
@@ -1892,6 +1955,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 55,
             "y": 60,
@@ -1918,6 +1982,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 65,
@@ -1944,6 +2009,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 75,
             "y": 65,
@@ -1970,6 +2036,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 65,
             "y": 65,
@@ -1996,6 +2063,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "thiefskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 55,
             "y": 65,
@@ -2022,6 +2090,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "warriorskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 60,
@@ -2048,6 +2117,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "warriorskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 75,
             "y": 60,
@@ -2074,6 +2144,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "warriorskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 65,
             "y": 60,
@@ -2100,6 +2171,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "rangerskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 85,
             "y": 60,
@@ -2126,6 +2198,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "rangerskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 75,
             "y": 60,
@@ -2152,6 +2225,7 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
         "setId": "rangerskilllist",
         "actionType": "command",
         "display": "floating",
+        "hideIfUnknown": true,
         "style": {
             "x": 65,
             "y": 60,
@@ -2321,5 +2395,10 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
     { "id": "tgt-get", "label": "Get", "command": "get %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#22c55e", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
     { "id": "tgt-kill", "label": "Kill", "command": "kill %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#dc2626", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
     { "id": "tgt-look", "label": "Look", "command": "look %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#3b82f6", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
-    { "id": "tgt-clear", "label": "Clear Target", "command": "__clear_target__", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 110, "h": 40, "backgroundColor": "rgba(100,100,100,0.6)", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true }
+    { "id": "tgt-clear", "label": "Clear Target", "command": "__clear_target__", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 110, "h": 40, "backgroundColor": "rgba(100,100,100,0.6)", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+
+    { "id": "innpc-kill", "label": "Kill", "command": "kill %n", "setId": "inlinenpc", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#dc2626", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "innpc-ex", "label": "Examine", "command": "examine %n", "setId": "inlinenpc", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#2563eb", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "innpc-look", "label": "Look", "command": "look %n", "setId": "inlinenpc", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#0ea5e9", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "innpc-steal", "label": "Steal", "command": "steal %n", "setId": "inlinenpc", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#14b8a6", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true }
 ];

@@ -1,58 +1,12 @@
 import { useState, useCallback, useRef } from 'react';
 import { MessageType, Message } from '../types';
 import { ansiConvert } from '../utils/ansi';
+import { numToWord, pluralizeMumeSubject, pluralizeVerb, pluralizeRest } from '../utils/gameUtils';
 
 // ---------------------------------------------------------------------------
 // Helper functions (previously top-level in index.tsx)
 // ---------------------------------------------------------------------------
 
-const numToWord = (n: number) => {
-    const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
-        "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"];
-    return words[n] || n.toString();
-};
-
-const pluralizeMumeSubject = (subject: string) => {
-    let s = subject.trim();
-    const prefixMatch = s.match(/^(A|An|The)\s+(.+)$/i);
-    let rest = s;
-    if (prefixMatch) rest = prefixMatch[2];
-
-    const lower = rest.toLowerCase();
-    if (lower.endsWith('wolf')) return rest.slice(0, -1) + 'ves';
-    if (lower.endsWith('elf')) return rest.slice(0, -1) + 'ves';
-    if (lower.endsWith('thief')) return rest.slice(0, -1) + 'ves';
-    if (lower.endsWith('man')) return rest.slice(0, -2) + 'en';
-    if (lower.endsWith('woman')) return rest.slice(0, -2) + 'en';
-    if (lower.endsWith('child')) return rest + 'ren';
-    if (lower.endsWith('y') && !/[aeiou]y$/i.test(lower)) return rest.slice(0, -1) + 'ies';
-    if (/[sxz]$|ch$|sh$/i.test(lower)) return rest + 'es';
-    return rest + 's';
-};
-
-const pluralizeVerb = (verb: string) => {
-    const v = verb.toLowerCase();
-    if (v === 'is') return 'are';
-    if (v === 'has') return 'have';
-    if (v === 'was') return 'were';
-    if (v.endsWith('es')) {
-        const base = v.slice(0, -2);
-        if (base.endsWith('sh') || base.endsWith('ch') || base.endsWith('s') || base.endsWith('x') || base.endsWith('z')) {
-            return verb.slice(0, -2);
-        }
-    }
-    if (v.endsWith('s') && !v.endsWith('ss')) return verb.slice(0, -1);
-    return verb;
-};
-
-const pluralizeRest = (text: string) => {
-    return text.replace(/\bits\b/g, 'their')
-        .replace(/\bhimself\b/g, 'themselves')
-        .replace(/\bherself\b/g, 'themselves')
-        .replace(/\bitself\b/g, 'themselves')
-        .replace(/\bhis\b/g, 'their')
-        .replace(/\bher\b/g, 'their');
-};
 
 // ---------------------------------------------------------------------------
 // Regex constants (previously top-level in index.tsx)
@@ -167,7 +121,12 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
                     if (actionText.includes('arrive')) verb = 'have arrived';
                     else if (actionText.includes('leave')) verb = 'leave';
                     else if (actionText.toLowerCase().startsWith('is ')) {
-                        verb = 'are ' + actionText.slice(3);
+                        // "is here" -> "are here", "is standing here" -> "stand here"
+                        if (actionText.toLowerCase().includes('standing')) verb = 'stand ' + actionText.slice(12);
+                        else if (actionText.toLowerCase().includes('resting')) verb = 'rest ' + actionText.slice(11);
+                        else if (actionText.toLowerCase().includes('sleeping')) verb = 'sleep ' + actionText.slice(12);
+                        else if (actionText.toLowerCase().includes('sitting')) verb = 'sit ' + actionText.slice(11);
+                        else verb = 'are ' + actionText.slice(3);
                     } else {
                         verb = pluralizeVerb(actionText);
                         rest = pluralizeRest(direction);

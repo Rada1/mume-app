@@ -53,9 +53,15 @@ const Joystick: React.FC<JoystickProps> = ({
 
             <div
                 className="joystick-container"
-                onPointerDown={onJoystickStart}
+                onPointerDown={(e) => {
+                    if (e.cancelable) e.preventDefault();
+                    onJoystickStart(e);
+                }}
                 onPointerMove={onJoystickMove}
-                onPointerUp={onJoystickEnd}
+                onPointerUp={(e) => {
+                    if (e.cancelable) e.preventDefault();
+                    onJoystickEnd(e);
+                }}
                 onPointerCancel={onJoystickEnd}
             >
                 <div className="joystick-base">

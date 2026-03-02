@@ -782,6 +782,7 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
             const mx = e.clientX - rect.left;
             const my = e.clientY - rect.top;
 
+            if (!activePointersRef.current.has(e.pointerId)) return;
             activePointersRef.current.set(e.pointerId, { x: mx, y: my });
             const pointerIds = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b);
             const pointers = pointerIds.map(id => ({ id, ...activePointersRef.current.get(id)! }));
@@ -1249,7 +1250,8 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                                 } else if (isFor) {
                                     const img = imagesRef.current['/assets/map/forest/tree1.png'];
                                     if (img && img.complete) {
-                                        offCtx.filter = 'contrast(1.2) grayscale(0.5)';
+                                        // Dark green ink effect
+                                        offCtx.filter = 'contrast(1.4) sepia(1) saturate(4) hue-rotate(85deg) brightness(0.4)';
                                         let cardinalFc = 0, neighborFc = 0, bX = 0, bY = 0;
                                         let fidx = 0;
                                         for (let dx = -1; dx <= 1; dx++) {
@@ -1288,7 +1290,7 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                                             const hSeedX = getSeed(room.x + i * 0.33, room.y + i * 0.17);
                                             const hSeedY = getSeed(room.x + i * 0.58, room.y + i * 0.44);
                                             const hScaleP = 0.8 + getSeed(room.x + i * 0.1, room.y + i * 0.2) * 0.4;
-                                            const iw = s * 0.6 * hScaleP; const ih = iw * (img.height / img.width);
+                                            const iw = s * 1.2 * hScaleP; const ih = iw * (img.height / img.width);
                                             const offX = (hSeedX * s * 0.7) + (s * 0.15); const offY = (hSeedY * s * 0.7) + (s * 0.15);
                                             offCtx.drawImage(img, offX - iw / 2, offY - ih / 2, iw, ih);
                                         }
@@ -1681,20 +1683,6 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                 stackPushed = false;
             }
 
-            ctx.save();
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const radius = Math.sqrt(centerX * centerX + centerY * centerY);
-            const vignette = ctx.createRadialGradient(centerX, centerY, radius * 0.1, centerX, centerY, radius * 1.1);
-            vignette.addColorStop(0, isDarkMode ? 'rgba(255,255,255,0)' : 'rgba(0,0,0,0)');
-            vignette.addColorStop(0.4, isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)');
-            vignette.addColorStop(0.7, isDarkMode ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)');
-            vignette.addColorStop(0.9, isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)');
-            vignette.addColorStop(1, isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)');
-            ctx.fillStyle = vignette;
-            ctx.fillRect(0, 0, width, height);
-            ctx.restore();
 
             // Draw Marquee selection box
             if (marqueeStart && marqueeEnd) {
@@ -1773,7 +1761,7 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
         };
     }, [currentRoomId, rooms, centerCameraOn, drawMap, isMinimized]);
 
-    if (isMinimized) {
+    if (isMinimized && !isMobile) {
         return (
             <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <button
@@ -2145,23 +2133,11 @@ export const Mapper = React.memo(forwardRef<MapperRef, MapperProps>(({ isDesignM
                     height: '100%',
                     overflow: 'hidden',
                     position: 'relative',
-                    /* Advanced masking for soft organic edges */
-                    maskImage: 'radial-gradient(ellipse at center, black 65%, transparent 100%)',
-                    WebkitMaskImage: 'radial-gradient(ellipse at center, black 65%, transparent 100%)',
                     /* Fallback background if the canvas clears */
                     backgroundColor: '#181825',
                     borderRadius: '12px'
                 }}
             >
-                {/* Soft Vignette Overlay - Fades the edges into the background color */}
-                <div style={{
-                    position: 'absolute',
-                    inset: '-5px', /* Slight bleed to avoid edge artifacts */
-                    pointerEvents: 'none',
-                    background: 'radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.5) 100%)',
-                    zIndex: 2,
-                    borderRadius: '12px'
-                }} />
 
                 <canvas
                     ref={canvasRef}

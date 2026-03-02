@@ -10,8 +10,11 @@ interface TelnetHandlers {
     onRoomUpdateExits?: (data: Record<string, GmcpExitInfo | false>) => void;
     onCharVitals?: (data: GmcpCharVitals) => void;
     onRoomPlayers?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
+    onRoomNpcs?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
     onAddPlayer?: (data: string | GmcpOccupant) => void;
+    onAddNpc?: (data: string | GmcpOccupant) => void;
     onRemovePlayer?: (data: string | GmcpOccupant) => void;
+    onRemoveNpc?: (data: string | GmcpOccupant) => void;
     onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
 }
 
@@ -204,21 +207,35 @@ export const useTelnet = (options: TelnetOptions) => {
                     const data = JSON.parse(json) as Record<string, GmcpExitInfo | false>;
                     if (handlers.onRoomUpdateExits) handlers.onRoomUpdateExits(data);
                 } catch (e) { }
-            } else if (pkgLower === 'room.players' || pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
+            } else if (pkgLower === 'room.players') {
                 try {
                     const data = JSON.parse(json) as GmcpRoomPlayers | (string | GmcpOccupant)[];
-                    console.log("[GMCP Occupants]", data);
                     if (handlers.onRoomPlayers) handlers.onRoomPlayers(data);
-                } catch (e) { console.error("[GMCP Error] Failed to parse room.chars", e); }
-            } else if (pkgLower === 'room.addplayer' || pkgLower === 'room.addchar' || pkgLower === 'room.chars.add') {
+                } catch (e) { }
+            } else if (pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
+                try {
+                    const data = JSON.parse(json) as GmcpRoomPlayers | (string | GmcpOccupant)[];
+                    if (handlers.onRoomNpcs) handlers.onRoomNpcs(data);
+                } catch (e) { }
+            } else if (pkgLower === 'room.addplayer') {
                 try {
                     const data = JSON.parse(json) as string | GmcpOccupant;
                     if (handlers.onAddPlayer) handlers.onAddPlayer(data);
                 } catch (e) { }
-            } else if (pkgLower === 'room.removeplayer' || pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove') {
+            } else if (pkgLower === 'room.addchar' || pkgLower === 'room.chars.add') {
+                try {
+                    const data = JSON.parse(json) as string | GmcpOccupant;
+                    if (handlers.onAddNpc) handlers.onAddNpc(data);
+                } catch (e) { }
+            } else if (pkgLower === 'room.removeplayer') {
                 try {
                     const data = JSON.parse(json) as string | GmcpOccupant;
                     if (handlers.onRemovePlayer) handlers.onRemovePlayer(data);
+                } catch (e) { }
+            } else if (pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove') {
+                try {
+                    const data = JSON.parse(json) as string | GmcpOccupant;
+                    if (handlers.onRemoveNpc) handlers.onRemoveNpc(data);
                 } catch (e) { }
             } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set') {
                 try {

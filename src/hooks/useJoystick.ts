@@ -111,7 +111,13 @@ export const useJoystick = () => {
 
         // Only execute command if NOT consumed by another button
         if (!wasConsumed) {
+            // Hard blur any active inputs to prevent accidental keyboard activation on mobile
+            if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+                (document.activeElement as HTMLElement)?.blur();
+            }
+
             if (dist < 20) {
+                if (e.cancelable) e.preventDefault();
                 if (!suppressDefault) executeCommand('look');
                 triggerHaptic(10);
                 joystickStartPos.current = null;
@@ -147,6 +153,11 @@ export const useJoystick = () => {
         setCurrentDir(null);
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
+
+        // Prevent focuses
+        if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+            (document.activeElement as HTMLElement)?.blur();
+        }
 
         if (!wasConsumed) {
             const cmd = dir === 'up' ? 'up' : 'down';

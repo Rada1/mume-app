@@ -90,6 +90,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.setItem('mud-theme', theme);
     }, [theme]);
 
+
     useEffect(() => {
         localStorage.setItem('mud-abilities', JSON.stringify(abilities));
     }, [abilities]);

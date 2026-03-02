@@ -55,6 +55,7 @@ import { SpatButtons } from './components/SpatButtons';
 
 
 
+
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 
 interface TelnetCallbacks {
@@ -62,9 +63,12 @@ interface TelnetCallbacks {
     onRoomUpdateExits: (data: any) => void;
     onCharVitals: (data: any) => void;
     onRoomPlayers: (data: any) => void;
+    onRoomNpcs: (data: any) => void;
     onRoomItems: (data: any) => void;
     onAddPlayer: (data: any) => void;
+    onAddNpc: (data: any) => void;
     onRemovePlayer: (data: any) => void;
+    onRemoveNpc: (data: any) => void;
 }
 
 const MudClient = () => {
@@ -135,6 +139,7 @@ const MudClient = () => {
         setManagerOpen: false,
         mapExpanded: false
     });
+    const [currentTerrain, setCurrentTerrain] = useState<string>('city');
 
     // Backward compatibility helpers
     const isInventoryOpen = ui.drawer === 'inventory';
@@ -190,7 +195,7 @@ const MudClient = () => {
     const hasAttemptedLogin = useRef(false);
 
     const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
-    // isKeyboardOpen → useViewport hook below
+    const [roomNpcs, setRoomNpcs] = useState<string[]>([]);
     const [characterName, setCharacterName] = useState<string | null>(null);
     const [roomItems, setRoomItems] = useState<string[]>([]);
 
@@ -228,7 +233,7 @@ const MudClient = () => {
 
     // --- Scroll & Viewport ---
     const viewport = useViewport();
-    const { isMobile, isKeyboardOpen, scrollContainerRef, scrollAnimationRef, isAutoScrollingRef,
+    const { isMobile, isLandscape, isKeyboardOpen, scrollContainerRef, scrollAnimationRef, isAutoScrollingRef,
         isLockedToBottomRef, scrollToBottom } = viewport;
 
     // --- Environment & Settings Hooks ---
@@ -320,7 +325,7 @@ const MudClient = () => {
         captureStage, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         processLine } = parser;
 
-    const { processMessageHtml } = useMessageHighlighter(target, btn.buttonsRef, roomPlayers, characterName, roomItems);
+    const { processMessageHtml } = useMessageHighlighter(target, btn.buttonsRef, roomPlayers, roomNpcs, characterName, roomItems);
 
     // DialMenu moved to src/components/Popovers/DialMenu.tsx
 
@@ -346,6 +351,10 @@ const MudClient = () => {
         setRumble, setHitFlash, setDeathStage, detectLighting, processLine,
         setPrompt: setActivePrompt, setInCombat,
         onCharNameChange: (name) => {
+            if (characterName && name !== characterName) {
+                setAbilities({});
+                addMessage('system', `Character changed to ${name}. Abilities reset.`);
+            }
             setCharacterName(name);
         },
         onPositionChange: (pos) => setPlayerPosition(pos)
@@ -375,30 +384,39 @@ const MudClient = () => {
         };
 
         callbacksRef.current = {
-            onRoomInfo: (data: GmcpRoomInfo) => notifyMapper(ref => ref.current?.handleRoomInfo(data)),
+            onRoomInfo: (data: GmcpRoomInfo) => {
+                notifyMapper(ref => ref.current?.handleRoomInfo(data));
+                const terrain = data.terrain || data.environment;
+                if (terrain) setCurrentTerrain(terrain);
+            },
             onRoomUpdateExits: (data: Record<string, GmcpExitInfo | false>) => notifyMapper(ref => ref.current?.handleUpdateExits(data)),
-            onCharVitals: (data: GmcpCharVitals) => { if (data.terrain) notifyMapper(ref => ref.current?.handleTerrain(data.terrain)); },
+            onCharVitals: (data: GmcpCharVitals) => {
+                if (data.terrain) {
+                    notifyMapper(ref => ref.current?.handleTerrain(data.terrain));
+                    setCurrentTerrain(data.terrain);
+                }
+            },
             onRoomPlayers: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => {
                 let players: string[] = [];
-                const parseOccupant = (p: string | GmcpOccupant): string[] => {
-                    if (typeof p === 'string') return [p];
-                    const names = [];
-                    if (p.name) names.push(p.name);
-                    if (p.short) names.push(p.short);
-                    if (p.shortdesc) names.push(p.shortdesc);
-                    if (p.keyword) names.push(p.keyword);
-                    return names;
+                const parseOccupant = (p: string | GmcpOccupant): string | null => {
+                    if (typeof p === 'string') return p;
+                    return p.name || p.keyword || p.short || p.shortdesc || null;
+                };
+                if (Array.isArray(data)) players = data.map(parseOccupant).filter(Boolean) as string[];
+                else players = (data.players || data.members || []).map(parseOccupant).filter(Boolean) as string[];
+                setRoomPlayers(players);
+            },
+            onRoomNpcs: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => {
+                let npcs: string[] = [];
+                const parseOccupant = (p: string | GmcpOccupant): string | null => {
+                    if (typeof p === 'string') return p;
+                    return p.name || p.keyword || p.short || p.shortdesc || null;
                 };
 
-                if (Array.isArray(data)) {
-                    players = data.flatMap(parseOccupant).filter(Boolean);
-                } else {
-                    const list = data.players || data.chars || data.members || [];
-                    players = list.flatMap(parseOccupant).filter(Boolean);
-                }
-                console.log("[Occupants List]", players);
-                if (players.length > 0) addMessage('system', `[GMCP] Room updated: ${players.length} occupants identified.`);
-                setRoomPlayers(players);
+                const items = Array.isArray(data) ? data : (data.chars || []);
+                npcs = items.map(parseOccupant).filter(Boolean) as string[];
+
+                setRoomNpcs(npcs);
             },
             onRoomItems: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => {
                 let items: string[] = [];
@@ -410,24 +428,29 @@ const MudClient = () => {
                     if (i.shortdesc) names.push(i.shortdesc);
                     return names;
                 };
-
-                if (Array.isArray(data)) {
-                    items = data.flatMap(parseItem).filter(Boolean);
-                } else {
-                    const list = data.items || data.objects || [];
-                    items = list.flatMap(parseItem).filter(Boolean);
-                }
-                console.log("[Items List]", items);
-                if (items.length > 0) addMessage('system', `[GMCP] Room items: ${items.length} objects identified.`);
+                if (Array.isArray(data)) items = data.flatMap(parseItem).filter(Boolean);
+                else items = (data.items || data.objects || []).flatMap(parseItem).filter(Boolean);
                 setRoomItems(items);
             },
             onAddPlayer: (data: string | GmcpOccupant) => {
                 const name = typeof data === 'string' ? data : data.name;
                 if (name) setRoomPlayers(prev => prev.includes(name) ? prev : [...prev, name]);
             },
+            onAddNpc: (data: string | GmcpOccupant) => {
+                const parseOccupant = (p: string | GmcpOccupant): string | null => {
+                    if (typeof p === 'string') return p;
+                    return p.name || p.keyword || p.short || p.shortdesc || null;
+                };
+                const name = parseOccupant(data);
+                if (name) setRoomNpcs(prev => prev.includes(name) ? prev : [...prev, name]);
+            },
             onRemovePlayer: (data: string | GmcpOccupant) => {
                 const name = typeof data === 'string' ? data : data.name;
                 if (name) setRoomPlayers(prev => prev.filter(p => p !== name));
+            },
+            onRemoveNpc: (data: string | GmcpOccupant) => {
+                const name = typeof data === 'string' ? data : data.name;
+                if (name) setRoomNpcs(prev => prev.filter(p => p !== name));
             }
         };
     }, [setRoomPlayers, setRoomItems, addMessage, btn]);
@@ -440,8 +463,11 @@ const MudClient = () => {
             onRoomUpdateExits: (data) => callbacksRef.current?.onRoomUpdateExits && callbacksRef.current.onRoomUpdateExits(data),
             onCharVitals: (data) => callbacksRef.current?.onCharVitals && callbacksRef.current.onCharVitals(data),
             onRoomPlayers: (data) => callbacksRef.current?.onRoomPlayers && callbacksRef.current.onRoomPlayers(data),
+            onRoomNpcs: (data) => callbacksRef.current?.onRoomNpcs && callbacksRef.current.onRoomNpcs(data),
             onAddPlayer: (data) => callbacksRef.current?.onAddPlayer && callbacksRef.current.onAddPlayer(data),
+            onAddNpc: (data) => callbacksRef.current?.onAddNpc && callbacksRef.current.onAddNpc(data),
             onRemovePlayer: (data) => callbacksRef.current?.onRemovePlayer && callbacksRef.current.onRemovePlayer(data),
+            onRemoveNpc: (data) => callbacksRef.current?.onRemoveNpc && callbacksRef.current.onRemoveNpc(data),
             onRoomItems: (data) => callbacksRef.current?.onRoomItems && callbacksRef.current.onRoomItems(data),
         });
     };
@@ -796,7 +822,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''}`}
             style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
             onClick={() => {
                 if (btn.isEditMode) {
@@ -826,6 +852,7 @@ const MudClient = () => {
 
                 <div className="content-layer">
                     <Header
+                        isLandscape={isLandscape}
                         lighting={lighting}
                         weather={weather}
                         isFoggy={isFoggy}
@@ -893,7 +920,7 @@ const MudClient = () => {
                                 }
                             }
                         }}
-                        terrain={undefined}
+                        terrain={currentTerrain}
                     />
                 </div>
 
@@ -963,7 +990,11 @@ const MudClient = () => {
                 </div>
 
                 <div className="custom-buttons-layer" ref={customButtonsLayerRef}>
-                    {btn.buttons.filter(b => (b.setId === btn.activeSet) && b.setId !== 'Xbox' && b.isVisible && b.display !== 'inline').map(button => (
+                    {btn.buttons.filter(b => {
+                        const inCurrentSet = b.setId === btn.activeSet && b.setId !== 'Xbox' && b.display !== 'inline';
+                        if (btn.isEditMode) return inCurrentSet;
+                        return inCurrentSet && b.isVisible;
+                    }).map(button => (
                         <GameButton
                             key={button.id}
                             button={button}
@@ -999,151 +1030,156 @@ const MudClient = () => {
                     ))}
                 </div>
 
-            </div> {/* Closes app-content-shaker */}
+                <div className={`mobile-bottom-gutter ${isKeyboardOpen ? 'hidden' : ''} ${isMapExpanded ? 'map-expanded' : ''}`}>
+                    {isMobile && (
+                        <div className={`mobile-mini-map ${isMapExpanded ? 'expanded' : ''}`}>
+                            <Mapper
+                                ref={mapperRef}
+                                isDesignMode={btn.isEditMode}
+                                characterName={characterName}
+                                isMmapperMode={isMmapperMode}
+                                isMobile={isMobile}
+                                isExpanded={isMapExpanded}
+                            />
+                        </div>
+                    )}
+                    <div className="mobile-controls-row">
+                        <div
+                            className="joystick-cluster"
+                            style={{
+                                left: (btn.uiPositions.joystick?.x ?? '0'),
+                                top: (btn.uiPositions.joystick?.y ?? '50%'),
+                                transform: `translateY(-50%) ${btn.uiPositions.joystick?.scale ? `scale(${btn.uiPositions.joystick.scale})` : ''}`,
+                                transformOrigin: 'center left',
+                                zIndex: 100,
+                                position: 'absolute',
+                                cursor: btn.isEditMode ? 'move' : undefined,
+                                border: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '2px dashed #ffff00' : undefined,
+                                borderRadius: '50%',
+                                boxShadow: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
+                            }}
+                            onPointerDown={(e) => {
+                                if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
+                                else if (e.cancelable) e.preventDefault();
+                            }}
+                        >
+                            <Joystick
+                                joystickKnobRef={joystick.joystickKnobRef}
+                                joystickGlow={joystickGlow}
+                                btnGlow={btnGlow}
+                                onJoystickStart={joystick.handleJoystickStart}
+                                onJoystickMove={joystick.handleJoystickMove}
+                                onJoystickEnd={(e) => {
+                                    const currentHeld = heldButtonRef.current;
+                                    const isCenterTap = joystick.handleJoystickEnd(e, (cmd) => executeCommand(cmd), triggerHaptic, setJoystickGlow, !!currentHeld);
+                                    if (isCenterTap && currentHeld && currentHeld.dx !== undefined && currentHeld.dy !== undefined) {
+                                        const button = btn.buttons.find(b => b.id === currentHeld.id);
+                                        if (button) {
+                                            const result = getButtonCommand(button, currentHeld.dx, currentHeld.dy, undefined, undefined, currentHeld.modifiers, joystick, target, true);
+                                            if (result) {
+                                                // Defuse the button so it doesn't fire again on release
+                                                const el = document.querySelector(`[data-id="${button.id}"]`) as any;
+                                                if (el) el._didFire = true;
 
-            <div className={`mobile-bottom-gutter ${isKeyboardOpen ? 'hidden' : ''} ${isMapExpanded ? 'map-expanded' : ''}`}>
-                <div className="mobile-controls-row">
-                    <div
-                        className="joystick-cluster"
-                        style={{
-                            left: (btn.uiPositions.joystick?.x ?? '0'),
-                            top: (btn.uiPositions.joystick?.y ?? '50%'),
-                            transform: `translateY(-50%) ${btn.uiPositions.joystick?.scale ? `scale(${btn.uiPositions.joystick.scale})` : ''}`,
-                            transformOrigin: 'center left',
-                            zIndex: 100,
-                            position: 'absolute',
-                            cursor: btn.isEditMode ? 'move' : undefined,
-                            border: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '2px dashed #ffff00' : undefined,
-                            borderRadius: '50%',
-                            boxShadow: (btn.isEditMode && btn.dragState?.id === 'joystick') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
-                        }}
-                        onPointerDown={(e) => {
-                            if (btn.isEditMode) handleDragStart(e, 'joystick', 'cluster');
-                            else if (e.cancelable) e.preventDefault();
-                        }}
-                    >
-                        <Joystick
-                            joystickKnobRef={joystick.joystickKnobRef}
-                            joystickGlow={joystickGlow}
-                            btnGlow={btnGlow}
-                            onJoystickStart={joystick.handleJoystickStart}
-                            onJoystickMove={joystick.handleJoystickMove}
-                            onJoystickEnd={(e) => {
-                                const currentHeld = heldButtonRef.current;
-                                const isCenterTap = joystick.handleJoystickEnd(e, (cmd) => executeCommand(cmd), triggerHaptic, setJoystickGlow, !!currentHeld);
-                                if (isCenterTap && currentHeld && currentHeld.dx !== undefined && currentHeld.dy !== undefined) {
-                                    const button = btn.buttons.find(b => b.id === currentHeld.id);
-                                    if (button) {
-                                        const result = getButtonCommand(button, currentHeld.dx, currentHeld.dy, undefined, undefined, currentHeld.modifiers, joystick, target, true);
-                                        if (result) {
-                                            // Defuse the button so it doesn't fire again on release
-                                            const el = document.querySelector(`[data-id="${button.id}"]`) as any;
-                                            if (el) el._didFire = true;
+                                                if (result.actionType === 'nav') btn.setActiveSet(result.cmd);
+                                                else if (result.actionType === 'assign' || result.actionType === 'menu' || result.actionType === 'select-assign') {
+                                                    const rect = el?.getBoundingClientRect();
+                                                    setPopoverState({
+                                                        x: rect ? rect.right + 10 : window.innerWidth / 2,
+                                                        y: rect ? rect.top : window.innerHeight / 2,
+                                                        setId: result.cmd,
+                                                        context: result.actionType === 'select-assign' ? result.modifiers : button.label,
+                                                        assignSourceId: button.id,
+                                                        assignSwipeDir: result.dir,
+                                                        executeAndAssign: result.actionType === 'select-assign',
+                                                        menuDisplay: button.menuDisplay,
+                                                        initialPointerX: rect ? (rect.left + rect.width / 2) : 0,
+                                                        initialPointerY: rect ? (rect.top + rect.height / 2) : 0
+                                                    });
+                                                } else {
+                                                    executeCommand(result.cmd);
+                                                }
 
-                                            if (result.actionType === 'nav') btn.setActiveSet(result.cmd);
-                                            else if (result.actionType === 'assign' || result.actionType === 'menu' || result.actionType === 'select-assign') {
-                                                const rect = el?.getBoundingClientRect();
-                                                setPopoverState({
-                                                    x: rect ? rect.right + 10 : window.innerWidth / 2,
-                                                    y: rect ? rect.top : window.innerHeight / 2,
-                                                    setId: result.cmd,
-                                                    context: result.actionType === 'select-assign' ? result.modifiers : button.label,
-                                                    assignSourceId: button.id,
-                                                    assignSwipeDir: result.dir,
-                                                    executeAndAssign: result.actionType === 'select-assign',
-                                                    menuDisplay: button.menuDisplay,
-                                                    initialPointerX: rect ? (rect.left + rect.width / 2) : 0,
-                                                    initialPointerY: rect ? (rect.top + rect.height / 2) : 0
-                                                });
-                                            } else {
-                                                executeCommand(result.cmd);
+                                                setHeldButton(null);
+                                                setCommandPreview(null);
+                                                triggerHaptic(50);
                                             }
-
-                                            setHeldButton(null);
-                                            setCommandPreview(null);
-                                            triggerHaptic(50);
                                         }
                                     }
-                                }
+                                }}
+                                onNavStart={joystick.handleNavStart}
+                                onNavEnd={(dir) => joystick.handleNavEnd(dir, executeCommand, triggerHaptic, setBtnGlow)}
+                                isTargetModifierActive={joystick.isTargetModifierActive}
+                            />
+                        </div>
+
+                        <div
+                            className="xbox-cluster"
+                            style={{
+                                right: (btn.uiPositions.xbox?.x ?? '0'),
+                                top: (btn.uiPositions.xbox?.y ?? '50%'),
+                                transform: `translateY(-50%) ${btn.uiPositions.xbox?.scale ? `scale(${btn.uiPositions.xbox.scale})` : ''}`,
+                                transformOrigin: 'center right',
+                                zIndex: 100,
+                                position: 'absolute',
+                                cursor: btn.isEditMode ? 'move' : undefined,
+                                border: (btn.isEditMode && btn.dragState?.id === 'xbox') ? '2px dashed #ffff00' : undefined,
+                                borderRadius: '50%',
+                                boxShadow: (btn.isEditMode && btn.dragState?.id === 'xbox') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
                             }}
-                            onNavStart={joystick.handleNavStart}
-                            onNavEnd={(dir) => joystick.handleNavEnd(dir, executeCommand, triggerHaptic, setBtnGlow)}
-                            isTargetModifierActive={joystick.isTargetModifierActive}
-                        />
-                    </div>
+                            onPointerDown={(e) => {
+                                if (btn.isEditMode) handleDragStart(e, 'xbox', 'cluster');
+                                else if (e.cancelable) e.preventDefault();
+                            }}
+                        >
+                            {btn.isEditMode && <div className="resize-handle" style={{ top: '-10px', right: '-10px' }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'xbox', 'cluster-resize'); }} />}
+                            {['xbox-y', 'xbox-b', 'xbox-a', 'xbox-x', 'xbox-z'].map(id => {
+                                const button = btn.buttons.find(b => b.id === id);
+                                if (!button) return null;
+                                const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-b' ? 'right' : id === 'xbox-a' ? 'bottom' : id === 'xbox-x' ? 'left' : 'center';
+                                return (
+                                    <GameButton
+                                        key={id}
+                                        button={button}
+                                        className={`xbox-btn ${posClass}`}
+                                        useDefaultPositioning={false}
+                                        isEditMode={btn.isEditMode}
+                                        isGridEnabled={btn.isGridEnabled}
+                                        gridSize={btn.gridSize}
+                                        isSelected={btn.selectedButtonIds.has(button.id)}
+                                        dragState={btn.dragState}
+                                        handleDragStart={handleDragStart}
+                                        handleButtonClick={handleButtonClick}
+                                        wasDraggingRef={wasDraggingRef}
+                                        triggerHaptic={triggerHaptic}
+                                        setPopoverState={setPopoverState}
+                                        setEditButton={(b) => {
+                                            btn.setEditingButtonId(b.id);
+                                            if (!btn.selectedButtonIds.has(b.id)) btn.setSelectedIds(new Set([b.id]));
+                                        }}
+                                        activePrompt={activePrompt}
+                                        executeCommand={executeCommand}
+                                        setCommandPreview={setCommandPreview}
+                                        setHeldButton={setHeldButton}
+                                        heldButton={heldButton}
+                                        joystick={{
+                                            isActive: joystick.joystickActive,
+                                            currentDir: joystick.currentDir,
+                                            isTargetModifierActive: joystick.isTargetModifierActive,
+                                            setIsJoystickConsumed: joystick.setIsJoystickConsumed
+                                        }}
+                                        target={target}
+                                        setActiveSet={btn.setActiveSet}
+                                        setButtons={btn.setButtons}
+                                    />
+                                );
+                            })}
 
-                    <div
-                        className="xbox-cluster"
-                        style={{
-                            right: (btn.uiPositions.xbox?.x ?? '0'),
-                            top: (btn.uiPositions.xbox?.y ?? '50%'),
-                            transform: `translateY(-50%) ${btn.uiPositions.xbox?.scale ? `scale(${btn.uiPositions.xbox.scale})` : ''}`,
-                            transformOrigin: 'center right',
-                            zIndex: 100,
-                            position: 'absolute',
-                            cursor: btn.isEditMode ? 'move' : undefined,
-                            border: (btn.isEditMode && btn.dragState?.id === 'xbox') ? '2px dashed #ffff00' : undefined,
-                            borderRadius: '50%',
-                            boxShadow: (btn.isEditMode && btn.dragState?.id === 'xbox') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
-                        }}
-                        onPointerDown={(e) => {
-                            if (btn.isEditMode) handleDragStart(e, 'xbox', 'cluster');
-                            else if (e.cancelable) e.preventDefault();
-                        }}
-                    >
-                        {btn.isEditMode && <div className="resize-handle" style={{ top: '-10px', right: '-10px' }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'xbox', 'cluster-resize'); }} />}
-                        {['xbox-y', 'xbox-b', 'xbox-a', 'xbox-x', 'xbox-z'].map(id => {
-                            const button = btn.buttons.find(b => b.id === id);
-                            if (!button) return null;
-                            const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-b' ? 'right' : id === 'xbox-a' ? 'bottom' : id === 'xbox-x' ? 'left' : 'center';
-                            return (
-                                <GameButton
-                                    key={id}
-                                    button={button}
-                                    className={`xbox-btn ${posClass}`}
-                                    useDefaultPositioning={false}
-                                    isEditMode={btn.isEditMode}
-                                    isGridEnabled={btn.isGridEnabled}
-                                    gridSize={btn.gridSize}
-                                    isSelected={btn.selectedButtonIds.has(button.id)}
-                                    dragState={btn.dragState}
-                                    handleDragStart={handleDragStart}
-                                    handleButtonClick={handleButtonClick}
-                                    wasDraggingRef={wasDraggingRef}
-                                    triggerHaptic={triggerHaptic}
-                                    setPopoverState={setPopoverState}
-                                    setEditButton={(b) => {
-                                        btn.setEditingButtonId(b.id);
-                                        if (!btn.selectedButtonIds.has(b.id)) btn.setSelectedIds(new Set([b.id]));
-                                    }}
-                                    activePrompt={activePrompt}
-                                    executeCommand={executeCommand}
-                                    setCommandPreview={setCommandPreview}
-                                    setHeldButton={setHeldButton}
-                                    heldButton={heldButton}
-                                    joystick={{
-                                        isActive: joystick.joystickActive,
-                                        currentDir: joystick.currentDir,
-                                        isTargetModifierActive: joystick.isTargetModifierActive,
-                                        setIsJoystickConsumed: joystick.setIsJoystickConsumed
-                                    }}
-                                    target={target}
-                                    setActiveSet={btn.setActiveSet}
-                                    setButtons={btn.setButtons}
-                                />
-                            );
-                        })}
+                        </div>
 
                     </div>
-
                 </div>
-
-                {isMobile && (
-                    <div className={`mobile-mini-map ${isMapExpanded ? 'expanded' : ''}`} onClick={() => { if (popoverState) setPopoverState(null); }}>
-                        <Mapper ref={mapperRef} isDesignMode={btn.isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} isMobile={isMobile} isExpanded={isMapExpanded} />
-                    </div>
-                )}
-            </div>
+            </div> {/* Closes app-content-shaker */}
 
             {/* spatButtons map logic moved to SpatButtons component */}
             <SpatButtons
@@ -1155,7 +1191,7 @@ const MudClient = () => {
             />
 
 
-            {btn.isEditMode && <div className="add-btn-fab" onClick={() => btn.createButton()}><Plus size={32} /></div>}
+            {btn.isEditMode && <div className="add-btn-fab" onClick={(e) => { e.stopPropagation(); btn.createButton(); }}><Plus size={32} /></div>}
             {btn.isEditMode && (
                 <div
                     className="exit-design-mode-fab"

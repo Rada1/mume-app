@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { CustomButton, MessageType } from '../types';
 import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS } from '../constants/buttons';
-import { MAGE_SPELLS, CLERIC_SPELLS, CLASS_MAPPINGS } from '../utils/spellLists';
+import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
 import { useGame } from '../context/GameContext';
 
 export const useButtons = () => {
@@ -13,7 +13,11 @@ export const useButtons = () => {
             try {
                 const parsed = JSON.parse(saved);
                 const loadedIds = new Set(parsed.map((b: any) => b.id));
-                const missingDefaults = DEFAULT_BUTTONS.filter(b => !loadedIds.has(b.id)).map(b => ({ ...b, isVisible: !b.trigger?.enabled }));
+                const missingDefaults = DEFAULT_BUTTONS.filter(b => !loadedIds.has(b.id)).map(b => ({
+                    ...b,
+                    isVisible: !b.trigger?.enabled,
+                    hideIfUnknown: b.hideIfUnknown !== undefined ? b.hideIfUnknown : true
+                }));
 
                 return [...parsed.map((b: CustomButton) => ({
                     ...b,
@@ -28,21 +32,55 @@ export const useButtons = () => {
                     trigger: {
                         ...b.trigger,
                         type: b.trigger?.type || 'show'
-                    }
+                    },
+                    hideIfUnknown: b.hideIfUnknown !== undefined ? b.hideIfUnknown : true
                 })), ...missingDefaults];
             } catch (e) { console.error("Failed to load buttons", e); }
         }
-        return DEFAULT_BUTTONS;
+        return DEFAULT_BUTTONS.map(b => ({ ...b, hideIfUnknown: b.hideIfUnknown !== undefined ? b.hideIfUnknown : true }));
     });
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
 
     const buttons = useMemo(() => {
         // Core sets and dynamic smart sets logic
         const classNames = ['ranger', 'warrior', 'mage', 'cleric', 'thief'];
         const activeSetLower = activeSet.toLowerCase();
+        const skillSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist'];
 
         // 1. Static filtering
         const filtered = rawButtons.filter(b => {
             if (b.setId && ['inventorylist', 'equipmentlist', 'Xbox'].includes(b.setId)) return true;
+
+            // Skip filtering if in edit mode so user can see/edit buttons
+            if (isEditMode) return true;
+
+            // Handle filtering by knowledge if the button is marked with hideIfUnknown
+            if (b.hideIfUnknown) {
+                const cmdLower = b.command.toLowerCase();
+                const labelLower = b.label.toLowerCase();
+                let name = labelLower;
+                let isSpellOrSkill = false;
+
+                if (cmdLower.startsWith('cast ') || cmdLower.startsWith('commune ')) {
+                    isSpellOrSkill = true;
+                    const match = cmdLower.match(/'([^']+)'/);
+                    if (match) name = match[1].toLowerCase();
+                } else {
+                    const firstWord = cmdLower.split(' ')[0];
+                    const allAbilities = [...MAGE_SPELLS, ...CLERIC_SPELLS, ...WARRIOR_SKILLS, ...RANGER_SKILLS, ...THIEF_SKILLS].map(s => s.toLowerCase());
+                    if (allAbilities.includes(firstWord) || allAbilities.includes(labelLower)) {
+                        isSpellOrSkill = true;
+                        name = allAbilities.includes(firstWord) ? firstWord : labelLower;
+                    }
+                }
+
+                if (isSpellOrSkill) {
+                    const prof = abilities[name] || abilities[labelLower] || abilities[cmdLower] || 0;
+                    if (prof <= 0) return false;
+                }
+            }
+
             if (!b.requirement) return true;
 
             if (b.requirement.characterClass && b.requirement.characterClass.length > 0) {
@@ -58,22 +96,21 @@ export const useButtons = () => {
         });
 
         // 2. Dynamic generation for Smart Sets
-        if (activeSetLower === 'spellbook' || classNames.includes(activeSetLower)) {
+        const isDynamicSet = activeSetLower === 'spellbook' || classNames.includes(activeSetLower);
+
+        if (isDynamicSet) {
             const generated: CustomButton[] = [];
-            const relevantAbilities = Object.entries(abilities).filter(([name, prof]) => {
-                if (prof <= 0) return false;
-                const abilityName = name.toLowerCase();
 
-                if (activeSetLower === 'spellbook') {
-                    return MAGE_SPELLS.some(s => s.toLowerCase() === abilityName) ||
-                        CLERIC_SPELLS.some(s => s.toLowerCase() === abilityName);
-                }
+            let baseList: string[] = [];
+            if (activeSetLower === 'spellbook') {
+                baseList = [...MAGE_SPELLS, ...CLERIC_SPELLS];
+            } else {
+                baseList = CLASS_MAPPINGS[activeSetLower] || [];
+            }
 
-                const classAbilities = CLASS_MAPPINGS[activeSetLower];
-                return classAbilities?.some(s => s.toLowerCase() === abilityName);
-            });
+            const relevantAbilities = baseList.map(name => ({ name, prof: abilities[name.toLowerCase()] || 0 }));
 
-            relevantAbilities.forEach(([name, prof], idx) => {
+            relevantAbilities.forEach(({ name, prof }, idx) => {
                 const cols = 2;
                 const row = Math.floor(idx / cols);
                 const col = idx % cols;
@@ -91,7 +128,9 @@ export const useButtons = () => {
                         y: 10 + row * 10,
                         w: 120,
                         h: 40,
-                        backgroundColor: 'rgba(74, 144, 226, 0.3)',
+                        backgroundColor: prof > 0 ? 'rgba(74, 144, 226, 0.3)' : 'rgba(100, 116, 139, 0.1)',
+                        color: prof > 0 ? '#fff' : 'rgba(255, 255, 255, 0.4)',
+                        borderColor: prof > 0 ? 'rgba(74, 144, 226, 0.5)' : 'rgba(255, 255, 255, 0.1)',
                         shape: 'pill',
                         transparent: false
                     },
@@ -102,10 +141,8 @@ export const useButtons = () => {
         }
 
         return filtered;
-    }, [rawButtons, activeSet, abilities, characterClass]);
+    }, [rawButtons, activeSet, abilities, characterClass, isEditMode]);
 
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
     const [dragState, setDragState] = useState<{ id: string, startX: number, startY: number, initialX: number, initialY: number, type: 'move' | 'resize' | 'cluster' | 'cluster-resize', initialW: number, initialH: number, initialPositions?: Record<string, { x: number, y: number }>, initialSizes?: Record<string, { w: number, h: number }> } | null>(null);
     const buttonTimers = useRef<{ [key: string]: ReturnType<typeof setTimeout> }>({});
     const buttonsRef = useRef(buttons);
@@ -144,7 +181,7 @@ export const useButtons = () => {
     }, [defaultSet]);
 
     useEffect(() => {
-        const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist', 'Xbox', 'inventorylist', 'equipmentlist', 'social list'];
+        const coreSets = ['magespelllist', 'clericspelllist', 'thiefskilllist', 'warriorskilllist', 'rangerskilllist', 'Xbox', 'inventorylist', 'equipmentlist', 'social list', 'inlinenpc'];
         const missingSets = coreSets.filter(setName => !rawButtons.some(b => b.setId === setName));
         const requiredCoreButtons = ['inv-give', 'xbox-z', 'inlp-soc'];
 
@@ -200,9 +237,10 @@ export const useButtons = () => {
         return Array.from(sets);
     }, [rawButtons]);
 
-    const createButton = (defaults?: Partial<CustomButton>) => {
+    const createButton = useCallback((defaults?: Partial<CustomButton>) => {
+        const id = Math.random().toString(36).substring(7);
         const newBtn: CustomButton = {
-            id: Math.random().toString(36).substring(7),
+            id,
             label: 'New Button',
             command: 'look',
             setId: activeSet,
@@ -226,42 +264,38 @@ export const useButtons = () => {
                 type: 'show'
             },
             isVisible: true,
+            hideIfUnknown: true,
             ...defaults
         };
         setRawButtons(prev => [...prev, newBtn]);
-    };
+        setEditingButtonId(id);
+        setSelectedIds(new Set([id]));
+    }, [activeSet, isGridEnabled, gridSize]);
 
-    const deleteButton = (id: string) => {
+    const deleteButton = useCallback((id: string) => {
         setRawButtons(prev => prev.filter(b => b.id !== id));
         setEditingButtonId(null);
-    };
+    }, []);
 
-    const deleteSet = (setName: string) => {
+    const deleteSet = useCallback((setName: string) => {
         if (setName === 'main') return; // Cannot delete main set
 
         setRawButtons(prev => {
-            // Remove buttons in this set
             let next = prev.filter(b => b.setId !== setName);
-
-            // Cleanup references in other buttons (nav commands or targetSets)
             next = next.map(b => {
                 let updated = false;
                 let bClone = { ...b };
-
                 if (b.actionType === 'nav' && b.command === setName) {
                     bClone.command = 'main';
                     bClone.label = 'MAIN';
                     updated = true;
                 }
-
                 if (b.trigger?.type === 'switch_set' && b.trigger.targetSet === setName) {
                     bClone.trigger = { ...b.trigger, targetSet: 'main' };
                     updated = true;
                 }
-
                 return updated ? bClone : b;
             });
-
             return next;
         });
 
@@ -270,7 +304,7 @@ export const useButtons = () => {
         if (defaultSet === setName) setDefaultSet('main');
 
         addMessageRef.current?.('system', `Deleted button set: ${setName}`);
-    };
+    }, [activeSet, combatSet, defaultSet]);
 
     const saveAsDefault = () => {
         const toSaveButtons = rawButtons.map(b => ({ ...b, isVisible: undefined }));
@@ -382,8 +416,9 @@ export const useButtons = () => {
         setGridSize,
         setAddMessage
     }), [
-        buttons, activeSet, isEditMode, editingButtonId, selectedButtonIds,
+        buttons, rawButtons, activeSet, isEditMode, editingButtonId, selectedButtonIds,
         uiPositions, dragState, availableSets, hasUserDefaults,
-        combatSet, defaultSet, isGridEnabled, gridSize
+        combatSet, defaultSet, isGridEnabled, gridSize, createButton,
+        deleteButton, deleteSet
     ]);
 };
