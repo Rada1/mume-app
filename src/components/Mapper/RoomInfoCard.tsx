@@ -1,6 +1,6 @@
 import React from 'react';
 import { MapperRoom } from './mapperTypes';
-import { TERRAIN_MAP, DIRS, generateId } from './mapperUtils';
+import { TERRAIN_MAP, DIRS, generateId, normalizeTerrain } from './mapperUtils';
 
 interface RoomInfoCardProps {
     roomId: string;
@@ -29,35 +29,70 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
         const vnum = roomId.substring(2);
         const data = preloadedCoordsRef.current[vnum];
         if (data) {
-            const [x, y, z, terrain, exits, name, area] = data;
+            // MMapper format: [x, y, z, terrainVal, exits, name, masterId]
+            const [x, y, z, terrainVal, exitsData, nameVal, masterId] = data;
+
             // Map the strange numbers/objects to our internal exit format
             const mappedExits: Record<string, import('./mapperTypes').MapperExit> = {};
-            if (exits) {
-                for (const d in (exits as any)) {
+            if (exitsData) {
+                for (const d in (exitsData as any)) {
                     let dirKey = d.toLowerCase();
-                    // Normalize full direction names if they exist in master data
+                    // Normalize standard and full direction names
                     if (dirKey === 'north') dirKey = 'n';
                     else if (dirKey === 'south') dirKey = 's';
                     else if (dirKey === 'east') dirKey = 'e';
                     else if (dirKey === 'west') dirKey = 'w';
                     else if (dirKey === 'up') dirKey = 'u';
                     else if (dirKey === 'down') dirKey = 'd';
+                    else if (dirKey === 'northeast') dirKey = 'ne';
+                    else if (dirKey === 'northwest') dirKey = 'nw';
+                    else if (dirKey === 'southeast') dirKey = 'se';
+                    else if (dirKey === 'southwest') dirKey = 'sw';
 
-                    const dest = (exits as any)[d];
-                    const destId = typeof dest === 'number' ? dest : (typeof dest === 'object' ? (dest as any).id : null);
-                    if (destId) mappedExits[dirKey] = { target: `m_${destId}`, closed: false };
+                    const dest = (exitsData as any)[d];
+                    const rawDestId = typeof dest === 'number' ? dest : (typeof dest === 'object' ? (dest as any).id : (typeof dest === 'string' ? dest : null));
+                    const destId = rawDestId !== null ? Number(rawDestId) : null;
+                    if (destId !== null && !isNaN(destId)) mappedExits[dirKey] = {
+                        target: `m_${destId}`,
+                        gmcpDestId: destId,
+                        closed: false
+                    };
                 }
+            }
+
+            // Resolve Terrain Name using utility
+            let resolvedTerrain = 'Field';
+            if (terrainVal !== undefined) {
+                const tKey = String(terrainVal);
+                resolvedTerrain = TERRAIN_MAP[tKey] || normalizeTerrain(tKey);
+            }
+
+            // Guess Zone from name if missing
+            let resolvedZone = 'Imported Map';
+            if (nameVal) {
+                const nv = String(nameVal).toLowerCase();
+                if (nv.includes('bree')) resolvedZone = 'Bree';
+                else if (nv.includes('shire') || nv.includes('hobbit') || nv.includes('buckland')) resolvedZone = 'The Shire';
+                else if (nv.includes('grey havens') || nv.includes('mithlond')) resolvedZone = 'Grey Havens';
+                else if (nv.includes('rivendell') || nv.includes('imladris')) resolvedZone = 'Rivendell';
+                else if (nv.includes('moria') || nv.includes('khazad')) resolvedZone = 'Moria';
+                else if (nv.includes('lorien')) resolvedZone = 'Lothlorien';
+                else if (nv.includes('fornost')) resolvedZone = 'Fornost';
+                else if (nv.includes('tharbad')) resolvedZone = 'Tharbad';
+                else if (nv.includes('fangorn')) resolvedZone = 'Fangorn';
+                else if (nv.includes('rohan') || nv.includes('edoras')) resolvedZone = 'Rohan';
+                else if (nv.includes('gondor')) resolvedZone = 'Gondor';
             }
 
             room = {
                 id: roomId,
                 gmcpId: Number(vnum),
-                name: String(name) || 'Unknown Room',
+                name: String(nameVal || `Room ${vnum}`),
                 x, y, z,
-                terrain: String(terrain) || 'Field',
+                terrain: resolvedTerrain,
                 exits: mappedExits,
-                desc: '',
-                zone: String(area) || '',
+                desc: (masterId && masterId !== vnum) ? `Alias of room ${masterId}` : '',
+                zone: resolvedZone,
                 notes: '',
                 createdAt: Date.now()
             };

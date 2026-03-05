@@ -27,7 +27,6 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
             position: 'absolute',
             top: '8px',
             left: '8px',
-            right: '8px',
             zIndex: 10,
             backgroundColor: 'rgba(30, 30, 46, 0.9)',
             padding: '4px',
@@ -39,9 +38,7 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
             backdropFilter: 'blur(8px)',
             fontSize: '11px',
             flexWrap: 'nowrap',
-            overflow: 'hidden',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-            maxWidth: 'fit-content'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
         }}>
             <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
                 <button
@@ -99,14 +96,22 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                 {isExpanded && "Center"}
             </button>
 
-            <div style={{ flexGrow: 1 }} />
 
             <button
-                style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#cdd6f4', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }}
+                style={{
+                    padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px',
+                    backgroundColor: 'transparent', color: '#cdd6f4', display: 'flex',
+                    alignItems: 'center', gap: '4px', transition: 'all 0.2s'
+                }}
                 onClick={() => setIsDropdownOpen(prev => !prev)}
                 title="More Options"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <circle cx="12" cy="5" r="2"></circle>
+                    <circle cx="12" cy="19" r="2"></circle>
+                </svg>
+                {isExpanded && "More"}
             </button>
 
             <button

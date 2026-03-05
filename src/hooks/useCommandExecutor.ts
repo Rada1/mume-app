@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Direction, TeleportTarget, MessageType, DrawerLine, Action } from '../types';
+import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
@@ -11,6 +11,7 @@ export interface ExecutorDeps {
     mapperRef: React.RefObject<MapperRef>;
     teleportTargets: TeleportTarget[];
     isDrawerCapture: React.MutableRefObject<boolean>;
+    isSilentCapture: React.MutableRefObject<boolean>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
@@ -22,24 +23,24 @@ export interface ExecutorDeps {
     target: string | null;
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
-    setIsInventoryOpen: (open: boolean) => void;
     setIsCharacterOpen: (open: boolean) => void;
-    setIsRightDrawerOpen: (open: boolean) => void;
-    actions: Action[];
-    setActions: (val: Action[] | ((prev: Action[]) => Action[])) => void;
+    setIsItemsDrawerOpen: (open: boolean) => void;
+    actions: GameAction[];
+    setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
 }
 
 export const useCommandExecutor = (deps: ExecutorDeps) => {
     const {
         telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets,
-        isDrawerCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv,
+        isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         setInventoryLines, setStatsLines, setEqLines, setTarget, target,
-        setPopoverState, status, setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen,
+        setPopoverState, status, setIsCharacterOpen, setIsItemsDrawerOpen,
         actions, setActions
     } = deps;
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         initAudio();
+        isSilentCapture.current = silent && isSystem;
 
         // Target Setting
         const setTargetMatch = cmd.match(/^(:|#)?target\s*(\s+|=)\s*(.+)$/i) || cmd.match(/^#target\s+(.+)$/i);
@@ -134,7 +135,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         }
 
         if (lowerCmd === 'closeall') {
-            setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false);
+            setIsCharacterOpen(false); setIsItemsDrawerOpen(false);
         }
 
         if (!silent) addMessage('user', finalCmd);
@@ -159,7 +160,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         status, target, teleportTargets, initAudio, addMessage, setTarget, setPopoverState,
         telnet, navIntervalRef, mapperRef, isDrawerCapture, captureStage, isWaitingForInv,
         isWaitingForStats, isWaitingForEq, setInventoryLines, setStatsLines, setEqLines,
-        setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen
+        setIsCharacterOpen, setIsItemsDrawerOpen
     ]);
 
     return { executeCommand };

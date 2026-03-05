@@ -1,12 +1,12 @@
 import { useState, useRef, useCallback } from 'react';
-import { GameStats, DrawerLine, Action } from '../types';
+import { GameStats, DrawerLine, GameAction } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import { extractNoun } from '../utils/gameUtils';
 import { usePracticeParser } from './usePracticeParser';
 import { useTriggerProcessor } from './useTriggerProcessor';
 
 export interface UseGameParserDeps {
-    isInventoryOpen: boolean; isCharacterOpen: boolean; mapperRef: React.RefObject<any>;
+    isItemsOpen: boolean; isCharacterOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
     addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string) => void;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
@@ -19,20 +19,21 @@ export interface UseGameParserDeps {
     setPlayerPosition: (val: string) => void; detectLighting: (light: string) => void;
     setCurrentTerrain?: (terrain: string) => void;
     isSoundEnabledRef: React.RefObject<boolean>; soundTriggersRef: React.RefObject<any[]>;
-    actionsRef: React.RefObject<Action[]>;
+    actionsRef: React.RefObject<GameAction[]>;
     executeCommandRef: React.RefObject<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>;
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isDrawerCapture: React.MutableRefObject<boolean>;
+    isSilentCapture: React.MutableRefObject<boolean>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv } = deps;
 
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -64,7 +65,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (/you have the following|you can practice|practice sessions|skill \/ spell|skill.*knowledge.*difficulty/i.test(lower)) { if (captureStage.current !== 'practice') setAbilities({}); captureStage.current = 'practice'; }
 
         if (/^[\*\)\!oO\.\[f\<%\~+WU:=O:\(]\s*[>:]\s*$/.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|you are using|carrying/i.test(lower))) {
-            captureStage.current = 'none'; isWaitingForStats.current = false; isWaitingForEq.current = false; isWaitingForInv.current = false;
+            captureStage.current = 'none'; isSilentCapture.current = false; isWaitingForStats.current = false; isWaitingForEq.current = false; isWaitingForInv.current = false;
 
             // Extract the prompt for lighting and terrain detection
             const promptMatch = textOnly.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
@@ -109,8 +110,8 @@ export function useGameParser(deps: UseGameParserDeps) {
 
 
         const pMatch = cleanLine.match(/^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/);
-        const shouldShow = captureStage.current === 'none' || !isDrawerCapture.current || /carrying|using|following/i.test(lower);
-        if (shouldShow) addMessage('game', pMatch ? pMatch[2] : cleanLine);
+        const shouldShow = (captureStage.current === 'none' || (!isDrawerCapture.current && !isSilentCapture.current)) || /carrying|using|following/i.test(lower);
+        if (shouldShow && !isSilentCapture.current) addMessage('game', pMatch ? pMatch[2] : cleanLine);
     }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers]);
 
     return { processLine };

@@ -7,7 +7,7 @@ interface JoystickProps {
     setJoystickGlow: (glow: boolean) => void;
 }
 
-export const useJoystick = () => {
+export const useJoystick = (triggerHaptic: (ms: number) => void) => {
     const [joystickActive, setJoystickActive] = useState(false);
     const [currentDir, setCurrentDir] = useState<Direction | null>(null);
     const [isJoystickConsumed, setIsJoystickConsumed] = useState(false);
@@ -15,6 +15,7 @@ export const useJoystick = () => {
     const joystickKnobRef = useRef<HTMLDivElement>(null);
     const joystickStartPos = useRef<{ x: number, y: number } | null>(null);
     const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+    const lastHapticSectorRef = useRef<number>(-1);
 
     const handleJoystickStart = useCallback((e: React.PointerEvent) => {
         if (e.cancelable) e.preventDefault();
@@ -71,8 +72,16 @@ export const useJoystick = () => {
         // Update current direction state (8-way mapping)
         if (dist < 20) {
             setCurrentDir(null);
+            lastHapticSectorRef.current = -1;
         } else {
             let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
+
+            // Trigger haptic "tick" on any 45-degree sector boundary
+            const sectorIndex = Math.floor(((angle + 22.5) % 360) / 45);
+            if (sectorIndex !== lastHapticSectorRef.current) {
+                triggerHaptic(10);
+                lastHapticSectorRef.current = sectorIndex;
+            }
 
             let dir: any = null;
             if (angle >= 337.5 || angle < 22.5) dir = 'e';
@@ -86,7 +95,7 @@ export const useJoystick = () => {
 
             setCurrentDir(dir);
         }
-    }, [joystickActive, isTargetModifierActive]);
+    }, [joystickActive, isTargetModifierActive, triggerHaptic]);
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, setJoystickGlow: (g: boolean) => void, suppressDefault?: boolean) => {
         if (longPressTimer.current) {

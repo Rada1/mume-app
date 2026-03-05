@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, Action } from '../../types';
+import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction } from '../../types';
 
 export const useGameProviderState = () => {
     // Settings & Mode
@@ -14,6 +14,7 @@ export const useGameProviderState = () => {
         if (stored !== null) return JSON.parse(stored) as boolean;
         return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     })());
+    const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', true);
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
@@ -36,7 +37,7 @@ export const useGameProviderState = () => {
 
     // UI state
     const [ui, setUI] = useState<{
-        drawer: 'none' | 'inventory' | 'character' | 'right';
+        drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -51,9 +52,8 @@ export const useGameProviderState = () => {
         menuView: 'main'
     });
 
-    const setIsInventoryOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'inventory' : 'none' })), []);
     const setIsCharacterOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'character' : 'none' })), []);
-    const setIsRightDrawerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'right' : 'none' })), []);
+    const setIsItemsDrawerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'items' : 'none' })), []);
     const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => ({ ...prev, mapExpanded: open })), []);
     const setIsSetManagerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, setManagerOpen: open })), []);
 
@@ -64,9 +64,45 @@ export const useGameProviderState = () => {
     const [isFoggy, setIsFoggy] = useState(false);
 
     // Other state
-    const [abilities, setAbilities] = usePersistentState<Record<string, number>>('mud-abilities', {});
-    const [characterClass, setCharacterClass] = usePersistentState<'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none'>('mud-character-class', 'none');
-    const [actions, setActions] = useState<Action[]>([]);
+    const [abilities, setAbilities] = useState<Record<string, number>>({});
+    const [characterClass, setCharacterClass] = useState<'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none'>('none');
+
+    // Handle character-specific persistence
+    useEffect(() => {
+        if (!characterName) {
+            // Load global defaults if no character
+            const savedAbilities = localStorage.getItem('mud-abilities');
+            const savedClass = localStorage.getItem('mud-character-class');
+            if (savedAbilities) setAbilities(JSON.parse(savedAbilities));
+            if (savedClass) setCharacterClass(JSON.parse(savedClass));
+            return;
+        }
+
+        const charAbilitiesKey = `mud-abilities-${characterName.toLowerCase()}`;
+        const charClassKey = `mud-character-class-${characterName.toLowerCase()}`;
+
+        const savedAbilities = localStorage.getItem(charAbilitiesKey);
+        const savedClass = localStorage.getItem(charClassKey);
+
+        if (savedAbilities) setAbilities(JSON.parse(savedAbilities));
+        else setAbilities({}); // Reset for new character if nothing saved
+
+        if (savedClass) setCharacterClass(JSON.parse(savedClass) as any);
+        else setCharacterClass('none');
+    }, [characterName]);
+
+    // Save changes to character-specific keys
+    useEffect(() => {
+        const key = characterName ? `mud-abilities-${characterName.toLowerCase()}` : 'mud-abilities';
+        localStorage.setItem(key, JSON.stringify(abilities));
+    }, [abilities, characterName]);
+
+    useEffect(() => {
+        const key = characterName ? `mud-character-class-${characterName.toLowerCase()}` : 'mud-character-class';
+        localStorage.setItem(key, JSON.stringify(characterClass));
+    }, [characterClass, characterName]);
+
+    const [actions, setActions] = useState<GameAction[]>([]);
     const actionsRef = useRef(actions);
     useEffect(() => { actionsRef.current = actions; }, [actions]);
     const [rumble, setRumble] = useState(false);
@@ -83,6 +119,7 @@ export const useGameProviderState = () => {
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
     const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'none'>('none');
     const isDrawerCapture = useRef<boolean>(false);
+    const isSilentCapture = useRef<boolean>(false);
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);
     const isWaitingForInv = useRef<boolean>(false);
@@ -103,7 +140,7 @@ export const useGameProviderState = () => {
         roomItems, setRoomItems,
         currentTerrain, setCurrentTerrain,
         ui, setUI,
-        setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen, setIsMapExpanded, setIsSetManagerOpen,
+        setIsCharacterOpen, setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen,
         lighting, setLighting,
         lightningEnabled, setLightningEnabled,
         weather, setWeather,
@@ -121,6 +158,7 @@ export const useGameProviderState = () => {
         inventoryLines, setInventoryLines,
         statsLines, setStatsLines,
         eqLines, setEqLines,
-        captureStage, isDrawerCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
+        autoConnect, setAutoConnect
     };
 };

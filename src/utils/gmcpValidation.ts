@@ -13,7 +13,14 @@ export function isGmcpCharVitals(data: any): data is GmcpCharVitals {
 }
 
 export function isGmcpRoomInfo(data: any): data is GmcpRoomInfo {
-    return data && typeof data === 'object' && ('vnum' in data || 'name' in data || 'terrain' in data || 'environment' in data);
+    return data && typeof data === 'object' && (
+        'num' in data ||
+        'vnum' in data ||
+        'id' in data ||
+        'name' in data ||
+        'terrain' in data ||
+        'environment' in data
+    );
 }
 
 export function isGmcpRoomPlayers(data: any): data is GmcpRoomPlayers {

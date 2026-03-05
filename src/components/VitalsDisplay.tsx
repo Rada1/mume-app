@@ -3,7 +3,7 @@ import { GameStats } from '../types';
 import { useGame } from '../context/GameContext';
 import { useAtmosphereAudio } from '../hooks/useAtmosphereAudio';
 
-interface StatBarsProps {
+interface VitalsDisplayProps {
     stats: GameStats;
     hpRatio: number;
     manaRatio: number;
@@ -16,7 +16,7 @@ interface StatBarsProps {
     isLandscape?: boolean;
 }
 
-const StatBars: React.FC<StatBarsProps> = ({
+const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
     stats, hpRatio: propsHpRatio, manaRatio: propsManaRatio, moveRatio: propsMoveRatio, inCombat,
     onClick, orientation = 'vertical', onWimpyChange, onPointerDown, isLandscape
 }) => {
@@ -277,4 +277,4 @@ const StatBars: React.FC<StatBarsProps> = ({
     );
 };
 
-export default React.memo(StatBars);
+export default React.memo(VitalsDisplay);

@@ -27,9 +27,8 @@ export interface InteractionDeps {
     wasDraggingRef: React.RefObject<boolean>;
     viewport: any;
     setIsMapExpanded: (val: boolean) => void;
-    setIsInventoryOpen: (val: boolean) => void;
     setIsCharacterOpen: (val: boolean) => void;
-    setIsRightDrawerOpen: (val: boolean) => void;
+    setIsItemsDrawerOpen: (val: boolean) => void;
     setInventoryLines: (val: any) => void;
     setEqLines: (val: any) => void;
     setStatsLines: (val: any) => void;
@@ -38,7 +37,7 @@ export interface InteractionDeps {
     isWaitingForInv: React.MutableRefObject<boolean>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'inventory' | 'character' | 'right';
+        drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
     };
 }
@@ -47,7 +46,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     const {
         executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
-        setIsMapExpanded, setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen,
+        setIsMapExpanded, setIsCharacterOpen, setIsItemsDrawerOpen,
         setInventoryLines, setEqLines, setStatsLines, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         ui
     } = deps;
@@ -115,29 +114,93 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             if (deps.ui.mapExpanded) {
                 setIsMapExpanded(false);
             } else if (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInv.current) {
-                setIsInventoryOpen(false); setIsRightDrawerOpen(false); setIsCharacterOpen(false); setIsMapExpanded(false);
+                setIsItemsDrawerOpen(false); setIsCharacterOpen(false); setIsMapExpanded(false);
             } else executeCommand('s');
         } else if (dir === 'right') {
             setStatsLines([]); executeCommand('stat', false, true, true); setIsCharacterOpen(true);
         } else if (dir === 'left') {
             setInventoryLines([]); setEqLines([]); executeCommand('inventory', false, true, true, true);
             setTimeout(() => executeCommand('eq', false, true, true, true), 300);
-            setIsRightDrawerOpen(true);
+            setIsItemsDrawerOpen(true);
         }
-    }, [viewport.isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen, executeCommand, setStatsLines, setInventoryLines, setEqLines, ui]);
+    }, [viewport.isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsCharacterOpen, setIsItemsDrawerOpen, executeCommand, setStatsLines, setInventoryLines, setEqLines, ui]);
 
     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
-        const selection = window.getSelection()?.toString().trim();
+        let selection = window.getSelection()?.toString().trim();
+
+        // Mobile fallback: Rapid taps often don't resolve selection in JS before the event fires,
+        // or browser selection has been suppressed by CSS rules.
+        if (!selection) {
+            const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+            if (targetEl) {
+                selection = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+            } else {
+                // If tapping plain text, try to find the word under the tap coordinates
+                const ev = e.nativeEvent as any;
+                const x = ev.clientX || (ev.touches?.[0]?.clientX);
+                const y = ev.clientY || (ev.touches?.[0]?.clientY);
+
+                if (x !== undefined && y !== undefined) {
+                    let range: Range | null = null;
+                    // Try exact point first
+                    if ((document as any).caretRangeFromPoint) {
+                        range = (document as any).caretRangeFromPoint(x, y);
+                    }
+
+                    // If no range or not a text node, try a small radius for better "fat finger" support
+                    if (!range || range.startContainer.nodeType !== Node.TEXT_NODE) {
+                        const offsets = [
+                            { dx: -5, dy: -5 }, { dx: 5, dy: -5 },
+                            { dx: -5, dy: 5 }, { dx: 5, dy: 5 },
+                            { dx: 0, dy: -10 }, { dx: 0, dy: 10 }
+                        ];
+                        for (const offset of offsets) {
+                            const r = (document as any).caretRangeFromPoint(x + offset.dx, y + offset.dy);
+                            if (r && r.startContainer.nodeType === Node.TEXT_NODE) {
+                                range = r;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (range) {
+                        const node = range.startContainer;
+                        const offset = range.startOffset;
+                        if (node.nodeType === Node.TEXT_NODE) {
+                            const text = node.textContent || "";
+                            // Improved word boundary detection: find nearest non-whitespace/non-punctuation cluster
+                            const beforeStr = text.slice(0, offset);
+                            const afterStr = text.slice(offset);
+
+                            const beforeWord = beforeStr.match(/(\w+)$/)?.[1] || "";
+                            const afterWord = afterStr.match(/^(\w+)/)?.[1] || "";
+
+                            selection = (beforeWord + afterWord).trim();
+                        }
+                    }
+                }
+            }
+        }
+
         if (selection) {
             setTarget(selection);
             addMessage('system', `Target set to: ${selection}`);
             triggerHaptic(30);
+
+            try {
+                window.getSelection()?.removeAllRanges();
+            } catch (err) {
+                // Ignore failures to clear 
+            }
         }
     }, [setTarget, addMessage, triggerHaptic]);
 
     const handleLogClick = useCallback((e: React.MouseEvent) => {
         const now = Date.now();
-        if (now - lastLogClickRef.current < 300) {
+        // Increase threshold slightly for mobile tap latency
+        const doubleTapThreshold = viewport.isMobile ? 400 : 300;
+
+        if (now - lastLogClickRef.current < doubleTapThreshold) {
             handleLogDoubleClick(e);
             lastLogClickRef.current = 0;
             return;
@@ -146,12 +209,35 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
 
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
         if (!targetEl) return;
-        e.stopPropagation(); triggerHaptic(20);
-        const cmd = targetEl.getAttribute('data-cmd'), action = targetEl.getAttribute('data-action'), context = targetEl.getAttribute('data-context');
-        if (action === 'menu') setPopoverState({ x: e.clientX, y: e.clientY, setId: cmd || 'selection', context: context || undefined });
-        else if (action === 'command' && cmd) executeCommand(context ? (cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`) : cmd);
-        else if (cmd === 'target' && context) { setTarget(context); addMessage('system', `Target set to: ${context}`); }
-    }, [triggerHaptic, setPopoverState, executeCommand, setTarget, addMessage, handleLogDoubleClick]);
+
+        e.stopPropagation();
+        triggerHaptic(20);
+
+        const cmd = targetEl.getAttribute('data-cmd');
+        const action = targetEl.getAttribute('data-action');
+        const context = targetEl.getAttribute('data-context');
+
+        // Use client coordinates or fallback for popover placement
+        const x = e.clientX || (e.nativeEvent as MouseEvent).clientX;
+        const y = e.clientY || (e.nativeEvent as MouseEvent).clientY;
+
+        if (action === 'menu') {
+            setPopoverState({
+                x: x || window.innerWidth / 2,
+                y: y || window.innerHeight / 2,
+                setId: cmd || 'selection',
+                context: context || undefined
+            });
+        }
+        else if (action === 'command' && cmd) {
+            const finalCmd = context ? (cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`) : cmd;
+            executeCommand(finalCmd);
+        }
+        else if (cmd === 'target' && context) {
+            setTarget(context);
+            addMessage('system', `Target set to: ${context}`);
+        }
+    }, [triggerHaptic, setPopoverState, executeCommand, setTarget, addMessage, handleLogDoubleClick, viewport.isMobile]);
 
     return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick };
 };

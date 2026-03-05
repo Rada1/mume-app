@@ -1,5 +1,5 @@
 import React from 'react';
-import { GameButton } from '../../GameButton';
+import { GameButton } from '../../Controls/GameButton/GameButton';
 
 interface XboxClusterProps {
     uiPositions: any;

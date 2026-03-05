@@ -1,5 +1,5 @@
 import React from 'react';
-import StatBars from '../../StatBars';
+import VitalsDisplay from '../../VitalsDisplay';
 import { GameStats } from '../../../types';
 
 interface StatsClusterProps {
@@ -49,7 +49,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
             onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'stats', 'cluster'); }}
         >
             {isEditMode && <div className="resize-handle" style={{ zIndex: 1700 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'stats', 'cluster-resize'); }} />}
-            <StatBars
+            <VitalsDisplay
                 hpRatio={hpRatio}
                 manaRatio={manaRatio}
                 moveRatio={moveRatio}

@@ -9,12 +9,13 @@ interface MapperDropdownProps {
     setIsDarkMode: (dark: boolean) => void;
     exportMap: () => void;
     importMap: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    importMMapper: (e: React.ChangeEvent<HTMLInputElement>) => void;
     clearMap: () => void;
 }
 
 export const MapperDropdown: React.FC<MapperDropdownProps> = ({
     isOpen, setIsOpen, allowPersistence, setAllowPersistence, isDarkMode, setIsDarkMode,
-    exportMap, importMap, clearMap
+    exportMap, importMap, importMMapper, clearMap
 }) => {
     if (!isOpen) return null;
 
@@ -42,6 +43,11 @@ export const MapperDropdown: React.FC<MapperDropdownProps> = ({
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                         Import Map
                         <input type="file" onChange={importMap} style={{ display: 'none' }} accept=".json" />
+                    </label>
+                    <label style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#f9e2af', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Import MMapper (.mm2)
+                        <input type="file" onChange={importMMapper} style={{ display: 'none' }} accept=".mm2" />
                     </label>
                     <button style={{ padding: '8px 12px', backgroundColor: 'rgba(243, 139, 168, 0.05)', border: 'none', color: '#f38ba8', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={clearMap}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>

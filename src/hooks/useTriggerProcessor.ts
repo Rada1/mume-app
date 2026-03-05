@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Action } from '../types';
+import { GameAction } from '../types';
 
 export const useTriggerProcessor = (deps: {
     isSoundEnabledRef: React.RefObject<boolean>;
@@ -9,7 +9,7 @@ export const useTriggerProcessor = (deps: {
     setButtons: React.Dispatch<React.SetStateAction<any[]>>;
     buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>;
     setActiveSet: (setId: string) => void;
-    actionsRef: React.RefObject<Action[]>;
+    actionsRef: React.RefObject<GameAction[]>;
     executeCommandRef: React.RefObject<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>;
 }) => {
     const { isSoundEnabledRef, soundTriggersRef, playSound, buttonsRef, setButtons, buttonTimers, setActiveSet, actionsRef, executeCommandRef } = deps;

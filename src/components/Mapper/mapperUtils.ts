@@ -10,10 +10,15 @@ export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: st
 };
 
 export const TERRAIN_MAP: Record<string, string> = {
+    // Character codes
     '[': 'Building', '#': 'City', '.': 'Field', 'f': 'Forest',
     '(': 'Hills', '<': 'Mountains', '%': 'Shallows', '~': 'Water',
     '+': 'Road', 'W': 'Rapids', 'U': 'Underwater', ':': 'Brush',
-    '=': 'Tunnel', '0': 'Cavern'
+    '=': 'Tunnel',
+    // Numeric codes (from standard MUD mappers)
+    '0': 'Inside/Cavern', '1': 'City', '2': 'Field', '3': 'Grasslands', '4': 'Forest',
+    '5': 'Hills', '6': 'Mountains', '7': 'Water (Shallow)', '8': 'Water (Deep)',
+    '9': 'Underwater', '10': 'Air', '11': 'Road', '12': 'Brush'
 };
 
 export const generateId = () => Math.random().toString(36).substr(2, 9);

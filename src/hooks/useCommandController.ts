@@ -11,6 +11,7 @@ export interface CommandControllerDeps {
     mapperRef: React.RefObject<any>;
     teleportTargets: any[];
     isDrawerCapture: React.MutableRefObject<boolean>;
+    isSilentCapture: React.MutableRefObject<boolean>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
@@ -27,9 +28,8 @@ export interface CommandControllerDeps {
     setTarget: (val: string | null) => void;
     popoverState: any;
     setPopoverState: (val: any) => void;
-    setIsInventoryOpen: (open: boolean) => void;
     setIsCharacterOpen: (open: boolean) => void;
-    setIsRightDrawerOpen: (open: boolean) => void;
+    setIsItemsDrawerOpen: (open: boolean) => void;
     setIsMapExpanded: (open: boolean) => void;
     viewport: any;
     triggerHaptic: (ms: number) => void;
@@ -38,11 +38,11 @@ export interface CommandControllerDeps {
     wasDraggingRef: React.RefObject<boolean>;
     ui: {
         mapExpanded: boolean;
-        drawer: 'none' | 'inventory' | 'character' | 'right';
+        drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
     };
-    actions: import('../types').Action[];
-    setActions: (val: import('../types').Action[] | ((prev: import('../types').Action[]) => import('../types').Action[])) => void;
+    actions: import('../types').GameAction[];
+    setActions: (val: import('../types').GameAction[] | ((prev: import('../types').GameAction[]) => import('../types').GameAction[])) => void;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {

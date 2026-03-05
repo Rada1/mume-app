@@ -64,7 +64,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         popoverState,
         setPopoverState,
         addMessage,
-        setSettings
+        setSettings,
+        autoConnect,
+        setAutoConnect
     } = useGame() as any;
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
@@ -117,13 +119,15 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setNewSoundRegex={setNewSoundRegex}
                     handleSoundUpload={handleSoundUpload}
                     soundTriggers={soundTriggers}
-                    deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
+                    setSoundTriggers={setSoundTriggers}
                     resetButtons={btn.resetToDefaults}
                     connect={connect}
                     loginName={loginName}
                     setLoginName={setLoginName}
                     loginPassword={loginPassword}
                     setLoginPassword={setLoginPassword}
+                    autoConnect={autoConnect}
+                    setAutoConnect={setAutoConnect}
                 />
             )}
 

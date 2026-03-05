@@ -1,6 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { IAC, SB, SE, TELNET_GMCP, TELNET_TTYPE, TTYPE_IS, TTYPE_SEND } from '../constants';
-import { MessageType, WeatherType, GameStats, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo } from '../types';
+import { MessageType, WeatherType, GameStats, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs } from '../types';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 
@@ -18,12 +18,12 @@ export interface TelnetHandlers {
     onOpponentChange?: (opponent: string | null) => void;
     onAddPlayer?: (data: string | GmcpOccupant) => void;
     onRemovePlayer?: (data: string | GmcpOccupant) => void;
-    onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
+    onRoomItems?: (data: GmcpRoomItems) => void;
     onRoomInfo?: (data: GmcpRoomInfo) => void;
-    onRoomUpdateExits?: (data: Record<string, GmcpExitInfo | false>) => void;
+    onRoomUpdateExits?: (data: GmcpUpdateExits) => void;
     onCharVitals?: (data: GmcpCharVitals) => void;
-    onRoomPlayers?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
-    onRoomNpcs?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
+    onRoomPlayers?: (data: GmcpRoomPlayers) => void;
+    onRoomNpcs?: (data: GmcpRoomNpcs) => void;
     onAddNpc?: (data: string | GmcpOccupant) => void;
     onRemoveNpc?: (data: string | GmcpOccupant) => void;
     onCharNameChange?: (name: string | null) => void;
@@ -114,12 +114,32 @@ export function useTelnet(options: TelnetOptions) {
         }
     }, [processLine, setPrompt, handlers]);
 
+    // Stable callback refs — update on every render so ProtocolHandler always
+    // calls the latest version without needing to be re-created.
+    const sendBytesRef = useRef(sendBytes);
+    const sendGMCPRef = useRef(sendGMCP);
+    const handleSubnegotiationRef = useRef(handleSubnegotiation);
+    const processTextRef = useRef(processText);
+    const addMessageRef = useRef(handlers.addMessage);
+    useEffect(() => {
+        sendBytesRef.current = sendBytes;
+        sendGMCPRef.current = sendGMCP;
+        handleSubnegotiationRef.current = handleSubnegotiation;
+        processTextRef.current = processText;
+        addMessageRef.current = handlers.addMessage;
+    });
+
+    // Create ProtocolHandler ONCE on mount — never recreate it, so gmcpReady
+    // is never inadvertently reset between renders.
     useEffect(() => {
         protocolHandler.current = new ProtocolHandler({
-            sendBytes, sendGMCP, handleSubnegotiation, processText,
-            addMessage: handlers.addMessage
+            sendBytes: (...args) => sendBytesRef.current(...args),
+            sendGMCP: (...args) => sendGMCPRef.current(...args),
+            handleSubnegotiation: (...args) => handleSubnegotiationRef.current(...args),
+            processText: (...args) => processTextRef.current(...args),
+            addMessage: (...args) => addMessageRef.current(...args)
         });
-    }, [sendBytes, sendGMCP, handleSubnegotiation, processText, handlers.addMessage]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const connect = () => {
         if (socketRef.current) socketRef.current.close();

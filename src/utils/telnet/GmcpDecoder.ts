@@ -1,4 +1,4 @@
-import { GameStats, WeatherType, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo } from '../../types';
+import { GameStats, WeatherType, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs } from '../../types';
 import { isGmcpCharVitals, isGmcpRoomInfo, isGmcpRoomPlayers, isGmcpRoomItems, isGmcpExitInfoMap } from '../../utils/gmcpValidation';
 
 export interface GmcpHandlers {
@@ -10,12 +10,12 @@ export interface GmcpHandlers {
     onOpponentChange?: (opponent: string | null) => void;
     onAddPlayer?: (data: string | GmcpOccupant) => void;
     onRemovePlayer?: (data: string | GmcpOccupant) => void;
-    onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
+    onRoomItems?: (data: GmcpRoomItems) => void;
     onRoomInfo?: (data: GmcpRoomInfo) => void;
-    onRoomUpdateExits?: (data: Record<string, GmcpExitInfo | false>) => void;
+    onRoomUpdateExits?: (data: GmcpUpdateExits) => void;
     onCharVitals?: (data: GmcpCharVitals) => void;
-    onRoomPlayers?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
-    onRoomNpcs?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
+    onRoomPlayers?: (data: GmcpRoomPlayers) => void;
+    onRoomNpcs?: (data: GmcpRoomNpcs) => void;
     onAddNpc?: (data: string | GmcpOccupant) => void;
     onRemoveNpc?: (data: string | GmcpOccupant) => void;
     onCharNameChange?: (name: string | null) => void;
@@ -30,6 +30,9 @@ export class GmcpDecoder {
     public decode(pkg: string, json: string) {
         const pkgLower = pkg.toLowerCase();
         const { handlers } = this;
+
+        // --- GMCP Debug Logging ---
+        console.log('[GMCP] Received:', pkg, json ? json.substring(0, 200) : '(no body)');
 
         if (pkgLower === 'char.vitals') {
             this.handleCharVitals(json);
@@ -65,7 +68,7 @@ export class GmcpDecoder {
                 if (this.handlers.onCharVitals) this.handlers.onCharVitals(data);
                 this.updateStatsFromVitals(data);
             }
-        } catch (e) { }
+        } catch (e) { console.error('[GMCP] Parse error in Char.Vitals:', e, json); }
     }
 
     private updateStatsFromVitals(data: any) {
@@ -124,36 +127,44 @@ export class GmcpDecoder {
     private handleRoomInfo(json: string) {
         try {
             const data = JSON.parse(json);
-            if (isGmcpRoomInfo(data) && this.handlers.onRoomInfo) this.handlers.onRoomInfo(data);
-        } catch (e) { }
+            console.log('[GMCP] Room.Info parsed:', data);
+            if (isGmcpRoomInfo(data)) {
+                if (this.handlers.onRoomInfo) this.handlers.onRoomInfo(data);
+            } else {
+                console.warn('[GMCP] Room.Info rejected by validator:', data);
+            }
+        } catch (e) { console.error('[GMCP] Parse error in Room.Info:', e, json); }
     }
 
     private handleUpdateExits(json: string) {
         try {
             const data = JSON.parse(json);
-            if (isGmcpExitInfoMap(data) && this.handlers.onRoomUpdateExits) this.handlers.onRoomUpdateExits(data);
-        } catch (e) { }
+            if (this.handlers.onRoomUpdateExits) {
+                if (data.exits) this.handlers.onRoomUpdateExits(data as GmcpUpdateExits);
+                else this.handlers.onRoomUpdateExits({ exits: data });
+            }
+        } catch (e) { console.error('[GMCP] Parse error in Room.UpdateExits:', e, json); }
     }
 
     private handleRoomPlayers(json: string) {
         try {
             const data = JSON.parse(json);
             if (isGmcpRoomPlayers(data) && this.handlers.onRoomPlayers) this.handlers.onRoomPlayers(data);
-        } catch (e) { }
+        } catch (e) { console.error('[GMCP] Parse error in Room.Players:', e, json); }
     }
 
     private handleRoomNpcs(json: string) {
         try {
             const data = JSON.parse(json);
             if (isGmcpRoomPlayers(data) && this.handlers.onRoomNpcs) this.handlers.onRoomNpcs(data);
-        } catch (e) { }
+        } catch (e) { console.error('[GMCP] Parse error in Room.Chars:', e, json); }
     }
 
     private handleRoomItems(json: string) {
         try {
             const data = JSON.parse(json);
             if (isGmcpRoomItems(data) && this.handlers.onRoomItems) this.handlers.onRoomItems(data);
-        } catch (e) { }
+        } catch (e) { console.error('[GMCP] Parse error in Room.Items:', e, json); }
     }
 
     private handleSimpleJson(json: string, handler?: (data: any) => void) {

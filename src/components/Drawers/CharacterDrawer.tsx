@@ -1,7 +1,7 @@
 import React from 'react';
 import { useGame } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
-import StatBars from '../StatBars';
+import VitalsDisplay from '../VitalsDisplay';
 
 interface CharacterDrawerProps {
     isOpen: boolean;
@@ -243,7 +243,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         textAlign: 'left'
                     }}
                 >
-                    <StatBars
+                    <VitalsDisplay
                         stats={stats}
                         hpRatio={hpRatio}
                         manaRatio={manaRatio}

@@ -82,6 +82,64 @@ export function useViewport() {
         }
     }, [isMobile]);
 
+    const [logFontSize, setLogFontSize] = useState(() => {
+        const saved = localStorage.getItem('mud-log-font-size');
+        return saved ? parseFloat(saved) : 1.0;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('mud-log-font-size', logFontSize.toString());
+    }, [logFontSize]);
+
+    const touchDistRef = useRef<number | null>(null);
+
+    // Global touch listeners for pinch zoom
+    useEffect(() => {
+        if (!isMobile) return;
+
+        const handleTouchStart = (e: TouchEvent) => {
+            if (e.touches.length === 2) {
+                const dist = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+                touchDistRef.current = dist;
+            }
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            if (e.touches.length === 2 && touchDistRef.current !== null) {
+                const distContext = Math.hypot(
+                    e.touches[0].pageX - e.touches[1].pageX,
+                    e.touches[0].pageY - e.touches[1].pageY
+                );
+
+                const ratio = distContext / touchDistRef.current;
+                touchDistRef.current = distContext;
+
+                setLogFontSize(prev => {
+                    const next = prev * ratio;
+                    // Clamp between 0.5 and 2.5
+                    return Math.min(2.5, Math.max(0.5, next));
+                });
+            }
+        };
+
+        const handleTouchEnd = () => {
+            touchDistRef.current = null;
+        };
+
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
+        window.addEventListener('touchend', handleTouchEnd);
+
+        return () => {
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
+    }, [isMobile]);
+
     // Dynamic viewport height for mobile browsers
     const updateHeight = useCallback(() => {
         const viewport = window.visualViewport;
@@ -158,17 +216,17 @@ export function useViewport() {
                 // To fit 80 chars: 80 * fontSize * 0.6 = width
                 // fontSize = width / 48
                 // We use 48.5 for a tighter fit while still allowing tiny padding
-                const fontSize = width / 48.5;
+                const fontSize = (width / 48.5) * logFontSize;
                 document.documentElement.style.setProperty('--dynamic-log-size', `${Math.max(6, fontSize)}px`);
             }
         } else {
-            document.documentElement.style.setProperty('--dynamic-log-size', '16px');
+            document.documentElement.style.setProperty('--dynamic-log-size', `${16 * logFontSize}px`);
         }
 
         lastViewportHeightRef.current = currentHeight;
 
         // Synchronous distance-from-bottom restoration handles keyboard transitions now.
-    }, [scrollToBottom, isMobile, isKeyboardOpen]);
+    }, [scrollToBottom, isMobile, isKeyboardOpen, logFontSize]);
 
     // Force snap and scroll strictly when keyboard state or mobile status changes
     useEffect(() => {
@@ -217,5 +275,7 @@ export function useViewport() {
         isLockedToBottomRef,
         scrollToBottom,
         updateHeight,
+        logFontSize,
+        resetLogFontSize: () => setLogFontSize(1.0)
     };
 }

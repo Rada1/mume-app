@@ -2,7 +2,7 @@ import { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, Chang
 import {
     GameStats, PopoverState, Message, MessageType, WeatherType,
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
-    DrawerLine, DeathStage, Action
+    DrawerLine, DeathStage, GameAction
 } from '../../types';
 import { useButtons } from '../../hooks/useButtons';
 import { useJoystick } from '../../hooks/useJoystick';
@@ -56,7 +56,7 @@ export interface GameContextType {
 
     // Shared UI state
     ui: {
-        drawer: 'none' | 'inventory' | 'character' | 'right';
+        drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -64,7 +64,7 @@ export interface GameContextType {
         menuView: 'main' | 'availableSets';
     };
     setUI: Dispatch<SetStateAction<{
-        drawer: 'none' | 'inventory' | 'character' | 'right';
+        drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -82,8 +82,8 @@ export interface GameContextType {
     setAccentColor: (val: string) => void;
     abilities: Record<string, number>;
     setAbilities: Dispatch<SetStateAction<Record<string, number>>>;
-    actions: Action[];
-    setActions: Dispatch<SetStateAction<Action[]>>;
+    actions: GameAction[];
+    setActions: Dispatch<SetStateAction<GameAction[]>>;
     characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
     setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
 
@@ -103,9 +103,8 @@ export interface GameContextType {
     setAlertness: (val: string) => void;
 
     // Helpers for UI
-    setIsInventoryOpen: (open: boolean) => void;
     setIsCharacterOpen: (open: boolean) => void;
-    setIsRightDrawerOpen: (open: boolean) => void;
+    setIsItemsDrawerOpen: (open: boolean) => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
 
@@ -116,7 +115,7 @@ export interface GameContextType {
 
     soundTriggersRef: RefObject<SoundTrigger[]>;
     isSoundEnabledRef: RefObject<boolean>;
-    actionsRef: RefObject<Action[]>;
+    actionsRef: RefObject<GameAction[]>;
 
     teleportTargets: TeleportTarget[];
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
@@ -203,6 +202,7 @@ export interface GameContextType {
 
     captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isDrawerCapture: MutableRefObject<boolean>;
+    isSilentCapture: MutableRefObject<boolean>;
     isWaitingForStats: MutableRefObject<boolean>;
     isWaitingForEq: MutableRefObject<boolean>;
     isWaitingForInv: MutableRefObject<boolean>;

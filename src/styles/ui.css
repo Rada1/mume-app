@@ -11,6 +11,23 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.mobile-header {
+    background: transparent !important;
+    border-bottom: none !important;
+    position: absolute !important;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    z-index: 1001;
+    pointer-events: none;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.mobile-header>* {
+    pointer-events: auto;
+}
+
 .title {
     font-size: 1.4rem;
     font-weight: 700;

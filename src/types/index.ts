@@ -148,12 +148,38 @@ export interface PopoverManagerProps {
 }
 
 
-export interface Action {
+export interface GameAction {
     id: string;
     pattern: string;
     command: string;
     isRegex: boolean;
     enabled: boolean;
+}
+
+export interface SettingsModalProps {
+    connectionUrl: string;
+    setConnectionUrl: (val: string) => void;
+    bgImage: string;
+    setBgImage: (val: string) => void;
+    handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    exportSettings: () => void;
+    importSettings: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    isLoading: boolean;
+    newSoundPattern: string;
+    setNewSoundPattern: (val: string) => void;
+    newSoundRegex: boolean;
+    setNewSoundRegex: (val: boolean) => void;
+    handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    soundTriggers: SoundTrigger[];
+    setSoundTriggers: (val: SoundTrigger[]) => void;
+    resetButtons: () => void;
+    connect: () => void;
+    loginName: string;
+    setLoginName: (val: string) => void;
+    loginPassword: string;
+    setLoginPassword: (val: string) => void;
+    autoConnect: boolean;
+    setAutoConnect: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -166,7 +192,7 @@ export interface SavedSettings {
     bgImage: string;
     buttons: CustomButton[];
     soundTriggers: Omit<SoundTrigger, 'buffer'>[];
-    actions?: Action[];
+    actions?: GameAction[];
     combatSet?: string;
     defaultSet?: string;
     loginName?: string;
@@ -176,6 +202,7 @@ export interface SavedSettings {
     abilities?: Record<string, number>;
     characterClass?: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
     setSettings?: Record<string, ButtonSetSettings>;
+    autoConnect?: boolean;
 }
 
 export interface RoomNode {

@@ -1,6 +1,8 @@
-import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { MapperRoom, MapperMarker } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY } from './mapperUtils';
+import { useMapHitTest } from './hooks/useMapHitTest';
+import { useMapWheelEvents } from './hooks/useMapWheelEvents';
 
 interface InteractionProps {
     rooms: Record<string, MapperRoom>;
@@ -53,7 +55,6 @@ export const useMapperInteractions = ({
     const [marqueeStart, setMarqueeStart] = useState<{ x: number, y: number } | null>(null);
     const [marqueeEnd, setMarqueeEnd] = useState<{ x: number, y: number } | null>(null);
 
-    // Stability Refs to avoid listener churn
     const roomsRef = useRef(rooms);
     const markersRef = useRef(markers);
     const selectedRoomIdsRef = useRef(selectedRoomIds);
@@ -64,81 +65,13 @@ export const useMapperInteractions = ({
     useEffect(() => { selectedRoomIdsRef.current = selectedRoomIds; }, [selectedRoomIds]);
     useEffect(() => { currentRoomIdRef.current = currentRoomId; }, [currentRoomId]);
 
-    const screenToWorld = useCallback((sx: number, sy: number) => {
-        const cvs = canvasRef.current;
-        if (!cvs) return { x: 0, y: 0 };
-        const rect = cvs.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
-        // The original logic used mx, my relative to canvas rect
-        return {
-            x: (sx / cameraRef.current.zoom) + cameraRef.current.x,
-            y: (sy / cameraRef.current.zoom) + cameraRef.current.y
-        };
-    }, [canvasRef]);
+    const { screenToWorld, getRoomAt, getMarkerAt } = useMapHitTest({
+        roomsRef, markersRef, currentRoomIdRef, cameraRef, canvasRef, viewZ, spatialIndexRef, preloadedCoordsRef
+    });
 
-    const getRoomAt = useCallback((wx: number, wy: number, strictZ = false) => {
-        const roomsToSearch = roomsRef.current;
-        const currentZ = viewZ !== null ? viewZ : (currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0);
-        const margin = 2;
-        let foundRoom: string | null = null;
-        let bestDist = Infinity;
-
-        // 1. Search Local State first
-        for (const key in roomsToSearch) {
-            const r = roomsToSearch[key];
-            const rx = r.x * GRID_SIZE, ry = r.y * GRID_SIZE;
-            if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
-                const rz = r.z || 0;
-                if (rz === currentZ) return r.id;
-                if (!strictZ) {
-                    const dist = Math.abs(rz - currentZ);
-                    if (dist < bestDist) { bestDist = dist; foundRoom = r.id; }
-                }
-            }
-        }
-
-        // 2. Search Master Map if nothing in local
-        if (spatialIndexRef.current && preloadedCoordsRef.current) {
-            const floor = Math.round(currentZ);
-            const floorBuckets = spatialIndexRef.current[floor];
-            if (floorBuckets) {
-                const bx = Math.floor(wx / GRID_SIZE / 5);
-                const by = Math.floor(wy / GRID_SIZE / 5);
-                // Check current bucket and neighbors
-                for (let dx = -1; dx <= 1; dx++) {
-                    for (let dy = -1; dy <= 1; dy++) {
-                        const vnums = floorBuckets[`${bx + dx},${by + dy}`];
-                        if (vnums) {
-                            for (const vnum of vnums) {
-                                const [rx_g, ry_g] = preloadedCoordsRef.current[vnum];
-                                const rx = rx_g * GRID_SIZE, ry = ry_g * GRID_SIZE;
-                                if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
-                                    return `m_${vnum}`;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return foundRoom;
-    }, [viewZ, preloadedCoordsRef, spatialIndexRef]);
-
-    const getMarkerAt = useCallback((wx: number, wy: number) => {
-        const markersToSearch = markersRef.current;
-        const roomsToSearch = roomsRef.current;
-        const currentZ = currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0;
-        const z = cameraRef.current.zoom;
-        for (const key in markersToSearch) {
-            const m = markersToSearch[key];
-            if ((m.z || 0) !== currentZ) continue;
-            const dx = m.x * GRID_SIZE - wx;
-            const dy = m.y * GRID_SIZE - wy;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < (20 / z)) return key;
-        }
-        return null;
-    }, []);
+    const { onWheel } = useMapWheelEvents({
+        cameraRef, roomsRef, currentRoomIdRef, canvasRef, setViewZ, setAutoCenter, triggerRender
+    });
 
     useEffect(() => {
         const cvs = canvasRef.current;
@@ -307,29 +240,6 @@ export const useMapperInteractions = ({
             }
         };
 
-        const onWheel = (e: WheelEvent) => {
-            e.preventDefault();
-            if (e.ctrlKey) {
-                const dir = e.deltaY > 0 ? -1 : 1;
-                setViewZ(prev => {
-                    const currentZ = currentRoomIdRef.current ? (roomsRef.current[currentRoomIdRef.current]?.z || 0) : 0;
-                    return (prev !== null ? prev : currentZ) + dir;
-                });
-                setAutoCenter(false);
-                triggerRender();
-                return;
-            }
-            const rect = cvs.getBoundingClientRect();
-            const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-            const cam = cameraRef.current, oldZoom = cam.zoom;
-            const factor = Math.pow(1.05, -e.deltaY / 120), newZoom = Math.max(0.01, Math.min(oldZoom * factor, 5));
-            if (Math.abs(newZoom - oldZoom) < 0.001) return;
-            const wx = (mx / oldZoom) + cam.x, wy = (my / oldZoom) + cam.y;
-            cam.x = wx - (mx / newZoom); cam.y = wy - (my / newZoom); cam.zoom = newZoom;
-            setAutoCenter(false);
-            triggerRender();
-        };
-
         cvs.addEventListener('pointerdown', onDown, { passive: false });
         window.addEventListener('pointermove', onMove, { passive: false });
         window.addEventListener('pointerup', onUp, { passive: false });
@@ -343,7 +253,7 @@ export const useMapperInteractions = ({
             window.removeEventListener('pointercancel', onUp);
             cvs.removeEventListener('wheel', onWheel);
         };
-    }, [mode, isDesignMode, isMinimized, canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender]);
+    }, [mode, isDesignMode, isMinimized, canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel]);
 
     const marqueeStr = `${marqueeStart?.x},${marqueeStart?.y}|${marqueeEnd?.x},${marqueeEnd?.y}`;
     const outputMarquee = useMemo(() => ({ start: marqueeStart, end: marqueeEnd }), [marqueeStr]);

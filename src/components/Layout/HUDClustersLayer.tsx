@@ -1,7 +1,7 @@
 import React from 'react';
-import { GameButton } from '../GameButton';
+import { GameButton } from '../Controls/GameButton/GameButton';
 import { useGame } from '../../context/GameContext';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, RotateCcw } from 'lucide-react';
 import { MapperCluster } from './HUD/MapperCluster';
 import { StatsCluster } from './HUD/StatsCluster';
 import { JoystickCluster } from './HUD/JoystickCluster';
@@ -24,13 +24,25 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, joystickGlow, setJoystickGlow, btnGlow, setBtnGlow
 }) => {
     const { stats, inCombat, characterName, isMmapperMode, btn, joystick, mapperRef, target, triggerHaptic, executeCommand, handleButtonClick, setPopoverState, viewport, activePrompt, showControls } = useGame();
-    const { isMobile, isLandscape } = viewport;
+    const { isMobile, isLandscape, logFontSize, resetLogFontSize } = viewport;
 
     const effectiveShowControls = showControls;
     const handleWimpyChange = (val: number) => executeCommand(`wimpy ${val}`);
 
     return (
         <>
+            {isMobile && logFontSize !== 1.0 && (
+                <div
+                    className="reset-zoom-fab"
+                    onClick={() => {
+                        triggerHaptic(25);
+                        resetLogFontSize();
+                    }}
+                    title="Reset Font Size"
+                >
+                    <RotateCcw size={20} />
+                </div>
+            )}
             <MapperCluster
                 uiPositions={btn.uiPositions}
                 isEditMode={btn.isEditMode}

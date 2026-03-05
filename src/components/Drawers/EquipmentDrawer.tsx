@@ -80,7 +80,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             style={{ touchAction: 'pan-y' }}
         >
             <div className="drawer-header">
-                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Equipment & Inventory</span>
+                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>ITEMS</span>
                 <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
             </div>
             <div className="drawer-content" style={{ display: 'flex', flexDirection: 'column', gap: '15px', flex: 1, overflow: 'hidden' }}>

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Mapper } from '../../Mapper';
+import { Mapper } from '../../Mapper/Mapper';
 import { MapperRef } from '../../Mapper/mapperTypes';
 import { CustomButton, GameStats } from '../../../types';
-import StatBars from '../../StatBars';
+import VitalsDisplay from '../../VitalsDisplay';
 import { useGame } from '../../../context/GameContext';
 
 interface MapperClusterProps {
@@ -45,6 +45,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         isMmapperMode={isMmapperMode}
                         isMobile={true}
                         isExpanded={isExpanded}
+                        setIsMinimized={(min) => setUI(prev => ({ ...prev, mapExpanded: !min }))}
                     />
                 </div>
             </div>

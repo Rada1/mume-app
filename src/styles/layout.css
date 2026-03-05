@@ -59,8 +59,8 @@
 
 @media (max-width: 600px) {
     .content-layer {
-        padding: 12px 0px;
-        padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        padding: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
     }
 }
 

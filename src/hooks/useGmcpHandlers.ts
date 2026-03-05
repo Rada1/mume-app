@@ -111,13 +111,21 @@ export const useGmcpHandlers = ({
         if (name) setRoomNpcs(prev => prev.includes(name) ? prev : [...prev, name]);
     }, [setRoomNpcs]);
 
-    const onRemovePlayer = useCallback((data: string | { name: string }) => {
-        const name = typeof data === 'string' ? data : data.name;
+    const onRemovePlayer = useCallback((data: string | GmcpOccupant) => {
+        const parseOccupant = (p: string | GmcpOccupant): string | null => {
+            if (typeof p === 'string') return p;
+            return p.name || p.keyword || p.short || p.shortdesc || null;
+        };
+        const name = parseOccupant(data);
         if (name) setRoomPlayers(prev => prev.filter(p => p !== name));
     }, [setRoomPlayers]);
 
-    const onRemoveNpc = useCallback((data: string | { name: string }) => {
-        const name = typeof data === 'string' ? data : data.name;
+    const onRemoveNpc = useCallback((data: string | GmcpOccupant) => {
+        const parseOccupant = (p: string | GmcpOccupant): string | null => {
+            if (typeof p === 'string') return p;
+            return p.name || p.keyword || p.short || p.shortdesc || null;
+        };
+        const name = parseOccupant(data);
         if (name) setRoomNpcs(prev => prev.filter(p => p !== name));
     }, [setRoomNpcs]);
 

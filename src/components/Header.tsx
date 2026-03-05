@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Wifi, WifiOff, Layers, Edit3, Settings, CloudFog, Swords, Crosshair, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Gamepad2 } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff } from 'lucide-react';
+import { EnvControls } from './Layout/EnvControls';
 import { LightingType, WeatherType } from '../types';
 import { useGame } from '../context/GameContext';
 
@@ -73,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({
 
 
     return (
-        <header className="header" style={{ flexWrap: 'nowrap', gap: 6 }}>
+        <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} style={{ flexWrap: 'nowrap', gap: 6 }}>
             {/* Left: Brand/Logo (Hidden on Mobile Design Mode to save critical space) */}
             {!isLandscape && (!viewport.isMobile || !isEditMode) && (
                 <div className="title" style={{ flexShrink: 0, fontSize: viewport.isMobile ? '1.1rem' : '1.4rem' }}>
@@ -82,75 +83,7 @@ const Header: React.FC<HeaderProps> = ({
             )}
 
             {/* Middle: Status Indicators (Flexible/Clipped) */}
-            <div style={{ display: 'flex', gap: 6, alignItems: 'center', flex: 1, minWidth: 0, justifyContent: 'center' }}>
-                {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
-                    <div
-                        className="status-indicator"
-                        style={{ color: 'var(--text-primary)', gap: 4, padding: '4px 6px' }}
-                        title="Lighting/Weather Status"
-                    >
-                        {getLightingIcon()}
-                        {getWeatherIcon()}
-                        {isFoggy && <CloudFog size={14} className="text-gray-400" />}
-                        {!viewport.isMobile && (
-                            <span style={{ fontSize: '0.75rem' }}>
-                                {lighting !== 'none' ? lighting.toUpperCase() : ''}
-                                {weather !== 'none' && weather !== 'clear' ? ` | ${weather.toUpperCase().replace('-', ' ')}` : ''}
-                                {isFoggy ? ' | FOG' : ''}
-                            </span>
-                        )}
-                    </div>
-                )}
-                {!isLandscape && inCombat && (
-                    <div
-                        className="status-indicator"
-                        style={{ color: '#ef4444', gap: 4, padding: '4px 6px', animation: 'combat-pulse 1s ease-in-out infinite' }}
-                        title="In Combat"
-                    >
-                        <Swords size={12} />
-                        {!viewport.isMobile && <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>COMBAT</span>}
-                    </div>
-                )}
-                {!isLandscape && (
-                    <div
-                        className="status-indicator"
-                        style={{
-                            color: target ? 'var(--map-accent)' : 'var(--text-faded)',
-                            gap: 4, padding: '4px 6px',
-                            cursor: 'pointer',
-                            opacity: target ? 1 : 0.6,
-                            border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)',
-                            maxWidth: viewport.isMobile ? '80px' : 'none',
-                            overflow: 'hidden'
-                        }}
-                        title={target ? "Current Target (Click to clear)" : "No Target"}
-                        onClick={() => target && onClearTarget && onClearTarget()}
-                    >
-                        <Crosshair size={12} />
-                        <span style={{ fontWeight: 'bold', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {target ? target.toUpperCase() : (viewport.isMobile ? '' : 'NO TARGET')}
-                        </span>
-                    </div>
-                )}
-
-                {!isLandscape && (
-                    <div
-                        className="status-indicator"
-                        style={{
-                            color: teleportTargetsCount && teleportTargetsCount > 0 ? 'var(--accent)' : 'var(--text-faded)',
-                            gap: 4, padding: '4px 6px',
-                            cursor: 'pointer',
-                            opacity: teleportTargetsCount && teleportTargetsCount > 0 ? 1 : 0.6,
-                            border: '1px solid var(--border-color)'
-                        }}
-                        title="Stored Teleport Rooms"
-                        onClick={() => onTeleportClick && onTeleportClick()}
-                    >
-                        <Crosshair size={12} style={{ transform: 'rotate(45deg)' }} />
-                        <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{teleportTargetsCount || 0}</span>
-                    </div>
-                )}
-            </div>
+            <EnvControls getLightingIcon={getLightingIcon} getWeatherIcon={getWeatherIcon} isLandscape={isLandscape} />
 
             {/* Right: Master Controls (Always Visible/Fixed) */}
             <div className="controls" style={{ flexShrink: 0, marginLeft: 'auto' }}>

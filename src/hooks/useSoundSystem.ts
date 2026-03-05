@@ -23,7 +23,9 @@ export const useSoundSystem = () => {
 
     const triggerHaptic = useCallback((duration: number = 20) => {
         if (navigator && typeof navigator.vibrate === 'function') {
-            navigator.vibrate(duration);
+            // Dampen haptics to be more subtle as per user feedback
+            const dampenedDuration = Math.max(1, Math.floor(duration * 0.5));
+            navigator.vibrate(dampenedDuration);
         }
     }, []);
 

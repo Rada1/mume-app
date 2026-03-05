@@ -1,17 +1,23 @@
 import { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
-import { useGame } from '../context/GameContext';
-import { useMapperController } from './Mapper/useMapperController';
-import { MapCanvas } from './Mapper/MapCanvas';
-import { MapperToolbar } from './Mapper/MapperToolbar';
-import { MapperDropdown } from './Mapper/MapperDropdown';
-import { MapperContextMenu } from './Mapper/MapperContextMenu';
-import { RoomInfoCard } from './Mapper/RoomInfoCard';
-import { PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './Mapper/mapperUtils';
+import { useGame } from '../../context/GameContext';
+import { useMapperController } from './useMapperController';
+import { MapCanvas } from './MapCanvas';
+import { MapperToolbar } from './MapperToolbar';
+import { MapperDropdown } from './MapperDropdown';
+import { MapperContextMenu } from './MapperContextMenu';
+import { RoomInfoCard } from './RoomInfoCard';
+import { parseMM2 } from './mm2Parser';
+import { useMapperInteractions } from './useMapperInteractions';
+import { PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './mapperUtils';
 
 interface MapperProps {
-    isMinimized: boolean;
-    setIsMinimized: (min: boolean) => void;
+    isMinimized?: boolean;
+    setIsMinimized?: (min: boolean) => void;
     characterName?: string;
+    isMobile?: boolean;
+    isExpanded?: boolean;
+    isDesignMode?: boolean;
+    isMmapperMode?: boolean;
 }
 
 export interface MapperHandle {
@@ -21,7 +27,9 @@ export interface MapperHandle {
     handleResetAndSync: () => void;
 }
 
-export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setIsMinimized, characterName }, ref) => {
+export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
+    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded } = props;
+    const effectiveIsMinimized = isMinimizedProp ?? (isExpanded !== undefined ? !isExpanded : false);
     const [mode, setMode] = useState<'play' | 'edit'>('play');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
@@ -31,7 +39,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
     const [infoRoomId, setInfoRoomId] = useState<string | null>(null);
     const [renderVersion, setRenderVersion] = useState(0);
     const [autoCenter, setAutoCenter] = useState(true);
-    const [isMobile] = useState(() => /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+    const [isMobile] = useState(() => isMobileProp ?? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
     const [viewZ, setViewZ] = useState<number | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,7 +48,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
 
-    const { addMessage } = useGame();
+    const { addMessage, triggerHaptic } = useGame();
     const controller = useMapperController(characterName ?? null, ref);
 
     const {
@@ -52,6 +60,21 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
     } = controller;
 
     const triggerRender = useCallback(() => setRenderVersion(v => v + 1), []);
+
+    const { marquee } = useMapperInteractions({
+        rooms, setRooms, markers, setMarkers,
+        selectedRoomIds, setSelectedRoomIds,
+        selectedMarkerId, setSelectedMarkerId,
+        cameraRef, mode, currentRoomId,
+        isDesignMode: props.isDesignMode || false,
+        isMinimized: effectiveIsMinimized,
+        setAutoCenter, setContextMenu, setInfoRoomId,
+        triggerHaptic: triggerHaptic ?? (() => { }),
+        canvasRef, cardRef, setIsDragging, handleAddRoom,
+        triggerRender, viewZ, setViewZ,
+        preloadedCoordsRef,
+        spatialIndexRef: controller.spatialIndexRef
+    });
 
     useEffect(() => {
         const all = [...PEAK_IMAGES, ...FOREST_IMAGES, ...HILL_IMAGES];
@@ -81,10 +104,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
             }
             playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
 
-            if (autoCenter) {
-                cameraRef.current.x = -r.x;
-                cameraRef.current.y = -r.y;
-            }
             triggerRender();
         } else if (!currentRoomId) {
             playerPosRef.current = null;
@@ -139,6 +158,19 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
         reader.readAsText(file);
     }, [addMessage, setRooms, setMarkers]);
 
+    const handleImportMMapper = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            addMessage?.('system', '[Mapper] Reading MMapper file...');
+            const data = await parseMM2(file, 5.0);
+            controller.loadImportedMapData(data);
+        } catch (err) {
+            console.error(err);
+            addMessage?.('system', '[Mapper] Error parsing .mm2 file.');
+        }
+    }, [addMessage, controller]);
+
     const handleAddMarker = useCallback((wx: number, wy: number, z: number) => {
         const id = Math.random().toString(36).substr(2, 9);
         setMarkers(prev => ({
@@ -157,16 +189,22 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
     }, [setMarkers]);
 
     const handleCenterOnPlayer = useCallback(() => {
-        if (playerPosRef.current) {
-            cameraRef.current.x = -playerPosRef.current.x;
-            cameraRef.current.y = -playerPosRef.current.y;
+        if (playerPosRef.current && canvasRef.current) {
+            const cvs = canvasRef.current;
+            const dpr = window.devicePixelRatio || 1;
+            const w = cvs.width / dpr;
+            const h = cvs.height / dpr;
+            const zoom = cameraRef.current.zoom || 1;
+
+            cameraRef.current.x = (playerPosRef.current.x * 50 + 25) - (w / (2 * zoom));
+            cameraRef.current.y = (playerPosRef.current.y * 50 + 25) - (h / (2 * zoom));
             setAutoCenter(true);
             triggerRender();
         }
     }, [cameraRef, triggerRender]);
 
     return (
-        <div className={`mapper-container ${isMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!isMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: '#11111b' }}>
+        <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: '#11111b' }}>
             <MapCanvas
                 ref={canvasRef}
                 rooms={rooms}
@@ -183,7 +221,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
                 playerTrailRef={playerTrailRef}
                 renderVersion={renderVersion}
                 isDragging={isDragging}
-                marquee={null}
+                marquee={marquee}
                 autoCenter={autoCenter}
                 stableRoomsRef={roomsRef}
                 stableRoomIdRef={currentRoomIdRef}
@@ -200,9 +238,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
                 setMode={setMode}
                 autoCenter={autoCenter}
                 setAutoCenter={setAutoCenter}
-                setIsMinimized={setIsMinimized}
+                setIsMinimized={setIsMinimized ?? (() => { })}
                 isMobile={isMobile}
-                isExpanded={!isMinimized}
+                isExpanded={!effectiveIsMinimized}
                 onCenterClick={handleCenterOnPlayer}
                 setIsDropdownOpen={setIsDropdownOpen}
                 unveilMap={unveilMap}
@@ -218,7 +256,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
                 setIsDarkMode={() => { }}
                 exportMap={handleExportMap}
                 importMap={handleImportMap}
-                clearMap={handleClearMap}
+                importMMapper={handleImportMMapper}
+                clearMap={() => {
+                    handleClearMap();
+                    setIsDropdownOpen(false);
+                }}
             />
 
             {contextMenu && (
@@ -267,9 +309,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>(({ isMinimized, setI
                 />
             )}
 
-            <div style={{ position: 'absolute', bottom: '10px', left: '10px', color: 'lime', background: 'rgba(0,0,0,0.85)', padding: '8px', zIndex: 9999, fontSize: '11px', pointerEvents: 'none', borderRadius: '4px', border: '1px solid #333', fontFamily: 'monospace' }}>
-                Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
-            </div>
+            {!effectiveIsMinimized && (
+                <div style={{ position: 'absolute', bottom: '10px', left: '10px', color: 'lime', background: 'rgba(0,0,0,0.85)', padding: '8px', zIndex: 9999, fontSize: '11px', pointerEvents: 'none', borderRadius: '4px', border: '1px solid #333', fontFamily: 'monospace' }}>
+                    Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
+                </div>
+            )}
         </div>
     );
 });

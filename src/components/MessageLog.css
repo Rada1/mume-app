@@ -32,6 +32,13 @@
     mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 30px, black 60px);
     position: relative;
     user-select: text;
+    -webkit-user-select: text;
+    -webkit-touch-callout: none;
+    /* Prevents long-press menu on mobile */
+    -webkit-tap-highlight-color: transparent;
+    /* Removes flicker on tap */
+    touch-action: manipulation;
+    /* Disables browser double-tap-to-zoom */
     cursor: text;
     min-height: 0;
     perspective: 1200px;
@@ -315,6 +322,7 @@
         padding-left: 6px !important;
         padding-right: 6px !important;
         padding-bottom: 60px !important;
+        padding-top: 45px !important;
     }
 
     .input-area {
@@ -322,6 +330,13 @@
         right: 6px !important;
         bottom: 6px !important;
         padding: 8px 12px !important;
+    }
+
+    .inline-btn {
+        padding: 4px 2px;
+        margin: -4px -2px;
+        position: relative;
+        z-index: 1;
     }
 }
 

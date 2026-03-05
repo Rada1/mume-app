@@ -2,7 +2,7 @@ import React from 'react';
 import { InventoryDrawer } from './InventoryDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
 import { EquipmentDrawer } from './EquipmentDrawer';
-import { Mapper } from '../Mapper';
+import { Mapper } from '../Mapper/Mapper';
 import { User, Shield, Package, Map as MapIcon } from 'lucide-react';
 
 
@@ -10,12 +10,12 @@ import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
 
 interface DrawerManagerProps {
     ui: {
-        drawer: 'none' | 'inventory' | 'character' | 'right';
+        drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
         mapExpanded: boolean;
     };
     setUI: React.Dispatch<React.SetStateAction<{
-        drawer: 'none' | 'inventory' | 'character' | 'right';
+        drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
         mapExpanded: boolean;
     }>>;
@@ -56,7 +56,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     const anyOpen = ui.drawer !== 'none' || isMapDrawerOpen;
 
-    const handleTabClick = (drawer: 'inventory' | 'character' | 'right') => {
+    const handleTabClick = (drawer: 'character' | 'items') => {
         triggerHaptic(30);
         if (ui.drawer === drawer) {
             setUI(prev => ({ ...prev, drawer: 'none' }));
@@ -65,11 +65,9 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             // Refresh data when opening
             if (drawer === 'character') {
                 executeCommand('stat', false, true, true);
-            } else if (drawer === 'right') {
+            } else if (drawer === 'items') {
                 executeCommand('inv', false, true, true, true);
                 setTimeout(() => executeCommand('eq', false, true, true, true), 200);
-            } else if (drawer === 'inventory') {
-                executeCommand('inv', false, true, true, true);
             }
         }
     };
@@ -88,20 +86,10 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </div>
 
             <div
-                className={`desktop-edge-tab right ${ui.drawer === 'right' ? 'active' : ''}`}
+                className={`desktop-edge-tab right ${ui.drawer === 'items' ? 'active' : ''}`}
                 style={{ top: '35%' }}
-                onClick={() => handleTabClick('right')}
-                title="Equipment"
-            >
-                <Shield className="tab-icon" />
-                <span className="tab-text">Equip</span>
-            </div>
-
-            <div
-                className={`desktop-edge-tab right ${ui.drawer === 'inventory' ? 'active' : ''}`}
-                style={{ top: '65%' }}
-                onClick={() => handleTabClick('inventory')}
-                title="Inventory"
+                onClick={() => handleTabClick('items')}
+                title="Items & Equipment"
             >
                 <Package className="tab-icon" />
                 <span className="tab-text">Items</span>
@@ -145,13 +133,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             )}
 
 
-            <InventoryDrawer
-                isOpen={ui.drawer === 'inventory'}
-                onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
-                triggerHaptic={triggerHaptic}
-                inventoryLines={inventoryLines}
-            />
-
             <CharacterDrawer
                 isOpen={ui.drawer === 'character'}
                 onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
@@ -160,7 +141,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             />
 
             <EquipmentDrawer
-                isOpen={ui.drawer === 'right'}
+                isOpen={ui.drawer === 'items'}
                 onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
                 eqLines={eqLines}
                 inventoryLines={inventoryLines}

@@ -36,6 +36,9 @@ export interface MapperRef {
     handleRoomInfo: (data: any) => void;
     handleUpdateExits: (data: any) => void;
     handleTerrain: (t: string) => void;
+    handleResetAndSync: () => void;
+    handleAddRoom: (wx: number, wy: number, z: number) => string;
+    handleDeleteRoom: (id: string) => void;
     pushPendingMove: (dir: string) => void;
     handleMoveFailure: () => void;
 }

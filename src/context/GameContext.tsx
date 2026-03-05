@@ -81,7 +81,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const btn = useButtons(abilities, characterClass);
-    const joystick = useJoystick();
+    const joystick = useJoystick(triggerHaptic);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport();
     const env = useEnvironment({
@@ -113,7 +113,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         abilities, setAbilities: s.setAbilities,
         characterClass, setCharacterClass: s.setCharacterClass,
         actions: s.actions, setActions: s.setActions,
-        setSettings: btn.setSettings, setSetSettings: btn.setSetSettings
+        setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
+        autoConnect: s.autoConnect, setAutoConnect: s.setAutoConnect
     });
 
     const { processMessageHtml } = useMessageHighlighter(target, btn.buttonsRef, roomPlayers, roomNpcs, characterName, roomItems);
@@ -137,7 +138,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
 
     const parser = useGameParser({
-        isInventoryOpen: s.ui.drawer === 'inventory',
+        isItemsOpen: s.ui.drawer === 'items',
         isCharacterOpen: s.ui.drawer === 'character',
         mapperRef,
         btn: {
@@ -168,6 +169,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setEqLines: s.setEqLines,
         captureStage: s.captureStage,
         isDrawerCapture: s.isDrawerCapture,
+        isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats,
         isWaitingForEq: s.isWaitingForEq,
         isWaitingForInv: s.isWaitingForInv
@@ -208,14 +210,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navIntervalRef, mapperRef, teleportTargets,
         setCommandPreview: () => { }, setInput, triggerHaptic, btn, joystick,
         wasDraggingRef: editor.wasDraggingRef,
-        captureStage: s.captureStage, isDrawerCapture: s.isDrawerCapture,
+        captureStage: s.captureStage, isDrawerCapture: s.isDrawerCapture, isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats, isWaitingForEq: s.isWaitingForEq, isWaitingForInv: s.isWaitingForInv,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines, setEqLines: s.setEqLines,
         input, isNoviceMode, status, target, setTarget: s.setTarget,
         popoverState, setPopoverState,
-        setIsInventoryOpen: s.setIsInventoryOpen,
         setIsCharacterOpen: s.setIsCharacterOpen,
-        setIsRightDrawerOpen: s.setIsRightDrawerOpen,
+        setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
         setIsMapExpanded: s.setIsMapExpanded,
         viewport,
         ui: s.ui,
@@ -262,6 +263,27 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
         }
     }, [activePrompt, status, settings.loginName, settings.loginPassword, executeCommand]);
+
+    // Practice sync on character detection
+    const lastSyncedCharRef = useRef<string | null>(null);
+    useEffect(() => {
+        if (characterName && characterName !== lastSyncedCharRef.current && status === 'connected') {
+            lastSyncedCharRef.current = characterName;
+            // Delay slightly to ensure login sequence is fully finished
+            setTimeout(() => {
+                executeCommand('practice', true, true);
+            }, 2000);
+        } else if (!characterName) {
+            lastSyncedCharRef.current = null;
+        }
+    }, [characterName, status, executeCommand, addSystemMessage]);
+    // Auto-connect on mount if enabled
+    useEffect(() => {
+        if (s.autoConnect && status === 'disconnected') {
+            telnet.connect();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Only on mount
 
     // Handle keyboard-triggered visibility for buttons
     useEffect(() => {
