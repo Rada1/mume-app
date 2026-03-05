@@ -233,9 +233,11 @@ export interface GmcpCharVitals {
 }
 
 export interface GmcpExitInfo {
-    name?: string;
+    name: string;
     flags?: string[];
     id?: number;
+    door?: number;
+    to_vnum?: number;
 }
 
 export interface GmcpRoomInfo {
@@ -249,6 +251,11 @@ export interface GmcpRoomInfo {
     terrain?: string | null;
     environment?: string | null;
     exits?: Record<string, GmcpExitInfo | number | false>;
+    details?: string[];
+}
+
+export interface GmcpUpdateExits {
+    exits: Record<string, GmcpExitInfo | number | false>;
 }
 
 export interface GmcpOccupant {
@@ -258,13 +265,8 @@ export interface GmcpOccupant {
     keyword?: string;
 }
 
-export interface GmcpRoomPlayers {
-    players?: (string | GmcpOccupant)[];
-    chars?: (string | GmcpOccupant)[];
-    members?: (string | GmcpOccupant)[];
-}
+export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> { }
 
-export interface GmcpRoomItems {
-    items?: (string | GmcpOccupant)[];
-    objects?: (string | GmcpOccupant)[];
-}
+export interface GmcpRoomNpcs extends Array<string | GmcpOccupant> { }
+
+export interface GmcpRoomItems extends Array<string | GmcpOccupant> { }

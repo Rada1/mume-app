@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Trash2, Copy } from 'lucide-react';
-import { CustomButton, ActionType, SwipeDirection } from '../types';
-import { makeBackgroundTransparent } from '../utils/imageUtils';
+import { CustomButton } from '../types';
+import { useButtonModalLogic } from '../hooks/useButtonModalLogic';
+import ButtonForm from './ButtonEditor/ButtonForm';
 
 interface EditButtonModalProps {
     editingButton: CustomButton;
@@ -20,186 +21,21 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
     availableSets,
     selectedButtonIds
 }) => {
-    const [activeTab, setActiveTab] = useState<'main' | 'gestures' | 'style' | 'triggers' | 'requirements'>('main');
+    const {
+        activeTab,
+        setActiveTab,
+        handleDuplicate,
+        updateButton,
+        handleImageUpload
+    } = useButtonModalLogic({
+        editingButton,
+        setEditingButtonId,
+        setButtons,
+        selectedButtonIds
+    });
 
-    const handleDuplicate = () => {
-        const newId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).substr(2);
-        const newBtn: CustomButton = {
-            ...editingButton,
-            id: newId,
-            label: editingButton.label + ' (Copy)',
-            style: {
-                ...editingButton.style,
-                x: (editingButton.style.x || 50) + 2,
-                y: (editingButton.style.y || 50) + 2
-            }
-        };
-        setButtons(prev => [...prev, newBtn]);
-        setEditingButtonId(newId);
-    };
-
-    const updateButton = (id: string, updates: Partial<CustomButton>) => {
-        setButtons(prev => prev.map(b => {
-            if (selectedButtonIds.has(b.id) || b.id === id) {
-                const merged = { ...b, ...updates };
-                // Deep merge style if present
-                if (updates.style) merged.style = { ...b.style, ...updates.style };
-                // Deep merge trigger if present
-                if (updates.trigger) merged.trigger = { ...b.trigger, ...updates.trigger };
-                return merged;
-            }
-            return b;
-        }));
-    };
-
-    const renderActionConfig = (label: string, field: 'command' | 'longCommand', typeField: 'actionType' | 'longActionType') => {
-        const actionType = editingButton[typeField] || 'command';
-        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign' || actionType === 'select-assign';
-
-        return (
-            <div className="setting-group" style={{ marginBottom: '15px' }}>
-                <label className="setting-label">{label}</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                    {isSetAction ? (
-                        <select
-                            className="setting-input"
-                            value={editingButton[field] || ''}
-                            onChange={e => updateButton(editingButton.id, { [field]: e.target.value })}
-                        >
-                            <option value="">Select Set...</option>
-                            {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                    ) : (
-                        <input
-                            className="setting-input"
-                            value={editingButton[field] || ''}
-                            onChange={e => updateButton(editingButton.id, { [field]: e.target.value })}
-                            placeholder="Command..."
-                        />
-                    )}
-                    <select
-                        className="setting-input"
-                        style={{ width: '130px' }}
-                        value={editingButton[typeField] || 'command'}
-                        onChange={e => updateButton(editingButton.id, { [typeField]: e.target.value as ActionType })}
-                    >
-                        <option value="command">Command</option>
-                        <option value="nav">Switch Set</option>
-                        <option value="menu">Menu</option>
-                        <option value="assign">Assign</option>
-                        <option value="select-assign">Select & Assign</option>
-                        <option value="teleport-manage">Teleport List</option>
-                        <option value="select-recipient">Select Recipient</option>
-                        <option value="preload">Preload Input</option>
-                    </select>
-                </div>
-            </div>
-        );
-    };
-
-    const renderSwipeConfig = (dir: SwipeDirection) => {
-        const actionType = editingButton.swipeActionTypes?.[dir] || 'command';
-        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign' || actionType === 'select-assign';
-
-        return (
-            <div style={{ display: 'flex', gap: '8px' }}>
-                {isSetAction ? (
-                    <select
-                        className="setting-input"
-                        value={editingButton.swipeCommands?.[dir] || ''}
-                        onChange={e => {
-                            const newSwipes = { ...editingButton.swipeCommands, [dir]: e.target.value };
-                            if (!e.target.value) delete newSwipes[dir];
-                            updateButton(editingButton.id, { swipeCommands: newSwipes });
-                        }}
-                    >
-                        <option value="">Select Set...</option>
-                        {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                ) : (
-                    <input
-                        className="setting-input"
-                        value={editingButton.swipeCommands?.[dir] || ''}
-                        onChange={e => {
-                            const newSwipes = { ...editingButton.swipeCommands, [dir]: e.target.value };
-                            if (!e.target.value) delete newSwipes[dir];
-                            updateButton(editingButton.id, { swipeCommands: newSwipes });
-                        }}
-                        placeholder="Cmd..."
-                    />
-                )}
-                <select
-                    className="setting-input"
-                    style={{ width: '100px' }}
-                    value={editingButton.swipeActionTypes?.[dir] || 'command'}
-                    onChange={e => {
-                        const newTypes = { ...editingButton.swipeActionTypes, [dir]: e.target.value as ActionType };
-                        updateButton(editingButton.id, { swipeActionTypes: newTypes });
-                    }}
-                >
-                    <option value="command">Cmd</option>
-                    <option value="nav">Set</option>
-                    <option value="menu">Menu</option>
-                    <option value="assign">Assign</option>
-                    <option value="select-assign">S&A</option>
-                    <option value="select-recipient">Recip</option>
-                    <option value="teleport-manage">Tele</option>
-                </select>
-            </div>
-        );
-    };
-
-    const renderLongSwipeConfig = (dir: SwipeDirection) => {
-        const actionType = editingButton.longSwipeActionTypes?.[dir] || 'assign';
-        const isSetAction = actionType === 'nav' || actionType === 'menu' || actionType === 'assign' || actionType === 'select-assign';
-
-        return (
-            <div style={{ display: 'flex', gap: '8px' }}>
-                {isSetAction ? (
-                    <select
-                        className="setting-input"
-                        value={editingButton.longSwipeCommands?.[dir] || ''}
-                        onChange={e => {
-                            const newCmds = { ...editingButton.longSwipeCommands, [dir]: e.target.value };
-                            if (!e.target.value) delete newCmds[dir];
-                            updateButton(editingButton.id, { longSwipeCommands: newCmds });
-                        }}
-                    >
-                        <option value="">Select Set...</option>
-                        {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
-                ) : (
-                    <input
-                        className="setting-input"
-                        value={editingButton.longSwipeCommands?.[dir] || ''}
-                        onChange={e => {
-                            const newCmds = { ...editingButton.longSwipeCommands, [dir]: e.target.value };
-                            if (!e.target.value) delete newCmds[dir];
-                            updateButton(editingButton.id, { longSwipeCommands: newCmds });
-                        }}
-                        placeholder="Cmd..."
-                    />
-                )}
-                <select
-                    className="setting-input"
-                    style={{ width: '100px' }}
-                    value={editingButton.longSwipeActionTypes?.[dir] || 'assign'}
-                    onChange={e => {
-                        const newTypes = { ...editingButton.longSwipeActionTypes, [dir]: e.target.value as ActionType };
-                        updateButton(editingButton.id, { longSwipeActionTypes: newTypes });
-                    }}
-                >
-                    <option value="command">Cmd</option>
-                    <option value="nav">Set</option>
-                    <option value="menu">Menu</option>
-                    <option value="assign">Assign</option>
-                    <option value="select-assign">S&A</option>
-                    <option value="select-recipient">Recip</option>
-                    <option value="teleport-manage">Tele</option>
-                </select>
-            </div>
-        );
-    };
+    const tabs: ('main' | 'gestures' | 'style' | 'triggers' | 'requirements')[] =
+        ['main', 'gestures', 'style', 'triggers', 'requirements'];
 
     return (
         <div className="modal-overlay" onClick={() => setEditingButtonId(null)}>
@@ -217,10 +53,10 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                 </div>
 
                 <div className="modal-tabs" style={{ display: 'flex', gap: '5px', borderBottom: '1px solid #444', marginBottom: '15px' }}>
-                    {['main', 'gestures', 'style', 'triggers', 'requirements'].map(tab => (
+                    {tabs.map(tab => (
                         <div
                             key={tab}
-                            onClick={() => setActiveTab(tab as any)}
+                            onClick={() => setActiveTab(tab)}
                             style={{
                                 padding: '8px 12px',
                                 cursor: 'pointer',
@@ -237,311 +73,13 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                 </div>
 
                 <div className="modal-content" style={{ flex: 1, overflowY: 'auto', paddingRight: '5px' }}>
-                    {activeTab === 'main' && (
-                        <>
-                            <div className="setting-group">
-                                <label className="setting-label">Label</label>
-                                <input className="setting-input" value={editingButton.label} onChange={e => updateButton(editingButton.id, { label: e.target.value })} />
-                            </div>
-                            <div className="setting-group">
-                                <label className="setting-label">Assigned Set ID</label>
-                                <input className="setting-input" value={editingButton.setId || 'main'} onChange={e => updateButton(editingButton.id, { setId: e.target.value })} />
-                            </div>
-                            <div className="setting-group">
-                                <label className="setting-label">Display Mode</label>
-                                <select className="setting-input" value={editingButton.display} onChange={e => updateButton(editingButton.id, { display: e.target.value as any })}>
-                                    <option value="floating">Floating Button</option>
-                                    <option value="inline">Inline Highlight</option>
-                                </select>
-                            </div>
-                            {(editingButton.actionType === 'menu' || editingButton.longActionType === 'menu') && (
-                                <div className="setting-group">
-                                    <label className="setting-label">Menu Display Style</label>
-                                    <select className="setting-input" value={editingButton.menuDisplay || 'list'} onChange={e => updateButton(editingButton.id, { menuDisplay: e.target.value as any })}>
-                                        <option value="list">List (Vertical)</option>
-                                        <option value="dial">Dial (Radial)</option>
-                                    </select>
-                                    <span className="setting-helper">Dial menus allow swiping around and firing on lift.</span>
-                                </div>
-                            )}
-                        </>
-                    )}
-
-                    {activeTab === 'gestures' && (
-                        <>
-                            {renderActionConfig('Short Press Action', 'command', 'actionType')}
-                            {renderActionConfig('Long Press Action', 'longCommand', 'longActionType')}
-
-                            <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
-                                <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Short Swipe Gestures</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                                    {[
-                                        { id: 'up' as SwipeDirection, label: 'North' }, { id: 'down' as SwipeDirection, label: 'South' },
-                                        { id: 'left' as SwipeDirection, label: 'West' }, { id: 'right' as SwipeDirection, label: 'East' },
-                                        { id: 'ne' as SwipeDirection, label: 'NE' }, { id: 'nw' as SwipeDirection, label: 'NW' },
-                                        { id: 'se' as SwipeDirection, label: 'SE' }, { id: 'sw' as SwipeDirection, label: 'SW' }
-                                    ].map(d => (
-                                        <div key={d.id} style={{ marginBottom: '10px' }}>
-                                            <label className="setting-label" style={{ fontSize: '0.75em', color: '#aaa', textTransform: 'uppercase' }}>{d.label}</label>
-                                            {renderSwipeConfig(d.id)}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
-                                <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Long Swipe Gestures</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
-                                    {[
-                                        { id: 'up' as SwipeDirection, label: 'North' }, { id: 'down' as SwipeDirection, label: 'South' },
-                                        { id: 'left' as SwipeDirection, label: 'West' }, { id: 'right' as SwipeDirection, label: 'East' },
-                                        { id: 'ne' as SwipeDirection, label: 'NE' }, { id: 'nw' as SwipeDirection, label: 'NW' },
-                                        { id: 'se' as SwipeDirection, label: 'SE' }, { id: 'sw' as SwipeDirection, label: 'SW' }
-                                    ].map(d => (
-                                        <div key={d.id} style={{ marginBottom: '10px' }}>
-                                            <label className="setting-label" style={{ fontSize: '0.75em', color: '#aaa', textTransform: 'uppercase' }}>{d.label}</label>
-                                            {renderLongSwipeConfig(d.id)}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </>
-                    )}
-
-                    {activeTab === 'style' && (
-                        <>
-                            <div className="setting-group">
-                                <label className="setting-label">Background Color</label>
-                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                    <input type="color" className="setting-input" style={{ height: '40px', width: '60px', padding: 0 }} value={editingButton.style.backgroundColor} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, backgroundColor: e.target.value } })} />
-                                    <input className="setting-input" value={editingButton.style.backgroundColor} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, backgroundColor: e.target.value } })} />
-                                </div>
-                            </div>
-                            <div className="setting-group">
-                                <label className="setting-label">Border Color</label>
-                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                                    <input type="color" className="setting-input" style={{ height: '40px', width: '60px', padding: 0 }} value={editingButton.style.borderColor || '#ffffff'} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, borderColor: e.target.value } })} />
-                                    <input className="setting-input" value={editingButton.style.borderColor || '#ffffff'} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, borderColor: e.target.value } })} />
-                                </div>
-                            </div>
-                            <div className="setting-group">
-                                <label className="setting-label">Border Width (px)</label>
-                                <input type="number" className="setting-input" value={editingButton.style.borderWidth || 1} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, borderWidth: parseInt(e.target.value) || 0 } })} />
-                            </div>
-                            <div className="setting-group">
-                                <label className="setting-label">Shape</label>
-                                <select className="setting-input" value={editingButton.style.shape} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, shape: e.target.value as any } })}>
-                                    <option value="rect">Rectangle</option>
-                                    <option value="pill">Pill</option>
-                                    <option value="circle">Circle</option>
-                                </select>
-                            </div>
-                            <div className="setting-group">
-                                <label className="setting-label">Button Icon</label>
-                                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                                    <input
-                                        type="text"
-                                        className="setting-input"
-                                        placeholder="Image URL..."
-                                        value={editingButton.icon || ''}
-                                        onChange={e => updateButton(editingButton.id, { icon: e.target.value })}
-                                    />
-                                    {editingButton.icon && (
-                                        <button
-                                            className="btn-secondary"
-                                            style={{ marginTop: 0, width: 'auto', padding: '0 10px' }}
-                                            onClick={() => updateButton(editingButton.id, { icon: undefined })}
-                                        >
-                                            Clear
-                                        </button>
-                                    )}
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <label className="btn-secondary" style={{ marginTop: 0, cursor: 'pointer', flex: 1 }}>
-                                        Upload Image
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            style={{ display: 'none' }}
-                                            onChange={e => {
-                                                const file = e.target.files?.[0];
-                                                if (file) {
-                                                    const reader = new FileReader();
-                                                    reader.onload = async (ev) => {
-                                                        const base64 = ev.target?.result as string;
-                                                        // Automatically clean backgrounds for uploaded icons
-                                                        const cleaned = await makeBackgroundTransparent(base64);
-                                                        updateButton(editingButton.id, { icon: cleaned });
-                                                    };
-                                                    reader.readAsDataURL(file);
-                                                }
-                                            }}
-                                        />
-                                    </label>
-                                    {editingButton.icon && (
-                                        <div style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            borderRadius: '4px',
-                                            background: '#222',
-                                            border: '1px solid #444',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            overflow: 'hidden'
-                                        }}>
-                                            <img src={editingButton.icon} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-                                        </div>
-                                    )}
-                                </div>
-                                <span className="setting-helper">Recommended: Transparent SVG or PNG (square).</span>
-                                {editingButton.icon && (
-                                    <div className="setting-group" style={{ marginTop: '10px' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                            <label className="setting-label">Icon Scale</label>
-                                            <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>{(editingButton.style.iconScale || 1).toFixed(1)}x</span>
-                                        </div>
-                                        <input
-                                            type="range"
-                                            min="0.2"
-                                            max="3.0"
-                                            step="0.1"
-                                            value={editingButton.style.iconScale || 1}
-                                            onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, iconScale: parseFloat(e.target.value) } })}
-                                            style={{ width: '100%' }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="setting-group" style={{ display: 'flex', gap: '20px' }}>
-                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={editingButton.style.transparent} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, transparent: e.target.checked } })} />
-                                    Transparent
-                                </label>
-                                {editingButton.style.shape === 'circle' && (
-                                    <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                        <input type="checkbox" checked={editingButton.style.curvedText} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, curvedText: e.target.checked } })} />
-                                        Curved Text
-                                    </label>
-                                )}
-                            </div>
-                        </>
-                    )}
-
-                    {activeTab === 'triggers' && (
-                        <>
-                            <div className="setting-group">
-                                <label className="setting-label">Match Text (Pattern)</label>
-                                <input className="setting-input" placeholder="Text to match..." value={editingButton.trigger?.pattern || ''} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, pattern: e.target.value } })} />
-                            </div>
-                            <div className="setting-group" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={editingButton.trigger?.enabled} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, enabled: e.target.checked } })} />
-                                    Enable Trigger
-                                </label>
-                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={editingButton.trigger?.isRegex} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, isRegex: e.target.checked } })} />
-                                    Use Regex
-                                </label>
-                            </div>
-                            <div className="setting-group" style={{ marginTop: '10px' }}>
-                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={editingButton.trigger?.autoHide} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, autoHide: e.target.checked } })} />
-                                    Hide Button on Click
-                                </label>
-                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={editingButton.trigger?.spit} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, spit: e.target.checked } })} />
-                                    Spit Animation
-                                </label>
-                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                    <input type="checkbox" checked={editingButton.trigger?.onKeyboard} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, onKeyboard: e.target.checked } })} />
-                                    Show on Keyboard (Mobile)
-                                </label>
-                                {editingButton.trigger?.onKeyboard && (
-                                    <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                        <input type="checkbox" checked={editingButton.trigger?.closeKeyboard} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, closeKeyboard: e.target.checked } })} />
-                                        Close Keyboard on Tap
-                                    </label>
-                                )}
-                            </div>
-                            <div className="setting-group">
-                                <label className="setting-label">Auto-Hide Timer (seconds)</label>
-                                <input type="number" className="setting-input" value={editingButton.trigger?.duration || 0} onChange={e => updateButton(editingButton.id, { trigger: { ...editingButton.trigger!, duration: parseInt(e.target.value) || 0 } })} />
-                                <span className="setting-helper">Set to 0 to disable auto-hide.</span>
-                            </div>
-                        </>
-                    )}
-
-                    {activeTab === 'requirements' && (
-                        <>
-                            <div className="setting-group">
-                                <label className="setting-label">Required Ability (Skill/Spell)</label>
-                                <input
-                                    className="setting-input"
-                                    placeholder="e.g. bash, fireball"
-                                    value={editingButton.requirement?.ability || ''}
-                                    onChange={e => updateButton(editingButton.id, {
-                                        requirement: { ...(editingButton.requirement || {}), ability: e.target.value }
-                                    })}
-                                />
-                                <span className="setting-helper">Case-insensitive. Leave empty for no ability requirement.</span>
-                            </div>
-
-                            <div className="setting-group">
-                                <label className="setting-label">Minimum Proficiency (%)</label>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <input
-                                        type="range"
-                                        min="0" max="100" step="5"
-                                        className="setting-input"
-                                        style={{ flex: 1 }}
-                                        value={editingButton.requirement?.minProficiency || 0}
-                                        onChange={e => updateButton(editingButton.id, {
-                                            requirement: { ...(editingButton.requirement || {}), minProficiency: parseInt(e.target.value) }
-                                        })}
-                                    />
-                                    <span style={{ width: '40px', textAlign: 'right', color: '#fff' }}>{editingButton.requirement?.minProficiency || 0}%</span>
-                                </div>
-                                <span className="setting-helper">Button only shows if proficiency is ≥ this value.</span>
-                            </div>
-
-                            <div className="setting-group">
-                                <label className="setting-label">Allowed Character Classes</label>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                                    {['ranger', 'warrior', 'mage', 'cleric', 'thief'].map(cls => (
-                                        <label key={cls} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#fff' }}>
-                                            <input
-                                                type="checkbox"
-                                                checked={editingButton.requirement?.characterClass?.includes(cls as any) || false}
-                                                onChange={e => {
-                                                    const current = editingButton.requirement?.characterClass || [];
-                                                    const next = e.target.checked
-                                                        ? [...current, cls]
-                                                        : current.filter(c => c !== cls);
-                                                    updateButton(editingButton.id, {
-                                                        requirement: { ...(editingButton.requirement || {}), characterClass: next as any }
-                                                    });
-                                                }}
-                                            />
-                                            {cls.charAt(0).toUpperCase() + cls.slice(1)}
-                                        </label>
-                                    ))}
-                                </div>
-                                <span className="setting-helper">If none selected, button shows for all classes.</span>
-                            </div>
-                            <div className="setting-group" style={{ borderTop: '1px solid #333', paddingTop: '15px' }}>
-                                <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'var(--accent)' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={editingButton.hideIfUnknown !== false}
-                                        onChange={e => updateButton(editingButton.id, { hideIfUnknown: e.target.checked })}
-                                    />
-                                    Hide if Unknown
-                                </label>
-                                <span className="setting-helper">Smart hiding based on your character's known spells and skills.</span>
-                            </div>
-                        </>
-                    )}
+                    <ButtonForm
+                        activeTab={activeTab}
+                        editingButton={editingButton}
+                        availableSets={availableSets}
+                        updateButton={updateButton}
+                        handleImageUpload={handleImageUpload}
+                    />
                 </div>
 
                 <div className="modal-footer" style={{ marginTop: '15px' }}>
