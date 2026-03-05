@@ -20,6 +20,8 @@ interface SetManagerModalProps {
     onToggleGrid: (enabled: boolean) => void;
     gridSize: number;
     onGridSizeChange: (size: number) => void;
+    isSmartPopulateEnabled: boolean;
+    onToggleSmartPopulate: (enabled: boolean) => void;
     setSettings?: Record<string, ButtonSetSettings>;
     setSetSettings?: (settings: Record<string, ButtonSetSettings>) => void;
 }
@@ -42,6 +44,8 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     onToggleGrid,
     gridSize,
     onGridSizeChange,
+    isSmartPopulateEnabled,
+    onToggleSmartPopulate,
     setSettings = {},
     setSetSettings
 }) => {
@@ -71,30 +75,41 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     marginBottom: '15px'
                 }}>
-                    <div className="modal-title" style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>GRID SETTINGS</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <div className="modal-title" style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>LAYOUT & DISPLAY SETTINGS</div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', minWidth: '120px' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={isGridEnabled}
+                                    onChange={e => onToggleGrid(e.target.checked)}
+                                />
+                                Snap to Grid
+                            </label>
+
+                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>Size:</span>
+                                <input
+                                    type="range"
+                                    min="2"
+                                    max="20"
+                                    step="1"
+                                    value={gridSize}
+                                    onChange={e => onGridSizeChange(parseInt(e.target.value))}
+                                    style={{ flex: 1 }}
+                                />
+                                <span style={{ fontSize: '0.8rem', minWidth: '30px' }}>{gridSize}%</span>
+                            </div>
+                        </div>
+
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: 'var(--accent)' }}>
                             <input
                                 type="checkbox"
-                                checked={isGridEnabled}
-                                onChange={e => onToggleGrid(e.target.checked)}
+                                checked={isSmartPopulateEnabled}
+                                onChange={e => onToggleSmartPopulate(e.target.checked)}
                             />
-                            Snap to Grid
+                            Smart Populate (Hide Unknown Skills/Spells)
                         </label>
-
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>Size:</span>
-                            <input
-                                type="range"
-                                min="2"
-                                max="20"
-                                step="1"
-                                value={gridSize}
-                                onChange={e => onGridSizeChange(parseInt(e.target.value))}
-                                style={{ flex: 1 }}
-                            />
-                            <span style={{ fontSize: '0.8rem', minWidth: '30px' }}>{gridSize}%</span>
-                        </div>
                     </div>
                 </div>
 

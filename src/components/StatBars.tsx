@@ -17,9 +17,12 @@ interface StatBarsProps {
 }
 
 const StatBars: React.FC<StatBarsProps> = ({
-    stats, hpRatio, manaRatio, moveRatio, inCombat,
+    stats, hpRatio: propsHpRatio, manaRatio: propsManaRatio, moveRatio: propsMoveRatio, inCombat,
     onClick, orientation = 'vertical', onWimpyChange, onPointerDown, isLandscape
 }) => {
+    const hpRatio = Math.max(0, Math.min(1, propsHpRatio));
+    const manaRatio = Math.max(0, Math.min(1, propsManaRatio));
+    const moveRatio = Math.max(0, Math.min(1, propsMoveRatio));
     const isVertical = orientation === 'vertical';
 
     const [isDragging, setIsDragging] = useState(false);
@@ -39,7 +42,9 @@ const StatBars: React.FC<StatBarsProps> = ({
         manaRowRef,
         moveRowRef,
         audioCtxRef,
-        isSoundEnabledRef: { current: isSoundEnabledRef.current } as any // Handle ref vs context
+        isSoundEnabledRef: {
+            current: isSoundEnabledRef.current
+        } as any // Handle ref vs context
     });
 
     const maxStatVal = Math.max(stats.maxHp, stats.maxMana, stats.maxMove, 1);

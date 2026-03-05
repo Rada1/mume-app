@@ -1,0 +1,2201 @@
+[
+    {
+        "desc": "Towering shelves of books line the walls of this large room. Some of the books\nlook quite ancient, and some are quite new. A large, finely carved oak table is\nin the centre of the room. A plush chair sits on either side of the rectangular\ntable. One end of the table is covered with many old scrolls, and prophetic\ntexts, while the other is much more clear, save for some fine works of fiction.\nA large spiral stairway leads to the second floor. To the north, a set of wide\ndouble doors open onto a beautiful bridge.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1481"
+                ],
+                "name": "",
+                "out": [
+                    "1481"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14434"
+                ],
+                "name": "",
+                "out": [
+                    "14434"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1482",
+        "light": 2,
+        "loadflags": 65536,
+        "mobflags": 0,
+        "name": "A Book Lined Study",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The view from this room may indeed be unsurpassed on arda. Thick crystal walls\nsurround the chamber, leaving your eyes to wander across the vast ocean to the\nwest and back to the towers and other buildings of Grey Havens to the east.\nSeveral padded benches are here, providing a comfortable spot to rest regardless\nof which view you wish to enjoy. The floor is polished white marble. Several\nmarble columns carved into great trees seem to grow from the very stone of the\nfloor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1482"
+                ],
+                "name": "",
+                "out": [
+                    "1482"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14434",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Crystal Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "This is the middle of a beautiful, wild garden. Flowers of all colours bloom\naround, filling the air with their sweet fragrance. Little trees are growing all\nabout, surrounding impressive marble statues and fountains, while large trees\nwith wide crowns spend shade.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24297"
+                ],
+                "name": "",
+                "out": [
+                    "24297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24318"
+                ],
+                "name": "",
+                "out": [
+                    "24318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24292"
+                ],
+                "name": "",
+                "out": [
+                    "24292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24291"
+                ],
+                "name": "",
+                "out": [
+                    "24291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24321",
+                    "24322"
+                ],
+                "name": "",
+                "out": [
+                    "24321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23792",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Garden of the Ainur",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 3,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "This is a quiet place where those who watch the world below can share their\nthoughts on life, death, the landscape and wonders of Arda's mighty warriors and\nmysterious wonders of good and evil. Those spending their time here maintain a\nrespectful tone of voice for others even when disagreeing with the strongest of\nadverse opinions. To those who have earned the right to join this collection of\nminds, all your thoughts on the future of this land are welcome.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24296"
+                ],
+                "name": "",
+                "out": [
+                    "24296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24319"
+                ],
+                "name": "",
+                "out": [
+                    "24319"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23792"
+                ],
+                "name": "",
+                "out": [
+                    "23792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24295"
+                ],
+                "name": "",
+                "out": [
+                    "24295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24291",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Shapers' Board",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 2,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "A huge hall stretches away into the distance. Great arched doorways break the\nflow of the marbled walls. This is the Nexus: the great hall connecting all of\nthe areas of Arda together. Above each archway is inscribed the name of the area\nto which it gives access.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24299"
+                ],
+                "name": "",
+                "out": [
+                    "24299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24303"
+                ],
+                "name": "",
+                "out": [
+                    "24303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24293"
+                ],
+                "name": "",
+                "out": [
+                    "24293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23792"
+                ],
+                "name": "",
+                "out": [
+                    "23792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24343"
+                ],
+                "name": "",
+                "out": [
+                    "24343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24292",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tolkien Forum",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 4,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24300"
+                ],
+                "name": "",
+                "out": [
+                    "24300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24302"
+                ],
+                "name": "",
+                "out": [
+                    "24302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24294"
+                ],
+                "name": "",
+                "out": [
+                    "24294"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24292"
+                ],
+                "name": "",
+                "out": [
+                    "24292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24344"
+                ],
+                "name": "",
+                "out": [
+                    "24344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24293",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Western Zones",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 5,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "This is a very small, rectangular room. The walls are empty and made of dim\nblack stones. In the middle of the room a small model has been placed on an oak\ntable. The model shows a landscape, coloured and with very very small details,\nlike trees and even tiny rabbits. In the middle of the model an impenetrable\ntower rises above the hills, surrounded by the Misty Mountains. A river runs\nwildly south from the tower, and not far south of it a ford can be seen, guarded\nby men on horses. Somehow the model still leaves something for your imagination,\nit doesn't tell the full tale, something urges you to stay here and look at it\nto find out what is amiss.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24293"
+                ],
+                "name": "",
+                "out": [
+                    "24293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24294",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Isengard/Dunland",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 6,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "For a room which is supposed to represent the cream of great ideas, the contents\nof the room seem curiously devoid of any meaningful structure.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24291"
+                ],
+                "name": "",
+                "out": [
+                    "24291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24295",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Idea Board",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 1,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "This is a most unpleasant room. Millions of ugly little bugs, all different, are\nconstantly crawling on the floor, pouring endlessly out of holes and cracks in\nthe walls, and eventually up your legs, except those who hang from the ceiling\nand drop down into your hair instead. Fortunately, a huge battery of anti-bug\nequipment is hanging on the walls: Very strong insecticides, sticky paper tape,\nbig aerosol cans of DDT, and several tame venus flytraps. Next to the equipment\nis a bug-proof sign: \"All bugs are reported to this board. Please remove them as\nsoon as they have been rectified. All builders are required to correct the bugs\nin their zones.\"\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24291"
+                ],
+                "name": "",
+                "out": [
+                    "24291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24296",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bug Board",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 2,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "To the south of this paved square stands a massive iron gate, with delicate\ngilding and simple yet beautiful carvings. The small paving stones continue to\nthe north, where the path enters an enclosure, and at the centre of this square\na stairway leads down to the Builders' Library.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24298"
+                ],
+                "name": "",
+                "out": [
+                    "24298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23792"
+                ],
+                "name": "",
+                "out": [
+                    "23792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24347"
+                ],
+                "name": "",
+                "out": [
+                    "24347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24297",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Entrance to the Ainur's Garden",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 3,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "Here it is that the builders and supervisors of test zones communicate. They are\noften to be seen writing wordy yet wise posts on the board, and yet magically\nonly they, and no others save the Valar can see these words of wisdom... Those\nwishing to build a testzone should read the sign in this room. Most of the other\ninformation (that can be found here and on board 6) is outdated. On a shelf,\nthere are two important books (look books) concerned with testzone building.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24297"
+                ],
+                "name": "",
+                "out": [
+                    "24297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24298",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Testzone Central",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 3,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "This untidy room is cluttered with all manner of maps plans and documents. Long\nago it served as the discussion room for miscellaneous zones, but these days it\nhas fallen into disarray, being used as a rather untidy archive for information\non superzones long completed. The Management apologises for any inconvenience,\nbut we'd hate for you to be buried alive under all the archived information. For\nyour own safety, we have restricted access to the hoardes of really useless\ndocuments stored here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24292"
+                ],
+                "name": "",
+                "out": [
+                    "24292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24300"
+                ],
+                "name": "",
+                "out": [
+                    "24300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24320"
+                ],
+                "name": "",
+                "out": [
+                    "24320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24299",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Building Archive",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 4,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "A small hill rises in the green plains as a tactical vantage point. From here\nyou can espy all comings and goings in the realm of the horse-lords. The land is\nmoving, something is in the air, suddenly it reaches you in a gust of wind\ncarrying a solemn monotone chant. The gods are singing of changes to come. At\nfirst the intensity and power of the song overwhelms you, but as you listen\ncloser and slowly begin to grasp their will a feeling begins to grow within\n...... the hope for the coming of the Rohirrim is suddenly rekindled!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24293"
+                ],
+                "name": "",
+                "out": [
+                    "24293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24301"
+                ],
+                "name": "",
+                "out": [
+                    "24301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24299"
+                ],
+                "name": "",
+                "out": [
+                    "24299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24300",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rohan",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 5,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24300"
+                ],
+                "name": "",
+                "out": [
+                    "24300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24301",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Central Anduin",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 6,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself plunged into darkness. All light has suddenly been\nextinguished and you find your innards turn. Then after what seems an age, but\nis probably no more than an instant, a bright light appears about you, blinding\nin its white intensity. A small pool of illumination is created by the beam from\nabove. You can see nothing else...everything is featureless. You stand alone,\nyour body blanched by the brightness, naked under its scrutiny. Then it\nstarts....a sound, faint at first....then little by little it gets louder. As it\ngrows you start to make out its origin. The sound of metal scraping on stone, as\nif someone is deliberately dragging a blade across the hard floor. The scraping\ncontinues...louder and louder it gets, and all the while your mind becomes more\nand more focused on the origin. Who is making that sound? Why are they doing it?\nAre they drawing nearer? You long for the answers, you will endure anything just\nto have this come to an end...for resolution. Then, without notice the sound\nstops. Peace for an instant. Then a face appears at the edge of the light\nstaring into your eyes....the Inquisitor has arrived!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24299"
+                ],
+                "name": "",
+                "out": [
+                    "24299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24320",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Comes the Inquisitor",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 3,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24344"
+                ],
+                "name": "",
+                "out": [
+                    "24344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24292"
+                ],
+                "name": "",
+                "out": [
+                    "24292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24343",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eregion, Enedwaith and Dunroamin'",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 4,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24343"
+                ],
+                "name": "",
+                "out": [
+                    "24343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24293"
+                ],
+                "name": "",
+                "out": [
+                    "24293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24344",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "TrollShaws",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 5,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "Here the builders will find all the help that they need. Take care that things\nmay change, for instance some unused flags will be reassigned. Some books are\nhere, available for consultation. Type: \"look books\" to read! A sign here,\ncontaining information about the books. A large spellbook is also here, bound to\na shelf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24350"
+                ],
+                "name": "",
+                "out": [
+                    "24350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24348"
+                ],
+                "name": "",
+                "out": [
+                    "24348"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24352"
+                ],
+                "name": "",
+                "out": [
+                    "24352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24351"
+                ],
+                "name": "",
+                "out": [
+                    "24351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24297"
+                ],
+                "name": "",
+                "out": [
+                    "24297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24347",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Builders' Library",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 0,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "This hall hosts discussions about what quests to unleash onto unsuspecting\nmortals. In the corner, a couple of Maiar are working on yet another grocery\nlist. Right above their heads, a menacing-looking cloud is forming.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24347"
+                ],
+                "name": "",
+                "out": [
+                    "24347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24349"
+                ],
+                "name": "",
+                "out": [
+                    "24349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24348",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hall of Quests",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 0,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "This is where builders congregate after all the mundane building work is done,\nhoping to catch one of the rare breed of mudllers. You notice a look of\nhopelessness in some of the weary faces and bloodshot eyes. Still, new builders\nkeep streaming in with fresh dreams of complexities they can add to their new\ncreations. To see the status of jobs taken, look jobs. If you have time to\nspare, look at the sign, \"FAQ\" and \"jobs\".\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24347"
+                ],
+                "name": "",
+                "out": [
+                    "24347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24354"
+                ],
+                "name": "",
+                "out": [
+                    "24354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24350",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Builders' Waiting Room for Mudlle Effects",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 0,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "A vortex of Magic energy is pulsating in the middle of the room, displacing the\nvery laws of nature and holding you in a firm grip, casting magic symbols in\nshowers everywhere. The symbols, which take the form of arcane pentagrams,\nsubtly engraved Tengwar lettering and crudely chiseled runes, reveal at closer\nexamination a delicately woven pattern of braces, commas, parentheses and the\nproud but simple theorems of lambda calculus.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24353"
+                ],
+                "name": "",
+                "out": [
+                    "24353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24347"
+                ],
+                "name": "",
+                "out": [
+                    "24347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24352",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chamber of Magic Mudlle Manipulation",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 1,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "This plain, perhaps even simple chamber is full of very dusty and rotted\nsimple-looking pieces of code, and of simple rusty tools to craft them. But\nthose responsible for coding this simple magic, with these simple tools, wish it\nto be made clear that they absolutley deny any truth behind the rumour that they\nare to be referred to as simpletons.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24352"
+                ],
+                "name": "",
+                "out": [
+                    "24352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24353",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dilapidated Chamber of Simple Magic",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 1,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "In the deep foundations of Lugburz, bound about by the power of the One Ring,\nstand many impenetrable caverns. They survived the overthrowing of Sauron, but\nwent unnoticed when he rebuilt his mighty fortress. And here, for a time, you\nmust dwell, unable to participate in the wars of Middle-earth. A tattered sign\nhas been fixed to the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25464"
+                ],
+                "name": "",
+                "out": [
+                    "25464"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25463",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "In a Dungeon beneath Barad-dur",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 13,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "Though these pits and caverns were delved exceedingly deep beneath the tower of\nLugburz, still somehow, tales from Middle-earth manage to reach you here, from\ntime to time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25465"
+                ],
+                "name": "",
+                "out": [
+                    "25465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25463"
+                ],
+                "name": "",
+                "out": [
+                    "25463"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25464",
+        "light": 0,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "In the Pits of Lugburz",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 14,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "These mighty vaults and caverns, hidden by deceit, deep beneath Barad-dur, are\nnever reached by the light of the sun. And yet, by some strange means, tales of\nthe world without sometimes reach you here. Perhaps they are but echoes of\nstories long forgotten, or perhaps they are dreams of what is yet to come.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25466"
+                ],
+                "name": "",
+                "out": [
+                    "25466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25464"
+                ],
+                "name": "",
+                "out": [
+                    "25464"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25465",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Hidden Pit beneath Barad-dur",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 15,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "Whatever this pool is cannot be told. It might be pure evil that has collected\nhere, deep down below Barad-dur. The surface is perfectly still but it does not\nshine like a mirror. It is of an even deeper black that can be imagined and it\nseems to go on forever, down into the deepest, forgotten places below Arda,\nwhere unknown evil and power eagerly await the return of Morgoth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25465"
+                ],
+                "name": "",
+                "out": [
+                    "25465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25466",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Ancient Pool",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 16,
+        "y": 98,
+        "z": 0
+    }
+]

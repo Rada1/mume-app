@@ -1,0 +1,168 @@
+[
+    {
+        "desc": "Rough, rocky stone formations form the walls, roof and floor of this cavern.\nThey show no signs of being used by the dwarves, except as an airshaft for the\nsmoke from the armoury. Several piles of bat droppings and skeletons of tiny\nanimals lay scattered on the ground. Fresh air fills the cave, flowing from the\nairshaft leading upwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14330"
+                ],
+                "name": "",
+                "out": [
+                    "14330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "25872"
+                ],
+                "name": "",
+                "out": [
+                    "25872"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25871",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Crack",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 60,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Further up in the crack, the walls begin to close in on each other. The way up\ngets tighter and tighter, eventually becoming too narrow for anything except\nsmall birds or bats to pass through. The chimney widens again downwards as it\nopens up into a small cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "25871"
+                ],
+                "name": "",
+                "out": [
+                    "25871"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25872",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Chimney",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 60,
+        "y": 38,
+        "z": 0
+    }
+]

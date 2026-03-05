@@ -1,0 +1,1599 @@
+[
+    {
+        "desc": "Short and gnarled trees grow in dense rows here. In one area the trees have been\nfelled, leaving only their stumps. A crossroad is revealed in this clearing,\nallowing to travel in three directions. A rocky mountain path leads south,\nhugging a steep escarpment, while a trampled area in the dense undergrowth to\nthe east and the west looks quite walkable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23582"
+                ],
+                "name": "",
+                "out": [
+                    "23582"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23586"
+                ],
+                "name": "",
+                "out": [
+                    "23586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23584"
+                ],
+                "name": "",
+                "out": [
+                    "23584"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23583",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Crossing",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 582,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Dense and nearly impassable undergrowth covers this ridge. Thorny shrubs and\ntwisting vines make up most of the vegetation, while gnarly, ancient trees with\nenormous trunks, which carry great and sprawling crowns, rise through the brush.\nThough the trees do not grow dense, their foliage creates a green roof which\nblots out the sky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23585"
+                ],
+                "name": "",
+                "out": [
+                    "23585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23583"
+                ],
+                "name": "",
+                "out": [
+                    "23583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23584",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thorny Promontory",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 581,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This overgrown ridge is littered with broken rocks and moss-covered boulders. A\nfew oak trees grow oddly twisted, standing in odd angles, with dark, strangely\ncontorted branches moving lazily as if in a constant breeze. Thick, green grass\ncovers the forest floor, growing everywhere except where rocks and boulders\nblock it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23654"
+                ],
+                "name": "",
+                "out": [
+                    "23654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23583"
+                ],
+                "name": "",
+                "out": [
+                    "23583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23586",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Range",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 583,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Elderberry bushes and willows grow amongst the hummocks that rise above the\nmoist muck in this area. Ancient, gnarled alders stand defiant amongst the\nsedges, branches drooping low. The smell of decomposition rises up from the bog,\nadding to the stifling atmosphere of these marshlands. Ribbitting and chirping\ncan be heard from various places amongst the vegetation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23744",
+                    "23765"
+                ],
+                "name": "",
+                "out": [
+                    "23599",
+                    "23744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23600"
+                ],
+                "name": "",
+                "out": [
+                    "23600"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23559"
+                ],
+                "name": "",
+                "out": [
+                    "23559"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23598",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Marshlands",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 580,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "Noxious fumes rise from the wet forest floor, gasses emanating from the\ndecomposing vegetation that fills the shallow, black soil. Tall reeds surround\nthorny shrubs growing among the black trees. A thin, dark mist hovers over the\nground, a foreboding sign that continues throughout the area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23667",
+                    "23744",
+                    "23759"
+                ],
+                "name": "",
+                "out": [
+                    "23744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23744"
+                ],
+                "name": "",
+                "out": [
+                    "23744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23667"
+                ],
+                "name": "",
+                "out": [
+                    "23667"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23598"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23558"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23599",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Miasmal Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 581,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "Dark, gnarled oaks shift and scrape against each other. They grow closely\ntogether in tight rows, forming a sort of passage through these overgrown\nbluffs. The thorn bushes and crab grass have been trampled flat in areas; the\ntrees bear scars that appear to have been caused by weapons.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23586"
+                ],
+                "name": "",
+                "out": [
+                    "23586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "23655"
+                ],
+                "name": "",
+                "out": [
+                    "23655"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23653"
+                ],
+                "name": "",
+                "out": [
+                    "23653"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23654",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trampled Cordon",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 584,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The terrain cants at a steep angle, overgrown with thorny bushes and gnarled oak\ntrees. Vines dangle down from the limbs of the trees, their lower ends scraping\nagainst the rocky ground. Thick roots snake across the ground, covered in layers\nof decaying leaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23656"
+                ],
+                "name": "",
+                "out": [
+                    "23656"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "23654"
+                ],
+                "name": "",
+                "out": [
+                    "23654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23655",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Slope",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 584,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "A rocky overhang protrudes from a mountainside above, creating a kind of ceiling\nabove parts of this shelf. Moss covers the mountain face to the north; a\ndark-green background that the thorny shrubs growing here press up against. An\nopening to the west offers a view of a sprawling forest with a dense canopy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23655"
+                ],
+                "name": "",
+                "out": [
+                    "23655"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23656",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cramped Shelf",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 583,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "A dense fog covers the wet ground of this swamp, rising up through a dense\ncanopy of trees. The dense fog makes it difficult to traverse this soggy ground\nwithout running headfirst into the trunk of a tree. The swamp is flat and\nfeatureless, offering no landmarks for any creature who might lose their\nbearings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23758"
+                ],
+                "name": "",
+                "out": [
+                    "23758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23758"
+                ],
+                "name": "",
+                "out": [
+                    "23599",
+                    "23758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23758",
+                    "23759"
+                ],
+                "name": "",
+                "out": [
+                    "23758",
+                    "23759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23599",
+                    "23758"
+                ],
+                "name": "",
+                "out": [
+                    "23599",
+                    "23758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23667",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Misty Swamp",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 582,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "This swamp is very congested by dense trees whose masses of black foliage block\nthe sky above. The ground is sodden and covered with waterlogged moss. The roots\nof the trees offer little support, and even those that appear sturdy are very\nslippery as they are covered with wet fungi, moss, and a foul ooze secreted by\nthe trees themselves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23599",
+                    "23760",
+                    "23765"
+                ],
+                "name": "",
+                "out": [
+                    "23599",
+                    "23760",
+                    "23765"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23599",
+                    "23758",
+                    "23760"
+                ],
+                "name": "",
+                "out": [
+                    "23599",
+                    "23758",
+                    "23760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23758"
+                ],
+                "name": "",
+                "out": [
+                    "23758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23598"
+                ],
+                "name": "",
+                "out": [
+                    "23598"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23744"
+                ],
+                "name": "",
+                "out": [
+                    "23744"
+                ]
+            }
+        ],
+        "id": "23744",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Foul Sunless Bog",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 581,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "Dark and putrid water covers the ground, discharging acrid fumes into the air.\nDense foliage holds these fumes close to the ground so that they form a hazy\nmist. These toxic fumes obscure vision, making it difficult to keep the bearings\nin the swamp.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23667",
+                    "23744",
+                    "23760",
+                    "23761"
+                ],
+                "name": "",
+                "out": [
+                    "23667",
+                    "23744",
+                    "23760",
+                    "23761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23667",
+                    "23760"
+                ],
+                "name": "",
+                "out": [
+                    "23667",
+                    "23760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23667",
+                    "23759",
+                    "23761"
+                ],
+                "name": "",
+                "out": [
+                    "23667",
+                    "23759",
+                    "23761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23667",
+                    "23744"
+                ],
+                "name": "",
+                "out": [
+                    "23667",
+                    "23744",
+                    "23760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23758",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Misty Swamp",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 582,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "Many swamp flowers spring up from this wide morass. The flowers sway gently with\nripples on the watery surface. Large bushes grow among scattered tall trees, and\nan obscuring haze hangs in the air. There is no feature to distinguish one\ndirection from another, and someone lost here would have to count on luck to\nfind their bearings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23760",
+                    "23761"
+                ],
+                "name": "",
+                "out": [
+                    "23760",
+                    "23761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23599",
+                    "23761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23667",
+                    "23758"
+                ],
+                "name": "",
+                "out": [
+                    "23667",
+                    "23758",
+                    "23760",
+                    "23761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23759",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Misty Swamp",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 583,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "Every footstep in this foul bog displaces a rotten mix of water and moss,\nreleasing swamp gas into the air. Fallen tree trunks surrounded by sodden clumps\nof dead leaves decay in scattered pools of water. Hordes of small insects feed\non the decomposing vegetation, making it impossible to inhale without swallowing\nsome of them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23744",
+                    "23758",
+                    "23762"
+                ],
+                "name": "",
+                "out": [
+                    "23744",
+                    "23758",
+                    "23762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23744",
+                    "23758",
+                    "23759",
+                    "23762"
+                ],
+                "name": "",
+                "out": [
+                    "23744",
+                    "23758",
+                    "23759",
+                    "23762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23758",
+                    "23759"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23762",
+                    "23765"
+                ],
+                "name": "",
+                "out": [
+                    "23762",
+                    "23765"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23760",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Feculent Bog",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 582,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "This swamp is bordered by steep slopes to the north and the east. Trees grow\nright up to the edge of these mountains, smothering them with vines and branches\nwhich drip a dense and black sap that dribbles down the rocky slopes. Black,\nrotting leaves and moss cover the ground, and a foul-smelling mist drifts in\nfrom the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23759"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23758",
+                    "23759"
+                ],
+                "name": "",
+                "out": [
+                    "23758",
+                    "23759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23759"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23758"
+                ],
+                "name": "",
+                "out": [
+                    "23758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23761",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Misty Swamp",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 583,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "This foul swamp is almost surrounded by steep hills. Tangled masses of vines,\ntrees, and bushes rise from the waterlogged ground, making it difficult to see\nvery far. A densely packed cluster of thick, black shrubs runs along the base of\na hill to the north.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "23760",
+                    "23763"
+                ],
+                "name": "shrubbery",
+                "out": [
+                    "23760",
+                    "23763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23760"
+                ],
+                "name": "",
+                "out": [
+                    "23760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23760"
+                ],
+                "name": "",
+                "out": [
+                    "23760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23762",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Swamp",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 582,
+        "y": 33,
+        "z": 0
+    },
+    {
+        "desc": "A damp tunnel leads deep into the hillside while the other end is blocked by\ndense bushes. Small drops of water plip and plop as they drip from the ceiling\nand splash onto the floor. Many stalactites of different lengths hang from the\nceiling; together they grant the illusion of inverted mountain peaks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "23762"
+                ],
+                "name": "shrubbery",
+                "out": [
+                    "23762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "23764"
+                ],
+                "name": "",
+                "out": [
+                    "23764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23763",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 4096,
+        "name": "Damp Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 582,
+        "y": 32,
+        "z": 0
+    },
+    {
+        "desc": "A tunnel entering from the east broadens into a massive cavern so high and dark\nthat it is impossible to see the ceiling. Massive pillars of grey and brown rock\nrise from the floor and disappear into the darkness above. The ground here is\nsolid but very uneven, as sharp dagger-like stones protrude from it. The walls\nare rough, battered by their natural enemies - time and water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23763"
+                ],
+                "name": "",
+                "out": [
+                    "23763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23764",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 4096,
+        "name": "Muggy Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 581,
+        "y": 32,
+        "z": 0
+    },
+    {
+        "desc": "Stagnant, musty air fills this overgrown swampland. Snarled bushes grow among\ntall trees; between them are watery pits filled with moss and mud. Some of these\npits are large enough to swallow a small troll. Many dark vines drop down from\nthe treetops, entwining with their trunks as they descend to the bushes and\nbogs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23744"
+                ],
+                "name": "",
+                "out": [
+                    "23744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "23760"
+                ],
+                "name": "",
+                "out": [
+                    "23760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23598"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23765",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Stifling Swamp",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 581,
+        "y": 34,
+        "z": 0
+    }
+]

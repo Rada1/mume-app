@@ -1,0 +1,5352 @@
+[
+    {
+        "desc": "The grass here is short and dry, criss-crossed with the tracks of what appear to\nbe small rodents. The short grass continues on into the south and east, with a\nsplash of white appearing near the horizon. To the north the grass grows taller\nand greener, extending for as far as the eye can see.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10059"
+                ],
+                "name": "",
+                "out": [
+                    "10059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10061"
+                ],
+                "name": "",
+                "out": [
+                    "10061"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10092"
+                ],
+                "name": "",
+                "out": [
+                    "10092"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10063"
+                ],
+                "name": "",
+                "out": [
+                    "10063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10060",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Short Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 277,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Short green grass grows here. Some places appear to have been cropped and the\nonly flowers that grow are short. There is a little clover and a few wild\nviolets. To the west the grass is taller and drier, while to the east you see\nthat the landscape is dotted with more clover.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10060"
+                ],
+                "name": "",
+                "out": [
+                    "10060"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10074"
+                ],
+                "name": "",
+                "out": [
+                    "10074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10062"
+                ],
+                "name": "",
+                "out": [
+                    "10062"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10061",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Short Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 277,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "You are standing among the tall, brittle-dry stalks of grass that seem to be\nmost common in this part of the Enedwaithe. The grass to the east is shorter but\ngreener, with occasional flowers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10063"
+                ],
+                "name": "",
+                "out": [
+                    "10063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10061"
+                ],
+                "name": "",
+                "out": [
+                    "10061"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10073"
+                ],
+                "name": "",
+                "out": [
+                    "10073"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10062",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 276,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The grass here is tall and has dried out to a golden brown. The wind ripples its\nsurface and the motion reminds you of wind on the surface of a pond only much,\nmuch bigger. The grass appears to be shorter to the east and greener.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10064"
+                ],
+                "name": "",
+                "out": [
+                    "10064"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10062"
+                ],
+                "name": "",
+                "out": [
+                    "10062"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10060"
+                ],
+                "name": "",
+                "out": [
+                    "10060"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10072"
+                ],
+                "name": "",
+                "out": [
+                    "10072"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10063",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 276,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Tall, dry, brown grass waves back and forth, prickling your skin where it hits.\nThe land is similar in all directions, but perhaps there is some green in the\nfar distant north or east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10071"
+                ],
+                "name": "",
+                "out": [
+                    "10071"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10073"
+                ],
+                "name": "",
+                "out": [
+                    "10073"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10063"
+                ],
+                "name": "",
+                "out": [
+                    "10063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10101"
+                ],
+                "name": "",
+                "out": [
+                    "10101"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10072",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 275,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "This area appears to have burned some time ago, among the grass you see\noccasional charred stubble, and once in a while a gleaming white animal skull.\nNearby sits a blackened stump which barely rises above the sea of grass around\nyou.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10072"
+                ],
+                "name": "",
+                "out": [
+                    "10072"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10062"
+                ],
+                "name": "",
+                "out": [
+                    "10062"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10100"
+                ],
+                "name": "",
+                "out": [
+                    "10100"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10073",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Charred Stump",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 275,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Most of the ground here is covered with pink and white clover, thinning out\ntowards the west. Where the clover thins out, short green grass can be seen,\ncontinuing on to the north and west. Further to the north the grass appears to\ndry out, appearing to have a brownish colour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10092"
+                ],
+                "name": "",
+                "out": [
+                    "10092"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10075"
+                ],
+                "name": "",
+                "out": [
+                    "10075"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10061"
+                ],
+                "name": "",
+                "out": [
+                    "10061"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10074",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Clover Fields",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 278,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Many hundreds of white and pink flowers dot the landscape all around you. Bees\nand butterflies move from flower to flower, minding their own business. The\nflowers thin out to the north and east but continue on to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10093"
+                ],
+                "name": "",
+                "out": [
+                    "10093"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10076"
+                ],
+                "name": "",
+                "out": [
+                    "10076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10074"
+                ],
+                "name": "",
+                "out": [
+                    "10074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10075",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Clover Fields",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 279,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The grass appears to be split into two regions here. The eastern side is quite\ngreen, but to the northwest of where you stand it becomes first drier then\ntaller. The land is slightly lower to the southeast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10091"
+                ],
+                "name": "",
+                "out": [
+                    "10091"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10074"
+                ],
+                "name": "",
+                "out": [
+                    "10074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10093"
+                ],
+                "name": "",
+                "out": [
+                    "10093"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10060"
+                ],
+                "name": "",
+                "out": [
+                    "10060"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10092",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Short Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 278,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Short green grass mixed with clover and dandelions seems to be growing well\nhere. Some areas, especially those south of here, seem to have been cropped\nclose to the ground. To the north, you see a large spike of rock projecting out\nof the ground like a giant's finger.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10098"
+                ],
+                "name": "",
+                "out": [
+                    "10098"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10075"
+                ],
+                "name": "",
+                "out": [
+                    "10075"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10094"
+                ],
+                "name": "",
+                "out": [
+                    "10094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10092"
+                ],
+                "name": "",
+                "out": [
+                    "10092"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10093",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Short Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 279,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Tinder dry and brittle, the grass here crunches underfoot as you travel across\nit. Use of fire here is probably not a good idea. The blackened tree to the\nnorthwest is a stark reminder of this.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10101"
+                ],
+                "name": "",
+                "out": [
+                    "10101"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10073"
+                ],
+                "name": "",
+                "out": [
+                    "10073"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10111"
+                ],
+                "name": "",
+                "out": [
+                    "10111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10100",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 274,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "All around you the grass is dry and brown. Several areas look as if they may\nhave burned recently, especially to the west. In the distance to the west stands\nthe stark form of a burnt tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10102"
+                ],
+                "name": "",
+                "out": [
+                    "10102"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10100"
+                ],
+                "name": "",
+                "out": [
+                    "10100"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10072"
+                ],
+                "name": "",
+                "out": [
+                    "10072"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10110"
+                ],
+                "name": "",
+                "out": [
+                    "10110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10101",
+        "light": 2,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Dry Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 274,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Stark and bleak, the charred remains of a tree which has been hit by lightning\nstand here in the middle of brittle, dried out grass. Between the split caused\nby lightning, and the fire damage it is clear that this tree will become a dead\nsnag standing alone in this sea of grass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10109"
+                ],
+                "name": "",
+                "out": [
+                    "10109"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10111"
+                ],
+                "name": "",
+                "out": [
+                    "10111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10101"
+                ],
+                "name": "",
+                "out": [
+                    "10101"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10113"
+                ],
+                "name": "",
+                "out": [
+                    "10113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10110",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Burnt Tree",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 273,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Blackened by a fire that passed through here, the grass has been burnt to a\nstubble all around you. The first shoots of new fire weed and grass are\nstruggling to re-establish themselves in the dry soil. To the west and north you\nsee the golden brown of dry, unburned grass, though the eerie shape of a burnt\ntree is also evident to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10110"
+                ],
+                "name": "",
+                "out": [
+                    "10110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10100"
+                ],
+                "name": "",
+                "out": [
+                    "10100"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10112"
+                ],
+                "name": "",
+                "out": [
+                    "10112"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10111",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Charred Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 273,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The landscape here is quite flat and monotonous. Dried out golden grass stands\nall around you. There doesn't seem to be any good landmarks that you can see\nfrom here. To the north and east the land is darker for some reason.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10113"
+                ],
+                "name": "",
+                "out": [
+                    "10113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10111"
+                ],
+                "name": "",
+                "out": [
+                    "10111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10122"
+                ],
+                "name": "",
+                "out": [
+                    "10122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10112",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 272,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Occasional tufts of dry grass and dead, dried up weeds dot the land here. The\nground is mostly covered with dark gravel and rocks though many appear to only\nbe dark on one side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10114"
+                ],
+                "name": "",
+                "out": [
+                    "10114"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10112"
+                ],
+                "name": "",
+                "out": [
+                    "10112"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10110"
+                ],
+                "name": "",
+                "out": [
+                    "10110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10121"
+                ],
+                "name": "",
+                "out": [
+                    "10121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10113",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bare Ground",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 272,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Endless flat plains of grass stretch on for miles in every direction. There are\nfew landmarks here at all, and it would be quite easy to lose your bearings\nhere. To the east you see that the grass has been burned by a grassfire, while\nto the west the plains become rockier before meeting a cliff which can just be\nmade out on the western horizon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10120"
+                ],
+                "name": "",
+                "out": [
+                    "10120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10122"
+                ],
+                "name": "",
+                "out": [
+                    "10122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10113"
+                ],
+                "name": "",
+                "out": [
+                    "10113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10125"
+                ],
+                "name": "",
+                "out": [
+                    "10125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10121",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 271,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Stretching out in all directions, the grassy plains march on towards the\nhorizon. Swaying gently in the wind, the grass almost seems to be dancing to\nsome unheard tune of a time long gone. To the north-east the grass seems to be\ndarker and shorter, looking burned in paces, while to the west you can make out\na small path leading up towards a cliff.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10121"
+                ],
+                "name": "",
+                "out": [
+                    "10121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10112"
+                ],
+                "name": "",
+                "out": [
+                    "10112"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10124"
+                ],
+                "name": "",
+                "out": [
+                    "10124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10122",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Grassland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 271,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The path bends west and north here, along the slopes up to the cliffs to the\nnorth-west. The path winds its way between the rocks and boulders lying around.\nDirt and some scattered grass cover the path. To the north the path continues\nalong the wall of the cliffs, and ends up in a rocky plain further north. To the\nwest the path runs along the grassy slopes that descends from the cliffs above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10124"
+                ],
+                "name": "",
+                "out": [
+                    "10124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10134"
+                ],
+                "name": "",
+                "out": [
+                    "10134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10123",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 270,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "This path seems to appear out of nothing. In among the rocks and boulders this\npath suddenly appears. The area around the path is totally covered with rocky\nplains. Nothing seems to grow here at all besides a few scattered, dried out\nbushes. To the west tall cliffs rise above the ground, impossible to access from\nhere with their vertical walls. The path continues southwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10125"
+                ],
+                "name": "",
+                "out": [
+                    "10125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10123"
+                ],
+                "name": "",
+                "out": [
+                    "10123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10122"
+                ],
+                "name": "",
+                "out": [
+                    "10122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10133"
+                ],
+                "name": "",
+                "out": [
+                    "10133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10124",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path beneath the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 270,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Covered with rocks and boulders the area lies beneath the cliffs to the west.\nThe sides of the cliffs to the west are almost vertical, and there is no way\nsomeone could climb up there without being an experienced climber. The plains\ncontinue north of here, while to the south a small path appears from in between\nthe rocks and boulders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10126"
+                ],
+                "name": "",
+                "out": [
+                    "10126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10124"
+                ],
+                "name": "",
+                "out": [
+                    "10124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10121"
+                ],
+                "name": "",
+                "out": [
+                    "10121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10132"
+                ],
+                "name": "",
+                "out": [
+                    "10132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10125",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 270,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Old cliffs cover the area to the west. Cracks and slits cover the ground, and\nwithout being careful it's easy to tumble and fall. Small weeds and scattered\ngrass grow in between the slits and cracks. West from here there are more cliffs\nwhile to the east the cliffs abruptly come to an end and down below to the east\na small path continues northwards through a rocky area. Southwards a slope\ndescends, leading to a path going west and east along the slopes. To the north\nsome cliffs block the passage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10133"
+                ],
+                "name": "",
+                "out": [
+                    "10133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10125"
+                ],
+                "name": "",
+                "out": [
+                    "10125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10136"
+                ],
+                "name": "",
+                "out": [
+                    "10136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10132",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 269,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "The slope gently rises up towards the cliffs in the north. The ground is filled\nwith semi-long, wet grass, which makes it slippery. Further up the slope the\nground is covered with less and less grass, and consists of mostly stones and\nrocks instead. Down below a path runs from west to east along the slope. Further\neast the slope descends down to some rocky plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10132"
+                ],
+                "name": "",
+                "out": [
+                    "10132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10134"
+                ],
+                "name": "",
+                "out": [
+                    "10134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10124"
+                ],
+                "name": "",
+                "out": [
+                    "10124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10135"
+                ],
+                "name": "",
+                "out": [
+                    "10135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10133",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slopes to the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 269,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Slopes surround the path northwards, leading up to the top of some cliffs in the\nnorth. The slopes are covered with grass, nearly down to the side of the path,\nonly parted by some small bushes at the side of the path. At the southern side\nof the path a large plain stretches out from west to east. This path continues\neast and west from here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10133"
+                ],
+                "name": "",
+                "out": [
+                    "10133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10123"
+                ],
+                "name": "",
+                "out": [
+                    "10123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "25947"
+                ],
+                "name": "",
+                "out": [
+                    "25947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10134",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path among the Slopes",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 269,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "The slopes of this hill are very steep, and climbing here offers quite a few\nchallenges. There are a lot of boulders and cliffs all around. Close to the west\nlies the top of this green and steep hill. A path runs north from here, along\nthe cliffs lying to the north. In the eastern horizon lies some high mountains\ncovered by mist.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10136"
+                ],
+                "name": "",
+                "out": [
+                    "10136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25947"
+                ],
+                "name": "",
+                "out": [
+                    "25947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10133"
+                ],
+                "name": "",
+                "out": [
+                    "10133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10152"
+                ],
+                "name": "",
+                "out": [
+                    "10152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10135",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slopes of a Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 268,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "This path runs along the cliffs from north to south. The cliffs are littered\nwith small weeds and patches of grass of uneven lengths. The path winds on to\nthe top of the cliffs in the north, while to the south it passes the foot of a\nhill which rises above the cliffs. Westwards a large flat area can be seen,\nconsisting mostly of dirt and sand with some scattered areas of grass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10137"
+                ],
+                "name": "",
+                "out": [
+                    "10137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10135"
+                ],
+                "name": "",
+                "out": [
+                    "10135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10132"
+                ],
+                "name": "",
+                "out": [
+                    "10132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10153"
+                ],
+                "name": "",
+                "out": [
+                    "10153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10136",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 268,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "This warm cave is large and dry, besides a damp area around the opening leading\nupwards. The inner parts of the cave are dry and warm, with their dark grey\nstony walls. A small plateau is carved out a foot or so above the ground in the\nback of the cave. The floor is filled with a small layer of dust and dirt, with\nsolid rock beneath. The only exit from the cave seems to be upwards through a\nhole high up on the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10131"
+                ],
+                "name": "",
+                "out": [
+                    "10131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10140",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Cavebear Den",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 269,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "The lake continues to the north and west. The water looks clear and deep. The\ncliffs surround lake to the south. There does not appear to be any way to climb\nthose cliffs, as they rise up from the banks of the lake. To the east a flat\narea seems to go on forever. Far to the north a stream flows out from the lake.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10141"
+                ],
+                "name": "",
+                "out": [
+                    "10141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10151"
+                ],
+                "name": "",
+                "out": [
+                    "10151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10153"
+                ],
+                "name": "",
+                "out": [
+                    "10153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10143"
+                ],
+                "name": "",
+                "out": [
+                    "10143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10142",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beautiful Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 266,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "This is the south-western part of the lake. Nothing much grows along the shores\nhere. The water is cold and deep in this area. To the east and south, all that\ncan be seen are cliff walls towering high above the lake. The only way to\ncontinue is over the lake to the north or east. Far to the east, above the lake\nlies a barren hilltop.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10144"
+                ],
+                "name": "",
+                "out": [
+                    "10144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10145"
+                ],
+                "name": "",
+                "out": [
+                    "10145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10142"
+                ],
+                "name": "",
+                "out": [
+                    "10142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10161"
+                ],
+                "name": "",
+                "out": [
+                    "10161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10143",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beautiful Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 265,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Many tall cliffs cover this area, as they lie close together. They lie so close\ntogether that it is possible to jump from one to another without risking much.\nSome dirt and some small bushes cover the stony ground. There is a path winding\nsouthwards down the steep hill. South, along the cliffs, there is a narrow path\nleading eastwards, while to the north lies a beautiful lake stretching out from\nnorth to east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10143"
+                ],
+                "name": "",
+                "out": [
+                    "10143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10146"
+                ],
+                "name": "",
+                "out": [
+                    "10146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10151"
+                ],
+                "name": "",
+                "out": [
+                    "10151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10145",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "High Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 265,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The path winds its way between rocks and boulders leading eastwards. A few small\nbushes and some scattered grass grow on each side of the path. Steep slopes lead\nup to the cliffs north of here. In between the rocks and boulders a small path\ncan be seen winding upwards along the side of the cliff. The areas south and\nwest from here are totally blocked from view by rocks and stones, and are\ninaccessible from here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10145"
+                ],
+                "name": "",
+                "out": [
+                    "10145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10149"
+                ],
+                "name": "",
+                "out": [
+                    "10149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10146",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path along the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 265,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "The path bends its way down to the west and gradually up the cliffs to the\nnorth. The path is wide, flat and easy to follow here, although it is mostly\ncovered with stones. Large boulders and rocks make it impossible to move both\nsouth and eastwards. North-west from here green plains cover the horizon as they\nstretch out as far as the eye can see in that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10148"
+                ],
+                "name": "",
+                "out": [
+                    "10148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10170"
+                ],
+                "name": "",
+                "out": [
+                    "10170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10147",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 264,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "Plains cover the path as it winds down to the level of the area below the\ncliffs. The path is wide and easy to follow here, as the area is not as steep as\nit seems to be further north closer to the cliffs. The area eastwards is blocked\nfrom view due to large boulders and rocks that are in the way. To the south the\npath bends westwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10161"
+                ],
+                "name": "",
+                "out": [
+                    "10161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10147"
+                ],
+                "name": "",
+                "out": [
+                    "10147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10175"
+                ],
+                "name": "",
+                "out": [
+                    "10175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10148",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path through the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 264,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Rocks and boulders cover the path on the southern side, and to the north a tall\ncliff rises above the ground. A small track leads north from this path, and\nwinds its way up towards the top of the cliff. It seems impossible to reach the\ntop without any climbing experience. This path continues east and west from\nhere. To the east the path ends up in an area filled with hills and grassy\nplains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10151"
+                ],
+                "name": "",
+                "out": [
+                    "10151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10150"
+                ],
+                "name": "",
+                "out": [
+                    "10150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10146"
+                ],
+                "name": "",
+                "out": [
+                    "10146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10149",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path along the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 266,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "The path is surrounded by plains and slopes filled with long green grass. The\ngrass is short along the path, as many people and animals have travelled here.\nSlopes slowly climb up towards the top of a hill north of the path. South of the\npath there is nothing but endless plains. To the west the path enters a rocky\narea with cliffs on the north side and large boulders on the southern side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10152"
+                ],
+                "name": "",
+                "out": [
+                    "10152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "25947"
+                ],
+                "name": "",
+                "out": [
+                    "25947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10149"
+                ],
+                "name": "",
+                "out": [
+                    "10149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10150",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path along the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 267,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "Tall cliffs lie westwards from here, while to the east the cliffs end and turn\ninto an area of hills. The ground is rocky with a few small bushes growing in\nthe small cracks in the cliff. The southern side of the slope is very steep, and\nthe small path that winds its way down the side seems impossible to follow\nwithout some kind of climbing experience. Down below a path runs along the\ncliffs from west to east, and to the north lies a large, beautiful lake.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10142"
+                ],
+                "name": "",
+                "out": [
+                    "10142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10149"
+                ],
+                "name": "",
+                "out": [
+                    "10149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10152"
+                ],
+                "name": "",
+                "out": [
+                    "10152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10145"
+                ],
+                "name": "",
+                "out": [
+                    "10145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10151",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "High Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 266,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "The ground here quickly turns into a steep slope. A lot of huge boulders are\nlying around. The path leads up and eastwards, leading to the top of the hill.\nJudging by the steep slopes it might be needed to be an experienced climber to\nbe sure to reach the top of this hill. Northwards the slopes fade, and the land\nbecomes flat.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10153"
+                ],
+                "name": "",
+                "out": [
+                    "10153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10150"
+                ],
+                "name": "",
+                "out": [
+                    "10150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10135"
+                ],
+                "name": "",
+                "out": [
+                    "10135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10151"
+                ],
+                "name": "",
+                "out": [
+                    "10151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "14124"
+                ],
+                "name": "",
+                "out": [
+                    "14124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10152",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Top of the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 267,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "This flat area, covered with short, dense grass, appears to be stuck between\nsome high cliffs rising in the east, and the lake that lies to the west. The\nlake stretches out to the west and by the edge of the lake the short, soft grass\nis filled with flowers of all kinds. Along the shore several water lilies slowly\nflows by in the clear blue water. Southwards a hill starts to rise into the air\nwith its long, rather steep, slopes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10154"
+                ],
+                "name": "",
+                "out": [
+                    "10154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10152"
+                ],
+                "name": "",
+                "out": [
+                    "10152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10136"
+                ],
+                "name": "",
+                "out": [
+                    "10136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10142"
+                ],
+                "name": "",
+                "out": [
+                    "10142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10153",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Flat Land",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 267,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "The path winds its way down the cliffs to the south and gradually up the cliffs\nto the north. Large rocks and boulders makes it difficult to move east or west\nfrom here. To the east lies a beautiful lake, while westwards plains filled with\ntall, green grass cover the view. The path is slippery as its covered with hard,\nand partly wet stones.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10160"
+                ],
+                "name": "",
+                "out": [
+                    "10160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10148"
+                ],
+                "name": "",
+                "out": [
+                    "10148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10143"
+                ],
+                "name": "",
+                "out": [
+                    "10143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10201"
+                ],
+                "name": "",
+                "out": [
+                    "10201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10161",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path through the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 264,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Deep underground, this lair looks like it was carved out by a creature to secure\nit and its family. Inside this tree the walls are made of wood, but some dirt\nand small branches cover the floor. The lair is filled with the smell of rotting\nflesh and damp wood. The floor, slimy and slippery, is filled with decapitated\nremains of the poor victims of this foul creature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "10129"
+                ],
+                "name": "",
+                "out": [
+                    "10129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10169",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Lair of the Termite",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 272,
+        "y": 183,
+        "z": 0
+    },
+    {
+        "desc": "This path seems to lead to the cliffs east of here. The path is rocky, and it is\nhard to move without the risk of tumbling and falling. North and north-west of\nhere there are enormous plains, covered with tall green grass. Movements can be\nseen in the grass as animals move about. To the west the path climbs slowly up\nto a rocky plateau providing an excellent view of the surrounding area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10175"
+                ],
+                "name": "",
+                "out": [
+                    "10175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10147"
+                ],
+                "name": "",
+                "out": [
+                    "10147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10171"
+                ],
+                "name": "",
+                "out": [
+                    "10171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10170",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path through the Cliffs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 263,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "This plateau overlooks the plains in the north and north-west. About the only\nthing that can be seen is long tall grass, but some movements and sounds can be\nseen and heard as animals move around in the tall grass below. There are mostly\nrocks lying around here, and slghtly to the north a small, smooth rock with\ngrass growing round it covers the ground. East of here a path leads down from\nthe plateau.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10174"
+                ],
+                "name": "",
+                "out": [
+                    "10174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10170"
+                ],
+                "name": "",
+                "out": [
+                    "10170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10172"
+                ],
+                "name": "",
+                "out": [
+                    "10172"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "10176"
+                ],
+                "name": "rock",
+                "out": [
+                    "10176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10171",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Promontory",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 262,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "This is the end of the plains. Rocky areas lie south of here, while plains\ncovered in tall, thick grass cover the horizon in the north. The grass is\nthinner here, as the ground consists of mostly rocks which makes it harder for\nplants to grow. East of here a rocky plateau rises above the tall grass. It\nseems hard to access from here due to a steep wall of large rocks leading up to\nthe plateau.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10173"
+                ],
+                "name": "",
+                "out": [
+                    "10173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10171"
+                ],
+                "name": "",
+                "out": [
+                    "10171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10172",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains near the Plateau",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 261,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "Tall grass as far as the eye can see in every direction is the only thing that\ncan be seen from here. The grass is so dense it's hard to make out the ground,\nwhich leaves it hard to move around in this area. The ground seems to be covered\nwith small rocks. When there is total silence animals can be heard moving around\nin the grass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10199"
+                ],
+                "name": "",
+                "out": [
+                    "10199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10172"
+                ],
+                "name": "",
+                "out": [
+                    "10172"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10174"
+                ],
+                "name": "",
+                "out": [
+                    "10174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10186"
+                ],
+                "name": "",
+                "out": [
+                    "10186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10173",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 261,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "South of here a rocky plateau rises up and covers the view in that direction,\nwhile plains continue as far as the eye can see in all the other directions. The\ntall grass makes it hard to see anything further than a few hundred meters in\nany of those directions. The ground is rocky here, and the grass is not as thick\nas it is further north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10200"
+                ],
+                "name": "",
+                "out": [
+                    "10200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10171"
+                ],
+                "name": "",
+                "out": [
+                    "10171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10175"
+                ],
+                "name": "",
+                "out": [
+                    "10175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10173"
+                ],
+                "name": "",
+                "out": [
+                    "10173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10174",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains near the Plateau",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 262,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "This seems to be the south-eastern corner of the plains. The grass is thinner\nhere, as the ground is rocky and less fertile than other parts of these plains.\nA path leading the way in between the cliffs runs along the border of the plain\nto the south and east. The cliffs lie further east, with their beautiful white\ncolour. South west from here lies a plateau, about as tall above the ground as\nthe green grass in the plains north of it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10201"
+                ],
+                "name": "",
+                "out": [
+                    "10201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10170"
+                ],
+                "name": "",
+                "out": [
+                    "10170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10148"
+                ],
+                "name": "",
+                "out": [
+                    "10148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10174"
+                ],
+                "name": "",
+                "out": [
+                    "10174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10175",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 263,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "This appears to be the beginning of an underground tunnel. The roof and walls\nare made out of stone. In the eastern corner of the tunnel the roof seems to\nhave some cracks that let some light through. The tunnel is very wide, and\njudging by the smoothness of the walls must have made by someone. The tunnel\ncontinues southwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10177"
+                ],
+                "name": "",
+                "out": [
+                    "10177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "10171"
+                ],
+                "name": "",
+                "out": [
+                    "10171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10176",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of the Wet Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 262,
+        "y": 185,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel bends to the west and north here. The tunnel inclines down to the\nwest and it gets wider northwards. The walls of the tunnel are damp, with some\nwater dripping from the stones. While the walls are made of stone the floor is\ncovered with dirt, which makes it rather slippery due to the water dripping\nslowly from the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10176"
+                ],
+                "name": "",
+                "out": [
+                    "10176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10178"
+                ],
+                "name": "",
+                "out": [
+                    "10178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10177",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Wet Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 262,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "As the tunnel continues westwards, more and more water seems to cover the floor\nof the tunnel. The floor is filled with mud here which makes it hard to move\naround without falling. The tunnel seems to widen out a bit again westwards, and\nthe sound of water can be heard from the same direction. Still the tunnel slopes\ndownwards to the west, while it's a struggle to move in the opposite direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10177"
+                ],
+                "name": "",
+                "out": [
+                    "10177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10179"
+                ],
+                "name": "",
+                "out": [
+                    "10179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10178",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wet Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 261,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "As the tunnel widens out a small underground lake appears. The lake is shallow\nhere, but it seems to become deeper further west. Further west the lake slips\nout of vision due to the dark and the roof becomes lower and lower. The water is\ncold as ice although it's not too deep just here. Everything is made of stone\nhere, the walls, roof and also the bottom of the lake. Eastwards a tunnel leads\non into the dark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10178"
+                ],
+                "name": "",
+                "out": [
+                    "10178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10180"
+                ],
+                "name": "",
+                "out": [
+                    "10180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10179",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Lake",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 9,
+        "sundeath": 2,
+        "x": 260,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "Here the vegetation seems to shift a bit. The pines that grow around to the\nnorth and west have almost gone completely. As far south as you can see the\ngrassy plains are the only thing visible. West of here the plains also continue\nwhile north of here you can see a field of some kind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10198"
+                ],
+                "name": "",
+                "out": [
+                    "10198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10173"
+                ],
+                "name": "",
+                "out": [
+                    "10173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10187"
+                ],
+                "name": "",
+                "out": [
+                    "10187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10186",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 260,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "You are in a large field, which is covered with grass and flowers. It is more or\nless completely flat while the land seems to rise a bit to the north. East of\nhere the flat plains-like area continues and also west of here. South of here\nlie some plains while to the north the fields seem to continue.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10205"
+                ],
+                "name": "",
+                "out": [
+                    "10205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10186"
+                ],
+                "name": "",
+                "out": [
+                    "10186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10199"
+                ],
+                "name": "",
+                "out": [
+                    "10199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10197"
+                ],
+                "name": "",
+                "out": [
+                    "10197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10198",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "In a Field",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 260,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Besides some fields west of here, nothing can be seen in any direction except\nplains. Tall grass, reaching up to a mans lower stomach, covers the area and\nmakes it hard to look in any direction. This area must be the perfect hiding\nplace for animals shy of people, and provide enough food for them with all the\nsmall animals living on these plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10204"
+                ],
+                "name": "",
+                "out": [
+                    "10204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10173"
+                ],
+                "name": "",
+                "out": [
+                    "10173"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10200"
+                ],
+                "name": "",
+                "out": [
+                    "10200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10198"
+                ],
+                "name": "",
+                "out": [
+                    "10198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10199",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 261,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "This seems to be the middle of the plains. It seems like there is nothing else\nbut tall, thick grass as far as the eye can see. It's hard to move around in\nthis grass, partly due to the fact that it is so thick and tall and partly\nbecause the ground below is filled with rocks of all sizes. Animals can be heard\nmoving around, but they cannot be seen except for some movements in the grass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10203"
+                ],
+                "name": "",
+                "out": [
+                    "10203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10174"
+                ],
+                "name": "",
+                "out": [
+                    "10174"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10201"
+                ],
+                "name": "",
+                "out": [
+                    "10201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10199"
+                ],
+                "name": "",
+                "out": [
+                    "10199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10200",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 262,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Dark green, tall grass covers the area like a dense carpet. Some noises can be\nheard as animals are hunting in the long, tall grass and some movements can be\nseen in the distance. These plains stretch out in every direction but east. To\nthe east a path appears to be leading in between some tall, white cliffs. The\ncliffs seem old and rugged, being formed by the weather and wind during many\ndecades.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10202"
+                ],
+                "name": "",
+                "out": [
+                    "10202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10175"
+                ],
+                "name": "",
+                "out": [
+                    "10175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10161"
+                ],
+                "name": "",
+                "out": [
+                    "10161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10200"
+                ],
+                "name": "",
+                "out": [
+                    "10200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10201",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 263,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "Although this place is not far below the river surface, managing to get one's\nhead above the water proves very difficult. The downward current created by the\ninfusion of the water above continues to push anything floating here deeper and\ndeeper. Looking north through clearer waters, a small natural lip extending just\nover the water's crest can be seen cut into the wall of the river bluff.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "10987"
+                ],
+                "name": "",
+                "out": [
+                    "10987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10985"
+                ],
+                "name": "",
+                "out": [
+                    "10985"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10986",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Turbulent Undertow",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 279,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "This narrow channel leads north under the granite bluff upon which the old elven\ncity stands. Natural in origin, it is just large enough for two people to swim\nside by side. Possibly a pocket of breathable air might exist further northward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "10988"
+                ],
+                "name": "",
+                "out": [
+                    "10988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10986"
+                ],
+                "name": "",
+                "out": [
+                    "10986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10987",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Flooded Channel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 279,
+        "y": 198,
+        "z": 0
+    },
+    {
+        "desc": "The water is calm and clear yet gazing down through it there is no way to judge\nthe depth. Looking upward, however, notably absent is the close granite roof\nthat covered this passage to the south. What lies above is uncertain but it is\nthe only option other than turning back southward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10987"
+                ],
+                "name": "",
+                "out": [
+                    "10987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10993"
+                ],
+                "name": "",
+                "out": [
+                    "10993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10988",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Watery End",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 279,
+        "y": 197,
+        "z": 0
+    },
+    {
+        "desc": "Only a finite amount of stale air fills the space between this pool of water and\nthe mile of granite bluff bearing down on this cavern's roof. Once that air is\ngone it would take more time then one could survive waiting to replenish it.\nThis perhaps may have been the fate of others who found this clandestine cave\nand faced the choice between running out of breathable air and drowning in the\nwater below. A natural ledge, just wide enough to stand upon, surrounds this\nsmall underground pool of water to the south, east and west. Northward the\ncavern extends several yards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10994"
+                ],
+                "name": "",
+                "out": [
+                    "10994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10988"
+                ],
+                "name": "",
+                "out": [
+                    "10988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10993",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Drowning Pool",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 278,
+        "y": 197,
+        "z": 0
+    },
+    {
+        "desc": "This cavern seems to have been thoroughly searched by someone or something. Deep\ngashes in the walls indicate that the searchers were looking for some hidden\nentrance from here to the city of Ost-in-Edhil which lies more miles above. It\nis possible they believed this to be a secret place dug up into the granite\nbluff, however, looking closely one can see this whole cavern is a natural\nformation. Perhaps once there was a way for air to freely reach here. Now\nbecause of the channelled water above feeding the rivers to a higher water\nstage, this place is secluded from all others with only the one watery entrance\nto the south. The air is stale and with each breath there is less of it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10993"
+                ],
+                "name": "",
+                "out": [
+                    "10993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10994",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Daunting Grotto",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 278,
+        "y": 196,
+        "z": 0
+    },
+    {
+        "desc": "This place offers the most amazing view, with the possibility to enjoy the sight\nof different terrain in every direction. South-east from here another hill like\nthis one can be seen. Down below, a small path running along the cliffs. The\nroad and river to the north-east, the flat lands to the north and plains to the\nwest. Far to the east lies the Misty mountains with their peaks piercing the\nclouds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "10152"
+                ],
+                "name": "",
+                "out": [
+                    "10152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14124",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Top of the Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 267,
+        "y": 181,
+        "z": 1
+    },
+    {
+        "desc": "The path runs east and west from here, surrounded by tall grass and small bushes\nwhile the path itself is covered by short grass and some dirt. North of the path\na slope slowly rises up towards some cliffs further north. The slope is gentle\nand easy to access with its soft grass. Southwards from the path the area is\ncovered with endless grassy plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10135"
+                ],
+                "name": "",
+                "out": [
+                    "10135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10134"
+                ],
+                "name": "",
+                "out": [
+                    "10134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10150"
+                ],
+                "name": "",
+                "out": [
+                    "10150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25947",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path along the Slopes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 268,
+        "y": 182,
+        "z": 0
+    }
+]

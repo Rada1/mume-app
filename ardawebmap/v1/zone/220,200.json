@@ -1,0 +1,757 @@
+[
+    {
+        "desc": "This is a small cave that seems to have been used as a treasure chamber since it\nis filled with old coffins, chests and the like. But it is obvious that the\ntreasure is history. Nearly all the chests are empty and most are broken or\nrotten. The smell of death hangs heavily in the air and some bones and skulls\ncan be spotted between the coffins. The only exit is up through a small niche.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9334"
+                ],
+                "name": "",
+                "out": [
+                    "9334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9333",
+        "light": 2,
+        "loadflags": 1,
+        "mobflags": 4096,
+        "name": "An Old Treasure Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 233,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "This cave is quite large and appears to have been set aside for the storage of\nweapons sometime in the past. Judging by the racks of rusting swords and axes,\nthe people who built these tunnels had some other pastime apart from tunnelling.\nThe cave extends to the north where it seems to be more narrow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9335"
+                ],
+                "name": "",
+                "out": [
+                    "9335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9333"
+                ],
+                "name": "patch",
+                "out": [
+                    "9333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9334",
+        "light": 2,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "A Storage Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 233,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "This place seems to be some kind of a storage cave. Around you are many jars and\ncasks, most of which are cracked or broken into pieces. At some point this had\nprobably been a food store for the many workers digging these tunnels. The cave\ncontinues to the south, where it seems to widen. Water is dripping from the\nstone ceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9334"
+                ],
+                "name": "",
+                "out": [
+                    "9334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9336"
+                ],
+                "name": "stoneslab",
+                "out": [
+                    "9336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9335",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "A Deserted Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 233,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The narrow tunnel is dark and filled with foully smelling, dirty water. The\nstench seems to grow to the north. The tunnel ceiling is quite low here, making\nit impossible to move without crawling. The walls are cold and moist. The tunnel\ncontinues west and north, where it leads into a large cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9337"
+                ],
+                "name": "",
+                "out": [
+                    "9337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9358"
+                ],
+                "name": "",
+                "out": [
+                    "9358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9338",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Damp and Murky Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 232,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "This part of the tunnel is filled with dirty, brown water from wall to wall, the\nuneven floor muddy and making it very hard to move. Water drips from the ceiling\nsoaking you right through as if attempting to make you thoroughly miserable. The\nstench from the water is extreme. The tunnel leads north and east. To the east,\nthe tunnel seems to climb upwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9353"
+                ],
+                "name": "",
+                "out": [
+                    "9353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9355"
+                ],
+                "name": "",
+                "out": [
+                    "9355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9354",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "A Damp and Murky Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 227,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel runs east-west, brown and foul-smelling water filling it from wall to\nwall. Water is running down the walls in small streams, and the level of water\nin the tunnel seems to rise. The water level appears to be lower in the eastern\npart of the tunnel and higher in the western part.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9356"
+                ],
+                "name": "",
+                "out": [
+                    "9356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9354"
+                ],
+                "name": "",
+                "out": [
+                    "9354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9355",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Damp and Murky Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 228,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The water is shallow here and not so hard to wade through, but it is very dirty,\nmurky and foul-smelling. The impenetrable darkness makes it hard to figure out\nwhere the different noises are coming from, but it is apparent that something\nliving is causing most of them. To the east, a bridge looms out of the darkness\nand with it maybe a spot where you could dry yourself off a bit. The tunnel\ncontinues to the west here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9357"
+                ],
+                "name": "",
+                "out": [
+                    "9357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9355"
+                ],
+                "name": "",
+                "out": [
+                    "9355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9356",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Damp and Murky Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 229,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "This old bridge looks as if it had seen better days and doesn't look as if it\ncould now support much weight. The ropes attaching it to either side of the dark\nchasm are old and frayed. It might be a good idea to hurry across and not dally\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9358"
+                ],
+                "name": "",
+                "out": [
+                    "9358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9356"
+                ],
+                "name": "",
+                "out": [
+                    "9356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1027,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9357",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "An Old and Decrepit Bridge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 230,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The long narrow tunnel is filled with dark brown water from wall to wall. The\nwater exudes a foul smell, which somehow appears very fitting for the\nsurroundings. The ceiling of the tunnel is so low that only a hobbit could pass\nhere without stooping. The tunnel continues to the east, while to the west it\ncrosses an old bridge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9338"
+                ],
+                "name": "",
+                "out": [
+                    "9338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9357"
+                ],
+                "name": "",
+                "out": [
+                    "9357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9358",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "A Damp and Murky Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 231,
+        "y": 200,
+        "z": 0
+    }
+]

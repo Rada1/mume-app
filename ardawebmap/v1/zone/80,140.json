@@ -1,0 +1,1684 @@
+[
+    {
+        "desc": "As the roadway widens, and approaches the vast, natural cavern to the east, so\nthe walls to either side begin to take on a new, and rather warmer appearance.\nSoft veins and small flecks of colour break through the harsh, grey granite, and\nyet, are but a pale reflection of the beauty of the chamber beyond.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17104"
+                ],
+                "name": "",
+                "out": [
+                    "17104"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17106"
+                ],
+                "name": "",
+                "out": [
+                    "17106"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17105",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 99,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "A pressing darkness enshrouds the roadway, dominating thoughts and feelings.\nHollow echoes of every sound, however faint, haunt this place, creating the\nillusion of small armies, trudging endlessly along Azaghal's Way. It is\ndisconcerting to realise that your own echoing footfalls might obscure the sound\nof an approaching foe.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17105"
+                ],
+                "name": "",
+                "out": [
+                    "17105"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17107"
+                ],
+                "name": "",
+                "out": [
+                    "17107"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17106",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 98,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "To the west, the road crosses through a huge cavern, a place of immense natural\nbeauty, but here, the stark, grey walls are cold and featureless. The darkness\nof Moria presses in on all sides, and the only sound is the repeating echo of\nfootfalls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17106"
+                ],
+                "name": "",
+                "out": [
+                    "17106"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17108"
+                ],
+                "name": "",
+                "out": [
+                    "17108"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17107",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 97,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Even the most tired and cynical would be awed by the sight of this cavern. The\ncold, dark reality of Moria seems to be suspended here, as if this chamber,\nalone, existed in a different and more tranquil time. The walls, the ceiling,\nand even the floor, sparkle brightly, in even the faintest trace of light,\nsweeping the observer into a world of fantastic images. But all too soon, the\nwondrous luminosity gives way, once more, to dreary, grey, granite walls, as\nAzaghal's Way stretches east and west, and a smaller road slopes gently away to\nthe south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17292"
+                ],
+                "name": "",
+                "out": [
+                    "17292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17107"
+                ],
+                "name": "",
+                "out": [
+                    "17107"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18028"
+                ],
+                "name": "",
+                "out": [
+                    "18028"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17108",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Huge Glittering Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 96,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "All is quiet and still in this dark passageway. The smooth floor beneath your\nfeet slopes gently away to the north, where the tunnel ends in a simple, yet\nexquisite archway. To the south, the ground becomes a little less even, and a\nlittle more gravelly, but what you notice most is the pungent odour which drifts\nto you from that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17278"
+                ],
+                "name": "",
+                "out": [
+                    "17278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17276"
+                ],
+                "name": "",
+                "out": [
+                    "17276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17277",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 90,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The faint, distant thundering of water can be heard here, as you stand at the\nthe top of a long winding staircase. It is impossible to see how far below you\nthe stairs continue, and it is quite tempting to reach for one of the loose\nstones which are scattered around, and drop it to plumb these depths. It seems\nimpossible to fight off a wave of vertigo when contemplating this drop,\nespecially considering that there is no handrail here, and that each tread of\nthe stair is perilously worn and chipped with use.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17277"
+                ],
+                "name": "",
+                "out": [
+                    "17277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17320"
+                ],
+                "name": "",
+                "out": [
+                    "17320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17278",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Top of a Treacherous Stair",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 90,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The air here is still, almost stagnant, and no sound is to be heard. Peering\ninto the darkness, it is possible to see that the tunnel here is somewhat\nsteeper than it was up to this point, falling away quite markedly to the east of\nyou. This passage seems to continue only a short way in either direction, making\nunanticipated turns to both the east and the west of where you stand.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17280"
+                ],
+                "name": "",
+                "out": [
+                    "17280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17282"
+                ],
+                "name": "",
+                "out": [
+                    "17282"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17281",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Sloping Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 99,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "Abruptly, the passageway turns here, leading upward to the south, and down from\nhere to the east. The floor is smooth, but quite dry, so the gentle gradient\noffers no difficulty. However, in the all-engulfing inky darkness of this tunnel\nit is impossible to see far in either direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17225"
+                ],
+                "name": "",
+                "out": [
+                    "17225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17281"
+                ],
+                "name": "",
+                "out": [
+                    "17281"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17282",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Sloping Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 98,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "A cool breeze wafts out of the still darkness within, carrying a blend of\nunfamiliar scents and an aura of great age. Somehow, this place feels evil,\nbelonging to a different time, perhaps, and only with a certain degree of\ntrepidation would anyone continue to follow this path between the dark, stone\nwalls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17288"
+                ],
+                "name": "",
+                "out": [
+                    "17288"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18031"
+                ],
+                "name": "",
+                "out": [
+                    "18031"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17285"
+                ],
+                "name": "",
+                "out": [
+                    "17285"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17284",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 91,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The slate-surfaced road continues to wind upward to the east, and downward to\nthe west, in long, regular curves. There are no side passages to distract the\ntraveller, and the road has not been marred or cracked by tremors as some other\nroads have - in this vicinity, at least.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17284"
+                ],
+                "name": "",
+                "out": [
+                    "17284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17286"
+                ],
+                "name": "",
+                "out": [
+                    "17286"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17285",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Switchbacks",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 90,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The road winds on through the stone in long curves - a long sweep to the north,\na broad curve, a long sweep to the south again. It ascends continuously to the\neast; to the west each curve is lower than the last. The walls and ceiling are\nfaced with white marble, once inlaid with runes of some more precious stone. The\nfilling is gone and the runes chipped and defaced, but it seems that you can\nrecognise the name of that great Dwarven king of legend, Azaghal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17285"
+                ],
+                "name": "",
+                "out": [
+                    "17285"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17287"
+                ],
+                "name": "",
+                "out": [
+                    "17287"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17286",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Switchbacks",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 89,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This road ascends into the heart of ruined Khazad-dum in a series of long,\ngoosenecked curves, first north, then south, but each curve higher and further\neast than the one before. The slate surface is smooth and easy to travel on. The\nwalls are faced with a brighter and finer grade of stone than in the tunnels\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17286"
+                ],
+                "name": "",
+                "out": [
+                    "17286"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16931"
+                ],
+                "name": "",
+                "out": [
+                    "16931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17287",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Switchbacks",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 88,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Broad and straight, with a high ceiling, and smooth walls of cold, dark stone,\nthis roadway runs away from you, to the west, rising sharply as it does so. To\nthe north, it joins the much grander thoroughfare, known in ancient times as\nAzaghal's Way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17284"
+                ],
+                "name": "",
+                "out": [
+                    "17284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17289"
+                ],
+                "name": "",
+                "out": [
+                    "17289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17288",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Roadway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 91,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The roadway ends abruptly here, as if its purpose had somehow been forgotten.\nThe cold, dark, granite walls are beaded with condensation, but otherwise seem\nquite featureless, and there is no indication as to why this passageway was\nconstructed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17288"
+                ],
+                "name": "",
+                "out": [
+                    "17288"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "17290"
+                ],
+                "name": "wetwall",
+                "out": [
+                    "17290"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17289",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Roadway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 90,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "This narrow passage slopes steadily upward, twisting and turning as it does so.\nA cool breeze drifts down to you from above, chilling the air where you stand,\nand whispering of the possibilty of an exit from the tunnels and caverns. The\nwall to the east of you seems a little different to those north and south, and a\nthin film of moisture beads its cool, smooth surface.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "17289"
+                ],
+                "name": "accessway",
+                "out": [
+                    "17289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17291"
+                ],
+                "name": "",
+                "out": [
+                    "17291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17290",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Winding, Sloping Accessway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 89,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "Perched high on the side of the mountain is a hidden outpost, once used by the\ndwarves to keep watch on the surrounding lands in relative secrecy. Far below,\nthe raging waters of the Cirith Caradhras flow in a fierce torrent through the\nvalley. To the north, and far distant, the pathway to the Redhorn Gate can\nbarely be spied, nestled among the same mighty glaciers, which cover the\nmountainside around you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17290"
+                ],
+                "name": "",
+                "out": [
+                    "17290"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17291",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 4096,
+        "name": "A Hidden Look-out Post",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 88,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The impenetrable darkness of this hallway seems never to diminish, and it would\nalmost seem that despite an endless march through the mountain, no progress has\nbeen made. The heavy, rock walls press in on either side, despite the generous\ndimensions of this passageway, and the only sound to be heard is the soft,\nrepeating echo of your own footfalls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17108"
+                ],
+                "name": "",
+                "out": [
+                    "17108"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18029"
+                ],
+                "name": "",
+                "out": [
+                    "18029"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18028",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 95,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Soft footsteps seem to approach, but it is hard to tell if they are coming from\nthe east or the west. Gradually, however, it becomes apparent that they are only\nechoes, making mischief in the unending darkness of this roadway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18028"
+                ],
+                "name": "",
+                "out": [
+                    "18028"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18030"
+                ],
+                "name": "",
+                "out": [
+                    "18030"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18029",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 94,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Broad and high, with a smooth floor and straight stone walls, Azaghal's Way\nstrides confidently on through the mountain, rising steadily in its eastward\nprogression. No sound is to be heard, save for that of your own footfalls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18029"
+                ],
+                "name": "",
+                "out": [
+                    "18029"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18031"
+                ],
+                "name": "",
+                "out": [
+                    "18031"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18030",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 93,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "A march of dwarves led by Azaghal to confront the dreaded Glaurung, a dragon of\nthe caves, once echoed the halls. Azaghal, being of brave soul, engaged the foul\nbeast, and died an honourable death on a cold and stony battlefield. The folk of\nKhazad-dum named this mighty roadway in his memory.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18030"
+                ],
+                "name": "",
+                "out": [
+                    "18030"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17284"
+                ],
+                "name": "",
+                "out": [
+                    "17284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18031",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 92,
+        "y": 156,
+        "z": 0
+    }
+]

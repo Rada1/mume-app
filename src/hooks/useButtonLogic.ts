@@ -7,7 +7,8 @@ export const useButtonLogic = (
     activeSet: string,
     abilities: Record<string, number>,
     characterClass: string,
-    isEditMode: boolean
+    isEditMode: boolean,
+    isSmartPopulateEnabled: boolean = true
 ) => {
     return useMemo(() => {
         const classNames = ['ranger', 'warrior', 'mage', 'cleric', 'thief'];
@@ -17,7 +18,7 @@ export const useButtonLogic = (
         const filtered = rawButtons.filter(b => {
             if (isEditMode) return true;
 
-            if (b.hideIfUnknown && b.setId !== 'Xbox') {
+            if (isSmartPopulateEnabled && b.hideIfUnknown && b.setId !== 'Xbox') {
                 const cmdLower = b.command.toLowerCase();
                 const labelLower = b.label.toLowerCase();
                 let name = labelLower;
@@ -69,8 +70,32 @@ export const useButtonLogic = (
                 }
             }
 
-            // Swipes are no longer filtered out to prevent UI label confusion.
-            // Dimming handles the unknown state visually.
+            // Dim buttons that are unknown but visible because smart populate is off
+            if (!isSmartPopulateEnabled && b.hideIfUnknown && !isEditMode) {
+                const cmdLower = b.command.toLowerCase();
+                const labelLower = b.label.toLowerCase();
+                let name = labelLower;
+                let isSpellOrSkill = false;
+
+                if (cmdLower.startsWith('cast ') || cmdLower.startsWith('commune ')) {
+                    isSpellOrSkill = true;
+                    const match = cmdLower.match(/'([^']+)'/);
+                    if (match) name = match[1].toLowerCase();
+                } else {
+                    const firstWord = cmdLower.split(' ')[0];
+                    const allAbilities = [...MAGE_SPELLS, ...CLERIC_SPELLS, ...WARRIOR_SKILLS, ...RANGER_SKILLS, ...THIEF_SKILLS].map(s => s.toLowerCase());
+                    if (allAbilities.includes(firstWord) || allAbilities.includes(labelLower)) {
+                        isSpellOrSkill = true;
+                        name = allAbilities.includes(firstWord) ? firstWord : labelLower;
+                    }
+                }
+
+                if (isSpellOrSkill) {
+                    const prof = abilities[name] || abilities[labelLower] || abilities[cmdLower] || 0;
+                    if (prof <= 0) modified.isDimmed = true;
+                }
+            }
+
             return modified;
         });
 
@@ -81,6 +106,9 @@ export const useButtonLogic = (
             let baseList: string[] = activeSetLower === 'spellbook' ? [...MAGE_SPELLS, ...CLERIC_SPELLS] : (CLASS_MAPPINGS[activeSetLower] || []);
 
             baseList.map(name => ({ name, prof: abilities[name.toLowerCase()] || 0 })).forEach(({ name, prof }, idx) => {
+                // If smart populate is on, only show known spells
+                if (isSmartPopulateEnabled && prof <= 0) return;
+
                 const cols = 2;
                 const row = Math.floor(idx / cols);
                 const col = idx % cols;
@@ -92,6 +120,7 @@ export const useButtonLogic = (
                     actionType: 'command',
                     display: 'floating',
                     isVisible: true,
+                    isDimmed: prof <= 0,
                     style: {
                         x: 10 + col * 40, y: 10 + row * 10, w: 120, h: 40,
                         backgroundColor: prof > 0 ? 'rgba(74, 144, 226, 0.3)' : 'rgba(100, 116, 139, 0.1)',
@@ -106,5 +135,5 @@ export const useButtonLogic = (
         }
 
         return filtered;
-    }, [rawButtons, activeSet, abilities, characterClass, isEditMode]);
+    }, [rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled]);
 };

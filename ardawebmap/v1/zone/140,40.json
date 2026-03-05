@@ -1,0 +1,1006 @@
+[
+    {
+        "desc": "This is the well tended garden of Bag End. The plants and flowers have been\ncared for by an expert, judging by their quality and condition. A huge old tree\nstands in the middle of the garden.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2095"
+                ],
+                "name": "",
+                "out": [
+                    "2095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2094",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 152,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "You are in the entrance garden of Bag End, reputed to be one of the finest\nsmials in all the Shire. The plants are very well cared for, and the flowers\nhere seem especially fragrant. To the north you see a round green door set in\nthe side of the hill.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2096"
+                ],
+                "name": "",
+                "out": [
+                    "2096"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2098"
+                ],
+                "name": "",
+                "out": [
+                    "2098"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2097"
+                ],
+                "name": "",
+                "out": [
+                    "2097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2094"
+                ],
+                "name": "",
+                "out": [
+                    "2094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2095",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Entrance Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 153,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "You are in a rather large smial, probably one of the largest in the Shire. On\nthe walls you can see beautiful paintings while many strange knick-knacks rest\non the shelves and tabletops. Bag End used to be owned by Bilbo Baggins, but he\nhas been gone from the area for a long time. The Sackvilles have taken residence\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14520"
+                ],
+                "name": "",
+                "out": [
+                    "14520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "2095"
+                ],
+                "name": "",
+                "out": [
+                    "2095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14517"
+                ],
+                "name": "",
+                "out": [
+                    "14517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14354"
+                ],
+                "name": "",
+                "out": [
+                    "14354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2096",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bag End",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 153,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This is the well tended garden of Bag End. The plants and flowers here have been\ntaken care of by an expert, judging from the quality and condition of the\nfoliage here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2095"
+                ],
+                "name": "",
+                "out": [
+                    "2095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2097",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Garden",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 154,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Sturdy bookshelves dominate the walls of this room. Many ancient tomes which\nrest on these shelves appear quite dusty, probably from not being opened in a\nwhile. A wide window surrounded by curtains lets you view the garden and a good\npart of the nearby road. A fireplace warms up the room in wintertime.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2096"
+                ],
+                "name": "",
+                "out": [
+                    "2096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14354",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Study",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 152,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "A large table resides in the centre of the room. Fine dinnerware is set about it\nand comfortable wooden chairs await any guests. A window on the wall allows you\nto view the scenic countryside.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14518"
+                ],
+                "name": "",
+                "out": [
+                    "14518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2096"
+                ],
+                "name": "",
+                "out": [
+                    "2096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14517",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dining Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 154,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This room is very clean and neat. On the shelves you can see dishes and other\nhousehold utensils. A table with some chairs around it occupy the centre of the\nroom. An old stove in good condition is ready to cook a meal. The room has the\nfaint smell of hot tea.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14519"
+                ],
+                "name": "",
+                "out": [
+                    "14519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14517"
+                ],
+                "name": "",
+                "out": [
+                    "14517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14518",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kitchen",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 154,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Within the pantry here resides a wide variety of foodstuffs, and it becomes\napparent that Mr. Baggins puts a high priority on food. Breads, cakes, meats,\nand vegetables are organized neatly along shelves. In the corner of the room sit\nsome caskets, most likely filled with beer and wine.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14518"
+                ],
+                "name": "",
+                "out": [
+                    "14518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14519",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Pantry",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 154,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "You are in a spacious, comfortable room. A large sofa, by hobbit proportions,\nlies in the corner of the room. An ornate bookstand rests next to it, with an\nopen book and an empty tea cup on top. A doorway leads into the bedroom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14522"
+                ],
+                "name": "",
+                "out": [
+                    "14522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2096"
+                ],
+                "name": "",
+                "out": [
+                    "2096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14521"
+                ],
+                "name": "",
+                "out": [
+                    "14521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14520",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Living Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 153,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Entering the room you realise that this is the ideal place to rest after a long\nday's work. A huge bed looks really cosy and comfortable. A small bookstand\nrests next to the bed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14520"
+                ],
+                "name": "",
+                "out": [
+                    "14520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14521",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bedroom",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 152,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "As comfortable as the master bedroom, this bedroom is used primarily by guests.\nThis bed is quite larger than the one in the master bedroom, but still seems a\ntad small to allow a human a comfortable rest. This room looks like it hasn't\nbeen used recently though, maybe due to the new owners.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14520"
+                ],
+                "name": "",
+                "out": [
+                    "14520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14522",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guest Bedroom",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 153,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "This room is the cleanest and most tranquil in the house. In the east corner of\nthe room there is a dresser that contains an assortment of boxes and trinkets.\nIn the centre of the back wall one of Tolman's dagger has been mounted. This\nparticular dagger is from his better days of battle and adventure. In the\nwesternmost part of the room, a man size bed has been placed, awaiting all those\nwho are willing to risk the comfort of this rich hobbit.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "22286"
+                ],
+                "name": "",
+                "out": [
+                    "22286"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22287",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sleeping Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 157,
+        "y": 59,
+        "z": 0
+    }
+]

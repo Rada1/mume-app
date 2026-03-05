@@ -89,7 +89,7 @@ export class ProtocolHandler {
             if (!this.gmcpReady) {
                 this.gmcpReady = true;
                 this.options.addMessage('system', 'GMCP negotiated. Requesting data...');
-                this.options.sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Room 1", "Room.Info 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1"]);
+                this.options.sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Char.Vitals 1", "Room 1", "Room.Info 1", "Room.UpdateExits 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1"]);
             }
         } else if (cmd === DO && option === TELNET_NAWS) {
             this.options.sendBytes([IAC, WILL, TELNET_NAWS]);

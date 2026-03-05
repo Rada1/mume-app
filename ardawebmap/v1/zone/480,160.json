@@ -1,0 +1,1090 @@
+[
+    {
+        "desc": "This is a much smaller cave that has been naturally carved adjacent to a larger\nnetwork of caves and caverns. The walls of the cave are slick with moisture and\nit seems hopeless to try to climb them. Green and black fungi grow all along the\nfloors at the bases of the walls. In some spots, huge mushrooms grow in\nflourishing clusters.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25581"
+                ],
+                "name": "",
+                "out": [
+                    "25581"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25586",
+        "light": 1,
+        "loadflags": 48,
+        "mobflags": 0,
+        "name": "Damp, Musty Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 499,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "This narrow channel is barely passable. The air is warm and humid, making the\nwalls slick with condensation. There are no hand- or foot-holds here, making\nclimbing treacherous. Warm, wet air can be felt from below, and a small rivulet\nof foetid water runs down from above, disappearing into the darkness below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25640"
+                ],
+                "name": "",
+                "out": [
+                    "25640"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25637"
+                ],
+                "name": "",
+                "out": [
+                    "25637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25639",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Channel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 498,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "It is cramped and dark at the top of this narrow channel, making it difficult to\nfind a foothold. The air here is thick and wet from the steam rising from below.\nA steady stream of water springs from a small crack in the stone above, forming\na rill that seems to have carved this channel from the rock with decades of\nerosion.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25639"
+                ],
+                "name": "",
+                "out": [
+                    "25639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25640",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foul-smelling Spring",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 498,
+        "y": 178,
+        "z": 0
+    },
+    {
+        "desc": "A knee-deep bog makes movement difficult, and every step releases waves of\noppressive stench. There is clearly movement nearby, but the profound darkness\nmakes it impossible to tell what might be out there. Water drips down from\nabove, the source unseen in the inky blackness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25661"
+                ],
+                "name": "",
+                "out": [
+                    "25661"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25663"
+                ],
+                "name": "",
+                "out": [
+                    "25663"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25662",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Huge Grotto",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 492,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "There is a foetid mire at the bottom of this cavern, and movement is tiring and\ntreacherous. Sounds are coming from all around, the source obscured by echoes.\nThe smell is overwhelming, a mixture of rotting flesh, mould, fermenting plant\nlife, and other, indistinguishable, but equally putrid odours.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25664"
+                ],
+                "name": "",
+                "out": [
+                    "25664"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25662"
+                ],
+                "name": "",
+                "out": [
+                    "25662"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25663",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Huge Grotto",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 491,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "Large stones and ledges form natural, though rugged, stairs leading down, and\nthe rough floor slopes upward to the south. The air coming from the south is\ndamp and musty, covering the walls with moisture. Strange sounds come from below\nevery now and again.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25666"
+                ],
+                "name": "",
+                "out": [
+                    "25666"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25658"
+                ],
+                "name": "",
+                "out": [
+                    "25658"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25665",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of a Rough Stairway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 495,
+        "y": 178,
+        "z": 0
+    },
+    {
+        "desc": "A tunnel has been formed in solid stone. The rough floor slopes sharply to the\nnorth, and muffled sounds can be heard from that direction every now and again.\nThe tunnel narrows to the west, though it still appears to be passable, and a\nmusty, dank smell comes from that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25665"
+                ],
+                "name": "",
+                "out": [
+                    "25665"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25667"
+                ],
+                "name": "",
+                "out": [
+                    "25667"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25666",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Curving Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 495,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "This narrow east-west passageway is barely passable. The walls are wet with\ncondensation, and meet at a point at the bottom of this tunnel, making walking\ndifficult. Stale, dank air, smelling of must and mould, can be felt coming from\nthe west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25666"
+                ],
+                "name": "",
+                "out": [
+                    "25666"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25668"
+                ],
+                "name": "",
+                "out": [
+                    "25668"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25667",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 494,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "A narrow shaft extends upward, barely passable and treacherous to climb. Muffled\nnoises can be heard from below, possibly from some creature living somewhere\nnearby or simply the wind or water playing tricks. The air coming coming from\nabove is wet and somewhat cool, forming condensation on the walls and floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25667"
+                ],
+                "name": "",
+                "out": [
+                    "25667"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25669"
+                ],
+                "name": "",
+                "out": [
+                    "25669"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25668",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Shaft",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 493,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel passes through soft, unstable rock, with passages leading to the\nnorth and east. The limestone walls and ceiling are crumbling, and large\nsections have sloughed off, leaving large scars and jagged-edged craters. The\nfloor is littered with scree, making it difficult to walk.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25950"
+                ],
+                "name": "",
+                "out": [
+                    "25950"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25948"
+                ],
+                "name": "",
+                "out": [
+                    "25948"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25949",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Unstable Rock Formation",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 499,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "Twisting and turning, this tunnel generally runs north-south, but it is easy to\nlose track of time and distance while following its zig-zag path. Fissures in\nthe soft stone create intricate patterns, with hair-like cracks criss-crossing\nlarger cracks of varying sizes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25951"
+                ],
+                "name": "",
+                "out": [
+                    "25951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25949"
+                ],
+                "name": "",
+                "out": [
+                    "25949"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25950",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Meandering Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 499,
+        "y": 178,
+        "z": 0
+    },
+    {
+        "desc": "A long, narrow shaft seems to extend nearly infinitely north and south. Piles of\nfine rubble and shale line the floor, revealing the instability of the\nsurrounding stone. The air here is strangely still, but not stale, with no odour\nat all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25952"
+                ],
+                "name": "",
+                "out": [
+                    "25952"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25950"
+                ],
+                "name": "",
+                "out": [
+                    "25950"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25951",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Long, Narrow Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 499,
+        "y": 177,
+        "z": 0
+    },
+    {
+        "desc": "A tunnel from the south opens into a large limestone grotto. Stalagmites of all\nsizes grow from the floor, reaching upwards towards the roof far above, while\nstalactites hang from above. Standing beneath these geologic structures is\nimprudent, as evidenced by several piles of rubble on the cavern floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "26074"
+                ],
+                "name": "",
+                "out": [
+                    "26074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25951"
+                ],
+                "name": "",
+                "out": [
+                    "25951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25952",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Precarious, Glistening Grotto",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 499,
+        "y": 176,
+        "z": 0
+    }
+]

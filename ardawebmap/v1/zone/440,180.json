@@ -1,0 +1,584 @@
+[
+    {
+        "desc": "Perhaps an extension of this underground area at one time, this chamber has\ncollapsed, leaving a dead end of dirt and stone in all directions except to the\nwest. The air is slightly less damp here than the rest of the tunnel, perhaps\nowing to the raised elevation of this room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14042"
+                ],
+                "name": "",
+                "out": [
+                    "14042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13990"
+                ],
+                "name": "",
+                "out": [
+                    "13990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14041",
+        "light": 2,
+        "loadflags": 3,
+        "mobflags": 4096,
+        "name": "Crumbling Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 441,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "A foul stench rises up from the water which is about ankle-deep. Various algae\nand moulds float upon the surface of the murky water, covering any view one\nmight have of the ground itself. Parasitic bugs almost too small for the eye to\nsee line the cavern walls and straddle the mark of the water level against the\ndirt walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14044"
+                ],
+                "name": "",
+                "out": [
+                    "14044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2051,
+                "in": [
+                    "14041"
+                ],
+                "name": "",
+                "out": [
+                    "14041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14042",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Foul Pool",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 440,
+        "y": 180,
+        "z": 0
+    },
+    {
+        "desc": "After the fall of Numenor only some of the shores that were once colonized\nremained property of the 'pure blooded' as the fierce Black Numenoreans called\nthemselves. You are standing in one of those places and the landscape reminds\nyou of Eru's wrath and the days of the Fall. Where once stood the glorious\npurple temples for the Black Lord's worship, dark ruins fester like wounds upon\nthe land. But, who knows, some power might still hide through the shadows of the\npast...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14485"
+                ],
+                "name": "",
+                "out": [
+                    "14485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14484",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hidden Island",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 452,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself in the ancient crypt of a Numenorean prince. Glyphs are etched\ninto the walls, still clear after so many years. The carvings depict the\nstruggle of the proud Numenoreans against the deathless Elves and Valar. The\ndefeat of Ar-Pharazon's fleet and the diminution of Sauron's power is also\nportrayed, with the aims of the surviving people set on complete revenge over\nall of Arda. On the floor itself there are broken pieces of weapons and armour\nstrewn about. Perhaps with some luck, a clever adventurer might find something\nstill of use. Above, dark waters leak through into the crypt.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14484"
+                ],
+                "name": "",
+                "out": [
+                    "14484"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14485",
+        "light": 1,
+        "loadflags": 2228248,
+        "mobflags": 0,
+        "name": "The Crypt",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 453,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "This passageway is narrow but tall, assembled from grey stone blocks which at\none time were fit together masterfully, yet which have now crumbled within the\nunyielding hands of time. The tunnel bends away to the east, but in the west it\nhas completely caved in. Many splintered bones lie scattered across the black,\ndamp dirt floor, and it appears that a large animal has excavated a sleeping\nburrow into the western wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16620"
+                ],
+                "name": "",
+                "out": [
+                    "16620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16619",
+        "light": 1,
+        "loadflags": 34,
+        "mobflags": 0,
+        "name": "Toppled Passageway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 448,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "As it bends from south to west, this narrow passageway is roughly rectangular in\nits cross-section, although the north-eastern wall leans ominously inward at\nseveral points. Many of the grey stones are crumbling into a thin, soft dust\nthat coats the uneven floor. Fresh sets of animal tracks, characterised by a\nbroad, scaly foot, are easily recognisable in this dust.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16621"
+                ],
+                "name": "",
+                "out": [
+                    "16621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16619"
+                ],
+                "name": "",
+                "out": [
+                    "16619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16620",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Stone Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 449,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "Judging from the claw marks on the ground, some large animal have dug this muddy\nburrow through the dirt-filled remains of a caved-in stone tunnel. The walls and\nfloor are made up of damp, black earth interwoven with the occasional\nroughly-cut stone block and tree-roots of varying diameter. To the north the\nancient architecture seems to have better withstood the effects of time, as the\nmuddiness of this pit gives way to an intact stone passageway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16620"
+                ],
+                "name": "",
+                "out": [
+                    "16620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "16440"
+                ],
+                "name": "mud",
+                "out": [
+                    "16440"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16621",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Muddy Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 449,
+        "y": 182,
+        "z": 0
+    }
+]

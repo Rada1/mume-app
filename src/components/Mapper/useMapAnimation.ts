@@ -51,8 +51,9 @@ export const useMapAnimation = ({
             }
 
             if (autoCenter && !isDragging) {
-                const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / 2);
-                const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / 2);
+                const zoom = camera.current.zoom || 1;
+                const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
+                const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
 
                 if (Math.abs(camera.current.x - targetCamX) > 0.1 || Math.abs(camera.current.y - targetCamY) > 0.1) {
                     camera.current.x += (targetCamX - camera.current.x) * 0.1;

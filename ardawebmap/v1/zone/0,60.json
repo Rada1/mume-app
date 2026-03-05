@@ -1,0 +1,588 @@
+[
+    {
+        "desc": "The huge door to the north is made of white marble, a real piece of work.\nIncrusted in the door are diamonds depicting every arcane word a powerful mage\nneeds. On the top of the door stand these words: ----- Aehnilaeo Toughadeuos\nIristaetar ----- For those who don't know sindarin the correct sentence is Truth\nis elsewhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1477"
+                ],
+                "name": "",
+                "out": [
+                    "1477"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1479"
+                ],
+                "name": "",
+                "out": [
+                    "1479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1478",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Armazac's Entrance",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 75,
+        "z": 0
+    },
+    {
+        "desc": "This room is filled with a nice smell of flowers and essential essence. In this\nroom Armazac prepares brew for his/her friends. With these potions they could\nget a higher strength, healing and so on. In the western corner of the room\nstand a strange artefact. This powerful artefact is built in a shiny material.\nAnd saying these magical words: By the Fluorescent Activated Cells Sorter Tell\nme what this item is made of.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1491"
+                ],
+                "name": "",
+                "out": [
+                    "1491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1478"
+                ],
+                "name": "",
+                "out": [
+                    "1478"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1479",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Laboratory",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 75,
+        "z": 0
+    },
+    {
+        "desc": "This magnificent hall has been paved with huge, flat slabs of marble. Against\nthe west wall a towering standard hangs, resplendant in green and red. It is a\nbreathtaking depiction of the shining home of Galadriel, Lorien. Large panes of\nglass allow ample sunlight into this room, and several young trees have been\nplanted in the centre of the room. A smoky chamber can be seen to the north,\nwhilst an open doorway leads off to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1490"
+                ],
+                "name": "",
+                "out": [
+                    "1490"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1481"
+                ],
+                "name": "",
+                "out": [
+                    "1481"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1483"
+                ],
+                "name": "",
+                "out": [
+                    "1483"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1480",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Grand Foyer",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 78,
+        "z": 0
+    },
+    {
+        "desc": "A small wooden bridge spans a stream that runs between the two sections of the\nbuilding. The stream gurgles over a steep cliff, falling ever downward into the\nrolling ocean. Two small benches and a small table sit on this redwood bridge.\nThe view is commanding, and ever tempting to elves longing to sail west for\nvalinor, waiting to be greeted by their long departed brethren. To the east, the\nstream pours towards you out of a lush forest. The bridge leads to a large\nentrance hall to the north and to the more private rooms of the residence to the\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1480"
+                ],
+                "name": "",
+                "out": [
+                    "1480"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1482"
+                ],
+                "name": "",
+                "out": [
+                    "1482"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1481",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Bridged Stream",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 79,
+        "z": 0
+    },
+    {
+        "desc": "This broad hall has been finely furnished with comfortable couches and chairs. A\nwide hearth lies against the north wall, while against the west wall stands what\nappears to be a huge display case. Upon closer inspection you realise it\ncontains a dazzling supply of pipes of all kinds as well as wide variety of\npipeweeds and herbs. A beautiful but tiny fountain trickles softly near the\neastern wall. The room is warm and comfortable and one could feel like resting\nhere a while.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1480"
+                ],
+                "name": "",
+                "out": [
+                    "1480"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1490",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Luxurious Pipeweed Lounge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 77,
+        "z": 0
+    },
+    {
+        "desc": "As you enter this room, you feel comfortable and in peace. As you were in your\nown house. On the wall stands some paintings of fierce battles that Master\nArmazac did during his old age. Now when he wants to find peace on Arda he just\nstays here and studies the arcane of magic. There is a sign over the Housekeeper\nsaying: Stay here if you wish, my house is your house.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1479"
+                ],
+                "name": "",
+                "out": [
+                    "1479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1491",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Armazac's Home Sweet Home",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 76,
+        "z": 0
+    },
+    {
+        "desc": "The narrow fissure twisting through the underground is bordered by a finely\nchiselled wall to the west. Set in the wall is a heavy stone door with great\niron hinges. Despite the obvious skill and persistence with which the western\nwall was carved, the passage is unadorned. A faint draught refreshing the musty\nsmell in the passage comes from the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14524"
+                ],
+                "name": "",
+                "out": [
+                    "14524"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28833"
+                ],
+                "name": "",
+                "out": [
+                    "28833"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14313",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Escape Route",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 19,
+        "y": 62,
+        "z": 0
+    }
+]

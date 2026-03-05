@@ -1,0 +1,3946 @@
+[
+    {
+        "desc": "A warmth fills your heart as you enter a spacious room dimly lit by torches in\nthe four corners of the room. Quickly catching your attention in the centre is a\nlarge marble statue glowing faintly. The statue is Sylan's noble father, a\nsoldier of the Arthedain. His face appears firm and solemn, ready to engrave\nhimself in battle at any cost to protect the city of Arthedain. Among the walls\nare many tapestries filled with beautiful art and paintings showing the\nrenovation of the new city of Fornost. The crest of the Arthedain is mounted on\nthe wall across from you with battle insignias and jewels surrounding it. To the\neast is another lit room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3010"
+                ],
+                "name": "",
+                "out": [
+                    "3010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "15233"
+                ],
+                "name": "",
+                "out": [
+                    "15233"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15232",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Foyer",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 223,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "This vast area appears to be Sylan's hall of honor. His nobleness and dedication\nto the Knights of Arthedain is evidently reflected throughout this room. Along\nthe floor are long carpets of battle insignias foreign to you. Written in\nWestron is a scripture mounted under another crest of Arthedain. Looking at it\nclosely you see the following: \"For I have taken the Arthedain solemn promise to\nprotect the cities of Fornost and Bree from evil at any cost to my life. I will\nuphold and protect the walls of Norbury my family has worked in vain to build.\n--- Sylan, Noble Knight of Arthedain. At the top of the hall is a window which\nalmost pours out the vastness of the sky, allowing the sun to give warmth to\nyour bones and the moon to shine it's glimmering rays among the many trophies of\nbattles and challenges Sylan has won. Thick metal and chain mail armour hangs on\nthe northern wall along with an empty sheath in the middle. The size and\nvastness of the sheath makes it evident that the sword of the kingdom of\nArthedain is not one to reckon with. To the west is the foyer and the east\nSylan's quarters.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15234"
+                ],
+                "name": "",
+                "out": [
+                    "15234"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15232"
+                ],
+                "name": "",
+                "out": [
+                    "15232"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15233",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Trophies",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 224,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "This room stands in stark comparison to the rest of this elegant home. The walls\nare spartan and free of decoration -- save a few candles along the walls and a\nlarge oak desk along the northern wall. A pile of furs lay in a corner near a\nsmall lantern, clearly, where Sylan prefers to sleep.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15233"
+                ],
+                "name": "",
+                "out": [
+                    "15233"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15234",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sylan's Quarters",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 225,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "As a strong contrast to the majestic hall of statues just south of here. This is\na cosy and small livingroom, which seems perfect for a dwarf in need of rest.\nThe ceiling if far lower than the hall and is made of oak instead of stone. The\nrich wood gives the room a deep luxurious aura. The floor is covered with a\ncolourful rag carpet which looks a bit misplaced here, perhaps it was a gift\nfrom a friend. A well-used oil lamp can be seen on a black bedside table and the\nbed itself stands along a short side of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18302"
+                ],
+                "name": "",
+                "out": [
+                    "18302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18303",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Astroc's Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 221,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "Before the Kingdom of Arthedain fell to the raid of the witch-kings, Arnor Lane\nwas one of the noblest areas of Fornost. Here, a few great ruins are waiting to\nbe rebuilt: their current shape still shows traces of their former glamour. The\ncoat-of-arms of the Noirins-family is still visible in the old pavement. Many\nnew houses have been built between the old ruins, ruins that appears to have\nbeen used as quarries.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21867"
+                ],
+                "name": "",
+                "out": [
+                    "21867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20351"
+                ],
+                "name": "",
+                "out": [
+                    "20351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "26040"
+                ],
+                "name": "",
+                "out": [
+                    "26040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20350",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arnor Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": -5,
+        "z": 0
+    },
+    {
+        "desc": "Arnor Street ends in front of a magnificent ruin which might once have been a\nguild or court hall. Most of the other ruins have already been used as quarry to\nget new stones for all the newer buildings that can be seen around. The old hall\nseems to have become some sort of small park, as the roof has collapsed long ago\nand is overgrown with grasses and mosses by now. Other plants, even trees, were\nalso able to take root. The coat-of-arms of the Tarma family, inlaid in the\npavement of the road, is one of the few still intact leftovers of a time that is\nlong gone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20350"
+                ],
+                "name": "",
+                "out": [
+                    "20350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21874"
+                ],
+                "name": "",
+                "out": [
+                    "21874"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20351",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The End of Arnor Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "This room is floored and lined with polished white marble, furrowed with black\nveins of sparkling ore. The ceiling is a great dome, decorated with frescoes of\ngreat battles and myths of Middle-earth's past, and the floor bears the mark of\na giant elf-rune. The south wall is broken by a large window, framed with red\ncurtains which can be flung back to let in the sunlight. An open archway leads\nnorth to what appears to be a sorcerous work-room, and a pair of great doors\nwith lions carved into the woodwork lead east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20353"
+                ],
+                "name": "",
+                "out": [
+                    "20353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20354"
+                ],
+                "name": "",
+                "out": [
+                    "20354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20349"
+                ],
+                "name": "",
+                "out": [
+                    "20349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20352",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Domed Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 223,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "Flasks and alembics cover a massive oak work table. On one side of the work\ntable are clustered piles of books and scrolls. A cage with a small ferret\ninside hangs from the ceiling, and hung from the east wall is a great tapestry\nupon which has been painted a detailed map of Middle-earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20352"
+                ],
+                "name": "",
+                "out": [
+                    "20352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20353",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Cluttered Studyroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 223,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "A great canopy-bed hung with golden curtains dominates the room. To one side is\na polished oak armoire, and beside a fancifully carved writing desk. On the\nopposite side of the room is a fireplace that burns without apparent need to be\nrefueled. Hung on the walls are trophies of war: orc scimitars and shields.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20352"
+                ],
+                "name": "",
+                "out": [
+                    "20352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20354",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Cozy Bedchamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 224,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "The Arnor Lane passes a small park that houses the ruins of an once palace-like\nbuilding. All other ruins in this short section of the road were removed and\nhave been replaced with new houses. In one place, the coat-of-arms of the\nEmeries family, one of the seven major noble houses of the fallen Kingdom of\nArthedain, has been inlaid into the roadway. The colourful stones are covered\nwith dirt and are only partly visible. A wild park can be seen towards the\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21870"
+                ],
+                "name": "",
+                "out": [
+                    "21870"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24466"
+                ],
+                "name": "",
+                "out": [
+                    "24466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21867"
+                ],
+                "name": "",
+                "out": [
+                    "21867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21865"
+                ],
+                "name": "",
+                "out": [
+                    "21865"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21866",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arnor Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "Here, Arnor Lane bends in a wide curve forming a right angle around the ruin of\nan odeon or theatre. Bushes and even a few small trees have taken root in and\naround that fallen building, while a few smaller new houses have been built near\nit. The now-shattered coat-of-arms of the Foros family is inlaid in the pavement\nin the road, right in front of the broken theatre.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21871"
+                ],
+                "name": "",
+                "out": [
+                    "21871"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20350"
+                ],
+                "name": "",
+                "out": [
+                    "20350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21872"
+                ],
+                "name": "",
+                "out": [
+                    "21872"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21866"
+                ],
+                "name": "",
+                "out": [
+                    "21866"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21867",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arnor Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "This comfortable-looking villa gives a serene and cosy impression. There are a\nfew bedrooms, a living room and a kitchen. All the rooms have large windows,\nallowing sunlight to enlighten the house round the day. The furniture has been\nmade of light-coloured wood. Flowers and herbs are growing all around the house,\nadding a sweet, fresh scent to the air. In front of the house there is a\nwell-kept, large patio that opens up towards the Arnor Lane.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21866"
+                ],
+                "name": "",
+                "out": [
+                    "21866"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21870",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Oriza's Villa",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 220,
+        "y": -7,
+        "z": 0
+    },
+    {
+        "desc": "This small house has been built entirely from wood. The construction work is of\nhigh quality, and the room gives a light and cosy impression. An eloquent\npicture has been hung on the wall, portraying a young Dunadan woman. The other\nfurniture of the house consist of some cupboards, a table with a set of chairs\naround it, and of a soft-looking bed in the corner. The floor is covered with a\nwide, forest-green carpet. There are numerous flower pots on the window sills,\nand outside one can see a ruined theatre.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21867"
+                ],
+                "name": "",
+                "out": [
+                    "21867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21871",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sari's House",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 221,
+        "y": -7,
+        "z": 0
+    },
+    {
+        "desc": "A proud garden spreads out here between the buildings. It is defying the\nsurroundings with its tamed, disciplined flora and serves as an invitation to\nthe low white round tower to the north. A richly adorned white marble fountain\nmakes out the heart and centre of the garden. Broad waves of flowers roll out in\ngrowing circles from it, the perfect shape interrupted only by narrow walkways\nleading to a small adjacent stone building and the entrance to the tower in the\nnorth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22296"
+                ],
+                "name": "",
+                "out": [
+                    "22296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21873"
+                ],
+                "name": "",
+                "out": [
+                    "21873"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21867"
+                ],
+                "name": "",
+                "out": [
+                    "21867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21872",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "A Secluded Garden",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 222,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "The stone floor has recently been thoroughly broomed and is, despite the bare\nearth showing in the gaps, clean and tidy. The building, consisting of one big\nroom, has only three walls to allow horses to easily enter from the west. In the\nmiddle of the house, a four foot high wooden plank divides the space in two. On\nthe walls of the southern part hang bridles and saddles together with horse\nshoes and grooming brushes. Next to the plank stands a large water trough that\nspans almost the whole breadth of the room. Securely fastened to the north wall\nis a massive workbench, filled with various tools and gardening utensils.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21872"
+                ],
+                "name": "",
+                "out": [
+                    "21872"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21873",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Simple Building at the Garden's Edge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 223,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "Deeply stained wood panels line the floor, walls, and ceiling of this large\nhall. There are finely crafted tapestries depicting ancient battles lining the\nwalls. A tinted glass lined cabinet stands against the outer wall. Figurines of\nunique and exotic creatures, made of various precious metals, line the cabinets'\nshelves. The figurines stand as a visual testament to foes slain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20351"
+                ],
+                "name": "",
+                "out": [
+                    "20351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21874",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Ornate Entrance Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 221,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "A large window opens up in the ceiling, allowing sunlight to reflect from the\nmirrors set up on the walls, efficiently lighting up the den on sunny days. A\nweapon rack filled with a collection of weapons and memorabilia, likely gathered\nduring the adventures of the houseowner, is set up on one of the walls. On the\nother side of the room stands a sturdy bed, next to a table cluttered with maps\ncovering every nook of Arda. A grand chair filled with inscribed notes of vile\ncreatures slain by Razputin, sits in the middle of the room. It faces a wall\nwith portrays of the entire bloodline of this mighty dwarf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24466"
+                ],
+                "name": "",
+                "out": [
+                    "24466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22280",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Razputin's Den",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 226,
+        "y": -5,
+        "z": 0
+    },
+    {
+        "desc": "There are no walls separating the different sections of this floor. Instead it\nall molds into a pleasant blend of comfort and function. An iron stove stands\nagainst the wall in the northwest corner of the tower, not far from the simple\nyet elegant dining table, large enough for several guests. On the opposing side\nstands a row of bookshelves, skillfully crafted to fit the curve of the wall.\nBetween the stove and the two armchairs resting on a red carpet below the\nshelves, an open fireplace provides some light to the windowless room. A large\nspiral staircase leads up to the second floor of the tower.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2051,
+                "in": [
+                    "21872"
+                ],
+                "name": "",
+                "out": [
+                    "21872"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "24483"
+                ],
+                "name": "",
+                "out": [
+                    "24483"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22296",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Bottom Floor of the Tower",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 222,
+        "y": -7,
+        "z": 0
+    },
+    {
+        "desc": "The room is crafted out of a thousand dark grey rectangle stones and styled as\nif it were a giant keep. Several tapestries are lined up on most walls, save for\nthe northern wall where a map hangs instead. A few torches take up the rest of\nthe empty space. A few end tables bear random trinkets and a few chairs are\nlined with a variety of elaborate cloaks for mending. It feels like home.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24466"
+                ],
+                "name": "",
+                "out": [
+                    "24466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22947",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Radar's Keep",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 225,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "All around are the remains of old ruins. Many plants, from grass to bushes and\neven trees, have been able to take root in between the broken buildings. The\nresult is a wild park right in the city of fornost. Long vines and other\ncreeping plants cover many of the old stones. It appears that some citizens have\nbuilt small houses in places at the borders of the wild park.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21866"
+                ],
+                "name": "",
+                "out": [
+                    "21866"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22280"
+                ],
+                "name": "",
+                "out": [
+                    "22280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24467"
+                ],
+                "name": "",
+                "out": [
+                    "24467"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22947"
+                ],
+                "name": "",
+                "out": [
+                    "22947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24466",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Arnor Park",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 226,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "Rustic stones reach high around a marble door, with opulent tapestries lining\neach wall of the entranceway. In stark contrast is the ceiling overhead,\ndepicting several identical white trees. The entrance also serves as an\nimpromptu cloakroom, with several coat racks standing near the door. A solid\npurple carpet with gold-coloured fringes provides a soft surface to walk upon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24468"
+                ],
+                "name": "",
+                "out": [
+                    "24468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24466"
+                ],
+                "name": "",
+                "out": [
+                    "24466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24467",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Front Entrance of a Tower",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 227,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "Two sets of carpeted stairs occupy much of the nexus, leading up and down in a\nclock-wise direction. A wavy oaken bannister follows the stairs, offering a\nhandhold for unsteady feet. Two rectangular metal hatches are installed on\neither side of the stairs. The left hatch is marked as a chute, while the right\nhatch is accompanied by securely fastened ropes, branding it a dumbwaiter. A\nsmall plaque has been fastened on one of the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24467"
+                ],
+                "name": "",
+                "out": [
+                    "24467"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24469"
+                ],
+                "name": "",
+                "out": [
+                    "24469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24471"
+                ],
+                "name": "",
+                "out": [
+                    "24471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24475"
+                ],
+                "name": "",
+                "out": [
+                    "24475"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24477"
+                ],
+                "name": "",
+                "out": [
+                    "24477"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24468",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 227,
+        "y": -7,
+        "z": 0
+    },
+    {
+        "desc": "A carpeted hallway passes by many doors of various makes and sizes, abodes of\nthe locals of Fornost. Small lanterns emit a muted light and a musty smell\npermeates the air, both due to a lack of windows. A few tapestries decorate the\nwalls, although many of them have a small coat of dust upon them. Well-cut\nstones lie behind and beside the tapestries, a sign of a robust and durable\nbuilding.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24470"
+                ],
+                "name": "",
+                "out": [
+                    "24470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24468"
+                ],
+                "name": "",
+                "out": [
+                    "24468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24469",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 228,
+        "y": -7,
+        "z": 0
+    },
+    {
+        "desc": "Several small lanterns have been fastened against the walls of the hallway,\nadding a touch of light to illuminate the way, but not enough to notice the dust\nthat has accumulated. A carpet that is mostly violet with yellow-coloured\nfringes lines the hallway in a north-south fashion, passing by a multitude of\ndifferent doors, each a different size and make. A few small paintings have been\nhung on the walls, yet care has been taken that they are far away from the\nlanterns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24469"
+                ],
+                "name": "",
+                "out": [
+                    "24469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24473"
+                ],
+                "name": "",
+                "out": [
+                    "24473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24470",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 228,
+        "y": -8,
+        "z": 0
+    },
+    {
+        "desc": "A luxurious purple carpet with frayed fringes covers most of the hallway floor,\npassing by several small apartments. The doors that lead into these dwellings\nvary in size and make, some locked and others bolted shut. The overhead ceiling\nis only eight feet high, tall enough for most Dunedain. A few lanterns are\nensconced along the wall, providing light where the Sun cannot reach.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24472"
+                ],
+                "name": "",
+                "out": [
+                    "24472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24468"
+                ],
+                "name": "",
+                "out": [
+                    "24468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24471",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 226,
+        "y": -7,
+        "z": 0
+    },
+    {
+        "desc": "A small layer of dust is visible by the light of small lanterns that have been\nattached to the walls in between some of the doors that line the hallway. A\nslightly frayed purple carpet with yellow fringes covers most of the floor,\nfollowing the hallway to both the east and the south. No tapestries or paintings\ncan be found in this section, although the wall on the eastern side features a\nlarge mural.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24471"
+                ],
+                "name": "",
+                "out": [
+                    "24471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24473"
+                ],
+                "name": "",
+                "out": [
+                    "24473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24472",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 226,
+        "y": -8,
+        "z": 0
+    },
+    {
+        "desc": "Small lanterns set in the walls illuminate the carpeted hallway, providing a\nsmall amount of heat and light to lead visitors of the tower to their\ndestination. The rest of the walls are unusually bare, although some of the\nstones have been etched with seemingly random symbols. The ceiling overhead is\nequally bare, but a warm violet carpet with gold fringes covers much of the\nfloor. The northeast corner is anything but bare, and seems to be a haven for\nclutter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24474"
+                ],
+                "name": "",
+                "out": [
+                    "24474"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24470"
+                ],
+                "name": "",
+                "out": [
+                    "24470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24472"
+                ],
+                "name": "",
+                "out": [
+                    "24472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24473",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 227,
+        "y": -8,
+        "z": 0
+    },
+    {
+        "desc": "A few bookshelves line the eastern wall, mostly devoid of books and somewhat\ndusty. The books that are present are arranged chaotically and bear signs of\nmisuse. A few writing desks with matching chairs form somewhat of a circle in\nthe middle of the room. The northern corner bears a small window with a cage\nhanging next to it. Small feathers and down are sprinkled in and below the cage,\nas well as a specks of parchment and a single broken small tube.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24473"
+                ],
+                "name": "",
+                "out": [
+                    "24473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24474",
+        "light": 0,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Reading Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 227,
+        "y": -9,
+        "z": 0
+    },
+    {
+        "desc": "A staircase occupies most of the area, with the stairs going both up and down in\na clockwise fashion. A blockage of several wooden planks nailed together has\nbeen erected to the south, preventing any from exploring this floor. At the\nmoment, the only way out would be to go up or down the stairs. A wavy bannister\nmade of oak serves as a handrail.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24476"
+                ],
+                "name": "",
+                "out": [
+                    "24476"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24468"
+                ],
+                "name": "",
+                "out": [
+                    "24468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24475",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 229,
+        "y": -10,
+        "z": 0
+    },
+    {
+        "desc": "The stairs and wavy oak bannister end at the top of the tower. A balcony can be\nspotted just to the south. Three small rooms are marked in the other directions,\ntheir doors elaborate with lush tapestries hanging next to them. Two large\nlanterns have been affixed to the walls, lighting up the entire staircase and\nsmall hallway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29085"
+                ],
+                "name": "",
+                "out": [
+                    "29085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24478"
+                ],
+                "name": "",
+                "out": [
+                    "24478"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24475"
+                ],
+                "name": "",
+                "out": [
+                    "24475"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24476",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of the Tower",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 230,
+        "y": -10,
+        "z": 0
+    },
+    {
+        "desc": "A wavy oaken bannister ends in a swirl as the stairs it accompanies reaches the\nbottom. The end of a chute can be seen on the western wall, its shaft poking out\nof the wall as no hatch contains it. On the floor below the chute, several small\nfragments of bark remain, insinuating a recent use for moving firewood. A\nrectangular hatch can be found on the eastern side, labelled as a dumb waiter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24481"
+                ],
+                "name": "",
+                "out": [
+                    "24481"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24479"
+                ],
+                "name": "",
+                "out": [
+                    "24479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24468"
+                ],
+                "name": "",
+                "out": [
+                    "24468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24477",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of a Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 229,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "A stone floor leads out to the outside, offering a good view over the city of\nFornost. A balcony has been created out of several oak planks. An oaken\nbalustrade serves as a railing, its spindles shaped like long Dunedain blades. A\nfew planters stand on either side of the balcony, although they are devoid of\nany sort of vegetation. The balcony is barely sheltered, thus anyone upon it\nmust suffer the rigours of the weather.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24476"
+                ],
+                "name": "",
+                "out": [
+                    "24476"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24478",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Tower Balcony",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 230,
+        "y": -9,
+        "z": 0
+    },
+    {
+        "desc": "Roughly dug dirt walls are reinforced by wooden support beams, creating a five\nfoot high tunnel. The beams are quite sturdy and well maintained. A few lanterns\nhave been securely attached with metal rods, their light showing a set of doors\nof varying sizes lining the walls. The packed dirt floor is mostly devoid of\ndebris, although some dirt has moved around a bit due to trampling boots,\ncollecting on a thick mat that ends at a stone entrance to the north. The tunnel\ncontinues to both the east and the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24477"
+                ],
+                "name": "",
+                "out": [
+                    "24477"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24488"
+                ],
+                "name": "",
+                "out": [
+                    "24488"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24480"
+                ],
+                "name": "",
+                "out": [
+                    "24480"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24479",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Excavated Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 229,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "A five foot high tunnel, dug out of thoroughly serves as a hallway for\nunderground dwellings. Several small rough apartments have been created out of\ncoarse dirt walls and wooden support beams, each exterior built with their own\ndistinct flair. A lantern accompanies every door, so visitors and inhabitants\nalike can find their destination with ease. Some small rugs cover the packed\ndirt floor, where travellers can stomp the dirt off their boots. The tunnel\ncontinues to the west, where more homes can be found.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24487"
+                ],
+                "name": "",
+                "out": [
+                    "24487"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24479"
+                ],
+                "name": "",
+                "out": [
+                    "24479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24480",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Excavated Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 230,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "A small stack of firewood, securely bound, stands neatly piled up against the\nwestern wall. A few empty boxes, odd pieces of furniture and a small broom\ncloset make up the rest for the storage room. Near the closet is a small pile of\ndust, small wood chips and dust web: the sweepings from the basement area. One\nlamp attached on one of the walls, almost at the ceiling, lights up most of the\nstorage room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25894"
+                ],
+                "name": "",
+                "out": [
+                    "25894"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24477"
+                ],
+                "name": "",
+                "out": [
+                    "24477"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24482"
+                ],
+                "name": "",
+                "out": [
+                    "24482"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24481",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Storage Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 229,
+        "y": -5,
+        "z": 0
+    },
+    {
+        "desc": "Several wine racks line the northern wall, yet they are devoid of any actual\nwine, hinting of either a rambunctious night or a poor supply. The fruity smell\nof wine does linger, coming from several empty wine bottles that lie in a small\npile beside a rack. The wine cellar is quite humid and no light sources adorn\nits walls, in order to protect the vintage. Round streaks mar the ground, an\nindication that several barrels were once stored here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24481"
+                ],
+                "name": "",
+                "out": [
+                    "24481"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24482",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wine Cellar",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 230,
+        "y": -5,
+        "z": 0
+    },
+    {
+        "desc": "The floor of this large room is elegantly set in a circular pattern, resembling\nthe garden outside. Rings of marble in different nuances decorate the floor like\nripples on a calm pool, spreading out from the spiralling iron staircase that\nruns through the centre of the whole tower like a giant metal spine. Large\nlancet windows distributed symmetrically around the walls allow the sunlight to\nshine in freely, bathing the entire room in bright light. Between the windows\nhang large silver chandeliers together with tapestries, showing images of proud\nwarriors in battle. Two gilded beds stand on either side of the chamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22296"
+                ],
+                "name": "",
+                "out": [
+                    "22296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24483",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the White Tower",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 222,
+        "y": -8,
+        "z": 0
+    },
+    {
+        "desc": "This sparsely furnitured room, albeit extremely messy to the point where it\nalmost seems to be abandoned, somehow manages to give a homey impression.\nVarious items such as magic scrolls, poorly written in Khuzdul and beer mugs\nhave been carelessly left on the rocky floor. Dim light is shining in through a\ndirty lantern that is hanging from the ceiling. In the middle of the room there\nis a giant oak table with a small brewery that wouldn't even meet the standards\nof Olly's Tavern. A faint odour of yeast seems to be permanent in here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24480"
+                ],
+                "name": "",
+                "out": [
+                    "24480"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24487",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brewer's Brewery",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 230,
+        "y": -2,
+        "z": 0
+    },
+    {
+        "desc": "As you enter this home, the smell of sweat and leather fill your nose. Lying\naround the western corner are various types of dwarven training equipment which\nare all well used. You notice an office in the northern corner, whereupon a\npicture of Khurmin and his dwarven family is placed. In the eastern corner lies\na makeshift bed, comfortable for most dwarves. Looking upwards you notice\nfrescoes depicting the many wars of Arda.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24479"
+                ],
+                "name": "",
+                "out": [
+                    "24479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24488",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dwarven Training Home",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 229,
+        "y": -2,
+        "z": 0
+    },
+    {
+        "desc": "Shelves dominate three of the walls here, with a bed standing in the corner of\nthe fourth wall. A wooden table and chairs stand in the middle of the room,\nacross from the door. The door appears to be plated with a darkened steel, which\nprovides more protection to the shelter. The stone walls look carefully\nconstructed and look sturdy enough to withstand anything. In each corner of the\nceiling there are small lanterns attached to steel hooks, bolted firmly into the\nwall at the top; the soft light emitting from the silver lanterns create a calm\nambience to the bunker, yet provide enough light to see.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24481"
+                ],
+                "name": "",
+                "out": [
+                    "24481"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25894",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dawnborn's Shelter",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 229,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "Some clean, fresh straw covers the floor of this stable. A few stalls line one\nend, each crafted from solid oak. The smell of feed mixed with a faint whiff of\nmanure fills the area. On the northern end, a solid cellar door with an iron\nlock has been set into the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20350"
+                ],
+                "name": "",
+                "out": [
+                    "20350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28694"
+                ],
+                "name": "",
+                "out": [
+                    "28694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26040",
+        "light": 0,
+        "loadflags": 262152,
+        "mobflags": 0,
+        "name": "Well-kept Stable",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 222,
+        "y": -5,
+        "z": 0
+    },
+    {
+        "desc": "Thick slabs of stone make up the walls of this chamber, obviously brought here\nat great expense from some western mountain. The stone is rough, covered in\nsharp protrusions and pocked depressions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "26040"
+                ],
+                "name": "",
+                "out": [
+                    "26040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28694",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone-lined Chamber",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 222,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "Massive oak doors, iron-banded and crested, open to a hall carved from black\nslate. Flickering torches illuminate ceiling frescoes while statues of heroes\nframed by stone columns watch silently from the room's edges. Against one wall,\nan ancient tapestry hangs loosely. Depicting the historic siege of Fornost, its\nonce-bright colours have long dulled, and its edges frayed. The dark stone\nfloor, polished to a mirror finish, leads to an intricately carved staircase\nthat ascends into the heart of the keep.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29086"
+                ],
+                "name": "",
+                "out": [
+                    "29086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24476"
+                ],
+                "name": "",
+                "out": [
+                    "24476"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30012"
+                ],
+                "name": "",
+                "out": [
+                    "30012"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29087"
+                ],
+                "name": "",
+                "out": [
+                    "29087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29085",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ancient Antechamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 230,
+        "y": -11,
+        "z": 0
+    },
+    {
+        "desc": "The sheer stonework of the tower opens to expose this broad terrace to the sky.\nNumerous chairs and sofas are arrayed across the space, many under simple covers\nthat offer some protection from the sun and weather. The balcony, bounded by\nornamental stone railings, provides a stellar view of the northern edge of the\ncity of Fornost, and of the bleak wilderness to the north, ever shadowed by the\npast horrors of Angmar.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29085"
+                ],
+                "name": "",
+                "out": [
+                    "29085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29086",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broad Stone Terrace",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 230,
+        "y": -12,
+        "z": 0
+    },
+    {
+        "desc": "The walls are lined with large, detailed maps pinned to wooden boards,\nshowcasing various regions and the battlefronts of Arda. A massive oak table\noccupies the centre of the room, its surface covered with miniature soldiers,\ntactical charts, and scrolls, indicative of ongoing strategic planning. Flanking\nthis table are three high-backed chairs of dark leather, bearing the marks of\nnumerous councils. The room is anchored by a large, ornate fireplace that\nprovides warmth and focus. The polished stone walls are decorated with banners\nbearing the sigils of Numenor and the Dunedain, while polished armour stands\ndisplay ceremonial and battle gear. At the far end of the room, to the left of\nthe fireplace, a closet can be seen filled with the trophies taken as spoils of\nwar. The air is redolent with the scent of parchment and ink, sweat and musk -\nall underscoring the weighty decisions made within these walls. To the north\nlies a scarcely discernible doorway, concealed behind an exquisite carving of\nNimloth, the White Tree of Numenor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29088"
+                ],
+                "name": "",
+                "out": [
+                    "29088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29085"
+                ],
+                "name": "",
+                "out": [
+                    "29085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29087",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Royal War Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 231,
+        "y": -11,
+        "z": 0
+    },
+    {
+        "desc": "The office of Telemmaite, a space of solemn authority and contemplative wisdom,\nappears untouched by time. Dominated by a large, intricately carved oak desk,\nthe room conveys an air of dignified purpose. Upon the desk is a smattering of\nmithril artefacts gathered from all corners of Arda, while maps and plans are\nmeticulously arranged and held in place with large mithril paperweights. Behind\nthe desk, a towering throne, freshly upholstered in dark forest-green leather\nand stitched with mithril, commands respect. Shelves line the walls, filled to\nthe brim with ancient tomes, scrolls, and Numenorean artifacts. A grand window,\nframed with heavy velvet drapes, offers a sweeping view of the North Downs, for\nproviding both inspiration as well as a backdrop for contemplation. High-backed\nchairs upholstered in rich fabrics are arranged around a low table in the corner\nof the room, covered in reports of the Orc and Black Numenorean revival.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29087"
+                ],
+                "name": "",
+                "out": [
+                    "29087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29088",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Office of Telemmaite",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 231,
+        "y": -12,
+        "z": 0
+    },
+    {
+        "desc": "The room hosts a wide, open layout, save for a few screens that obscure a simple\nbed and cabinet. The centre of the room hosts a heavy wooden table, upon which\nscores of letters, detailed inventories, and other paperwork are chaotically\narranged. The dark-paneled walls of the room are lined with display shelves,\ncontaining a range of weapons, relics, and other curios. A broad canvas\nclarifies the source of the collection: a map of Forochel, highlighting the fell\nIcebay, the edges of the Iron Mountains, and vague borders of the fallen horrors\nof Angmar.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29085"
+                ],
+                "name": "",
+                "out": [
+                    "29085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30012",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Office of Sirris",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 229,
+        "y": -11,
+        "z": 0
+    }
+]

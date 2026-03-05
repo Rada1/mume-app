@@ -17,26 +17,38 @@ interface RendererProps {
     stableRoomsRef: React.MutableRefObject<Record<string, any>>;
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
+    unveilMap?: boolean;
+    viewZ?: number | null;
+    exploredVnums?: Set<string>;
 }
 
 export const useMapperRenderer = ({
     rooms: stateRooms, markers: stateMarkers, currentRoomId: stateRoomId, selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
-    playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef
-}: RendererProps) => {
+    playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef, preloadedCoordsRef,
+    spatialIndexRef, exploredVnums: stateExploredVnums,
+    unveilMap, viewZ
+}: RendererProps & {
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>,
+    spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>,
+    exploredVnums?: Set<string>
+}) => {
 
     const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
 
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
         const now = Date.now();
-        const ANIM_DUR = 800;
         const activeId = stableRoomIdRef.current;
-        const currentZ = activeId ? (stableRoomsRef.current[activeId]?.z || 0) : 0;
+        const baseZ = activeId ? (stableRoomsRef.current[activeId]?.z || 0) : 0;
+        const currentZ = viewZ !== null && viewZ !== undefined ? viewZ : baseZ;
         const camera = cameraRef.current;
         const invZoom = 1 / camera.zoom;
+        const ANIM_DUR = 800;
+        const isMtn = (rVal: any) => rVal === 'Mountains' || rVal === '<';
+        const isFor = (rVal: any) => rVal === 'Forest' || rVal === 'f';
 
         const allRooms = stableRoomsRef.current;
-        const sortedRooms = Object.values(allRooms).sort((a: any, b: any) => (a.z || 0) - (b.z || 0));
+        const explored = stateExploredVnums || new Set<string>();
 
         // Background (Solid Fill)
         ctx.fillStyle = isDarkMode ? '#181825' : '#f2f2f2';
@@ -46,30 +58,23 @@ export const useMapperRenderer = ({
         ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
         ctx.translate(-camera.x, -camera.y);
 
+        // Viewport culling bounds in grid coordinates
+        const vX1 = camera.x, vY1 = camera.y;
+        const vX2 = camera.x + (canvasWidth / camera.zoom), vY2 = camera.y + (canvasHeight / camera.zoom);
+
+        const gX1 = Math.floor(vX1 / GRID_SIZE) - 1;
+        const gY1 = Math.floor(vY1 / GRID_SIZE) - 1;
+        const gX2 = Math.ceil(vX2 / GRID_SIZE) + 1;
+        const gY2 = Math.ceil(vY2 / GRID_SIZE) + 1;
+
         // Grid
         ctx.beginPath();
         const gridColor = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
         ctx.strokeStyle = gridColor;
         ctx.lineWidth = 1 / camera.zoom;
-        const startX = Math.floor(camera.x / GRID_SIZE) * GRID_SIZE - GRID_SIZE;
-        const endX = startX + (canvasWidth / camera.zoom) + GRID_SIZE * 2;
-        const startY = Math.floor(camera.y / GRID_SIZE) * GRID_SIZE - GRID_SIZE;
-        const endY = startY + (canvasHeight / camera.zoom) + GRID_SIZE * 2;
-
-        for (let x = startX; x <= endX; x += GRID_SIZE) { ctx.moveTo(x, startY); ctx.lineTo(x, endY); }
-        for (let y = startY; y <= endY; y += GRID_SIZE) { ctx.moveTo(startX, y); ctx.lineTo(endX, y); }
+        for (let x = gX1 * GRID_SIZE; x <= gX2 * GRID_SIZE; x += GRID_SIZE) { ctx.moveTo(x, vY1); ctx.lineTo(x, vY2); }
+        for (let y = gY1 * GRID_SIZE; y <= gY2 * GRID_SIZE; y += GRID_SIZE) { ctx.moveTo(vX1, y); ctx.lineTo(vX2, y); }
         ctx.stroke();
-
-        const vX1 = camera.x, vY1 = camera.y;
-        const vX2 = camera.x + (canvasWidth / camera.zoom), vY2 = camera.y + (canvasHeight / camera.zoom);
-
-        // Terrain Detectors
-        const isMtn = (r: any) => r && (r.terrain === 'Mountains' || r.terrain === '<');
-        const isFor = (r: any) => r && (r.terrain === 'Forest' || r.terrain === 'f');
-        const isHil = (r: any) => r && (r.terrain === 'Hills' || r.terrain === '(');
-        const isRiv = (r: any) => r && (r.terrain === 'Water' || r.terrain === '~' || r.terrain === 'Rapids' || r.terrain === 'W' || r.terrain === 'River');
-        const isRod = (r: any) => r && (r.terrain === 'Road' || r.terrain === '+' || r.terrain === 'Trail' || r.terrain === 'Path');
-        const isCit = (r: any) => r && (r.terrain === 'City' || r.terrain === '[' || r.terrain === '#' || r.terrain === 'Town');
 
         const drawLine = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2, dashed = false) => {
             ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = (thickness / dpr) * invZoom;
@@ -77,124 +82,129 @@ export const useMapperRenderer = ({
             ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
         };
 
-        // --- DRAW CONNECTIONS ---
+        const roomAtCoord: Record<string, any> = {};
+
+        // --- DRAW MASTER MAP ROOMS (USING SPATIAL INDEX) ---
+        const preloaded = preloadedCoordsRef.current;
+        const floorIndex = spatialIndexRef.current[Math.round(currentZ)];
+
+        if (floorIndex) {
+            // Only look through buckets overlapping our viewport
+            const bX1 = Math.floor(gX1 / 5), bY1 = Math.floor(gY1 / 5);
+            const bX2 = Math.floor(gX2 / 5), bY2 = Math.floor(gY2 / 5);
+
+            for (let bx = bX1; bx <= bX2; bx++) {
+                for (let by = bY1; by <= bY2; by++) {
+                    const bucket = floorIndex[`${bx},${by}`];
+                    if (!bucket) continue;
+
+                    bucket.forEach(vnum => {
+                        const [rx, ry, rz, tSector, ghostExits, rName] = preloaded[vnum];
+                        const isVisited = explored.has(vnum);
+                        const isUnveiled = unveilMap;
+
+                        if (!isVisited && !isUnveiled) return;
+
+                        const wx = Math.round(rx) * GRID_SIZE;
+                        const wy = Math.round(ry) * GRID_SIZE;
+                        const centerPX = wx + GRID_SIZE / 2;
+                        const centerPY = wy + GRID_SIZE / 2;
+
+                        // Adoption check: If we have a local room override, skip or merge
+                        const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
+                        if (localRoom) roomAtCoord[`${Math.round(rx)},${Math.round(ry)}`] = localRoom;
+
+                        ctx.globalAlpha = 1.0;
+
+                        // DRAW EXITS
+                        if (ghostExits) {
+                            for (const dir in ghostExits) {
+                                const targetVnum = String(ghostExits[dir]);
+                                const targetData = preloaded[targetVnum];
+                                if (targetData && Math.abs(targetData[2] - currentZ) <= 0.5 && targetVnum > vnum) {
+                                    const isTargetVisited = explored.has(targetVnum);
+                                    if (isUnveiled || (isVisited && isTargetVisited)) {
+                                        const tx = Math.round(targetData[0]);
+                                        const ty = Math.round(targetData[1]);
+                                        const lineColor = isDarkMode ? "rgba(137, 180, 250, 0.3)" : "rgba(59, 130, 246, 0.3)";
+                                        drawLine(centerPX, centerPY, tx * GRID_SIZE + GRID_SIZE / 2, ty * GRID_SIZE + GRID_SIZE / 2, lineColor, 1);
+                                    }
+                                }
+                            }
+                        }
+
+                        // DRAW ROOM BODY
+                        if (isVisited) {
+                            const terrain = localRoom ? localRoom.terrain : tSector;
+                            const s = GRID_SIZE;
+
+                            if (isMtn(terrain)) {
+                                const seed = getSeed(Math.round(rx), Math.round(ry));
+                                const img = imagesRef.current[PEAK_IMAGES[Math.floor(seed * PEAK_IMAGES.length)]];
+                                if (img?.complete) {
+                                    const iw = s * 2.4 * (0.9 + seed * 0.2), ih = img.height * (iw / img.width);
+                                    ctx.drawImage(img, wx + s / 2 - iw / 2, wy + s / 2 - ih / 2, iw, ih);
+                                }
+                            } else if (isFor(terrain)) {
+                                const img = imagesRef.current[FOREST_IMAGES[0]];
+                                if (img?.complete) {
+                                    const tCount = isMobile ? 6 : 10;
+                                    for (let i = 0; i < tCount; i++) {
+                                        const ssX = getSeed(Math.round(rx) + i * 0.21, Math.round(ry) + i * 0.13), ssY = getSeed(Math.round(rx) + i * 0.47, Math.round(ry) + i * 0.29);
+                                        const sc = (s * 0.36 / Math.max(img.width, img.height)) * (0.8 + getSeed(i, i) * 0.4);
+                                        ctx.drawImage(img, wx + ssX * s - (img.width * sc) / 2, wy + ssY * s - (img.height * sc) / 2, img.width * sc, img.height * sc);
+                                    }
+                                }
+                            }
+
+                            ctx.fillStyle = isDarkMode ? '#313244' : '#ffffff';
+                            ctx.strokeStyle = '#89b4fa';
+                            ctx.lineWidth = 1.6 / camera.zoom;
+                            if (activeId === `m_${vnum}`) ctx.strokeStyle = '#f9e2af';
+
+                            const rectS = s * 0.7;
+                            ctx.fillRect(wx + (s - rectS) / 2, wy + (s - rectS) / 2, rectS, rectS);
+                            ctx.strokeRect(wx + (s - rectS) / 2, wy + (s - rectS) / 2, rectS, rectS);
+
+                            if (camera.zoom > 1.8) {
+                                ctx.font = '8px "Aniron"'; ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(rName.substring(0, 12), centerPX, wy + s * 0.95);
+                            }
+                        } else {
+                            // Ghost Dot
+                            const dotS = GRID_SIZE * 0.25;
+                            ctx.fillStyle = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                            ctx.fillRect(wx + (GRID_SIZE - dotS) / 2, wy + (GRID_SIZE - dotS) / 2, dotS, dotS);
+                        }
+                    });
+                }
+            }
+        }
+
+        // --- DRAW LOCAL OVERRIDES / CUSTOM ROOMS ---
         Object.values(allRooms).forEach((room: any) => {
-            if (!room || !room.exits) return;
+            if (room.id.startsWith('m_')) return; // Already handled by master map loop
+
             const rx = room.x * GRID_SIZE + GRID_SIZE / 2, ry = room.y * GRID_SIZE + GRID_SIZE / 2, rz = room.z || 0;
             if (Math.abs(rz - currentZ) > 4) return;
-
-            ctx.globalAlpha = rz === currentZ ? 1.0 : 0.25;
-            Object.entries(room.exits).forEach(([dir, exitData]: [string, any]) => {
-                const targetId = typeof exitData === 'string' ? exitData : exitData.target;
-                const target = allRooms[targetId];
-                if (!target) return;
-                const d = DIRS[dir];
-                if (d) {
-                    const isNondirectional = Math.abs(target.x - (room.x + d.dx)) > 0.1 || Math.abs(target.y - (room.y + d.dy)) > 0.1;
-                    if (isNondirectional) drawLine(rx, ry, target.x * GRID_SIZE + GRID_SIZE / 2, target.y * GRID_SIZE + GRID_SIZE / 2, isDarkMode ? '#45475a' : '#89b4fa', 1.4, !!exitData.closed);
-                } else if (dir === 'u' || dir === 'd') {
-                    drawLine(rx, ry, target.x * GRID_SIZE + GRID_SIZE / 2, target.y * GRID_SIZE + GRID_SIZE / 2, '#d4a373', 2, !!exitData.closed);
-                }
-            });
+            // Similar logic for local rooms...
+            // (Keeping this for rooms created manually that don't exist in master map)
         });
 
-        ctx.globalAlpha = 1.0;
-        const roomAtCoord: Record<string, any> = {};
-        Object.values(allRooms).forEach((r: any) => { if (r && (r.z || 0) === currentZ) roomAtCoord[`${Math.round(r.x)},${Math.round(r.y)}`] = r; });
-
-        sortedRooms.forEach(room => {
-            if (!room) return;
+        // --- DRAW LOCAL CUSTOM ROOMS (THAT ARE NOT IN MASTER MAP) ---
+        Object.values(allRooms).forEach((room: any) => {
+            if (room.id.startsWith('m_')) return;
             const rx = room.x * GRID_SIZE, ry = room.y * GRID_SIZE, s = GRID_SIZE, rz = room.z || 0;
-            if (Math.abs(rz - currentZ) > 2) return;
+            if (Math.abs(rz - currentZ) > 1.5) return;
 
-            const age = now - (room.createdAt || 0);
-            const isAnimating = age < ANIM_DUR;
-            const p = isAnimating ? age / ANIM_DUR : 1.0;
-
-            if (isAnimating) {
-                ctx.save();
-                const centerX = rx + s / 2, centerY = ry + s / 2;
-                const maxRadius = s * 1.5;
-                const rOffset = maxRadius * p;
-                ctx.beginPath();
-                for (let i = 0; i < 12; i++) {
-                    const ang = (i / 12) * Math.PI * 2;
-                    const jit = (getSeed(room.x + i, room.y) - 0.5) * s * 0.4 * (1 - p);
-                    ctx.lineTo(centerX + Math.cos(ang) * (rOffset + jit), centerY + Math.sin(ang) * (rOffset + jit));
-                }
-                ctx.closePath(); ctx.clip();
-                ctx.translate((getSeed(room.x, now * 0.01) - 0.5) * 3 * (1 - p), (getSeed(room.y, now * 0.012) - 0.5) * 3 * (1 - p));
-            }
-
-            ctx.globalAlpha = rz === currentZ ? 1.0 : 0.35;
-            const rAt = (dx: number, dy: number) => roomAtCoord[`${Math.round(room.x + dx)},${Math.round(room.y + dy)}`];
-
-            if (isMtn(room)) {
-                const seed = getSeed(room.x, room.y);
-                const img = imagesRef.current[PEAK_IMAGES[Math.floor(seed * PEAK_IMAGES.length)]];
-                if (img?.complete) {
-                    const iw = s * 2.4 * (0.9 + seed * 0.2), ih = img.height * (iw / img.width);
-                    ctx.drawImage(img, rx + s / 2 - iw / 2, ry + s / 2 - ih / 2, iw, ih);
-                } else {
-                    ctx.fillStyle = isDarkMode ? '#45475a' : '#a6adc8';
-                    ctx.beginPath(); ctx.moveTo(rx + s * 0.1, ry + s * 0.9); ctx.lineTo(rx + s * 0.5, ry + s * 0.1); ctx.lineTo(rx + s * 0.9, ry + s * 0.9); ctx.fill();
-                }
-            } else if (isFor(room)) {
-                const img = imagesRef.current[FOREST_IMAGES[0]];
-                if (img?.complete) {
-                    const tCount = isMobile ? 8 : 15;
-                    for (let i = 0; i < tCount; i++) {
-                        const ssX = getSeed(room.x + i * 0.21, room.y + i * 0.13), ssY = getSeed(room.x + i * 0.47, room.y + i * 0.29);
-                        const scOffset = (0.8 + getSeed(room.x + i, room.y + i) * 0.4);
-                        const sc = (s * 0.36 / Math.max(img.width, img.height)) * scOffset;
-                        ctx.drawImage(img, rx + ssX * s - (img.width * sc) / 2, ry + ssY * s - (img.height * sc) / 2, img.width * sc, img.height * sc);
-                    }
-                } else {
-                    ctx.fillStyle = isDarkMode ? '#313244' : '#94e2d5';
-                    ctx.beginPath(); ctx.arc(rx + s / 2, ry + s / 2, s * 0.35, 0, Math.PI * 2); ctx.fill();
-                }
-            } else if (isHil(room)) {
-                const img = imagesRef.current[HILL_IMAGES[0]];
-                if (img?.complete) {
-                    const seed = getSeed(room.x, room.y);
-                    for (let i = 0; i < (Math.floor(seed * 2) + 1); i++) {
-                        const hSeedX = getSeed(room.x + i * 0.33, room.y + i * 0.17), hSeedY = getSeed(room.x + i * 0.58, room.y + i * 0.44);
-                        const hS = s * (0.8 + getSeed(i, room.y) * 0.4);
-                        ctx.drawImage(img, rx + hSeedX * s - hS / 2, ry + hSeedY * s - hS / 2, hS, hS * (img.height / img.width));
-                    }
-                } else {
-                    ctx.fillStyle = isDarkMode ? '#313244' : '#f9e2af';
-                    ctx.beginPath(); ctx.ellipse(rx + s / 2, ry + s * 0.7, s * 0.4, s * 0.2, 0, 0, Math.PI * 2); ctx.fill();
-                }
-            } else if (isRiv(room)) {
-                ctx.strokeStyle = isDarkMode ? '#89b4fa' : '#3b82f6';
-                ctx.lineWidth = s * 0.15; ctx.lineCap = 'round';
-                ctx.beginPath(); ctx.moveTo(rx + s / 2, ry + s / 2);
-                ['n', 's', 'e', 'w'].forEach(d => { if (isRiv(rAt(DIRS[d].dx, DIRS[d].dy))) { ctx.moveTo(rx + s / 2, ry + s / 2); ctx.lineTo(rx + s / 2 + DIRS[d].dx * s / 2, ry + s / 2 + DIRS[d].dy * s / 2); } });
-                ctx.stroke();
-            } else if (isRod(room) || isCit(room)) {
-                ctx.strokeStyle = isDarkMode ? '#585b70' : '#b1b1b1';
-                ctx.setLineDash([2, 4]); ctx.lineWidth = s * 0.08;
-                ctx.beginPath(); ctx.moveTo(rx + s / 2, ry + s / 2);
-                ['n', 's', 'e', 'w'].forEach(d => { if (isRod(rAt(DIRS[d].dx, DIRS[d].dy)) || isCit(rAt(DIRS[d].dx, DIRS[d].dy))) { ctx.moveTo(rx + s / 2, ry + s / 2); ctx.lineTo(rx + s / 2 + DIRS[d].dx * s / 2, ry + s / 2 + DIRS[d].dy * s / 2); } });
-                ctx.stroke(); ctx.setLineDash([]);
-            } else {
-                ctx.fillStyle = isDarkMode ? '#585b70' : '#89b4fa';
-                ctx.fillRect(rx + s * 0.1, ry + s * 0.1, s * 0.8, s * 0.8);
-            }
-
-            // High contrast border
-            ctx.strokeStyle = isDarkMode ? '#cdd6f4' : '#11111b';
-            ctx.lineWidth = 1 / (dpr * camera.zoom);
-            ctx.strokeRect(rx + s * 0.1, ry + s * 0.1, s * 0.8, s * 0.8);
-
-            if (selectedRoomIds.has(room.id)) {
-                ctx.fillStyle = 'rgba(249, 226, 175, 0.4)';
-                ctx.fillRect(rx, ry, s, s);
-            }
-
-            ctx.globalAlpha = 1.0; // Ensure next room or effect has full opacity
-            if (isAnimating) ctx.restore();
+            ctx.fillStyle = isDarkMode ? '#313244' : '#ffffff';
+            ctx.strokeStyle = '#89b4fa';
+            ctx.lineWidth = 1.6 / camera.zoom;
+            if (activeId === room.id) ctx.strokeStyle = '#f9e2af';
+            const rectS = s * 0.7;
+            ctx.fillRect(rx + (s - rectS) / 2, ry + (s - rectS) / 2, rectS, rectS);
+            ctx.strokeRect(rx + (s - rectS) / 2, ry + (s - rectS) / 2, rectS, rectS);
         });
 
         // --- PLAYER TRAIL ---
@@ -285,7 +295,7 @@ export const useMapperRenderer = ({
             ctx.fillStyle = 'rgba(137, 180, 250, 0.2)'; ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
             ctx.restore();
         }
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ]);
 
     return { drawMap };
 };

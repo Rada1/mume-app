@@ -1,0 +1,2003 @@
+[
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24326"
+                ],
+                "name": "",
+                "out": [
+                    "24326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24330",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tales",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -4,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "Cette piece est sombre et enfumee. Des garcons affaires mais neanmoins\nobsequieux virevoltent avec aisance parmi les clients assis autour de petites\ntables en marbre. Dans un coin, a peine eclaires par une lampe verdatre, quatre\njoueurs sans age repetent les sempiternelles parties de l'apres-midi. Au sud,\nune grande porte vitree, conduit a la terrasse.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24321"
+                ],
+                "name": "",
+                "out": [
+                    "24321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24332"
+                ],
+                "name": "",
+                "out": [
+                    "24332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24333"
+                ],
+                "name": "",
+                "out": [
+                    "24333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24331",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cafe Francais",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -6,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "Sur cette terasse inondee de soleil des parasols jaunes et rouges protegent les\nbuveurs prelasses. En contrebas les toits de Paris forment une charmante mer\nd'ocre et de rouge... Un serveur vous aborde et vous demande: \"Desirez-vous\nboire quelque chose ?\"... Comment refuser ? Au nord une porte vitree conduit a\nl'interieur de ce \"French Coffee\".\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24331"
+                ],
+                "name": "",
+                "out": [
+                    "24331"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24334"
+                ],
+                "name": "",
+                "out": [
+                    "24334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24332",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Terrasse",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -6,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "There are no big changes here, but everything seems to constantly shift, warp or\nmove. While no change in itself is big, every single one adds up and makes a\nvery noticeable difference.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24331"
+                ],
+                "name": "",
+                "out": [
+                    "24331"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24333",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hall of Small Changes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -5,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "Light does not often reach this place. The only thing you notice is a musty\nsmell, maybe caused by some strange animal ?\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24335"
+                ],
+                "name": "",
+                "out": [
+                    "24335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24332"
+                ],
+                "name": "",
+                "out": [
+                    "24332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24334",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside a Gigantic Tree",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": -7,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "You are in an owl's nest, in the midst of a gigantic tree. The floor is littered\nwith mouse bones. Somebody seems to have moved back recently, piles of paper\nbearing strange cabalistic marks are neatly stacked in the corners.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24334"
+                ],
+                "name": "",
+                "out": [
+                    "24334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24335",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Owl's nest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -7,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "It looks like any other mercenary's hideout. There are various kind of weapons\nhanged on the walls, some of them quite antique. On the right corner you notice\na table full of strange liquids and alchemical supplies.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24355",
+                    "24356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                    "24355"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24358"
+                ],
+                "name": "",
+                "out": [
+                    "24358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24355",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Verona's Hideout",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -5,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "As you crest the Hill, you notice a vast expanse of trees lie before you. The\nsmell of fresh air tingles your nostrils whilst you hear the birds chirping and\nthe leaves rustling. The trees are aligned in perfect order and the fruit they\nbear looks delicious.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24361"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24355",
+                    "24357"
+                ],
+                "name": "",
+                "out": [
+                    "24357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24356",
+                    "24362"
+                ],
+                "name": "",
+                "out": [
+                    "24362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24356",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Apple's Orchard",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -5,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "Cameron Diaz is standing here looking very cute.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24356"
+                ],
+                "name": "",
+                "out": [
+                    "24356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24357",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "La Casa de Kheldur",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -9,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "The little path now comes to and end, in this huge hall, you are suposed to find\npeace and harmony. Some small white stones are to be seen on the ground, showing\nthe path to the east and in to the brokendoor. Some strange blue stones are\nlying here, makeing a strange beautiful light The stones seems to picture a\narrow pointing to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24355"
+                ],
+                "name": "",
+                "out": [
+                    "24355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24359"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24358",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Marte's Bed Room",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -6,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "The first thing you notice when entering this room is the smell, a mixture of\ntobacco and stale beer fills the air. The room however, is very clean and well\nkept. A highly polished walnut topped bar runs the east side of this room,\nbehind which a variety of liquors, spirits and wines are stocked. Barrels that\nhave been turned into makeshift stools are laid out in an orderly fashion in\nfront of the bar. The wall to the north shows a picture of dogs playing pool and\nsmoking. Low lighting completes the scene. A sign above the bar reads: 'Dont be\noffended if your ask for ID, it means you look young!'\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24358"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24359",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Tavern of Tarnas",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -7,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Great, towering walls thrust upwards and together to form the enormous boundries\nof this troll cave. Upon the walls crude drawings have been etched into the\nwalls by way of broken bone and immense pressure. On the ground is a large pile\nof shattered skulls, snapped vertabre, and half-rotten hobbit corpses that have\nbeen twisted into crude, humorous shapes. Upon closer inspection of a hobbit\ncorpse nearest your feet, you can see broken toes and\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24366"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24356"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4105,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24360",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Noisy Grotto Pub and Grill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": -4,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24356"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24361",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Room-of-Creating",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -5,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "As you walk into this cave a quick shiver goes up your spine. Cold air flows\nthrought this cave making the hairs on the back of your neck stand. Searching\ndeeper into the cave a pair of glowing red eyes can be seen. Moving closer, bats\nstart to fly about, and rats scurry around the floor, as you become more\nfrightened. The walls are covered with a thick goo among them and the smell of\nrotten corpses floats about the cave. Although all these features surround you.\nA bright light appears as Omega the Invincible appears infront of you. Instantly\nyour heart becomes lighter and your hairs settle, as you feel warmth inside this\ncave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24356"
+                ],
+                "name": "",
+                "out": [
+                    "24356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24362",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Omega's Secret Cave",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": -6,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "This might be a corner if the internet weren't round. This might be a sight to\nsee if there were no sound.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24357"
+                ],
+                "name": "",
+                "out": [
+                    "24364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24363",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tavares' tipsy turvey",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -8,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "From this elaborate command post, all that happens on Arda below can be seen,\nevaluated, tested and stored. Cabinets and drawers line the room, overflowing\nwith scrolls and tomes of bygone deeds and historical events. In the middle of\nthe room stands a table, upon which several journals and writing utensils lie.\nHuge windows line the east side of the room, where a large telescope can be seen\nlooking down upon the silken tights of a fair maiden. Someone is standing here\n(idle).\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24364"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24363"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24365"
+                ],
+                "name": "",
+                "out": [
+                    "24365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24364",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thank God It's Friday's!",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": -7,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Like silken tights on the legs of a fair maiden, flames engulf you from all\nsides, burning the skin from your cooking flesh. The pain you suffer is nothing\ncompared to the piercing sound that makes your teeth loosen from your jaw and\nmake your ear-drums immediately vaporize. All around you see small pieces of\ncharred bones, no doubt from uninvited visitors who didn't pay enough respect to\nthe one ruling here. Two huge thrones made out of black marble stands next to a\nsmall, round table with delicate inlays of gold and jade. Some small silver cups\nfilled with a clear liquid stand on top of the table.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                    "24365"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24364"
+                ],
+                "name": "",
+                "out": [
+                    "24364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24365",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Purgatory",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": -4,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Look, silken tights on a fair maiden: .,. ,d\"\"\"$h .,,ccc$ ,dF <!;`$h\n.zc$$$$$$$$$ $\" !!!! $$ ,cd$$$$$$$$$$??\" .zcd$$$$hcc, .,.. . `''`! $$\n,c$$$$$$$$$$$$$$. ` zd$$$???$$$$$$$c,`4c,`\"?$$h `$cdccc, \"\"\n,c$$$$$$$$$$$$$$$$$$$c z$$$\",- . <$$$$$$$$c\n\"$$$c,`\"?cccc$$$$$$$$$$cc,`\"?$$$$$$$$$$$$$$$$$$ ,d$$$ - -`.z$$$$$$$$$$h\n?$$$$$$c,\"?$$$$$$$$$$$$$$$c, \"$$$$$$$$$$$$$$$ z$$$$$c,zc$$$$$$$P\" `?$$F\n$$$$$$$$h \"$$$$$$$$$$???$$$$. \"$$$$$$$$$$$$$ z$$$$$$$$$$$$$$$$\", ; d$$$\n$$$$$$$$$h ?$$$$$$$$\" \"$$$ ,c \"$$$$$?????? <$$$$$$$$$$$$$$$$\"z !',$$$$\n$$$$$$$$$$c $$$$$$$$c `$$hd$$c \".,,cccccc $$$$$$$$$$$$$$$$$ L' z$$$$P\n$$$$$$$$$$$ ?$$$$$$$$h.,,,c$$$$$$$h.\"$???\"\"\"\"\n<$$$$$$$$$$$$$$$$$c,zd$$$$$\"d$$$$$$$$$$$.`$$$$$$$$$$$$$$$$$$$$$$$c <!!!!\n<$$$$$$$$$$$$$$$$$$$$$$$$$\",$$$$$$$$$$$$$ $$$$$$$$$$$$$$$$$$$$$$$$h <!!!'\n<$$$$$$$$$$$$$$$$$$$$$$$$\",$$$$$$$$$$$$$P $$$$$$$$$$$$$$$$$$$$$$$$$L ' ,c$\n$$$$$$$$$$$$$$$$$$$$$$P\"z$$$$$$$$$$$$$$$ $$$$$$$$$$$$$$$$$$$$$$$$$$. $$$$\n`$$$$$$$$$$$$$$$$$$$P\",d$$$$$$$$$$$$$$$F,$$$$$$$$$$$$$$$$$$$$$$$$$$$ ?P\"\n`?$$$$$$$$$$$$$$P\" ,d$$$$$$$$$$$$$$$$$ d$$$$$$$$$$$$$$$$$$$$$$$$$$$h ,c$\n\"??$$$$$$??\"\",c$$$$$$$$$$$$$$$$$$$\",$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $$$\n.,..,,,cd$$$$$$$$$$$$$$$$$$$$$\",$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ $$$\n\"?$$$$$$$$$$$$$$$$$$$$$$$$$$\",$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P $$$ z\" .\n\"??$$$$$$$$$$$$$$$$$$$$P z$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$> $$$ zP\n<!!>;,`\"?$$$$$$$$$$$$$$$P\",d$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ d$$$ ,$\n`!!!!!!!;,`\"???$$$$$\"?$\",d$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\",$$$$\n<$.`!!!!!!!!!!!!;> `\"\"\" <$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\",$$$$$ $h..```````'\n.,,zcccc$$\",$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\",$$$$$$\n`\"?$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P z$$$$$$$\n.,d\"\"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P\",c$$$$$$$$\n\"?$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P\".z$$$$$$$$$$\n`\"?$$$$$$$$$$$$$$$$$$$$$$$$$$$$$P\" ,c$$$$$$$$$$$$\n`\"\"?$$$$$$$$$$$$$$$$$$$??\"\".zc$$$$$$$$$$$$$$$\n\"=c,.`\"\"\"???????\"\"\"\".,zcd$$$$$$$$$$$$$$$$$$$\n\"?$$$hccccccc$$$$$$$$$$$$$$$$$$$$$$$$$$$$ `\"?$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n\"??$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ c,.\"??$$$$$$$$$$$$$$$$$$$$$$$$$$$\n$$$$cc,\"\"$$$$$$$$$$$$$$$$$$$$$$$$ $$$$$$$$$$$$$$$$\"\"???????$$$$$$$$\n,$$$$$$$$$$$$$$$$$$$ccc .. . .,. d$$$$$$$$$$$$$$$$$$$P\" $$$$$$$$$$$$$$$$$$$P\n$$$$$$$$$$$$$$$$$$P <$$$$$$$$$$$$$$$$$P $$$$$$$$$$$$$$$$$P $$$$$$$$$$$$$$$$\"\n.`$$P\"\"?$$$\"\"$$\" d$ $P,$h`$P cc \" $P $ $$$ $\"z$$ $F F<$$FzP $$\" ? d$\" d$\" \"\" `\"\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24365"
+                ],
+                "name": "",
+                "out": [
+                    "24360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24366",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "BIG FAKKING PIG",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": -3,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "This small but sturdy treehouse is perched roughly twenty feet above the ground.\nAt this height, often times light breezes blow past, ruffling one's hair and\ncarrying the scent of flowers from below. Books and trinkets are laying upon a\nset of shelves carved out of the tree's trunk. This home's single solid wall\nbranches off the supporting tree. A cuddly white stuffed toy eagle sways\ncomfortably within a hammock attached to two treebranches. Sitting against one\nwall is a large wooden chest, a few blanket corners poking out. The rest of this\nhome is quite open, leading out onto a round terrace with a simple handrail. The\nentire structure is made of wood and enclosed in a large beech on the outskirts\nof a lush forest. The anterior view offers a wonderous view of a white sand\nbeach and crystal blue waters.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24369"
+                ],
+                "name": "",
+                "out": [
+                    "24369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24370"
+                ],
+                "name": "",
+                "out": [
+                    "24370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24368"
+                ],
+                "name": "",
+                "out": [
+                    "24368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                    "24357"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24367",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Breezy Treehouse",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": -10,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "This island is one of the most breathtaking places on earth. Tucked away in the\nmiddle of nowhere, it is packed with an amazing variety of flora and fauna in an\nequally impressive array of landscapes - cool mountain valleys, sultry mangrove\nforests, and massive volcanoes draped with lush forests and topped with desolate\ncraters. Wonderful, sandy beaches at the western part of the island with huge\npalms invite visitors to relax. A huge and colourful hammock is tied to two\npalms close to the beach providing a shady refuge for tired visitors right\nbeside the refreshing small stream meeting the sea after a few meters.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24367"
+                ],
+                "name": "",
+                "out": [
+                    "24367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24368",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Temptation Island",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": -11,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "Lots of books are on the ground, opened and underlined. When you examine the\nsurroundings, you find that they are not ONLY on the ground, they are\neverywhere: in the bookshelf, desk, chair, and over a table. Also, you notice a\ntapestry hanging from the wall in front of bookshelf wall, with a beautiful\nembroidered image on it. Also, in the center wall, there is a window, with a\npicture resting against it. A soft and comfortable red carpet invites you to\nwalk without shoes. A small magical waterfall is in the center of the room,\ninviting you to drink from it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24367"
+                ],
+                "name": "",
+                "out": [
+                    "24367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24369",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Irikan's Cleric Study",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -10,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "The peak of this mountain proudly points directly skyward. The view extends so\nfar in each direction, that on cloudless days even the faint edge of the distant\nMortal Lands is visible far to the east. Away to the west, a slight darkening\nsuggests the Void beyond the rim of Arda. The air is cold and crisp here even\nwhen lands below enjoy the warmth of Spring. The faint scent of pinetrees\nreaches here from the treeline, a ways below. The silence is far deeper than the\nmelodies spun by the Elves in their fair halls afar to the east. The presence of\nEru Iluvatar, the One and the Creator, surrounds this place like a great\nblanket, magnified by the perfect silence.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24367"
+                ],
+                "name": "",
+                "out": [
+                    "24367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24370",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Solitary Mountain",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": -9,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "The walls in this chamber are made of white marble, being circular in shape,\nalike to those of a tower. Several, wide pillars of stone travel high above,\nwhere they greet and support the ceiling. A spiral, silver staircase traces\nclose to the pillars, until the stairs disappear beyond sight above, where a\nblazing light enters the room. The staircase is held aloft by several, thin rods\nthat are also silver, and each one is reflecting a great amount of the light\nthat shines in from above. The lower portion of this chamber lies in shadow\nthough, where there is only a single beam of light that reaches down and upon a\nsculpture of Nimloth the White Tree of Numenor. The sculpture of the tree stands\nin the center of the chamber, near the base of the stairs. Between the pillars\nare several paintings, each one was painted directly onto the walls. Though this\nchamber is only a small space within the Halls of Doom, this is where Almarian,\nloyal servant of Namo, can be found after her tasks are complete for the day,\npainting all of Numenorean's sorrow upon the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24369"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24372"
+                ],
+                "name": "",
+                "out": [
+                    "24372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24371",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vestige of Numenor",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -10,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "This golden abode is the home of Namo, one of the Feanturi. Large pillars rise\ntowards the bejewelled ceiling, covered with ancient paintings depicting Arda\nduring its early days. Eru and Manwe can easily be recognized, as well as\nYavanna and the golden trees, Telperion and Laurelin. The cold floor has been\nengraved with strange patterns, giving this room an eerie feeling. Fabulous\nwooden benches has been put along the walls, each bench in front of a pillar,\nmaking it easy for you to sit down and watch the beautiful paintings. But then,\nwho would want to spend time here? The Halls of the Doomed, the Halls of the\nDead. A place every mortal will have to pass through, strong or weak, beautiful\nor ugly. The mere thought makes you dizzy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24371"
+                ],
+                "name": "",
+                "out": [
+                    "24371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24372",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Halls of Doom",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -11,
+        "y": 105,
+        "z": 0
+    }
+]

@@ -6,11 +6,7 @@ export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: st
     e: { dx: 1, dy: 0, opp: 'w' },
     w: { dx: -1, dy: 0, opp: 'e' },
     u: { dx: 0, dy: 0, dz: 1, opp: 'd' },
-    d: { dx: 0, dy: 0, dz: -1, opp: 'u' },
-    ne: { dx: 1, dy: -1, opp: 'sw' },
-    nw: { dx: -1, dy: -1, opp: 'se' },
-    se: { dx: 1, dy: 1, opp: 'nw' },
-    sw: { dx: -1, dy: 1, opp: 'ne' }
+    d: { dx: 0, dy: 0, dz: -1, opp: 'u' }
 };
 
 export const TERRAIN_MAP: Record<string, string> = {

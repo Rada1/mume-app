@@ -183,6 +183,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     onToggleGrid={btn.setIsGridEnabled}
                     gridSize={btn.gridSize}
                     onGridSizeChange={btn.setGridSize}
+                    isSmartPopulateEnabled={btn.isSmartPopulateEnabled}
+                    onToggleSmartPopulate={btn.setIsSmartPopulateEnabled}
                     setSettings={btn.setSettings}
                     setSetSettings={btn.setSetSettings}
                 />

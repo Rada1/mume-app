@@ -1,0 +1,6097 @@
+[
+    {
+        "desc": "This is the western end of Hwain's Way, the long corridor that leads to the\nKing's chambers, armouries and smithies in the Seventh Deep, below the East Gate\nof Khazad-dum. Above you Hwain's Way ends in an intersection, while to the east\nthe corridor runs - you might think forever - straight, smooth and gradually\ndescending into the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17607"
+                ],
+                "name": "",
+                "out": [
+                    "17607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16931"
+                ],
+                "name": "",
+                "out": [
+                    "16931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17606",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 85,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "A broad tunnel descends steadily from west to east. This seems to have been an\nimportant road; the hard stone of its surface has survived the abuse of the\ncenturies. The walls are marked by simple columns carved in relief, which no one\nhas thought worth while to destroy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17608"
+                ],
+                "name": "",
+                "out": [
+                    "17608"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17606"
+                ],
+                "name": "",
+                "out": [
+                    "17606"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17607",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 86,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "A large and seemingly endless corridor continues its long way through the lower\nlevels of Khazad-dum. The floor shows signs of great usage in the past, but\nsince the appearance of Durin's Bane, it would seem that traffic has virtually\nceased. The same can be said for maintainance, for the passage of time has\nopened innumerable small cracks in the walls and floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17609"
+                ],
+                "name": "",
+                "out": [
+                    "17609"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17607"
+                ],
+                "name": "",
+                "out": [
+                    "17607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17608",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 87,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "In this intersection the long corridor known as Hwain's Way bends from the west\nto the southeast, where it continues its slow descent towards the King's\nchambers. A secondary passage to the north abandons the main road and disappears\nin the distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17936"
+                ],
+                "name": "",
+                "out": [
+                    "17936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17937"
+                ],
+                "name": "",
+                "out": [
+                    "17937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17608"
+                ],
+                "name": "",
+                "out": [
+                    "17608"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17609",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 88,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "This is one of the many intersections of Hwain's Way with some other lesser\ntunnel. The main corridor continues its long descent from the northwest to the\nsoutheast; from the entrance to the side passage, to the east, comes a cold and\ndamp air current that chills your bones and carries a strange smell.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17611"
+                ],
+                "name": "",
+                "out": [
+                    "17611"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17659"
+                ],
+                "name": "",
+                "out": [
+                    "17659"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17937"
+                ],
+                "name": "",
+                "out": [
+                    "17937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17610",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 89,
+        "y": 236,
+        "z": 0
+    },
+    {
+        "desc": "You have reached a bend in the long corridor that connects the western sections\nof Khazad-dum to the King's Chambers, the deepest levels of the old Dwarven\ncity. Hwain's Way seems to go on endlessly both to the east and to the\nnorthwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17610"
+                ],
+                "name": "",
+                "out": [
+                    "17610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17612"
+                ],
+                "name": "",
+                "out": [
+                    "17612"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17611",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 89,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "An ornate doorway in the northern wall contrasts sharply with the usually\nfeatureless walls of the interminable corridor that extends itself to the west\nand the east. The smell coming from the north, and the crude symbols scratched\nin coal on the wall, also contrast with the elegance of the Dwarven portal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28721"
+                ],
+                "name": "",
+                "out": [
+                    "28721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17613"
+                ],
+                "name": "",
+                "out": [
+                    "17613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17611"
+                ],
+                "name": "",
+                "out": [
+                    "17611"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17612",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 90,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "The long corridor known as Hwain's Way stretches its way in a west-east\ndirection. Both to the west and to the east, the otherwise featureless rough\nwalls of the tunnel are interrupted by intersections. You can sometimes hear\nstrange growling sounds coming from the west. Who, or what, is making those\nnoises is not certain: their source, however, is not likely to be friendly\ntowards intruders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17614"
+                ],
+                "name": "",
+                "out": [
+                    "17614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17612"
+                ],
+                "name": "",
+                "out": [
+                    "17612"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17613",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 91,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "You are standing at a T junction between two important corridors. One, that runs\nas usual from the west to the east, is Hwain's Way. The other corridor, which\nbegins behind a portal on the northern wall, climbs gently and soon bends to the\neast. The latter corridor's name was forgotten in the years since the awakening\nof the Valarauko, but, judging from its size, it must have had some importance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17650"
+                ],
+                "name": "",
+                "out": [
+                    "17650"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17615"
+                ],
+                "name": "",
+                "out": [
+                    "17615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17613"
+                ],
+                "name": "",
+                "out": [
+                    "17613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17614",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 92,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "As you stop to remove a small stone from your boot, you begin to realise how\nlong the way from Hollin to Eastern Moria is. Hwain's Way, with its straight\nwalls full of small cracks, seems to continue forever. You might think that your\nattempt to reach the Deeps, or to return to Hollin, is doomed to failure, and\nthat you will spend the rest of eternity walking along this endless corridor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17616"
+                ],
+                "name": "",
+                "out": [
+                    "17616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17614"
+                ],
+                "name": "",
+                "out": [
+                    "17614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17615",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 93,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in the middle of a large corridor below the Misty Mountains. As\nyou look west and east you cannot see the end of the tunnel; you are amazed at\nthe skill of the Dwarven miners of old, who managed to create such a large\ncomplex of tunnels and to make it possible to live inside them without\nsuffocating. Yet, the same tunnels that once were used to extract the priceless\nmithril from the roots of the Misties, are now home to a host of orcs - who\nmight take you by surprise any time!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17617"
+                ],
+                "name": "",
+                "out": [
+                    "17617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17615"
+                ],
+                "name": "",
+                "out": [
+                    "17615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17616",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 94,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "Your footsteps echo in the vast emptiness of the large corridor known as Hwain's\nWay. The tunnel continues straight as far as you can see to the west, towards\nWest Door, and to the east, where it descends towards what once were the King's\nchambers and armoury. A smaller passage in the northern wall leads to an\nascending spiral staircase not too far away, and beyond, where it gradually\ndisappears in the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17618"
+                ],
+                "name": "",
+                "out": [
+                    "17618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17620"
+                ],
+                "name": "",
+                "out": [
+                    "17620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17616"
+                ],
+                "name": "",
+                "out": [
+                    "17616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17617",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 95,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "The worn grey steps of a long and large spiral stair lead up from here. At the\nbase of the stair tunnels leave north and south. The southern passage is rather\nshort, and soon joins a much larger corridor, while the tunnel to the north\nvanishes behind a bend after a few metres. The ground is cracked, as if a mighty\nhammer had struck it violently: as you move, you are careful not to stumble and\nsprain an ankle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17619"
+                ],
+                "name": "",
+                "out": [
+                    "17619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17617"
+                ],
+                "name": "",
+                "out": [
+                    "17617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17752"
+                ],
+                "name": "",
+                "out": [
+                    "17752"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17618",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of a Long Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 95,
+        "y": 236,
+        "z": 0
+    },
+    {
+        "desc": "You are walking along a large tunnel, running from the east to the west, and\ngently descending. The tunnel walls and floor are smooth, while the ceiling's\nshape is a little irregular. A smaller, twisting passage leads south; its\nceiling is wet with small drops of water, the floor is slippery and the air\nthere is humid, as if the water of some subterranean river permeated the pores\nof the rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17618"
+                ],
+                "name": "",
+                "out": [
+                    "17618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17647"
+                ],
+                "name": "",
+                "out": [
+                    "17647"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17648"
+                ],
+                "name": "",
+                "out": [
+                    "17648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17619",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Sloping Passage",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 95,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "You have reached a junction along Hwain's Way. The large corridor, as usual,\ncontinues its slow descent to the east and ascent to the west; a smaller passage\nleaves north. The air coming from the northern passage is cooler than the air in\nthe main tunnel, and slightly damper. To the east Hwain's Way seems to have been\npartly blocked off.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17647"
+                ],
+                "name": "",
+                "out": [
+                    "17647"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17621"
+                ],
+                "name": "",
+                "out": [
+                    "17621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17617"
+                ],
+                "name": "",
+                "out": [
+                    "17617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17620",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 96,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "Many huge, cracked blocks of grey stone fell to the ground when the ceiling of\nthis section of Hwain's Way collapsed, hundreds of years ago. Now, as the gravel\ncrackles below your weary feet, you watch carefully the irregularly shapen\nboulders, since they all seem on the verge of toppling down and squishing you to\ndeath in the process. Yet, if you want to cross to the other side, the only\nvisible way lies through the menacing rocks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17622"
+                ],
+                "name": "",
+                "out": [
+                    "17622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17620"
+                ],
+                "name": "",
+                "out": [
+                    "17620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17621",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 97,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in the middle of a seemingly endless large corridor, which\nstretches itself in a more or less west to east direction. The air here is hot;\nfrom time to time, a jet of even hotter air blows on your face from a merely\nnoticeable crack in the wall. Some tens of meters to the west, your way towards\nHollin and the light of the Sun has partially collapsed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17623"
+                ],
+                "name": "",
+                "out": [
+                    "17623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17621"
+                ],
+                "name": "",
+                "out": [
+                    "17621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17622",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 98,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "You are walking along a corridor which seems to continue forever its straight\npath in a west-east direction, slowly climbing to the west. A smaller tunnel\nleads north and soon bifurcates into what looks like a minerary area. From the\nwest, if you stand still and are silent, you can sometimes hear some harsh\nsounds. Are they voices, heavy steps, or something else? You will have to\ninvestigate more directly to know.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17633"
+                ],
+                "name": "",
+                "out": [
+                    "17633"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17624"
+                ],
+                "name": "",
+                "out": [
+                    "17624"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17622"
+                ],
+                "name": "",
+                "out": [
+                    "17622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17623",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 99,
+        "y": 237,
+        "z": 0
+    },
+    {
+        "desc": "You are walking along a narrow minerary tunnel in the depths of Moria. To the\nsouth this passage joins a much larger gallery; to the east it ends in a small\nchamber. All traces of mineral ore seem to have vanished from here a long time\nago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17623"
+                ],
+                "name": "",
+                "out": [
+                    "17623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17631"
+                ],
+                "name": "",
+                "out": [
+                    "17631"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17633",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 99,
+        "y": 236,
+        "z": 0
+    },
+    {
+        "desc": "You have reached the bottom of a narrow stairway, whose worn steps, roughly cut\nin the grey stone, lead up and westwards. To the east and north, minerary\ntunnels lead away in the darkness. The tunnel to the north is larger than the\nother, and nearly horizontal, while the eastern tunnel slopes downwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17638"
+                ],
+                "name": "",
+                "out": [
+                    "17638"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17636"
+                ],
+                "name": "",
+                "out": [
+                    "17636"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17643"
+                ],
+                "name": "",
+                "out": [
+                    "17643"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17637",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stairway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 99,
+        "y": 239,
+        "z": 0
+    },
+    {
+        "desc": "You are in the middle of a long, nearly straight tunnel, running north to south.\nAs you walk, you can hear the faint echo of your steps coming from both ends of\nthis gallery. Yet this is not the only sound you can perceive: sometimes, even\nwhen you stop, something - it might be the noise of heavy boots marching on the\nstone, but you are not sure - reaches your ears.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17639"
+                ],
+                "name": "",
+                "out": [
+                    "17639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17637"
+                ],
+                "name": "",
+                "out": [
+                    "17637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17638",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 99,
+        "y": 238,
+        "z": 0
+    },
+    {
+        "desc": "You have the distinct feeling that you have walked through these small tunnels\nfor hours and hours now. Many passages look alike, and you have been forced to\nretrace your steps - due to a blocked passage - dozens of times. At last, you\ncome to a chamber from which four major galleries depart. One leads west,\nsloping upwards. The second is the largest, and leads almost horizontally to the\nsouth. The third tunnel descends steeply to the east. Finally, the northern exit\nis blocked by a pile of rubble.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17638"
+                ],
+                "name": "",
+                "out": [
+                    "17638"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17632"
+                ],
+                "name": "",
+                "out": [
+                    "17632"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17640"
+                ],
+                "name": "",
+                "out": [
+                    "17640"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17639",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 99,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "Following the main tunnel, you have reached a Y junction. The mines continue to\nthe north and east, while a third branch, to the southwest, ends abruptly with\nan extremely large and seemingly bottomless chasm. A jet of hot air flows from\nthe depths of the earth, and makes you sweat.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17641"
+                ],
+                "name": "",
+                "out": [
+                    "17641"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17639"
+                ],
+                "name": "",
+                "out": [
+                    "17639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17640",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 98,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "Dozens and dozens of small, twisted passages worm their way through the hard\nrock of the depths of Moria in all directions. As far as you can see, the\nDwarves have followed the ore vein and all of its ramifications until no useful\nmaterials remained around. After exploring the tunnels, you realise that many of\nthem have been closed off, or rejoin each other after a few tens of meters. The\nmain ways out lie to the west, to the south and to the east; the exits all look\nalike to your eyes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17640"
+                ],
+                "name": "",
+                "out": [
+                    "17640"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17644"
+                ],
+                "name": "",
+                "out": [
+                    "17644"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17642"
+                ],
+                "name": "",
+                "out": [
+                    "17642"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17641",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 98,
+        "y": 234,
+        "z": 0
+    },
+    {
+        "desc": "At this point the tunnel you have been following becomes very narrow, so that in\ncertain places you have to squeeze yourself between the rocky wall and a pile of\ndebris. To the south the mine ends in a small room; a bifurcation can be seen\nnear you to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17643"
+                ],
+                "name": "",
+                "out": [
+                    "17643"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17641"
+                ],
+                "name": "",
+                "out": [
+                    "17641"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17642",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 97,
+        "y": 234,
+        "z": 0
+    },
+    {
+        "desc": "A narrow stairway crosses this small room. The steps descend to the east and\nclimb westwards into the darkness. A passage leads to a mine gallery to the\nnorth, while, to the south, another tunnel has been sealed by a cave-in, perhaps\ncenturies ago, when the Dwarves were forced to abandon this place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17642"
+                ],
+                "name": "",
+                "out": [
+                    "17642"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17956"
+                ],
+                "name": "",
+                "out": [
+                    "17956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17637"
+                ],
+                "name": "",
+                "out": [
+                    "17637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17643",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stairway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 97,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "You are in the middle of a network of small tunnels, leading in all directions.\nMany of the tunnels, though, have been sealed by cave-ins or large holes on the\nfloor. The main gallery here leads north to south, but a few meters south of\nhere a large pile of debris blocks the way. The only secondary tunnel in decent\nshape lies to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17645"
+                ],
+                "name": "",
+                "out": [
+                    "17645"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17641"
+                ],
+                "name": "",
+                "out": [
+                    "17641"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17644",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 99,
+        "y": 234,
+        "z": 0
+    },
+    {
+        "desc": "This place looks like the edge of a large network of minerary tunnels. To the\nwest a large passage slopes gently upwards; its floor was worn by the passage of\nmany loads of unrefined ore. Three tunnels led once to the south; now, one of\nthem has collapsed, while a very large chasm prevents you from entering the\nsecond. As you look at the tunnel walls, you realise that there is very little\nore left here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17644"
+                ],
+                "name": "",
+                "out": [
+                    "17644"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17646"
+                ],
+                "name": "",
+                "out": [
+                    "17646"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17645",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Exhausted Mines",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 99,
+        "y": 233,
+        "z": 0
+    },
+    {
+        "desc": "You have reached the top of a smooth-walled tunnel which slopes down gently to\nthe south. A rougher tunnel, nearly horizontal, leaves east, entering a maze of\nsmaller caves, while a short, straight stair leads up to a tiny room. The gentle\nsound of flowing water comes from above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17647"
+                ],
+                "name": "",
+                "out": [
+                    "17647"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17645"
+                ],
+                "name": "",
+                "out": [
+                    "17645"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17957"
+                ],
+                "name": "",
+                "out": [
+                    "17957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17646",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Passage",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 98,
+        "y": 233,
+        "z": 0
+    },
+    {
+        "desc": "The main passage here bends north and west, while a secondary tunnel plunges\ndown to the south. Cold air blows through this latter tunnel, whistling a\nstrange sound. The western tunnel slopes down gently, while to the north the\ncorridor rises somewhat more steeply.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17646"
+                ],
+                "name": "",
+                "out": [
+                    "17646"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17620"
+                ],
+                "name": "",
+                "out": [
+                    "17620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17619"
+                ],
+                "name": "",
+                "out": [
+                    "17619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17647",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Passage",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 96,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "You are walking along a large tunnel deep below the peaks of Caradhras. The\ncorridor gently descends to the west and climbs to the east. Gusts of hot air\nblow into your face from some small cracks in the floor and walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17619"
+                ],
+                "name": "",
+                "out": [
+                    "17619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17649"
+                ],
+                "name": "",
+                "out": [
+                    "17649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17648",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Passage",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 94,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "The main corridor, climbing from the west to the east, meets here another\npassage which goes north for a little while and then turns left. You can\nsometimes hear a booming noise, similar to the sound of a large drum, and loud\ncries in the distance. You recall hearing dreadful tales about the orc tribes\npopulating the halls of Khazad-dum: life under the shadow of Durin's Bane has\nmade these orcs particularly vicious and cruel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17651"
+                ],
+                "name": "",
+                "out": [
+                    "17651"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17648"
+                ],
+                "name": "",
+                "out": [
+                    "17648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17650"
+                ],
+                "name": "",
+                "out": [
+                    "17650"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17649",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Passage",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 93,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "This is the western end of a large, smooth-walled passage that climbs gently to\nthe east. As you look around, you see that, to the south, the passage meets a\nlarger corridor - probably Hwain's Way, the main road from West Door to the\nSeventh Deep of Eastern Moria. Water drips slowly from a crack in the ceiling.\nThe crack is larger than many other cracks you have seen, but it would be\nimpossible to force your way through.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "17967"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17614"
+                ],
+                "name": "",
+                "out": [
+                    "17614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17649"
+                ],
+                "name": "",
+                "out": [
+                    "17649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17650",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Sloping Passage",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 92,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "A sharp turn in the passage is dominated by a huge statue of a Dwarf, placed in\na niche to the northeast. The once elegant marble of the statue has been defiled\nby orkish scrawlings, and its arms lie in pieces at the bottom of the niche. The\nsoft stone walls of the corridor run west and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17649"
+                ],
+                "name": "",
+                "out": [
+                    "17649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17652"
+                ],
+                "name": "",
+                "out": [
+                    "17652"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17651",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Long Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 93,
+        "y": 234,
+        "z": 0
+    },
+    {
+        "desc": "The cracked soft stone walls of this narrow corridor seem to grow nearer as you\nproceed in your journey, giving you a feeling of claustrophobia. If you stop for\na moment and listen, you can hear a thumping noise in the distance, similar to\nthe marching of many heavy boots. The tunnel is still running in a west-east\ndirection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17651"
+                ],
+                "name": "",
+                "out": [
+                    "17651"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17653"
+                ],
+                "name": "",
+                "out": [
+                    "17653"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17652",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Long Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 92,
+        "y": 234,
+        "z": 0
+    },
+    {
+        "desc": "The ancient walls of this narrow passage stretch themselves from the west to the\neast. From time to time you bruise your arms against a protuberance in the soft,\ncracked grey stone which surrounds you; this prevents you from falling prey to\nthe hypnotic effect of the seemingly endless walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17652"
+                ],
+                "name": "",
+                "out": [
+                    "17652"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17654"
+                ],
+                "name": "",
+                "out": [
+                    "17654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17653",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Long Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 91,
+        "y": 234,
+        "z": 0
+    },
+    {
+        "desc": "You are standing at the western end of a long, but rather narrow, corridor.\nThere are many small cracks on the walls of soft stone. The corridor goes on to\nthe east; to the north it joins a damp passage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17655"
+                ],
+                "name": "",
+                "out": [
+                    "17655"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17653"
+                ],
+                "name": "",
+                "out": [
+                    "17653"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17654",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Long Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 90,
+        "y": 234,
+        "z": 0
+    },
+    {
+        "desc": "Three tunnels meet here, in the depths of Moria. The southern one is larger than\nthe others and dry, while the passages to the north and west are damp. A very\nstrong smell of decay pervades this place, and seems to get even stronger to the\nnorth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17656"
+                ],
+                "name": "",
+                "out": [
+                    "17656"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17654"
+                ],
+                "name": "",
+                "out": [
+                    "17654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17936"
+                ],
+                "name": "",
+                "out": [
+                    "17936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17655",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "T Junction",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 90,
+        "y": 233,
+        "z": 0
+    },
+    {
+        "desc": "As you proceed inside this tunnel, the air becomes even more damp and\nunbreathable than before. The stone below your feet is slippery because of a\nvery thin layer of water. As you look around, you realise that the source of the\nsmell of decay you noticed before lies here: the stench comes from a pile of\nsemidecomposed orc corpses. Above the grisly sight there is an inscription. The\ntunnel continues south and east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17655"
+                ],
+                "name": "",
+                "out": [
+                    "17655"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17657"
+                ],
+                "name": "",
+                "out": [
+                    "17657"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17656",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "A Damp Side Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 90,
+        "y": 232,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel here bends rather sharply west and south. A current of damp air comes\nfrom the west, carrying the stench of decay, and plunges into a narrow crack in\nthe floor. Water trickles down from many small stalactites with a loud,\nreverberating sound.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17658"
+                ],
+                "name": "",
+                "out": [
+                    "17658"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17656"
+                ],
+                "name": "",
+                "out": [
+                    "17656"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17660"
+                ],
+                "name": "",
+                "out": [
+                    "17660"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17657",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "A Damp Side Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 91,
+        "y": 232,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a small secondary tunnel, which climbs slowly to the north.\nCold, humid air blows through nearly invisible fissures in the old cave walls,\nchilling you to the bones. South of here the tunnel becomes slightly larger, and\nbends westwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17657"
+                ],
+                "name": "",
+                "out": [
+                    "17657"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17659"
+                ],
+                "name": "",
+                "out": [
+                    "17659"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17658",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Damp Side Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 91,
+        "y": 233,
+        "z": 0
+    },
+    {
+        "desc": "This is the southern end of a small corridor which climbs slowly to the north.\nThe air coming from the tunnel is stale, humid and carries a strange smell. To\nthe west, the corridor joins a much large passage, which, if what you heard\nabout Khazad-dum is correct and if your sense of direction does not betray you,\nshould be Hwain's Way, a large road which crosses all of Moria from the west to\nthe east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17658"
+                ],
+                "name": "",
+                "out": [
+                    "17658"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17610"
+                ],
+                "name": "",
+                "out": [
+                    "17610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17659",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Damp Side Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 91,
+        "y": 235,
+        "z": 0
+    },
+    {
+        "desc": "The narrow space of this cleft in the rock makes movement difficult and slow.\nThe walls of this crevice are very wet due to the rivulets of water which snake\ndown the surfaces of the crack from above. This water collects in the narrow\nbottom of the crevice and flowing as a small stream descends eastwards. A strong\nair current blows down the length of the crack.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17661"
+                ],
+                "name": "",
+                "out": [
+                    "17661"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17657"
+                ],
+                "name": "",
+                "out": [
+                    "17657"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17660",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Crevice",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 91,
+        "y": 231,
+        "z": 0
+    },
+    {
+        "desc": "A body of water fills this cove. The surface of the water lies undisturbed with\nonly a few small waves lapping against the craggy walls. To the north the dark\nlake disappears into a large cavern. A breach in the west wall of the cove leads\nto a crevice which recedes into the stone. A trickle of water enters the lake\nfrom the floor of the crevice and a soft breeze also enters through this cleft.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17662"
+                ],
+                "name": "",
+                "out": [
+                    "17662"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17660"
+                ],
+                "name": "",
+                "out": [
+                    "17660"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17661",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Silent Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 92,
+        "y": 231,
+        "z": 0
+    },
+    {
+        "desc": "Still and dark, the waters of this underground lake look cold and uninviting.\nNary a sound can be heard, and the quiet splashes you make echo off the high\nrocks of this chamber. To the east and north the glassy waters continue while\nthe rough rocks of a wall lie west. To the south the cavern becomes smaller, the\nhigh ceiling descending towards the waters of a cove.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17663"
+                ],
+                "name": "",
+                "out": [
+                    "17663"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17661"
+                ],
+                "name": "",
+                "out": [
+                    "17661"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17665"
+                ],
+                "name": "",
+                "out": [
+                    "17665"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17662",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Silent Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 92,
+        "y": 230,
+        "z": 0
+    },
+    {
+        "desc": "In the roots of the mountain, the waters of the lake lie still, cold and dark.\nWithin its surface you can see your reflection but the depths are obscured by\nsuspensions underwater. Occasionally a solitary drip can be heard as water falls\nfrom the few, small stalactites and stone promontories above. To the west and\nnorth the huge cavern ends, and the rocky walls of the cave are gently lapped.\nEast and south the lake stretches out beyond your perceptions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17662"
+                ],
+                "name": "",
+                "out": [
+                    "17662"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17664"
+                ],
+                "name": "",
+                "out": [
+                    "17664"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17663",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Silent Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 92,
+        "y": 229,
+        "z": 0
+    },
+    {
+        "desc": "A rocky ledge protruding from the northern wall lies just below the surface of\nthe lake, providing respite for those weary of swimming. The otherwise calm\nsurface of the lake is disturbed by the uprising of water from below. Down, deep\nbelow, murky plumes of silt carried by the currents upwell and disperse\ngradually, flowing slowly to the southern parts of the lake. The western reaches\nof the lake lie dark and silent, few drops ever falling to break the quiet.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17665"
+                ],
+                "name": "",
+                "out": [
+                    "17665"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17663"
+                ],
+                "name": "",
+                "out": [
+                    "17663"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "17997"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17664",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Silent Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 93,
+        "y": 229,
+        "z": 0
+    },
+    {
+        "desc": "This is a corner of the lake-immersed cavern which stretches north and east.\nSlow currents below the surface deposit their suspensions deep on the lake\nfloor. The flow south suggests that an underwater outflow drains the waters from\nthe lake, though no sign of an exit is visible. The slippery walls of the cavern\nto the south and east are impossible to scale, rising as they do towards a\ndistant rocky ceiling. Water occasionally drops from above but otherwise no\nsound is heard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17664"
+                ],
+                "name": "",
+                "out": [
+                    "17664"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17662"
+                ],
+                "name": "",
+                "out": [
+                    "17662"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17665",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Silent Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 93,
+        "y": 230,
+        "z": 0
+    },
+    {
+        "desc": "You are standing at a bend in a small passage below the Misty Mountains. The air\nis extremely moist, so that some small, white fungi have managed to grow on the\nplain walls of the tunnel. The stench of decay fills this place. To the south\nthe air seems to become more breathable, as the tunnel enlarges and meets a\nlarger corridor. To the east, after a short but steep ascent, you can see\nanother intersection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17609"
+                ],
+                "name": "",
+                "out": [
+                    "17609"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17655"
+                ],
+                "name": "",
+                "out": [
+                    "17655"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17936",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "A Damp Side Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 89,
+        "y": 233,
+        "z": 0
+    },
+    {
+        "desc": "You are walking along a large corridor running from the northwest to the\nsoutheast. When Durin's Bane was still sleeping in the depths of the earth, this\nwas one of the most frequented roads in Khazad-dum. Since the Balrog came and\nslew the King of Moria, most of the travellers along this once glorious corridor\nare orcs, trolls and other foul servants of the Darkness: nearly all of the few\nintruders from the outer world have been killed by the orcs, or, perhaps,\ncaptured and sent to a fate worse than death.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17609"
+                ],
+                "name": "",
+                "out": [
+                    "17609"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17610"
+                ],
+                "name": "",
+                "out": [
+                    "17610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17937",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hwain's Way",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 88,
+        "y": 236,
+        "z": 0
+    },
+    {
+        "desc": "A narrow stair begins here its slow descent to the lower levels of Khazad-dum.\nThe grey, worn steps almost remind you of the golden years of Moria, when\nthousands of Dwarven miners laboured in tunnels like this one to extract the\npriceless mithril from the roots of the Misty Mountains. Alas, the sound of the\npick is heard no more in these halls; the only constant sound, now, is the\nflowing of water coming from the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17957"
+                ],
+                "name": "",
+                "out": [
+                    "17957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17643"
+                ],
+                "name": "",
+                "out": [
+                    "17643"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17956",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of a Stairway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 97,
+        "y": 232,
+        "z": 0
+    },
+    {
+        "desc": "In the remote times when this section of the mines still yielded ore for the\nDwarven smithies, the miners probably used to come here to rest, from time to\ntime. A clean, tiny water rivulet flows from a crack in the wall into a sort of\ncarved washbasin, then vanishes again through a small hole. Along the walls you\ncan see many cracked stone benches, upon which are the broken remains of some\nmusical instruments. To the north a small tunnel leaves this room, while a ramp\nof stairs goes down to the mine tunnels.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17956"
+                ],
+                "name": "",
+                "out": [
+                    "17956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17646"
+                ],
+                "name": "",
+                "out": [
+                    "17646"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17957",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Miners' Resting Place",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 97,
+        "y": 233,
+        "z": 0
+    },
+    {
+        "desc": "You are lost in some very deep caverns, hundreds of meters below the deepest\ntunnels of the Dwarves. Here old, nameless beings gnaw at the rock, digging\nlong, twisted, cold caves in the foundations of the earth. Icy water trickles\ndown from the irregularly shapen ceiling, chilling you to the bones, then\ncollecting into small pools and flowing away through minute cracks in the floor.\nStrange noises surround you, coming from all directions. Are they merely the\nmagnified echo of your own footsteps and your breath, mixed with the tiny\ndroplets falling, or is there some foul creature stalking you?\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "17966"
+                ],
+                "name": "",
+                "out": [
+                    "17966"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "17966"
+                ],
+                "name": "",
+                "out": [
+                    "17966"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "17965"
+                ],
+                "name": "",
+                "out": [
+                    "17965"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "17964",
+                    "17966"
+                ],
+                "name": "",
+                "out": [
+                    "17964"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "17631"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17963",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Deeps of Moria",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 95,
+        "y": 239,
+        "z": 0
+    },
+    {
+        "desc": "You are lost in some very deep caverns, hundreds of meters below the deepest\ntunnels of the Dwarves. Here old, nameless beings gnaw at the rock, digging\nlong, twisted, cold caves in the foundations of the earth. Icy water trickles\ndown from the irregularly shapen ceiling, chilling you to the bones, then\ncollecting into small pools and flowing away through minute cracks in the floor.\nStrange noises surround you, coming from all directions. Are they merely the\nmagnified echo of your own footsteps and your breath, mixed with the tiny\ndroplets falling, or is there some foul creature stalking you?\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "17965"
+                ],
+                "name": "",
+                "out": [
+                    "17965"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "17965"
+                ],
+                "name": "",
+                "out": [
+                    "17965"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                    "17963"
+                ],
+                "name": "",
+                "out": [
+                    "17963"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 17,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "17965"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17964",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Deeps of Moria",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 94,
+        "y": 239,
+        "z": 0
+    },
+    {
+        "desc": "You have climbed a natural shaft from the caves below, and you think that, by\nnow, you should have reached once again the tunnels and the halls made by the\npeople of Durin. Above you the shaft becomes very narrow; the only way out of\nthis place seems to be a crack to the... south? The time you spent below made\nyou lose your sense of direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "17650"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "17965"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17967",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Natural Shaft",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 92,
+        "y": 239,
+        "z": 0
+    },
+    {
+        "desc": "The current suddenly slows and you feel yourself ejected into a large watery\nexpanse. The colour of the water clouds your vision, but you see above you the\nsurface. The currents still grab you but unless you want to swim against them,\nyou must surface here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17998"
+                ],
+                "name": "",
+                "out": [
+                    "17998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "17664"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17997",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Source of the Lake",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 93,
+        "y": 228,
+        "z": 0
+    },
+    {
+        "desc": "It seems ages since you were pulled into this underwater abyss. Your lungs now\nscream for air and your limbs tire. Even your sight is gone, as the rust\ncolouring of the current means even your hand is unseen. The journey is also\nrough and you bash into the rocky walls as the torrent takes a sharp bend. Your\nonly options are to let it carry you onwards, or to struggle in the opposite\ndirection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17999"
+                ],
+                "name": "",
+                "out": [
+                    "17999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17997"
+                ],
+                "name": "",
+                "out": [
+                    "17997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17998",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Murky Torrent",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 94,
+        "y": 228,
+        "z": 0
+    },
+    {
+        "desc": "With the water dissolving the rocks, and picking up sediment, you have no idea\nwhere you are going. You can either let the water take you, or else you will\nhave to fight against the flow. The only thing of comfort in this airless world\nis that there seem to be no bends in the watery-tunnel to bash into.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18000"
+                ],
+                "name": "",
+                "out": [
+                    "18000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17998"
+                ],
+                "name": "",
+                "out": [
+                    "17998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17999",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Murky Torrent",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 94,
+        "y": 227,
+        "z": 0
+    },
+    {
+        "desc": "The waters in this part of the watercourse have eroded their way through rocks\nwhich have deposited sediment in the flow. Looking back towards where the\ntorrent divided is only just possible. Ahead along the route of the water, only\na rusty colour can be seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17999"
+                ],
+                "name": "",
+                "out": [
+                    "17999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18001"
+                ],
+                "name": "",
+                "out": [
+                    "18001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18000",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Murky Torrent",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 94,
+        "y": 226,
+        "z": 0
+    },
+    {
+        "desc": "This juncture of passages underwater is quite complex. From the north, a strong\ncurrent flows into this chamber, pitched at a steep gradient from south to\nnorth. To the south and east is visible a dark tunnel leading down, the waters\nobviously decending into it. Water from the north tunnel also makes its way\nwest, but due to the size of the exit, the water leaves in a more leisurely\nfashion. Rocks and boulders of all size litter the bottom of the chamber along\nthe south wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18002"
+                ],
+                "name": "",
+                "out": [
+                    "18002"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18003"
+                ],
+                "name": "",
+                "out": [
+                    "18003"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18000"
+                ],
+                "name": "",
+                "out": [
+                    "18000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18005"
+                ],
+                "name": "",
+                "out": [
+                    "18005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18001",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dividing of the Flow",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 95,
+        "y": 226,
+        "z": 0
+    },
+    {
+        "desc": "This broken chamber looks to have once been part of a larger whole. To the\nnorth, a strong current of water pushes its way towards you, through a\nramshackle wall of rocks and boulders. The few bubbles carried with the water\nmigrates upwards to provide a breathing space in the upper part of the chamber.\nStrong eddies exist within the corners of the subterrean room and it is hard\nwork not to get swept downstream to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18001"
+                ],
+                "name": "",
+                "out": [
+                    "18001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18002",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 95,
+        "y": 225,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel winds north and south and water fills it to the top. No sign can be\nseen of any small cave or side passage where contact with the world of air above\ncould be made. As the visibility is low, it is hard to avoid the small bits of\nrock that periodically fly past. It is easy to cruise with the flow south,\nneeding little energy. To swim north against the current is entirely different.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18001"
+                ],
+                "name": "",
+                "out": [
+                    "18001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18004"
+                ],
+                "name": "",
+                "out": [
+                    "18004"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18003",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 95,
+        "y": 227,
+        "z": 0
+    },
+    {
+        "desc": "The submerged tunnel rounds out here, forcing you to choose between one of the\nwalls for some guidance in the depths. The torrent flows down from the north\nhere, turning sharply to plunge off east. Much of the rock is pitted and worn as\nsmall stones carried from upstream smash into the wall at this bend.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18003"
+                ],
+                "name": "",
+                "out": [
+                    "18003"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18006"
+                ],
+                "name": "",
+                "out": [
+                    "18006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18004",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Bend",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 95,
+        "y": 228,
+        "z": 0
+    },
+    {
+        "desc": "By some caprice of geology, this dome-shaped chamber remains dry and full of\nair, while below the underwater torrent churns. The cavern has smooth walls, as\nif at one time it had been scoured by the stream that now flows beneath it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18001"
+                ],
+                "name": "",
+                "out": [
+                    "18001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18005",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dry Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 94,
+        "y": 225,
+        "z": 0
+    },
+    {
+        "desc": "Onwards and on, the heady flow of water carries anything east. The way west is\nnow inclined upwards, though it passes under a rocky ledge as well. The water is\nvery cold and you cannot see far in either direction. As you do your utmost to\nhold on to your possessions, you see no hope of any trapped air to refresh your\nlungs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18007"
+                ],
+                "name": "",
+                "out": [
+                    "18007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18004"
+                ],
+                "name": "",
+                "out": [
+                    "18004"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18006",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 96,
+        "y": 228,
+        "z": 0
+    },
+    {
+        "desc": "In this jagged rock tunnel, the current of water heading east makes life easy\nfor swimming that way. Otherwise, a real effort to make headway west is\nrequired. The water is not very clear, but it is good enough for you to keep\nyour bearings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18009"
+                ],
+                "name": "",
+                "out": [
+                    "18009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18006"
+                ],
+                "name": "",
+                "out": [
+                    "18006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18007",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 97,
+        "y": 228,
+        "z": 0
+    },
+    {
+        "desc": "Below the turbulent eddying of the watery whirlpool, you can barely make out the\nconfines of the underwater current through the mass of bubbles, drawn down into\nthe depths. The fast current flows east along a rocky shelf, wider than it is\nhigh.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18010"
+                ],
+                "name": "",
+                "out": [
+                    "18010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18294"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18008",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Under the Whirlpool",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 97,
+        "y": 227,
+        "z": 0
+    },
+    {
+        "desc": "Here within a a tall, narrow water-passage you are buffetted by the force of two\ncurrents which meet here and flow off further east. To the west is a\ncontinuation of the narrow tunnel. From the north wall descends a rocky tube,\ncarrying waters containing a few bubbles to join this aquatic corridor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18010"
+                ],
+                "name": "",
+                "out": [
+                    "18010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18012"
+                ],
+                "name": "",
+                "out": [
+                    "18012"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18007"
+                ],
+                "name": "",
+                "out": [
+                    "18007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18009",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Torrent",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 98,
+        "y": 228,
+        "z": 0
+    },
+    {
+        "desc": "The current speeds up as the height of the watery shelf under the whirlpool gets\nlower in height. Just as it looks as if you will get forced into too narrow a\npassage, the heavy flow arcs southwards and down a dark tunnel. The trapped\nbubbles thin out and you can see a few dark blooms of life in the narrow crevice\nat the back of the shelf to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18009"
+                ],
+                "name": "",
+                "out": [
+                    "18009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18011"
+                ],
+                "name": "",
+                "out": [
+                    "18011"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18008"
+                ],
+                "name": "",
+                "out": [
+                    "18008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18010",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 98,
+        "y": 227,
+        "z": 0
+    },
+    {
+        "desc": "In the altering of the course of the water, the air carried with it has been\nforced up into this crevice under the shelf. Although small, it provides a\nuseful supply of air for you and a welcome respite. The area still contains\nplenty of water though.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18010"
+                ],
+                "name": "",
+                "out": [
+                    "18010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18011",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Air-filled Crevice",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 99,
+        "y": 227,
+        "z": 0
+    },
+    {
+        "desc": "The flow of the subterranean torrent eastwards halts here as the rocky passage\nends and the water is diverted down a wide fissure in the floor. Though the\nfissure opens up below, you cannot tell how much deeper the currents lead or\nwhether you will find a precious air-pocket from which to take a breath.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18009"
+                ],
+                "name": "",
+                "out": [
+                    "18009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "18013"
+                ],
+                "name": "",
+                "out": [
+                    "18013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18012",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Torrent",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 99,
+        "y": 228,
+        "z": 0
+    },
+    {
+        "desc": "This is the bottom of a wide fissure in the ceiling of a large submerged cavern.\nAs it is quite large, the speed of the currents is considerably slower than in\nthe tunnel above. The fissure narrows westwards, becoming too narrow to swim\ninto. Eastwards, the greater part of the cavern opens out but it is impossible\nto see more than qualitative features.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18014"
+                ],
+                "name": "",
+                "out": [
+                    "18014"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18012"
+                ],
+                "name": "",
+                "out": [
+                    "18012"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18013",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Submerged Fissure",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 99,
+        "y": 229,
+        "z": 0
+    }
+]

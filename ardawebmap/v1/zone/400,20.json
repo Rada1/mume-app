@@ -1,0 +1,756 @@
+[
+    {
+        "desc": "Bridging the gap between a massive hill of black boulders and a steeply\nascending granite terrace is a long, flat ledge, swept clean of debris by a\nwickedly howling wind. The edge drops away quickly to the south, but the path is\nwide and by keeping to the north wall is not too dangerous.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6365"
+                ],
+                "name": "",
+                "out": [
+                    "6365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6366"
+                ],
+                "name": "",
+                "out": [
+                    "6366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6364",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Flat Ledge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 418,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Part of a six- or seven-tiered natural terrace, this ridge juts out over the\nsurrounding rock, but is not too high to easily reach. Unfortunately, the ledges\nseem to be among the clouds, and cannot be accessed from here. This place\naffords a good view of the lands to the south; where a sprawling expanse of\nwhite hills seems to push against a thick, dark forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6362"
+                ],
+                "name": "",
+                "out": [
+                    "6362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6364"
+                ],
+                "name": "",
+                "out": [
+                    "6364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6365",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 419,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "A huge pile of gargantuan, black boulders clumped together, form this part of\nthe mountainside. The rock is hard and smooth, as if weathered from eons of\nsleet, hail, and cold rain. It is also cold to the core, a deep and ancient cold\nthat goes to your bone and makes you feel small and weak. In your ascent you can\ngo west or east, or head back down to a dark, flat area of plains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6368"
+                ],
+                "name": "",
+                "out": [
+                    "6368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6364"
+                ],
+                "name": "",
+                "out": [
+                    "6364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6367"
+                ],
+                "name": "",
+                "out": [
+                    "6367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6366",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 417,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The western side of the mountain has eroded away, leaving a precipitous drop of\nhundreds of feet. Far, far below, you can make out a shallow depression filled\nwith water and boulders. It would behoove the traveller to watch his step here;\na slip could lead to a messy death.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6366"
+                ],
+                "name": "",
+                "out": [
+                    "6366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6367",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 416,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "A massive spur of rock thrusts out into a narrow gorge here. To the east the\nBruinen falls several hundred yards into a frothy cauldron of water, filling the\nair with a thin mist. The landscape in all directions is nothing but barren\nmoorland, except to the west where the gorge opens up and becomes rather lush.\nThe only way down into the valley you can see is a spiral staircase cut in the\ncliff, which descends to the bottom of the gorge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5519"
+                ],
+                "name": "",
+                "out": [
+                    "5519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "6429"
+                ],
+                "name": "",
+                "out": [
+                    "6429"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6428",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Huge Outcrop of Rock",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 400,
+        "y": 22,
+        "z": 0
+    },
+    {
+        "desc": "The path is rather slippery in this narrow gorge due to the spray, and you will\nhave to pick your footing extremely carefully. The path winds down from above in\na set of stairs cut in the rock, and continues west in the small space between\nriver and cliff wall. Down to the east the river foams and churns, after\nentering the gorge in a waterfall of several hundred yards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "6430"
+                ],
+                "name": "",
+                "out": [
+                    "6430"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "6428"
+                ],
+                "name": "",
+                "out": [
+                    "6428"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6429",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Path through a Gorge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 400,
+        "y": 23,
+        "z": 0
+    },
+    {
+        "desc": "There is a dazzling display of magic in this room. All around the fountain there\nare balls of fire, ice and lightning flying around or flashing in and out of\nexistence. Nice trick...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "6425"
+                ],
+                "name": "",
+                "out": [
+                    "6425"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19281"
+                ],
+                "name": "",
+                "out": [
+                    "19281"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19280",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Entrance Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 401,
+        "y": 27,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this room are covered with bookshelves, some of which seem to have\nbeen burned recently. Inspecting a bit closer, the only thing that appears\nunscathed is the huge table, covered with stacks of scrolls and books, in the\nmiddle of the room. This has to be the room where the mistress of the house\nworks on her new spells. Maybe not the safest place to be...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20270"
+                ],
+                "name": "",
+                "out": [
+                    "20270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19280"
+                ],
+                "name": "",
+                "out": [
+                    "19280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19281",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Megazz' Magic Study",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 400,
+        "y": 27,
+        "z": 0
+    },
+    {
+        "desc": "This room seems like every woman's dream. The bed is huge and very comfortable.\nTo the left there is a window with a beautiful view of the valley. Directly\nopposite the entrance is a mirror. There is the distinct feeling that the mirror\nshows only what the mistress wishes to see.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19281"
+                ],
+                "name": "",
+                "out": [
+                    "19281"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20270",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 400,
+        "y": 26,
+        "z": 0
+    }
+]

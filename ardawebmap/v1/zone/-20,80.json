@@ -1,0 +1,1601 @@
+[
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24325"
+                ],
+                "name": "",
+                "out": [
+                    "24325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24331"
+                ],
+                "name": "",
+                "out": [
+                    "24331"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24326"
+                ],
+                "name": "",
+                "out": [
+                    "24326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24322"
+                ],
+                "name": "",
+                "out": [
+                    "24322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23792"
+                ],
+                "name": "",
+                "out": [
+                    "23792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24336"
+                ],
+                "name": "",
+                "out": [
+                    "24336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24321",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "General",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -5,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "A huge hall stretches away into the distance. Great arched doorways break the\nflow of the marbled walls. This is the Nexus: the great hall connecting all of\nthe areas of Arda together. Above each archway is inscribed the name of the area\nto which it gives access.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24324"
+                ],
+                "name": "",
+                "out": [
+                    "24324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24321"
+                ],
+                "name": "",
+                "out": [
+                    "24321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24323"
+                ],
+                "name": "",
+                "out": [
+                    "24323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24322",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Free Peoples' Roleplaying Board",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -6,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "No mortal words might describe the ignominy that fills this place... High upon a\nshelf, where only Aratar can reach, stand two books.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24322"
+                ],
+                "name": "",
+                "out": [
+                    "24322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24323",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Barad-dur",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": -7,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "A huge hall stretches away into the distance. Great arched doorways break the\nflow of the marbled walls. This is the Nexus: the great hall connecting all of\nthe areas of Arda together. Above each archway is inscribed the name of the area\nto which it gives access.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24322"
+                ],
+                "name": "",
+                "out": [
+                    "24322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24325"
+                ],
+                "name": "",
+                "out": [
+                    "24325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24324",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Orkish Roleplaying Board",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -6,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "This dimly-lit hall seems to have been made to look as much a tribute to the\nbravery, savagery, and recklessness of the orc tribe as the owners of the place\ncould possibly allow. The walls, the roof, and the floor are crudely cut and\nuneven, obviously carved in imitation of orkish work. Hanging on the walls and\nlying in piles on the floor are armour, swords, hammers, shields, scalps,\nflasks, jewellery, gold, and many other things which, judging by their state,\nmust have been collected by Elrond from the bottom of Bruinen when he ordered\nthe ford of Bruinen to dry up.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24329"
+                ],
+                "name": "",
+                "out": [
+                    "24329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24321"
+                ],
+                "name": "",
+                "out": [
+                    "24321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24328"
+                ],
+                "name": "",
+                "out": [
+                    "24328"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24324"
+                ],
+                "name": "",
+                "out": [
+                    "24324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24325",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Halls of the Uruk-Tarkhnarb",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": -5,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "Deep in the ground, below the roots of the trees and the mountains, lies this\ndark, cool burrow. Darkness here is impenetrable and complete; no ray of burning\nlight from the above will ever reach here to disturb those for whom this cavern\nwas dug.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24328"
+                ],
+                "name": "",
+                "out": [
+                    "24328"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24330"
+                ],
+                "name": "",
+                "out": [
+                    "24330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24327"
+                ],
+                "name": "",
+                "out": [
+                    "24327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24321"
+                ],
+                "name": "",
+                "out": [
+                    "24321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24326",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trolls",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": -4,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24326"
+                ],
+                "name": "",
+                "out": [
+                    "24326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24327",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Jail",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -3,
+        "y": 99,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24326"
+                ],
+                "name": "",
+                "out": [
+                    "24326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24325"
+                ],
+                "name": "",
+                "out": [
+                    "24325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24342"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24328",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Black Numenoreans",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -4,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "From the frozen North, marauding Orcs of the Zaugurz tribe come to this cavern\nto brag about their successes and moan about their defeats. The cave floor is\nfull of pillaged loot, ready to be used to further the Zaugurz plans of\nconquest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24325"
+                ],
+                "name": "",
+                "out": [
+                    "24325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24329",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Halls of the Zaugurz",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -5,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "Cages and cages of bears are stored here in this unpleasant abode, waiting to be\nshipped to various destinations. While there are no signs of bulls here, there\nare four doors in here that lead to various guildhalls. You can also go up from\nhere, a popular option for most markets.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24341"
+                ],
+                "name": "",
+                "out": [
+                    "24341"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24337"
+                ],
+                "name": "",
+                "out": [
+                    "24337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24340"
+                ],
+                "name": "",
+                "out": [
+                    "24340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24338"
+                ],
+                "name": "",
+                "out": [
+                    "24338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24321"
+                ],
+                "name": "",
+                "out": [
+                    "24321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24336",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bear Market",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -7,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24336"
+                ],
+                "name": "",
+                "out": [
+                    "24336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24337",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Classes Circle (Mages)",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -7,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24336"
+                ],
+                "name": "",
+                "out": [
+                    "24336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24339"
+                ],
+                "name": "",
+                "out": [
+                    "24339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24338",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Classes Circle (Thieves)",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -8,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24338"
+                ],
+                "name": "",
+                "out": [
+                    "24338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24339",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tharbad Thieves",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -9,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24336"
+                ],
+                "name": "",
+                "out": [
+                    "24336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24340",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Classes Circle (Warriors)",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -6,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24336"
+                ],
+                "name": "",
+                "out": [
+                    "24336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24341",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Classes Circle (Clerics)",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": -7,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "In the middle of the room you see a huge altar. White candles are slowly\nburning, and someone is chanting in the distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24342"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24328"
+                ],
+                "name": "",
+                "out": [
+                    "24342"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24342",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Home of Ilie",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -3,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "Det har ar Mandors hall. Var snall och ta av dig skorna innan du fortsatter\nvidare in i lagenheten. Till vanster ligger serverrummet och rakt fram ser du\nvardagsrummet med en soffa och tv-horna, och inne i hornet ett skrivbord med ett\npar datorer och flertalet skarmar. Fran koket doftar det svagt av te.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24347"
+                ],
+                "name": "",
+                "out": [
+                    "24347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24351",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Halls of Mandor",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -1,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "This is where builders post their mudlle ideas for discussion and sanity\nchecking by mudllers. When/if the mudllers say the idea is OK, the request will\nbe either done or moved into the waiting room to wait for its turn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24350"
+                ],
+                "name": "",
+                "out": [
+                    "24350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24354",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Builders' Discussion Room for Mudlle Effects",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -1,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "A dim red glare in the east reflecting off the low dusky clouds silhouettes the\ncraggy peaks of the Ephel Duath. High on a rocky seat upon the knees of the\nMountains of Shadow stand the walls and tower of Minas Morgul. All around the\ntower darkness lies like a cloak on the landscape, but the tower itself is lit\nby a pale corpse-light that illuminates nothing. The top-most course of the\ntower slowly revolves, first one way and then another, a huge ghostly head\nleering into the night. A stream flows out of the valley - wide flats lying on\neither bank like shadowy meads filled with pale white flowers. A white bridge\ncrosses the stream, and beyond the road winds up the valley to the city gates.\nFigures stand on the bridge, carven with cunning in forms human and bestial, but\nall corrupt and loathsome. The water flowing beneath is silent and steaming, but\nthe vapour rising from it is deadly cold.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29054",
+        "light": 0,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Morgul Vale",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": -2,
+        "y": 85,
+        "z": 0
+    }
+]

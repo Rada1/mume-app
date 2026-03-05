@@ -1,0 +1,3138 @@
+[
+    {
+        "desc": "The forest is thinning a little here, and it is finally possible to struggle\ninto the thick undergrowth to the north. A lone tree here seems to rustle and\ncreek more than those deep in the heart of the forest, with many of its leaves\nfluttering to the ground below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8979"
+                ],
+                "name": "",
+                "out": [
+                    "8979"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9006"
+                ],
+                "name": "",
+                "out": [
+                    "9006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8981"
+                ],
+                "name": "",
+                "out": [
+                    "8981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8980",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "At the Edge of the Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 213,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "Most of the trees in this forest are extremely large, however, the one that\nstands here does not seem to be like the others. It has not grown very tall, and\nits trunk seems to have grown around itself, making it look extremely twisted.\nAt the base of the tree, the tangled roots and rotten leaves seem to obscure a\nsmall hole.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9005"
+                ],
+                "name": "",
+                "out": [
+                    "9005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9009"
+                ],
+                "name": "",
+                "out": [
+                    "9009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8980"
+                ],
+                "name": "",
+                "out": [
+                    "8980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9028"
+                ],
+                "name": "tangle",
+                "out": [
+                    "9028"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8981",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Twisted Tree",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 214,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "Of the many tall trees that fill these woods, one stands particularly high. It\nhas a huge base with the size of a large cabin, the branches themselves are the\nsize of small trees. Further within the forest, towards the west, trees\nidentical to this one loom in abundance. The sky is masked from sight with the\nlarge branches and leaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8995"
+                ],
+                "name": "",
+                "out": [
+                    "8995"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9010"
+                ],
+                "name": "",
+                "out": [
+                    "9010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8994",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath a Large Tree",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 217,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "The trees around here have grown closer to the ground than they do in other\nareas within the forest. Their branches almost touch the ground, and in some\nspots there are marks from where they have scraped the ground, pushed by the\nwind. The grass has grown a little higher here, from the water that is trapped\non the forest floor during rainy seasons.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8994"
+                ],
+                "name": "",
+                "out": [
+                    "8994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8996"
+                ],
+                "name": "",
+                "out": [
+                    "8996"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9000"
+                ],
+                "name": "",
+                "out": [
+                    "9000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9003"
+                ],
+                "name": "",
+                "out": [
+                    "9003"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8995",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Floor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 217,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "The ground here is cooled by both the air that caresses it, and the lush green\ngrass that catches each morning's dew. There is little to see here, other than a\nvariety of trees, with every branch, twig, and leaf looking exactly like all the\nothers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8995"
+                ],
+                "name": "",
+                "out": [
+                    "8995"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8997"
+                ],
+                "name": "",
+                "out": [
+                    "8997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8996",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 217,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "A small hill slopes up here, covered with grass and the roots of trees that grow\nat an angle along the hill. There is a small hole at the base of the incline,\nalmost covered by two tree trunks growing near each other. A few wild flowers\ngrow across the side of the hill, their purple petals and long green stems\nblending beautifully with the colour of the leaves on the trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9000"
+                ],
+                "name": "",
+                "out": [
+                    "9000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8998"
+                ],
+                "name": "",
+                "out": [
+                    "8998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8996"
+                ],
+                "name": "",
+                "out": [
+                    "8996"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9027"
+                ],
+                "name": "",
+                "out": [
+                    "9027"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8997",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Base of the Forest Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 218,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The few scattered trees of the pathway have now closed in to form a giant\nforest. The air seems almost still, but for a gentle breeze, which rustles\namongst the branches. Where once the path was grassy, now you stand upon ground\nlittered with dead twigs, and decaying leaves, and interrupted in places by\nlarge, twisted roots, which protrude from the earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8999"
+                ],
+                "name": "",
+                "out": [
+                    "8999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9002"
+                ],
+                "name": "",
+                "out": [
+                    "9002"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8997"
+                ],
+                "name": "",
+                "out": [
+                    "8997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8998",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to a Large Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 219,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "A haunting chime can be heard as a breeze slowly picks up through the branches\nof the trees. The sign at the entrance of this forest may have some truth in it\nas a definite sound seems to emanate from nowhere. Branches from many different\ntrees also have grown closer and closer towards the ground, almost touching it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9001"
+                ],
+                "name": "",
+                "out": [
+                    "9001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8998"
+                ],
+                "name": "",
+                "out": [
+                    "8998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9000"
+                ],
+                "name": "",
+                "out": [
+                    "9000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8999",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Enchanted Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 219,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "One tree stands out among the rest in this area of the forest, it has large\nbranches with many different kinds of coloured leaves. The ground below it is\ncovered with the large seeds of its making. Foliage from the tree covers the\narea completely, obscuring any sight of the sky, and the roots of the tree are\nalmost as thick as its branches, spreading out to some distance, to soak up\nevery drop of available water. No bush or sapling can compete with this giant,\nwhich stands alone, and majestic.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8997"
+                ],
+                "name": "",
+                "out": [
+                    "8997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8999"
+                ],
+                "name": "",
+                "out": [
+                    "8999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8995"
+                ],
+                "name": "",
+                "out": [
+                    "8995"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9000",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At a Large Lovely Tree",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 218,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "Woods that once were so close, it was difficult to distinguish which branch grew\nfrom which tree, now have opened up to reveal the sky. The forest has formed a\ncircle where no foliage dare enter. Grass closely hugs the border of the circle,\nmaking the boundary even more defined. All living beings within this forest\navoid this area, as if it were somehow held sacred.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8999"
+                ],
+                "name": "",
+                "out": [
+                    "8999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9001",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Opening in the Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 219,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "A large tree stands almost as a silhoutte here, with large green and brown\nleaves covering it entirely. The woodland behind grows even denser, the deeper\none penetrates the forest, and a number of large branches lie on the ground\nhere, perhaps brought down by some heavy wind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9010"
+                ],
+                "name": "",
+                "out": [
+                    "9010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8995"
+                ],
+                "name": "",
+                "out": [
+                    "8995"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9004"
+                ],
+                "name": "",
+                "out": [
+                    "9004"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9003",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At an Old Tree",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 216,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "The woods continue to grow close together and crowd in on each other. This, and\nthe dense foliage, make it difficult to tell what is up within the trees. A few\nnotches have been carved here in the bark of the tree, like an ancient hand hold\nin a mountainside.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9009"
+                ],
+                "name": "",
+                "out": [
+                    "9009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9003"
+                ],
+                "name": "",
+                "out": [
+                    "9003"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9005"
+                ],
+                "name": "",
+                "out": [
+                    "9005"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9013"
+                ],
+                "name": "secret",
+                "out": [
+                    "9013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9004",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Large Tree",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 215,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "The woodland is filled with trees, that are extremely close to one another. This\nforest has the look of being long left untouched, except for some marks on the\ntrees. A sound is present that resembles a moan caused by wind rustling through\nbranches.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8981"
+                ],
+                "name": "",
+                "out": [
+                    "8981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9004"
+                ],
+                "name": "",
+                "out": [
+                    "9004"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9006"
+                ],
+                "name": "",
+                "out": [
+                    "9006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9005",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Some Woods",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 214,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "There seems to be no light entering this part of the woods. Trees have covered\nall the land here with their large branches and their many leaves. The grass on\nthe ground is moist with the water that is trapped from evaporating with a\nmorning sun.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8980"
+                ],
+                "name": "",
+                "out": [
+                    "8980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9005"
+                ],
+                "name": "",
+                "out": [
+                    "9005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9007"
+                ],
+                "name": "",
+                "out": [
+                    "9007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9006",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dimly Lit Woods",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 213,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "A couple of trees stand here close together, with their branches so interwined\nthat they look like they are hugging. Another tree stands alone however, with\nits dead leaves and dead trunk. The other parts of the woodland keep a fair\ndistance from this dead and strangely large tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9008"
+                ],
+                "name": "barkdoor",
+                "out": [
+                    "9008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9006"
+                ],
+                "name": "",
+                "out": [
+                    "9006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9007",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Clump of Trees",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 212,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "Parts of the interior of this tree are dead and decaying, giving off a rank\nodour. However, there is sufficient living wood remaining to maintain a strong\nstructure, despite the rotting leaf litter and dead limbs, which lie all over\nthe floor.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9007"
+                ],
+                "name": "escape",
+                "out": [
+                    "9007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 67,
+                "in": [
+                    "9021"
+                ],
+                "name": "wood",
+                "out": [
+                    "9021"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9008",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside a Decaying Tree",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 212,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The branches high up in the trees are rustling around much more than they did\nbefore, with the growing wind slapping them. Sounds can be heard coming from way\nup within the trees, however it is difficult to distinguish what the noises are.\nMany leaves lie on the ground, yet, there are many more up in the trees that\nmake it impossible to see what is up there.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9004"
+                ],
+                "name": "",
+                "out": [
+                    "9004"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9010"
+                ],
+                "name": "",
+                "out": [
+                    "9010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8981"
+                ],
+                "name": "",
+                "out": [
+                    "8981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9009",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rustling Woods",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 215,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "Many noises can be heard coming from above, within the large foliage of the\nforest. Dangling from a branch, there appear to be some wooden pipes tied\ntogether, with holes in them. The small breeze that moves through them creates\nthe most eerie noises. It is nothing more than a child's wind chime toy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9003"
+                ],
+                "name": "",
+                "out": [
+                    "9003"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8994"
+                ],
+                "name": "",
+                "out": [
+                    "8994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9009"
+                ],
+                "name": "",
+                "out": [
+                    "9009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9010",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Loud Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 216,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "Many different items sit in this room on shelves supported by branches of the\ntree. There are a few larger items that rest on the floor beside a large counter\nthat stands in the middle of the room. There is a board on the counter that\nlists many prices of different things, however, they have been erased and\nrewritten so many times, it is difficult to tell what may be written on them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9012"
+                ],
+                "name": "",
+                "out": [
+                    "9012"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9011",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "General Store",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 214,
+        "y": 163,
+        "z": 0
+    },
+    {
+        "desc": "The bridge is well tied, with many thick and well made ropes wrapped around the\ndifferent trees of the village. The rather narrow bridge makes passage tricky,\nthough it does not wobble in the wind. One board, in the middle, creaks softly\nwhen pressure is upon it.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9011"
+                ],
+                "name": "",
+                "out": [
+                    "9011"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9013"
+                ],
+                "name": "",
+                "out": [
+                    "9013"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9015"
+                ],
+                "name": "",
+                "out": [
+                    "9015"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9012",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rope Bridge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 214,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "There are a lot of wooden planks transformed into a platform in these huge\ncrowded trees. The ground is far below, and small forest animals go about the\ntrees unaware of the village above. A rope bridge connects the trees to small\nhomes made of wood. The branches and leaves of the tree conceal it from below.\nThe wooden rail along the platform disappears as three rope bridges begin to the\nnorth, south and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9012"
+                ],
+                "name": "",
+                "out": [
+                    "9012"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9016"
+                ],
+                "name": "",
+                "out": [
+                    "9016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9014"
+                ],
+                "name": "",
+                "out": [
+                    "9014"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9004"
+                ],
+                "name": "secret",
+                "out": [
+                    "9004"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9013",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to a Tree Village",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 214,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "Aloft high in the tree, constructed of a few small boards, stands a small perch.\nLike a bird's nest, the entire village can be seen from this height, including\nsome of the houses that from below cannot be found. Branches criss and cross\nbelow here, making a natural ladder, with a square made out of rope as the only\nguard rail for an experienced tree climber. The entire forest, and most of the\nvillage can be seen and watched from up within this high tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9013"
+                ],
+                "name": "",
+                "out": [
+                    "9013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9014",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Archer's Post",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 215,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "Animal furs hang along the walls of the home, their fur now only a decoration. A\nlarge bear skin lies on the floor near the entrance, its mouth grimly shut and\nfacing the door. A window along the north side exposes the ground below, however\nthe branches and leaves provide excellent cover.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9012"
+                ],
+                "name": "",
+                "out": [
+                    "9012"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9015",
+        "light": 2,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Large Lovely Home",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 215,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "The bridge has many boards tied together tightly, creating a very sturdy, and\nwell made bridge. The wood is painted a greenish and brownish colour, most\nlikely to make it nearly invisibile to the ground below. There are many ropes\ntied to different branches to keep it very sturdy. The rail is a thick rope\nwrapped around the trunk of two trees.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9017"
+                ],
+                "name": "",
+                "out": [
+                    "9017"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9013"
+                ],
+                "name": "",
+                "out": [
+                    "9013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9019"
+                ],
+                "name": "",
+                "out": [
+                    "9019"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9016",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rope Bridge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 213,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "A large bed made of furs lies in one of the corners of the room, with a large\ngoose down pillow and many smaller ones piled up on top of it. A large bow and\nquiver rests neatly in the opposite corner of the house, with arrows that have\nbeautifully coloured feathers within them. Branches run up along the back wall,\nproviding more evidence that the house is supported solely by the trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9016"
+                ],
+                "name": "",
+                "out": [
+                    "9016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9017",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Home within the Trees",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 213,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "A large oven is embedded in the side of possibly the largest tree in this\nforest. Its bricks have decayed from a bright red colour, to one of blackened\ngrey. There are pastries, wrapped delicately, sitting on shelves. A small chair\nand table sit beside the door of the house. The smells coming from the house\nhave a taste in the mouth like that of fresh bread, pies, and cakes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9019"
+                ],
+                "name": "",
+                "out": [
+                    "9019"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9018",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Baker's Home",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 212,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "There are wooden floors of different sizes, heights, and shapes all over this\ntree. A small building is supported among the massive branches to the north,\nwhilst to the south and east, rope bridges reach out toward the nearby trees.\nAlong the platform and the bridges are rails of soft wood, supported by\ninterlocking branches, and tightly bound ropes.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9018"
+                ],
+                "name": "",
+                "out": [
+                    "9018"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9020"
+                ],
+                "name": "",
+                "out": [
+                    "9020"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9016"
+                ],
+                "name": "",
+                "out": [
+                    "9016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9019",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Large Tree",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 212,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "An intersection stands within the trees, made with tightly bound ropes and\nsturdy wood for the bridge. Buildings clutter all the trees nearby, with many\nrope bridges connecting them. The ground seems a far cry down below, with the\nbranches of trees around it concealing it almost totally from sight. A large\ntree looms towards the west, its massive dead branches appear to be barely\nhanging onto it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9019"
+                ],
+                "name": "",
+                "out": [
+                    "9019"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9022"
+                ],
+                "name": "",
+                "out": [
+                    "9022"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9021"
+                ],
+                "name": "",
+                "out": [
+                    "9021"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9020",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rope Bridge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 212,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "Unlike most of the others in this part of the forest, this tree is quite\nunhealthy. Much of the wood is dead and some decaying, yet enough of the living\nheartwood remains, to maintain a strong platform, among the sagging branches.\nNevertheless, much of the coarse bark on the trunk is peeling as if diseased.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9020"
+                ],
+                "name": "",
+                "out": [
+                    "9020"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9008"
+                ],
+                "name": "barkdoor",
+                "out": [
+                    "9008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9021",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At a Large Decaying Tree",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 211,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "The platform is wide enough for many people to stand upon, with wooden rails\nenclosing it. This wooden structure is attached to an extremely large tree, and\nnearby, in another large oak, a building nestles among the branches. The leaves\nall around rustle in the soft wind, and the ground below cannot be seen through\nthe thick foliage. Indeed, this place must be well hidden from the forest floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9020"
+                ],
+                "name": "",
+                "out": [
+                    "9020"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9023"
+                ],
+                "name": "",
+                "out": [
+                    "9023"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9024"
+                ],
+                "name": "",
+                "out": [
+                    "9024"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9022",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tree Platform",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 212,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "Furs of many different animals hang from hooks in the wall, while, along the\nopposite wall, animal skins and leather lie on shelves. A large counter, with a\nwooden board hanging on the front, sits in the middle of the room. The board\nlists many prices of different items for sale, however, prices have been crossed\nout and new ones put in their place so many times, that it is difficult to read\nthem.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9022"
+                ],
+                "name": "",
+                "out": [
+                    "9022"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9023",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Village Clothery",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 212,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "The rope bridge makes a turn in mid air, creating an artwork of tied rope to\nkeep it sturdy. It links a couple of different trees together, and with the\nextremely intricate rope pattern, allows for the bridge to change its course\nwithout having to find yet another tree. Even in fairly strong winds, the bridge\nhardly sways at all.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9025"
+                ],
+                "name": "",
+                "out": [
+                    "9025"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9022"
+                ],
+                "name": "",
+                "out": [
+                    "9022"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9024",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rope Bridge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 213,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "The bridge has many boards tied together tightly, creating a very sturdy, and\nwell made bridge. The wood is painted a greenish and brownish colour, most\nlikely to make it nearly invisibile to the ground below. There are many ropes\ntied to different branches to keep it very sturdy. The rail is a thick rope\nwrapped around the trunk of two trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9026"
+                ],
+                "name": "",
+                "out": [
+                    "9026"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9024"
+                ],
+                "name": "",
+                "out": [
+                    "9024"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9025",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rope Bridge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 214,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "A few chairs stand in the middle of the room, facing some paintings that hang\nalong the wall depicting the building of the village. A wolf skin covers the\nfloor, greeting people as they walk in. Hanging in a corner is a lit lantern,\nwith a small bucket of water sitting beneath it. The light from the lantern\nflickers on the wall, making the most beautiful dances.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9025"
+                ],
+                "name": "",
+                "out": [
+                    "9025"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9026",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "House in the Trees",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 215,
+        "y": 167,
+        "z": 0
+    },
+    {
+        "desc": "The hole does not go back very far, but the rear seems to be a small fox den.\nTiny bones clutter the corners, with a few pieces of fur left almong them, and\ntiny claw marks can be seen all over the ground, among the stout roots, which\nbreak through the soil and stretch up to the roof of the chamber. It would seem\nthat the tree roots are the only thing which maintains the roof of this tiny\nearthy hollow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8997"
+                ],
+                "name": "",
+                "out": [
+                    "8997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9027",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earthy Hollow",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 218,
+        "y": 163,
+        "z": 0
+    },
+    {
+        "desc": "The ground above has rotted away from beside the tree to reveal this small hole.\nThe carcass of a rotting animal along with the smell of rotten tree limbs and\nleaves, makes the overall smell of the hole very pungent. A few wild flowers\ngrow along the sides near the top of the hole, hiding the outside from view.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8981"
+                ],
+                "name": "",
+                "out": [
+                    "8981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9028",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Under the Twisted Tree",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 212,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "Like the edge of a treacherous mountainside, the ground is filled with marks and\nslashes. Tiny little streams course through the little valleys formed by the\nslashes on the floor. From this small cavern there are but two ways to journey.\nTo the north lies an underground stream, whilst another passage climbs almost\nvertically from here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14473"
+                ],
+                "name": "",
+                "out": [
+                    "14473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14472"
+                ],
+                "name": "",
+                "out": [
+                    "14472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22940",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Damp Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 208,
+        "y": 160,
+        "z": 0
+    }
+]

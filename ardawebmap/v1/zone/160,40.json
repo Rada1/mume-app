@@ -1,0 +1,251 @@
+[
+    {
+        "desc": "You walk warily on, following the twists and turns of the tiny tunnel. With\nevery step, the smooth mud walls seem to edge ever closer, threatening to close\nin on you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2449"
+                ],
+                "name": "",
+                "out": [
+                    "2449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2454"
+                ],
+                "name": "",
+                "out": [
+                    "2454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2453",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Brockenbores",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 173,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Without warning, the tunnel walls suddenly part and retreat from you, and you\nfind yourself in some kind of small cave with -- you gasp, and feel your heart\nthumping with excitement. Can it be that you have chanced upon an ancient\ntreasure trove? Dust-covered chests are lined neatly against the walls, perhaps\nforgotten by whoever hid them here. You get closer to the chests, then notice\nthe note pasted on one of them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2453"
+                ],
+                "name": "",
+                "out": [
+                    "2453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2454",
+        "light": 2,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "The Brockenbores",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 172,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "With some effort, you have coaxed your body through the small opening. Your\nsense of achievement is however short-lived, as you realise the winding tunnel\nyou are in shows no sign of widening at any point. Your light seems puny against\nthe overall darkness, your dancing shadows appear to jeer from the walls, and\naltogether it is a very uncomfortable situation. You feel an urge to back out to\nthe pleasant spring above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "2446"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2192"
+                ],
+                "name": "",
+                "out": [
+                    "2192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28954",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Brockenbores",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 176,
+        "y": 59,
+        "z": 0
+    }
+]

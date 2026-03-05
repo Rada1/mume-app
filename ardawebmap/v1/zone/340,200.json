@@ -1,0 +1,3929 @@
+[
+    {
+        "desc": "Certain portions of the ground are solid sandstone, whereas other parts are\ncomposed of loose dirt topped by yellow grass blades, struggling to survive.\nNorthwest, in the distance, a huge cliff can be seen. Stretching out towards the\neast a proud forest of trees grows blanketed by a misty air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18647"
+                ],
+                "name": "",
+                "out": [
+                    "18647"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15391"
+                ],
+                "name": "",
+                "out": [
+                    "15391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15393"
+                ],
+                "name": "",
+                "out": [
+                    "15393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15392",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountains",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 355,
+        "y": 219,
+        "z": 0
+    },
+    {
+        "desc": "In the distant west, a dark cliff grows ominously, but here, only a few pebbles\ndot the moist ground. For the most part, the ground harbours a few green grasses\nand a modest bit of moss. Yellow stones look as if they had been tossed about\nthe area randomly. To the north, there rises a wall of trees not higher than\nthree men, forming a dark canopy of grey and green.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18648"
+                ],
+                "name": "",
+                "out": [
+                    "18648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15390"
+                ],
+                "name": "",
+                "out": [
+                    "15390"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15396"
+                ],
+                "name": "",
+                "out": [
+                    "15396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15392"
+                ],
+                "name": "",
+                "out": [
+                    "15392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15393",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Border",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 356,
+        "y": 219,
+        "z": 0
+    },
+    {
+        "desc": "The ground here slopes down towards the northeast. The rich earth that covers\nthe ground has been swept away, indicating that perhaps this area was once a\nriverbed in ages past. The tree roots crawl like fingers into the abandoned\nriverbed and then burrow into the dry earth. From the north and east the sound\nof rushing water can faintly be heard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15469"
+                ],
+                "name": "",
+                "out": [
+                    "15469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15395"
+                ],
+                "name": "",
+                "out": [
+                    "15395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15471"
+                ],
+                "name": "",
+                "out": [
+                    "15471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18649"
+                ],
+                "name": "",
+                "out": [
+                    "18649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15394",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest along the Entwash Bend",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 218,
+        "z": 0
+    },
+    {
+        "desc": "A patch of rowans has started to grow here upon the hill. Through the trees and\nashen mist one can make out the branches that spring out of the low lying trunks\nof these proud rowans. Most miraculous of all however, is how these slender\nbranches weave up into the canopy, delicate yet strong. Covering the ground\nbetween the gnarled roots grows a variety of moss and mushrooms, taking\nadvantage of the uncomfortable humidity.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15394"
+                ],
+                "name": "",
+                "out": [
+                    "15394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15400"
+                ],
+                "name": "",
+                "out": [
+                    "15400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15397"
+                ],
+                "name": "",
+                "out": [
+                    "15397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15396"
+                ],
+                "name": "",
+                "out": [
+                    "15396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15395",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Rowan Grove",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 219,
+        "z": 0
+    },
+    {
+        "desc": "A creeping mist flows over the roots that cover the ground. It swirls about the\ntrees and stifles everything in the moist air. From out of the ground rise giant\nboles with trunks that stretch up until their branches become entangled and form\nparts of a canopy that chokes out the light from above. Moss and ferns grow\nalong the ground, speckled with dew.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18649"
+                ],
+                "name": "",
+                "out": [
+                    "18649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18539"
+                ],
+                "name": "",
+                "out": [
+                    "18539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15395"
+                ],
+                "name": "",
+                "out": [
+                    "15395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15393"
+                ],
+                "name": "",
+                "out": [
+                    "15393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15396",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Misty Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 219,
+        "z": 0
+    },
+    {
+        "desc": "The ground drops significantly to the south. Giant trees with interlocked roots\ngrow at an angle to the ground with their majestic trunks reaching towards the\nsky. Small plants litter the ground, trying to prevent erosion. Roots line the\nslope southwards as well, making the passage up or down a bit easier. The sound\nof water can be heard from the northeast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15471"
+                ],
+                "name": "",
+                "out": [
+                    "15471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15398"
+                ],
+                "name": "",
+                "out": [
+                    "15398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15473"
+                ],
+                "name": "",
+                "out": [
+                    "15473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15395"
+                ],
+                "name": "",
+                "out": [
+                    "15395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15397",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest along the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 359,
+        "y": 219,
+        "z": 0
+    },
+    {
+        "desc": "Washed rocks and pebbles cover the ground as a small tributary of the Entwash\nrushes down the hill into the grey and misty forest beyond. The ground rises to\nan open, grass-covered hill to the west. It is covered with rich yellow and\ngreen blades of grass, but there also grow two proud and dark polished pines. It\nslopes southward into a significantly less dense forest composed of deciduous\ntrees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15451"
+                ],
+                "name": "",
+                "out": [
+                    "15451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18648"
+                ],
+                "name": "",
+                "out": [
+                    "18648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15468"
+                ],
+                "name": "",
+                "out": [
+                    "15468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15443"
+                ],
+                "name": "",
+                "out": [
+                    "15443"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15442",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Lofty Hill along the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 356,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "Two great trees stand here, one on each side of the hill, like living\ngate-posts. The two proud evergreens are polished dark, and gleam in the light\nthat makes its way from the sky. From beneath their boughs and roots, the river\nEntwash splashes at a slow pace from a hidden location.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15442"
+                ],
+                "name": "",
+                "out": [
+                    "15442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15444"
+                ],
+                "name": "",
+                "out": [
+                    "15444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15443",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Pines by the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "Beyond the dark pines to the east, there lies a wide level space, as though the\nfloor of a great hall had been cut in the side of the hill. Two walls follow the\nlevel space on either side, growing in height. On each side of the path, there\nsits an aisle of trees that grow in size as they progress towards the back of\nthe hall. Running from the west, a small tributary of the Entwash river gurgles\nits way down the slope towards the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15450"
+                ],
+                "name": "",
+                "out": [
+                    "15450"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15445"
+                ],
+                "name": "",
+                "out": [
+                    "15445"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15443"
+                ],
+                "name": "",
+                "out": [
+                    "15443"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15447"
+                ],
+                "name": "",
+                "out": [
+                    "15447"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15444",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small River in the Glade",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "Trees of various species grow here at medium height and gradually get taller as\nthey progress westwards towards the rock-face. The forest floor consists of a\nmultitude of green ferns, grasses, and mosses that patch the brown damp earth.\nThe slow rustle of water can be heard from the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15444"
+                ],
+                "name": "",
+                "out": [
+                    "15444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15446"
+                ],
+                "name": "",
+                "out": [
+                    "15446"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15445",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest along the Precipice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 218,
+        "z": 0
+    },
+    {
+        "desc": "A rock face that reaches about fifty feet stands here, its sheer face made up of\nsolid yellow granite. The trees have grown to an enormous height and their\ncanopy nearly blocks out all light from above. To the east, the forest starts to\nshrink in height and a slight rustle of water can be heard towards the large\nlevel area in the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15447"
+                ],
+                "name": "",
+                "out": [
+                    "15447"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15445"
+                ],
+                "name": "",
+                "out": [
+                    "15445"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15446",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grove in the Fangorn Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 218,
+        "z": 0
+    },
+    {
+        "desc": "The end of the path has now stopped at the rock wall that stretches upwards for\nfifty feet or more. At the bottom, it has been hollowed back into a shallow bay\nwith an arched roof of stone. Far above, a spring pours silver drops of water\ndown upon the face of the rock wall and spills like a fine curtain in front of\nthe arched bay. The water gathers in a stone basin in the floor and then flows\nout beside the open path, down towards the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15449"
+                ],
+                "name": "",
+                "out": [
+                    "15449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15446"
+                ],
+                "name": "",
+                "out": [
+                    "15446"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15444"
+                ],
+                "name": "",
+                "out": [
+                    "15444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15448"
+                ],
+                "name": "",
+                "out": [
+                    "15448"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15447",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Glade Facing the Rock-wall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "A large, hollowed out bay has been dug out of the rock-wall. Its arched roof\nmakes a perfect turn about the cave for fifteen or more feet into the air. The\ninside of the bay is considerably dimmer than the outside, but a silver curtain\nof water that rushes down the outside of the bay gives a feeling of warmth to\nthe room with its cleared basin and large stone structures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15447"
+                ],
+                "name": "",
+                "out": [
+                    "15447"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15448",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "Wellinghall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 352,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "A sheer rock face now tells the end of the forest that grows within this hewn\nhall of granite. Reaching fifty feet into the air it surpassed all the trees of\nmany forms that grow here within the hall. The damp earth that harbours plants,\nmosses, and ferns has been locked within a matrix of roots that then springs\nupwards into the tallest of the trees of this forest aisle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15447"
+                ],
+                "name": "",
+                "out": [
+                    "15447"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15450"
+                ],
+                "name": "",
+                "out": [
+                    "15450"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15449",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grove in the Fangorn Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "The forest here grows well. Its roots stretch across the damp earth that\nharbours a myriad of fungi, mosses, and grasses alongside the giant trees that\ngrow upwards in many slants and forms. As the forest progresses further towards\nthe east, the sheer rock wall follows on the north, growing in size directly\nproportional to the surrounding forest. From the south, a slight whisper of\nwater can be heard trickling away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15444"
+                ],
+                "name": "",
+                "out": [
+                    "15444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15449"
+                ],
+                "name": "",
+                "out": [
+                    "15449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15450",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest along the Precipice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "Giant roots criss-cross along the ground, shattering their way into the earth\nand causing the forest floor to be littered with pebbles and debris. The canopy\nnearly shuts out all light in the massive tangle of grey branches found above.\nStill, the absence of light is joined by the sound of water towards the south,\nwhere the limestone bedrock is exposed to the air. The northern direction seems\nto be blocked by many closely growing pine trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15442"
+                ],
+                "name": "",
+                "out": [
+                    "15442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15453"
+                ],
+                "name": "",
+                "out": [
+                    "15453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15452"
+                ],
+                "name": "",
+                "out": [
+                    "15452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15451",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Forest by the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 356,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "A misty grey forest, composed of gnarled trees with an interlocking canopy of\nboughs and leaves, grows in near silence. A giant rock structure lies to the\nsouth, gouged with scrapes and nooks. Grey roots stream across the ground and\nanchor themselves into the mossy, twig covered forest floor of green and grey\ntones. The northern direction is blocked by several ancient trees that seem to\nhave grown closely together for ages, in a west-east leading row.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15451"
+                ],
+                "name": "",
+                "out": [
+                    "15451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15464"
+                ],
+                "name": "",
+                "out": [
+                    "15464"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15452",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dim Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "The soil here has been scraped away, exposing rough limestone along the moist,\ntwig covered ground. Though the limestone is hard, tree roots easily pierce\ntheir way through the stone rather than grow around. Through time the limestone\nhas become more solid woven between age-old roots. The sound of water can be\nheard trickling away faintly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15468"
+                ],
+                "name": "",
+                "out": [
+                    "15468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15454"
+                ],
+                "name": "",
+                "out": [
+                    "15454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15451"
+                ],
+                "name": "",
+                "out": [
+                    "15451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15453",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Forest along the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "Broken bits of limestone cover the ground as roots dig their way into the earth\nalong the forest floor. The roots grind through all sorts of forest debris,\nlittering the ground and heading in a vaguely southward direction. However,\nwithout apparent reason, everything seems to drift to this direction. The sound\nof water can barely be heard from the south, perhaps giving some reason to the\nsoutherly descent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15469"
+                ],
+                "name": "",
+                "out": [
+                    "15469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15455"
+                ],
+                "name": "",
+                "out": [
+                    "15455"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15453"
+                ],
+                "name": "",
+                "out": [
+                    "15453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15454",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Forest by the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "Perception is entirely limited to three yards in any direction. Moist mossy and\nbrown boles grow from the ground, stretching upward with immense power. A giant\nroot slowly rises in a large arch before grinding into the limestone bedrock.\nWithin the arch grows rows upon rows of orange mushrooms among a variety of\nmoist mosses and green ferns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15470"
+                ],
+                "name": "",
+                "out": [
+                    "15470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15456"
+                ],
+                "name": "",
+                "out": [
+                    "15456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15454"
+                ],
+                "name": "",
+                "out": [
+                    "15454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15455",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest next to the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 359,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "Sun-tanned stones of a light brown shade clutter the ground, locked in piles.\nAround them, the moist rich soil harbours moss and green grasses. The ridge\nrises toward the snow-capped mountains, turning slightly with the land contours.\nTo the east the ground slowly seems to drop, and a forest is seen shrouded in a\ngrey mist.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15466"
+                ],
+                "name": "",
+                "out": [
+                    "15466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15464"
+                ],
+                "name": "",
+                "out": [
+                    "15464"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15463",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rising Ridge",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 349,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "A towering forest lies to the east with its branches reaching an enormous\nheight. Grey bark and gnarled roots make up most of what can be seen in that\ndirection. Far above, the branches consist of an entangled mess of differently\nnuanced leaves. A brown ridge with some spots of green foliage grows toward the\nwhite mountains to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15465"
+                ],
+                "name": "",
+                "out": [
+                    "15465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15452"
+                ],
+                "name": "",
+                "out": [
+                    "15452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15463"
+                ],
+                "name": "",
+                "out": [
+                    "15463"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15464",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest Boundary",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 350,
+        "y": 216,
+        "z": 0
+    },
+    {
+        "desc": "A giant cliff of rock towers in the east, with boulders and giant slabs lying\naround at different angles at its base. To the south lies a cliff of black rock\nwith a slab propped up against it. Grasses grow interweaving between the rubble\nthat litters the ground. The ridge seems to rise yet more to the west and\nonwards to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15464"
+                ],
+                "name": "",
+                "out": [
+                    "15464"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15467"
+                ],
+                "name": "slab",
+                "out": [
+                    "15467"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15466"
+                ],
+                "name": "",
+                "out": [
+                    "15466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15465",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rising Ridge",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 350,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "The ridge slows its ascent and becomes nearly straight. Yellow and brown rocks\nmake up clumped formations around this area. As the ridge trails onward, the\nrocks become larger and jut out of the ground to form an unclimbable maze.\nBoulders cover the ground, blocking passage to the south and west. To the north\nand east there is a rising ridge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15463"
+                ],
+                "name": "",
+                "out": [
+                    "15463"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15465"
+                ],
+                "name": "",
+                "out": [
+                    "15465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15466",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Boulder Ridge",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 349,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "Jagged rocks cover the dirt floor. The ceiling is composed of the same grey rock\nthat makes up the giant slab for the entrance. The roof rises in an uneven arch\nuntil reaching the back wall of the cave. The slow drip of water can be heard\nfrom somewhere, carried along by a cold draft.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15465"
+                ],
+                "name": "",
+                "out": [
+                    "15465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15467",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 350,
+        "y": 218,
+        "z": 0
+    },
+    {
+        "desc": "Flowing from the west, the Entwash swiftly glides over rocks and pebbles.\nRippling and ever in motion, it flows on towards the east into the mist. Above,\na grey canopy covers the sky as branches struggle to gain access to any, even\nthe most scant, rays of light. Rising sharply, the river bank of cracked\nlimestone grows a few feet into the air, where tree roots dig their way down\ninto the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15453"
+                ],
+                "name": "",
+                "out": [
+                    "15453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18649"
+                ],
+                "name": "",
+                "out": [
+                    "18649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15469"
+                ],
+                "name": "",
+                "out": [
+                    "15469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15442"
+                ],
+                "name": "",
+                "out": [
+                    "15442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15468",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "River Entwash",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 357,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "Cold water rushes down from the west to the east. Farther along the river, the\nwater quietly trickles around rocks making many perfect ripples across its\nsurface. At the top of the limestone bank lays a wall of brown and grey tree\nboles. They reach upward, each tree covered in moss forming a thick canopy of\nboughs and leaves that shuts out any light from above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15454"
+                ],
+                "name": "",
+                "out": [
+                    "15454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15394"
+                ],
+                "name": "",
+                "out": [
+                    "15394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15470"
+                ],
+                "name": "",
+                "out": [
+                    "15470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15468"
+                ],
+                "name": "",
+                "out": [
+                    "15468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15469",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "River Entwash",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 358,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "Crystal clear water gurgles smoothly down the streambed, gliding in from the\nwest and flowing south. It moves gracefully over the stones until it reaches one\nof the many rocks that it cannot completely rise over, and thus splashes into\nthe air. Grey limestone, worn and old, makes up the bank, upon which a snarl of\nroots hints at the immense and thick forest that towers above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15455"
+                ],
+                "name": "",
+                "out": [
+                    "15455"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15471"
+                ],
+                "name": "",
+                "out": [
+                    "15471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15512"
+                ],
+                "name": "",
+                "out": [
+                    "15512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15469"
+                ],
+                "name": "",
+                "out": [
+                    "15469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15470",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Entwash",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 359,
+        "y": 217,
+        "z": 0
+    },
+    {
+        "desc": "The water flows from the north and then on towards the east. It glides over\nriver-worn pebbles and scrapes against the limestone that makes up the looming\nbank of the river. Trees, that grow into the sky, smother nearly all light from\nabove with their branches forming an intricate web of leaves and twigs. From\ntheir boles reach roots of enormous size that grow down into the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15470"
+                ],
+                "name": "",
+                "out": [
+                    "15470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15397"
+                ],
+                "name": "",
+                "out": [
+                    "15397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15472"
+                ],
+                "name": "",
+                "out": [
+                    "15472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15394"
+                ],
+                "name": "",
+                "out": [
+                    "15394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15471",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Entwash",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 359,
+        "y": 218,
+        "z": 0
+    },
+    {
+        "desc": "Despite the utter darkness of this part of the forest, the undergrowth is quite\ndeveloped, although the leaves appear to be in shades of grey and black, rather\nthan the usual greens. This peculiar vegetation even seems to thrive on\ndarkness, as the rare places where a bit of sunlight breaks through at times,\nare strangely deserted. In every direction, large dark trunks, almost regularly\nspaced out, stretch out in the far distance, like the bars of a colossal\nportcullis. But the real hindrance comes from all the sharp-leaved black bushes\novergrowing in the undergrowth.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15700"
+                ],
+                "name": "trees",
+                "out": [
+                    "15700"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "15701"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16114",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Utterly Dark Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 359,
+        "y": 210,
+        "z": 0
+    },
+    {
+        "desc": "The floor, covered by ice which was left when the subterranean river vanished,\nis very slick, making it difficult to move without sliding towards the east,\nwhich is the direction of the natural slant of this tunnel. The air here is\nterribly cold, in spite of a less chilling breeze coming from a conduit above.\nThe husk of a worm-like creature is visible here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18146"
+                ],
+                "name": "",
+                "out": [
+                    "18146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18093"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18094",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rounded Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 351,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The smooth tunnel makes a bend here, where the river followed a vein of softer\nrocks towards the south. The floor of the tunnel is made slippery by a thin\npellicle of ice. A chilling murmur comes out of a large opening in the north\nwall along with an ice-cold draught. Dry husks of strange worm-like creatures\nlitter the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18149"
+                ],
+                "name": "",
+                "out": [
+                    "18149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18165"
+                ],
+                "name": "",
+                "out": [
+                    "18165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18146"
+                ],
+                "name": "",
+                "out": [
+                    "18146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18095",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Opening in Rounded Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 353,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "In this section of the tunnel, a slow mass of stinking earth flows westwards as\nit follows the slope of an old river, almost blocking the passage in that\ndirection. The dirty earth, along with a foul dark liquid, oozes from a black\nhole in the ceiling high above filling the air with its polluted stench of urea.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18097"
+                ],
+                "name": "",
+                "out": [
+                    "18097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18165"
+                ],
+                "name": "",
+                "out": [
+                    "18165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18145"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18096",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Circular Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 354,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "This rounded tunnel, its walls polished by the water which flowed through it\ncenturies ago, follows a twisted path through the mountain. Now the stream is\ngone, probably frozen by the incredible cold which inhabits these chambers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18098"
+                ],
+                "name": "",
+                "out": [
+                    "18098"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18096"
+                ],
+                "name": "",
+                "out": [
+                    "18096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18097",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Circular Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 355,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel slants downwards to the west where its polished walls still bear the\nmarks of the river which created them years ago. The water, hurling down from an\nimpressive vertical shaft just above your head, created the unclimbable,\nsilky-smooth walls. North of you, a recent seism has caused a vertical crack to\nopen in the rock. Dangling above the crack you can see the remnants of a small\nspider-web.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "18099"
+                ],
+                "name": "crack",
+                "out": [
+                    "18099"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18097"
+                ],
+                "name": "",
+                "out": [
+                    "18097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1025,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18098",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 4096,
+        "name": "Small Circular Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "Sliding and ramping, crawling and climbing, you can slowly make your way through\nthe twisted crack, scratching your members at the etched edges. The stones that\nyou touch are warmer than one might expect in these surroundings and are covered\nby a thin pellicle of gluey salivation. Above you, the fissure is closed by a\nenormous web, in which the dry remains and bones of humanoids are still fixed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "18098"
+                ],
+                "name": "crack",
+                "out": [
+                    "18098"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18100"
+                ],
+                "name": "",
+                "out": [
+                    "18100"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18099",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Crack",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The crack is some five to ten yards high and forms a ragged set of teeth where\nthe granite was ripped apart. The hand and foot holds that allow one to drop\ndown into the crack unscathed are just a little too high to allow to climb out.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18101"
+                ],
+                "name": "",
+                "out": [
+                    "18101"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18099"
+                ],
+                "name": "",
+                "out": [
+                    "18099"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18100",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Crack",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 357,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The roof of what was once a large cavern lies partially crumbled on the floor.\nWhile the exact events that made the roof crumble are unknown, the condition of\nthe walls indicates that the forces involved must have been tremendous and\nspontaneous. Broken boulders are piled upon the ground, forcing any traveller\nthrough this area to climb again and again while picking the way through the\ndesolation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18103"
+                ],
+                "name": "",
+                "out": [
+                    "18103"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18105"
+                ],
+                "name": "",
+                "out": [
+                    "18105"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18106"
+                ],
+                "name": "",
+                "out": [
+                    "18106"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18104",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dislocated Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 355,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "This niche in the cavern has been demolished by an underground tremor causing\nmany rocks and boulders to fall on the floor. The collapse of the ceiling has\nobstructed the path to the west, as several huge boulders have piled against a\nnatural granite pillar. The smell coming out of the furthest corner indicates\nthat death is never far.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18104"
+                ],
+                "name": "",
+                "out": [
+                    "18104"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18105",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "A Small Dislocated Cave",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 354,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "AAA AAA AAA AAA AAA AAA AAA AAA AAA AH! CROUNK! BONG! SPLASH! You would have\nbroken every bone in your body if the pit had been empty, but instead you\ndrowned in the twenty feet of urine which covers the bottom of the pit. Some\npeople have had more pleasant deaths.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18165"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18122",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "A Dark Bottomless Pit",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 353,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself in a flat segment of a circular tunnel, smooth and rounded as\nif the tunnel had been artificially built. However, common sense would indicate\nthat this tunnel was formed by an underground river. The yellow- brownish walls\nhave been moulded into the basalt rocks and polished by age. Small spider-webs\ncan be seen hanging in the corners, a clear indication that in spite of the\ncoldness and deepness of these tunnels, there is enough food to sustain some\nforms of life. The floor is littered by husks of strange worm-like creatures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "18095"
+                ],
+                "name": "",
+                "out": [
+                    "18095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18094"
+                ],
+                "name": "",
+                "out": [
+                    "18094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18146",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rounded Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 352,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18098"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18159",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 356,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "This place is an ancient confluence of two underground rivers, one coming from\nthe north and another from the east. These rivers once joined here forming a\ntorrent that hurled down into the deep pit to the south. While the flowing water\nvanished long ago, a rivulet of dark liquid mixed with soiled dirt still flows\nslowly in its place, filling the tunnel with a terrible stench.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18095"
+                ],
+                "name": "",
+                "out": [
+                    "18095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18096"
+                ],
+                "name": "",
+                "out": [
+                    "18096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18165",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rounded Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 353,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "Deciduous trees rise up into the sky from the moist, sandstone covered ground.\nTheir roots creep around the solid boulders and dig into the soil that harbours\nyellow and green grasses. The view north and west is dominated by solid walls of\nnearly vertical dark stone. Towards the south, the trees disperse, and the\nground starts to rise.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15392"
+                ],
+                "name": "",
+                "out": [
+                    "15392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18648"
+                ],
+                "name": "",
+                "out": [
+                    "18648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18647",
+        "light": 1,
+        "loadflags": 524288,
+        "mobflags": 0,
+        "name": "Forest Edge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 355,
+        "y": 218,
+        "z": 0
+    },
+    {
+        "desc": "Medium sized trees rise from the ground, barely reaching above the height of\nthree men. The trees are not nearly as dense as others towards the north or\neast, but the foliage grows significantly better due to the amount of light\navailable. The ground is covered with hard yellow sandstone, limiting growth of\nthe trees and allowing an abundance of foliage that sits in the comfort of the\nshade.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15442"
+                ],
+                "name": "",
+                "out": [
+                    "15442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15393"
+                ],
+                "name": "",
+                "out": [
+                    "15393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18649"
+                ],
+                "name": "",
+                "out": [
+                    "18649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18647"
+                ],
+                "name": "",
+                "out": [
+                    "18647"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18648",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest by the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 356,
+        "y": 218,
+        "z": 0
+    },
+    {
+        "desc": "The trees make a giant transition here. To the west they begin to disperse, yet\nhere they grow with more vigour. Giant roots strangle the earth with their grip,\npulverizing the limestone that shows up in certain locations. Small types of\nflora grow on the forest ground in many shades of brilliant purples, giving some\ncolour to the blandness of the grey trees and misty air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15468"
+                ],
+                "name": "",
+                "out": [
+                    "15468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15396"
+                ],
+                "name": "",
+                "out": [
+                    "15396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15394"
+                ],
+                "name": "",
+                "out": [
+                    "15394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18648"
+                ],
+                "name": "",
+                "out": [
+                    "18648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18649",
+        "light": 0,
+        "loadflags": 16384,
+        "mobflags": 16384,
+        "name": "Forest by the Entwash",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 218,
+        "z": 0
+    }
+]

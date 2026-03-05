@@ -1,0 +1,3474 @@
+[
+    {
+        "desc": "The trail continues in the same old direction - east and west. Following it with\nyour eyes, you see that it makes a sharp turn to the north a bit further east.\nThe trail is nearly overgrown, making it obvious that it is not used very often\nthese days.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5619"
+                ],
+                "name": "",
+                "out": [
+                    "5619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5617"
+                ],
+                "name": "",
+                "out": [
+                    "5617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5618",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail to the Misty Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 400,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are still on the trail taking you towards the waiting mountains in the east.\nTo the north, you can enter some plains that seem to extend very far in all\ndirections. Looking to the north-east, you see a small cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19364"
+                ],
+                "name": "",
+                "out": [
+                    "19364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5620"
+                ],
+                "name": "",
+                "out": [
+                    "5620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5618"
+                ],
+                "name": "",
+                "out": [
+                    "5618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5619",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail to the Misty Mountains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 401,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Here, the grassy trail runs just south of a hill. Looking west, you see the\ntrail continuing very far, but as you look east, you notice that the trail turns\nnorthwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5621"
+                ],
+                "name": "",
+                "out": [
+                    "5621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5619"
+                ],
+                "name": "",
+                "out": [
+                    "5619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5620",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail to the Misty Mountains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 402,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Just east of here the trail bends to the north, westwards however the trail\ncontinues very far. Northeast of here you see a hill, and further in the east\nyou see an even higher hill, but they are nothing compared to the high mountains\nfar in the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5622"
+                ],
+                "name": "",
+                "out": [
+                    "5622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5620"
+                ],
+                "name": "",
+                "out": [
+                    "5620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5621",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trail to the Misty Mountains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 403,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing on the trail to the mountains as it bends from west to north.\nSouth of here you see a slightly rocky plain, and to the west the trail\ncontinues over the flat landscape. In the east you see a high hill rising over\nthe trees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5623"
+                ],
+                "name": "",
+                "out": [
+                    "5623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5677"
+                ],
+                "name": "",
+                "out": [
+                    "5677"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "5621"
+                ],
+                "name": "",
+                "out": [
+                    "5621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5622",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 404,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The slope that is so visible further north is here just a faint slope that is\nalmost invisible, instead the forest has become a more vivid part of the\nscenery, and light forest is now completely surrounding you. East the woods seem\nto get a little thicker.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5674"
+                ],
+                "name": "",
+                "out": [
+                    "5674"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5681"
+                ],
+                "name": "",
+                "out": [
+                    "5681"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5675",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 405,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in the light forest just at the border where it opens up to\nsome grassy plains to the south. North the forest continues and it even becomes\na little thicker though it is hardly visible. To the north the ground also seems\nto rise a little.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5681"
+                ],
+                "name": "",
+                "out": [
+                    "5681"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5680"
+                ],
+                "name": "",
+                "out": [
+                    "5680"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5685"
+                ],
+                "name": "",
+                "out": [
+                    "5685"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5678"
+                ],
+                "name": "",
+                "out": [
+                    "5678"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5676",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 406,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The forest bordering the trail is very light, making travel here quite easy. The\nforest continues to the east while it leaves way for the trail to the north of\nhere. The grass on the ground is not very high and not many bushes can be seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5622"
+                ],
+                "name": "",
+                "out": [
+                    "5622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5678"
+                ],
+                "name": "",
+                "out": [
+                    "5678"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5677",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 404,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The light forest here opens up into plains with high grass to the south. East\nand west the light forest continues, and the vegetation does not shift much. The\ngrass is just high enough here to cover your feet when you walk, making the\nground very soft and comfortable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5679"
+                ],
+                "name": "",
+                "out": [
+                    "5679"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5676"
+                ],
+                "name": "",
+                "out": [
+                    "5676"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5677"
+                ],
+                "name": "",
+                "out": [
+                    "5677"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5678",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 405,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The plains here are covered with thick grass that reaches almost to your knees\nwhen standing in it. Here and there you see rabbit-holes. And where rabbits are,\nfoxes are, so you guess a particular large hole at a small hill close to the\nborder of the forest to the north is a fox-hole.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5678"
+                ],
+                "name": "",
+                "out": [
+                    "5678"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5680"
+                ],
+                "name": "",
+                "out": [
+                    "5680"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5679",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 405,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The plains bordering the forest to the north are covered with thick grass that\ncovers you all the way to your knees when you stand in it. No trees grow on the\nplains, just an occational bush or two, providing shelter for the animals in the\nmiddle of the days.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5676"
+                ],
+                "name": "",
+                "out": [
+                    "5676"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5686"
+                ],
+                "name": "",
+                "out": [
+                    "5686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5679"
+                ],
+                "name": "",
+                "out": [
+                    "5679"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5680",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 406,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The light forest here is not as open as the ones west of and south of here, and\nfurther north a thick hedge of bushes prevents travelling further, and the\nforest beyond that is much denser than this one. South the ground slopes down\njust a little as the forest clears up even more.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5676"
+                ],
+                "name": "",
+                "out": [
+                    "5676"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5675"
+                ],
+                "name": "",
+                "out": [
+                    "5675"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5681",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 406,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "This hut has probably not been used in a long time. The roof has partially\nfallen in and one of the stone walls has started to crumble. The door and all of\nthe windows are broken. The floor is covered with all kinds of junk but in one\ncorner you see a small trapdoor in the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5685"
+                ],
+                "name": "",
+                "out": [
+                    "5685"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5715"
+                ],
+                "name": "",
+                "out": [
+                    "5715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5684",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside a Deserted Hut",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 407,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The light forest changes into grassy plains further to the south. North of here\nhowever you see a deserted hut that seem to have been empty for a long time. The\nroof has fallen in at one place and all windows on this side are broken and so\nis the door. Perhaps it was once the home of a local farmer.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5684"
+                ],
+                "name": "",
+                "out": [
+                    "5684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5686"
+                ],
+                "name": "",
+                "out": [
+                    "5686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5676"
+                ],
+                "name": "",
+                "out": [
+                    "5676"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5685",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outside a Deserted Hut",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 407,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The plains here at the border of the light forest to the north are covered with\nthick grass. The plain descends down to a small hole at one place, with a small\npond with some light trees at the edge of the water. This would be an important\nplace for the animals in the area as the water seem to be very fresh.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5685"
+                ],
+                "name": "",
+                "out": [
+                    "5685"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5687"
+                ],
+                "name": "",
+                "out": [
+                    "5687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5680"
+                ],
+                "name": "",
+                "out": [
+                    "5680"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5686",
+        "light": 2,
+        "loadflags": 40,
+        "mobflags": 0,
+        "name": "Grassy Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 407,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The plains at the border of the thin forest to the north are covered with thick\ngrass that reaches far beyond your ankles. The plains continue to the east and\nwest; west of here you also see the ground descend down in a hollow, where some\ntrees also grow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5689"
+                ],
+                "name": "",
+                "out": [
+                    "5689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5688"
+                ],
+                "name": "",
+                "out": [
+                    "5688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5686"
+                ],
+                "name": "",
+                "out": [
+                    "5686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5687",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 408,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The grassy plains continue to the east and west of here. To the north the plains\nslowly turn into a thin forest. The grass growing on the plain is not as thick\nhere as it is further west, but much taller. The tall grass is a perfect hideout\nfor larger animals such as deers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5699"
+                ],
+                "name": "",
+                "out": [
+                    "5699"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5700"
+                ],
+                "name": "",
+                "out": [
+                    "5700"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5687"
+                ],
+                "name": "",
+                "out": [
+                    "5687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5688",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 409,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The thin forest is very sparse and slowly fades away into the grassy plains to\nthe south. North of here the ground slopes down into a ravine which looks like a\ndead end. East the thin forest continues and far to the east you see what seems\nto be a thick forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5690"
+                ],
+                "name": "",
+                "out": [
+                    "5690"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5687"
+                ],
+                "name": "",
+                "out": [
+                    "5687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5699"
+                ],
+                "name": "",
+                "out": [
+                    "5699"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5689",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Thin Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 408,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The ravine comes to a stop as a huge cliff prevents you from exiting anywhere\nbut back south. To the south the ground slopes up some and some trees start to\ncover the ground. Down here in the ravine the main vegetation is bushes, quite\nthick bushes actually, some of them might even have food on them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5689"
+                ],
+                "name": "",
+                "out": [
+                    "5689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5690",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ravine",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 408,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The forest here is notably lighter than the ones north and east of here. The\nvegetation on the ground here is also much richer than that of the surrounding\nwoods. A small spring comes out from a rock at a small cliff, probably an\nunderground spring from the hills you see in the north. The spring ends in a\nhole in the ground, forming a small pond of fresh water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5697"
+                ],
+                "name": "",
+                "out": [
+                    "5697"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5702"
+                ],
+                "name": "",
+                "out": [
+                    "5702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5698",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 409,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "This thin forest slowly fades away into grassy plains to the south. East of here\nthe thin forest becomes a little thicker and further to the east you see a thick\nforest that becomes even thicker to the northeast. On the ground the grass grows\nthick and that makes the ground very soft and nice to walk on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5688"
+                ],
+                "name": "",
+                "out": [
+                    "5688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5701"
+                ],
+                "name": "",
+                "out": [
+                    "5701"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5689"
+                ],
+                "name": "",
+                "out": [
+                    "5689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5699",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Thin Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 409,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The grassy plains that surround the area are covered with tall grass that would\nreach a grown up deer to its belly. To the north the plains transform into a\nlight forest, and further to the north the forest becomes much darker.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5701"
+                ],
+                "name": "",
+                "out": [
+                    "5701"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5688"
+                ],
+                "name": "",
+                "out": [
+                    "5688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5700",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Grassy Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 410,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You are in a place in the forest where it shifts hastily from a thin forest to\nthe west into a dark black forest a little to the northeast. Right here the\nforest is still quite light, and the ground is covered with thick grass, but not\nfar east and north the forest is much thicker.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5702"
+                ],
+                "name": "",
+                "out": [
+                    "5702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5700"
+                ],
+                "name": "",
+                "out": [
+                    "5700"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5706"
+                ],
+                "name": "",
+                "out": [
+                    "5706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5699"
+                ],
+                "name": "",
+                "out": [
+                    "5699"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5701",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 410,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The woods become thicker and north and east of here they become even thicker.\nWest and south of here the forest opens up into light forest and grassy plains.\nTo the northwest you see some hills rise above the forest, the view from up\nthere would probably be quite good.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5703"
+                ],
+                "name": "",
+                "out": [
+                    "5703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5701"
+                ],
+                "name": "",
+                "out": [
+                    "5701"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5714"
+                ],
+                "name": "",
+                "out": [
+                    "5714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5698"
+                ],
+                "name": "",
+                "out": [
+                    "5698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5702",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 410,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The dense forest here makes a border to the dark forests to the north. To the\neast the dense forest continues, but west it opens up into a much lighter one.\nThe ground is covered with small rocks, making travel a little difficult.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5714"
+                ],
+                "name": "",
+                "out": [
+                    "5714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5707"
+                ],
+                "name": "",
+                "out": [
+                    "5707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5701"
+                ],
+                "name": "",
+                "out": [
+                    "5701"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5706",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 411,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The dense forest surrounds you and makes you feel very small. To the north the\nforest grows even thicker. Further to the east you see the Misty Mountains tower\nup like a wall, but that is still beyond your reach as the dense forests prevent\nfurther travel to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5708"
+                ],
+                "name": "",
+                "out": [
+                    "5708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5706"
+                ],
+                "name": "",
+                "out": [
+                    "5706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5707",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 412,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The dense forest from the south gets even thicker the further north you go. To\nthe north the forest is so dense it is not even possible to go there, and you\nhave to turn back or find some other entrance to the forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5707"
+                ],
+                "name": "",
+                "out": [
+                    "5707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5714"
+                ],
+                "name": "",
+                "out": [
+                    "5714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5708",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of a Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 412,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The forest becomes darker and north of here it becomes really dark. To the south\nand west however it clears up a little. The ground is quite rocky here, making\nit difficult to walk. As you look up in the sky you see high trees with lots of\nbranches, preventing the sunlight from hitting the ground with full energy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5713"
+                ],
+                "name": "",
+                "out": [
+                    "5713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5706"
+                ],
+                "name": "",
+                "out": [
+                    "5706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5708"
+                ],
+                "name": "",
+                "out": [
+                    "5708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5702"
+                ],
+                "name": "",
+                "out": [
+                    "5702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5714",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entering a Black Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 411,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "This cellar under the deserted hut is in far better shape than the main building\nitself. Along one wall stands what is left of some old shelves that seem to have\nbeen a storage place for food and groceries. The shelf covers almost all of the\nwall and only leaves a dark corner at the far end. The floor is not of soil but\nof stone, making you think that it was not a regular farmer that once lived\nhere; however, that is only a wild guess.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "5716"
+                ],
+                "name": "hiddendoor",
+                "out": [
+                    "5716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5684"
+                ],
+                "name": "",
+                "out": [
+                    "5684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5715",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cellar",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 407,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "This hidden room was probably the study of some important man. At the wall you\nsee an old desk and a chair, the desk has a few closed drawers. Fixed to the\nwall you see a shield and a longsword. This place has something strange with it,\nsomething evil. You just cannot figure out what, though.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5715"
+                ],
+                "name": "",
+                "out": [
+                    "5715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5716",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Hidden Backroom",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 408,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "Breaking down the earthwall you enter a hidden chamber behind the wall. The\nchamber is big and has lots of dark corners. As you explore the chamber you\nsense a strong presence of evil. Maybe you should get out of here while you can.\nOn the floor you see marks of something having been dragged across the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "5718"
+                ],
+                "name": "earthwall",
+                "out": [
+                    "5718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5717",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Hidden Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 414,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel is quite large and you have no problem walking in it, it is dug out\nof the earth and has a rounded roof. You suddenly realise what kind of creatures\nlive in these tunnels as you see huge piles of bones at the end of the tunnel,\nand the huge footprints in the ground. Those are troll-tracks, trolls!\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "5717"
+                ],
+                "name": "earthwall",
+                "out": [
+                    "5717"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5719"
+                ],
+                "name": "",
+                "out": [
+                    "5719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5718",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Earth Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 414,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel comes to a bend and continues to the west and south of here. The\ntunnel is large and you have no problem standing or walking in it. You wonder\nwho made theese tunnels, but can not come to a conclusion on that. On the walls\nyou see a lot of spider-web; some spiders quickly run across the ground as you\nenter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5720"
+                ],
+                "name": "",
+                "out": [
+                    "5720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5718"
+                ],
+                "name": "",
+                "out": [
+                    "5718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5719",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Bend in the Earth Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 415,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "Entering the hole under the roots you see an earth tunnel continue to the north.\nThe tunnel is quite large and would not give you any problem exploring it. The\nroof is rounded and the whole tunnel seem to have been dug out by someone - or\nsomething.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5719"
+                ],
+                "name": "",
+                "out": [
+                    "5719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5713"
+                ],
+                "name": "",
+                "out": [
+                    "5713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5720",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earth Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 415,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "This small house consist of only one room, and it is obviously the home of a\nhunter of some kind, with heads from all kinds of different beasts set on the\nwalls. A bed stands in one corner, with an old, and probably useless composite\nbow above it. The only exit is through the wooden door to the north.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "19361"
+                ],
+                "name": "wooden",
+                "out": [
+                    "19361"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5750",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hunter's Lodge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 403,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "The deserted wasteland spreads around you. The only change in the local scenery\nis a small ruin on a hill to the west. No birds live here, and the only sound\nyou hear, is the rattling of a snake disappearing into the brownish grass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5752"
+                ],
+                "name": "",
+                "out": [
+                    "5752"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5756"
+                ],
+                "name": "",
+                "out": [
+                    "5756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5751",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wasteland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 400,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Nothing, and again nothing exciting can be found in the discouraging view that\nmeets you as you turn around to have a look at the surrounding land. Wasteland\nlies to the north and the south. Moving east and west is prevented by thorny\nbushes and thick undergrowth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5751"
+                ],
+                "name": "",
+                "out": [
+                    "5751"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5753"
+                ],
+                "name": "",
+                "out": [
+                    "5753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5752",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wasteland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 400,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "This portion of the wasteland must have been forested at one point, as there are\nmany broken and rotting stumps still clinging to the rocky soil. There are no\ntrees left intact, however, and the only vegetation to be found are small,\nstunted bushes and a few patches of hardy grass and weeds, almost brown from\nlack of moisture.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5752"
+                ],
+                "name": "",
+                "out": [
+                    "5752"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5755"
+                ],
+                "name": "",
+                "out": [
+                    "5755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5754"
+                ],
+                "name": "",
+                "out": [
+                    "5754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5753",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wasteland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 400,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "The land here is the same wasteland you have been walking through for far too\nlong. You notice that there are more bushes here, than there was further back. A\nsudden rattle in the bushes makes you spin around, but you see nothing\nspecial... You have a VERY bad feeling about this place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5753"
+                ],
+                "name": "",
+                "out": [
+                    "5753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5754",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wasteland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 401,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "You seem to have reached the end of the wasteland. Huge blocks prevent any\nfurther travel to the east and the south. However, wasteland lies both north and\nwest of here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5753"
+                ],
+                "name": "",
+                "out": [
+                    "5753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5764"
+                ],
+                "name": "",
+                "out": [
+                    "5764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5755",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wasteland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 400,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "The hidden cleft under the huge rock is quite narrow and moving around down here\nis not that easy. Some other clefts and openings can be found leading out of\nhere in all directions, but none of them seem to lead anywhere interesting\nthough, some of them are quite dark and you can never be certain. On the ground\nyou see some bones from an animal which probably has fallen down into the cleft\nand died.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5667"
+                ],
+                "name": "",
+                "out": [
+                    "5667"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14395",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Cleft",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 414,
+        "y": 80,
+        "z": 0
+    }
+]

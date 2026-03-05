@@ -1,0 +1,2959 @@
+[
+    {
+        "desc": "High in the sky, the world stretches out in all directions. The snow-clad\nmountain tops, like white soldiers in formation, march on for leagues. Far in\nthe distance, the even greater heights of Caradhras can be seen. The wind is\ncold and unforgiving.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28389"
+                ],
+                "name": "",
+                "out": [
+                    "28389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28390"
+                ],
+                "name": "",
+                "out": [
+                    "28390"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28387"
+                ],
+                "name": "",
+                "out": [
+                    "28387"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28388",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Atop a Mountain Summit",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 404,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "View of the surrounding area is somewhat blocked by the rest of the mountain\nridge that is not scalable. This spot does offer some protection from the wind,\nbut slanted footing is the cost. The wind here is less harsh as the brunt of it\nis shielded by the ridge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28388"
+                ],
+                "name": "",
+                "out": [
+                    "28388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28470"
+                ],
+                "name": "",
+                "out": [
+                    "28470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28389",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Crest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 404,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "A pair of mountains loom into the sky. Their icy stone slopes appear smooth and\nfeatureless while at the crests, a circular cap of snow has come to rest. They\nstand tall and proud, impervious to the passage of time. The snow becomes\nincreasingly deep to the west, having become caught between the two mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28388"
+                ],
+                "name": "",
+                "out": [
+                    "28388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28391"
+                ],
+                "name": "",
+                "out": [
+                    "28391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28390",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cleft in the Mountains",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 403,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "This deep ravine between the mountain slopes acts as a trough, catching the\nendless amount of snow that slides down the slopes. The walls of the ravine are\nsteep and made of stone that is locked in permafrost. Any small sound creates a\nmagnifying echo as it bounces between the cliff-like walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28390"
+                ],
+                "name": "",
+                "out": [
+                    "28390"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28392"
+                ],
+                "name": "",
+                "out": [
+                    "28392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28477"
+                ],
+                "name": "",
+                "out": [
+                    "28477"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28391",
+        "light": 0,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Snow-filled Ravine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 402,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "The mountains tower on either side, but here a small gap between them lies. The\nlofty ridges up above make sharp outlines against the sky. Though lower in\naltitude than the peaks surrounding this location, the snow is still plentiful.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28391"
+                ],
+                "name": "",
+                "out": [
+                    "28391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28393"
+                ],
+                "name": "",
+                "out": [
+                    "28393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28392",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cleft in the Mountains",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 401,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Like a giant half moon, the top of this mountain drops off into sheer cliffs on\none side. Ice has formed along the ridge making things smooth and slippery. A\nlone tree stands near the top completely devoid of all greenery. The tree has\nbecome completely frozen still and is as hard as a rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28394"
+                ],
+                "name": "",
+                "out": [
+                    "28394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28392"
+                ],
+                "name": "",
+                "out": [
+                    "28392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28475"
+                ],
+                "name": "",
+                "out": [
+                    "28475"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28393",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Crest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 400,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Snow, stone, and ice mingle together creating what appears to be a landslide\nfrozen in time. Debris can be spotted hidden in the ice and boulders of\nconsiderable size seem to have been swept along as well. The air here is\nmotionless, almost as if holding its breath.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28393"
+                ],
+                "name": "",
+                "out": [
+                    "28393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28398"
+                ],
+                "name": "",
+                "out": [
+                    "28398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28395"
+                ],
+                "name": "",
+                "out": [
+                    "28395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28394",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Frozen Landslide",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 400,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "This small valley hiding in the Misty Mountains offers a welcome respite from\nthe steep slopes all around. Bits of grass grow here and there on the valley\nfloor, mixed with stones and other rubble that has tumbled down from above. The\nair here is calm, with almost no wind, and is shielded by the mountain wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28396"
+                ],
+                "name": "",
+                "out": [
+                    "28396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28394"
+                ],
+                "name": "",
+                "out": [
+                    "28394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28395",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Valley between Mountains",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 400,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "This valley is sandwiched between the ever climbing mountains. The valley floor\nis covered in a thick layer of white snow. Though the area is mostly quiet, when\na sound occurs it is magnified and echoes throughout the landscape.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28395"
+                ],
+                "name": "",
+                "out": [
+                    "28395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28397"
+                ],
+                "name": "",
+                "out": [
+                    "28397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28478"
+                ],
+                "name": "",
+                "out": [
+                    "28478"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28396",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Valley Floor",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 400,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "The mountain is very steep and slanted here. Jagged rocks and heavy stones lose\ntheir grip and slide down the mountainside at the slightest disturbance. The\nclattering noise of their fall echoes in the mountains, caught and carried by\nthe wind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28396"
+                ],
+                "name": "",
+                "out": [
+                    "28396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "28414"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28476"
+                ],
+                "name": "",
+                "out": [
+                    "28476"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28397",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Slope",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 400,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "Two massive boulders stand here, looming overhead like the great snow giants of\ntales. The boulders provide cover from the sun but the surrounding area is\nmostly composed of ice save for slick patches of stone that appear suddenly in\nthe most unpredictable places. The air is still, but the frost in it lingers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28399"
+                ],
+                "name": "",
+                "out": [
+                    "28399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28394"
+                ],
+                "name": "",
+                "out": [
+                    "28394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28479"
+                ],
+                "name": "",
+                "out": [
+                    "28479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28398",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Frozen Ledge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 2,
+        "x": 401,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "Shimmering and beautiful, some crystals of ice hang precariously from the\nceiling; poised at any moment to crash to the ground. Icy mists lie like a thick\nblanket over the ground. The occasional wailing of wind can just be heard\ntearing over some opening somewhere in the surrounding caverns echoing off the\nwalls. A few large stones, which must have fallen from the walls long ago, now\nlie on the ground covered in razorlike crystal ice structures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28411"
+                ],
+                "name": "",
+                "out": [
+                    "28411"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28407"
+                ],
+                "name": "",
+                "out": [
+                    "28407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28400"
+                ],
+                "name": "",
+                "out": [
+                    "28400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28398"
+                ],
+                "name": "",
+                "out": [
+                    "28398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28399",
+        "light": 1,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Hall of Ice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 402,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "Razor-sharp shards of ice shoot up from the floor and climb up the walls. A\nfrosty mist hangs over the floor, seemingly coming from cracks in the frozen\nwalls. The air is perfectly still, as if holding its breath in anticipation of\nsomething.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28401"
+                ],
+                "name": "",
+                "out": [
+                    "28401"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28399"
+                ],
+                "name": "",
+                "out": [
+                    "28399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28400",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ice Shard Pit",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 403,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "Walls of chipped ice tower over the area. The ice is thick, with signs of\nhaphazard nicks and chips dotting the bottom. Clouds of vapor puff out of the\nground, covering the area in a thin mist. Failed attempts to scale the wall can\nbe seen, with frozen remains littering the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28402"
+                ],
+                "name": "",
+                "out": [
+                    "28402"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28400"
+                ],
+                "name": "",
+                "out": [
+                    "28400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28401",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wall of Ice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 404,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "The hard stone floor of this cavern is slick with ice. A long crack travels\nalong the walls circling the chamber. The cave's ceiling is quite lofty with\nechoes getting lost in the darkness above. A layer of frost covers the stone\nsurfaces.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28401"
+                ],
+                "name": "",
+                "out": [
+                    "28401"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28404"
+                ],
+                "name": "",
+                "out": [
+                    "28404"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28403"
+                ],
+                "name": "",
+                "out": [
+                    "28403"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28410"
+                ],
+                "name": "",
+                "out": [
+                    "28410"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28402",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cracked Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 404,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Though this cave is amply proportioned, it was made to seem smaller by the two\nlarge stone platforms that occupy opposing walls. Each is over ten feet long,\nand stands some five feet above the cave floor. It is obvious that they were\nhewn from the chilly stone for some purpose, but what that might be would seem\nunclear without considering the large, ragged remnants and poorly tanned skins\nthat cover each.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28402"
+                ],
+                "name": "",
+                "out": [
+                    "28402"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28403",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Frozen Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 405,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Grey stones lie scattered all about the floor of this cavern. The centre of the\nroom is dominated by a single great rock with chisseled carvings that have been\ncut into its face. The area surrouding the rock has been cleared of all rubble\nto allow the carvings to be easily viewed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28402"
+                ],
+                "name": "",
+                "out": [
+                    "28402"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28405"
+                ],
+                "name": "",
+                "out": [
+                    "28405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28404",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Black Rock",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 404,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "A frozen altar stands in the centre of the room upon a dais of black obsidian.\nAbove the altar, a tall arch made of curved ice, so smooth that it could be\nmistaken for glass, stands beautiful. Some bones and frozen furs have been\nplaced here as offerings to whatever deity the snow giants observe.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28410"
+                ],
+                "name": "",
+                "out": [
+                    "28410"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28406"
+                ],
+                "name": "",
+                "out": [
+                    "28406"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28404"
+                ],
+                "name": "",
+                "out": [
+                    "28404"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28409"
+                ],
+                "name": "",
+                "out": [
+                    "28409"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28405",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Icy Grotto",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 403,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "The walls of the chamber are made of frosted ice, forming an almost perfect\ncircle as they wrap around the chamber. Pillars of ice reach up from the ground\nsupporting the ceiling like trees of glass. Inside the pillars stand enormous\nbodies of giants, their faces glaring out but frozen in an icy eternal sleep.\nThis isn't a cave, it's a tomb.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28405"
+                ],
+                "name": "",
+                "out": [
+                    "28405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28406",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Circle of Pillars",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 403,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "Huge stalactites, made from pure ice, hang from the ceiling and stick out from\nthe walls like long knives. Several of the stalactites are missing, leaving only\ntheir stumps behind, as if someone has ripped them from where they previously\nhung. The walls of this chamber are made of stone but have long since become\nencased within thick sheets of ice.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28399"
+                ],
+                "name": "",
+                "out": [
+                    "28399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28409"
+                ],
+                "name": "",
+                "out": [
+                    "28409"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28408"
+                ],
+                "name": "",
+                "out": [
+                    "28408"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28407",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ice Stalactite Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 402,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "A glistening sheet of ice blankets what was at one point a pond in the cave. Now\nthe ice is so thick and smooth it is like polished glass, reflecting any light\nit catches. There are cracks snaking their way all through the walls creating\nmany shapes. A hole in the wall opens up to the sky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28407"
+                ],
+                "name": "",
+                "out": [
+                    "28407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28408",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Mirror of Ice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 401,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "A thin, serpentine path snakes through the ice, with sharp icicles stabbing\nthrough the walls. A thin path can be seen where countless footsteps have worn\nthe ice down to the shards of rock. The view of the ceiling is blocked by the\narching ice formations, almost as if the ice was the hand of a frozen giant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28407"
+                ],
+                "name": "",
+                "out": [
+                    "28407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28405"
+                ],
+                "name": "",
+                "out": [
+                    "28405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28409",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Frozen Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 402,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "Two tall pillars of stone stand at the back of the hall with a bear skin\nstretched taut between them. A large wooden club lies propped up against one of\nthe pillars. Several large boulders with flattened tops are arranged in a circle\naround the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28405"
+                ],
+                "name": "",
+                "out": [
+                    "28405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28402"
+                ],
+                "name": "",
+                "out": [
+                    "28402"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28410",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 32768,
+        "name": "Hall of the Giants",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 403,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "The chamber has been hewn from the mountain by living hands judging from the\nsmooth walls covered in frost. The floor is hard and frigid to the feet. Above,\npillars of ice descend from the ceiling making contact with the floor and taking\nroot. The walls are more rock here and show their age with visible lines of\nsediment slashing across them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28399"
+                ],
+                "name": "",
+                "out": [
+                    "28399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28412"
+                ],
+                "name": "",
+                "out": [
+                    "28412"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28411",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cavern of Ice Pillars",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 402,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "What appears to have been at first a planned extension of the tunnel is now\nblocked completely with collapsed snow. The walls of this snowy crawlspace have\nbeen almost completely buried by blocks of ice and snow which have fallen and\nbeen crushed down by the weight of the glacier above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28411"
+                ],
+                "name": "",
+                "out": [
+                    "28411"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28412",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Glacier Runoff",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 403,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "Dwarfing many of the surrounding mountain tops, this high terrace stands tall.\nRocks, large and small, are in abundance here and the wind howls as it passes\nover them. The slightest physical disturbance often sends the rocks tumbling\ndown the mountainside, bouncing and crashing into anything in their path.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28472"
+                ],
+                "name": "",
+                "out": [
+                    "28472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28471"
+                ],
+                "name": "",
+                "out": [
+                    "28471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28389"
+                ],
+                "name": "",
+                "out": [
+                    "28389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28470",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "High Terrace",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 404,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "A great nest stands at the top of a high peak. Sheltered by a perfect alcove of\nrock above and on one side, this is an excellent vantage point of the\nsurrounding areas. Ice creeps along the edges of the alcove but inside there is\nno ice to be found.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28470"
+                ],
+                "name": "",
+                "out": [
+                    "28470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28471",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Eagles' Loft",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 404,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "Slippery ice covers the slopes with scarce a foothold to be seen. Small stones\nand pebbles have been frozen in the swirling white canvas. The world is split\nasunder with one hemisphere a wall of ice, the other an endless sky. Far below,\nthe snow filled basins between the mountains twinkle and glisten.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28470"
+                ],
+                "name": "",
+                "out": [
+                    "28470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28473"
+                ],
+                "name": "",
+                "out": [
+                    "28473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28472",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Along a Mountain Crest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 403,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "Along this mountain top a flattened natural path lies in contrast to the sharp\nridges that surround it. Narrow and with a cliff-like drop off on either side,\nthe path navigates over the mountain's peak. The wind sputters and whispers as\nit races over the mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28472"
+                ],
+                "name": "",
+                "out": [
+                    "28472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28475"
+                ],
+                "name": "",
+                "out": [
+                    "28475"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28474"
+                ],
+                "name": "",
+                "out": [
+                    "28474"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28473",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Along a Mountain Crest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 402,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "The mountain approaches its crest here but diverts into a small alcove that has\nbecome a great eagle's sanctuary. The world stretches away below as the vantage\nof this place is unparalleled. Large branches have been woven together tightly\nforming huge nests with one particularly grand nest on a raised stone slab.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28473"
+                ],
+                "name": "",
+                "out": [
+                    "28473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28474",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Eagle's Eyrie",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 402,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "The crest of this mountain climbs high into the sky giving an expansive view of\nthe surrounding areas. Snow has piled up layer upon layer and every so often\nchunks around the edges fall off, crashing down the mountainside. The wind bites\nthe top of the mountain with no remorse.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28473"
+                ],
+                "name": "",
+                "out": [
+                    "28473"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28393"
+                ],
+                "name": "",
+                "out": [
+                    "28393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28475",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lofty Peak",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 401,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "The entirety of this mountain top is encased in heavy snow. The summit of the\nmountain, approaching the clouds themselves, stands tall above the ground far\nbelow. Great blocks of ice, like massive nails, surround the peak. The wind is\nharsh and unforgivingly cold.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28391"
+                ],
+                "name": "",
+                "out": [
+                    "28391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28477",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Snowy Summit",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 401,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "Nestled in the high Misty Mountains, this little dale lies quite hidden. Thick\ngrass lies underfoot with a small frost on top, giving the grass a bit of\ncrunch. There seem to be animal tracks imprinted in the grass, leading various\ndirections. Several moss-covered boulders lie close to the steep slopes that\nlead back into the lofty mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28479"
+                ],
+                "name": "",
+                "out": [
+                    "28479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28396"
+                ],
+                "name": "",
+                "out": [
+                    "28396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28478",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassy Mountain Dale",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 400,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "A small valley in the mountains lies here. Although the surrounding slopes are\ncovered in snow, here it's not so cold. A small spring can be spotted in the\ncorner of this little dale. Green grass and other plant life radiate out from\nthe spring, offering a welcome resting place to weary travellers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28480"
+                ],
+                "name": "",
+                "out": [
+                    "28480"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28478"
+                ],
+                "name": "",
+                "out": [
+                    "28478"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "28398"
+                ],
+                "name": "",
+                "out": [
+                    "28398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28479",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Vale in the Misty Mountains",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 401,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "Towering above, the mountains wrap around this little valley like huge sleeping\nbears. The almost permanent shadow that is cast on this land ensures the area is\nnot very warm. A small pond, frozen over with a thin sheet of ice, lies\nmotionless in the corner of the valley.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28479"
+                ],
+                "name": "",
+                "out": [
+                    "28479"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28480",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Shadow of the Misty Mountains",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 402,
+        "y": 111,
+        "z": 0
+    }
+]

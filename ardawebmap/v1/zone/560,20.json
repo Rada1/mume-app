@@ -1,0 +1,2528 @@
+[
+    {
+        "desc": "Dense groves of sprawling trees populate this soggy valley. Some trees lie\nupended and rotting in the muddy terrain. Poison ivy grows along the bark of the\ntrees, covering some of them from root to crown. The ground slopes down to a\ndirty rivulet in the centre of this valley, fed by the rainfall draining down\nthe surrounding mountainsides.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23598"
+                ],
+                "name": "",
+                "out": [
+                    "23598"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "23570"
+                ],
+                "name": "",
+                "out": [
+                    "23570"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23600",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Musty Copse",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 579,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "This cavern begins at a round hole at the top of a slope to the south. From\nthere, the cavern quickly expands, widening to dozens of yards between the\neastern and the western walls. The floor slants downwards to the north, while\nthe roof stays at the same height which causes the cavern to expand in height as\nwell. The walls, roof, and floor are of rough and uneven grey rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23604"
+                ],
+                "name": "",
+                "out": [
+                    "23604"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23602"
+                ],
+                "name": "",
+                "out": [
+                    "23602"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23603",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 573,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "The cave is ovoid with considerably smooth, rock walls of mostly a dim grey\ncolour, interspersed with ash grey. In a few separate locations, thin, dark\nroots protrude from the ceiling, clear evidence that trees or bushes with deep\nroots grow above this cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23603"
+                ],
+                "name": "",
+                "out": [
+                    "23603"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23605"
+                ],
+                "name": "",
+                "out": [
+                    "23605"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23604",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Large Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 573,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "Every here and there, dim grey walls are interspersed with a greener hue,\nranging from subtle hints a few feet high to dark green stains near the bottom\nof the cave. The walls end upwards into an inky darkness, hiding the ceiling\nfrom sight. A few jagged and uneven edges break up otherwise smooth wall. Dark\nbrown streaks resembling a deep brown mud seemingly connect each edge to each\nother. Some of the more jagged edges have broken off, creating a haphazard line\nof pebble-sized rocks.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23606"
+                ],
+                "name": "",
+                "out": [
+                    "23606"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23607"
+                ],
+                "name": "",
+                "out": [
+                    "23607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23604"
+                ],
+                "name": "",
+                "out": [
+                    "23604"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23605",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vast Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 573,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "Smooth, grey rock walls line the cave, only to be interrupted by a crack in the\nnorthern wall. The crack twists and turns in a semi-straight line from top to\nbottom, as if splitting the cave in half, effectively becoming a focal point of\nthe large cave. A few small strands of discarded light brown moss lie scattered\non the worn cavern floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23610"
+                ],
+                "name": "",
+                "out": [
+                    "23610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23605"
+                ],
+                "name": "",
+                "out": [
+                    "23605"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23606",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Immense Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 574,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "Featuring mostly even rock walls, very small rounded, irregular cones form a\ndistinguishing layer to both the top and the bottom of the cave. The glacous\nstalactites grow longer and denser, their pointed edges reaching over two feet\nlong towards the middle of the cave. Its companions that litter the cave floor\nare much more subdued, stalagmites adding an uneven surface in sharp contrast to\nthe grey walls. A thin layer of dirty water forms tiny puddles of black water on\nthe cavern's floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23609"
+                ],
+                "name": "",
+                "out": [
+                    "23609"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23608"
+                ],
+                "name": "",
+                "out": [
+                    "23608"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23605"
+                ],
+                "name": "",
+                "out": [
+                    "23605"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23607",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vast Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 572,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "A spacious den has been excavated beneath a hill. The walls look stable and\nsolid, and are covered with scratch marks. Piles of leaves mixed with animal\nhair lie at the back of the den. Some dry, gnawed-on bones litter the floor.\nThere is no meat on them and they do not seem part of a recent meal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23607"
+                ],
+                "name": "",
+                "out": [
+                    "23607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23608",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Den under the Hills",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 572,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "Claw marks cover the walls of this den. Thin roots poke through the roof of the\nden, indicating that there is only a few feet of soil between the top of the\ncave and a forest floor. A pile of leaves and twigs lies at the back of the den,\nmixed with a lot of animal hair.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23607"
+                ],
+                "name": "",
+                "out": [
+                    "23607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23609",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Den under the Hills",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 572,
+        "y": 33,
+        "z": 0
+    },
+    {
+        "desc": "This junction of caverns opens into a small cave to the east, a large cavern to\nthe west, and to the north lies yet another dark opening. The cavern's moist\nair, and widely spread moss covering the stones make the ground feel very\nslippery. An occasional tiny breeze of fresh air seems to flush in from the\nnorth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23611"
+                ],
+                "name": "",
+                "out": [
+                    "23611"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23612"
+                ],
+                "name": "",
+                "out": [
+                    "23612"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23606"
+                ],
+                "name": "",
+                "out": [
+                    "23606"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23610",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Junction of Caverns",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 575,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "Grey walls of rough rock form the eastern and the western walls of this cavern.\nAs if uncertain if it's to be a great, vast cavern, or a narrow tunnel, in some\nplaces the walls are no more than a dozen feets apart, while elsewhere they\nseparate by dozens of yards. There are bends and twists, blind corners and\nshallow alcoves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23610"
+                ],
+                "name": "",
+                "out": [
+                    "23610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23614"
+                ],
+                "name": "",
+                "out": [
+                    "23614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23611",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark, Winding Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 575,
+        "y": 33,
+        "z": 0
+    },
+    {
+        "desc": "This niche is but a dark secluded corner of a network of caverns expanding out\nof sight to the west. The roof is surprisingly high for such a small cave and\nthe upper reaches are hidden in shadows. The floor is strew with boulders\ndiscoloured in shades of yellow, brown, and green by cave-living lichens.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "23613"
+                ],
+                "name": "smallboulder",
+                "out": [
+                    "23613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23610"
+                ],
+                "name": "",
+                "out": [
+                    "23610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23612",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 576,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "This cavern has been formed from boulders, rocks and debris fallen down from the\nsurrounding hillsides. Over the ages smaller rocks have covered the holes and\ngaps to form a roof. The ground is littered with smaller stones and rocks and\nnothing grows in this cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "23612"
+                ],
+                "name": "",
+                "out": [
+                    "23612"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23613",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Natural Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 576,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "Rough grey rock form the walls, floor, and ceiling of this natural cavern. The\nfloor is worn in places, as if being trod upon countless times. A jagged opening\nto the north is partly covered by bushes. A slope at the cavern's southern end,\nwinding this way and that in a zig-zag manner, allows for an ascent deeper into\nthe cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23615"
+                ],
+                "name": "",
+                "out": [
+                    "23615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23611"
+                ],
+                "name": "",
+                "out": [
+                    "23611"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23614",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shadowy Grotto",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 575,
+        "y": 32,
+        "z": 0
+    },
+    {
+        "desc": "A forest of oak, fir and birch covers the wide floor of a valley. Hills rise to\nthe south, and the forest thins out there as if it was hesitant to approach\nthem. Bushes and shrubs take over as the forest recedes in the shadows of the\nhills. A trampled animal trail can be espied worn into the crab grass in-between\nbushes where a series of switchbacks allows passage into the rougher terrain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23616"
+                ],
+                "name": "",
+                "out": [
+                    "23616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23614"
+                ],
+                "name": "",
+                "out": [
+                    "23614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23617"
+                ],
+                "name": "",
+                "out": [
+                    "23617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23615",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forested Valley Floor",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 575,
+        "y": 31,
+        "z": 0
+    },
+    {
+        "desc": "Large and sprawling oaks cover the landscape here, their low-hanging branches\ngnarled and scraping against one another. A thick layer of lichen has formed on\nthe treetops, creating a dense canopy that hardly allows any light to pass\nthrough. The forest floor reflects this darkness, with dark musty fungi growing\namongst the matte black twisting roots.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23621"
+                ],
+                "name": "",
+                "out": [
+                    "23621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23615"
+                ],
+                "name": "",
+                "out": [
+                    "23615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23620"
+                ],
+                "name": "",
+                "out": [
+                    "23620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23616",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Tangled Woodlands",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 575,
+        "y": 30,
+        "z": 0
+    },
+    {
+        "desc": "Black and gnarled trees stand close together here, forming a dense forest.\nThorny shrubs grow between trees and anywhere there is the slightest opportunity\nto thrive. Low hanging branches scrape the forest floor and thick, grey lichen\nhang from them like veils. Black, twisting vines crawl up trunks to disappear in\nthe impenetrable canopy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23620"
+                ],
+                "name": "",
+                "out": [
+                    "23620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23615"
+                ],
+                "name": "",
+                "out": [
+                    "23615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23618"
+                ],
+                "name": "",
+                "out": [
+                    "23618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23617",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 574,
+        "y": 31,
+        "z": 0
+    },
+    {
+        "desc": "The age old trees that grow here seem to bend under the weight of their own\nboughs. Vine and lichen-draped branches droop, almost to the point of touching\nthe ground. The undergrowth has been flattened and trampled in the western part\nof the forest, at the feet of steep cliffs that rise suddenly and mark the end\nof the valley.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23617"
+                ],
+                "name": "",
+                "out": [
+                    "23617"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "23619"
+                ],
+                "name": "logdoor",
+                "out": [
+                    "23619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23618",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lumbering Oaks",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 573,
+        "y": 31,
+        "z": 0
+    },
+    {
+        "desc": "Warm, humid air fills this cavern. A vast and endless web of fungi and vines\ncovers the walls from floor to ceiling. A glowing mat of moss completely covers\nthe floor, leaving no sign of the rock beneath it. The floor slopes steeply\ndownward to the south, and numerous shrubs are visible outside the cavern\nentrance to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "23618"
+                ],
+                "name": "",
+                "out": [
+                    "23618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "23623"
+                ],
+                "name": "",
+                "out": [
+                    "23623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23619",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Fungal Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 572,
+        "y": 31,
+        "z": 0
+    },
+    {
+        "desc": "Thorny bushes scratch against the gnarled and twisted trees here, growing up\nagainst the bark and intertwining with the dark vines hanging down from the\ntrees' branches. The terrain becomes increasingly steep to the west; a foul\nrivulet forms a cut down the slope and across the forest floor, running between\nstained, mottled roots.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23622"
+                ],
+                "name": "",
+                "out": [
+                    "23622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23617"
+                ],
+                "name": "",
+                "out": [
+                    "23617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23616"
+                ],
+                "name": "",
+                "out": [
+                    "23616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23620",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Slope",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 574,
+        "y": 30,
+        "z": 0
+    },
+    {
+        "desc": "Rows of tall oaks encircle a sloping vale filled with sprawling bushes. The\nbranches of the trees intertwine above and a canopy of broad leaves forms a\ndense roof. The ground is covered in black moss and thick, knotted roots beneath\nthe trees, while the bushes in the deeper vale grow too dense to allow even a\nglimpse of the soil beneath.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23616"
+                ],
+                "name": "",
+                "out": [
+                    "23616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23622"
+                ],
+                "name": "",
+                "out": [
+                    "23622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23621",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Twisted Canopy",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 575,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "The forest grows sparse in this north-western corner of a valley nestled among\nthe foothills of the Emyn-nu-Fuin. However, while the trees are few here,\nbrambles and thorn bushes grow in abundance. Dense dark green crab grass also\nthrives in this region, covering the landscape in emerald swaths.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23620"
+                ],
+                "name": "",
+                "out": [
+                    "23620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23621"
+                ],
+                "name": "",
+                "out": [
+                    "23621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23622",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brushwood Valley",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 574,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "Numerous stalactites hang down from the ceiling of this sloping cavern. The\nwalls of the cave are covered with grey fungus and water constantly drips down\nfrom the ceiling. The slope slants down to the south where it narrows. A worn\npath along the easiest route of ascent clearly shows that this passage is used\nfrequently.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23619"
+                ],
+                "name": "",
+                "out": [
+                    "23619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23624"
+                ],
+                "name": "",
+                "out": [
+                    "23624"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23623",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cavernous Slope",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 571,
+        "y": 31,
+        "z": 0
+    },
+    {
+        "desc": "A vast cavern opens up to the north, the east and the west; to the south, it\ntapers into a narrow passage. Great fissures scar the ceiling and water slowly\ndrops down from above. Mounds of bat guano lie on the cavern's floor, filling\nthe air with an acrid, pungent stench.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23649"
+                ],
+                "name": "",
+                "out": [
+                    "23649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23629"
+                ],
+                "name": "",
+                "out": [
+                    "23629"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23647"
+                ],
+                "name": "",
+                "out": [
+                    "23647"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23648"
+                ],
+                "name": "",
+                "out": [
+                    "23648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23630",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fissured Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 571,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "A small, semicircular grotto opens up into a bigger cavern to the west. Great\nslabs of rock slanted at various angles make up the walls of the grotto; these\nslabs are covered with scattered patches of fungi. Several large cracks scar the\nceiling and water slowly drops down from above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23630"
+                ],
+                "name": "",
+                "out": [
+                    "23630"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23647",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Fissured Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 572,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Several shallow recesses, each less than ten feet deep, line the walls of this\ndark cavern. Some of these openings seem to be covered with cobwebs, and round\ncocoons hang from the walls. The floor is rough, with many sharp, protruding\nrocks which make it difficult to walk upon. The ceiling is quite low compared to\nthat of the caverns stretching to the east, yet would still be out of reach for\neven the tallest of trolls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23630"
+                ],
+                "name": "",
+                "out": [
+                    "23630"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23648",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fissured Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 570,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Many stalactites hang from the ceiling in this large and murky cavern. A soft,\nfresh breeze carries from high above where great fissures scar the ceiling\nbetween the stalactites. The cavern walls are steep and made of brown and grey\nstone; a passage opens up to the south. There are several wet patches on the\nfloor where slowly dripping water is soaked up by the soil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23630"
+                ],
+                "name": "",
+                "out": [
+                    "23630"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23649",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fissured Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 571,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "This dark tunnel comes to an abrupt end as a massive gate made of wood stands to\nthe north. An opening of some kind seems to lead to the east and another\ndownwards inside the mountain. Walls of this tunnel are rough and hard with some\nmarks from the tools used to gnaw into the stone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2051,
+                "in": [
+                    "23652"
+                ],
+                "name": "",
+                "out": [
+                    "23652"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23651"
+                ],
+                "name": "",
+                "out": [
+                    "23651"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23635"
+                ],
+                "name": "",
+                "out": [
+                    "23635"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23650",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Massive Wooden Gate",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 576,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this room look somewhat more polished than those of the passage\nimmediately to the west. Wooden planks cover the floor, and there is a fireplace\nin the corner which appears to be used for cooking. A crude bed made of hay and\nfur sits on the floor next to the eastern wall. This room offers a clear view of\na heavy wooden gate to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23650"
+                ],
+                "name": "",
+                "out": [
+                    "23650"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23651",
+        "light": 1,
+        "loadflags": 20,
+        "mobflags": 4096,
+        "name": "Guard Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 577,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "A dark tunnel descending from above comes to a sudden end at a massive wooden\ngate bolted securely into the rock walls from both sides. This crude creation\nappears quite bulky and strong despite the lack of finesse in its construction.\nThe tunnel narrows as it approaches the gate and when it reaches it, the tunnel\nis only as high and as wide as the gate is.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "23650"
+                ],
+                "name": "",
+                "out": [
+                    "23650"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23653"
+                ],
+                "name": "",
+                "out": [
+                    "23653"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23652",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Tunnel at a Gate",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 576,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "A small and narrow tunnel has been delved into the mountain, falling steeply as\nit descends to the south. Tool marks are visible on the walls, and the ground\nhas been worn smooth by heavy traffic. The ceiling has been shored up with\nnumerous wooden beams.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23654"
+                ],
+                "name": "",
+                "out": [
+                    "23654"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23652"
+                ],
+                "name": "",
+                "out": [
+                    "23652"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23653",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 576,
+        "y": 37,
+        "z": 0
+    }
+]

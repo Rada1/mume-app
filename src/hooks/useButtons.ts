@@ -14,6 +14,7 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
     const [gridSize, setGridSize] = useState(() => parseInt(localStorage.getItem('mud-grid-size') || '5'));
     const [combatSet, setCombatSet] = useState<string | undefined>(() => localStorage.getItem('mud-combat-set') || undefined);
     const [defaultSet, setDefaultSet] = useState<string | undefined>(() => localStorage.getItem('mud-default-set') || 'main');
+    const [isSmartPopulateEnabled, setIsSmartPopulateEnabled] = useState(() => localStorage.getItem('mud-smart-populate') !== 'false');
     const [setSettings, setSetSettings] = useState<Record<string, ButtonSetSettings>>(() => {
         try {
             const saved = localStorage.getItem('mud-set-settings');
@@ -51,7 +52,7 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         return DEFAULT_BUTTONS;
     });
 
-    const buttons = useButtonLogic(rawButtons, activeSet, abilities, characterClass, isEditMode);
+    const buttons = useButtonLogic(rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled);
     const { resetToDefaults } = useButtonPersistence(rawButtons, setRawButtons, uiPositions, setUiPositions);
 
     const buttonsRef = useRef(buttons);
@@ -125,8 +126,12 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         localStorage.setItem('mud-set-settings', JSON.stringify(setSettings));
     }, [setSettings]);
 
+    useEffect(() => {
+        localStorage.setItem('mud-smart-populate', isSmartPopulateEnabled ? 'true' : 'false');
+    }, [isSmartPopulateEnabled]);
+
     return useMemo(() => ({
         buttons, setButtons: setRawButtons, rawButtons, buttonsRef, activeSet, setActiveSet, isEditMode, setIsEditMode, editingButtonId, setEditingButtonId, selectedButtonIds, setSelectedIds, toggleSelection, uiPositions, setUiPositions, dragState, setDragState, availableSets, createButton, deleteButton, deleteSet, resetToDefaults: (m?: any) => resetToDefaults(addMessageRef.current || undefined), buttonTimers, combatSet, setCombatSet, defaultSet, setDefaultSet, isGridEnabled, setIsGridEnabled, gridSize, setGridSize, setAddMessage: (fn: any) => { addMessageRef.current = fn; },
-        setSettings, setSetSettings
-    }), [buttons, rawButtons, activeSet, isEditMode, editingButtonId, selectedButtonIds, uiPositions, dragState, availableSets, combatSet, defaultSet, isGridEnabled, gridSize, createButton, deleteButton, deleteSet, resetToDefaults, setSettings]);
+        setSettings, setSetSettings, isSmartPopulateEnabled, setIsSmartPopulateEnabled
+    }), [buttons, rawButtons, activeSet, isEditMode, editingButtonId, selectedButtonIds, uiPositions, dragState, availableSets, combatSet, defaultSet, isGridEnabled, gridSize, createButton, deleteButton, deleteSet, resetToDefaults, setSettings, isSmartPopulateEnabled]);
 };

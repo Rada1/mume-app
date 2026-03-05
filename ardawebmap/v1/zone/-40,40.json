@@ -1,0 +1,334 @@
+[
+    {
+        "desc": "After Thrain and Thorin settled in the Blue Mountains after the battle at\nNanduhirion, the exploration of the mountain lead the Dwarves farther and\nfarther into the underground. As the excavations continued, this tunnel was\ncreated to host a large rock-grinder; here the largest of ore fragments are\nbrought to be mauled to a more manageable size. The tunnel leaves the grinder to\nthe south where, in the distance, a large opening leads into a mine shaft.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14306"
+                ],
+                "name": "",
+                "out": [
+                    "14306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14305",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Side Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -27,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "In the days of Thrain, the gift of Aule and the will among the Dwarves forged\ntogether an entrance into the very heart of the Blue Mountains. A vast system of\nmine tunnels takes its beginning at a steep shaft located south of this\ntunnel-branch where neither crack nor scratch can take root in the meticulously\ncarved stone. In an opening in the western wall is set a plain oaken door.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14305"
+                ],
+                "name": "",
+                "out": [
+                    "14305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14307"
+                ],
+                "name": "",
+                "out": [
+                    "14307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14308"
+                ],
+                "name": "",
+                "out": [
+                    "14308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14306",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Side Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -27,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "A large rectangular cavern, excavated with utmost skill and precision, extends\nfifty by sixty feet in the underground beneath the Blue Mountains. Straight\nwalls of hard trusty rock form the solid base for a high wooden ceiling fifteen\nfeet above. Arranged along the walls are many tables, cabinets and boards for\ntools, and in the centre of the room is a large anvil. Metal buckets, some\nfilled with scrap metal and some with iron-ore, stand by a door in the eastern\nwall ready to be emptied into the hot fire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14306"
+                ],
+                "name": "",
+                "out": [
+                    "14306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14308",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Theddin's Smithy",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": -28,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "A circular cavern of dwarven make extends its arching walls inwards forming a\nspherical ceiling around an anvil in the centre of the cavern. The afferent\nwalls surround what appears to be a dwarven workshop. Broad shelves and large\nwooden cabinets precisely ordered on the walls and in clusters on the floor\nprovide storage space for many strange tools that are used by the dwarven\nmetal-workers. Despite the obvious completeness of the workshop it has not been\nused for a long time, as is apparent from the dust and cobwebs that span the\nroom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28752"
+                ],
+                "name": "",
+                "out": [
+                    "28752"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28837",
+        "light": 0,
+        "loadflags": 7,
+        "mobflags": 0,
+        "name": "Thrain's Anvil",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": -23,
+        "y": 59,
+        "z": 0
+    }
+]

@@ -4,10 +4,11 @@ export function isGmcpCharVitals(data: any): data is GmcpCharVitals {
     if (!data || typeof data !== 'object') return false;
     const keys = Object.keys(data).map(k => k.toLowerCase());
     return (
-        keys.some(k => ['hp', 'hits', 'health', 'h'].includes(k)) ||
-        keys.some(k => ['mana', 'sp', 'spirit', 'm'].includes(k)) ||
-        keys.some(k => ['move', 'mv', 'mp', 'moves', 'v'].includes(k)) ||
-        keys.some(k => ['light', 'l'].includes(k))
+        keys.some(k => ['hp', 'hits', 'health', 'h', 'maxhp', 'maxhits', 'H'].includes(k)) ||
+        keys.some(k => ['mana', 'sp', 'spirit', 'm', 'maxmana', 'maxsp', 'maxspirit', 'M'].includes(k)) ||
+        keys.some(k => ['move', 'mv', 'mp', 'moves', 'v', 'maxmove', 'maxmv', 'maxmp', 'V'].includes(k)) ||
+        keys.some(k => ['light', 'l'].includes(k)) ||
+        keys.some(k => ['terrain', 'environment'].includes(k))
     );
 }
 

@@ -102,7 +102,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setDetectLighting: (fn) => { /* internal use */ }
     });
 
-    const { audioCtxRef, initAudio } = useSoundSystem();
+    const { audioCtxRef, initAudio, triggerHaptic: soundSystemHaptic } = useSoundSystem();
+    // Wire the real haptic function into the ref immediately
+    triggerHapticRef.current = soundSystemHaptic;
     const settings = useSettings({
         addMessage, audioCtxRef, initAudio,
         setButtons: btn.setButtons,
@@ -194,6 +196,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onAddNpc: (data) => { gmcpHandlers.onAddNpc(data); addNpcFn?.(data); },
             onRemovePlayer: (data) => { gmcpHandlers.onRemovePlayer(data); removePlayerFn?.(data); },
             onRemoveNpc: (data) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
+            onCharNameChange: gmcpHandlers.onCharNameChange,
+            onPositionChange: gmcpHandlers.onPositionChange,
             onOpponentChange: (name) => { opponentChangeFn?.(name); }
         }
     });
@@ -307,7 +311,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
             mapperRef, ...settings, audioCtxRef,
             telnet, parser,
-            detectLighting: (sym) => { }, setDetectLighting: (fn) => { }
+            detectLighting: env.detectLighting,
+            setDetectLighting: (fn) => { /* internal use */ }
         }}>
             {children}
         </GameContext.Provider>

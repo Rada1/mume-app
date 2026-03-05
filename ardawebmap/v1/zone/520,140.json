@@ -1,0 +1,1268 @@
+[
+    {
+        "desc": "The trees of this forest are towering, ancient giants. Many of them are gnarled\nand twisted. Large roots protrude through the thick layer of rotting leaves on\nthe ground. Aside from the trees, little grows here except and the fungi and\nmushrooms that draw their nourishment from the tree's trunks, as little light\nfinds its way through the canopy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25320"
+                ],
+                "name": "",
+                "out": [
+                    "25320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25318"
+                ],
+                "name": "",
+                "out": [
+                    "25318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25319",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 32768,
+        "name": "Dark and Dreary Corner of Mirkwood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "These shrub-covered fields lie in the shadow of a high plateau to the west, and\nthat shade probably kept the trees of Mirkwood to the east from creeping all the\nway up to the foot of the plateau. The vegetation consists of thorn-covered\nbushes and sturdy-looking shrubs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25321"
+                ],
+                "name": "",
+                "out": [
+                    "25321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25319"
+                ],
+                "name": "",
+                "out": [
+                    "25319"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25320",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled, Ensnaring Thornbushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 2,
+        "x": 520,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "This thicket-covered stretch of land lies between denser undergrowth to the\nnorth, the dark depths of Mirkwood to the east, and a plateau to the west. The\nground is overgrown with thorny thickets cut with wide paths. Most of the bushes\nhave long, nasty thorns pointing every which way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25322"
+                ],
+                "name": "",
+                "out": [
+                    "25322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25320"
+                ],
+                "name": "",
+                "out": [
+                    "25320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25321",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Thornbushes",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 2,
+        "x": 520,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "The uneven terrain here at the foot of the high plateau to the west is entirely\ncovered by immense thickets. Thousands of shrubs grow in such proximity that to\neach other that the whole thicket appears like one single plant. A few paths\nexist where a mount or traveller can make their way through.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25323"
+                ],
+                "name": "",
+                "out": [
+                    "25323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25321"
+                ],
+                "name": "",
+                "out": [
+                    "25321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25322",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thorny Thicket",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 2,
+        "x": 520,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The slopes of this hill are covered by a dark forest. The trees are black oaks\nwith gnarled roots and twisted trunks, and tall, dark alders. The undergrowth of\nstrangling vines and long-thorned bushes has been haphazardly crushed and torn\nup, root and all, as if something very large and impatient smashed through.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25324"
+                ],
+                "name": "",
+                "out": [
+                    "25324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25322"
+                ],
+                "name": "",
+                "out": [
+                    "25322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25325"
+                ],
+                "name": "",
+                "out": [
+                    "25325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25323",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Wooded Hill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 2,
+        "x": 520,
+        "y": 152,
+        "z": 0
+    },
+    {
+        "desc": "Raised over the surrounding dark forest, this hill might once have been lit by\nthe warm sun. But now the black oaks have stolen most of the light with their\ndense cover of dark leaves. The hill's summit and slopes are covered by a layer\nof dead leaves and several large, round boulders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25323"
+                ],
+                "name": "",
+                "out": [
+                    "25323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25324",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 16384,
+        "name": "Steep, Sombre Hill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 2,
+        "x": 520,
+        "y": 151,
+        "z": 0
+    },
+    {
+        "desc": "The forest is extremely dark and dense, with huge trees that prevent any\nsunlight from reaching the ground. A crude camp was set up between some large\nrocks and ancient trees. It consists of a few ragged furs and dirty hides around\na fireplace. A huge dulled, dirty cauldron, used to cook something or someone,\nhangs over the fire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "26073"
+                ],
+                "name": "hugestoneblock",
+                "out": [
+                    "26073"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "25546"
+                ],
+                "name": "trunk",
+                "out": [
+                    "25546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25417"
+                ],
+                "name": "",
+                "out": [
+                    "25417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25419"
+                ],
+                "name": "",
+                "out": [
+                    "25419"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25418",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Camp of the Hill Trolls",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 147,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel has been hollowed out by the hill trolls out of the black rock that\nmakes up Dol Guldur. A rough stair leads back upwards into the forest that seems\nto have been a natural cave at some point in time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25460"
+                ],
+                "name": "",
+                "out": [
+                    "25460"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25461"
+                ],
+                "name": "",
+                "out": [
+                    "25461"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25418"
+                ],
+                "name": "",
+                "out": [
+                    "25418"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25419",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel of the Hill Trolls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 144,
+        "z": 0
+    },
+    {
+        "desc": "The valley floor is covered with a dense and dark wood of ancient oaks, which\nblock most of what sunlight there might be above. The valley continues to the\nsouth while gentle slopes rise to the north and west, leading up to higher\nground, which even so look equally covered by dense forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25459"
+                ],
+                "name": "",
+                "out": [
+                    "25459"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25454"
+                ],
+                "name": "",
+                "out": [
+                    "25454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25452"
+                ],
+                "name": "",
+                "out": [
+                    "25452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25453",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Deep Forested Valley",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 149,
+        "z": 0
+    },
+    {
+        "desc": "The floor of this wide valley is covered by enormous oaks. It narrows to the\nnorth while the south side is blocked off by slopes too steep to ascend. Fallen\nleaves cover the ground in a thick layer of rotting compost. The smell of rotten\nplantlife hangs heavily in the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25453"
+                ],
+                "name": "",
+                "out": [
+                    "25453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25456"
+                ],
+                "name": "",
+                "out": [
+                    "25456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "25455"
+                ],
+                "name": "",
+                "out": [
+                    "25455"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25454",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Deep Forested Valley",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 150,
+        "z": 0
+    },
+    {
+        "desc": "The branches of this tree form a loose canopy. The footing is treacherous, but\nplentiful. Rotten vegetation clings to the trunk, giving off an unpleasant\nodour. The tree itself seems solid, though it has hard to tell behind the\nmultiple layers of moss.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "25454"
+                ],
+                "name": "",
+                "out": [
+                    "25454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25455",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Up an Oak Tree",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 521,
+        "y": 150,
+        "z": 0
+    },
+    {
+        "desc": "This forested hillock is elevated over the lower parts of Mirkwood to the east\nand north. The same gnarly ancients grow here though, their massive trunks\nstanding a tad too close to each other. Their outstretched branches intertwine\nabove to form an almost solid ceiling of vegetation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25453"
+                ],
+                "name": "",
+                "out": [
+                    "25453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25458"
+                ],
+                "name": "",
+                "out": [
+                    "25458"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25459",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Gloomy Hillock",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 520,
+        "y": 148,
+        "z": 0
+    },
+    {
+        "desc": "The dark tunnel suddenly stops in what seems to be dead end. A few splintered\ncrates, some completely upended, have been dumped unceremoniously at the end of\nthe tunnel. Some roots grow down from the forest above amongst the troll filth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25419"
+                ],
+                "name": "",
+                "out": [
+                    "25419"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "25546"
+                ],
+                "name": "slab",
+                "out": [
+                    "25546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25460",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Tunnel of the Hill Trolls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 144,
+        "z": 0
+    },
+    {
+        "desc": "Refuse covers the filthy floor of this gloomy cave has been dug out of the black\nrock. A huge slab of stone has been roughly placed on the dirty floor of the\ncave that slows a draft. The trunk of a large pine tree has been placed on the\nwestern half of the cave to give some privacy to its inhabitants.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25418"
+                ],
+                "name": "",
+                "out": [
+                    "25418"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "25460"
+                ],
+                "name": "slab",
+                "out": [
+                    "25460"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25546",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 12288,
+        "name": "Sullen Cave",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 521,
+        "y": 147,
+        "z": 0
+    },
+    {
+        "desc": "This cave is a troll lair if there ever was one. It reeks with the stench of\nunwashed flesh and rotting meat. The floor is littered with gnawed, cracked\nbones and other refuse. In one dark back corner lie some items of metal, most\nbent, broken, and unrecognisable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25418"
+                ],
+                "name": "",
+                "out": [
+                    "25418"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26073",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Lair of the Hill Trolls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 521,
+        "y": 148,
+        "z": 0
+    }
+]

@@ -1,0 +1,936 @@
+[
+    {
+        "desc": "The bushes make movement difficult but it is possible to travel farther into the\nbrush to the north and south while movement to the east is impossible. The\nground is covered with short grass in between the bushes. The area seems quite\ndesolate showing no signs of civilised inhabitants.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9591"
+                ],
+                "name": "",
+                "out": [
+                    "9591"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9589"
+                ],
+                "name": "",
+                "out": [
+                    "9589"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9616"
+                ],
+                "name": "",
+                "out": [
+                    "9616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9615"
+                ],
+                "name": "",
+                "out": [
+                    "9615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9590",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of the Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground is covered with a foot high green grass where the thorny bushes\ncovering the area in all directions have yielded. It seems impossible to get\nfarther east while travel in other directions will take you into other parts of\nthe brush. To the south the grass is getting shorter but also less coarse as the\nsoil contains more accessible water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9592"
+                ],
+                "name": "",
+                "out": [
+                    "9592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9590"
+                ],
+                "name": "",
+                "out": [
+                    "9590"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9627"
+                ],
+                "name": "",
+                "out": [
+                    "9627"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9591",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scattered Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground is covered with an equal mixture of a foot high green grass that\nseems to be able to draw enough water to thrive and coarse bushes. The bushes\nscattered over the area are getting taller and denser to the north where they\nseem to be weeding most other vegetation but it might still be possible to find\na way through. The brush continues to the west and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9593"
+                ],
+                "name": "",
+                "out": [
+                    "9593"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9591"
+                ],
+                "name": "",
+                "out": [
+                    "9591"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9628"
+                ],
+                "name": "",
+                "out": [
+                    "9628"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9592",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Brush",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 12,
+        "sundeath": 0,
+        "x": 240,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The dry ground covered with short, parched brown grass is hard and lumpy. Here,\ntall gorse bushes provide a little protection from the wind, but they also stop\npassage in most directions. It might be possible to clear a way to the west,\nwhile to the south the coarse bushes give up control to the flourishing green\ngrass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9594"
+                ],
+                "name": "",
+                "out": [
+                    "9594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9592"
+                ],
+                "name": "",
+                "out": [
+                    "9592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 32,
+                "flags": 515,
+                "in": [
+                    "9650"
+                ],
+                "name": "",
+                "out": [
+                    "9650"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9593",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Brush",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The hard ground is lumpy and covered with short and parched brown grass. The\nonly form of shelter is provided by the tall gorse bushes covering most of the\narea and keeping all other vegetation at bay. Passage is blocked by the bushes\nin all directions except south where it might be possible to clear a way through\nthe bushes.\n",
+        "exits": [
+            {
+                "dflags": 33,
+                "flags": 515,
+                "in": [
+                    "9595"
+                ],
+                "name": "vegetation",
+                "out": [
+                    "9595"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9593"
+                ],
+                "name": "brush",
+                "out": [
+                    "9593"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 33,
+                "flags": 515,
+                "in": [
+                    "9649"
+                ],
+                "name": "brush",
+                "out": [
+                    "9649"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9594",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 16384,
+        "name": "Deep in the Thorns",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "Choked by all the tall, dense gorse that consumes the landscape, small patches\nof parched, brown grass dot the cracked and lifeless dirt. Shrouded with their\ndark green leaves and menacingly sharp thorns, the bushes seem content as they\nflourish at the expense of all other vegetation. These proud, almost arrogant\nplants grow ever taller and wider, making passage difficult in all directions.\n",
+        "exits": [
+            {
+                "dflags": 33,
+                "flags": 515,
+                "in": [
+                    "9596"
+                ],
+                "name": "thickbush",
+                "out": [
+                    "9596"
+                ]
+            },
+            {
+                "dflags": 33,
+                "flags": 515,
+                "in": [
+                    "9594"
+                ],
+                "name": "vegetation",
+                "out": [
+                    "9594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 33,
+                "flags": 515,
+                "in": [
+                    "9648"
+                ],
+                "name": "thornybush",
+                "out": [
+                    "9648"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 33,
+                "flags": 3,
+                "in": [
+                    "20369"
+                ],
+                "name": "witheredshrub",
+                "out": [
+                    "20369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9595",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dense Gorse",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 240,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "Almost tall as trees, huge thorny bushes and shrubs grow close together forming\nan unrelenting spiky wall. Small patches of dry, dark grass grow subdued on the\nfew areas the brush have not claimed yet. All around the horizon the brush goes\non with discouraging density. There is very little life here as there is hardly\nany edible plants to give any nourishment.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 33,
+                "flags": 515,
+                "in": [
+                    "9595"
+                ],
+                "name": "thickbush",
+                "out": [
+                    "9595"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9647"
+                ],
+                "name": "thickbrush",
+                "out": [
+                    "9647"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9596",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep in the Thorns",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 12,
+        "sundeath": 2,
+        "x": 240,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The animal den has recently been dug into the hard, dry soil. The earthen walls\nstill show fresh traces of medium sized clawmarks. The first six to seven yards\nbeing a rather narrow tunnel opening up into a large den. Recent footprints on\nthe dusty floor bears witness of wolves having used the den recently.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9590"
+                ],
+                "name": "",
+                "out": [
+                    "9590"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9615",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Animal Den",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 241,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "Not more than ten feet in each direction, this room serves as a reception area\nfor the inn. A long counter about three feet in elevation sits near the western\nwall with a small note nailed to the side facing the centre of the room. Simple\ncarvings adorn the edges of the countertop, and its surface is smooth except in\nthe places it has been scratched. A tall, narrow red curtain runs from floor to\nceiling in the middle of the northern wall, concealing whatever lies beyond it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14406"
+                ],
+                "name": "",
+                "out": [
+                    "14406"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14407",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "The Inn at Jasper's Tavern",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 243,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "This burrow is most likely the old home of a badger but it has been widened to\nallow the passage of a humanoid. The entrance is concealed by the remains of a\nshrub. The burrow widens even more going south giving room for a door with its\ncasing firmly embedded in the sides of the burrow. A lot of fresh footmarks on\nthe ground suggests that this place is not abandoned.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20370"
+                ],
+                "name": "",
+                "out": [
+                    "20370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9595"
+                ],
+                "name": "",
+                "out": [
+                    "9595"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20369",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hidden Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 242,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "A small room has been excavated at the end of the burrow giving room for a bed\nand a crude table. A wooden door is set in the north wall so it is possible to\nblock the exit keeping out animals of the wilderness. Its massive wooden frame\nis embedded in the earthen sides of the burrow making it very secure. There is a\nsmall gap over the door making it possible for the smoke from the fireplace to\nleave the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20369"
+                ],
+                "name": "",
+                "out": [
+                    "20369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20370",
+        "light": 0,
+        "loadflags": 2097168,
+        "mobflags": 0,
+        "name": "A Crude Dwelling",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 242,
+        "y": 155,
+        "z": 0
+    }
+]

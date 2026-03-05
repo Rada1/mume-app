@@ -1,0 +1,2863 @@
+[
+    {
+        "desc": "The odour in this dingy room is a musty mix of stale alcohol and tanning oils.\nAlong the eastern wall, there is a neglected bar with dirty glasses carelessly\nleft on it. The few tables, upon which patrons rarely sit, are decrepit and\nrun-down. There are holes punched through the various chairs that are strewn\naround the tables. The decline in patronage has led the owner to dabble in other\ntrades. An array of oils and instruments, which were used to fashion animal\nhides into useful leathers and other similar things, covers a rickety bench on\nthe western wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16166"
+                ],
+                "name": "",
+                "out": [
+                    "16166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16160",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dingy Bar",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 378,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "There are stalls in the stable. Most of them are empty and look as if they have\nbeen unused for years. The walls of the stable are thin, and there are holes\nscattered all over the boards. A large and rusty water trough lies in the middle\nof the stable. The water in it is green with algae.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16165"
+                ],
+                "name": "",
+                "out": [
+                    "16165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16162"
+                ],
+                "name": "",
+                "out": [
+                    "16162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16161",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Tiny Stable",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 377,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "A wooden fence creates a large oval around the field. A few posts and beams make\nhurdles of varying heights. A small, open-air shelter stands at one end of the\npractice yard, attached to the stable. In it, there stands a small workbench\nwith various tools scattered and piled on it. A modest bed with linen blankets\nsits close to the bench.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16161"
+                ],
+                "name": "",
+                "out": [
+                    "16161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16162",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Practice Yard",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 376,
+        "y": 181,
+        "z": 0
+    },
+    {
+        "desc": "This house is broken down and seems to be on the verge of falling apart. Holes\nare readily apparent in the ceiling, and the floor seems to consist of nothing\nbut dirt. Various hunting tools are displayed on the walls, worn and well used\nby the last inhabitant of the house.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16164"
+                ],
+                "name": "",
+                "out": [
+                    "16164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16163",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "A Small House",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 375,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "The street surface has transformed over many years of neglect into nothing more\nthan a thick layer of gunk and mud. Deep soggy ruts run back and forth through\nthe gooey matter, making it troublesome to cross without slipping or getting\ndirty. The narrow street barely allows two fully-grown men to stand shoulder to\nshoulder. A horse would have to be relieved of both coach and carriage to be\nable to pass. A doorway leads into an abandoned house to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16167"
+                ],
+                "name": "",
+                "out": [
+                    "16167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16165"
+                ],
+                "name": "",
+                "out": [
+                    "16165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16163"
+                ],
+                "name": "",
+                "out": [
+                    "16163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16164",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dirty Street",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 376,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "What passes for the centre of this small village is just a part of a street that\nappears slightly wider here than to the east and the west. Thick mud lurches\nunderfoot, making it difficult to traverse with or without a mount. A few stones\npoke out of the mud, indicating that once, this road was paved with cobblestone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16161"
+                ],
+                "name": "",
+                "out": [
+                    "16161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16170"
+                ],
+                "name": "",
+                "out": [
+                    "16170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16166"
+                ],
+                "name": "",
+                "out": [
+                    "16166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16164"
+                ],
+                "name": "",
+                "out": [
+                    "16164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16165",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Square",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 377,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "A small well is here, giving water to the poor denizens of the village. The\nfooting around the well is muddy and soggy from regular spillage as the\nvillagers draw water from the well. The rest of the surface of the street\nconsists of packed dirt, littered with small cobblestones. Deep ruts, running\nfrom the east to the west, scar the ground on the northern side close to a\nshabby building.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16160"
+                ],
+                "name": "",
+                "out": [
+                    "16160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16020"
+                ],
+                "name": "",
+                "out": [
+                    "16020"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16165"
+                ],
+                "name": "",
+                "out": [
+                    "16165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16166",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "A Shabby Stone Well",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 378,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "Furs and pelts cover the walls of this dwelling. A large bear fur, complete with\nhead and claws, covers almost an entire wall. The floor is creaky, and cracks\nhave formed in the wood. A few small pieces of wooden furniture are scattered\nacross the room, leaving an undemanding look, apart from the trophies of wild\nanimals.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16164"
+                ],
+                "name": "",
+                "out": [
+                    "16164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16168"
+                ],
+                "name": "",
+                "out": [
+                    "16168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16167",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hunter's Lodge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 376,
+        "y": 183,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this room are lined with animal skins, and the floor is carpeted\nwith fur and skins. A modest table sits at the southern end of the room with an\nold wooden chair placed right in front of it. A few pieces of a half-burnt\ncandle are scattered over the table, and dots of old wax-drips decorate the\nsurface. The bed is only big enough for one and is made of simple, rough wood.\nIt has a thick but tatty bearskin serving as a mattress, and two crumpled sheets\non it replace the blanket.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16167"
+                ],
+                "name": "",
+                "out": [
+                    "16167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16168",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "Hunter's Quarters",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 375,
+        "y": 183,
+        "z": 0
+    },
+    {
+        "desc": "The small kitchen is crammed with mostly empty shelves, cupboards, a table and\ntwo rickety chairs. The drawers and benches are strewn with dented pots, pans\nand a few other kitchen utensils. The plates and bowls are chipped and worn,\nindicating a long period of use. A measly number of basic ingredients can be\nfound, but unfortunately there is no delicious aroma coming from the large oven\nsitting at the southern wall of the room. Instead, it is filled with black ash\nand food residue. The wooden floor is creaky and has small holes in it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16170"
+                ],
+                "name": "",
+                "out": [
+                    "16170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16169",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Kitchen",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 377,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "A small sitting-room leads into the house. While the owners of the house have\ntried to furnish their quarters in a rather lavish manner, it still seems\nfrugal. A single, large animal fur fulfils the role of the carpet, and cut tree\nstumps serve as benches. A small table sits in the corner of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16165"
+                ],
+                "name": "",
+                "out": [
+                    "16165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16169"
+                ],
+                "name": "",
+                "out": [
+                    "16169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16171"
+                ],
+                "name": "",
+                "out": [
+                    "16171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16170",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Parlour",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 378,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "The bedroom area is filled with knickknacks made of parts of various wild\nbeasts, lying around on the small drawer and the bedside table. Necklaces made\nof bones, noisemakers of teeth and backscratchers made of claws are just some of\nthese items. Furs cover every square inch of the floor making it warm and soft\nto step on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16170"
+                ],
+                "name": "",
+                "out": [
+                    "16170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16171",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 379,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "The river here narrows to less than forty feet at the top of the falls before\ncascading eastwards over the edge of a steep incline down into a mist shrouded\nemptiness far below. Only a madman would fling himself out into such emptiness,\nas the concealing spray of the crashing waters might hide all manner of\ninteresting, but painful ways, to die.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15903"
+                ],
+                "name": "",
+                "out": [
+                    "15903"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "15902"
+                ],
+                "name": "",
+                "out": [
+                    "15902"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "16734"
+                ],
+                "name": "",
+                "out": [
+                    "16737"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16736",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Falls of Mist",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 379,
+        "y": 197,
+        "z": 0
+    },
+    {
+        "desc": "Here, near the end of the trail, looking south one can discern some dark shadows\nfloating across the floor of the chasm several yards below. An ice-cold current\nseems to flow out of the shadows, chilling your skin as it penetrates your\nclothes. A deadly sensation originates from the darkness just west of here. At\nyour feet a wide crevice forms a passage that leads into a crumbling cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18147"
+                ],
+                "name": "",
+                "out": [
+                    "18147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "18123"
+                ],
+                "name": "",
+                "out": [
+                    "18123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "18107"
+                ],
+                "name": "",
+                "out": [
+                    "18107"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18104"
+                ],
+                "name": "",
+                "out": [
+                    "18104"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18106",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Chasm Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 360,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "The trail comes to a sudden end at a mound of ice. The temperature, well below\nfreezing, eats through the warmest of clothing sending a chill through your\nbones. No sound can be heard as something much colder and more ancient than the\nice in the room seems to sap the warmth of your body.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "18108"
+                ],
+                "name": "",
+                "out": [
+                    "18108"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18110"
+                ],
+                "name": "",
+                "out": [
+                    "18110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18109",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 65536,
+        "name": "Ice Mound",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 360,
+        "y": 198,
+        "z": 0
+    },
+    {
+        "desc": "This is a narrow entrance to an ancient crypt. The black walls glisten as if\nthey were metallic and seem bitterly cold to the touch. This room, as well as\nthe remainder of the crypt, seems untouched by the havoc in the upper chambers,\npreserved from the flow of ice and natural decay. A frosty mist forms as the\ncold moist air above meets the bitter coldness of the crypt.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18111"
+                ],
+                "name": "",
+                "out": [
+                    "18111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18109"
+                ],
+                "name": "",
+                "out": [
+                    "18109"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18110",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crypt Entrance",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 361,
+        "y": 198,
+        "z": 0
+    },
+    {
+        "desc": "A magnificent and finely crafted archway marks the division between the upper\nand lower chambers. The arches extend some ten feet above you and are composed\nof solid marble inlaid with gold, emerald and rubies. The sides are perfectly\nsmooth and oriented much like a tuning fork.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18112"
+                ],
+                "name": "",
+                "out": [
+                    "18112"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18113"
+                ],
+                "name": "",
+                "out": [
+                    "18113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18110"
+                ],
+                "name": "",
+                "out": [
+                    "18110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18116"
+                ],
+                "name": "",
+                "out": [
+                    "18116"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18111",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Archway",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 362,
+        "y": 198,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself in a high narrow corridor. The walls, some six feet apart, are\nmasked by an eerie black which extends from the ceiling, some ten feet above to\nthe floor. With the frigid cold an aurora of nothingness forms, masking the\ninnate essence of oneself and causing a sensation of unnatural panic and fear.\nWhatever constructed these chambers possessed an ancient power, one well beyond\nthat of mortal beings, able to mask and cancel all forms of present day magic.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18111"
+                ],
+                "name": "",
+                "out": [
+                    "18111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18120"
+                ],
+                "name": "",
+                "out": [
+                    "18120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18112",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Side Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 362,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "The corridor seems endless in the pitch black surroundings, even though a low\nvibration rattles through the floors. While the walls remain still, the\nsensation that the corridor has narrowed cannot be mistaken. From here you can\ngo west towards the entrance of the crypt or north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18114"
+                ],
+                "name": "",
+                "out": [
+                    "18114"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18111"
+                ],
+                "name": "",
+                "out": [
+                    "18111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18113",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Back Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 363,
+        "y": 198,
+        "z": 0
+    },
+    {
+        "desc": "This corridor at the rear of the crypt turns sharply from east-west to north-\nsouth forming a crisp corner. An eerie black extends from the floor to the\nceiling some ten feet above and masks all movements in the room. A frigid cold\nseems to emanate from the room to the east sucking out all warmth. Whatever\nconstructed these chambers surely possessed an ancient power well beyond that of\nmortal beings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18113"
+                ],
+                "name": "",
+                "out": [
+                    "18113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18115"
+                ],
+                "name": "",
+                "out": [
+                    "18115"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18114",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Back Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 363,
+        "y": 197,
+        "z": 0
+    },
+    {
+        "desc": "With your every movement, an invisible hand seems to pass through you stealing\nthe heat from your soul, causing your blood to slowly turn to ice. The remains\nof broken swords and armour lie scattered across the floor, much of it rusted\nand all of it useless. Scrape marks line the walls where those before you have\ntried in vain to flee from that which had gripped them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18114"
+                ],
+                "name": "",
+                "out": [
+                    "18114"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18115",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 4096,
+        "name": "Backroom",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 364,
+        "y": 197,
+        "z": 0
+    },
+    {
+        "desc": "It seems that many of the victims' bodies were placed in this room. The corpses,\nstacked one upon another, form a neat pile of gutless bodies which are prevented\nfrom rot or decay by the cold. Oddly, the bodies stacked here appear to be those\nof the strongest and largest victims that were sacrificed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18116"
+                ],
+                "name": "",
+                "out": [
+                    "18116"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18121",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Side Room",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 363,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "This portion of the trail now follows an old riverbed. In this spot a waterfall\nonce roared as water came crashing down the slope to the south. The river ceased\nto flow long ago and the only vestige that remains are a few stalactites of ice\nhanging on the wall and the icy floor beneath you. The trail, faintly visible\nunder the ice, was polished by the passage of the water eons ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "18124"
+                ],
+                "name": "",
+                "out": [
+                    "18124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "18106"
+                ],
+                "name": "",
+                "out": [
+                    "18106"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1025,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18123",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Frozen Waterfall",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 361,
+        "y": 199,
+        "z": 0
+    },
+    {
+        "desc": "With great effort, you have managed to reach a narrow cleft high upon the\nwestern side of the mountain. Unfortunately, the cleft is coated in ice, has no\nhandholds and a strong stiff wind blows pushing you down the western side some\nfive meters.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18069"
+                ],
+                "name": "",
+                "out": [
+                    "18069"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18127",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Impassable Mountain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 360,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "You are in the rear of a dark cavern. Here, insulated from the cold which whirls\naround the chasm, one could almost call this place warm. This chamber, dug into\nthe granite rock, is padded by animal hair and elf ears. Several humanoid bones\nare scattered around; against a wall lies a corpse wiggling its toe in the wind.\nWhat is scary are the eyes, wide open, looking into an eternal vacuum, but\nabsolutely white, as if it had no soul before its death.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18140"
+                ],
+                "name": "",
+                "out": [
+                    "18140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "fracturedfloor",
+                "out": [
+                    "18160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18144",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 360,
+        "y": 194,
+        "z": 0
+    },
+    {
+        "desc": "This space is narrow and cramped with a ragged ceiling some six inches above you\nforming a small air pocket above the underground stream. While the air is rather\nstale, it is still breathable. To the west, there is a small cavern offering\nescape from the icy water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18170"
+                ],
+                "name": "",
+                "out": [
+                    "18170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18144"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18161"
+                ],
+                "name": "",
+                "out": [
+                    "18161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18160",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Air Pocket",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 363,
+        "y": 190,
+        "z": 0
+    },
+    {
+        "desc": "You are in a narrow underwater corridor. While it is possible to swim eastward,\nthe task would be difficult as the water races down towards the west. Above you\nthere is a small air pocket offering fresh air and relief from the current.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18169"
+                ],
+                "name": "",
+                "out": [
+                    "18169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18160"
+                ],
+                "name": "",
+                "out": [
+                    "18160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18162"
+                ],
+                "name": "",
+                "out": [
+                    "18162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18161",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 363,
+        "y": 191,
+        "z": 0
+    },
+    {
+        "desc": "The water rushes west where a very faint light can be seen, indicating an\nentrance to this passage in that direction. The reflections cast by the faint\nlight emphasise the ragged walls and show where the mountain was ripped apart\neons ago. While the current is very strong, it is possible to continue upwards\ntowards the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 131,
+                "in": [
+                    "18163"
+                ],
+                "name": "",
+                "out": [
+                    "18163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18161"
+                ],
+                "name": "",
+                "out": [
+                    "18161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18162",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 363,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "Underwater, you would have to fight the current to move towards the east. A\nfaint light can be seen towards the west, as the stream approaches the end of\nthe underground corridor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18162"
+                ],
+                "name": "",
+                "out": [
+                    "18162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18164"
+                ],
+                "name": "",
+                "out": [
+                    "18164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18163",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 362,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "This is a low corridor heading east through the Misty Mountains. The chamber,\noriginally a small fissure that was slowly widened by the continuous flow of\nwater through the walls of the mountain, is large enough for passage. While it\nis possible to continue eastward, to do so would require you to swim underwater\nand fight the stream's strong westward current as it passes into the narrow\ngranite crevices.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18163"
+                ],
+                "name": "",
+                "out": [
+                    "18163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "11131"
+                ],
+                "name": "",
+                "out": [
+                    "11131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18164",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground River",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 361,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "This is a very small cavern. The walls are ragged with sharp outcroppings while\nthe bottom is covered with soft clay that lies beneath a layer of silt which has\na murky appearance. From the pattern of the silt it is evident that there is a\nstrong current flowing southward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18168"
+                ],
+                "name": "",
+                "out": [
+                    "18168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18071"
+                ],
+                "name": "",
+                "out": [
+                    "18071"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18167",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 360,
+        "y": 189,
+        "z": 0
+    },
+    {
+        "desc": "Oddly, the water whips around this small cavern forming a small whirlpool which,\nthrough the passage of time, has worn the walls smooth. The ground is littered\nwith small stones and a few larger rocks. There is a thin layer of soft silt\ncovering the hard bottom, much of it collected by and pushed through the hole at\nthe bottom where the water flows out.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18167"
+                ],
+                "name": "",
+                "out": [
+                    "18167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18072"
+                ],
+                "name": "",
+                "out": [
+                    "18072"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18169"
+                ],
+                "name": "",
+                "out": [
+                    "18169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18168",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Underwater Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 360,
+        "y": 190,
+        "z": 0
+    },
+    {
+        "desc": "The corridor is very narrow and ragged, the small bends allowing for leverage\nand movement against the strong westward current. There is almost a calmness,\nmuch like one would find in the eye of a hurricane, beckoning you upwards,\ntowards the low underwater cavern just above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18161"
+                ],
+                "name": "",
+                "out": [
+                    "18161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18168"
+                ],
+                "name": "",
+                "out": [
+                    "18168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18169",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underwater Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 364,
+        "y": 191,
+        "z": 0
+    },
+    {
+        "desc": "While the cavern is low and damp, its floor is not reached by the icy waters to\nthe east. The walls of the cavern, composed of hard granite and untarnished by\npassage of time, are ragged, sharp and cool to the touch. On the floor of the\ncavern there are small patches of moss covering much of the smooth granite. A\nsmall lever can be seen embedded into the wall and in the corner, where a patch\nof the moss was cleared, a faint inscription has been etched into the stone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18160"
+                ],
+                "name": "",
+                "out": [
+                    "18160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18170",
+        "light": 1,
+        "loadflags": 7,
+        "mobflags": 0,
+        "name": "Small Cavern",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 362,
+        "y": 190,
+        "z": 0
+    }
+]

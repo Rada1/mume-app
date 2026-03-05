@@ -1,0 +1,5592 @@
+[
+    {
+        "desc": "This wide road is bordered to both sides by large structures, but every entrance\nhas been blocked or totally destroyed. The remnants of these acts of destruction\nhave left a fine film of dust everywhere, and small stones and debris litter the\nroad, which continues to the east and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17125"
+                ],
+                "name": "",
+                "out": [
+                    "17125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17123"
+                ],
+                "name": "",
+                "out": [
+                    "17123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17124",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 120,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "A wide road running east west is cut by a small passage going north. To the\nsouth it broadens out into a small plaza. There is a very malodorous stench\ndrifting in from the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17126"
+                ],
+                "name": "",
+                "out": [
+                    "17126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17200"
+                ],
+                "name": "",
+                "out": [
+                    "17200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17138"
+                ],
+                "name": "",
+                "out": [
+                    "17138"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17124"
+                ],
+                "name": "",
+                "out": [
+                    "17124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17125",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 121,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This rough tunnel seems to have been added on at a much later date than the\ntunnel to the south. The work looks to have been done by much rougher hands and\naccomplished with much less skill. The walls are quite rough and the footing can\nbe quite tricky. It continues to the north and dumps onto a much more polished\nhallway to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17127"
+                ],
+                "name": "",
+                "out": [
+                    "17127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17125"
+                ],
+                "name": "",
+                "out": [
+                    "17125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17126",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stinking Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 121,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "This passage looks to be of much newer make than the one to the immediate north.\nThe handiwork and craftsmanship is of a much lesser skill level. The walls are\nneither smooth nor particularly straight and sweep almost drunkenly to the\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17128"
+                ],
+                "name": "",
+                "out": [
+                    "17128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17126"
+                ],
+                "name": "",
+                "out": [
+                    "17126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17127",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stinking Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 121,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "This rather plain hallway continues to the west but slopes rather sharply\nupward. The hallway, while plain, brings out the natural grain of the rock. This\nexplains the rather steep slope as a striation of the rock juts up at a steep\ndescent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17127"
+                ],
+                "name": "",
+                "out": [
+                    "17127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17129"
+                ],
+                "name": "",
+                "out": [
+                    "17129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17133"
+                ],
+                "name": "",
+                "out": [
+                    "17133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17128",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway of Aule",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 121,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "This rather plain hallway runs both east and west. The natural beauty of the\nrock has been brought out in the simple yet skilful craftsmanship of the tunnel,\nwhich has not a single corner or angle to be seen. All is elegantly curved, and\nfinely polished.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17128"
+                ],
+                "name": "",
+                "out": [
+                    "17128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17130"
+                ],
+                "name": "",
+                "out": [
+                    "17130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17129",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway of Aule",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 120,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "A wide avenue opens up to the east and a small ramp slopes down to a lower\nlevel. Small shops and what looks like the fronts of houses line the avenue.\nMost of the entrances have been reduced to rubble or otherwise sealed off. The\ncorridor is lit by a myriad of gems and jewels each catching and refracting\nwhatever available light there is.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17134"
+                ],
+                "name": "",
+                "out": [
+                    "17134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17128"
+                ],
+                "name": "",
+                "out": [
+                    "17128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17133",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Avenue of Stars",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 122,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The Avenue extends in both directions. The destruction on either side of the\nAvenue is almost complete. All doors and windows have been sealed or completely\ndestroyed. Hundreds of gems embedded in the stone catch and refract any\navailable light.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17135"
+                ],
+                "name": "",
+                "out": [
+                    "17135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17133"
+                ],
+                "name": "",
+                "out": [
+                    "17133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17134",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Avenue of Stars",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 123,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The destruction in this part of the Avenue is almost complete. Several large\nblocks which made up a nearby wall of a house encroach upon the Avenue making\ntravel tight in places.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17136"
+                ],
+                "name": "",
+                "out": [
+                    "17136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17134"
+                ],
+                "name": "",
+                "out": [
+                    "17134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17135",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Avenue of Stars",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 124,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The destruction here looks different then other parts of the Avenue. The rock\nseems scored and gouged in countless places. Dark red and black marks litter the\nfloor and walls. High above a mosaic sits in pristine preservation making a\nmarked contrast to the rest of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17137"
+                ],
+                "name": "",
+                "out": [
+                    "17137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17135"
+                ],
+                "name": "",
+                "out": [
+                    "17135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17136",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Avenue of Stars",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 125,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The large hallway coming from the east ends in a set of stairs leading\ndownwards. There is a large mosaic covering the whole ceiling above your head.\nIt is comprised of hundreds of reflective pieces of glass. It seems to have\nsurvived largely intact. Probably due to the height of the ceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17136"
+                ],
+                "name": "",
+                "out": [
+                    "17136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17181"
+                ],
+                "name": "",
+                "out": [
+                    "17181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17137",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Avenue of Stars",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 126,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The road makes a straight path through to the east and west. Blacker holes to\nthe west indicate some passages breaking off of the main road. The sound of\nwater gurgling somewhere off in the distance breaks the silence.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17139"
+                ],
+                "name": "",
+                "out": [
+                    "17139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17125"
+                ],
+                "name": "",
+                "out": [
+                    "17125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17138",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 122,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The road heads off to the west. The rough pavement of the road gives way to\nsmoothly polished marble to the east as the road gives way to a large vaulted\nhall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17140"
+                ],
+                "name": "",
+                "out": [
+                    "17140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17138"
+                ],
+                "name": "",
+                "out": [
+                    "17138"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17139",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Azaghal's Way",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 123,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The hall vaults up to a lofty one hundred foot height. There are thick black\ncolumns of polished marble which hold up quadripartite vaults. Each vault\ncontains a bas-relief in dwarven history. Clever air holes add natural shadowing\nto the artwork.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17141"
+                ],
+                "name": "",
+                "out": [
+                    "17141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17147"
+                ],
+                "name": "",
+                "out": [
+                    "17147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17148"
+                ],
+                "name": "",
+                "out": [
+                    "17148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17139"
+                ],
+                "name": "",
+                "out": [
+                    "17139"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17140",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 124,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The ceiling swoops up to about one hundred feet and is supported by several\nmassive pillars each about fifteen feet around. Several carvings still survive\nsuspended about 75 feet up and filling the spaces between the pillars. The\nceiling of the hall is decorated with frescoes and carvings which cunningly mask\nseveral airshafts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17140"
+                ],
+                "name": "",
+                "out": [
+                    "17140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17142"
+                ],
+                "name": "",
+                "out": [
+                    "17142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17141",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 124,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "The Hall is quite impressive soaring to a height of about one hundred feet. Huge\npillars ring the walls of the hall supporting the ceiling. Several cracks have\ndeveloped under these pillars however and they form a fine patina of cracks that\nrun from pillar to pillar. There is a small exit going north and a large\nfountain is directly south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17149"
+                ],
+                "name": "",
+                "out": [
+                    "17149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17148"
+                ],
+                "name": "",
+                "out": [
+                    "17148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17143"
+                ],
+                "name": "",
+                "out": [
+                    "17143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17141"
+                ],
+                "name": "",
+                "out": [
+                    "17141"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17142",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 125,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "The hall comes to a corner here while extending to the south and west. Huge\npillars about fifteen feet in diameter soar up a stunning one hundred feet to\nsupport the ceiling. Large tapestries have been hung strung between the pillars\nabout seventy five feet up.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17144"
+                ],
+                "name": "",
+                "out": [
+                    "17144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17142"
+                ],
+                "name": "",
+                "out": [
+                    "17142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17143",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 126,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "The hall vaults up to a lofty one hundred foot height. There are thick black\ncolumns of polished marble which hold up quadripartite vaults. Each vault\ncontains cleverly carved scenes of dwarven history. A wide set of stairs opens\nup to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17143"
+                ],
+                "name": "",
+                "out": [
+                    "17143"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17145"
+                ],
+                "name": "",
+                "out": [
+                    "17145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17150"
+                ],
+                "name": "",
+                "out": [
+                    "17150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17148"
+                ],
+                "name": "",
+                "out": [
+                    "17148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17144",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 126,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Columns ring the entire hall. Huge black monoliths raising up and touching the\nceiling. Blocks of quarts act like huge mirrors set in the ceiling magnifying\nthe available light.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17144"
+                ],
+                "name": "",
+                "out": [
+                    "17144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17146"
+                ],
+                "name": "",
+                "out": [
+                    "17146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17145",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 126,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "Columns of shiny black marble support the ceiling. You can see several airshafts\narround the hall that allow the daylight to peek in and light the room. Blocks\nof quartz are used to reflect the light towards the centre of the hall. There is\na large fountain in the middle of the hall, just north of here. A dark tunnel\nexits south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17148"
+                ],
+                "name": "",
+                "out": [
+                    "17148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17151"
+                ],
+                "name": "",
+                "out": [
+                    "17151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17145"
+                ],
+                "name": "",
+                "out": [
+                    "17145"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17147"
+                ],
+                "name": "",
+                "out": [
+                    "17147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17146",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 125,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in the south western corner of the Hall of Lore. The ceiling is\nresting on huge pillars about a hundred feet above your head. Each and every\nsound is hurled back and forth between the walls and the ceiling, making a\nrumbling echo that reveals your position to everyone in your vicinity.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17140"
+                ],
+                "name": "",
+                "out": [
+                    "17140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17146"
+                ],
+                "name": "",
+                "out": [
+                    "17146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17147",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Lore",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 124,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "In the middle of the hall there is a small pool providing Durin's Mansion with\nwater from the Mirrormere. The water pours out from a tall statue in the middle\nof the pool. Both the fountain and the pool are cut right out of the mountain\nand, like the floor, no cracks can be seen. The water in the pool is filthy and\nlooks rather disgusting, but the water coming from the fountain looks fresh.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17142"
+                ],
+                "name": "",
+                "out": [
+                    "17142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17146"
+                ],
+                "name": "",
+                "out": [
+                    "17146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17144"
+                ],
+                "name": "",
+                "out": [
+                    "17144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17140"
+                ],
+                "name": "",
+                "out": [
+                    "17140"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17148",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Pool of Kheled-zaram",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 125,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this avenue are covered in scribbling. Most of it has succumbed to\nthe vagaries of time and chance. Some newer writing is evident and legible. A\nsmall stairway heads down. The avenue continues to the south while a large door\noccupies the east wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17142"
+                ],
+                "name": "",
+                "out": [
+                    "17142"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17095"
+                ],
+                "name": "",
+                "out": [
+                    "17095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17180"
+                ],
+                "name": "",
+                "out": [
+                    "17180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17149",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Avenue of Balin",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 125,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "A wide set of shallow steps greeted by a low slung handrail on either side. The\nhandrail consists of small squat columns capped by a wide hand rail worn smooth\nby thousands of hands. The steps once were covered by a carpet, but all that is\nleft is scraps of fabric and a slight indent in the centre of the stairs\npresumably where the bulk of traffic went.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17144"
+                ],
+                "name": "",
+                "out": [
+                    "17144"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17502"
+                ],
+                "name": "",
+                "out": [
+                    "17502"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17150",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lore Stairs",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 127,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "The road continues on drearily to the south but opens into a magnificent hall to\nthe north. There is little adornment on the walls or ceiling and the road seems\nto have been designed for more practical uses.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17146"
+                ],
+                "name": "",
+                "out": [
+                    "17146"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17152"
+                ],
+                "name": "",
+                "out": [
+                    "17152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17151",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dwarven Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 125,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The road goes ever on to the north and south. It is wide enough for two carts to\npass with some difficulty. The flagstones are in decent condition with just a\nfew here and there cracked or missing. There is little adornment, just solid\ndwarven stonework.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17151"
+                ],
+                "name": "",
+                "out": [
+                    "17151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17153"
+                ],
+                "name": "",
+                "out": [
+                    "17153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17152",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dwarven Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 125,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "A wide path that has been covered in cobblestones. The natural rock can be seen\npeeking up where the cobblestones have given way to decay or forcibly removed.\nThe walls are smooth and straight, broken only by an alcove recessed straight\ninto the rock every twenty feet or so. Most of the alcoves only hold the\nshattered remnants of once stood there, but occasionally a leg or a marble piece\nof a torso is still recognizable. In the centre is a statue of a dwarf, staring\nback almost disconsolately at the destruction that has occured around him.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17164"
+                ],
+                "name": "",
+                "out": [
+                    "17164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17132"
+                ],
+                "name": "",
+                "out": [
+                    "17132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17163",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 128,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The wide cobblestone pavement shows signs of water wear here. The mortar holding\nthe cobblestones together has turned a dark shade of green where the water has\nbeen allowed to linger. Alcoves spaced every twenty feet extend down the\ncorridor on either side. Most seem to be empty or hold only the shattered\nremnants of some ancient sculpture or statue. White, presumably marble,\ncollonades can be glimpsed extending to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17165"
+                ],
+                "name": "",
+                "out": [
+                    "17165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17185"
+                ],
+                "name": "",
+                "out": [
+                    "17185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17163"
+                ],
+                "name": "",
+                "out": [
+                    "17163"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17164",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 129,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "Huge white marble pillars parade to the south. They contrast starkly with the\ndark polished marble of the wall itself. The columns abut the darker marble of\nthe wall but are not a part of it. The columns parade to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17164"
+                ],
+                "name": "",
+                "out": [
+                    "17164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17166"
+                ],
+                "name": "",
+                "out": [
+                    "17166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17165",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "White Colonnade",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 129,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "The white marble columns end abruptly at an opening to the south. The darker\nmarble, however continues its trek to the south and continues into the much\nlarger room to the south. The white marble columns abut the darker marble of the\nwalls but are set apart from it. The colonnade continues to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17165"
+                ],
+                "name": "",
+                "out": [
+                    "17165"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17167"
+                ],
+                "name": "",
+                "out": [
+                    "17167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17166",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "White Colonnade",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 129,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "Exits appear in almost every direction. The archways all meld into one great\npattern, twisting and convoluting uniting two great white arches to the south\nand west. The majority of the dome is made up of a dark purple marble with white\nstriations forking through it. In spots, the marble still looks highly polished,\nbut centuries of wear and tear have dulled most of its lustre.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17166"
+                ],
+                "name": "",
+                "out": [
+                    "17166"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17168"
+                ],
+                "name": "",
+                "out": [
+                    "17168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17201"
+                ],
+                "name": "",
+                "out": [
+                    "17201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17167",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Large Dome",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 129,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "Rows of white columns pace this small pathway north to a larger domed area. The\ncolumns are of a stone other than marble and posess none of the flaws that\nmarble has. The collonade continues to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17167"
+                ],
+                "name": "",
+                "out": [
+                    "17167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17169"
+                ],
+                "name": "",
+                "out": [
+                    "17169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17168",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "White Colonnade",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 129,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The beautifully decorated ceiling is held up by numerous white pillars on each\nside of the street. It looks like this part of the mountain is a naturally white\nrock, but the dwarves have used rocks and gems from the mines to make the\ndecorations above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17168"
+                ],
+                "name": "",
+                "out": [
+                    "17168"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17170"
+                ],
+                "name": "",
+                "out": [
+                    "17170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17169",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "White Colonnade",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 129,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "This is a circle formed room with exits in two other directions. It is rather\ndifferent from the rest of the area. The gold ore coming from the south meets\nthe white quartz coming from the north. A pillar is standing just in the middle\nof the room, where the two types of rock meet. The gold ore and the pale white\nquartz are tangled together in a perfect spiral from the floor up to the\nceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17169"
+                ],
+                "name": "",
+                "out": [
+                    "17169"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17171"
+                ],
+                "name": "",
+                "out": [
+                    "17171"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17195"
+                ],
+                "name": "",
+                "out": [
+                    "17195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17170",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Golden Crossing",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 129,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The road makes a gradual turn here. The outside wall of the tunnel bends\ngradually in a fluid motion while the inside wall turns at a right angle. This\ngives extra room for wide turns. The road continues to the south and east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17175"
+                ],
+                "name": "",
+                "out": [
+                    "17175"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17177"
+                ],
+                "name": "",
+                "out": [
+                    "17177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 7,
+                "in": [
+                    "17200"
+                ],
+                "name": "crack",
+                "out": [
+                    "17200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17176",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 130,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The walls take on a dull black matte finish here. There is a slight sheen of\ndampness on the road as the temperature dips slightly as well. The blackness of\nthe walls continues on to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17178"
+                ],
+                "name": "",
+                "out": [
+                    "17178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17176"
+                ],
+                "name": "",
+                "out": [
+                    "17176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17177",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Dark Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 131,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The road splits into two smaller corridors. A slightly cooler draft wafts in\nfrom the west. The road looks decidedly darker to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17190"
+                ],
+                "name": "",
+                "out": [
+                    "17190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17179"
+                ],
+                "name": "",
+                "out": [
+                    "17179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17177"
+                ],
+                "name": "",
+                "out": [
+                    "17177"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17178",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road of Narvi",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 132,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "A very narrow passage has been cut to connect two larger roads. The passage is\nvery rough and looks quite unfinished. The rough rock gives way to the smoother\nmore finished rock to the east and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20701"
+                ],
+                "name": "",
+                "out": [
+                    "20701"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17178"
+                ],
+                "name": "",
+                "out": [
+                    "17178"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17179",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 133,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "This is a small room that ascends into a rotunda about thirty feet in height.\nThe walls are of a dark marble. The rotunda is circular and looks as if it were\nplaced on top of the four walls of the room. Hollowed out ceiling tiles etched\ninto intricate patterns make up the bulk of the dome. A small oculus at the peak\nof the dome appears darker than the surrounding stone and looks like an air\npassage of some kind allowing smoke to escape. There is a staircase recessed\ninto the west wall leading up and separate tunnels to the north and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17181"
+                ],
+                "name": "",
+                "out": [
+                    "17181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20705"
+                ],
+                "name": "",
+                "out": [
+                    "20705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17149"
+                ],
+                "name": "",
+                "out": [
+                    "17149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17180",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Old Dome",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 134,
+        "y": 154,
+        "z": 0
+    },
+    {
+        "desc": "Several areas converge here. A wide cobblestone path treks off to the west,\nwhile the south opens up area reaching up to a large dome. There is also a steep\nincline going up. Occasionally shafts of light peek down from on high.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17180"
+                ],
+                "name": "",
+                "out": [
+                    "17180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17182"
+                ],
+                "name": "",
+                "out": [
+                    "17182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17137"
+                ],
+                "name": "",
+                "out": [
+                    "17137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17181",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 134,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The path continues east and west. Several of the cobblestones are missing making\nfooting somewhat tricky. Alcoves set into the walls at even intervals extend in\nboth directions. Most are empty, but a figure of a dwarf looms in one.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17181"
+                ],
+                "name": "",
+                "out": [
+                    "17181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17183"
+                ],
+                "name": "",
+                "out": [
+                    "17183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17182",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 133,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "A wide cobblestone path meanders east and west here. The shattered remnants of\nseveral statues are strewn about. Bits of stone bodyparts can be recognized,\nwith the largest being a full half torso that seems almost alive as it rises out\nof the rubble.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17182"
+                ],
+                "name": "",
+                "out": [
+                    "17182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17184"
+                ],
+                "name": "",
+                "out": [
+                    "17184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17183",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 132,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The cobblestone marking the path narrows a little here before widening out again\nto the east and west. There is the faintest trace of foetid water trickling in\nfrom the west. The alcoves pacing each side of the path are empty except for the\nbuildup of a dark green mossy substance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17183"
+                ],
+                "name": "",
+                "out": [
+                    "17183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17185"
+                ],
+                "name": "",
+                "out": [
+                    "17185"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17184",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 131,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "The gallery continues in both directions paced by the alcoves on either side.\nThis section seems to have avoided the water damage but not the smell. The rank\nsmell of standing water wafts in from the west caressing the nostrils with the\nscent of foetid water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17184"
+                ],
+                "name": "",
+                "out": [
+                    "17184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17164"
+                ],
+                "name": "",
+                "out": [
+                    "17164"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17185",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Wide Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 130,
+        "y": 153,
+        "z": 0
+    },
+    {
+        "desc": "This simple passage connects two larger paths. The passage itself is completely\nbereft of adornment, consisting of two smooth walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20705"
+                ],
+                "name": "",
+                "out": [
+                    "20705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17187"
+                ],
+                "name": "",
+                "out": [
+                    "17187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17186",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 133,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "A wide road wrought with wondrous feats of masonry heads south. Intricate\npatterns of stone adorn the walls. The stonework is a weaving pattern, not\nunlike a painting. Time and damage has taken its toll however, and the story is\ntough to decipher. There is a sign carved in a strong dwarven hand. A small\npassageway heads off to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17188"
+                ],
+                "name": "",
+                "out": [
+                    "17188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17186"
+                ],
+                "name": "",
+                "out": [
+                    "17186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17187",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road of Narvi",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 132,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "The road continues in both directions and intersects with an alley which\nbranches off to the west. There are several indications that a large battle was\nfought here some time ago. Scratches on the wall, presumably by the victor,\nmight have given some insight, but they have been smudged beyond recognition.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17187"
+                ],
+                "name": "",
+                "out": [
+                    "17187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17189"
+                ],
+                "name": "",
+                "out": [
+                    "17189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17202"
+                ],
+                "name": "",
+                "out": [
+                    "17202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17188",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road of Narvi",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 132,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "A wide road built at the height of dwarven masonry. Intricate patterns of stone\nadorn both sides of the road. The stonework is a weaving pattern, not unlike a\npainting. The elements or something even more base has taken its toll in some\nparts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17188"
+                ],
+                "name": "",
+                "out": [
+                    "17188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17190"
+                ],
+                "name": "",
+                "out": [
+                    "17190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17189",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Road of Narvi",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 132,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "A set of runes carved in Khuzdul on the west wall proclaim this the Road of\nNarvi. The road is wide enough for four to walk abreast with no problem and\ncontinues to the north and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17189"
+                ],
+                "name": "",
+                "out": [
+                    "17189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17178"
+                ],
+                "name": "",
+                "out": [
+                    "17178"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 7,
+                "in": [
+                    "17942"
+                ],
+                "name": "dwarfdoor",
+                "out": [
+                    "17942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17190",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Road of Narvi",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 132,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The road ends abruptly here and enter a small circular area to the east. A tall\nspire of quartz and gold can be seen rising from the floor to the east. The\nflagstones of the road give way to a polished marble surface.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17170"
+                ],
+                "name": "",
+                "out": [
+                    "17170"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17196"
+                ],
+                "name": "",
+                "out": [
+                    "17196"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17195",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dimrill Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 128,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The road bends to the east and north. The tunnel makes a slight dip but\nrecovers. There is collected silt and sediment in the dip as water seems wont to\ncollect there.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17197"
+                ],
+                "name": "",
+                "out": [
+                    "17197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17195"
+                ],
+                "name": "",
+                "out": [
+                    "17195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17196",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dimrill Road",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 127,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "This used to once be an inn, but now it is inhabited by something much larger\nthan a dwarf. The room has been littered with large blocks of granite. The\nremains of several corpses are stacked in one of the corners. By the look of the\ntwisted features and ugly snouts they seem to be orkish.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17158"
+                ],
+                "name": "",
+                "out": [
+                    "17158"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 7,
+                "in": [
+                    "17199"
+                ],
+                "name": "",
+                "out": [
+                    "17199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17198",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Troll Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 120,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "This is a small room just off the inn's common room to the west. The thick layer\nof dust covering everything in the room is a good indication that whatever moved\nthe large blocks of granite into the inn to the west doesn't come here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "17198"
+                ],
+                "name": "",
+                "out": [
+                    "17198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17199",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Old Innrooms",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 121,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "A small plaza has been cut out of the mountain just south of Azaghal's Way. It\nwas probably used as a place to rest on the long travel through the dark realm.\nA large tile is standing up against the southern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17125"
+                ],
+                "name": "",
+                "out": [
+                    "17125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 7,
+                "in": [
+                    "17176"
+                ],
+                "name": "tile",
+                "out": [
+                    "17176"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17200",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Small Plaza",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 121,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "This a small alley which leads off of a large dome to the west. Fluted pilasters\nlead right into a ceiling carved with a complex net of interweaving branches.\nThe overall look is stylized trees forming a canopy of leaves over your head.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17202"
+                ],
+                "name": "",
+                "out": [
+                    "17202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17167"
+                ],
+                "name": "",
+                "out": [
+                    "17167"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17201",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Durin's Alley",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 130,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This small alley leads into a larger road to the east. Fluted pilasters lead\nupward to join a mesh of stylized interweaving branches which form the ceiling.\nThe overall effect is a canopy of trees sloping to a point at the height of the\nceiling. To the south between to pilasters is a large opening.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17203"
+                ],
+                "name": "",
+                "out": [
+                    "17203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17188"
+                ],
+                "name": "",
+                "out": [
+                    "17188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17201"
+                ],
+                "name": "",
+                "out": [
+                    "17201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17202",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Durin's Alley",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 131,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This room was obviously not made by dwarves, but its rough-hewn walls appear to\nbe fairly old. Dominating the room is a winch-like apparatus, which is ap-\nparently used to lift a large block of stone that is currently positioned on the\nwestern wall. On the eastern side of the room is a large pit, and the floor\nalong the edge is scored with deep grooves. The entire floor near the pit is\nstained ruddy red, almost as if the impervious stone had somehow ab- sorbed a\ngreat quantity of blood. On the southern wall is a heavy door made entirely of\nblack iron, and coated with a dark black substance that flakes to the touch.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17202"
+                ],
+                "name": "",
+                "out": [
+                    "17202"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 7,
+                "in": [
+                    "17204"
+                ],
+                "name": "",
+                "out": [
+                    "17204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "17496"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17203",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rough-hewn Room",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 130,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "The walls and floor of this enclosed chamber are coated in a thick black\nsubstance that flakes in places revealing a lighter red colour beneath it.\nSeveral rings of metal absolutely caked in the black or red substance have been\ndriven into the walls at varying heights. There are heavy reinforced doors to\nthe north and east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "17203"
+                ],
+                "name": "",
+                "out": [
+                    "17203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "17496"
+                ],
+                "name": "",
+                "out": [
+                    "17496"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17204",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Bloody Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 130,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "Soupy gore fills the bottom of this pit, varying in depth from two feet along\nthe northern wall to an unknown depth farther south. Undoubtably the remains of\ncountless sacrifices have gone into creating this area, an environment that\ncould not be tolerated by any but the most loathsome of creatures. From time to\ntime great bubbles slowly rise from the depths, reaching the surface and\nbursting with a splattering of red, and ripples of undetermined origin also\noccasionally make their way across the surface of the liquid. An almost palpable\nmalevolence can be felt, as if the presence of any other living crea- ture in\nthis pit represents an affront that cannot be tolerated.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "17204"
+                ],
+                "name": "",
+                "out": [
+                    "17204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "17203"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17496",
+        "light": 1,
+        "loadflags": 64,
+        "mobflags": 65536,
+        "name": "Gore-filled Pit",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 131,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "Along the northern wall you can see a few statues of the former kings of Moria.\nA big tapestry picturing Aule and Durin is also hanging here. The chamber was\nastounding in its heyday when the dwarves were here, but that was long ago.\nPieces of rotten flesh, and humanoid bones were carelessly dumped all over the\nplace. The once so beautiful tapestry is torn and stained with blood, and the\nstatues have carelessly been toppled over and smashed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 7,
+                "in": [
+                    "17190"
+                ],
+                "name": "dwarfdoor",
+                "out": [
+                    "17190"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 2055,
+                "in": [
+                    "25955"
+                ],
+                "name": "hatch",
+                "out": [
+                    "25955"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17942",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Hidden Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 133,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The road ends here. You can see that the intention was to make the road go\nfurther south, but the only exit apart from the road back north is a passage to\nthe west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20702"
+                ],
+                "name": "",
+                "out": [
+                    "20702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17179"
+                ],
+                "name": "",
+                "out": [
+                    "17179"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20701",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Nain's Way",
+        "portable": 2,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 134,
+        "y": 159,
+        "z": 0
+    },
+    {
+        "desc": "The road is in very bad repair. Cracks and fissures have occured on the road\nsurface making travel very difficult. The surface has become almost like steps\nas the unstableness has caused one end to lift higher than the other. The walls\nhave been reinforced haphazardly with wooden beams and stone columns. The\ncolumns look to have been pulled from other parts of Moria as they are a\nmismatched set of differing colors and styles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20703"
+                ],
+                "name": "",
+                "out": [
+                    "20703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20701"
+                ],
+                "name": "",
+                "out": [
+                    "20701"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20702",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Nain's Way",
+        "portable": 2,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 134,
+        "y": 158,
+        "z": 0
+    },
+    {
+        "desc": "The road extends for some distance in both directions. The stonework here is in\ngood shape - in many places there is clear evidence of repairs having been done\nsometime in the relatively recent past.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20704"
+                ],
+                "name": "",
+                "out": [
+                    "20704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20702"
+                ],
+                "name": "",
+                "out": [
+                    "20702"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20703",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Nain's Way",
+        "portable": 2,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 134,
+        "y": 157,
+        "z": 0
+    },
+    {
+        "desc": "This section of the road is in very good repair. None of the flagstones which\ncomprise the bed of the road are missing or even cracked. The road extends to\nthe north and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20705"
+                ],
+                "name": "",
+                "out": [
+                    "20705"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20703"
+                ],
+                "name": "",
+                "out": [
+                    "20703"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20704",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Nain's Way",
+        "portable": 2,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 134,
+        "y": 156,
+        "z": 0
+    },
+    {
+        "desc": "This is an intersection of sorts, with exits in all directions but east. The way\ncontinues to the south but opens up into a larger room to the north. West is a\nsmall passage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17180"
+                ],
+                "name": "",
+                "out": [
+                    "17180"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "20704"
+                ],
+                "name": "",
+                "out": [
+                    "20704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "17186"
+                ],
+                "name": "",
+                "out": [
+                    "17186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20705",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Nain's Way",
+        "portable": 2,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 134,
+        "y": 155,
+        "z": 0
+    },
+    {
+        "desc": "This is a small chamber which has remained hidden through the generations. There\nis a rather large table and a few chairs stacked around it. All the furniture is\nstill serviceable. The table is piled high with a great many things, covered\nwith dust and draped with spiderwebs. Some bookshelves line the west wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 7,
+                "in": [
+                    "17942"
+                ],
+                "name": "trapdoor",
+                "out": [
+                    "17942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25955",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chamber of Zirakzigil",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 2,
+        "x": 133,
+        "y": 157,
+        "z": 0
+    }
+]

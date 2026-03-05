@@ -1,0 +1,254 @@
+[
+    {
+        "desc": "The small trail seems to end here, mountains stop you from continuing in any\ndirection. The bushes are really dense, making it hard for you to walk fast\nhere. South of you a small lake is lying far below you, the mountains on the\nother side mirrored in the dark surface of the water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6869"
+                ],
+                "name": "",
+                "out": [
+                    "6869"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6866"
+                ],
+                "name": "brush",
+                "out": [
+                    "6866"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6868",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Sidetrail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 466,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This small trail is leading slightly downwards. As you get further east, more\nbushes seem to be able to survive. All around you high mountains with white\npointed tops are reaching high into the sky. Sometimes a bird can be seen high\nin the sky. Corpses of dead mountain goats and wargs can be seen scattered along\nthe trail.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6868"
+                ],
+                "name": "",
+                "out": [
+                    "6868"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6870"
+                ],
+                "name": "",
+                "out": [
+                    "6870"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6869",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Sidetrail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 465,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This place must have been used by the mountaineers as a storage place. It is\nquite dark, and a foul stench pervades the air. But more than that, an evil\npresence seems to lurk here. The southern wall of the cellar seems to be more\ndecayed than the rest, quite rotten, with planks only loosely held in most\nplaces.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6909"
+                ],
+                "name": "panel",
+                "out": [
+                    "6909"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "6902"
+                ],
+                "name": "",
+                "out": [
+                    "6902"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6910",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Cellar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 462,
+        "y": 39,
+        "z": 0
+    }
+]

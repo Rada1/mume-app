@@ -1,0 +1,168 @@
+[
+    {
+        "desc": "High up in the trees the elves of Lorien can live feeling safe from the many\ndangers that plague the forest below. On the strong branches of this stout\nmallorn-tree a stable wooden platform has been built to serve as a dwelling. The\nplatform extends to the north where a mass of leaves and branches conceals it\ncompletely, sheltering those that dwell here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14080"
+                ],
+                "name": "",
+                "out": [
+                    "14080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 75,
+                "in": [
+                    "13516"
+                ],
+                "name": "",
+                "out": [
+                    "13516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14079",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "In the Treetops",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 182,
+        "z": 0
+    },
+    {
+        "desc": "A dense canopy of leaves and branches surrounds this part of the large platform.\nWell hidden from view, this simple flet offers shelter and protection for its\nproud residents. Some of the branches which form this dwelling are furnished\nwith a variety of elven decorations, from wreaths of leaves and flowers to\ncarefully crafted wooden ornaments depicting scenes from the legends as far back\nas the First Age.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14079"
+                ],
+                "name": "",
+                "out": [
+                    "14079"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14080",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Inside the Treehouse",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 181,
+        "z": 0
+    }
+]

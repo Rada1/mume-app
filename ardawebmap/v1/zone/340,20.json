@@ -1,0 +1,2525 @@
+[
+    {
+        "desc": "This cave is shaped like a terrace with wide, stair-like ledges to the east and\nwest. Towards the west a cliff wall looms, so smooth it looks almost polished.\nEastwards, the cavern floor falls away again in another steep decline. A narrow\nledge leads out above the eastern chasm, following the southern cave wall in a\nsharp bend, only to quickly disappear from sight.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22097"
+                ],
+                "name": "",
+                "out": [
+                    "22097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "22092"
+                ],
+                "name": "",
+                "out": [
+                    "22092"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22096",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Base of a Steep Cliff",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 357,
+        "y": 33,
+        "z": 0
+    },
+    {
+        "desc": "This narrow, unsteady ledge clings to the rock face, painstakingly winding its\nway southwards. To the west the ledge enters a cave, and footing is likely to be\nmore stable. The ledge itself is is littered with earth and pebbles. In places\nthere are gaps that must be stepped over, which further speak of the dangers of\nloitering here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22098"
+                ],
+                "name": "",
+                "out": [
+                    "22098"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22096"
+                ],
+                "name": "",
+                "out": [
+                    "22096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22097",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Precarious Ledge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 358,
+        "y": 33,
+        "z": 0
+    },
+    {
+        "desc": "In places, this uneven ledge slopes downwards out from the rock face, and small\nrocks and pebbles crunch underfoot: further heightening the risk of a fall. A\nstep in any direction seems hazardous and potentially fatal. At places the ledge\nwidens enough for easy passage, yet in other it is narrow enough that brushing\nagainst the cave wall is inevitable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22097"
+                ],
+                "name": "",
+                "out": [
+                    "22097"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22099"
+                ],
+                "name": "",
+                "out": [
+                    "22099"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22098",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Precarious Ledge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 358,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "With a sharp twist, this tunnel bends toward the south and the east. The walls\nare smooth and rounded, made of earth rather than hard rock. It is hard to say\nif this is part of natural cave system or if this tunnel has been dug out.\nTowards the east the tunnel open up into a wide space while it continues in a\nslight downward slope to the south. The air is foul here, a stench of rot and\ndecay ever present as if something died and was left unburied.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22100"
+                ],
+                "name": "",
+                "out": [
+                    "22100"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22098"
+                ],
+                "name": "",
+                "out": [
+                    "22098"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22099",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Twisting Earth Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 357,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "Droves of loose earth has fallen to the floor of this tunnel, making the footing\nsoft but taxing. The tunnel slopes down steeply toward the east to disappear\ndeeper into the ground. The tunnel seem much too rounded to be a creation of\nnature, although there are no obvious sign of it being intentionally designed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22099"
+                ],
+                "name": "",
+                "out": [
+                    "22099"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22101"
+                ],
+                "name": "",
+                "out": [
+                    "22101"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22100",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Earth Tunnel at the Top of a Slope",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 357,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "This serpentine, sloping earth tunnel winds its way down through layers of\ndensely packed earth. The tunnel seem to level out not far below this point,\nalthough if that means that it is any closer to anything of relevance is\nindeterminable. A long, wide groove runs along the centre of the tunnel, as if\nsomething heavy was dragged along the floor recently.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22100"
+                ],
+                "name": "",
+                "out": [
+                    "22100"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22102"
+                ],
+                "name": "",
+                "out": [
+                    "22102"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22101",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Earth Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 357,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "A deep furrow, almost a yard wide and half as deep, has been ploughed along this\ntunnel. Something very heavy may have been either dragged or rolled through\nhere, going up the slope or coming down it. The walls hard-packed earth walls\nare interspersed with small grey rocks of varying shapes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22103"
+                ],
+                "name": "",
+                "out": [
+                    "22103"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22101"
+                ],
+                "name": "",
+                "out": [
+                    "22101"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22102",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of an Earth Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 358,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "This long, narrow tunnel winds through hard, densely packed earth strewn with\nrocks of varying sizes. Neither the tunnel's origin nor eventual destination is\nobvious from this part of the passageway. To see beyond the next curved bend,\none would have to set out in either direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22104"
+                ],
+                "name": "",
+                "out": [
+                    "22104"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22102"
+                ],
+                "name": "",
+                "out": [
+                    "22102"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22103",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Earth Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 359,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "A deep, narrow fissure follows the length of the ravine here, reminiscent of a\nlong, irregular wound of unknowable depth. Luckily, the fissure is too narrow to\nfall down into, or the unwary could vanish forever in a moment of carelessness.\nThe ravine itself continues to the east and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22110"
+                ],
+                "name": "",
+                "out": [
+                    "22110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22113"
+                ],
+                "name": "",
+                "out": [
+                    "22113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22111",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Ravine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 32,
+        "z": 0
+    },
+    {
+        "desc": "A large boulder blocks most of the underground ravine here, firmly embedded in\nthe mix of hard earth and gravel underfoot. Passage through the area requires\nsqueezing oneself between the boulder and the rugged walls of the ravine. Many\nsmaller rocks lie scattered across the ground, hinting at a roof above that is\nfar from stable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22111"
+                ],
+                "name": "",
+                "out": [
+                    "22111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22114"
+                ],
+                "name": "",
+                "out": [
+                    "22114"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22113",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Ravine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 32,
+        "z": 0
+    },
+    {
+        "desc": "The great ravine through the deep subterranean bedrock comes to its end here,\nthe sides simply coming together to meet at a solid wall of rock. Where the\nravine is a bit wider, there is an area where the northern wall is considerably\nless steep than elsewhere. A tunnel opening lies there, the opening a black hole\nagainst the surrounding stone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22113"
+                ],
+                "name": "",
+                "out": [
+                    "22113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22115"
+                ],
+                "name": "",
+                "out": [
+                    "22115"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22114",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Ravine by an Incline",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 32,
+        "z": 0
+    },
+    {
+        "desc": "A narrow cavern to the north leads out onto this open area. The tunnel ends at\nthe very brink of an underground ravine at least twenty feet across. The slope\ndown to the ravine's floor is steep, but rugged and uneven and should be easy\nenough to traverse. A cold draft can be felt from below, slightly rustling some\nold, dead cobwebs that cling to the limestone walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22130"
+                ],
+                "name": "",
+                "out": [
+                    "22130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22114"
+                ],
+                "name": "",
+                "out": [
+                    "22114"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22115",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brink above a Ravine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 31,
+        "z": 0
+    },
+    {
+        "desc": "This low, wide cavern lies nestled in the very foundations of Arda, deep beneath\nthe world of men and elves. Erosion has hollowed out an uneven cavity with grey\nlimestone walls. Numerous stalagmites rise from the ground where slowly,\ndripping mineral-enriched water has built up small, stunted formations over the\neons.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22115"
+                ],
+                "name": "",
+                "out": [
+                    "22115"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22131"
+                ],
+                "name": "",
+                "out": [
+                    "22131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22130",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eroded Limestone Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 30,
+        "z": 0
+    },
+    {
+        "desc": "A hollow cavity has formed here in the limestone bedrock. Layers in shades of\nwhite and grey are easily distinguished on the walls. A narrow shaft, a natural\ntunnel hollowed out through the ages, leads upwards here. To the west, a\nlimestone cave continues into the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22130"
+                ],
+                "name": "",
+                "out": [
+                    "22130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22132"
+                ],
+                "name": "",
+                "out": [
+                    "22132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22131",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eroded Limestone Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 30,
+        "z": 0
+    },
+    {
+        "desc": "Here, a long, slim shaft has formed in the limestone bedrock. The walls are of a\nstratiform of lightly grey and white layers of limestone. The various layers\nhave eroded in varying degrees, providing a multitude of small ledges to place\nhands and feet on, making the shaft accessible to even the most inexperienced\nclimber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22133"
+                ],
+                "name": "",
+                "out": [
+                    "22133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22131"
+                ],
+                "name": "",
+                "out": [
+                    "22131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22132",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Limestone Shaft",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 358,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this grotto shift in streaks of white and grey limestone. The low\nceiling above could cause concern for the claustrophobic, and small stalactites\nhanging down are a potential danger for the tall, unwary adventurer. A chute\nnear the southern wall leads down, deeper into the underworld.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22134"
+                ],
+                "name": "cavewall",
+                "out": [
+                    "22134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22132"
+                ],
+                "name": "",
+                "out": [
+                    "22132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22133",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Grotto",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "Towering stalagmites, ancient things built up through the ages by the slow\ndripping of water filled with minerals, rise from the cavern floor towards a\nceiling lost in the darkness above. The cave is the size of a large cathedral,\nwith the walls to either side lost in gloom. Towards the eastern end the ceiling\nis considerably lower than elsewhere in this massive cavern. A great crack runs\nalong the cavern floor near the centre of the area, and in places it is wide\nenough for a horse to fall through.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "24394"
+                ],
+                "name": "obstacle",
+                "out": [
+                    "24394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22133"
+                ],
+                "name": "cavewall",
+                "out": [
+                    "22133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "22123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22134",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Among Towering Stalagmites",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "The ceiling here is quite high, and many shelves, carved directly into the hard,\nblack rock, line the walls. Pots, kettles, tools and barrels lie half-cracked,\nhalf-crushed all over the cave. Smashed chests, rusted iron tools and moulding\nfoodstuffs lie scattered in the dirt. Rats, roaches and centipedes scurry along\nfissures in the ground. To the south a wooden door is slowly rotting and falling\napart; it is the only visible exit out of here.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22183"
+                ],
+                "name": "rearwall",
+                "out": [
+                    "22183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22187"
+                ],
+                "name": "",
+                "out": [
+                    "22187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22186",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Abandoned Reserve",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 20,
+        "z": 0
+    },
+    {
+        "desc": "The stone stairs turn quickly, leading upwards to another level of the\nunderground caves. A rotting, skewed wooden frame outlines the tunnel to the\nnorth. A small hallway of some sort is located to the west. A tightly-packed\nlayer of dirt covers the ground, with deep footprints leading in all directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22186"
+                ],
+                "name": "",
+                "out": [
+                    "22186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22188"
+                ],
+                "name": "",
+                "out": [
+                    "22188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22191"
+                ],
+                "name": "",
+                "out": [
+                    "22191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22187",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inclining Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 21,
+        "z": 0
+    },
+    {
+        "desc": "Small openings to the north and west both appear to lead to large, dark halls.\nTo the east a smaller cavern can be seen, flickering with a faint light. The\npitch-black walls have a rough appearance, suggesting this hallway was quickly\nexcavated. The area is bare, except for some debris lying on the floor. Broken\ntools lie spread in the hallway, along with smaller rocks, broken planks, live\ncockroaches, and the bones from some sort of animal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22189"
+                ],
+                "name": "",
+                "out": [
+                    "22189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22187"
+                ],
+                "name": "",
+                "out": [
+                    "22187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22190"
+                ],
+                "name": "",
+                "out": [
+                    "22190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22188",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 21,
+        "z": 0
+    },
+    {
+        "desc": "Tall, rough black pillars extend down the centre of this hall, forming parallel\nrows. The hall is wide and tall, its walls lined with sharp stone edges. Little\ncare was used when excavating the area: some of the pillars are crooked and\nappear to be buckling under the weight of the mountain, and now and then ominous\ncreaking sounds can be heard. Small rocks and pebbles lie in the dirt around\nsome of the pillars. A big stone table rises from the ground: it has been carved\ndirectly from the surrounding stone. A strong, putrid smell is ever-present in\nthe thick, humid air. The halls widen to the north, while to the south they\nnarrow into a smaller hallway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22184"
+                ],
+                "name": "",
+                "out": [
+                    "22184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22188"
+                ],
+                "name": "",
+                "out": [
+                    "22188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22189",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hewn Halls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 20,
+        "z": 0
+    },
+    {
+        "desc": "This hall is in complete disarray: the innermost part has collapsed, leaving a\nheap of rocks, planks, and other debris. A thick layer of stone dust covers the\nwhole area. Huge blocks of black stone lie cracked along the walls. The\ndried-out husks of dead bugs and pulverized bones large enough to be from a\ntroll have been crushed by the rockfall. A small hallway leads eastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22188"
+                ],
+                "name": "",
+                "out": [
+                    "22188"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24401"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22190",
+        "light": 1,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Deteriorating Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 21,
+        "z": 0
+    },
+    {
+        "desc": "This cavern is black as night and shaped like a funnel that opens up to the\nnorth and closes off towards a pile of rubble to the south. There are a few\nfootprints on the ground, but because no flow of air reaches this forsaken\nplace, there is no way of telling how old the tracks are.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24395"
+                ],
+                "name": "",
+                "out": [
+                    "24395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22134"
+                ],
+                "name": "",
+                "out": [
+                    "22134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24394",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Funnel-shaped Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 27,
+        "z": 0
+    },
+    {
+        "desc": "The absence of sounds and smells gives this quiet, damp cavern an air of\ndesolation and abandonment. A fine dust has settled on the floor, where a line\nof tracks tell a tale that the place is used at least intermittently. The roof\nabove is smooth, with just a handful of stalactites. A row of holes have been\nhacked out of the wall in some far distant past, but it is impossible to tell\nfor what purpose.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24396"
+                ],
+                "name": "",
+                "out": [
+                    "24396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24394"
+                ],
+                "name": "",
+                "out": [
+                    "24394"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24395",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Still Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 26,
+        "z": 0
+    },
+    {
+        "desc": "Here, a steady drip of water from above has turned the tunnel floor into a muddy\nmush. Whereas the ground seems drier in the southern portion of the space, tiny\nstreams of water are flowing quietly towards the north. The cave walls are\nblack, with a greenish tinge along the bottom - quite possibly some sort of\nlichen or mould.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24397"
+                ],
+                "name": "",
+                "out": [
+                    "24397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24395"
+                ],
+                "name": "",
+                "out": [
+                    "24395"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24396",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Damp Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 357,
+        "y": 25,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel floor tilts from south to north and from west to east. If it were not\nfor the gritty, mud-like gravel on the tunnel floor, passage here would be\nslippery and perilous. Most of the water coming down from the cracks and\nstalactites above gathers along the eastern wall, forming a slowly trickling\nminiature stream that runs in a northerly direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24398"
+                ],
+                "name": "",
+                "out": [
+                    "24398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24396"
+                ],
+                "name": "",
+                "out": [
+                    "24396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24397",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Damp Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 357,
+        "y": 24,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel slopes gently from north to south. A small stream of water is\ntrickling along the eastern wall, gathering up the water that drips down from\nthe dark, stalactite-ridden celiling above. A chopped-off torch mount has been\nfastened to the western wall, but it is now too old and decrepit to use.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24399"
+                ],
+                "name": "",
+                "out": [
+                    "24399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24397"
+                ],
+                "name": "",
+                "out": [
+                    "24397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24398",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Damp Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 357,
+        "y": 23,
+        "z": 0
+    },
+    {
+        "desc": "The most notable feature of this otherwise non-remarkable cavern are the two\nstreams that meet here, one coming from the west and one from the south. The\nstreams, each just a small but steady trickle, meet here and disappear into a\nblack hole in lower northeastern corner of the cavern. There is a slight smell\nof mould in the air, coupled with something faint but far more unsavory.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24398"
+                ],
+                "name": "",
+                "out": [
+                    "24398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24400"
+                ],
+                "name": "",
+                "out": [
+                    "24400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24399",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Confluence of Underground Streams",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 22,
+        "z": 0
+    },
+    {
+        "desc": "A rapid but quite small stream gushes out from a hole in the western wall. It\nrushes across the gravelly tunnel floor, heading in an eastwardly direction.\nLooking around the gravel reveals a number of dry patterns formed by the water,\nindicating that the water flow varies with time. Higher and somewhat drier\nground can be reached by heading north. An odd, fungal smell hangs in the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24401"
+                ],
+                "name": "",
+                "out": [
+                    "24401"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24399"
+                ],
+                "name": "",
+                "out": [
+                    "24399"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24400",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Damp Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 22,
+        "z": 0
+    },
+    {
+        "desc": "The cavern floor here forms a natural platform of sorts, with a couple of crude\nstairs leading down towards the south. A rich, fungal smell hangs in the air, no\ndoubt emanating from the many layers of fungus and mould that blanket the lower\nparts of the walls. There is a hole in the middle of the platform, about four by\nfour foot in size. A black, sooty patch can be seen in the north-eastern corner\nof the platform, where ages ago someone lit a camp fire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24400"
+                ],
+                "name": "",
+                "out": [
+                    "24400"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "22190"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24401",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 4096,
+        "name": "Smelly Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 356,
+        "y": 21,
+        "z": 0
+    }
+]

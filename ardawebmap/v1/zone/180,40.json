@@ -1,0 +1,588 @@
+[
+    {
+        "desc": "The walls of this small cavern are formed of dense, hard rock. The humid air\nmakes it hard to breathe and causes the rocky walls to shimmer when even the\nslightest beam of light touches it. Soft sounds of water are carried by a gentle\nbreeze from the west, hinting that there might be a source of water in that\ndirection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27264"
+                ],
+                "name": "",
+                "out": [
+                    "27264"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27261"
+                ],
+                "name": "",
+                "out": [
+                    "27261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27265"
+                ],
+                "name": "",
+                "out": [
+                    "27265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27263",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 199,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "All around the cavern, a soft golden glow is emitted, comparable to that of\nsunlight in the early hours of daybreak. Hard, crystalline formations grow\nupwards as if trying to reach the ones that cling from the ceiling. Sounds of\nwater droplets can be heard echoing off the formations. The floor is covered\nwith soft yellow sand that shimmers in the same faint glow as the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27263"
+                ],
+                "name": "",
+                "out": [
+                    "27263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27264",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Golden Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 199,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "Fine sands and small pebbles form a beach. An underground river flows between\nthe eastern and western cave walls to the south. The roar of a waterfall can be\nheard, along with the sound of rushing water in that direction as well. The\nwater flowing from the south gently pushes against the beach, forming small\nwaves and pushing sediment onto the sand.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27267"
+                ],
+                "name": "",
+                "out": [
+                    "27267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27263"
+                ],
+                "name": "",
+                "out": [
+                    "27263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27265",
+        "light": 1,
+        "loadflags": 8192,
+        "mobflags": 0,
+        "name": "Underground Beach",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 198,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "A narrow tunnel leads to an alcove a dozen feet above a mist-covered underground\nlake. The surface of the lake seems to be quite calm, yet in the distance of\nthis huge cave the sound of violently flowing water can be heard. The\ncondensation on the ceiling above the lake drips down, soaking the cavern\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27262"
+                ],
+                "name": "",
+                "out": [
+                    "27262"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27266",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Alcove above an Underground Lake",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 199,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "A large waterfall gushes down along the western cave wall. It creates a strong\nsoutherly current, as well as a slight northerly current. The arched ceiling\nlowers even more and several protrusions of stone nearly break the water\ncreating small white rapids. Over the years, some rocks have been polished by\nthe current and they split up the stream to create multiple river paths leading\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27265"
+                ],
+                "name": "",
+                "out": [
+                    "27265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "27268"
+                ],
+                "name": "",
+                "out": [
+                    "27268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27267",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Subterranean River",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 198,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Below the arched ceiling, the underground streams start to flow swiftly to the\nsouth. Several parts of the ceiling hang very low and leave little space between\nthem and the water's surface. Many rock formations jut out of the water creating\nfaster, rolling rapids.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27267"
+                ],
+                "name": "",
+                "out": [
+                    "27267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "27269"
+                ],
+                "name": "",
+                "out": [
+                    "27269"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27268",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Subterranean River",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 198,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The rushing river ends abruptly as it flows out into this large, underground\nlake. A thin layer of mist covers the surface and water is dripping from the\nhigh ceiling. The water seems to be very still and unmoved, but very slight\nwhirls show a current to the south. Near the southern part of the cave, whirls\nand ripples become clearly visible and indicate a very strong current.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27268"
+                ],
+                "name": "",
+                "out": [
+                    "27268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                    "27270"
+                ],
+                "name": "",
+                "out": [
+                    "27270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27269",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Large Subterranean Lake",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 198,
+        "y": 59,
+        "z": 0
+    }
+]

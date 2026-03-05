@@ -1,0 +1,2257 @@
+[
+    {
+        "desc": "Built on the western shores of Aman, facing only the Encircling Sea and the Wall\nof the Night stand the vast Halls of Mandos. In this small and remote corner of\nthe Halls of Awaiting you tarry in a time of recollection, perhaps listening to\nechoes of times long gone by, or perhaps dreaming dreams of your own and\nwondering when the time will come that you are able to return once more to roam\nfreely upon Middle-earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14509"
+                ],
+                "name": "",
+                "out": [
+                    "14509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14508",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "Vast and strong are the Halls of Awaiting, tall are the Pelori, called also the\nMountains of Defence, and long and mysterious is the Straight Way to the True\nWest, and yet still sometimes rumour reaches this place of the deeds and words\nof those who still dwell upon Middle-earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14510"
+                ],
+                "name": "",
+                "out": [
+                    "14510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14511"
+                ],
+                "name": "",
+                "out": [
+                    "14511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22909"
+                ],
+                "name": "",
+                "out": [
+                    "22909"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14508"
+                ],
+                "name": "",
+                "out": [
+                    "14508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14509",
+        "light": 2,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 15,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "Half-substance, half-shadow, high walls rise to the distant roof of the Halls.\nFar above, just below the roof, many narrow windows have been cut in the shadowy\nfabric. Through these windows golden and silvery light enters the Halls and\nstrange scents and whispers drift in. Some of these whispers speak of strange\nlands and things; others are in no language of Middle-earth that you can\nrecognise.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14509"
+                ],
+                "name": "",
+                "out": [
+                    "14509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14510",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "In this corner of the Halls of Awaiting you might hear echoes and rumours of\nthings long gone by, or catch a glimpse of more recent events on Middle-earth.\nFor though you are far removed here from the events in the mortal realm, still\nlike reflections and dreams their tales sometimes reach you here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14509"
+                ],
+                "name": "",
+                "out": [
+                    "14509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14511",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Halls of Awaiting",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "The floor in this part of the wide halls slopes down until it turns into a wide\npool of silvery water. The pool's surface is still and shining like a polished\nmirror, yet deep down it is filled with a faint light. The light seems clearer\nand cleaner than anything you have ever seen. Sometimes it seems the light would\ncome from within of the pool's water itself; these silver reflections are only\nfaint, but still bright and blinding as the highest sun.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14509"
+                ],
+                "name": "",
+                "out": [
+                    "14509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22909",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Silver Pool",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 16,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24293"
+                ],
+                "name": "",
+                "out": [
+                    "24293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24303"
+                ],
+                "name": "",
+                "out": [
+                    "24303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24302",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vale of Anduin/Road to Tharbad",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 5,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "Where once a haggard team of grizzled old builders toiled under the watchful eye\nof Arion, their slavemaster, to create the old Dwarven Halls of Khazad-dum, now\nan energetic group of bright-eyed young builders and supervisors (and a few old\nfarts) strive to recreate Lothlorien, that elven land of fabled beauty and only\nrumoured peril.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24292"
+                ],
+                "name": "",
+                "out": [
+                    "24292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24304"
+                ],
+                "name": "",
+                "out": [
+                    "24304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24302"
+                ],
+                "name": "",
+                "out": [
+                    "24302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24303",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lothlorien",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 4,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "You stand on a bald hill surrounded in all directions by thick, dark forest.\nFrom beneath the distant branches, dim, heavy rustlings, groans, and chitterings\ncan be heard. Far to the west, beyond the Anduin, a pale golden haze hangs above\na much brighter-looking forest. The hilltop is covered with great cyclopean\nstones, each marked with its own identifying number. Orcs, organized in\nwork-gangs, bustle about with loads of wood, cloth, stone, precious metals, and\nhousehold goods, snarling and cursing as they bump into each other. Some very\nlarge trolls, seemingly immune to the rays of the dim sun, sullenly trudge past\ncarrying huge shovels. A wooden lean-to contains a drafting table, on which,\nweighted with metal chunks to keep them from unrolling, are some parchment rolls\non which architectural drawings can be seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24303"
+                ],
+                "name": "",
+                "out": [
+                    "24303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24305"
+                ],
+                "name": "",
+                "out": [
+                    "24305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24306"
+                ],
+                "name": "",
+                "out": [
+                    "24306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24309"
+                ],
+                "name": "",
+                "out": [
+                    "24309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24304",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Southern Mirkwood Construction Co.",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 4,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "An ominous claustrophobic sense envelops you as you try and navigate the\ntwisted, dense undergrowth that makes the best of the gloomy conditions below\nthe canopy of the endless forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24304"
+                ],
+                "name": "",
+                "out": [
+                    "24304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24311"
+                ],
+                "name": "",
+                "out": [
+                    "24311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24305",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mirkwood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 5,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "Welcome to the forest called Fangorn, bordered on the east by the Wold, and on\nthe west by the high peaks of the southern Misty Mountains. Elvish history tells\nhow, when Varda, Queen of the Heavens, rekindled the Stars and awoke the Elves\nthe Ents also awoke in the Great Forests of Arda. They came from the thoughts of\nYavanna, Queen of the Earth, and were her shepherds of trees. Shepherds and\nguardians they proved to be, for if roused to anger Entish wrath was terrible\nand they could crush stone and steel with their hands alone. Justly they were\nfeared, but they were also gentle and wise. \"Do not be too hasty, that is my\nmotto.\" - Treebeard A small sign is hanging on a nearby branch.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24304"
+                ],
+                "name": "",
+                "out": [
+                    "24304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24306",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fangorn Forest [No Smoking Please]",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 3,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "Mysterious stains spot the lime, corduroy upholstry of this spacious couch.\nSmall crumbs and misplaced cigarette ash offer a granular texture to the\notherwise smooth surface of the fabric. Between the ill-fitting green cushions\nare gaping black chasms leading into the perilous depths of the seat. A freshly\nstarched blanket is neatly folded on the right arm of the couch.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24306"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24308"
+                ],
+                "name": "",
+                "out": [
+                    "24308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24307",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Giant Green Sofa",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 0,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "You are emersed in a big bowl of comfortably warm oatmeal. Squished around the\nsoggy oats are large blocks of sugar cubes, stacked into comfortable resting\nchairs and sofas. A thin trickle of warm milk pours into the bowl from a nearby\ngranite spigot, which constantly refreshes the temperature and causes thick,\nslow-rising bubbles to gently surface and pop, releasing warm brown-sugar\nscented vapours into the steamy air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24310"
+                ],
+                "name": "",
+                "out": [
+                    "24310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24307"
+                ],
+                "name": "",
+                "out": [
+                    "24307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24308",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Staer's Big Bowl of Porridge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 0,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "Several Finns are in this hot dimly lit room and everyone is holding a cold\nbottle of beer sipping from it every now and then. Everyone is uttering in some\nstrange tongue. The air in this room is hot and humid. There is a stove full of\nsteaming black stones in the middle of the room while the walls are made of huge\nlogs. There is a pile of used bath whisks made of birch branches. The cute arse\nof Muumi is hanging on the wall. A small window is in the east wall with a view\nto a lake covered with ice and a hole in it. A finn's head is peeking above the\ndark waters in the hole. There is a lovely oil painting hanging above the stove.\nA huge thermometer is hanging on the wall. Some czech is here suffering from the\nheat.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24308"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24304"
+                ],
+                "name": "",
+                "out": [
+                    "24304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24309",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sauna",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 0,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "Here, hidden from the ever-watchful eyes of people, Staer conducts his secret\ndealings and powers with the unknown. Mysterious creatures live and die within\nthe confines of these wet, rock hardened walls. The air lights up with zips of\nblue and yellow - as mudlle magic inundates the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24308"
+                ],
+                "name": "",
+                "out": [
+                    "24308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4099,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24310",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Staer's Private Lab",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 1,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "Darkness surrounds this fire-lit forest glen, where four logs have been placed\nin a square around a blazing bonfire. Beyond the fire's perimeter, recflections\nof eyes of all kinds of shapes and sizes weave in and out of the inky darkness.\nHissing, scraping sounds can be heard from somewhere close by, but just as the\near begins to discern one sound, it stops, just to be replaced by another.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24305"
+                ],
+                "name": "",
+                "out": [
+                    "24305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24312",
+                    "28469"
+                ],
+                "name": "",
+                "out": [
+                    "24312",
+                    "28469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24311",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Forest Road",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 5,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "A cozy-looking, red summer cottage stands in the warm, bright sunlight upon a\nsmooth rock of the lakeside. The lake is as deep blue as a sapphire, and its\nwater look refreshing and tempting. Smoke is curling up from the chimney of the\ncottage - it looks like Antti is heating up sauna for his Finn, Gnome and Troll\nfriends. Behind the cottage, a peaceful birch forest sings a soft, relaxing\nmelody, a praise for the sun and the tender summer wind!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24313"
+                ],
+                "name": "",
+                "out": [
+                    "24313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24311"
+                ],
+                "name": "",
+                "out": [
+                    "24311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24315"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24312",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Antti's Summer Cottage near Warrens",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 5,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "The Dark Lord's servants have reached Barad-dur with the Ring. The holocaust\nbegins. Suddenly the earth groans and quakes! Rising swiftly up, high above the\nmountains, vast soaring darkness springs into the sky, flickering with fire. His\nvoice, dim but growing, filled with ancient evil, harsh as stone, spoke the\nwords of betrayal: Ash nazg durbatuluk, ash nazg gimbatul, Ash nazg thrakatuluk\nagh burzum-ishi krimpatul! From the south in the land of Mordor, there rose a\nhuge shape of shadow, black against the pall of cloud, impenetrable,\nlightning-crowned, filling all the sky. Enormous it reared above the world, on\nits hand a band of utter darkness, dooming the land to night eternal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24312"
+                ],
+                "name": "",
+                "out": [
+                    "24312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24314"
+                ],
+                "name": "",
+                "out": [
+                    "24314"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24313",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Epilogue",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 4,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "Cool wisps of fresh air sweep calmly over this picturesque landscape. The\noverwhelmingly peaceful and serene atmosphere undoubtedly reflect the character\nof the Ainur that resides here. Close to the waters edge, there is an inviting\ncanopy providing just enough shelter from the warm sun. White sand soft as\npowder covers the majority of this coastline dotted only by the occasional palm\ntree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24313"
+                ],
+                "name": "",
+                "out": [
+                    "24313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24314",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Anne's Private Beach",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 3,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "Several Finns are in this hot dimly lit room and everyone is holding a cold\nbottle of beer sipping from it every now and then. Everyone is uttering in some\nstrange tongue. The air in this room is hot and humid. There is a stove full of\nsteaming black stones in the middle of the room. The walls are made of huge\nlogs. There is a pile of used bath whisks made of birch branches. The cute arse\nof Muumi is hanging on the wall. A small window is in the east wall with a view\nto a lake covered with ice and a hole in it. A finn's head is peeking above the\ndark waters in the hole. There is a lovely oil painting hanging above the stove.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24312"
+                ],
+                "name": "",
+                "out": [
+                    "24316"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24315",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sauna",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 5,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "ororor\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "24317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "24315"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24316",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Humala's place of Pleasure",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 5,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself surrounded by ancient walls that have crumbled in spots. The\nground has been dug up by what appear to have been numerous battles raging here\nfor many years. Magic must have been released here since no plantation is\ncapable of growing in this area. Only one being was victorious throughout all\nthe wars and it occasionally visits here to gloat. In the corner sits a\nmagnificent Parlour Palm. Humala, wielding an engraved lag hammer, is sitting\nhere on your face (wizinvis M and idle). Humala, wielding an engraved lag\nhammer, is sitting here on your face (wizinvis M and idle). Humala, wielding an\nengraved lag hammer, is sitting here on your face (wizinvis M and idle). Humala,\nwielding an engraved lag hammer, is sitting here on your face (wizinvis M and\nidle). Humala, wielding an engraved lag hammer, is sitting here on your face\n(wizinvis M and idle). Humala, wielding an engraved lag hammer, is sitting here\non your face (wizinvis M and idle).\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "24317"
+                ],
+                "name": "",
+                "out": [
+                    "24317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24317",
+                    "24358"
+                ],
+                "name": "",
+                "out": [
+                    "24317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "24316"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24317",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Presidential Palace of Peru",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 6,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "This is a luxurious room, obviously used for the relaxation of the Ainur. Soft\nsofas line the walls, their plush fabric inviting you to lie down. A bar is in\nthe centre of the room. Many crystal containers of wines and liquors are set\nneatly across the top. The contents look very inviting. A big bottle of Dain's\nLaphroaig stands atop the bar. A cask of Maedhros's current favourite, Longrow,\nstands ready for tasting.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23792"
+                ],
+                "name": "",
+                "out": [
+                    "23792"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24318",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Gods' Antechamber",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 3,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "This is where builders come and fix their typos, if they want to not be accused\nof being lazy dogs. A special warning scrawled in blood from Maedhros says:\nPlease, please, please remove the post you correct! (And if possible mail the\nposter of the report.)\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24291"
+                ],
+                "name": "",
+                "out": [
+                    "24291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24319",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tpyo board",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 2,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "The walls in this chamber are made of white marble, being circular in shape,\nalike to those of a tower. Several, wide pillars of stone travel high above,\nwhere they greet and support the ceiling. A spiral, silver staircase traces\nclose to the pillars, until the stairs disappear beyond sight above, where a\nblazing light enters the room. The staircase is held aloft by several, thin rods\nthat are also silver, and each one is reflecting a great amount of the light\nthat shines in from above. The lower portion of this chamber lies in shadow\nthough, where there is only a single beam of light that reaches down and upon a\nsculpture of Nimloth the White Tree of Numenor. The sculpture of the tree stands\nin the center of the chamber, near the base of the stairs. Between the pillars\nare several paintings, each one was painted directly onto the walls. Though this\nchamber is only a small space within the Halls of Doom, this is where Almarian,\nloyal servant of Namo, can be found after her tasks are complete for the day,\npainting all of Numenorean's sorrow upon the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24302",
+                    "24346"
+                ],
+                "name": "",
+                "out": [
+                    "24346"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24345",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vestige of Numenor",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 7,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "This golden abode is the home of Namo, one of the Feanturi. Large pillars rise\ntowards the bejewelled ceiling, covered with ancient paintings depicting Arda\nduring its early days. Eru and Manwe can easily be recognized, as well as\nYavanna and the golden trees, Telperion and Laurelin. The cold floor has been\nengraved with strange patterns, giving this room an eerie feeling. Fabulous\nwooden benches has been put along the walls, each bench in front of a pillar,\nmaking it easy for you to sit down and watch the beautiful paintings. But then,\nwho would want to spend time here? The Halls of the Doomed, the Halls of the\nDead. A place every mortal will have to pass through, strong or weak, beautiful\nor ugly. The mere thought makes you dizzy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24345"
+                ],
+                "name": "",
+                "out": [
+                    "24345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24346",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Halls of Doom",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 7,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "There is a large, oaken table on this green meadow. On the table are numerous\ndetailed models of cities, environment, and landscapes. There are trees, rivers,\neven entire cities but most of the models are covered with a thick layer of\ndust. Yet in some places, the dust has been removed and it seems that someone\nmade a few changes here and there, adding new, shiny spots.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24348"
+                ],
+                "name": "",
+                "out": [
+                    "24348"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24349",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Coordination Meadow for New Quests in Old Zones",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 0,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "A warm summer night embraces Antti's summer cottage, blanketing it into soft\nshades of dark, wrapping everything within its protective arms, providing\npeaceful and safe sleep. The beautiful lake around the cottage is totally still,\nonly a vague sound of some night bird can be heard in the distance. A group of\nSauna gnomes are dancing on the smooth rock before the cottage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24311"
+                ],
+                "name": "",
+                "out": [
+                    "24311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28469",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Antti's Summer Cottage near Warrens",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 5,
+        "y": 102,
+        "z": -1
+    }
+]

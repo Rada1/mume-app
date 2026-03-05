@@ -1,0 +1,1355 @@
+[
+    {
+        "desc": "The darkness opens up into an old armoury, filled with several fireplaces,\nbenches and anvils. This large abandoned cavern still seems to be in perfect\norder. Along the walls hangs an assortment of half complete weapons and armour,\nmostly comprised of axes, shields, swords and spears of all shapes and sizes.\nThe cave continues to the east. Tunnels open in the southern and northern walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14326"
+                ],
+                "name": "",
+                "out": [
+                    "14326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "681"
+                ],
+                "name": "",
+                "out": [
+                    "681"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14327"
+                ],
+                "name": "",
+                "out": [
+                    "14327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "680",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dwarven Armoury",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 56,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel continues in the darkness, extending east and west as far as the eye\ncan see. The bare walls are totally smooth, showing signs of care and\nthoroughness in their construction. The floor slants away to the east, further\ninto the dark rock. A smell of dust and coal pervades the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14326"
+                ],
+                "name": "",
+                "out": [
+                    "14326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "683"
+                ],
+                "name": "",
+                "out": [
+                    "683"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "682",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 55,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "This large wooden crate has been crafted to look like a storage silo from the\noutside, complete with a stock of grain and a fully functional door assembly.\nThe entire wall facing the storage cave easily swings out of the way with little\neffort. Its lock and hinges are crude and lack any kind of protective casing or\nhousing. Wafts of damp air emanate from a narrow tunnel leading eastwards\nfurther into the mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "682"
+                ],
+                "name": "",
+                "out": [
+                    "682"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "684"
+                ],
+                "name": "silowall",
+                "out": [
+                    "684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "683",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside a Large Silo",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 54,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel widens up, almost like a small cavern. The floor is cold and the air\ndry, making this cavern a good place for long term storage. Several silos have\nbeen built against the walls, apparently for storing grain and crops. The wooden\nplanks of the silo fronts line up by the walls, covering them totally. Small\npiles of grain lie spread across the smooth floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "686"
+                ],
+                "name": "",
+                "out": [
+                    "686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "685"
+                ],
+                "name": "",
+                "out": [
+                    "685"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "683"
+                ],
+                "name": "silowall",
+                "out": [
+                    "683"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "684",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Storage Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 53,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "An underground tunnel through the black rock mountain. The walls are crude, as\nis the floor, but the grinding tear of feet and time has worn a smooth path in\nthe rock, into the tunnel going north. The floor inclines steeply at the\nsouthern wall, allowing passage to the grid up in the roof.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "684"
+                ],
+                "name": "",
+                "out": [
+                    "684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "571"
+                ],
+                "name": "",
+                "out": [
+                    "571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "685",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Back Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 53,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel continues its course through the black rock, deep below the mountain\npeaks. The passage is almost as big as a cavern; the roof is several feet higher\nthan the tallest of dwarves; the walls wide enough for half a dozen adventurers\nto walk abreast. Crates, boxes and piles of stored goods are stacked to one side\nof the tunnel, forming a narrow path along the other wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "687"
+                ],
+                "name": "",
+                "out": [
+                    "687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "684"
+                ],
+                "name": "",
+                "out": [
+                    "684"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "686",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Storage Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 53,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "The underground tunnel lies in darkness. Built up by black rock walls and a\nslightly slanted floor it leads through the mountain. The walls are crude, dust\ndances in the air in front of you. The tunnel southwards widens as it leads\ndeeper. A stair is built at the north end, leading up to a grid in the tunnel\nroof.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "686"
+                ],
+                "name": "",
+                "out": [
+                    "686"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "688"
+                ],
+                "name": "stoneslab",
+                "out": [
+                    "688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "687",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Back Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 53,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "A huge stone platform, standing 2 or so meters high, has been placed at the\ncentre of the niche. A massive rock table with 10 chiseled boulders for chairs\nsits in the middle of the platform. The area surrounding the platform is huge,\nand could easily support crowds in the hundreds, and possibly thousands. This\nwas obviously a place of extreme importance, and you feel somewhat in awe as you\ngaze upon this ancient dwarven council site.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "689"
+                ],
+                "name": "",
+                "out": [
+                    "689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "687"
+                ],
+                "name": "stonechair",
+                "out": [
+                    "687"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "688",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone Auditorium",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 53,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "High ridges and peaks surround this small vale entirely blocking off any\npossibility that it may be seen from the outside. The north and west sides of\nthe valley contain numerous small huts and cabins, so old that some are roofless\nand others have simply collapsed. Large outposts are located at the top of the\nmountain ridges to the south and southeast, used to survey the entire\nsurrounding countryside. A large structure sits in the middle of a niche to the\nsouth and a small path leads off east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "688"
+                ],
+                "name": "",
+                "out": [
+                    "688"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "691"
+                ],
+                "name": "",
+                "out": [
+                    "691"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "690"
+                ],
+                "name": "",
+                "out": [
+                    "690"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "689",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountain Vale",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 53,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "This cabin seems to be the living quarters for leaders of the vale, as it is the\nwell constructed and situated quite centrally and close to the auditorium. It is\nfairly large and seems to have room to sleep about 10 comfortably. A dusty old\ncanvas map of the vale and surrounding country is still pinned to a long table\nin the centre of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "689"
+                ],
+                "name": "",
+                "out": [
+                    "689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "690",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Oak Cabin",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 52,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "You seem to have stumbled onto a narrow hidden path that leads west through the\nmountains. Made up of mostly solid rock, the ground is much harder here and the\ngouges from the east are not nearly as deep, and in some places unnoticable. The\npath widens to the east and opens up into a small mountain vale.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "181"
+                ],
+                "name": "levee",
+                "out": [
+                    "181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "689"
+                ],
+                "name": "",
+                "out": [
+                    "689"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "691",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hidden Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 54,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14298"
+                ],
+                "name": "",
+                "out": [
+                    "14299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14300"
+                ],
+                "name": "",
+                "out": [
+                    "14302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14299"
+                ],
+                "name": "",
+                "out": [
+                    "14299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14301",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 40,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel bends slowly on its way through the black stone, deep inside this\ndark mountain. The smooth walls and expert cant of the floor show signs of true\nDwarven craftsmanship. The tunnel continues to the west, and a large cavern\nopens up to the south, smelling of dust and coal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "680"
+                ],
+                "name": "",
+                "out": [
+                    "680"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "682"
+                ],
+                "name": "",
+                "out": [
+                    "682"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14326",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in a Narrow Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 56,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "This room used to store large piles of raw material for the Dwarven smiths who\ntoiled over burning forges, crafting their many weapons and armour. Heaps and\nstashes of coal and metal lie here still, yet over the years they have been\ntainted by moisture and rust. Among these piles one can find an assortment of\ndiscarded tools and lanterns which may still be salvageable. The eastern wall is\ncut almost vertically, and all the supplies have been moved away from it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 513,
+                "flags": 3,
+                "in": [
+                    "14328"
+                ],
+                "name": "cavernwall",
+                "out": [
+                    "14328"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "680"
+                ],
+                "name": "",
+                "out": [
+                    "680"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14327",
+        "light": 2,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Supplies Corner",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 57,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Dusty piles of coal, empty barrels, wooden wheelbarrows and unused anvils occupy\nthis big tunnel. The rock floor is smooth and cold and the roof hovers above\nyou, black, heavy and monumental. The faint sound of dripping water can be heard\nin the silence. Openings to adjacent caves lie to the east and south, and a door\ncan be seen in the western wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14329"
+                ],
+                "name": "",
+                "out": [
+                    "14329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14330"
+                ],
+                "name": "",
+                "out": [
+                    "14330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14327"
+                ],
+                "name": "",
+                "out": [
+                    "14327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14328",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inner Supplies Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 58,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This room has been built as a small auditorium with shelves instead of seating.\nThe shelves once displayed the finely crafted weapons and armour of the hidden\narmoury nearby. All the shelves are covered with a thick layer of dust; some\neven house the dwellings of various creatures that roam these cavernous\npassageways.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25871"
+                ],
+                "name": "",
+                "out": [
+                    "25871"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14328"
+                ],
+                "name": "",
+                "out": [
+                    "14328"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14330",
+        "light": 2,
+        "loadflags": 2,
+        "mobflags": 4096,
+        "name": "Display Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 59,
+        "y": 39,
+        "z": 0
+    }
+]

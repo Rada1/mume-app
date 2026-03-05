@@ -1,0 +1,1510 @@
+[
+    {
+        "desc": "This warm and cosy room is framed with dark oak and protected by whitewashed\nwalls that have been set with wattle and daub. A small glass window peeks out of\nthe eastern wall and large pine planks cover the floor. The room is somewhat\ndim, but a single lantern hanging from the rafters above provides ample light.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30049"
+                ],
+                "name": "",
+                "out": [
+                    "30049"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30048",
+        "light": 0,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Cosy Room",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -20,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "This large room is warm and inviting. A roaring fire greets travellers who are\nwelcome to sit among the beautifully furnished long tables and benches. The back\nof the inn is set with laden shelves. The inn is quite clean and tidy and it is\nclear that the owner takes great pride in keeping it so for his guests.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30048"
+                ],
+                "name": "",
+                "out": [
+                    "30048"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30050"
+                ],
+                "name": "",
+                "out": [
+                    "30050"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30049",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cosy Inn",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": -20,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "A solitary inn stands to the west on a foundation of grey stones. It rises on\nheavy oak timbers to a roof of wooden shingles, with whitewashed walls made of\nwattle and daub. Several windows peek out over the inn's courtyard, which\nconnects to a wagon trail. The trail disappears eastward into the Tower Hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30051"
+                ],
+                "name": "",
+                "out": [
+                    "30051"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30049"
+                ],
+                "name": "",
+                "out": [
+                    "30049"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30050",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Front of a Cosy Inn",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": -19,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "This grassy knoll provides a breathtaking view of the surrounding hills. A worn\nwagon trail climbs through the Tower Hills from the west before veering south to\nfollow an escarpment. A distant inn can be spotted towards the west, while a\ngoat trail too narrow and steep for wagons can be seen leading eastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30052"
+                ],
+                "name": "",
+                "out": [
+                    "30052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30050"
+                ],
+                "name": "",
+                "out": [
+                    "30050"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30051",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tower Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -18,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "A light fog covers the Tower Hills in moisture, keeping the stones slick and\ngrasses watered. The only path visible is a narrow goat trail that meanders\nthrough the well-grazed hills. The goat trail navigates itself smartly among the\nboulders and shrubs with a westward decline and eastward rise.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30053"
+                ],
+                "name": "",
+                "out": [
+                    "30053"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30051"
+                ],
+                "name": "",
+                "out": [
+                    "30051"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30052",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -17,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "The goat trail in the hills meets a scarp slope where the higher elevation\nbecomes more wooded with beech, yew, and juniper. The hillside is tall and forms\na natural barrier that forces the trail to follow it. A dense patch of broken\nbushes grow alongside the base of the scarp to the south, making the trail head\nwestward instead.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30054"
+                ],
+                "name": "",
+                "out": [
+                    "30054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30052"
+                ],
+                "name": "",
+                "out": [
+                    "30052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30053",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -16,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "A light fog limits visibility along this narrow goat trail as it cuts across the\nTower Hills. The convenient trail leads southward along a steep scarp slope and\neastward where it climbs a crag and enters a small wood. Evidence of deer, wild\nboar, and other game can be seen splitting off into the shrubs and brush.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30053"
+                ],
+                "name": "",
+                "out": [
+                    "30053"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30055"
+                ],
+                "name": "",
+                "out": [
+                    "30055"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30054",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -16,
+        "y": 27,
+        "z": 0
+    },
+    {
+        "desc": "Fog lightly shrouds this wooded section of the Tower Hills, blanketing the dense\nfoliage and thick brush and making it hard to see far. A winding and narrow goat\ntrail is the only path forward. The trail can be seen leading westward and\nsouthward as it follows a saddle between a two hilltops.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30056"
+                ],
+                "name": "",
+                "out": [
+                    "30056"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30054"
+                ],
+                "name": "",
+                "out": [
+                    "30054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30055",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -15,
+        "y": 27,
+        "z": 0
+    },
+    {
+        "desc": "The rugged goat trail winds past boulders and shrubs until it reaches the crest\nof a hilltop that is shrouded in fog. The trail can be seen leading north across\na brush-covered saddle to another hilltop and south where the Tower Hills become\nless vegetated and more rocky, their faces covered in boulders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30055"
+                ],
+                "name": "",
+                "out": [
+                    "30055"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30057"
+                ],
+                "name": "",
+                "out": [
+                    "30057"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30056",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foggy Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -15,
+        "y": 28,
+        "z": 0
+    },
+    {
+        "desc": "The partially washed-out trail navigates itself across a recent landslide within\nthe Tower Hills. The earth is loose, jumbled, and provides poor footing; making\nthe stretch arduous. Grasses and shrubs have already begun to slowly recolonize\nthe hillside. The trail leads south into a goat paddock and north to a hilltop.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30056"
+                ],
+                "name": "",
+                "out": [
+                    "30056"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "30058"
+                ],
+                "name": "",
+                "out": [
+                    "30058"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30057",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tower Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -15,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "A small goat paddock has been constructed between the hills where a tiny spring\nbabbles out of the ground. The high walls of the paddock are made of tightly\nwoven saplings to protect the goats and prevent escape. Evidence of the goats\nand their goatherd can be found in the mud where the grass was grazed short.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "30057"
+                ],
+                "name": "",
+                "out": [
+                    "30057"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "30059"
+                ],
+                "name": "",
+                "out": [
+                    "30059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30058",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 4096,
+        "name": "Goat Paddock",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -15,
+        "y": 30,
+        "z": 0
+    },
+    {
+        "desc": "The verdant Tower Hills in this location are taller than those to the west. The\nsides of the hills are covered with long grasses and dotted with young trees. A\nnarrow goat trail can be seen winding its way westward down to a small goat\npaddock and northward where the hills increase in elevation even more.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30060"
+                ],
+                "name": "",
+                "out": [
+                    "30060"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 7,
+                "in": [
+                    "30058"
+                ],
+                "name": "",
+                "out": [
+                    "30058"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30059",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tower Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -14,
+        "y": 30,
+        "z": 0
+    },
+    {
+        "desc": "The prominent crest of the Tower Hills provides an awe-inspiring view of the\nsurrounding area. Hills upon hills stretch out into the horizon, all covered in\ngreen grasses, shrubs, and trees. A goat trail leads southward and eastward from\nthis vantage point, winding through bolders and brush.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30059"
+                ],
+                "name": "",
+                "out": [
+                    "30059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30061"
+                ],
+                "name": "",
+                "out": [
+                    "30061"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30060",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tower Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -14,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "The hills become dense with brush, forcing all to move along a narrow goat trail\nthat cuts through the shrubs, bushes, and young trees. A light fog rolls through\nthis wooded part of the Tower Hills, further obstructing vision and making the\nrocks, grasses, and underbrush slick and wet.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30062"
+                ],
+                "name": "",
+                "out": [
+                    "30062"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30060"
+                ],
+                "name": "",
+                "out": [
+                    "30060"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30061",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Brush-covered Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -13,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "A narrow trail cuts across a majestic valley that is nestled deep within the\nTower Hills. The grassy slopes of the hills are wooded with young stands of\nalder, ash, beech, and birch that have grown in low points of elevation where\nwater collects. Evidence of wild game is everywhere among these lush hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30063"
+                ],
+                "name": "",
+                "out": [
+                    "30063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30061"
+                ],
+                "name": "",
+                "out": [
+                    "30061"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30062",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brush-covered Valley",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -12,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "The narrow trail traverses a valley nestled deep within the Tower Hills. The\ngrassy slopes of the hills are adorned with vibrant stands of alder, ash, beech,\nand birch, thriving in the lower elevations where water gathers. Wild game\ntracks hint at the thriving ecosystem within these lush hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30062"
+                ],
+                "name": "",
+                "out": [
+                    "30062"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30064"
+                ],
+                "name": "",
+                "out": [
+                    "30064"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30063",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brush-covered Valley",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -12,
+        "y": 30,
+        "z": 0
+    },
+    {
+        "desc": "The hills gradually thicken with brush, compelling all to follow a narrow goat\ntrail that cuts through shrubs, bushes, and young trees. Within the wooded\nexpanse of the Tower Hills, the rocks, grasses, and underbrush bear the mark of\ndampness, bestowed by the elements. The trail starts rising to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30063"
+                ],
+                "name": "",
+                "out": [
+                    "30063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30065"
+                ],
+                "name": "",
+                "out": [
+                    "30065"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30064",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Brush-covered Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -12,
+        "y": 31,
+        "z": 0
+    },
+    {
+        "desc": "From the commanding crest of the Tower Hills, a striking view reveals hills\ncascading southward into the distance, adorned with vibrant green grasses,\nshrubs, and trees. Leading the way, a goat trail skilfully navigates its course\nsouthward and northward, meandering through bolders and dense foliage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "30064"
+                ],
+                "name": "",
+                "out": [
+                    "30064"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4101,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30065",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tower Hills",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": -12,
+        "y": 32,
+        "z": 0
+    }
+]

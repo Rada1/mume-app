@@ -59,7 +59,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             onClick={() => {
                                 const setName = popoverState.setId;
                                 const dir = popoverState.assignSwipeDir;
-                                setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'nav' } } : { ...b, command: setName, label: setName.toUpperCase(), actionType: 'nav' }) : b));
+                                setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName.toUpperCase(), actionType: 'menu' }) : b));
                                 setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`);
                             }}
                         >

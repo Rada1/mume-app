@@ -1,0 +1,7365 @@
+[
+    {
+        "desc": "The forest has thinned here, allowing tall grasses to invade the forest. An\noccasional shrub can be found, ready and willing to block your way, or provide a\nfew vines full of sharp thorns to scratch at your flesh.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4518"
+                ],
+                "name": "",
+                "out": [
+                    "4518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4498"
+                ],
+                "name": "",
+                "out": [
+                    "4498"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4568"
+                ],
+                "name": "",
+                "out": [
+                    "4568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4504"
+                ],
+                "name": "",
+                "out": [
+                    "4504"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4503",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The thinning forest here has led to a greater amount of underbrush. To the north\nthe growth is so thick it seems to squeeze the life from the trees, while to the\nsouth the forest has fallen to disease.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4592"
+                ],
+                "name": "",
+                "out": [
+                    "4592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4503"
+                ],
+                "name": "",
+                "out": [
+                    "4503"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4505"
+                ],
+                "name": "",
+                "out": [
+                    "4505"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4504",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The forest opens to the south, to the scene of a broken shack. In all other\ndirections the forest thickens, much to thick to be passable to north, but still\nthin enough to travel east or west. One noticable aspect of this area is all the\nuprooted trees, and those trees lacking branches.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4593"
+                ],
+                "name": "",
+                "out": [
+                    "4593"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4504"
+                ],
+                "name": "",
+                "out": [
+                    "4504"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4506"
+                ],
+                "name": "",
+                "out": [
+                    "4506"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4505",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 356,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "They say that if you don't ask, the trees won't tell you. Here, it might be\npreferable if you do not ask, for the small animals stuck through like rotting\nshish kebabs on the tree limbs give off an odor bad enough to make you sick to\nyour stomach already.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4512"
+                ],
+                "name": "",
+                "out": [
+                    "4512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4505"
+                ],
+                "name": "",
+                "out": [
+                    "4505"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4507"
+                ],
+                "name": "",
+                "out": [
+                    "4507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4506",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Within the heart of the forest things just seem gloomier. No normal forest\nsounds can be heard, perhaps it is just your passing, but the small animals that\nlive here must have become accustomed to danger. Only the silent will survive.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4514"
+                ],
+                "name": "",
+                "out": [
+                    "4514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4511"
+                ],
+                "name": "",
+                "out": [
+                    "4511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4506"
+                ],
+                "name": "",
+                "out": [
+                    "4506"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4508"
+                ],
+                "name": "",
+                "out": [
+                    "4508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4507",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The earth here has been mauled on an almost continous basis. Or, perhaps it\nmight be more accurate to say, nightly. It seems as if something has been eating\nthe roots of the trees. Certainly something with a voracious appetite.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4509"
+                ],
+                "name": "",
+                "out": [
+                    "4509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4507"
+                ],
+                "name": "",
+                "out": [
+                    "4507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5381"
+                ],
+                "name": "",
+                "out": [
+                    "5381"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4508",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The midst of the forest bespeaks ages of sorrow. Bent limbs seem to reach out to\nyou, begging for your ability to move to more hospitable territory. Even the\nroots seem to reach out from the earth, eager to get away from whatever lurks\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4523"
+                ],
+                "name": "",
+                "out": [
+                    "4523"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4514"
+                ],
+                "name": "",
+                "out": [
+                    "4514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4513",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The trees here hang their limbs low, seeming to hold the weight of Arda upon\ntheir broken and bent wood. You ask yourself what could be worse, to be a tree,\nforced to endure the sights and sounds within this grisly forest, or to be one\nof the victims.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4522"
+                ],
+                "name": "",
+                "out": [
+                    "4522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4507"
+                ],
+                "name": "",
+                "out": [
+                    "4507"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4513"
+                ],
+                "name": "",
+                "out": [
+                    "4513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5290"
+                ],
+                "name": "",
+                "out": [
+                    "5290"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4514",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The underbrush has grown thick here, effectively blocking passage through the\nforest to the south and west. Many brambles and vines seem to have made a nice\nhome for themselves here, tearing at your flesh as if they survived on your\nblood and not the sunshine they get so little of.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4521"
+                ],
+                "name": "",
+                "out": [
+                    "4521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4516"
+                ],
+                "name": "",
+                "out": [
+                    "4516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4515",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Sorrow speaks loudly its name within these woods. No stars and no sun can be\nseen through the thick canopy, only the cool air as it rustles the branches\nabove. No doubt because of the thick canopy overhead, the forest floor has very\nlittle brush, and can be navigated easily, with the exception a large stand of\ntrees to the south that are thick enough to block travel southwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20716"
+                ],
+                "name": "",
+                "out": [
+                    "20716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4517"
+                ],
+                "name": "",
+                "out": [
+                    "4517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4515"
+                ],
+                "name": "",
+                "out": [
+                    "4515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4516",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 356,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The stand of trees has grown too thick to be passable to the south, but\nelsewhere the thick overhead canopy has prevented the extensive growth of\nunderbrush that clogs the passage south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4520"
+                ],
+                "name": "",
+                "out": [
+                    "4520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4518"
+                ],
+                "name": "",
+                "out": [
+                    "4518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4516"
+                ],
+                "name": "",
+                "out": [
+                    "4516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4517",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Several large holes can be seen in the canopy overhead, letting through light\nfrom the sky above. During the daytime the nastiest beasts that inhabit the\nforest will surely be kept at bay, but at night this world belongs to different\nowners.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4519"
+                ],
+                "name": "",
+                "out": [
+                    "4519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4503"
+                ],
+                "name": "",
+                "out": [
+                    "4503"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4567"
+                ],
+                "name": "",
+                "out": [
+                    "4567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4517"
+                ],
+                "name": "",
+                "out": [
+                    "4517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4518",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "Like many pillars reaching up to support a vast ceiling of green, the forest\ngives you the feel of a vast indoor arena. An arena that only the worms and\nfungi clean, and the fun begins at night. Prepare to be the next gladiator.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4529"
+                ],
+                "name": "",
+                "out": [
+                    "4529"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4518"
+                ],
+                "name": "",
+                "out": [
+                    "4518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4566"
+                ],
+                "name": "",
+                "out": [
+                    "4566"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4520"
+                ],
+                "name": "",
+                "out": [
+                    "4520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4519",
+        "light": 1,
+        "loadflags": 48,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Overhead the forest is thick, down below it is barren. The smell is unique\nhowever, a combination of evergreen, musty wet air, and odor of a rotting\ncorpse. Probably the deer corpse up ahead, with the fungi sprouting around it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4530"
+                ],
+                "name": "",
+                "out": [
+                    "4530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4517"
+                ],
+                "name": "",
+                "out": [
+                    "4517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4519"
+                ],
+                "name": "",
+                "out": [
+                    "4519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20716"
+                ],
+                "name": "",
+                "out": [
+                    "20716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "5368"
+                ],
+                "name": "tendrils",
+                "out": [
+                    "5368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4520",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The forest darkens the horizon in all directions except north, where you can see\na barren area filled with boulders. You can hear the wind whistling a tune of\nsorrow around the trees, begging for the future to bring happier times.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4532"
+                ],
+                "name": "",
+                "out": [
+                    "4532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4515"
+                ],
+                "name": "",
+                "out": [
+                    "4515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20716"
+                ],
+                "name": "",
+                "out": [
+                    "20716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4522"
+                ],
+                "name": "",
+                "out": [
+                    "4522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4521",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "A thick canopy blocks the sun from reaching the forest floor in this area.\nMushrooms can be seen clinging to the trees, and a foul stench arrises from\ntheir rotting pussing caps. Probably wise to avoid mushrooms that thrive in\ndecay.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4525"
+                ],
+                "name": "",
+                "out": [
+                    "4525"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4514"
+                ],
+                "name": "",
+                "out": [
+                    "4514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4521"
+                ],
+                "name": "",
+                "out": [
+                    "4521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4523"
+                ],
+                "name": "",
+                "out": [
+                    "4523"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4522",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Horrid smells overtake you, and you notice the rotting remains of something at\nthe base of a tree. Whatever it was, something took great joy in smashing it's\nskull against the trunk of a tree. Perhaps it is best to leave the trees to\ntheir fate and escape with your own life intact.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4524"
+                ],
+                "name": "",
+                "out": [
+                    "4524"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4513"
+                ],
+                "name": "",
+                "out": [
+                    "4513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4522"
+                ],
+                "name": "",
+                "out": [
+                    "4522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4523",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Thick trees, bent trees, all of which seem to reach to the sky for some saviour.\nAlthough their foliage is thick enough to keep the yellow eye at bay, this\nhasn't helped their roots and trunks, as evidenced by many scratches and gashes\nin their bark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4526"
+                ],
+                "name": "",
+                "out": [
+                    "4526"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4523"
+                ],
+                "name": "",
+                "out": [
+                    "4523"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4525"
+                ],
+                "name": "",
+                "out": [
+                    "4525"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4524",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The forest can be seen thinning to the north, finally giving way to a field\nfarther north. Eastwards a rocky slope stops the forest from spreading its\ndepression any farther east. A few of the trees at the edge seem ready to fall\ndown the rocks, their roots straining to hold them up.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4533"
+                ],
+                "name": "",
+                "out": [
+                    "4533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4522"
+                ],
+                "name": "",
+                "out": [
+                    "4522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4532"
+                ],
+                "name": "",
+                "out": [
+                    "4532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4524"
+                ],
+                "name": "",
+                "out": [
+                    "4524"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4525",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The edge of the forest, with its forlorn and bent trees has reached its end\nhere. As the trees thin, the underbrush grows thick, and its thorny appendages\nconstantly snag you, as if trying to drag you back. An occasional fungus can be\nseen pushing its bulbous top through the earth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4527"
+                ],
+                "name": "",
+                "out": [
+                    "4527"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4524"
+                ],
+                "name": "",
+                "out": [
+                    "4524"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4533"
+                ],
+                "name": "",
+                "out": [
+                    "4533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4526",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 353,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "All around this small clearing the trees and brush seem to reach towards you,\nanxious to cover more land. The land seems to have been trampled often by large\nbeasts. What few plants remain have been crushed numerous times.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4526"
+                ],
+                "name": "",
+                "out": [
+                    "4526"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4527",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Clearing",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 353,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The forest has provided for its own here. There are many nice places to hide\nbehind the bushes while keeping an eye on the clearing to the south. From the\nflattened bushes you can see that someone has been using this area recently.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4565"
+                ],
+                "name": "",
+                "out": [
+                    "4565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4566"
+                ],
+                "name": "",
+                "out": [
+                    "4566"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4564"
+                ],
+                "name": "",
+                "out": [
+                    "4564"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4529"
+                ],
+                "name": "",
+                "out": [
+                    "4529"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4528",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 359,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The smell of putrid rot hangs in the air, as if someplace, hidden beneath the\nroots of a tree, may lie the corpse of an unlucky traveller. The woods have\nnever been hospitable to humans or hobbits, and it has only grown worse with the\npassing of each day.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4546"
+                ],
+                "name": "",
+                "out": [
+                    "4546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4519"
+                ],
+                "name": "",
+                "out": [
+                    "4519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4528"
+                ],
+                "name": "",
+                "out": [
+                    "4528"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4530"
+                ],
+                "name": "",
+                "out": [
+                    "4530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4529",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The fertile soil of the forest gives way to the rocky ground of a gully to the\nwest. Its steep sides look passable here, but certainly not as easy as the woods\nin all other directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4547"
+                ],
+                "name": "",
+                "out": [
+                    "4547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4520"
+                ],
+                "name": "",
+                "out": [
+                    "4520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4529"
+                ],
+                "name": "",
+                "out": [
+                    "4529"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4531"
+                ],
+                "name": "",
+                "out": [
+                    "4531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4530",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "As if a bone was ripped from the earth here, this gully bares the rocks that\nmake up the foundation of the land. Starting west of here a short ways, the\ngully bends to the north where it's sides are steeper and the rocks seem to have\nsharper points.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4535"
+                ],
+                "name": "",
+                "out": [
+                    "4535"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "20716"
+                ],
+                "name": "",
+                "out": [
+                    "20716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4530"
+                ],
+                "name": "",
+                "out": [
+                    "4530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4532"
+                ],
+                "name": "",
+                "out": [
+                    "4532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4531",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gully",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 356,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "This rocky terrain seems to funnel to the east, making moving in other\ndirections possible albeit dangerous. Here and there can be seen an occasional\nbone, leftovers from someone's dinner. Someone very big.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4534"
+                ],
+                "name": "",
+                "out": [
+                    "4534"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4521"
+                ],
+                "name": "",
+                "out": [
+                    "4521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4531"
+                ],
+                "name": "",
+                "out": [
+                    "4531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4525"
+                ],
+                "name": "",
+                "out": [
+                    "4525"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4532",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rough Ground",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 355,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "Grasses grow tall in this strange clearing. The trees seem to have avoided this\narea, their branches actually turned away, leaving naked trunks exposed to\nwhatever menace might lurk unseen here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4525"
+                ],
+                "name": "",
+                "out": [
+                    "4525"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4534"
+                ],
+                "name": "",
+                "out": [
+                    "4534"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4526"
+                ],
+                "name": "",
+                "out": [
+                    "4526"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4533",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Glade",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 354,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The woods here have been twisted horribly, as if the evil of the east had shaped\nthem to his desires, then froze them in that state to prevent any feeling but\nagony to enter their souls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4537"
+                ],
+                "name": "",
+                "out": [
+                    "4537"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4532"
+                ],
+                "name": "",
+                "out": [
+                    "4532"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4533"
+                ],
+                "name": "",
+                "out": [
+                    "4533"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4534",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Warped Woods",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The ravine heads north and south here, with forest high up to the east and west.\nThe walls to the east and west, too steep to climb, seem perfect for the few\nvultures that sit in the trees high overhead, watching for a spare morsel. The\ncrack in the earth deepens to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4543"
+                ],
+                "name": "",
+                "out": [
+                    "4543"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4531"
+                ],
+                "name": "",
+                "out": [
+                    "4531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4535",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Ravine",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 356,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "Nefarious grins seem to be traced in the bark of the trees here, their branches\nreaching out as if to drag you into some hidden maw. Even their roots can be\nseen to wiggle, as if blowing gently in the wind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4538"
+                ],
+                "name": "",
+                "out": [
+                    "4538"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4537"
+                ],
+                "name": "",
+                "out": [
+                    "4537"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4536",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Warped Woods",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "These ghastly woods seem ready to charge you, each with a sinister face painted\nin the lines of it's bark, always looking, always watching you. Some short\ntrees, almost midgets compared to their cousins can be seen to have roots lying\nmostly on top of the soil.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4540"
+                ],
+                "name": "",
+                "out": [
+                    "4540"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4534"
+                ],
+                "name": "",
+                "out": [
+                    "4534"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4543"
+                ],
+                "name": "",
+                "out": [
+                    "4543"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4536"
+                ],
+                "name": "",
+                "out": [
+                    "4536"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4537",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Warped Woods",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The trees here seem to move and bend, forcing you along a path of their\nchoosing. Their trunks twisted, their leaves sprouting from bark, it would seem\nMorgoth himself had paid a visit to this place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4536"
+                ],
+                "name": "",
+                "out": [
+                    "4536"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4540"
+                ],
+                "name": "",
+                "out": [
+                    "4540"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4538",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Dark Warped Woods",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 354,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "The trees here bend as if they were dancing, frozen in impossible positions.\nSome stand with trunks arched as if doing somersaults, others bend as if they\nwere a vine and not a tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4543"
+                ],
+                "name": "",
+                "out": [
+                    "4543"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4541"
+                ],
+                "name": "",
+                "out": [
+                    "4541"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4540"
+                ],
+                "name": "",
+                "out": [
+                    "4540"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4539",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Warped Woods",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 356,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "Branches delve into the ground here, only to spring forth with leaves a few feet\naway. Madness seems to have reached its peak here, with what seems to be roots\nclimbing the trunks of other trees as if they were vines.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4537"
+                ],
+                "name": "",
+                "out": [
+                    "4537"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4539"
+                ],
+                "name": "",
+                "out": [
+                    "4539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4538"
+                ],
+                "name": "",
+                "out": [
+                    "4538"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5307"
+                ],
+                "name": "",
+                "out": [
+                    "5307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4540",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 16384,
+        "name": "Dark Warped Woods",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 355,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "While this may not be the most hospitable place around, the rocky walls of this\nchasm seem to offer some protection from the evil forces that warp the forest\nabove. Of course, that may all be just an illusion.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22073"
+                ],
+                "name": "",
+                "out": [
+                    "22073"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4542"
+                ],
+                "name": "",
+                "out": [
+                    "4542"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4544"
+                ],
+                "name": "",
+                "out": [
+                    "4544"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4539"
+                ],
+                "name": "",
+                "out": [
+                    "4539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4541",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Ravine",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 357,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "The ravine curves again here, leading to the north and west. The walls to the\neast and south may be climbable, and you can see the forest towering overhead.\nOne can almost hear a faint thumping noise coming from below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4541"
+                ],
+                "name": "",
+                "out": [
+                    "4541"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4547"
+                ],
+                "name": "",
+                "out": [
+                    "4547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4545"
+                ],
+                "name": "",
+                "out": [
+                    "4545"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4543"
+                ],
+                "name": "",
+                "out": [
+                    "4543"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4542",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crook in the Ravine",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 357,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The crevice bends again here, heading to the east and south. The walls here are\nnot so steep as those to the south, and may be climbable, although the woods\noverlooking the crevice urge you to reconsider that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4539"
+                ],
+                "name": "",
+                "out": [
+                    "4539"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4535"
+                ],
+                "name": "",
+                "out": [
+                    "4535"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4542"
+                ],
+                "name": "",
+                "out": [
+                    "4542"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4537"
+                ],
+                "name": "",
+                "out": [
+                    "4537"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4543",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crook in the Ravine",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 356,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "The forest is sparse here, a few trees looking over a ravine to the west, and\nthick underbrush preventing movement anywhere but back south. This area seems a\nbit less weary than the rest of the forest, perhaps because some light actually\nwarms the earth in places here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4545"
+                ],
+                "name": "",
+                "out": [
+                    "4545"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4541"
+                ],
+                "name": "",
+                "out": [
+                    "4541"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4544",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forested Edge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "The weary forest looks out over a bend in a ravine situated to the west. North\nand south the forest continues to be traversable, but the easterly direction has\nbeen blocked by trees that seem to have been planted close together on purpose.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4544"
+                ],
+                "name": "",
+                "out": [
+                    "4544"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4546"
+                ],
+                "name": "",
+                "out": [
+                    "4546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4542"
+                ],
+                "name": "",
+                "out": [
+                    "4542"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4545",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "No light reaches the forest floor here, the canopy above providing enough\nnourishment for the large trees to sustain them against the withering trials\ngiven to the by the evil beasts that roam the forest. It is said that trolls\nturn to stone at the touch of a ray of sun, and perhaps it is the trolls\nknowledge of this that keeps these trees unharmed in this dangerous area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4545"
+                ],
+                "name": "",
+                "out": [
+                    "4545"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4529"
+                ],
+                "name": "",
+                "out": [
+                    "4529"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4565"
+                ],
+                "name": "",
+                "out": [
+                    "4565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4547"
+                ],
+                "name": "",
+                "out": [
+                    "4547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4546",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 358,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "The forest stops abruptly to the north, where a steep slope leads into a wide\nchasm. Going north may be unwise for those who wish to stay in the shelter of\nthe forest. Not that these woods bring peace of mind, but at least any eyes that\nmay be watching you must be skillful in keeping quiet as well.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4542"
+                ],
+                "name": "",
+                "out": [
+                    "4542"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4530"
+                ],
+                "name": "",
+                "out": [
+                    "4530"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4546"
+                ],
+                "name": "",
+                "out": [
+                    "4546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4547",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 357,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "Westwards the underbrush has covered the forest floor making It impassable, and\nnorth the earthen ground gives way to large rocks and a steep slope. An entire\nbody has been nailed to the trunk of a tree near the rocky slope - it appears to\nhave been an unlucky dwarf and its feet dangle only inches from the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4571"
+                ],
+                "name": "",
+                "out": [
+                    "4571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4565"
+                ],
+                "name": "",
+                "out": [
+                    "4565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4549"
+                ],
+                "name": "",
+                "out": [
+                    "4549"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4548",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 359,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "Something has made this part of the forest its very own trophy room. The heads\nof just about anything, from stags to elves and orcs, can be seen impaled on the\nbranches here. It is odd that the heads have all been placed only 4 to 5 feet\noff the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4548"
+                ],
+                "name": "",
+                "out": [
+                    "4548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4528"
+                ],
+                "name": "",
+                "out": [
+                    "4528"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4563"
+                ],
+                "name": "",
+                "out": [
+                    "4563"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4546"
+                ],
+                "name": "",
+                "out": [
+                    "4546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4565",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Dreary Forest",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 359,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "Grasses and small bushes have taken this clearing for their own, fending off the\nforest that has encroached on them from all directions but south. The darkness\nhiding behind the trees can almost be felt, trying to press towards this\nclearing, only to be stopped by the open sky above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4528"
+                ],
+                "name": "",
+                "out": [
+                    "4528"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4567"
+                ],
+                "name": "",
+                "out": [
+                    "4567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4559"
+                ],
+                "name": "",
+                "out": [
+                    "4559"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4519"
+                ],
+                "name": "",
+                "out": [
+                    "4519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4566",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Opening in the Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 359,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The opening in the forest here reminds you of a valley, with the grasses and\nbushes looking so small against the backdrop of large trees that guard their\nflanks. If fenced off this area would surely make a good corral or pasture.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4566"
+                ],
+                "name": "",
+                "out": [
+                    "4566"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4568"
+                ],
+                "name": "",
+                "out": [
+                    "4568"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4558"
+                ],
+                "name": "",
+                "out": [
+                    "4558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4518"
+                ],
+                "name": "",
+                "out": [
+                    "4518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4567",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Opening in the Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 359,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The tall grasses that populate this field seemed to have overgrown themselves\nwithout any farm animals to feed on them. The weeds have been the winners in\nthis competition, leaving the weaker plants to shrivel and die.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4567"
+                ],
+                "name": "",
+                "out": [
+                    "4567"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4499"
+                ],
+                "name": "",
+                "out": [
+                    "4499"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4569"
+                ],
+                "name": "",
+                "out": [
+                    "4569"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4503"
+                ],
+                "name": "",
+                "out": [
+                    "4503"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4568",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Withering Grass",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 359,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This rocky slope descends to the east, winding away from the forest to the\nsouth. It would almost seem that someone has purposefully placed the rocks here\nin unsteady positions, for even the largest rocks tip and move as you walk on\nthem.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4548"
+                ],
+                "name": "",
+                "out": [
+                    "4548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4574"
+                ],
+                "name": "",
+                "out": [
+                    "4574"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4571",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Slope",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 359,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "You have arrived at the base of a low cliff. Its walls much too steep for\nclimbing, it appears to be used as a camp quite frequently. A small campfire can\nbe seen, but it is currently extinguished.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "5321"
+                ],
+                "name": "crack",
+                "out": [
+                    "5321"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "4575"
+                ],
+                "name": "opening",
+                "out": [
+                    "4575"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4571"
+                ],
+                "name": "",
+                "out": [
+                    "4571"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4574",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky End",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 359,
+        "y": 50,
+        "z": 0
+    },
+    {
+        "desc": "The tower of stone comes to an end in an area with very low walls, only about\nhalf a foot high and no ceiling. Wind and rain have left their marks on the once\nfirm floor, made of thick wooden planks. Above, the open sky looks to goes on\nforever. Looking outward the surrounding landscape can be seen for a very far\ndistance. Undulating hills and a circling trail can be seen to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14382"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14380",
+                    "14382"
+                ],
+                "name": "",
+                "out": [
+                    "14380"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14381",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Top of the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 344,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "From here you have a better view to what appears to be a tall tower on the edge\nof the forest. It rises just east of here and goes up maybe ten yeards before\nreaching the top. In the west and north the canopy continues, but seems to be\nless accessible than here, unless you are a bird.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14381"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14381"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4478"
+                ],
+                "name": "",
+                "out": [
+                    "4478"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14382",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Up in the Canopy",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 343,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Misshapen trees give way to a rocky gully to the north. The wind can be heard\nsweeping across the trees and through the gully, making a howling noise, a\nperpetual scream quite suitable to the atmosphere of the rest of the forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4531"
+                ],
+                "name": "",
+                "out": [
+                    "4531"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4516"
+                ],
+                "name": "",
+                "out": [
+                    "4516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4520"
+                ],
+                "name": "",
+                "out": [
+                    "4520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4521"
+                ],
+                "name": "",
+                "out": [
+                    "4521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20716",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 356,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "A ravine opens up towards the south. The hollow in the northern wall of the\nravine provides a stony roof above, offering some protection from the elements.\nThis grotto could possibly mark the beginning of a deeper cave, as a huge bear\nfur hung against the inner wall seems to cover an entrance deeper into the\nunderground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22074"
+                ],
+                "name": "",
+                "out": [
+                    "22074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4541"
+                ],
+                "name": "",
+                "out": [
+                    "4541"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22073",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Shelter",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 357,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "While this was in all likelihood a natural cavern in the past, it has been\nexpanded with crude tools to form a wide, high-ceilinged corridor. On the roof\nabove, broken remnants of stalactites cling to the rock. Anything reaching down\nbelow ten feet has been hewn off, leaving jagged, shattered remains. On the\nlightly grey limestone floor, any stalagmites rising up to meet the opposing\nstalactites have been removed with brute force. The now widened corridor leads\ndeeper into a cavern to the west, while a huge bear fur has been hung on the\nsouthern wall to cover what looks like a narrowing tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22073"
+                ],
+                "name": "",
+                "out": [
+                    "22073"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22075"
+                ],
+                "name": "",
+                "out": [
+                    "22075"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22074",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Limestone Corridor",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 357,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "These caves may well be natural in origin but have been converted into a rustic\nliving area by whomever that now occupy them. Rocks or boulders one would expect\nin a cave have been cleared out, and the ground is worn smooth by the regular\npassage of its inhabitants. Towards the west, the cave leads through a narrow\nopening from which scents of meat and blood come drifting on the slowly\ncirculating air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22076"
+                ],
+                "name": "",
+                "out": [
+                    "22076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22074"
+                ],
+                "name": "",
+                "out": [
+                    "22074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22078"
+                ],
+                "name": "",
+                "out": [
+                    "22078"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22075",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Wide Diverging Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 356,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "Four tunnels lead off in different directions from this subterranean juncture.\nThe cavern is lofty, the ceiling no less than ten feet high at its lowest point.\nA vague scent of wood smoke fills the air, hinting at a recent fire in one of\nthe nearby caves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22077"
+                ],
+                "name": "",
+                "out": [
+                    "22077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22075"
+                ],
+                "name": "",
+                "out": [
+                    "22075"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22079"
+                ],
+                "name": "",
+                "out": [
+                    "22079"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22080"
+                ],
+                "name": "",
+                "out": [
+                    "22080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22076",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Juncture",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 356,
+        "y": 50,
+        "z": 0
+    },
+    {
+        "desc": "This wide tunnel takes a rough, uneven path through the surrounding rock, moving\nthrough this area in a south-to-west bend. A small spring seeps up from the\ncavern floor at the eastern wall, gathering in a small pool to provide fresh\nwater. The dust on the ground is mostly cleared away in a path from the pool and\ntowards the south; although more because of regular traffic than any obvious\nintent to keep the area neat and clean. The tunnel to the west seem a lot less\ndisturbed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22076"
+                ],
+                "name": "",
+                "out": [
+                    "22076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22081"
+                ],
+                "name": "",
+                "out": [
+                    "22081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22077",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Wide Tunnel by a Spring",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 356,
+        "y": 49,
+        "z": 0
+    },
+    {
+        "desc": "This narrow cave has been converted into a crude larder. The walls are speckled\nwith spots of dried blood, and on the dusty floor dark, drying stains attract\nflies and other insects. Simple iron hooks have been set into the walls, ready\nfor whatever meats may be hung from them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22075"
+                ],
+                "name": "",
+                "out": [
+                    "22075"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22078",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 4096,
+        "name": "Stone Giant's Larder",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 355,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "A low, narrow opening to the west seem to be the only entrance to this dwelling.\nThe interior is stark, the walls harsh bare stone and the floor rough and\nuneven. Three tall piles of grass, leaves and animal furs could be passed off as\nsleeping places, and the scorched stones in the centre of the chamber suggest\nthat at times a fire is built here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22076"
+                ],
+                "name": "",
+                "out": [
+                    "22076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22079",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Stark Dwelling",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 357,
+        "y": 50,
+        "z": 0
+    },
+    {
+        "desc": "A very large set of stairs has been hewn out of the hard rock, leading further\ndown into deep caverns. The cavern floor has been cleared of irregularities and\nany sharp or protruding stone has been removed from the walls. With a little\ndecoration and lighting, this cave could almost pass as a hallway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22076"
+                ],
+                "name": "",
+                "out": [
+                    "22076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22083"
+                ],
+                "name": "",
+                "out": [
+                    "22083"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22080",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of Stone Stairs",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 355,
+        "y": 50,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel enters this wide, spacious grotto from the east. To the south and\nwest, hard solid walls of rock block any passage, but towards the north the cave\nopens up and the far wall is barely discernible. Travel northwards is\ninterrupted by a jagged crevice, and the only obvious way onwards in that\ndirection is to climb down into the crevice and find a way from there.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22077"
+                ],
+                "name": "",
+                "out": [
+                    "22077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22082"
+                ],
+                "name": "",
+                "out": [
+                    "22082"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22081",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shelf above a Crevice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 355,
+        "y": 49,
+        "z": 0
+    },
+    {
+        "desc": "This crevice is narrow, with steep and jagged walls and sharp rocks everywhere.\nAt the very southwestern end of the crevice, a rock shelf is visible. This looks\nto be the only reasonable place to climb out of here. If one were inclined to\nstay in the crevice, it appears to continue eastwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22085"
+                ],
+                "name": "",
+                "out": [
+                    "22085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22081"
+                ],
+                "name": "",
+                "out": [
+                    "22081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22082",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Crevice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 355,
+        "y": 48,
+        "z": 0
+    },
+    {
+        "desc": "Huge steps have been hewn out of the solid rock to the west, where a slight\nslope ascends and provides easier passage to the levels above. Each step is so\nhigh that a hobbit would need to use his hands to climb to the next, and so wide\nthat said hobbit could place his bed on it. The cavern floor looks well trodden,\nfree of loose rocks and remarkably smooth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22084"
+                ],
+                "name": "",
+                "out": [
+                    "22084"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22080"
+                ],
+                "name": "",
+                "out": [
+                    "22080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22083",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foot of Stone Stairs",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 353,
+        "y": 50,
+        "z": 0
+    },
+    {
+        "desc": "The cavern system comes to a dead end here, and this small cave has been\nconverted to a crude abode. Judging from the size of the long, wooden bunks\nagainst the back wall, the inhabitants are of impressive dimensions. The walls\nare rough but seem to have been smoothened to some extent, the worst of the\nsharp edges chopped away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22083"
+                ],
+                "name": "",
+                "out": [
+                    "22083"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22084",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Crude Abode",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 354,
+        "y": 50,
+        "z": 0
+    },
+    {
+        "desc": "This deep cleft is barely passable. The broken, jagged rocks of the crevice's\nwalls makes travel to the east and west very difficult. Climbing out of the deep\nfissure is completely out of the question, the sides being much too steep, the\nrock cracked and broken; and most likely prone to falling apart if any weight is\nput upon it. The ground is littered with rubble fallen from the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22086"
+                ],
+                "name": "",
+                "out": [
+                    "22086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22082"
+                ],
+                "name": "",
+                "out": [
+                    "22082"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22085",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Deep in an Underground Crevice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 356,
+        "y": 48,
+        "z": 0
+    },
+    {
+        "desc": "Here at the eastern end of this crevice, deep beneath the surface, little hope\nis given to a weary adventurer. The bottom of this crevice is a bleak place, the\nground littered with broken rocks and fallen rubble. The sides of the deep\nfissure appear impossible to climb and the only viable direction of travel is to\nfollow the course of the crevice towards the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22085"
+                ],
+                "name": "",
+                "out": [
+                    "22085"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22087"
+                ],
+                "name": "debris",
+                "out": [
+                    "22087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22086",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eastern End of an Underground Crevice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 357,
+        "y": 48,
+        "z": 0
+    },
+    {
+        "desc": "Here, the vast cavern that extends west of here ends in a small retreat. Lots of\nrubble lies strewn across the cavern floor, fallen from the unstable roof above.\nMost of the cavern walls and gravel consists of hard, grey stone prone to\nbreaking apart into smaller shards with sharp, jagged edges.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22088"
+                ],
+                "name": "",
+                "out": [
+                    "22088"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22086"
+                ],
+                "name": "debris",
+                "out": [
+                    "22086"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22087",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rubble-strewn Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 357,
+        "y": 47,
+        "z": 0
+    },
+    {
+        "desc": "The size of this wide, vast cavern would put the throne room in many a castle to\nshame. The walls stand far enough apart to be shrouded in inky gloom. A great\naggregation of rocky formations on the floor level makes the area hard to\nnavigate. The floor itself is full of cracks, some of which are wide enough to\nstep into if one were careless.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22087"
+                ],
+                "name": "",
+                "out": [
+                    "22087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22089"
+                ],
+                "name": "",
+                "out": [
+                    "22089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22088",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vast Natural Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 356,
+        "y": 47,
+        "z": 0
+    },
+    {
+        "desc": "A cave-in has created an enormous mass of crushed boulders along a wall in this\ncolossal cavern. Any pathway in that direction has been lost forever. The\nremainder of the cave can still be described as pasture-sized. The rock is of a\ndark grey variety, and the rugged formations of the walls, floor and ceiling\nleaves no doubt that this cave is a work of nature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22088"
+                ],
+                "name": "",
+                "out": [
+                    "22088"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22090"
+                ],
+                "name": "",
+                "out": [
+                    "22090"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22089",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vast Natural Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 355,
+        "y": 47,
+        "z": 0
+    },
+    {
+        "desc": "Faint sounds of dripping water can be heard echoing from some dark corner of\nthis gigantic grotto. A wide variety of rocks make up the walls and floor, much\nof it granite but also volcanic rock types. Pillars of basalt stand tall in the\nstale air, remnants of chutes of volcanic magma that solidified in ages long\ngone. There is also thin veins of pitch black obsidian embedded in the rock bed,\nthe slivers of glass-like rock glitter alluringly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22091"
+                ],
+                "name": "",
+                "out": [
+                    "22091"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22089"
+                ],
+                "name": "",
+                "out": [
+                    "22089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22090",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep in a Vast Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 355,
+        "y": 46,
+        "z": 0
+    },
+    {
+        "desc": "A vast, natural cavern has formed here, deep down underground. The ground is\nvery uneven, with cliff-like formations several yards high that rise from the\nfloor throughout the cave. Much of the rock seem rich in ore, and there are\nveins of a dark, rusty red colour and some of brighter yellow shades.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22093"
+                ],
+                "name": "",
+                "out": [
+                    "22093"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22092"
+                ],
+                "name": "",
+                "out": [
+                    "22092"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22090"
+                ],
+                "name": "",
+                "out": [
+                    "22090"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22091",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep in a Vast Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 356,
+        "y": 46,
+        "z": 0
+    },
+    {
+        "desc": "This smaller tunnel connects two huge, open caverns to the east and west, while\nto the north and south the walls of rough rock stand much closer together. The\nground falls away in a steep treacherous fall to the east. A heedless traveller\ncould walk right off the edge and crash down into the dark depths of this\nsubterranean world.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22091"
+                ],
+                "name": "",
+                "out": [
+                    "22091"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "22096"
+                ],
+                "name": "",
+                "out": [
+                    "22096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22092",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of a Steep Cliff",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 357,
+        "y": 46,
+        "z": 0
+    },
+    {
+        "desc": "The ground here is covered in thick layers of knee-high bat guano. The\ncave-dwelling bats roost in the airy lofts high above, where they must have\nfound access to the outside world. The air is filled with a stinging, acrid\nscent. The deep aggregation of guano continues uninterrupted towards the east,\nwhile the cave southwards may be a route to cleaner places.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22091"
+                ],
+                "name": "",
+                "out": [
+                    "22091"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22094"
+                ],
+                "name": "",
+                "out": [
+                    "22094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22093",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guano Deluge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 356,
+        "y": 45,
+        "z": 0
+    },
+    {
+        "desc": "Vast deposits of bat guano have accrued on the floor of this grotto. The white,\nacidic droppings lie in layers thick enough to reach a hobbit's waist, filling\nthe air with acrid, unpleasant smells. The cavern continues to the east and\nwest, and so too does the guano, although there seems to be slightly less of it\ntowards the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22095"
+                ],
+                "name": "",
+                "out": [
+                    "22095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22093"
+                ],
+                "name": "",
+                "out": [
+                    "22093"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22094",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guano Deluge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 357,
+        "y": 45,
+        "z": 0
+    },
+    {
+        "desc": "The fluttering sounds of batwings higher up in the lofty spaces of this cavern\nis ever present. A shaft can be glimpsed high above, likely a route the\ncavern-dwelling bats take to the surface. Down here at the cavern floor, a great\ndeal of spider webs have been spun between boulders and ledges. The webs reach\nas far up as halfway to the shaft above. Higher up, where the walls are closer\ntogether, the great webs stretch from wall to wall, obviously intended to\nentangle any bat that swoops down too low.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22094"
+                ],
+                "name": "",
+                "out": [
+                    "22094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22118"
+                ],
+                "name": "",
+                "out": [
+                    "22118"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22095",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hunting Grounds",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 45,
+        "z": 0
+    },
+    {
+        "desc": "The sides of this steep but cragged hole are lit by a faint sickly green glow\nfrom patches of phosphorescent moss growing on the cave walls. A tunnel opens up\nto the west, the opening partly covered by strands of sticky spider webs. Above,\nthe edge of the hole is easily reachable even for those of humble stature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22119"
+                ],
+                "name": "",
+                "out": [
+                    "22119"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22095"
+                ],
+                "name": "",
+                "out": [
+                    "22095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22118",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Deep Hole",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 358,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "Faint skittering sounds can be heard from the north and west. Noise travels far\nin these deep tunnels and the sounds are faint enough to perhaps be imagined. A\nsnarl of webbings line the cave, covering boulders and deep dark holes in the\nuneven walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22118"
+                ],
+                "name": "",
+                "out": [
+                    "22118"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22120"
+                ],
+                "name": "",
+                "out": [
+                    "22120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22119",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Threshold of a Spider Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 357,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "The ceiling hangs down low enough in this grotto to give even the least\nclaustrophobic of travellers pause. The cavern is made of a mineral-rich rock\nmostly a light grey in colour. Only the lack of seeping water keeps this cave\ntraversible, for if the stunted stalactites hanging down from the ceiling were\nof the lengths such formations can grow into, they would meet the floor and\nclose this tunnel completely. Passageways leads off to the east, west, and\nnorth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22123"
+                ],
+                "name": "",
+                "out": [
+                    "22123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22119"
+                ],
+                "name": "",
+                "out": [
+                    "22119"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22122"
+                ],
+                "name": "",
+                "out": [
+                    "22122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22120",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Diverging Tunnels",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "This dark tunnel, far beneath the fresh air and open spaces of the outside\nworld, show plenty of signs of a habitual presence of spiders. Webs have been\nspun, stretching between rocks and boulders, crags and stalactites. Any careless\nmovement could cause severe entanglement in the sticky traps.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22120"
+                ],
+                "name": "",
+                "out": [
+                    "22120"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22124"
+                ],
+                "name": "mouldywebs",
+                "out": [
+                    "22124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22122",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 355,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "A great number of stalagmites have formed across the expanse of this cavern,\nrising up from the floor as thick, peaked pillars. Above hang the corresponding\nstalactites, which are much slimmer in shape. Many spider webs have been spun\nhere: most of them are empty, although some of them hold the dried husks of bats\nor lizards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22129"
+                ],
+                "name": "",
+                "out": [
+                    "22129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22120"
+                ],
+                "name": "",
+                "out": [
+                    "22120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "22134"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22123",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "Here, deep down near the roots of the world, the rocks enclosing this narrow\ntwisting passageway are as black as the darkest night: shot through with veins\nof faintly glittering minerals. A fair amount of spider webs cover the walls,\nsome of it new and sticky and some merely tangles of old, dry cobwebs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22125"
+                ],
+                "name": "",
+                "out": [
+                    "22125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22122"
+                ],
+                "name": "mouldywebs",
+                "out": [
+                    "22122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22124",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Corner",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 354,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "The presence of spiders is evident no matter in which direction one turns.\nThick, sticky webs cover the walls, floor and ceiling and the dry, empty husks\nof past prey litters the ground. A smaller chamber lies to the north, the\nentrance so covered in webs it could easily be overlooked. Towards the south\nthere seem to be less webs, and more of the dark rock beneath visible. A way out\nwould surely lie in that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22126"
+                ],
+                "name": "",
+                "out": [
+                    "22126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22124"
+                ],
+                "name": "",
+                "out": [
+                    "22124"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22128"
+                ],
+                "name": "",
+                "out": [
+                    "22128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22125",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep in the Spider's Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 354,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "This entire grotto functions as a hatchery for the spiders of the area. Grey,\nbulging eggsacks hang from sticky spider webs and tiny, hatched eggs litter the\nfloor. Most of the cave is covered in thick webs, the strands far too thick to\nhaving been spun by a common house spider.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22125"
+                ],
+                "name": "",
+                "out": [
+                    "22125"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22127"
+                ],
+                "name": "cobwebs",
+                "out": [
+                    "22127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22126",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Hatchery",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 354,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "Great webs spun by what must be truly intimidating spiders cover holes and\ncavities in the walls, possibly providing nests and hiding places. A patch of\nbare rock on the southern wall is surprisingly free of webs, and the stone is a\nmuch lighter grey than the surrounding stone. The tunnel leads towards the east,\nwhere faint reflections of water can be glimpsed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22128"
+                ],
+                "name": "",
+                "out": [
+                    "22128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22129"
+                ],
+                "name": "",
+                "out": [
+                    "22129"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22126"
+                ],
+                "name": "cobwebs",
+                "out": [
+                    "22126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22127",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Webbed Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 355,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "Tremendous patience and effort has gone into entangling the walls, floor and\nceiling of this lair in a mesh of webs. Here and there, dry old husks of bats\nand lizards can be seen among the cobwebs, leftovers from creatures the spiders\nin these deep caves have feasted upon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22127"
+                ],
+                "name": "",
+                "out": [
+                    "22127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22125"
+                ],
+                "name": "",
+                "out": [
+                    "22125"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22128",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Spider's Lair",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 355,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "A dark pool has formed in a hollow in the eastern part of this cave. Thin,\npointed stalactites hang above the pool, some so long that their tips touch the\nsurface of the water. Drops of mineral-enriched water fall from the smaller\nstalactites, as if they were a part of a slow, steady rain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22123"
+                ],
+                "name": "",
+                "out": [
+                    "22123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22127"
+                ],
+                "name": "",
+                "out": [
+                    "22127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22129",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Pool in the Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 356,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "You have no idea what you have climbed into. The tree has been eaten, is being\neaten, by hordes of small worms. Each excretes a thin weblike strand behind it.\nThe smell the creatures make is horrid, as if some airborne toxin was setting\noff alarms in your nose.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "4592"
+                ],
+                "name": "",
+                "out": [
+                    "4592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28885",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of a Webbed Tree",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 351,
+        "y": 58,
+        "z": 0
+    }
+]

@@ -1,0 +1,4302 @@
+[
+    {
+        "desc": "This dim tunnel is unfinished and unadorned, the walls still scarred by the\npicks of Dwarven miners. Facing the entrance is a huge wooden worktable, made of\na single huge slab of oak, which also serves as a counter. Behind it, in the\ndistance, bright red and yellow coals glow fiercely under the great smelting\npots. Wood smoke laced with the smells of melted rock and hot metal wafts over\nthe counter whenever a current of air passes this way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1"
+                ],
+                "name": "",
+                "out": [
+                    "1"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "0",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 8194,
+        "name": "Vig's Shop",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "The lowest level of the city begins here, where the houses and parks of the\nupper areas give way to business and government. The walls rise up straight and\nproud to the ceiling, well above your head, which is covered with an intricate\npattern of stonework. The lines weave in and out and over and under each other,\nleading your eyes down the hall until the tracery vanishes out of sight. The\nmain passage to the upper levels rises upwards and westwards, while a short\ncorridor going straight west leads to a doorway from which a warm blast of acrid\nfumes occasionally issues.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3"
+                ],
+                "name": "",
+                "out": [
+                    "3"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2"
+                ],
+                "name": "",
+                "out": [
+                    "2"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5"
+                ],
+                "name": "",
+                "out": [
+                    "5"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "0"
+                ],
+                "name": "",
+                "out": [
+                    "0"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "56"
+                ],
+                "name": "",
+                "out": [
+                    "56"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kizdin Crafts",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "Here all sorts of pottery is created. On the east wall sit several storage sheds\ncontaining various types of clays. In the centre sit two potter's wheels for\nforming plates and bowls and other useful objects. Finally the items are fired\nin the kilns along the west wall. To the south is arrayed a selection of toys\nmade from wood and clay.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1"
+                ],
+                "name": "",
+                "out": [
+                    "1"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Craftsmen's Shop",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "Bales of wool are brought here from the upper levels where they are bought and\nsold. A host of dwarves works diligently to produce cloth for their people.\nFirst the wool is sifted through and all rocks and twigs removed. Next the\nshaggy clumps are loaded onto the distaff, and spun into long strands of yarn,\nspindles of which are brought to the back of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4"
+                ],
+                "name": "",
+                "out": [
+                    "4"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "1"
+                ],
+                "name": "",
+                "out": [
+                    "1"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wool-Workers",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "This is a small, cramped chamber brightly lit by several wall-lanterns. The room\nis filled by several looms at each of which sits a nimble dwarf, weaving the\nyarn which is periodically brought from the front of the room. There is a\ncontinuous clickety-clattering as the wooden looms are opened and closed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3"
+                ],
+                "name": "",
+                "out": [
+                    "3"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Weavers",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 50,
+        "z": 0
+    },
+    {
+        "desc": "After a long but gentle decline from the west, the corridor here levels out.\nThis is the commercial centre of the city, and on either side you see doorways\nto offices and workshops. The walls are lined with ornamental columns, and\nbetween each two a simple scene is carved into the wall.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6"
+                ],
+                "name": "",
+                "out": [
+                    "6"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7"
+                ],
+                "name": "",
+                "out": [
+                    "7"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8"
+                ],
+                "name": "",
+                "out": [
+                    "8"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1"
+                ],
+                "name": "",
+                "out": [
+                    "1"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kizdin Crafts",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "The smooth scent of leather fills the air. This room delves back far from the\nmain passage. In the back are vats of soaking hides, being prepared for tanning.\nNearby is a series of tanning vats slowly turning the hides into leather. There\nare also a few Dwarves pounding various oils into fresh hides, producing a soft\nchamois leather. Finally the leather is cut and shaped, sewn and decorated, at\ntables arrayed across the front of the chamber. All types of leather goods can\nbe seen in various stages of production.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "5"
+                ],
+                "name": "",
+                "out": [
+                    "5"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Leatherworkers",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "Here are the offices of those who direct the Dwarves' great work. This is a\nlong, somewhat narrow room, filled with orderly desks, and more paper than\ntools. The light is bright and diffuse. All the tunnelling and digging and\ncarving is overseen from this room. The design of the caves is a careful match\nof the needs of the growing population of the caves with the natural desires of\nthe stone in which they live.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5"
+                ],
+                "name": "",
+                "out": [
+                    "5"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7",
+        "light": 2,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Miners and Architects",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "All around you busy Dwarves do the work which keep this city alive. You are\ncompletely surrounded by bustling activity, and the Dwarves pay your sloth no\nmind. The passage continues east and west as far as you can see, small cones of\nlight dwindling off into the distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9"
+                ],
+                "name": "",
+                "out": [
+                    "9"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10"
+                ],
+                "name": "",
+                "out": [
+                    "10"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "11"
+                ],
+                "name": "",
+                "out": [
+                    "11"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5"
+                ],
+                "name": "",
+                "out": [
+                    "5"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kizdin Crafts",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "Here is where the miners of the area leave and pick up various mining tools.\nWooden ore buckets and picks of all sizes adorn both the walls and the floor. It\nseems messy, yet the workers you see coming and going seem to know exactly where\neverything is.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8"
+                ],
+                "name": "",
+                "out": [
+                    "8"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9",
+        "light": 2,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Miner's Supply Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "This dim tunnel leads deeper down into the mountain. Unlike those to the north\nit is unfinished and unadorned, the wall still scarred by the picks of Dwarven\nminers, whose activity you can faintly hear to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8"
+                ],
+                "name": "",
+                "out": [
+                    "8"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14"
+                ],
+                "name": "",
+                "out": [
+                    "14"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Felak-Azan",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "The stolid hall stretches off before you. To the east the decor changes; the\npatterns of stonework end, and a wide variety of axes hang upon the walls.\nAround you are bearded Dwarves of every description and station. Nobility in\ntheir finery walk quickly east to the King's court, while labourers walk the\nsame way for a pint of mead in the Khazad Kheled-Baruk. On one side of you a\ncart is pulled, stacked high with cloths and thread in a thousand colours, and\nbehind that comes a mule loaded with pig iron. Anything your hands or stomach or\nhead needs must surely be close at hand.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "12"
+                ],
+                "name": "",
+                "out": [
+                    "12"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "13"
+                ],
+                "name": "",
+                "out": [
+                    "13"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17"
+                ],
+                "name": "",
+                "out": [
+                    "17"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8"
+                ],
+                "name": "",
+                "out": [
+                    "8"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "11",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kizdin Crafts",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "Here a master cobbler and several journeymen produce most of the footwear for\nthe city. There is a variety of materials spread about the workbenches, but\nleather and cotton seem to predominate. The work here is quiet and relaxed, and\na joking banter passes back and forth amongst the cobblers. You see that several\nguilds have set up their shop here. In the immediate area you notice that the\nwoolworkers and a tailor have set up a table.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "11"
+                ],
+                "name": "",
+                "out": [
+                    "11"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Cobblers Market",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "This room is filled with a wide variety of toys, all beautiful and some\nobviously magical. You see puppets and soft cloth dolls, metal soldiers, wooden\nanimals, hobbyhorses, small clay ducks on wheels, miniature boats, intricately\ncarved tops, and all sorts of puzzles and tricks. A few Dwarves sit over\ncluttered workbenches, adding to the stocks.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "11"
+                ],
+                "name": "",
+                "out": [
+                    "11"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Toymakers' Workshop",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel here is only dimly lit by lanterns along the wall. This seems to be a\nrecent excavation, and is as yet unused. To the south you hear the sound of\npicks striking stone wafting up from a downward-sloping tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10"
+                ],
+                "name": "",
+                "out": [
+                    "10"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15"
+                ],
+                "name": "",
+                "out": [
+                    "15"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28546"
+                ],
+                "name": "",
+                "out": [
+                    "28546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Felak-Azan",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "From the pick marks on the walls around you, this passage was purposefully\ndelved, but it seems to have been abandoned. Several dark lanterns hang from the\nwalls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14"
+                ],
+                "name": "",
+                "out": [
+                    "14"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Felak-Narag",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "A spiral staircase has been carved into the stone, winding its way around and\naround some fifty feet up and down. A single painting covers the outside wall, a\nbroad overview of some distant battle which the Dwarves will never forget, and\nnever forgive.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18612"
+                ],
+                "name": "",
+                "out": [
+                    "18612"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14514"
+                ],
+                "name": "",
+                "out": [
+                    "14514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "43",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of a Spiral Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "A small line of houses extends off from the main route. The rock changes as the\ntunnel extends to the south, where it is no longer suitable for mining.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18613"
+                ],
+                "name": "",
+                "out": [
+                    "18613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "46"
+                ],
+                "name": "",
+                "out": [
+                    "46"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "45",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dum Khazdul",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 45,
+        "z": 0
+    },
+    {
+        "desc": "This sweltering room contains the Dwarven ironworks. Carts are wheeled up to the\nentrance, where they deposit their ore in large bins. In this part of the\nchamber sturdy Dwarves crush the ore into small pieces. Nothing is wasted; the\niron dust is sintered into larger, more useful lumps. Carts bring the bits of\niron ore south, where the heat intensifies.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "47"
+                ],
+                "name": "",
+                "out": [
+                    "47"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "45"
+                ],
+                "name": "",
+                "out": [
+                    "45"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "46",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ironworks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 45,
+        "z": 0
+    },
+    {
+        "desc": "Groups of sweating, bare-chested Dwarves labour in the heat to process the\nsteady flow of iron ore. In the centre of this area is a cylindrical stone-\nbuilt furnace. Into it the Dwarves feed a mixture of coal and iron ore. Around\nthe furnace stand Dwarves pumping stolidly on tuyeres, feeding the flames\nwithin. After a time they remove a solid lump of malleable iron, adding it to\nthe stacks on the side of the room. This cavern is near the top of the mountain,\nand several large ventilation shafts rise from the ceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "46"
+                ],
+                "name": "",
+                "out": [
+                    "46"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "47",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ironworks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 46,
+        "z": 0
+    },
+    {
+        "desc": "You are within an enormous cavern which extends beyond your vision and whose\nceiling is lost in darkness. Though the floor is perfectly smooth, the walls are\nrough, filled with small niches and rocky knobs sticking into the hall. To your\nnortheast, in the centre of this vast chamber, you can see what appear to be\nmountains rising up from the floor. Nearest you is a grey mount, rising up to a\nsilver peak. Farther north stands one like a tooth tipped with snow; its walls\nglowing red in the cavern's light.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "52"
+                ],
+                "name": "",
+                "out": [
+                    "52"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "49"
+                ],
+                "name": "",
+                "out": [
+                    "49"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18618"
+                ],
+                "name": "",
+                "out": [
+                    "18618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "48",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gabil Felak",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "You are within an enormous cavern which extends beyond your vision and whose\nceiling is lost in darkness. Though the floor is perfectly smooth, the walls are\nrough, filled with small niches and protrusions sticking into the hall. Directly\nto the north you see a miniature mountain rising high above your head, even\nhere, deep within the Blue Mountains. It rises quickly, hard grey stone\ncunningly crafted by the Dwarves, with a silver peak gleaming in the cave's\nlight.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28550"
+                ],
+                "name": "",
+                "out": [
+                    "28550"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14514"
+                ],
+                "name": "",
+                "out": [
+                    "14514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "50"
+                ],
+                "name": "",
+                "out": [
+                    "50"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "48"
+                ],
+                "name": "",
+                "out": [
+                    "48"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "49",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gabil Felak",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "You stand within an enormous cavern which extends beyond your vision and whose\nceiling is lost in darkness. Though the floor is perfectly smooth, the walls are\nrough, filled with small niches and rocky knobs sticking into the hall. Just to\nthe east a vast tower of rock rises from the floor, gleaming a snow- white\nsilver at its peak. To the northeast stands a mountainous tower with sheer,\ndull-red sides. Peeking between them you can just see the white peak of a third\ntower.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "60"
+                ],
+                "name": "",
+                "out": [
+                    "60"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "48"
+                ],
+                "name": "",
+                "out": [
+                    "48"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28550"
+                ],
+                "name": "",
+                "out": [
+                    "28550"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "52",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gabil Felak",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a magnificent hall, the walls are filled with all sorts of\nthings collected from near and far. To the east there is a sturdy oakdoor which\nleads out from this home, south of here there is another chamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14323"
+                ],
+                "name": "",
+                "out": [
+                    "14323"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "18615"
+                ],
+                "name": "",
+                "out": [
+                    "18615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14121",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Entrance",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this chamber are very smooth and if it wasnt already known there\nwould almost not be any way of telling this is a chamber dug out of the stone.\nThe floor is made of marble and is very carefully polished almost making it\npossible to see reflections in it. To the west a velved passage leads into a\nsmall back-chamber which probably is the bed chamber of the owner of this\nbeautyful home. North of here is an entrance hall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14121"
+                ],
+                "name": "",
+                "out": [
+                    "14121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28877"
+                ],
+                "name": "",
+                "out": [
+                    "28877"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14323",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Inner Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 45,
+        "z": 0
+    },
+    {
+        "desc": "This is a great circular pit carved in the native stone of the mountains. A\ngreat staircase, wide enough for twenty dwarves to walk abreast, rises gradually\nupward, turning counter-clockwise as it goes. Its risers are paved with marble,\nand black onyx sconces on the wall hold lamps which are continually filled from\nan unseen source and kept burning.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "49"
+                ],
+                "name": "",
+                "out": [
+                    "49"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "43"
+                ],
+                "name": "",
+                "out": [
+                    "43"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14514",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Base of a Spiral Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "The hall descends slightly as it continues to the west, and the simple homes\nseem to become a bit more prosperous. Many Dwarves amble along here, as in the\nrest of this hall, but you see almost no children. The people of Mahal are\nstrong and hardy, but still, as the long years pass, they diminish.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "45"
+                ],
+                "name": "",
+                "out": [
+                    "45"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "44"
+                ],
+                "name": "",
+                "out": [
+                    "44"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18614"
+                ],
+                "name": "",
+                "out": [
+                    "18614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18613",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dum Khazdul",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "This is a large, grand hall with a curved ceiling rising far above your head.\nAll along the walls extend hundreds of Dwarven apartments, built into the living\nrock, rising into the darkness. All along these living quarters, balconies\nextend, and Dwarves walk around on them, or from apartment to apartment, or\nalong the floor where you stand. This seems to be a prosperous area, dotted with\nmarble pillars and elegant statuary. The cavern extends to the west and north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18616"
+                ],
+                "name": "",
+                "out": [
+                    "18616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18613"
+                ],
+                "name": "",
+                "out": [
+                    "18613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18615"
+                ],
+                "name": "",
+                "out": [
+                    "18615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18614",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dum Khazdul",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "This is a large, grand hall with a curved ceiling rising far above your head.\nAll along the walls extend hundreds of Dwarven apartments, built into the living\nrock, rising into the darkness. All along these living quarters, balconies\nextend, and Dwarves walk around on them, or from apartment to apartment, or\nalong the floor where you stand. This seems to be a prosperous area, dotted with\nmarble pillars and elegant statuary. The cavern extends to the east and north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18617"
+                ],
+                "name": "",
+                "out": [
+                    "18617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18614"
+                ],
+                "name": "",
+                "out": [
+                    "18614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "14121"
+                ],
+                "name": "",
+                "out": [
+                    "14121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18615",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dum Khazdul",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 44,
+        "z": 0
+    },
+    {
+        "desc": "This is a large, grand hall with a curved ceiling rising far above your head.\nAll along the walls extend hundreds of Dwarven apartments, built into the living\nrock, rising into the darkness. All along these living quarters, balconies\nextend, and Dwarves walk around on them, or from apartment to apartment, or\nalong the floor where you stand. This seems to be a prosperous area, dotted with\nmarble pillars and elegant statuary. The cavern extends to the west and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18614"
+                ],
+                "name": "",
+                "out": [
+                    "18614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18617"
+                ],
+                "name": "",
+                "out": [
+                    "18617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18616",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dum Khazdul",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "This is a large, grand hall with a curved ceiling rising far above your head.\nAll along the walls extend hundreds of Dwarven apartments, built into the living\nrock, rising into the darkness. All along these living quarters, balconies\nextend, and Dwarves walk around on them, or from apartment to apartment, or\nalong the floor where you stand. This seems to be a prosperous area, dotted with\nmarble pillars and elegant statuary. The cavern extends east and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18618"
+                ],
+                "name": "",
+                "out": [
+                    "18618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18615"
+                ],
+                "name": "",
+                "out": [
+                    "18615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18616"
+                ],
+                "name": "",
+                "out": [
+                    "18616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18617",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dum Khazdul",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "There is a small stretch of apartments here, in a passage between two large\ncaverns. To the west the rows of Dwarven doorways abruptly ends where a new\ntunnel is being delved.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18617"
+                ],
+                "name": "",
+                "out": [
+                    "18617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "48"
+                ],
+                "name": "",
+                "out": [
+                    "48"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18619"
+                ],
+                "name": "",
+                "out": [
+                    "18619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18618",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dum Khazdul",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 17,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "This rocky tunnel is still being excavated, but already a few hardy Dwarves are\nclaiming it for their homes. There is a small vein of silver running through the\nmountains here, and the Dwarves mine it carefully. Carts of iron ore are also\nfrequently wheeled away to the blast furnace.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18618"
+                ],
+                "name": "",
+                "out": [
+                    "18618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18620"
+                ],
+                "name": "",
+                "out": [
+                    "18620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18619",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kizdin-Zirak",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 16,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "Starting from the mouth of a tunnel to the east, it appears that many dwarves\nhave already chosen this place to make their homes. A marble hall, though its\nconstruction is kept very simple, glimmers brightly when answering the\nreflection of the burning flame from the torches that are hung on the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24418"
+                ],
+                "name": "",
+                "out": [
+                    "24418"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18619"
+                ],
+                "name": "",
+                "out": [
+                    "18619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18621"
+                ],
+                "name": "",
+                "out": [
+                    "18621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18620",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "The marble hall takes a turn northwards, as it leads to the dwarven homes that\nare built deep inside the mountain. Torches line the way, their light flickering\nand dancing on the walls. Most times, the faint sounds of mining and falling\nrocks can be heard echoing off the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18622"
+                ],
+                "name": "",
+                "out": [
+                    "18622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18620"
+                ],
+                "name": "",
+                "out": [
+                    "18620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18621",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "The marble walkway takes yet another turn, leading deeper into the stone-laid\ndwarven tunnels. The polished marble glitters in return to any light source that\npasses, and echoes hollowly upon every step taken. Most times sounds of further\ndigging echo off the walls. It seems as if the dwarves here seldom rest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18621"
+                ],
+                "name": "",
+                "out": [
+                    "18621"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18623"
+                ],
+                "name": "",
+                "out": [
+                    "18623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18622",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 14,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "The marble tunnel comes to a stop at an intersection of excavations. To all\ndirections but east lie sites for new dwarven homes, carefully channeled into\nthe stone by the busy dwarven builders of the Blue Mountains. A few piles of\nflint and rocks litter the floor of the hall, indicating that the construction\nhere is at the final stage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18624"
+                ],
+                "name": "",
+                "out": [
+                    "18624"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18631"
+                ],
+                "name": "",
+                "out": [
+                    "18631"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18622"
+                ],
+                "name": "",
+                "out": [
+                    "18622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18630"
+                ],
+                "name": "",
+                "out": [
+                    "18630"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18623",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Marble Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 13,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "This rocky landing has a smooth stony floor. It looks as if the dwarven builders\nhave started to work on this vacant lot in order to make it more suitable for a\ncomfortable home. Some spots on the wall have been reinforced with polished\nstone plates. The rest lies bare, waiting for the touches of its new habitant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18627"
+                ],
+                "name": "",
+                "out": [
+                    "18627"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24417"
+                ],
+                "name": "",
+                "out": [
+                    "24417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28552"
+                ],
+                "name": "",
+                "out": [
+                    "28552"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18629",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Excavated Landing",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 11,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "The landing rises up from the marble hall, a set of stone stairs carved in\nbetween, probably for easier access. The landing has been cleaned up, apart from\na lone mine-cart that stands in the corner, half-filled with rubble and stones.\nIt looks as this arched stone tunnel could be easily arranged to fit to a\ndwarfs' liking, providing them with a comfortable home.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18623"
+                ],
+                "name": "",
+                "out": [
+                    "18623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18630",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Excavated Landing",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 12,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "The large hall is filled with large tables with all sort of miniature mining\nequipment placed on them. On one of the tables small carts are placed on some\nsort of railway, while miniatures of dwarves are equipped with small picks,\nhammers and tongs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18623"
+                ],
+                "name": "",
+                "out": [
+                    "18623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18632"
+                ],
+                "name": "",
+                "out": [
+                    "18632"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18633"
+                ],
+                "name": "",
+                "out": [
+                    "18633"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18631",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gabildum of the Miniatures",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 13,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "In the rough cut walls small sparkles of silver reflect the light coming from\nthe large hall to the north. A huge wooden desk, with a silver plated top, is\nplaced in the centre of the hall. An unfinished picture of mining equipment is\nplaced on the desk. Cabinets and racks with bound sheets of paper are placed\nalong the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18631"
+                ],
+                "name": "",
+                "out": [
+                    "18631"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18632",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kibilgundu",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 13,
+        "y": 43,
+        "z": 0
+    },
+    {
+        "desc": "This small oval shaped hall has rich decorated walls; gems, each with a label\nattached are placed on one of the shelves at the left wall, while several maps,\nwith marks of dwarf mining activity are attached to the opposite wall. At the\nfar end of the hall you notice a bed made of solid granite and a couple of\nchests. One of them has dirty clothes hanging out of it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18631"
+                ],
+                "name": "",
+                "out": [
+                    "18631"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18633",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Francis' Gundu",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 14,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "Tall obsidian pillars rise from the dark floor of this ominous hall and stretch\nto the curved ceiling above. Glowing runes woven with silver and gold adorn the\npillars, narrating Iror's many adventures and triumphs. Rising from the centre\nof the hall is an obsidian throne, so dark it appears to absorb the light which\nfills the hall from two roaring fireplaces. Flanking the throne are many niches\ndelved between the pillars consisting of Iror's personal library, bed chambers,\nand other rooms. A lectern stands in front of the throne, with a hastily\nscribbled scroll tossed upon it...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18629"
+                ],
+                "name": "",
+                "out": [
+                    "18629"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24417",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Iror's Private Halls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 11,
+        "y": 41,
+        "z": 0
+    },
+    {
+        "desc": "The room has been carved from granite, now smooth like glass. A fireplace in the\nsouthern part heats the room. A bed sits against the western wall, and to the\neast a small desk and a chair. A sconce above the desk holds a lit torch, giving\nlight to the workspace. A small sign has been nailed to one of the walls. A\nsmall ventilation shaft can be seen high up in the north-eastern corner of the\nceiling, leading in air which streams out through the roaring fireplace, giving\nthe room good ventilation. The granite floor is slightly heated from the grand\nfireplace.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18620"
+                ],
+                "name": "",
+                "out": [
+                    "18620"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24418",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Nainn's Quarters",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 15,
+        "y": 42,
+        "z": 0
+    },
+    {
+        "desc": "Here the miners have come upon a natural opening in the rock. The floors have\nbeen polished smooth recently, and the walls bedecked with paintings and some\ntapestries, in preparation of new Dwarven Homes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14"
+                ],
+                "name": "",
+                "out": [
+                    "14"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28547"
+                ],
+                "name": "",
+                "out": [
+                    "28547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28546",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Felak-Azan",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 18,
+        "y": 55,
+        "z": 0
+    },
+    {
+        "desc": "Lamps mounted on the smooth stone walls cast flickering shadows around this\nwell-lit hall. Every surface is impeccably clean, and polished to a shine. The\nthree columns along the north wall, and the three columns along the south wall\neach depict one of the nameless six Dwarven fathers. Above the eastern doorway\nthe seventh Dwarven father, Durin the first, the deathless, king of Khazad-dum\nis shown wearing a crown of seven stars. In the centre of the room rests a\nmassive stone table around which visitors to Fenuln's hall can gather and feast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28548"
+                ],
+                "name": "",
+                "out": [
+                    "28548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28546"
+                ],
+                "name": "",
+                "out": [
+                    "28546"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28547",
+        "light": 0,
+        "loadflags": 65536,
+        "mobflags": 0,
+        "name": "Fenuln's Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 18,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this bedroom are rough cut granite with patches of green malachite\ncarefully exposed, but still embedded in the walls where the water dripping\nthrough the copper rich stone naturally deposited the mineral. Between the large\nblack bear fur covering the floor and the roaring fireplace, the chamber is\nquite cosy. The room is exceptionally well ventilated as there is barely any\nscent of smoke from the fire, and a gentle breeze of fresh air can be felt. In\nthe corner a stone staircase leads downwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28547"
+                ],
+                "name": "",
+                "out": [
+                    "28547"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28549"
+                ],
+                "name": "",
+                "out": [
+                    "28549"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28548",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Malachite Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 19,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "Stalactites hang from the roof of the natural portions of the cavern, and broken\nrocks show the obvious signs of excavation elsewhere. A faint dripping sound can\nbe heard, as the water from the nearby lake filters through the mountain. Piles\nof discarded stone are stacked adjacent to where valuable ore has been hewn from\nthe mine. Although the chunks of granite look haphazardly cracked, a closer\ninspection reveals that the fractures must have been masterfully placed to\nefficiently extract all of the ore with the least number of pickaxe strikes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28548"
+                ],
+                "name": "",
+                "out": [
+                    "28548"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28549",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Excavation",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 19,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "Though Dwarves by their nature are not drawn to stealth, some skills have found\ntheir way into Dwarven usage. Here, within mighty Zirakzigil many Dwarves hone\nthese skills, trained by formidable rogue-captains. Though the Dwarves refuse\nsuch skills as backstabbing, all manner of other rogue skills you see practiced\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "49"
+                ],
+                "name": "",
+                "out": [
+                    "49"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "53"
+                ],
+                "name": "",
+                "out": [
+                    "53"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "52"
+                ],
+                "name": "",
+                "out": [
+                    "52"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28551"
+                ],
+                "name": "",
+                "out": [
+                    "28551"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28550",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 128,
+        "name": "Zirakzigil",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 19,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "The natural walls here have been carved and chiseled with an extraordinary\npattern that resembles a brick wall. A large forge stands along the western\nwall, ablaze and venting through the ceiling above. Tool racks along the eastern\nwall are neatly kept and well organized. A large mural was beautifully painted\nnear the forge of seven well-formed dwarves that are sleeping peacefully, while\na craftsmen guards them protectively. The glow from the forge compliments this\nmural to honour Aule and the Seven Fathers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18629"
+                ],
+                "name": "",
+                "out": [
+                    "18629"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28552",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shrine of Aule",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 10,
+        "y": 40,
+        "z": 0
+    },
+    {
+        "desc": "This bed chamber is has a very relaxing atmosphere, along one wall there is a\nmagnificent bed made out of sturdy oak-wood and over it is lays a bedspread made\nout of the finest furs. Several very interesting metal pieces and other trophies\nare hanging from the walls and standing in the corners, the owner of this home\nmust be out of the ordinary, even for being a dwarf.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14323"
+                ],
+                "name": "",
+                "out": [
+                    "14323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28877",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Cosy Bed Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 15,
+        "y": 45,
+        "z": 0
+    }
+]

@@ -1,0 +1,504 @@
+[
+    {
+        "desc": "Four earthen walls surround a sienna dirt courtyard large enough to accommodate\ndozens of horses and as many men. At the intersections of the walls, sturdy\nwooden ladders lead to and from a small ledge that runs the entire length of the\ndirt battlements, some fifteen feet above the ground. Deep ruts in the ground\nlead from the north gate to a large stable in the east, the result of numerous\nhorses passing into and out of this fort. Directly opposite of the north gate, a\nramshackle barracks has been constructed from wood, leather, straw and earth.\nScattered around the entrances to the barracks and the stables are various\nweapons and shields, all in desperate need of repair.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15217"
+                ],
+                "name": "",
+                "out": [
+                    "15217"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15221"
+                ],
+                "name": "",
+                "out": [
+                    "15221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15220"
+                ],
+                "name": "",
+                "out": [
+                    "15220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15215"
+                ],
+                "name": "",
+                "out": [
+                    "15215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15214",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "South Fort Courtyard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 333,
+        "y": 260,
+        "z": 0
+    },
+    {
+        "desc": "The battlements stand as high as four feet and run along all the walls. Men can\nmove along the wall two to three abreast along wooden platforms that have been\ninserted into the earth walls. In the south corner a wooden tower rises above\nthe walls to give the soldiers a good view of the land. A ladder leads from the\nwalkway up to the tower.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15219"
+                ],
+                "name": "",
+                "out": [
+                    "15219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15214"
+                ],
+                "name": "",
+                "out": [
+                    "15214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15215",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Southern Battlements",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 332,
+        "y": 260,
+        "z": 0
+    },
+    {
+        "desc": "Standing nearly ten feet above the tallest battlements, this lookout tower\noffers an unimpeded view of the land for miles in every direction. A small\nladder, no wider than a large man, leads up to a wooden platform, which is\ncovered with a slanted roof. There are also rails built around the tower to keep\nanyone from falling over the side. A small lantern hangs from a thin rope\nattached to the makeshift roof.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15215"
+                ],
+                "name": "",
+                "out": [
+                    "15215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15219",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "South Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 331,
+        "y": 260,
+        "z": 0
+    },
+    {
+        "desc": "Impeccably clean stalls run the length of this carefully maintained stable. Each\nanimal has its own stall, complete with a wooden roof, three sidewalls and a\nhalf-open gate. Each stall has its own food trough and water bucket. The ground\nis covered with a thick pallet of clean straw. Perfectly aligned racks and hooks\nhang next to each gate where saddles, bridles and blankets are stored.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15214"
+                ],
+                "name": "",
+                "out": [
+                    "15214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15220",
+        "light": 1,
+        "loadflags": 262400,
+        "mobflags": 0,
+        "name": "Stables",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 334,
+        "y": 260,
+        "z": 0
+    },
+    {
+        "desc": "A rectangular structure, constructed from a variety of building materials serves\nas barracks for the Rohir soldiers manning this fort. Overhead, thin wooden\nplanks are covered by hay, bound and braided together with leather straps, to\ncreate an effective roof. Old and worn cots line the southern and northern\nwalls. A large fireplace, no more than mud bricks stacked up at a hole in the\nwestern wall, warms and illuminates the long room. Armour, weapons and other\nsmall items are scattered about the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15214"
+                ],
+                "name": "",
+                "out": [
+                    "15214"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15222"
+                ],
+                "name": "",
+                "out": [
+                    "15222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15221",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "South Fort Barracks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 333,
+        "y": 261,
+        "z": 0
+    },
+    {
+        "desc": "This section of the barracks is shielded by a large screen of wicker. Small\nsleeping mats and chests for personal belongings stand along the walls. Even\nthough the structure is a barrack, this part does not seem as orderly as the\nrest of it. Evidence of non-military guests are present in the form of various\nclothes hung to dry in a corner.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15221"
+                ],
+                "name": "",
+                "out": [
+                    "15221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15222",
+        "light": 1,
+        "loadflags": 131072,
+        "mobflags": 1,
+        "name": "Sleeping Quarters",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 332,
+        "y": 261,
+        "z": 0
+    }
+]

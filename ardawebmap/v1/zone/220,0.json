@@ -1,0 +1,5553 @@
+[
+    {
+        "desc": "The entrance is leading to a courtyard northwards, and there are hallways both\neast and west of here. All the walls and the roof are made of stone, and some\nold weapons and shields are hanging on the walls above the hallways. Some\nstrange sounds, like men moving around, can be heard above. The ground is\ncovered with old cobblestones. Heavy usage of horses and men, have worn out the\nstones.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2962"
+                ],
+                "name": "",
+                "out": [
+                    "2962"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "26311"
+                ],
+                "name": "",
+                "out": [
+                    "26311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2958"
+                ],
+                "name": "",
+                "out": [
+                    "2958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2959"
+                ],
+                "name": "",
+                "out": [
+                    "2959"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2957",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Gates",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 228,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "The room is pretty dark because of the rather small opening westwards, and a\ndoor northwards that lets no light through. The roof is made of solid stone, as\nis the floor. The floor seems less used here than west of here, probably because\nno mounts and pets have been allowed here. Silence fills the room, as nothing\ncan be heard in any direction due to the heavy door northwards, and the low\nopening westwards.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2964"
+                ],
+                "name": "",
+                "out": [
+                    "2964"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2957"
+                ],
+                "name": "",
+                "out": [
+                    "2957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2958",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "East of the Gates",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 229,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "This ancient hallway contains more luxury and the carvings are more detailed\nthan the other rooms in the eastern parts of the castle. North of here an\nancient door blocks the way. The door is solid and some carvings can be seen on\nit. In the south-western corner of the room a stair leads upwards to a tower\nseen above. Some lanterns hang on the walls around the room, and they give off\nenough light so that each corner of the room is lit.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2960"
+                ],
+                "name": "",
+                "out": [
+                    "2960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2957"
+                ],
+                "name": "",
+                "out": [
+                    "2957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2972"
+                ],
+                "name": "",
+                "out": [
+                    "2972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2959",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway of Minas Brethil",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 227,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "This is a large room, which contains a big table with a dozen chairs around it.\nThe table stands in one end of the room, while the rest of the room seems rather\nempty, besides some old maps and drawings on the walls. The walls are made of\nbrick like stones, still the room is warm and comfortable. One of the reasons\nfor that might be the wooden floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2975"
+                ],
+                "name": "",
+                "out": [
+                    "2975"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "2959"
+                ],
+                "name": "",
+                "out": [
+                    "2959"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14358"
+                ],
+                "name": "lever",
+                "out": [
+                    "14358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2960",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "War Room",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 227,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "This is where the guards of the castle live and spend their time when they have\nno assignment. When not on duty the guards occupy themselves with games or\nattending to their accoutrements. The men each have a bed and locker for their\nbelongings including their armour weapons and uniforms, but precious little\nelse. In addition to lodgings, it contains rooms for meals and training.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2962"
+                ],
+                "name": "",
+                "out": [
+                    "2962"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2961",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guard Barracks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 231,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "A large squarelike area that clearly shows indications of heavy use. The sturdy\ncobblestones worn by both the weather and the frequent visits of many people. In\nthe centre a large grey fountain can be seen. Its clear water flowing steadily.\nThe massive front gates and their overgate structure loom above the southern\nportion. To the east lies the old and well used stables while north of here the\nexit to the Great Halls can be seen. West of here the lies a large brick\nbuilding, housing the guards of the castle.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2965"
+                ],
+                "name": "",
+                "out": [
+                    "2965"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2957"
+                ],
+                "name": "",
+                "out": [
+                    "2957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2963"
+                ],
+                "name": "",
+                "out": [
+                    "2963"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2961"
+                ],
+                "name": "",
+                "out": [
+                    "2961"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2962",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Courtyard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 232,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "Placed on the eastern portion of the Courtyard lies the wood building that\nhouses the mounts and pets of the inhabitants. Made out of thick pines and with\na thatched roof it makes a safe lodging. In connection to the stable a small\npaddock can be seen, where the mounts get their daily exercise. The keeper of\nthis lodging is the Grumm family. A family that has outlasted many of the noble\nlines of Rhudaur.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2962"
+                ],
+                "name": "",
+                "out": [
+                    "2962"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2963",
+        "light": 2,
+        "loadflags": 262144,
+        "mobflags": 0,
+        "name": "Stables",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 233,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "This hallway is light, as it is lit up by several lanterns on each wall. South\nof here a huge door blocks the entrance, while a hall appears to the north. The\nstones used to make the walls here are not as dark as in the rest of the castle,\nwhich indicates that this part was finished at a latter stage. A carpet covers\nthe floor which is made of stone as in the rest of the castle. The temperature\nhere is rather cold.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2969"
+                ],
+                "name": "",
+                "out": [
+                    "2969"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2958"
+                ],
+                "name": "",
+                "out": [
+                    "2958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2964",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Ancient Hallway",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 229,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "Carved from an anomalous lobe of maroon-streaked crimson stone, the hall\nresembles a chapel of retrospection. Its walls, alcoves, pilasters, and arching\nvault are carved in mannish forms whose faces resembles the old rulers of\nRhudaur. The floor is covered with a thick red carpet. Upon this carpet stands a\nlarge roundish oaktable. Here the valiant heroes of Rhudaur have their meetings,\ndiscussing different news from the world outside. Around on the walls different\nsigns can be seen. The entrance is secured by a large oakdoor, covered with\ndetailed carvings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2962"
+                ],
+                "name": "",
+                "out": [
+                    "2962"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2965",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Grand Hall of Red",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 232,
+        "y": 4,
+        "z": 0
+    },
+    {
+        "desc": "Like the western tower this one has the same openings high on the wall. The\nopenings let some light in so the castle is fairly lit. In addition to this some\nlanterns are placed around in the tower so it can be lit at night. An opening\nwestwards leads to the battlements above the gate, and a stairway, leading to\nthe top of the tower, can be seen north of here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2967"
+                ],
+                "name": "",
+                "out": [
+                    "2967"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2971"
+                ],
+                "name": "",
+                "out": [
+                    "2971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2966",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eastern Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 228,
+        "y": 3,
+        "z": 0
+    },
+    {
+        "desc": "The stairway leads upward, toward the top of the tower. Despite the long stairs\nthis chamber seems rather empty. The only thing of interest that can be seen\nhere is a board, mounted upon the wall. The walls themselves are constructed\nwith brick-like stones, greyish in colour. To the south the main floor of the\neastern tower can be seen, through an arched doorway, and through the small\nsquare window in the west wall, the castle grounds spread out below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2966"
+                ],
+                "name": "",
+                "out": [
+                    "2966"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2970"
+                ],
+                "name": "",
+                "out": [
+                    "2970"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2967",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eastern Stairway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 228,
+        "y": 2,
+        "z": 0
+    },
+    {
+        "desc": "The cave contains several signs that tell about the background of the\ninhabitants. They tell about the place of roaring red gold, of its history,\ninhabitants, famous places, and more. The cave itself is cold, and nothing\ncovers the floor. Lanterns are the only light source, giving out a dim light.\nDue to its round form, the cave has no corners. South of here a larger hall can\nbe seen, and you notice some light from a fireplace.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2969"
+                ],
+                "name": "",
+                "out": [
+                    "2969"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2968",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Cave of History",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 229,
+        "y": 3,
+        "z": 0
+    },
+    {
+        "desc": "This huge hall has several lanterns mounted on the walls, and a fireplace gives\noff some light. The hall is about ten times thirty meters in size and made of\nstone. The fireplace provides necessary heating. Around on the walls several\nsigns tells stories from battles the inhabitants participated in. Some pictures\nreconstructing the battles can also be seen on the western wall. North of here a\nsmall cave appears, while a hallway leads southwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2968"
+                ],
+                "name": "",
+                "out": [
+                    "2968"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2964"
+                ],
+                "name": "",
+                "out": [
+                    "2964"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2969",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hall of Ancient Tales",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 229,
+        "y": 4,
+        "z": 0
+    },
+    {
+        "desc": "The height between the floor and the roof is quite low here, not more than six\nfeet at the most. The floor is made of wood, which squeaks as you move across\nthe room. In one corner stands a desk and a chair, which have obviously been\nused recently, and small square windows set in each wall offer an excellent view\nof the castle and its surroundings. A narrow stairway leads to the main floor of\nthe tower, below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2967"
+                ],
+                "name": "",
+                "out": [
+                    "2967"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2970",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 512,
+        "name": "Top of the Eastern Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 228,
+        "y": 1,
+        "z": 0
+    },
+    {
+        "desc": "From here it's possible to see down on the path and the wooden bridge in front\nof the castle. Below on the other side lies the courtyard, and noise of people\nand horses can be heard. The battlements are made of huge brick like stones,\nwhile the floor is made of wood. Eagles are circling above, looking for small\nanimals in the dense vegetation around the castle. Towers can be seen both east\nand west of here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2966"
+                ],
+                "name": "",
+                "out": [
+                    "2966"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2972"
+                ],
+                "name": "",
+                "out": [
+                    "2972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2971",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "On the Battlements",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 227,
+        "y": 3,
+        "z": 0
+    },
+    {
+        "desc": "The tower contains a few small square-like openings high on the wall. They are\nhigh up on the wall so that it is impossible to see out through them. The walls\nare made of stones formed like bricks. East of here there is an opening that\nleads out on some battlements. Further east another tower like this one can be\nseen. North of here a stairway can be seen, leading upwards to the top of the\ntower. Stairs lead downwards to the lower parts of the castle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2973"
+                ],
+                "name": "",
+                "out": [
+                    "2973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2971"
+                ],
+                "name": "",
+                "out": [
+                    "2971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2959"
+                ],
+                "name": "",
+                "out": [
+                    "2959"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2972",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Western Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 226,
+        "y": 3,
+        "z": 0
+    },
+    {
+        "desc": "The stairway leads upward, offering access to the top floor of the tower. There\nis almost nothing in this chamber, save for a heavy board, which is mounted to\none of the grey stone walls. Through an elegantly arched doorway, to the south,\nthe main floor of the tower can be seen, and through the small square window in\nthe east wall, the castle grounds can be spied below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2972"
+                ],
+                "name": "",
+                "out": [
+                    "2972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2974"
+                ],
+                "name": "",
+                "out": [
+                    "2974"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2973",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Western Stairway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 226,
+        "y": 2,
+        "z": 0
+    },
+    {
+        "desc": "From this lofty room it is possible to see much of Fornost and Fornost Erain.\nLooking downward through the small square windows affords a view of the castle\ncourtyard to the east, and of the castle surroundings. The chamber is low-\nroofed, such that anyone more than about six feet in height would have to stoop\nto avoid banging their head on the ceiling, and the only way out of here is via\na narrow stairway, leading downward. The room contains only a simple bed, a\nsmall desk, and two old chairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2973"
+                ],
+                "name": "",
+                "out": [
+                    "2973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2974",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 256,
+        "name": "Top of the Western Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 226,
+        "y": 1,
+        "z": 0
+    },
+    {
+        "desc": "This room has been built from sturdy dark stone. The rock has been cut out and\nbrought here from the granite filled mountains of Rhudaur. Neatly fitted and\npolished with great care its difficult to see that the room has been made by\nseperate stones. From this hall several doors can be seen, leading to the\nprivate rooms of the castle inhabitants. No hangings or storied webs, nor any\nthings of woven stuff or wood can be seen in this solemn room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2960"
+                ],
+                "name": "",
+                "out": [
+                    "2960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2975",
+        "light": 2,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Quarters",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 227,
+        "y": 4,
+        "z": 0
+    },
+    {
+        "desc": "The small cobbled yard is surrounded by walls on all sides. Some soldiers are\nperfecting their skills at swordplay under the supervision of a higher officer.\nAn archery range has been constructed towards the south wall, for the Dunadan\nscouts and hunters to practice at. North is a gate leading out of the garrison,\nand east the headquarters of Fornost's forces.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2982"
+                ],
+                "name": "",
+                "out": [
+                    "2982"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "25905"
+                ],
+                "name": "",
+                "out": [
+                    "25905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2981",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Exercise Yard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 222,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "This staircase leads in winding steps up the tower beside the main gate of the\ncity. Although the steps are relatively wide, they are also quite old and worn\nout, which makes them slippery. There is nothing to hold on to, so watch your\nstep!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2989"
+                ],
+                "name": "",
+                "out": [
+                    "2989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14439"
+                ],
+                "name": "",
+                "out": [
+                    "14439"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2988",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 222,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "This is where many of the soldiers keep themselves occupied when they are not on\nduty. Some of them play cards, some read while others just chat. A huge wooden\ntable dominates the room and several chairs are set around it. The room has no\nwindows, but there are a couple of paintings of famous battles. On one of them\nyou see the hordes of Angmar storming a city which might be Fornost. You can't\nbe sure though, because all you can see is a part of a city wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25905"
+                ],
+                "name": "",
+                "out": [
+                    "25905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2990"
+                ],
+                "name": "",
+                "out": [
+                    "2990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2988"
+                ],
+                "name": "",
+                "out": [
+                    "2988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2989",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Soldiers Quarters",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 223,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "This is a huge sleeping room with 15 two story beds. Cupboards for the private\npossessions of the soldiers are along the walls and paintings of more or less\ndressed women are attached to them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2989"
+                ],
+                "name": "",
+                "out": [
+                    "2989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2990",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sleeping Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 224,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a small prison cell just big enough for two prisoners. You see\ntwo plank beds and a wooden desk with a chair in front of it. In a corner of the\nroom there is a shelf and a small, dirty mirror. The window is safeguarded with\nheavy iron bars. The only exit is a metal door to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "2993"
+                ],
+                "name": "",
+                "out": [
+                    "2993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2991",
+        "light": 2,
+        "loadflags": 24,
+        "mobflags": 0,
+        "name": "The Prison Cell",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 225,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "You enter a small but neat and luxuriously furnished room. A red carpet covers\nthe floor, which creaks as you move over it. Small windows high on the northern\nwall allows light to slip in on sunny days. The largest part of the room is\noccupied by an old, heavy desk make of oak, covered with papers and maps. There\nare also some comfortable chairs and a small cabinet containing liqueur in fine\nbottles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2993"
+                ],
+                "name": "",
+                "out": [
+                    "2993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "26111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2992",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Commandant's Office",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 226,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "The corridor widens up a bit, and you see a small niche with a desk in it. To\nthe east you see a very comfortably furnished office, and in contrast with this\nthere is a solid metal door on the southern wall - obviously leading to the\njail. A sign sits on the secretary's table, and a notice hangs beside it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15240"
+                ],
+                "name": "",
+                "out": [
+                    "15240"
+                ]
+            },
+            {
+                "dflags": 1048,
+                "flags": 3,
+                "in": [
+                    "2991"
+                ],
+                "name": "",
+                "out": [
+                    "2991"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2992"
+                ],
+                "name": "",
+                "out": [
+                    "2992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2994"
+                ],
+                "name": "",
+                "out": [
+                    "2994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2993",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 225,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "You walk through a plain, simple corridor that runs east and west. There are\nsmall windows high on the southern wall, but they don't let much light in, so\nthere are burning torches attached to the wall every here and there. A door is\nin the northern wall.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3040"
+                ],
+                "name": "",
+                "out": [
+                    "3040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2993"
+                ],
+                "name": "",
+                "out": [
+                    "2993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25905"
+                ],
+                "name": "",
+                "out": [
+                    "25905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2994",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 224,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "This must be one of the quieter places on Craftsmen's Alley. Not that it means\nthis place is peaceful: the many voices of the street-mongers are replaced by\nthe noise created as metal hits metal, coming from a smithy north of the street.\nThick, black smoke rises from its chimney.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3007"
+                ],
+                "name": "",
+                "out": [
+                    "3007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2998"
+                ],
+                "name": "",
+                "out": [
+                    "2998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2996"
+                ],
+                "name": "",
+                "out": [
+                    "2996"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2997",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Craftsmen's Alley",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 11,
+        "z": 0
+    },
+    {
+        "desc": "You arrive this old and crumbling gateway, yet another monument of the city's\npast. It bridges the northern side of the street with the southern, where the\ncity's garrison is nowadays. Wherever it once led, whatever building it once was\nthe entrance to, is now long gone and forgotten.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2999"
+                ],
+                "name": "",
+                "out": [
+                    "2999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2997"
+                ],
+                "name": "",
+                "out": [
+                    "2997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2998",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At an Old Gateway",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 11,
+        "z": 0
+    },
+    {
+        "desc": "This street shines out in contrast to its dingy neighbourhood, like a fire in a\nforest; and with its freshly painted shutters, well-polished brasses, and\ngeneral cleanliness and gaiety, it instantly catches and pleases the eye of the\nbeholder.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3000"
+                ],
+                "name": "",
+                "out": [
+                    "3000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2998"
+                ],
+                "name": "",
+                "out": [
+                    "2998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "2999",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wall Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "The street runs north and south along the city's eastern wall. You can see\nrangers patrolling the battlements above you while narrow, high houses line the\nother side of the road. To the north lies the heart of the city, the Market\nSquare.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26308"
+                ],
+                "name": "",
+                "out": [
+                    "26308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2999"
+                ],
+                "name": "",
+                "out": [
+                    "2999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "28878"
+                ],
+                "name": "",
+                "out": [
+                    "28878"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3000",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wall Street",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in the shadow of the high city walls, below one of the few\nsections that hasn't needed any rebuilding. The scent of freshly baked bread\ngrabs hold of your head and turns it north, where you discover a tiny bakery.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3002"
+                ],
+                "name": "",
+                "out": [
+                    "3002"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26308"
+                ],
+                "name": "",
+                "out": [
+                    "26308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21875"
+                ],
+                "name": "",
+                "out": [
+                    "21875"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3001",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eastern End of Market Square",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "You are standing inside a small bakery. A sweet scent of freshly baked bread\nfills the room. You feel hungry as you look at all these fine breads well\narranged on their shelves. A tidy sign is nailed to the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3001"
+                ],
+                "name": "",
+                "out": [
+                    "3001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3002",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 16,
+        "name": "Small Bakery",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a big hall with a great deal of activity. People are constantly\ncoming in, doing their business, and leaving thereafter. You can check here if\nsomebody wrote a letter to you, or write one yourself to your friends in other\ncities far away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21875"
+                ],
+                "name": "",
+                "out": [
+                    "21875"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3003",
+        "light": 2,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Post Office",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "This is the place where you can buy excellent weapons, new or used, as you like,\nin every price range. The weaponsmith will also mend your old sword if you are a\nlittle low on cash right now. A large sign is pinned on the wall behind the\ncounter.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2997"
+                ],
+                "name": "",
+                "out": [
+                    "2997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3007",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4,
+        "name": "The Mighty Hammer Weaponry",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "You stand at an old well, which apparently still serves its purpose, as people\narrive to fill their barrels, pots or waterskins. You hear laughter and singing\nthrough a window in house to the south, but you cannot see a thing, for the\ncurtains are closed, and the entrance is a bit west, under a bright red sign.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21875"
+                ],
+                "name": "",
+                "out": [
+                    "21875"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21876"
+                ],
+                "name": "",
+                "out": [
+                    "21876"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26308"
+                ],
+                "name": "",
+                "out": [
+                    "26308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28665"
+                ],
+                "name": "",
+                "out": [
+                    "28665"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3008",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "At the Well",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "Fornost's citizens don't seem like a very religious lot to you, but of course\nthey don't totally ignore their creators. This circular temple contain statues\nand portraits of the Valar and the Maiar, but also men and elves the citizens\nfeel worthy of such an honour. A board here contains all known prophesies and\ncommandments the creators have laid down on the shoulders of mankind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18302"
+                ],
+                "name": "",
+                "out": [
+                    "18302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25906"
+                ],
+                "name": "",
+                "out": [
+                    "25906"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3010"
+                ],
+                "name": "",
+                "out": [
+                    "3010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3009",
+        "light": 0,
+        "loadflags": 524288,
+        "mobflags": 0,
+        "name": "The Circular Temple",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 1,
+        "z": 0
+    },
+    {
+        "desc": "The footpath you are standing on takes you to a small, round sanctuary if you\ncontinue east on it. The city wall is just north and houses block your way\nsouth. Turning your attention to the gardens for a moment, it seems like the\ngardener is a true master of his profession. The lawns are all very green and\nneat, the various bushes well trimmed, and the flowers have just the right\ncolours. Clearly a case of quality before quantity!\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15232"
+                ],
+                "name": "",
+                "out": [
+                    "15232"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15235"
+                ],
+                "name": "",
+                "out": [
+                    "15235"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3009"
+                ],
+                "name": "",
+                "out": [
+                    "3009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3011"
+                ],
+                "name": "",
+                "out": [
+                    "3011"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3010",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "The Small, Well-tended Gardens",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 1,
+        "z": 0
+    },
+    {
+        "desc": "This room is small, but the lack of clutter makes it appear more spacious. On\nthe wall several maps of the nearby forests hang. A table stands in the centre\nof the room. A single door leads out to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "2994"
+                ],
+                "name": "",
+                "out": [
+                    "2994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3040",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 128,
+        "name": "Scout Trainer's Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 224,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "Placed beneath the earths surface its air is cold and fresh. This is where most\nof the castle supplies and spare equipment is stored. Rows upon rows of shelves\nstore every conceivable thing the inhabitants and their servers might need. The\nroom is made out of the same stone as found in the Quarters. The black stone\nseems to absorb most of the light brought in here, making it impossible to\ndistinguish shadows of any kind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14359"
+                ],
+                "name": "",
+                "out": [
+                    "14359"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "2960"
+                ],
+                "name": "",
+                "out": [
+                    "2960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14358",
+        "light": 2,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Storage Room",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 226,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "Well hidden beyond the Storage Room this is one of the last resorts to get away\nfrom the castle should it be attacked. Made partly of rock partly of wood the\nsmall corridor leads southwards. Near the end of the corridor barly noticable a\nsmall crack leads upward. Its made in such a way that once left there is no way\nto get back in.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14358"
+                ],
+                "name": "",
+                "out": [
+                    "14358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "26310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14359",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hidden Passage",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 226,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "The staircase ends here as it reaches its top at a small landing. There is a\ndoorway on the western wall, and a ladder which leads up to the top of the\ntower.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14441"
+                ],
+                "name": "",
+                "out": [
+                    "14441"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14440"
+                ],
+                "name": "",
+                "out": [
+                    "14440"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2988"
+                ],
+                "name": "",
+                "out": [
+                    "2988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14439",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "You are standing on the top of this old, crumbling tower. Like everything else\nin Fornost, it has been heavily patched, so you proceed with caution as you lean\non the battlement and adore the splendid view of Fornost and its outskirts. This\nwould make a great spot to watch anyone moving on the road that leads south from\nFornost. A high cliff with a castle on its top blocks your view westwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14439"
+                ],
+                "name": "",
+                "out": [
+                    "14439"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14440",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Tower at the Gate",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "You stand in a room which contains lots of strange machinery, some winches and a\nfireplace with a big pile of dry wood beside it. By the size of this fireplace\nyou can tell it is not made to keep the soldiers warm and dry, but rather to\nwarm up a large pot containing a thick fluid, probably oil of some kind. The pot\nis mounted on an axis which allows it to be tilted, so its contents can be\npoured down through holes in the floor. You look through these holes and see the\npassageway between the gate and the portcullis. An old, worn book has been\nthrown away in a corner.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14439"
+                ],
+                "name": "",
+                "out": [
+                    "14439"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14442"
+                ],
+                "name": "",
+                "out": [
+                    "14442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14441",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Above the Gate of Fornost",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "As you walk past the guard's post and into the dimly lit room, you quickly\nnotice an unusual odour. A rather grandiose fireplace occupies the centre of the\nwest wall while the assortment of chairs around the fireplace would seem to\naccomodate virtually any guest. On the south wall, a large portrait is proudly\ndisplayed between two fine tapestries.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3010"
+                ],
+                "name": "",
+                "out": [
+                    "3010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15237"
+                ],
+                "name": "",
+                "out": [
+                    "15237"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15236"
+                ],
+                "name": "",
+                "out": [
+                    "15236"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15235",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ticar's Home",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 220,
+        "y": 2,
+        "z": 0
+    },
+    {
+        "desc": "As you enter the room, your suspicions of the source of the unusual odour are\nconfirmed as your olefactory senses are overwhelmed. The small room is obviously\nwhere Ticar practices and perfects his magical mastery. Books line the north and\neast walls with an occasional scroll folded between the books. On the south\nwall, several shelves hold some small pouches and an occasional potion. In the\nsouthwest corner, a large sack hangs from the ceiling by a rope. Nestled in the\nnortheast corner is a small table with a stool shoved under it. An unusual\nspherical crystal is perched upon the table. A cauldron precariously occupies\nthe southeast corner.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15235"
+                ],
+                "name": "",
+                "out": [
+                    "15235"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15236",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Alchemy Laboratory",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 221,
+        "y": 2,
+        "z": 0
+    },
+    {
+        "desc": "After squeezing by the small iron gate, the tranquility of the very private\ncourtyard immediately puts you at ease. The courtyard is surrounded by an\nenourmous stone wall that separates the bustling capital city from Ticar's own\nprivate garden. The wall is consumed by an ivy that completely covers it. To the\nwest, two benches large enough for two people each sit facing each other near\nthe wall and under a large oak tree. To the southeast, a large flat stone sits\non top of a dirt mound. In the centre of the courtyard, a statue of a petite\nelven child is surrounded on three sides by small rose bushes. As you walk\ncloser, you notice that the child is the centrepiece of a fountain and a small\nstream of water flows from the child's mouth. The scent of honeysuckle\ntantilizes your senses as you stand in awe of this beautiful setting. Nestled\nunder the eve of the house in the northeast corner of the courtyard you notice a\nsmall hut and next to the entrance to the hut stands a proud suit of armour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15235"
+                ],
+                "name": "",
+                "out": [
+                    "15235"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15237",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Courtyard",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 220,
+        "y": 3,
+        "z": 0
+    },
+    {
+        "desc": "Sacks of flour, crates of dried cured beef, and baskets of vegetables and\npotatoes are stacked along the left wall of this room. To the right stands a\nsmall but well-used food preparation table, a sink, and a wood stove. Clearly,\nthis is where the master of the house prepares his rations for his long hunts,\nas well as his home cooked dinners. Hanging on hooks from the ceiling are\nvarious herbs and plants being dried for use in herbal remedies.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28878"
+                ],
+                "name": "",
+                "out": [
+                    "28878"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15238",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crowded Pantry",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 225,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "An immense four post bed with a huge feather-stuffed comforter dominates this\nroom. Its large posts have been cut from oak and appear to be small trees\nthemselves. A huge oak dresser stands next to a granite wall, and a huge white\npelt of a cavebear serves as a rug on the stone floor. Torch sconces are placed\ninto the walls, and the stone above them is blackened by their soot. A window,\ndraped in red velvet, looks out onto the street. Above the bed, a portrait hangs\non the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28878"
+                ],
+                "name": "",
+                "out": [
+                    "28878"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15239",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Master Bedroom",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 226,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "In this small office is a rather large round table surround by eight wooden\nchairs. The table, like the walls, is covered in an assortment of maps and land\nsurveys. Markers on one of the larger table maps show which parcels of land are\nin use and what is available for future construction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2993"
+                ],
+                "name": "",
+                "out": [
+                    "2993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15240",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "City Planning Office",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 225,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this passage are made of large stone blocks placed one upon\nanother. The blocks are piled from the floor to the ceiling where they form a\ndome. Inside the dome, bricks of dark and light marble create a intricate\npattern across the ceiling. Along the walls of stone, majestic statues carved in\nthe same marble seen in the ceiling contribute to the feeling of greatness the\nowner must have intended when building this hall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18303"
+                ],
+                "name": "",
+                "out": [
+                    "18303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3009"
+                ],
+                "name": "",
+                "out": [
+                    "3009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18302",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Stone Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 221,
+        "y": 0,
+        "z": 0
+    },
+    {
+        "desc": "After climbing through the secret entrance, you have come across a foyer. This\nroom is rather spartan and is devoid of anything of interest. The white door to\nthe north leads into another room, while you may leave via the grate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18305"
+                ],
+                "name": "",
+                "out": [
+                    "18305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3027"
+                ],
+                "name": "",
+                "out": [
+                    "3027"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18304",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Foyer",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 223,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "Upon entering this room, subtle scent of mauve petals permeates the air. The\nbeautiful aroma originates from a bowl, which is half-full with mythical mauve\npetals. The bowl lies on a large table made of cedar and next to it lies a bone\npipe. Rest of the table is covered with notes and manuscripts, which seem to be\nof arcaic nature. Large bookcases line the northern wall and a very comfortable\nlooking armchair is placed, between the bookcases and the table, within easy\narm's reach from the petals and the books. There is an oakdoor to the west,\nleading into the bedroom and passage to the south leads to the entrance of this\nsimple house.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18304"
+                ],
+                "name": "",
+                "out": [
+                    "18304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18306"
+                ],
+                "name": "",
+                "out": [
+                    "18306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18305",
+        "light": 0,
+        "loadflags": 65536,
+        "mobflags": 0,
+        "name": "Study",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 223,
+        "y": 4,
+        "z": 0
+    },
+    {
+        "desc": "This room is rather spartan, consisting of a mere bed and a chest at the foot of\nit. It seems that the owner of this house is a man of simplistic pleasure.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18305"
+                ],
+                "name": "",
+                "out": [
+                    "18305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18306",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bedroom",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 222,
+        "y": 4,
+        "z": 0
+    },
+    {
+        "desc": "This is a loud place! You hear harsh voices, shrill laughter, and the high sound\nof glasses clinking. An endless stream of beer finds its way into the bellies of\nthe rough men who frequent this room. The swords are removed, however, and it is\nusually very peaceful here. A sign hangs on one of the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3039"
+                ],
+                "name": "",
+                "out": [
+                    "3039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20072",
+        "light": 0,
+        "loadflags": 65536,
+        "mobflags": 16,
+        "name": "Dining Hall of the Crown",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 223,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "You are standing on the Market Square, right outside the recently opened post\noffice. In the same building, but west some, you can see the city's council. The\n'Crown of Arnor' Inn is south of the square, and between it and you there is a\nwell. In the east you can spot a section of the high city wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3003"
+                ],
+                "name": "",
+                "out": [
+                    "3003"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3008"
+                ],
+                "name": "",
+                "out": [
+                    "3008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3001"
+                ],
+                "name": "",
+                "out": [
+                    "3001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3005"
+                ],
+                "name": "",
+                "out": [
+                    "3005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21875",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Market Square",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "Surrounding you are herbs of such variety and diversity that you are in awe.\nSpices and leaves, teas and beans, they fill each nook and cranny. Behind the\ncounter hangs a sign.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3008"
+                ],
+                "name": "",
+                "out": [
+                    "3008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21876",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Herb Shop",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 220,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in the large entrance hall to the soldier quarters. This is the\nplace where the daily briefings are held. The room has something cold and\nbusinesslike about it, and the floor has been waxed not long ago. A corridor\nleads east to the commandants office and the prison cell.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28594"
+                ],
+                "name": "",
+                "out": [
+                    "28594"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2989"
+                ],
+                "name": "",
+                "out": [
+                    "2989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "2994"
+                ],
+                "name": "",
+                "out": [
+                    "2994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "2981"
+                ],
+                "name": "",
+                "out": [
+                    "2981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25905",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 223,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "This glade is surrounded by large gnarled trees blocking out most of the natural\nlight. In the larger patches of light grow many red roses that sing with an\nunfamiliar beauty. Near the middle of the glade, there is a small courtyard\npaved with black marble stones. The centre of the courtyard is dominated by a\nfountain made from a strange black stone that seems to absorb the light around\nit lending an erie quality to the scene. Surounding this courtyard are several\nobsidian statues that have been carved into figures of the fallen kings of\nGondor. On one side, a bronze plinth sits empty, awaiting the final statue. Some\nletters are carved in the plinth. To the east there is a massive marble\nstaircase leading up to black steel-banded ghostwood door set into the western\nface of an enormous tower. To the west lies an archway with a twisted iron gate\nleading out into the bustling city beyond.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25907"
+                ],
+                "name": "",
+                "out": [
+                    "25907"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3009"
+                ],
+                "name": "",
+                "out": [
+                    "3009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25906",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dreary Glade",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 222,
+        "y": 1,
+        "z": 0
+    },
+    {
+        "desc": "The base of the tower here has a small landing with a narrow set of grey stone\nstairs that lead upward in a spiral around the inside of the tower. Despite the\nmany years of service, the stones do not show any wear from use. To the west is\na steel banded door.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25906"
+                ],
+                "name": "",
+                "out": [
+                    "25906"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25907",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ascending Stairway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 223,
+        "y": 1,
+        "z": 0
+    },
+    {
+        "desc": "There is a small archway set into the eastern side of the city wall, with a\nstony path leading out from it. Just over the wall, a few crumbling parapets are\nbarely visible. The street continues to the south, while a large square\nstretches out west and north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3001"
+                ],
+                "name": "",
+                "out": [
+                    "3001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3000"
+                ],
+                "name": "",
+                "out": [
+                    "3000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26309"
+                ],
+                "name": "",
+                "out": [
+                    "26309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3008"
+                ],
+                "name": "",
+                "out": [
+                    "3008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26308",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eastern End of Market Square",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 221,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "A stone wall lining the path on either side provides shelter from all but the\nnoon day sun. Vines and roots have covered the walls in a carpet of dense\nvegetation. The path itself is laid with stone, well worn by the tread of hoof\nand boot.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26310"
+                ],
+                "name": "",
+                "out": [
+                    "26310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26308"
+                ],
+                "name": "",
+                "out": [
+                    "26308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26309",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Path",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 222,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "The stony path gives way to a wooden bridge here. It is fairly small, but built\nsolid, clearly strong enough for several men on horseback. A small river of\ncrystal clear water runs silently under the bridge. An ancient castle can be\nseen to the north, while to the west the path continues through the walls of\nFornost.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26311"
+                ],
+                "name": "",
+                "out": [
+                    "26311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26309"
+                ],
+                "name": "",
+                "out": [
+                    "26309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "14359"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26310",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wooden Bridge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 228,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "A huge gate towers up ahead, made of ancient beech wood. A sign is posted on one\ngate, with neat gold lettering upon dark wood. The castle itself is made of\nstone, and looks dark and fearsome, yet inviting. Dense vegetation abounds in\nthe area, making the castle hard to see from a distance, although the walls\nstand about eighteen feet high. Towers dominate each corner of the castle, and\nmovements can be seen on the battlements high above you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "2957"
+                ],
+                "name": "",
+                "out": [
+                    "2957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26310"
+                ],
+                "name": "",
+                "out": [
+                    "26310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26311",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Gates of Minas Brethil",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 0,
+        "x": 228,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "The walls on both the west and east side of this medium-sized chamber are made\nof solid stone, except on the north end where the straight walls begin to curve.\nThe curved section of the wall was made with a beautiful white marble, with\nblack and silver specks throughout each block drawing attention. A fine silver\nhas been placed along the top and bottom of the walls as trim, with a unique\npattern that trails from the south end to the marble portion, where two argent\npillars stand on each side. Between the pillars is a silver-framed painting of a\nroyal figure, with a silver plaque of inscription fastened above it. An\nexpansive mural was painted on each of the stone walls leading to the pillars;\none of a shipwreck upon the frozen seas and the other appears to be an immense\nbattle with the Witch-king from an age long passed. The floor is polished and\nwhite, with the ceiling above matching, causing any noise to echo through the\nchamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25905"
+                ],
+                "name": "",
+                "out": [
+                    "25905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28594",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arvedui's Memoir Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 223,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "Massive oak timbers frame the interior of this private home. Large glass lamps\nhang from the high vaulted ceiling on long iron chains. The far side of the\nlodge is dominated by a massive fireplace with an immense mantle hewn from oak\nand stained pitch black from the soot of countless fires. All along the granite\nwalls are large storage shelves and hanging pegs that hold a wide variety of\nhunting gear, stable tack, and implements of war. A spiral stone staircase leads\nto the rooms above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3000"
+                ],
+                "name": "",
+                "out": [
+                    "3000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15238"
+                ],
+                "name": "",
+                "out": [
+                    "15238"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "15239"
+                ],
+                "name": "",
+                "out": [
+                    "15239"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28878",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Hunting Lodge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 226,
+        "y": 10,
+        "z": 0
+    }
+]

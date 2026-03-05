@@ -1,0 +1,254 @@
+[
+    {
+        "desc": "The chalky stones have cracked, opening up a sheltered area amongst the rocks.\nThere is a light wind, but the rocks over the top of the natural walkway provide\nample protection from the elements. Goosegrass covers the ground and various\nsmall insects can be seen flitting aroud.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "1696"
+                ],
+                "name": "",
+                "out": [
+                    "1696"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "28713"
+                ],
+                "name": "",
+                "out": [
+                    "28713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28712",
+        "light": 0,
+        "loadflags": 65536,
+        "mobflags": 0,
+        "name": "Entranceway",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 113,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "There is a smell of mint in this well-kept corridor. Chalk rock cut from the\nhill protects this hallway even in the most windy nights. On the north wall are\nmurals depicting various joyful scenes and many close friends.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "28715"
+                ],
+                "name": "",
+                "out": [
+                    "28715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28712"
+                ],
+                "name": "",
+                "out": [
+                    "28712"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "28714"
+                ],
+                "name": "",
+                "out": [
+                    "28714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28713",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rock-covered Corridor",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 112,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "A smell of jasmine and other fresh flowers wafts here, quite a contrast to the\nbleakness of the surroundings. Great care was used to make this room exquisite.\nHand-crafted floral arrangements thrive along the sides of the stonework that\nhas been assembled. The open sky grants full access for the sun and rain to bear\ndown on the colourful plant life all around you. There is a cherry-finished bed\nin the corner, covered on top by a rock wall with different coloured mosses\ngrowing on it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28713"
+                ],
+                "name": "",
+                "out": [
+                    "28713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28714",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Secluded Bedroom",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 111,
+        "y": 100,
+        "z": 0
+    }
+]

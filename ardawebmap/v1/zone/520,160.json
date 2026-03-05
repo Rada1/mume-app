@@ -1,0 +1,1016 @@
+[
+    {
+        "desc": "This narrow tunnel has been burrowed into the earth. Some roots from the trees\nabove form the sides of the burrow. Some solid rock can be seen in the sides and\nfloor of the burrow, mixed with root and dirt. To the west, the tunnel continues\ninto the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25423"
+                ],
+                "name": "",
+                "out": [
+                    "25423"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25342"
+                ],
+                "name": "",
+                "out": [
+                    "25342"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25422",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 526,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "This cave appears natural, though the smooth floor indicates it has been\ntraversed frequently in recent times. A narrow passage leads out of the cave to\nthe east, while a broad tunnel to the west leads into a wide cavern. A few\nstalactites hang from the ceiling, each with a small trickle of water running\ndown the side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25422"
+                ],
+                "name": "",
+                "out": [
+                    "25422"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25424"
+                ],
+                "name": "",
+                "out": [
+                    "25424"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25423",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 525,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "The cave here opens up into a wide cavern, over twenty feet tall at the ceiling.\nApparently some trolls have made their home here, as there is a sizable\ncollection of discarded bones, bits of flesh, and filthy rags. The disgusting\nodour that hangs thick in the air is enough to turn the stomach of even the most\nstalwart adventurer.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25425"
+                ],
+                "name": "",
+                "out": [
+                    "25425"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25423"
+                ],
+                "name": "",
+                "out": [
+                    "25423"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25429"
+                ],
+                "name": "",
+                "out": [
+                    "25429"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25424",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 0,
+        "name": "Cavern Entrance",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 524,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "There is nothing growing here on the rocky ground of the wide cavern. A few\nrocks and pebbles are strewn about, but the floor is otherwise featureless. The\neastern wall is solid and continues to the north and south. To the west the\ncavern opens wider.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25424"
+                ],
+                "name": "",
+                "out": [
+                    "25424"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25426"
+                ],
+                "name": "",
+                "out": [
+                    "25426"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25428"
+                ],
+                "name": "",
+                "out": [
+                    "25428"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25425",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 524,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "This natural cavern is big enough for several trolls to stand abreast. Some of\nthe southern wall has collapsed, leaving rough and jagged boulders strewn about\nthe floor. Some water drips in through the cracks in the wall, but it appears\nstable for now.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25425"
+                ],
+                "name": "",
+                "out": [
+                    "25425"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25427"
+                ],
+                "name": "",
+                "out": [
+                    "25427"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25426",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Cavern",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 524,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "The cavern comes to a corner here, with walls of hard rock standing firm to the\nwest and south. It is evidently inhabited, as the bits of flesh and discarded\nrefuse show the signs of a recent meal. A strong smell of decay, mixed with the\nodour of fresh meat fills the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25428"
+                ],
+                "name": "",
+                "out": [
+                    "25428"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25426"
+                ],
+                "name": "",
+                "out": [
+                    "25426"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25427",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wide Cavern",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 523,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "A passage to the west leads out of the cavern into a dark tunnel. In front of\nthe entrance to the tunnel, a few half-eaten animals and makeshift furnishings\nindicate the presence of trolls. The cavern is certainly tall enough to\naccommodate such creatures, though where their food comes from is a mystery.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25429"
+                ],
+                "name": "",
+                "out": [
+                    "25429"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25427"
+                ],
+                "name": "",
+                "out": [
+                    "25427"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25425"
+                ],
+                "name": "",
+                "out": [
+                    "25425"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25430"
+                ],
+                "name": "",
+                "out": [
+                    "25430"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25428",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Tunnel Entrance",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 523,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "The cavern is quite high here, causing the faint sounds of dripping water to\necho through the chamber. The cave appears to be natural, but the scattered\nrefuse and faint odour of unwashed flesh indicate it is now inhabited. It\nappears to widen to the south, though the dim light makes it difficult to see\nhow much.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25428"
+                ],
+                "name": "",
+                "out": [
+                    "25428"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25424"
+                ],
+                "name": "",
+                "out": [
+                    "25424"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25429",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural, Wide Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 523,
+        "y": 164,
+        "z": 0
+    },
+    {
+        "desc": "The rocky walls of this tunnel are jagged and sharp. A bit of dirty water forms\na basin in the middle of the floor, its source not readily apparent. The air is\nhumid, and a thin layer of mud covers the floor. Within the muck, a few pieces\nof bone mixed with trash can be seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25428"
+                ],
+                "name": "",
+                "out": [
+                    "25428"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25431"
+                ],
+                "name": "",
+                "out": [
+                    "25431"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25430",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Jagged Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 522,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "The rocky walls of the tunnel here show no signs of digging, apparently it is a\nnatural formation. The tunnel is tall enough here for a man to walk straight,\nthough the lack of light might make that a somewhat disturbing endeavour. An\nodour of decaying meat wafts through the tunnel, though the source is not\nreadily apparent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25430"
+                ],
+                "name": "",
+                "out": [
+                    "25430"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25432"
+                ],
+                "name": "",
+                "out": [
+                    "25432"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25431",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rock-walled Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 521,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "Various bones and body parts lie about, apparently dragged here by some\npredator. They reek with a strong odour of decaying meat. The floor of the the\ntunnel is hard rock, with a few pebbles scattered about. The walls, though hard,\nseem to be made of densely packed earth rather than rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25431"
+                ],
+                "name": "",
+                "out": [
+                    "25431"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25433"
+                ],
+                "name": "",
+                "out": [
+                    "25433"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25432",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 520,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "A platform has been crafted atop the rockspire. Brute force has been used to\nclear away the worst outcroppings, creating a fairly flat, rocky surface. The\nonly entrance, for any creature lacking wings, seems to be the hatch near the\ncentre of the platform. Several very large iron rings have been embedded into\nthe platform.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25565"
+                ],
+                "name": "",
+                "out": [
+                    "25565"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25566",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Platform atop a Rockspire",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 520,
+        "y": 161,
+        "z": 0
+    }
+]

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { CustomButton, MessageType } from '../types';
 
 export interface InteractionDeps {
@@ -51,6 +51,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         setInventoryLines, setEqLines, setStatsLines, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         ui
     } = deps;
+    const lastLogClickRef = useRef<number>(0);
 
     const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string) => {
         e.stopPropagation();
@@ -62,7 +63,6 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         const targetEl = (e.currentTarget as HTMLElement);
         if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'teleport-manage'].includes(button.actionType || '')) setPopoverState(null);
         if (targetEl?.classList) { targetEl.classList.remove('btn-glow-active'); void targetEl.offsetWidth; targetEl.classList.add('btn-glow-active'); }
-        triggerHaptic(35);
 
         let cmd = button.command;
         if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`; }
@@ -126,16 +126,6 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         }
     }, [viewport.isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen, executeCommand, setStatsLines, setInventoryLines, setEqLines, ui]);
 
-    const handleLogClick = useCallback((e: React.MouseEvent) => {
-        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
-        if (!targetEl) return;
-        e.stopPropagation(); triggerHaptic(20);
-        const cmd = targetEl.getAttribute('data-cmd'), action = targetEl.getAttribute('data-action'), context = targetEl.getAttribute('data-context');
-        if (action === 'menu') setPopoverState({ x: e.clientX, y: e.clientY, setId: cmd || 'selection', context: context || undefined });
-        else if (action === 'command' && cmd) executeCommand(context ? (cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`) : cmd);
-        else if (cmd === 'target' && context) { setTarget(context); addMessage('system', `Target set to: ${context}`); }
-    }, [triggerHaptic, setPopoverState, executeCommand, setTarget, addMessage]);
-
     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
         const selection = window.getSelection()?.toString().trim();
         if (selection) {
@@ -144,6 +134,24 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             triggerHaptic(30);
         }
     }, [setTarget, addMessage, triggerHaptic]);
+
+    const handleLogClick = useCallback((e: React.MouseEvent) => {
+        const now = Date.now();
+        if (now - lastLogClickRef.current < 300) {
+            handleLogDoubleClick(e);
+            lastLogClickRef.current = 0;
+            return;
+        }
+        lastLogClickRef.current = now;
+
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        if (!targetEl) return;
+        e.stopPropagation(); triggerHaptic(20);
+        const cmd = targetEl.getAttribute('data-cmd'), action = targetEl.getAttribute('data-action'), context = targetEl.getAttribute('data-context');
+        if (action === 'menu') setPopoverState({ x: e.clientX, y: e.clientY, setId: cmd || 'selection', context: context || undefined });
+        else if (action === 'command' && cmd) executeCommand(context ? (cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`) : cmd);
+        else if (cmd === 'target' && context) { setTarget(context); addMessage('system', `Target set to: ${context}`); }
+    }, [triggerHaptic, setPopoverState, executeCommand, setTarget, addMessage, handleLogDoubleClick]);
 
     return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick };
 };

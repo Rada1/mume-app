@@ -1,0 +1,2186 @@
+[
+    {
+        "desc": "Carved from the living rock of Zirakzigil, this small tower has stood since the\nage when dwarves first delved beneath these peaks. The thousands of years that\nhave passed have done nothing to mar the elegant stonework, and, much like a\ndwarf, this tower stands mute and resolute - stoically resisting whatever fury\nthe mountains can unleash upon it. A solitary window looks out onto a small\nfield of snow, here at the top of the world above even the clouds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17733"
+                ],
+                "name": "",
+                "out": [
+                    "17733"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17990"
+                ],
+                "name": "",
+                "out": [
+                    "17990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17732",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Durin's Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 113,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "This small and snow-covered plain lies atop Celebdil, the Silvertine. To the\nsouth is Durin's Tower - a simple stone edifice that somehow seems the height of\nDwarven elegance as it might be part of the mountain itself. In every other\ndirection, the clouds obscure the lands like a great grey blanket - only the\nmost severe of storms can hurl snow at this height, but once it falls, it cannot\nmelt. Some distance away, the equally impressive peaks of Caradhras and\nFanuidhol protrude above the eternal cloud cover, forming the remainder of the\nmajestic triumvirate of peaks over Khazad-dum.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17736"
+                ],
+                "name": "",
+                "out": [
+                    "17736"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17732"
+                ],
+                "name": "",
+                "out": [
+                    "17732"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17734"
+                ],
+                "name": "",
+                "out": [
+                    "17734"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17735"
+                ],
+                "name": "",
+                "out": [
+                    "17735"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17733",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Upon the Peak of Zirakzigil",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 113,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "The damp mist enfolds you as you begin to plummet towards the distant earth. You\nbreak through the bottom of the clouds and are rewarded with a brief but\nspectacular view of the surrounding lands, but the onrushing ground quickly\nsquelches your sense of wonder.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17733"
+                ],
+                "name": "",
+                "out": [
+                    "17733"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17734",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "Above the Clouds",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 114,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "The damp mist enfolds you as you begin to plummet towards the distant earth. You\nbreak through the bottom of the clouds and are rewarded with a brief but\nspectacular view of the surrounding lands, but the onrushing ground quickly\nsquelches your sense of wonder.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17733"
+                ],
+                "name": "",
+                "out": [
+                    "17733"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17735",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "Above the Clouds",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 112,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "The stair has reached one end of a relatively long straight stretch, which is a\npleasant change after hundreds of twisting steps. It might be the eastern end,\nbut there is no quick way to be certain - the many sharp and irregular turnings\nin the rest of the stairwell make it extremely easy to lose the sense of\ndirection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17742"
+                ],
+                "name": "",
+                "out": [
+                    "17742"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17740"
+                ],
+                "name": "",
+                "out": [
+                    "17740"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17741",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 4096,
+        "name": "Hidden Stair",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 118,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "The stairwell, which, above, is extremely contorted, abruptly stops bending\nright in this place. The dazzling convolutions give way to a long straight ramp,\nwhich gradually slopes down into the darkness. Almost no noise, apart from that\nof your own making, can be heard here: massive layers of rock separate this\nplace from the rest of the world.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17741"
+                ],
+                "name": "",
+                "out": [
+                    "17741"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17743"
+                ],
+                "name": "",
+                "out": [
+                    "17743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17742",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hidden Stair",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 117,
+        "y": 240,
+        "z": 0
+    },
+    {
+        "desc": "Bending alternately clockwise and anticlockwise, with no semblance of order, the\nstair continues its long journey through the hard rock. The continuous bends\nhave a somewhat hypnotic effect, reinforced by the fact that the walls are so\nclose to each other that one has almost no freedom to move: the only choice lies\nbetween going ahead or turning back.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17744"
+                ],
+                "name": "",
+                "out": [
+                    "17744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17742"
+                ],
+                "name": "",
+                "out": [
+                    "17742"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17743",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 4096,
+        "name": "Hidden Stair",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 117,
+        "y": 241,
+        "z": 0
+    },
+    {
+        "desc": "The stairwell, enclosed within massive, cracked stone walls, seems to get\nnarrower and narrower as it descends, until it becomes barely wide enough to let\na single person through. A thin layer of dust, which has accumulated with the\npassage of time, rests on the barely worn steps.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17745"
+                ],
+                "name": "",
+                "out": [
+                    "17745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17743"
+                ],
+                "name": "",
+                "out": [
+                    "17743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17744",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hidden Stair",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 117,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "The upper end of an old stone stair lies a few paces east of here, where the\nnarrow stairwell opens into a small secret chamber. In the opposite direction\nthe stair plunges down very steeply, and the rough stone walls surrounding it\ngrow nearer to each other. There seem to be little signs of passage here: in\ncontrast with some larger tunnels, the floor and the steps have not been worn\nout by thousands and thousands of moving feet.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17746"
+                ],
+                "name": "",
+                "out": [
+                    "17746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17744"
+                ],
+                "name": "",
+                "out": [
+                    "17744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17745",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of a Hidden Stair",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 117,
+        "y": 243,
+        "z": 0
+    },
+    {
+        "desc": "This small room is enclosed by roughly formed walls. They block any movement\nsouth or east, but west a passageway leads between them. The northern wall is\nsmooth and well fit, revealing a moveable slab. The disuse of this room is\nevident, from not only the stale air and dust, but also from the cobwebs forming\na silky screen over much of the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16861"
+                ],
+                "name": "",
+                "out": [
+                    "16861"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17745"
+                ],
+                "name": "",
+                "out": [
+                    "17745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17746",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Alcove",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 118,
+        "y": 243,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17978"
+                ],
+                "name": "",
+                "out": [
+                    "17978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17976"
+                ],
+                "name": "",
+                "out": [
+                    "17976"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17977",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 100,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17979"
+                ],
+                "name": "",
+                "out": [
+                    "17979"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17977"
+                ],
+                "name": "",
+                "out": [
+                    "17977"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17978",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 101,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17980"
+                ],
+                "name": "",
+                "out": [
+                    "17980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17978"
+                ],
+                "name": "",
+                "out": [
+                    "17978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17979",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 102,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17981"
+                ],
+                "name": "",
+                "out": [
+                    "17981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17979"
+                ],
+                "name": "",
+                "out": [
+                    "17979"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17980",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 103,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17982"
+                ],
+                "name": "",
+                "out": [
+                    "17982"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17980"
+                ],
+                "name": "",
+                "out": [
+                    "17980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17981",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 104,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17983"
+                ],
+                "name": "",
+                "out": [
+                    "17983"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17981"
+                ],
+                "name": "",
+                "out": [
+                    "17981"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17982",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 105,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17984"
+                ],
+                "name": "",
+                "out": [
+                    "17984"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17982"
+                ],
+                "name": "",
+                "out": [
+                    "17982"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17983",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 106,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17985"
+                ],
+                "name": "",
+                "out": [
+                    "17985"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17983"
+                ],
+                "name": "",
+                "out": [
+                    "17983"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17984",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 107,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17986"
+                ],
+                "name": "",
+                "out": [
+                    "17986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17984"
+                ],
+                "name": "",
+                "out": [
+                    "17984"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17985",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 108,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17987"
+                ],
+                "name": "",
+                "out": [
+                    "17987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17985"
+                ],
+                "name": "",
+                "out": [
+                    "17985"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17986",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 109,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17988"
+                ],
+                "name": "",
+                "out": [
+                    "17988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17986"
+                ],
+                "name": "",
+                "out": [
+                    "17986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17987",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 110,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17989"
+                ],
+                "name": "",
+                "out": [
+                    "17989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17987"
+                ],
+                "name": "",
+                "out": [
+                    "17987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17988",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 111,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "This unbroken spiral of steps - assumed to exist only in legend even by the\nDwarves - climbs ever onward through the heart of Zirakzigil. The steps are cut\nfor Dwarven legs, making travel for the taller folk an arduous task. Far below,\ndarkness floods the shaft and conceals whatever long-lost secrets that lie\nbelow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17990"
+                ],
+                "name": "",
+                "out": [
+                    "17990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17988"
+                ],
+                "name": "",
+                "out": [
+                    "17988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17989",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Endless Stair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 112,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "A cool breeze drifts lazily down from above, where the stair appears to come\nfinally to an end. The dark, stale atmosphere from below seems to fight to gain\nsupremacy here, at the top of the stair, and dust motes dance and twirl around,\nbefore falling in a soft carpet on the cold, smooth stone. The walls and floor\nhere are perfectly polished, and their craftsmanship unmarked by the long\npassage of time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17732"
+                ],
+                "name": "",
+                "out": [
+                    "17732"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17989"
+                ],
+                "name": "",
+                "out": [
+                    "17989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17990",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 113,
+        "y": 242,
+        "z": 0
+    },
+    {
+        "desc": "Less of this avenue has collapsed than to the east and west, probably because\nfewer rooms were excavated to the north and south. But the pavement is buckled\ndownward in great cracked dips, and large slabs of the floor and wall lie in the\nroadway and must be climbed over. The air here is very stale; it seems as if no\nliving thing has come here for centuries.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18365"
+                ],
+                "name": "",
+                "out": [
+                    "18365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18368"
+                ],
+                "name": "",
+                "out": [
+                    "18368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18367",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Avenue",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 119,
+        "y": 247,
+        "z": 0
+    },
+    {
+        "desc": "This broad avenue, once lined by shops and residences carved into the stone, has\nbeen almost completely obliterated. Rock pressing down from above has crushed\nthe chambers and corridors, squeezing them flat and filling them with massive\nstone slabs. However, along the northern edge of the avenue, a small remnant of\nthe roadway remains, virtually a crawlway about four feet high at most whose\nroof is composed of the slanted slabs of the fallen ceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18367"
+                ],
+                "name": "",
+                "out": [
+                    "18367"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "20698"
+                ],
+                "name": "rockslab",
+                "out": [
+                    "20698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18368",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Collapsed Avenue",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 118,
+        "y": 247,
+        "z": 0
+    }
+]

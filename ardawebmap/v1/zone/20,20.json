@@ -1,0 +1,1528 @@
+[
+    {
+        "desc": "Many Dwarves pass by you here, at the northeastern corner of a gigantic opening\nin the mountain. This seems to be a major thoroughfare leading east and south.\nTo your west are three mountains rising high up into the air. Two you see\nclearly, hard grey rock rising slowly up to white towers. Behind them you can\nglimpse the peak of a third.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "57"
+                ],
+                "name": "",
+                "out": [
+                    "57"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "54"
+                ],
+                "name": "",
+                "out": [
+                    "54"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "56"
+                ],
+                "name": "",
+                "out": [
+                    "56"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "58"
+                ],
+                "name": "",
+                "out": [
+                    "58"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "55",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gabil Felak",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 21,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This is a majestic entranceway to an enormous cavern to the west. From the east\na wide corridor slopes slowly up, with constant width and height, until it\napproaches its end. There it abruptly widens, the ceiling rises into shadows and\nthe path splits into two, separated by a massive statue. Dwarves walk quickly\npast you carrying all manner of provisions and crafts, paying little heed to the\nmajestic sculpture.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "55"
+                ],
+                "name": "",
+                "out": [
+                    "55"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1"
+                ],
+                "name": "",
+                "out": [
+                    "1"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "56",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kizdin Crafts",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 22,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "In the shelves that line the walls of this room lie countless devices. They all\nseem of a strange, mechanical nature. A great table fills the eastern portion of\nthe room, and several lamps hang above it. On this table are scattered tumblers\nand strange instruments.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "55"
+                ],
+                "name": "",
+                "out": [
+                    "55"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "57",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "Locksmith's Shop",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 21,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "Here within this tower in the shape of a mountain, the skills of survival are\ntaught to those who would go out into the wild, mastering animals and facing the\ndangers of the elements. Even dwarven warriors, with faces hard as stone, know\nthat their skin can be rent and torn, and that it is important to know how to\nbind one's wounds so that one may heal and return later on to battle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "53"
+                ],
+                "name": "",
+                "out": [
+                    "53"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "55"
+                ],
+                "name": "",
+                "out": [
+                    "55"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "58",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 64,
+        "name": "Bundushathur",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 20,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14300"
+                ],
+                "name": "",
+                "out": [
+                    "14301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "83",
+                    "14299"
+                ],
+                "name": "",
+                "out": [
+                    "14299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14302"
+                ],
+                "name": "",
+                "out": [
+                    "14299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14298",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 39,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14298",
+                    "14301",
+                    "14302"
+                ],
+                "name": "",
+                "out": [
+                    "14298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14300"
+                ],
+                "name": "",
+                "out": [
+                    "14300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14301"
+                ],
+                "name": "",
+                "out": [
+                    "14301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14298",
+                    "14300"
+                ],
+                "name": "",
+                "out": [
+                    "14302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14299",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 39,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a dense, gloomy, entangled forest. The trees grow in all\ndirections, and the thick undergrowth forces you to turn frequently, totally\nruining your sense of direction. From time to time, a couple of red eyes blink\nin the dark, and you hear deep growls and high pitched howls. The entwined\nbranches of the trees above you are so thick that almost no light filters to the\nground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "671"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "14299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14299"
+                ],
+                "name": "",
+                "out": [
+                    "14300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "671",
+                    "14301"
+                ],
+                "name": "",
+                "out": [
+                    "14298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14302",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dense Forest",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 38,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Torches in the wall provide nominal light throughout this lofty, vaulted room. A\ngreat, ring-shaped table made of carved stone dominates the centre of the room.\nDeftly crafted chairs surround the table. The seats number at least a dozen,\nindicative that someone utilizes this room for extremely large meetings. A door\nto the east leads into a small stone alcove while the path to the south opens\ninto a large arched passageway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14412"
+                ],
+                "name": "",
+                "out": [
+                    "14412"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14414"
+                ],
+                "name": "",
+                "out": [
+                    "14414"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14413",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arched Assembly Hall",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 31,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Carved from the dense limestone prevalent in this area, this modest stone\ndwelling possesses smooth walls and a well-worn floor. A disheveled desk made\nfrom wood stands in the corner. Papers covered with various numbers crowd the\ndesk. A small door to the west leads into a dimly lit space dominated by a large\ntable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14413"
+                ],
+                "name": "",
+                "out": [
+                    "14413"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14414",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Quarters of Mathias",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 32,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This splendid stone vestibule features polished marble floors and beautiful jade\nornamentation. The complex carvings picture mostly battle and hunting scenes. A\nlarge, exceptional statue is displayed prominently in the centre of the room. To\nthe east there is a small wooden door while a sturdy iron door blocks the way to\nthe west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14416"
+                ],
+                "name": "",
+                "out": [
+                    "14416"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14418"
+                ],
+                "name": "",
+                "out": [
+                    "14418"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14417"
+                ],
+                "name": "",
+                "out": [
+                    "14417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14412"
+                ],
+                "name": "",
+                "out": [
+                    "14412"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14415",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Heroes",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 34,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Lit by tin lanterns fixed on the stone walls, this area is cluttered with a\nvariety of shields, breastplates and other assorted ring mail and chain mail\narmour pieces. Tools and pieces of armour being repaired lie on a large, oaken\nwork table in one corner of the room. In another corner, iron bars are stacked\nneatly in preparation for future use.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14415"
+                ],
+                "name": "",
+                "out": [
+                    "14415"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14417",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Battalion Armoury",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 33,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Carved from dense igneous bedrock, this crude chamber lacks the fancy statues\nand masonry that are prevalent in this area. A diminutive fireplace in one\ncorner of the room reveals unadorned, rough walls while wrought stones and\nboulders form an assortment of furniture.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14415"
+                ],
+                "name": "",
+                "out": [
+                    "14415"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14418",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shigalanka's Barracks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 35,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This small chamber is lit by only one torch. Slightly cramped, it is nonetheless\na comfortable place for a hardy Dwarf to sleep. The entrance is large enough for\neven an Elf to enter; however, more than a few people in this room would be\nuncomfortable at best.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20087"
+                ],
+                "name": "",
+                "out": [
+                    "20087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20089",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Poorly-lit Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 24,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Stairs carved directly into the rockface provide passage from Durin's Hall to\nthe chambers below. An abundance of torches light the otherwise dark room,\nallowing travellers to carefully avoid mishaps on their way up or down. Much\nactivity can be heard from Durin's Hall, while the corridor heading east at the\nbase of the stairs is strangely quiet.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20091"
+                ],
+                "name": "",
+                "out": [
+                    "20091"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20087"
+                ],
+                "name": "",
+                "out": [
+                    "20087"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20090",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Long Winding Stairwell",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 25,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this corridor are almost pitch-black, yet strangely reflective,\nallowing the light from the torches ensconced on the walls to play on the smooth\nsurfaces. Although there is usually much activity in the halls above, almost no\nnoise can be heard here. Small rooms can be seen to the north and south, while\nthe stairwell leads back to Durin's Hall to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20094"
+                ],
+                "name": "",
+                "out": [
+                    "20094"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20093"
+                ],
+                "name": "",
+                "out": [
+                    "20093"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20092"
+                ],
+                "name": "",
+                "out": [
+                    "20092"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20090"
+                ],
+                "name": "",
+                "out": [
+                    "20090"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20091",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Obsidian Corridor",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 26,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The corridor continues, heading deep into the mountains underneath the Trader's\nWay. A swell of heat can be felt from the room to the north, and the banging of\nhammer on anvil is heard constantly during the day; the Dwarves must keep busy\nforging weapons and armour. A small chamber opens up to the south through a\nstone door. The obsidian walls glisten in the torchlight, confusing the eye.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20096"
+                ],
+                "name": "",
+                "out": [
+                    "20096"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20095"
+                ],
+                "name": "",
+                "out": [
+                    "20095"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20091"
+                ],
+                "name": "",
+                "out": [
+                    "20091"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20092",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Obsidian Corridor",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 27,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This room has few furnishings of interest. Only a large chest in the far corner\nof the room displays an impressive collection of elements of war, most of them\nhaving seen at least one bloody battle. The inhabitant of this room obviously\nlives for warfare and takes pleasure only in a battle well-fought.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20091"
+                ],
+                "name": "",
+                "out": [
+                    "20091"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20094",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stony Hollow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 26,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "A blast of warm air sweeps across the entrace to this vast room. The tall\nchimneys of the smithy of Durin's Army extend high above the ground,\ndisappearing into the darkness above. The bodyguard of Durin's Army is also a\nskilled craftsman, and aids his fellow Dwarves if there is a need, be it a dent\ntoo large or a scratch too deep.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20092"
+                ],
+                "name": "",
+                "out": [
+                    "20092"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20096",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vented Smithy",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 27,
+        "y": 38,
+        "z": 0
+    }
+]

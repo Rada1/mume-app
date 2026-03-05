@@ -92,7 +92,7 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
             {['xbox-y', 'xbox-b', 'xbox-a', 'xbox-x', 'xbox-z', 'xbox-door'].map(id => {
                 const button = buttons.find(b => b.id === id);
                 if (!button || (button.isVisible === false && !isEditMode)) return null;
-                const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-b' ? 'right' : id === 'xbox-a' ? 'bottom' : id === 'xbox-x' ? 'left' : id === 'xbox-z' ? 'center' : 'outside';
+                const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-x' ? 'right' : id === 'xbox-b' ? 'left' : id === 'xbox-a' ? 'bottom' : id === 'xbox-z' ? 'center' : 'outside';
                 return (
                     <GameButton
                         key={id}

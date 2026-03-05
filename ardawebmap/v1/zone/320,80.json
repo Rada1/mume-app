@@ -1,0 +1,5718 @@
+[
+    {
+        "desc": "Here the road bends from the north to the east and continues straight east,\nleaving the hill ridge to the north. To the south of the road you can see three\nstones, obviously set there as marking signs. The stones are so weathered that\nyou can no longer read what was written on them once, but even if you could read\nit, you would probably find it no longer true anyway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4148"
+                ],
+                "name": "",
+                "out": [
+                    "4148"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4244"
+                ],
+                "name": "",
+                "out": [
+                    "4244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4150"
+                ],
+                "name": "",
+                "out": [
+                    "4150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4249"
+                ],
+                "name": "",
+                "out": [
+                    "4249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4149",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 326,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The highest point of the hill ridge is just above you, but the slope leading to\nit is an almost vertical rock wall which there seems to be no way to climb. To\nthe south of the road at some distance you can see a stone arch rising in the\nmiddle of a grassy plain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4245"
+                ],
+                "name": "",
+                "out": [
+                    "4245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4151"
+                ],
+                "name": "",
+                "out": [
+                    "4151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4149"
+                ],
+                "name": "",
+                "out": [
+                    "4149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4150",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 327,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Following the bends of the feet of the hills, the Old East Road runs east-west\non its way from the Last Bridge to the River Bruinen. South of the road the\ngrassland stretches to the very horizon, patches of grey and patches of green\nblending at a distance into one carpet of a grey-green colour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4159"
+                ],
+                "name": "",
+                "out": [
+                    "4159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4246"
+                ],
+                "name": "",
+                "out": [
+                    "4246"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4152"
+                ],
+                "name": "",
+                "out": [
+                    "4152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4150"
+                ],
+                "name": "",
+                "out": [
+                    "4150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4151",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 328,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The Old East Road is running east-west here. A hill with a wide flat crown rises\nto the north of the road. On the other side of the road everything is overgrown\nby weeds, but just to the south of you the thicket is cut in two by a wide\nribbon of land covered with a carpet of a heather-like plant.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4160"
+                ],
+                "name": "",
+                "out": [
+                    "4160"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4247"
+                ],
+                "name": "",
+                "out": [
+                    "4247"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4153"
+                ],
+                "name": "",
+                "out": [
+                    "4153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4151"
+                ],
+                "name": "",
+                "out": [
+                    "4151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4152",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 329,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The road runs east-west here. A ridge of hills rises above you to the north.\nWide stone shelves lead up the side of the ridge allowing one to climb all the\nway up to the top. Wormwood grows to the south of the road, swaying in the wind\nand filling the air with a bitter smell.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4161"
+                ],
+                "name": "",
+                "out": [
+                    "4161"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4248"
+                ],
+                "name": "",
+                "out": [
+                    "4248"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4154"
+                ],
+                "name": "",
+                "out": [
+                    "4154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4152"
+                ],
+                "name": "",
+                "out": [
+                    "4152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4153",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 330,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Leaving to the north the last hill of the ridge, the Old East Road bends from\nthe west to the south, continuing its way through the grassy plains. On the\nsouthern side of the road everything is overgrown with weeds; a heathery plain\nstretches out to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4155"
+                ],
+                "name": "",
+                "out": [
+                    "4155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4215"
+                ],
+                "name": "",
+                "out": [
+                    "4215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4153"
+                ],
+                "name": "",
+                "out": [
+                    "4153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4154",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 331,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The Old East Road turns north-east here, winding along the foot of the hills.\nAges ago the road already ran through this land, and ages from now it will\nprobably still run through it, even when all the old walls and towers crumble\ndown, and no other trace of Men is left in the Lone-lands. Buildings wear down\nfrom use, but a road gets stronger from use. Buildings suffer from their owners,\nbut a road cares not who uses it or for what purpose, for rain soon washes away\nany traces and any defile. Buildings can be burned down or knocked down, but a\nroad can only be destroyed by a flood or an earthquake, and if destroyed, it\nwill probably be restored, while somewhere there are people who need to pass\nthrough this land.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4154"
+                ],
+                "name": "",
+                "out": [
+                    "4154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4218"
+                ],
+                "name": "",
+                "out": [
+                    "4218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4216"
+                ],
+                "name": "",
+                "out": [
+                    "4216"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4248"
+                ],
+                "name": "",
+                "out": [
+                    "4248"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4155",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 331,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Heather grows on the side of the road, its faint fragrance unusually distinct\nand sweet in the fresh air. A few heather plants have white flowers and look\nslightly larger than the ordinary heather; these plants also seem to smell\nstronger.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4157"
+                ],
+                "name": "",
+                "out": [
+                    "4157"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4216"
+                ],
+                "name": "",
+                "out": [
+                    "4216"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4369"
+                ],
+                "name": "",
+                "out": [
+                    "4369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4154"
+                ],
+                "name": "",
+                "out": [
+                    "4154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4215",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Heathery Slope",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 332,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The road makes its way through the lands that are now called Lone-lands. They\nhave not always been called so; Men once dwelt here, ages ago. Legends tell that\nthey became an evil people, because they fell under the shadow of Angmar. But\nall were destroyed in the war that brought the North Kingdom to its end. It is\nsaid that the hills have forgotten them, but a shadow still lies on the land.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4215"
+                ],
+                "name": "",
+                "out": [
+                    "4215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4217"
+                ],
+                "name": "",
+                "out": [
+                    "4217"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4365"
+                ],
+                "name": "",
+                "out": [
+                    "4365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4155"
+                ],
+                "name": "",
+                "out": [
+                    "4155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4216",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 332,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "A strange kind of weeds dominates on this patch of grassland. Most of the plants\nare from two to three feet high with very thick and tough stems and meaty\nleaves, grey-green on the outside and silvery-grey on the inside. The flowers\nare white five-petalled stars, disproportionately small for such tall stems and\nthick leaves; something in their appearance gives them a mournful look.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4216"
+                ],
+                "name": "",
+                "out": [
+                    "4216"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4416"
+                ],
+                "name": "",
+                "out": [
+                    "4416"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4218"
+                ],
+                "name": "",
+                "out": [
+                    "4218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4217",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Grassland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 332,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Judging by the ditches that cut the ground at regular intervals, this must have\nonce been a field, cultivated to grow crops. Weeds have now taken this spot of\nland for their own, claiming the place that once belonged to more civilised\nplants. Some of these weeds are probably descendants of the plants that were\ngrown here by people: there is one that looks distinctly like corn but has\nthorns on its stem and is of an unpleasant brownish hue.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4155"
+                ],
+                "name": "",
+                "out": [
+                    "4155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4217"
+                ],
+                "name": "",
+                "out": [
+                    "4217"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4219"
+                ],
+                "name": "",
+                "out": [
+                    "4219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4218",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Grassland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 331,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "This village had probably been destroyed in a war and abandoned ever since. No\nbuilding has survived the centuries of desolation, and you can only see where\nthe houses and streets had been by noticing where the ground rises or falls\nslightly, or where the vegetation changes in type or in colour. One can only\nwonder whether a great city fallen and abandoned would leave more traces in the\nlandscape, and whether its ruins would take much longer to overgrow than the\nruins of a small village.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4248"
+                ],
+                "name": "",
+                "out": [
+                    "4248"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4218"
+                ],
+                "name": "",
+                "out": [
+                    "4218"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4220"
+                ],
+                "name": "",
+                "out": [
+                    "4220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4219",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruins of a Village",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 330,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "This had been a village once, but it was so long ago that all one can see is\nwhere the buildings had been. This uneven square, slightly rising over the\nground and completely covered with weeds, must have been one building; that\nrectangle must have been the other, and this uneven shape might have been a\ncross-like base of a temple. This patch might have once been a main road or a\nsquare because it continues the overgrown road that entered the village to the\nnorth, and this one might have been a major street because it is covered by a\ncarpet of the same heather-like plant as the main road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4247"
+                ],
+                "name": "",
+                "out": [
+                    "4247"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4219"
+                ],
+                "name": "",
+                "out": [
+                    "4219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4221"
+                ],
+                "name": "",
+                "out": [
+                    "4221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4220",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruins of a Village",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 329,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Weeds of all sizes, shapes and colours grow here. To the west of you an ancient\ncemetery lies behind a low wall. The wall is not more than two feet high and\nseems to be purely decorative, yet it seems to have done its part in keeping the\nweeds out of the cemetery and not letting it overgrow completely.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4246"
+                ],
+                "name": "",
+                "out": [
+                    "4246"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4220"
+                ],
+                "name": "",
+                "out": [
+                    "4220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4222"
+                ],
+                "name": "",
+                "out": [
+                    "4222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4221",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "East of a Cemetery",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 328,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Hundreds and hundreds of tombstones rise from the ground at this abandoned\ncemetery, protected only by a low wall and open to the sky and to the wind. All\nthe tombstones here are blank, marked by no inscription or symbol. Whatever has\nleft these graves unnamed - necessity, accident or design - there is nothing\nhere to tell you what had happened, when or why.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4245"
+                ],
+                "name": "",
+                "out": [
+                    "4245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4221"
+                ],
+                "name": "",
+                "out": [
+                    "4221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4223"
+                ],
+                "name": "",
+                "out": [
+                    "4223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4222",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forgotten Cemetery",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 327,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The weeds are not so thick here, and in places there are even patches of\nordinary green grass. To the east you can see a cemetery behind a low wall. The\nwall is about one and a half feet high, obviously built to mark the borders of\nthe cemetery, but not to keep anyone out of it. The stones of the wall are\ncovered with moss and climbing flowers, little white and lilac bells with black\nedges like black ribbons worn in mourning.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4244"
+                ],
+                "name": "",
+                "out": [
+                    "4244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4222"
+                ],
+                "name": "",
+                "out": [
+                    "4222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4224"
+                ],
+                "name": "",
+                "out": [
+                    "4224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4223",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Grassland by a Cemetery Wall",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 326,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The grassland rises slightly to the west, ascending the slope of a low hill.\nSomething seems to have stopped the ubiquitous weeds half-way through the\nascent, and only the plain green grass and a couple of field flowers made their\nway to the top, where a few white birches proudly rise, crowning the level\nslope.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4243"
+                ],
+                "name": "",
+                "out": [
+                    "4243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4223"
+                ],
+                "name": "",
+                "out": [
+                    "4223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4225"
+                ],
+                "name": "",
+                "out": [
+                    "4225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4224",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Grassland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 325,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Tall white birches rise all around, an unexpected bright patch in the sombre\nlandscape where all hills and forests are dark or black, most grasses are grey,\nand the sky seems to be bleak even on the sunny days. Somebody might have\nplanted these birches here for some reason, or else they might be one of the few\nthings still remaining from those long forgotten days when these lands had a\nbrighter appearance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4242"
+                ],
+                "name": "",
+                "out": [
+                    "4242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4224"
+                ],
+                "name": "",
+                "out": [
+                    "4224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4226"
+                ],
+                "name": "",
+                "out": [
+                    "4226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4225",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Clump of Birches",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 324,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "A patch of white attracts the gaze to the east, where a clump of birches rises\non the top of a low hill. By contrast, the forest to your north seems as dark as\nif somebody had painted its trees black. Nature seems to have been reluctant to\nallow such a sharp change of colour from black to white, and so it painted this\npatch of land between the two patches of forest grey with a few occasional spots\nof green.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4241"
+                ],
+                "name": "",
+                "out": [
+                    "4241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4225"
+                ],
+                "name": "",
+                "out": [
+                    "4225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4227"
+                ],
+                "name": "",
+                "out": [
+                    "4227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4226",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 323,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "To the east and south the forest gradually thins and finally succumbs to\ngrass-covered plains. In the other directions the forest is still dark, dense\nand brooding. Tracks of small animals can be seen here and there on the ground,\nbut it is hard to discern what type of animals made them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4240"
+                ],
+                "name": "",
+                "out": [
+                    "4240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4226"
+                ],
+                "name": "",
+                "out": [
+                    "4226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4228"
+                ],
+                "name": "",
+                "out": [
+                    "4228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4227",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 322,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Baleful primal trees of unholy size, age, and grotesqueness leer above you like\npillars of a temple. This is the edge of the forest and the trees have thinned.\nGrey fields take over to the west and to the far north a large river flows down\nfrom the Ettendales.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4239"
+                ],
+                "name": "",
+                "out": [
+                    "4239"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4227"
+                ],
+                "name": "",
+                "out": [
+                    "4227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4229"
+                ],
+                "name": "",
+                "out": [
+                    "4229"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4228",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of a Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 321,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Bleak and grey plains stretch all the way to the southern horizon. The land here\nlooks rocky and vegetation is sparse. A dark forest with large twisted trees\ngrows to the east; at the border it looks thin, but further in it becomes almost\nimpenetrable. To the north-west lies the remains of old wheat fields, but no one\nseems to have cultivated them for many years and now most of the top soil has\nblown away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4238"
+                ],
+                "name": "",
+                "out": [
+                    "4238"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4228"
+                ],
+                "name": "",
+                "out": [
+                    "4228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4230"
+                ],
+                "name": "",
+                "out": [
+                    "4230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4229",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 320,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "This is the southeastern corner of what once was a large cultivated area. To the\neast of here lies a large and dense forest, while to the south a rocky and bleak\nlandscape takes over. However, to the far northwest distant mountains can be\nseen on a clear day. A low pile of rocks, which was once a fence marking the\nedge of a wheat field, hinders movement to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4254"
+                ],
+                "name": "",
+                "out": [
+                    "4254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4229"
+                ],
+                "name": "",
+                "out": [
+                    "4229"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4239"
+                ],
+                "name": "",
+                "out": [
+                    "4239"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4237"
+                ],
+                "name": "",
+                "out": [
+                    "4237"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4238",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of the Fields",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 320,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The huge trees that inhabit this dark and brooding forest stand all about you,\nthough they become more densely packed towards the east. While it is possible to\nlocate a grey field beyond the forest to the west, the branches make it hard to\ndistinguish many details. Several roots near the surface of the soft soil makes\nwalking across the forest somewhat hazardous.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4253"
+                ],
+                "name": "",
+                "out": [
+                    "4253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4228"
+                ],
+                "name": "",
+                "out": [
+                    "4228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4240"
+                ],
+                "name": "",
+                "out": [
+                    "4240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4238"
+                ],
+                "name": "",
+                "out": [
+                    "4238"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4239",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Edge of a Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 321,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "This is the centre of a dark and brooding forest that bears an aspect more than\nunusually sinister. Ancient lightning-scarred trees seem unnaturally large and\ntwisted, while the other vegetation is unnaturally thick and feverish. Of wild\ncreatures there are none.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4252"
+                ],
+                "name": "",
+                "out": [
+                    "4252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4227"
+                ],
+                "name": "",
+                "out": [
+                    "4227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4241"
+                ],
+                "name": "",
+                "out": [
+                    "4241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4239"
+                ],
+                "name": "",
+                "out": [
+                    "4239"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4240",
+        "light": 1,
+        "loadflags": 1048576,
+        "mobflags": 0,
+        "name": "Centre of a Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 322,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Lightning seems to have struck the black trees of the forest here and there,\nfalling this tree, scarring that one, burning a spot on the ground here,\nsplitting a tree-stump there. The trees here are older than those to the north,\nand some of them seem to be dry, but as their black leaves do not change colour\nand do not fall off when they dry, one can barely tell the dead trees from the\nliving ones.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4251"
+                ],
+                "name": "",
+                "out": [
+                    "4251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4226"
+                ],
+                "name": "",
+                "out": [
+                    "4226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4242"
+                ],
+                "name": "",
+                "out": [
+                    "4242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4240"
+                ],
+                "name": "",
+                "out": [
+                    "4240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4241",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 323,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The forest ends sharply to the east, the few remaining trees scattered as if\nretreating in haste. Just a few steps to the south of the last black tree some\nwhite birches stand with such a proud look, as if they were an army that was set\nthere to beat back the unfriendly black forest and proved victorious in the\ntask.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4250"
+                ],
+                "name": "",
+                "out": [
+                    "4250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4225"
+                ],
+                "name": "",
+                "out": [
+                    "4225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4243"
+                ],
+                "name": "",
+                "out": [
+                    "4243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4241"
+                ],
+                "name": "",
+                "out": [
+                    "4241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4242",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of the Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 324,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The burial mound on the forest border is covered with green grass. Upon its\nwestern side the grass is white as with a drifted snow: small flowers spring\nhere like countless stars amid the turf. Whoever rests in this green mound must\nrest in peace now, for time treats the dead better than the living, and the\nhouses of the dead better than the houses of the living. Time erases towers,\ntemples, cities and villages, yet keeps intact a mound, a grave, a crypt, a\ncemetery.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4249"
+                ],
+                "name": "",
+                "out": [
+                    "4249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4224"
+                ],
+                "name": "",
+                "out": [
+                    "4224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4244"
+                ],
+                "name": "",
+                "out": [
+                    "4244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4242"
+                ],
+                "name": "",
+                "out": [
+                    "4242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4243",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Grassy Mound",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 325,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Rocks have been set in the ground at regular intervals, indicating that this\ncompletely overgrown patch of land had once been of use to people. Centuries ago\nthe last people abandoned this land, letting it rest, and centuries might pass\ntill they return here and till somebody again turns this patch of grassland into\na field or a pasture.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4149"
+                ],
+                "name": "",
+                "out": [
+                    "4149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4223"
+                ],
+                "name": "",
+                "out": [
+                    "4223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4245"
+                ],
+                "name": "",
+                "out": [
+                    "4245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4243"
+                ],
+                "name": "",
+                "out": [
+                    "4243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4244",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Grassland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 326,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "A tall arch, made of plain grey stone, rises here, marking the entrance to the\ncemetery that lies behind a low mossy wall. No inscription marks the arch, but a\nstrange sign is engraved on the top: a square with chipped corners, divided into\nfour parts. A few climbing plants have set root by the base of the arch and made\ntheir way up the arch; their bell-like flowers are white or lilac with a black\nborder.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4150"
+                ],
+                "name": "",
+                "out": [
+                    "4150"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4222"
+                ],
+                "name": "",
+                "out": [
+                    "4222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4246"
+                ],
+                "name": "",
+                "out": [
+                    "4246"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4244"
+                ],
+                "name": "",
+                "out": [
+                    "4244"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4245",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Stone Arch",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 327,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The ground is very even here, as if this was once a cultivated field. The soil\nis moist, dark in colour and probably quite fertile, but nothing except weeds\ngrows here now. The weeds grow very thickly, making it hard to move. At some\ndistance to the north you can see the Old East Road running at the foot of a\nridge of hills, their dark heads sharply outlined across the sky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4151"
+                ],
+                "name": "",
+                "out": [
+                    "4151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4221"
+                ],
+                "name": "",
+                "out": [
+                    "4221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4247"
+                ],
+                "name": "",
+                "out": [
+                    "4247"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4245"
+                ],
+                "name": "",
+                "out": [
+                    "4245"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4246",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Grassland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 328,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Once this must have been a fairly wide and well-used road. But the only way to\nnotice that it was here before at all is by looking at the vegetation on the\nground. Around the road the land is completely overgrown by thick and thorny\nweeds, whereas the road itself is covered by a carpet of some plants, which\nwould seem to be heather if most of their flowers were not white.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4152"
+                ],
+                "name": "",
+                "out": [
+                    "4152"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4220"
+                ],
+                "name": "",
+                "out": [
+                    "4220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4248"
+                ],
+                "name": "",
+                "out": [
+                    "4248"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4246"
+                ],
+                "name": "",
+                "out": [
+                    "4246"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4247",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Overgrown Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 329,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "A silvery-grey, bitter-smelling sea of wormwood sways around you, a new wave\npassing through it with every gust of the wind. To the northeast the Old East\nRoad passes through the terrain. To the west and the south the grassland changes\ncolour, as the wormwood blends with the other weeds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4153"
+                ],
+                "name": "",
+                "out": [
+                    "4153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4219"
+                ],
+                "name": "",
+                "out": [
+                    "4219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4155"
+                ],
+                "name": "",
+                "out": [
+                    "4155"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4247"
+                ],
+                "name": "",
+                "out": [
+                    "4247"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4248",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Overgrown Grassland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 330,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "As the trees to the north grow thinner, the stream becomes quicker and noisier,\nas if it was eager to get out of the cheerless forest. For a while the stream\nfollows the curves of the forest ground, then rushes down from a steep bank,\nslows down to a trickle on a level slope and so reaches the border of the forest\nand the Old East Road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4147"
+                ],
+                "name": "",
+                "out": [
+                    "4147"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4243"
+                ],
+                "name": "",
+                "out": [
+                    "4243"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4149"
+                ],
+                "name": "",
+                "out": [
+                    "4149"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4250"
+                ],
+                "name": "",
+                "out": [
+                    "4250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4249",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "A Small Forest Stream",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 325,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Stumbling at the roots of the trees, fallen branches and rocks in the forest\nsoil, a small stream makes its way through the dark forest. The trees around the\nstream are so still as if they were listening to the sound of flowing water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4271"
+                ],
+                "name": "",
+                "out": [
+                    "4271"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4242"
+                ],
+                "name": "",
+                "out": [
+                    "4242"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4249"
+                ],
+                "name": "",
+                "out": [
+                    "4249"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4251"
+                ],
+                "name": "",
+                "out": [
+                    "4251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4250",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "A Stream in the Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 324,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "No oaks, beeches, or other cheerful green trees of sunlit lands grow in this\nforest. Unfamiliar dark trees reach to the sky, their bark almost black, and\ntheir black branches and foliage covering the sky in such an intricate pattern,\nas if somebody cut it out of black paper or wrought out of black metal and then\nglued to the sky or nailed to the tree-tops.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4270"
+                ],
+                "name": "",
+                "out": [
+                    "4270"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4241"
+                ],
+                "name": "",
+                "out": [
+                    "4241"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4250"
+                ],
+                "name": "",
+                "out": [
+                    "4250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4252"
+                ],
+                "name": "",
+                "out": [
+                    "4252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4251",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 323,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "While the dark forest has begun to thin it is still very dense, dark and\ndifficult to traverse. A small clearing has been created here when a tall lonely\ntree was destroyed by lightning. The bones and chewed corpses of several small\nmammals lie partly buried in the weedy, fulgurite-pitted earth, so apparently\nsome kind of predator roams these woods.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4269"
+                ],
+                "name": "",
+                "out": [
+                    "4269"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4240"
+                ],
+                "name": "",
+                "out": [
+                    "4240"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4251"
+                ],
+                "name": "",
+                "out": [
+                    "4251"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4253"
+                ],
+                "name": "",
+                "out": [
+                    "4253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4252",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Dark Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 322,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "These are the outskirts of ancient farmlands. These lands were most likely\nabandoned when war resulted in the removal of the North Kingdom. The soil here\nwas once very fertile but now most of it has blown away leaving a thin layer\nthat contains a grey and unhealthy look. The old farmlands spread out for many\nmiles towards the south-west and finally ends at the edge of a narrow valley\nthat is bounded by the flow of the river Mitheithel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4268"
+                ],
+                "name": "",
+                "out": [
+                    "4268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4239"
+                ],
+                "name": "",
+                "out": [
+                    "4239"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4252"
+                ],
+                "name": "",
+                "out": [
+                    "4252"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4254"
+                ],
+                "name": "",
+                "out": [
+                    "4254"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4253",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Farmland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 321,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "This is the centre of what was once a farm's huge field capable of growing\nenough grain to feed a large population. That population disappeared when the\nkingdom of Rhudaur was first absorbed by its larger neighbours and later\ndestroyed by them. Some strands of wheat still grow around here, but mostly the\nvegetation consists of various types of weeds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4267"
+                ],
+                "name": "",
+                "out": [
+                    "4267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4238"
+                ],
+                "name": "",
+                "out": [
+                    "4238"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4253"
+                ],
+                "name": "",
+                "out": [
+                    "4253"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4255"
+                ],
+                "name": "",
+                "out": [
+                    "4255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4254",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Farmland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 320,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "To the south the remains of a rather large building that once stood two stories\nhigh can be found. An old sign in a rusty doorplate is still legible. Around the\nruins, ancient oak trees that are several feet in diameter still grow, though\none of them has been uprooted and is leaning against the remainder of a three\nfeet tall wall. West from here is a smaller building that once served as a\nstable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4052"
+                ],
+                "name": "",
+                "out": [
+                    "4052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4260"
+                ],
+                "name": "",
+                "out": [
+                    "4260"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "4262"
+                ],
+                "name": "",
+                "out": [
+                    "4262"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4261"
+                ],
+                "name": "",
+                "out": [
+                    "4261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4259",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path to the Inn",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 320,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "This was once the Last Inn. Now all that remains are the stone walls, a roof and\na pile of rubble. In the centre of the old common room someone has cleared the\narea by removing the debris and has then used some of this waste to form a crude\ncircular fireplace. Other than the remains of a recent fire, there are no signs\nof recent habitation at the inn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4259"
+                ],
+                "name": "",
+                "out": [
+                    "4259"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4260",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Inn at the Last Bridge",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 320,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "This building used to be a smithy, but a fire raged here some time ago and since\nthen the building has remained a hollowed ruin for the stones in the walls\ncrumbled and cracked under the intense heat of the fire. On the blackened floor\nthere are some small puddles of metal left over from the days when this building\nwas used by the blacksmith. A door which opens in the western wall leads out\ntowards the small path.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "4259"
+                ],
+                "name": "",
+                "out": [
+                    "4259"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4262",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Decaying Smithy",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 321,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "The canyon floor slopes heavily downwards to the north, and upwards to the east\n-- towards the rocky hills. North of here the canyon seems to bend to the east,\nfar away. The canyon floor is covered by rubble and earth, and some tiny and\ntwisted plants grow here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4358"
+                ],
+                "name": "",
+                "out": [
+                    "4358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4389"
+                ],
+                "name": "",
+                "out": [
+                    "4389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4359",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Canyon",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 336,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Tall and steep these hills rise high above the Old East Road to the south. East\nof here a very deep and narrow canyon splits the hills apart, and it seems to be\nimpossible to get to the bottom without risking life and limb. To the west\nhowever, quiet plains slope from the north down towards the road. North of here\npatches of trees form a forest, which grows thicker in that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4360"
+                ],
+                "name": "",
+                "out": [
+                    "4360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4362"
+                ],
+                "name": "",
+                "out": [
+                    "4362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4366"
+                ],
+                "name": "",
+                "out": [
+                    "4366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4361",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Hills",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 335,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The road is still rather level even though the terrain on both sides is quite\nrugged. This is due entirely to the presence of a notch cut through the hills\nlike a dagger-wound. Whether this is a natural phenomena or the remnant of some\nancient construction project cannot be determined, but travelers certainly\nbenefit from its existence.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4361"
+                ],
+                "name": "",
+                "out": [
+                    "4361"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4418"
+                ],
+                "name": "",
+                "out": [
+                    "4418"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4363"
+                ],
+                "name": "",
+                "out": [
+                    "4363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4364"
+                ],
+                "name": "",
+                "out": [
+                    "4364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4362",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 335,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "A very steep ridge running from southwest to northeast meets the road here, but\nthe road passes through a narrow cleft and manages to stay almost level. If this\ncleft is artificial, it was excavated centuries ago because the walls are well\neroded.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4419"
+                ],
+                "name": "",
+                "out": [
+                    "4419"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4386"
+                ],
+                "name": "",
+                "out": [
+                    "4386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4362"
+                ],
+                "name": "",
+                "out": [
+                    "4362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4363",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 336,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The road winds through an area of hills to the south and a plain sloping upwards\nto the north. East and west of here the road continues. To the north-east, a\nremarkably tall and steep hill can be seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4366"
+                ],
+                "name": "",
+                "out": [
+                    "4366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4417"
+                ],
+                "name": "",
+                "out": [
+                    "4417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4362"
+                ],
+                "name": "",
+                "out": [
+                    "4362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4365"
+                ],
+                "name": "",
+                "out": [
+                    "4365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4364",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 334,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The road passes through a region of small hillocks, which grow larger as one\nmoves to the east. The surrounding countryside supports a few sparse patches of\nforest, but for the most part the land is grassy. To the east, some of the\nlarger hills begin to support some forested areas.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4369"
+                ],
+                "name": "",
+                "out": [
+                    "4369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4416"
+                ],
+                "name": "",
+                "out": [
+                    "4416"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4364"
+                ],
+                "name": "",
+                "out": [
+                    "4364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4216"
+                ],
+                "name": "",
+                "out": [
+                    "4216"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4365",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 333,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Flat plains, with only a few shrubberies and even fewer flowers slope down to\nthe south, where the Old East Road stretches from east to west. East of here\nsteep, dangerous-looking hills stab at the sky, and far to the north the edges\nof a vast forest can be seen where the plains end. A small and somewhat\ndemolished mound, overgrown with thorny bushes and grass stands here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4367"
+                ],
+                "name": "",
+                "out": [
+                    "4367"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4364"
+                ],
+                "name": "",
+                "out": [
+                    "4364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4361"
+                ],
+                "name": "",
+                "out": [
+                    "4361"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4369"
+                ],
+                "name": "",
+                "out": [
+                    "4369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4366",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 334,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The plains slope down from the north towards the Old East Road, south of here.\nHeather plants grow beside the road, and boulders of different sizes are spread\nout all over the slopes. Embedded in the grass are wooden splinters from what\nmust have been several wagons many years ago. Far north of here, the border of a\nforest is visible.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4368"
+                ],
+                "name": "",
+                "out": [
+                    "4368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4365"
+                ],
+                "name": "",
+                "out": [
+                    "4365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4366"
+                ],
+                "name": "",
+                "out": [
+                    "4366"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4215"
+                ],
+                "name": "",
+                "out": [
+                    "4215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4369",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Heathery Slope",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 333,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "On the south side of the road, a rich forest spreads out. East of here the road\ndigs deeper into the hills, but to the west the ground flattens some. To the\nnorth, rugged hills make it impossible to leave the road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4422"
+                ],
+                "name": "",
+                "out": [
+                    "4422"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4383"
+                ],
+                "name": "",
+                "out": [
+                    "4383"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4385"
+                ],
+                "name": "",
+                "out": [
+                    "4385"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4384",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 339,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "To the north, a set of extremely rugged hills prevents one from leaving the\nroad, as the ground quickly deteriorated into eroded gullies choked with\nundergrowth. South of the road the hills aren't nearly as severe, and the\npockets of forest are full of game.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4421"
+                ],
+                "name": "",
+                "out": [
+                    "4421"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4384"
+                ],
+                "name": "",
+                "out": [
+                    "4384"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4386"
+                ],
+                "name": "",
+                "out": [
+                    "4386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4385",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 338,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "To the north, many rugged hills present a formidable challenge to anyone\ntraveling off of the road. The hills are gentler to the south, but there is\nquite a lot of vegetation. To the west, a very steep (but narrow) ridge cuts\nacross the road at an angle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4389"
+                ],
+                "name": "",
+                "out": [
+                    "4389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4420"
+                ],
+                "name": "",
+                "out": [
+                    "4420"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4385"
+                ],
+                "name": "",
+                "out": [
+                    "4385"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "4363"
+                ],
+                "name": "",
+                "out": [
+                    "4363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4386",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old East Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 337,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "All earth on the eastern side of this hill has eroded away, leaving a clean and\nsheer rockface. Beyond the rockface a range of smaller and not as rugged hills\ncover the landscape. The Old East Road lies south of here, but to get there one\nwould have to go far west before it is possible to climb down from the tall\nhills. To the north, more hills lie scattered over the land.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4396"
+                ],
+                "name": "",
+                "out": [
+                    "4396"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4388"
+                ],
+                "name": "",
+                "out": [
+                    "4388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4387",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tall, Steep Hill",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 339,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "On top of this rugged hill, a clump of trees provides a natural wind-shelter as\nit surrounds a small dip in the hill-crown. To the south a majestic view of the\nOld East Road opens up, but climbing down the steep and rubble-covered hillside\nwould be impossible. The hills slopes down to a number of smaller rocky hills to\nthe west, but east of here another hill stands as tall and steep. Some smaller,\nsmoother hills stand to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4397"
+                ],
+                "name": "",
+                "out": [
+                    "4397"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4387"
+                ],
+                "name": "",
+                "out": [
+                    "4387"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4389"
+                ],
+                "name": "",
+                "out": [
+                    "4389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4388",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tall, Steep Hill",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 338,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "This area is covered with rocky hills and small hillocks between them. On the\nground boulders, rocks and rubble makes travel hard. Strong-looking young\nspruces form small clumps on the tops of some of the hills. To the south the Old\nEast Road stretches from east to west, and west of here the hills slopes\ndownwards into a very narrow crevice-like canyon. East of here the hills grow\ntaller, and there is no way of seeing past them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4386"
+                ],
+                "name": "",
+                "out": [
+                    "4386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4388"
+                ],
+                "name": "",
+                "out": [
+                    "4388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4359"
+                ],
+                "name": "",
+                "out": [
+                    "4359"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4389",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rocky Hills",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 337,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The landscape here is composed of many small hillocks. Their rounded tops are\noften completely free of vegetation, but in the shallow depressions between\nthere are often small stand of trees. The Old East Road lies north of here, and\nsome hills stand to the east. West of here a flat, grassy area resides.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4365"
+                ],
+                "name": "",
+                "out": [
+                    "4365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4417"
+                ],
+                "name": "",
+                "out": [
+                    "4417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4217"
+                ],
+                "name": "",
+                "out": [
+                    "4217"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4416",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Light Forest",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 333,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The ground is a bit rougher here than to the west, and hills begin to dominate\nthe landscape. To the north, the ground becomes much gentler and glimpses of the\nOld East Road are visible from the northernmost of the hills. The range of hills\ncontinues to the northeast --- the road passes through a notch in the hills, so\na traveler would not have an arduous journey through the region, provided he\nstays on the road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4364"
+                ],
+                "name": "",
+                "out": [
+                    "4364"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4418"
+                ],
+                "name": "",
+                "out": [
+                    "4418"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4416"
+                ],
+                "name": "",
+                "out": [
+                    "4416"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4417",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rugged Hills",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 334,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Right to the north, the Old East Road runs through a notch in this range of\nrugged hills. Travel is treacherous, as often steep slopes are hidden beneath\nthick brush, and in the vales between the hills the trees grow close and\ntangled.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4362"
+                ],
+                "name": "",
+                "out": [
+                    "4362"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4417"
+                ],
+                "name": "",
+                "out": [
+                    "4417"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4418",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rugged Hills",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 335,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Immediately to the west, a tall and razor-like ridge precludes any movement in\nthat direction. The ridge ends abruptly a short distance to the north; it almost\nlooks as if it has been sliced to allow passage for the road which lies a short\ndistance away. In general, the terrain here is hills, broken by occasional\npatches of dense forest. The forests seem to dominate more in the northern\nareas.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4363"
+                ],
+                "name": "",
+                "out": [
+                    "4363"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4420"
+                ],
+                "name": "",
+                "out": [
+                    "4420"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4419",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "East of a Ridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 336,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The hills here are fairly rugged. From the crests of the taller ones, the brown\nribbon of the Old East Road can be seen a few miles to the north. Some of the\nlower hills are covered with pine and spruce, and in the shaded dells, tangled\nmasses of rhododendrons make movement a chore.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4386"
+                ],
+                "name": "",
+                "out": [
+                    "4386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4421"
+                ],
+                "name": "",
+                "out": [
+                    "4421"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4419"
+                ],
+                "name": "",
+                "out": [
+                    "4419"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4420",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forested Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 337,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The lower-lying areas in the region are generally havens for small patches of\nforest, while the tops of the hills (some with slopes quite severe) stick out\nabove the trees like rocks from the sea. The terrain seems much the same in\nevery direction, but to the north the Old East Road is visible from vantage\npoints on top of the hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4385"
+                ],
+                "name": "",
+                "out": [
+                    "4385"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4422"
+                ],
+                "name": "",
+                "out": [
+                    "4422"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4420"
+                ],
+                "name": "",
+                "out": [
+                    "4420"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4421",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forested Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 338,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "To the east, the forest abruptly ends in a large clearing. The ground is fairly\nhilly, and in the small dales between hillcrests the forest is quite thick.\nSmall game-trails crisscross the area, and the calling of ravens is heard quite\noften. To the north, at the bottom of a slope, the Old East Road can be espied.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4384"
+                ],
+                "name": "",
+                "out": [
+                    "4384"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4423"
+                ],
+                "name": "",
+                "out": [
+                    "4423"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "4421"
+                ],
+                "name": "",
+                "out": [
+                    "4421"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "4422",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forest among the Hills",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 1,
+        "x": 339,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this cave are jagged and cracked, as if somebody would have created\nwith open space in the hill with sheer force. The granite is dark grey and\nspotted with dried blood-stains. The floor is rocky here, tiny streams of water\ntrickle between the small rocks to the lower eastern cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25978"
+                ],
+                "name": "",
+                "out": [
+                    "25978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "5387",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Trolls' Treasure Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 338,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "A large stone door is set into the eastern wall of this blackened cave. Marks of\ncharcoal and dried blood can be seen on the walls and floor. A round opening to\nthe north leads to a downwards sloping tunnel. A sharp, strong smell makes the\natmosphere thick in here. A stonedoor is set in the eastern wall, and high above\nit a large, dark hole leads into the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25978"
+                ],
+                "name": "",
+                "out": [
+                    "25978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "5388"
+                ],
+                "name": "",
+                "out": [
+                    "5388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19410",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to a Dreadful Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 339,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "To the west a quite large rock blocks passage into the cave beyond, and an even\nlarger boulder is used as barricade to the south. Here the rock walls and\nceiling are dark red-brown, smooth and sooted. The earthen floor is too hard for\nanything to leave tracks. To the east the cave continues.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "19410"
+                ],
+                "name": "",
+                "out": [
+                    "19410"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "5386"
+                ],
+                "name": "",
+                "out": [
+                    "5386"
+                ]
+            },
+            {
+                "dflags": 33,
+                "flags": 3,
+                "in": [
+                    "5387"
+                ],
+                "name": "rock",
+                "out": [
+                    "5387"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25978",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 65536,
+        "name": "Dreadful Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 339,
+        "y": 84,
+        "z": 0
+    }
+]

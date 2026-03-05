@@ -1,0 +1,2777 @@
+[
+    {
+        "desc": "This once was a place filled with people. Now, only a withered well standing in\nthe middle of the square is left from those days. Looking west, you see the\nlarge gate to the citadel, with its towers stretching into the sky. A road\nleaves the square to the east, taking you downhill.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3104"
+                ],
+                "name": "",
+                "out": [
+                    "3104"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3107"
+                ],
+                "name": "",
+                "out": [
+                    "3107"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3105",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Square at the Castle",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 199,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "Crumbling stone walls are the only remnants of a large house - once the home of\nthe hundred soldiers that once was the Royal Guard of Arthedain. The roof has\nfallen in, and you see no traces of any living beings. You shiver as you look\naround and see the piles of human bones that reminds of the horrible slaughter\nthat once took place within these walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3103"
+                ],
+                "name": "",
+                "out": [
+                    "3103"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3106",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Old Barracks",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 199,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "A small room lies here, just behind the gate of the castles' main building. You\ncan go back outside to the east or up a wide stone stair to the west. Stretching\nover twenty yards from the north to the south, this is truly a hallway worthy of\na king.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3105"
+                ],
+                "name": "",
+                "out": [
+                    "3105"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3108"
+                ],
+                "name": "",
+                "out": [
+                    "3108"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3107",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Behind the Gate",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 198,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "You have entered the impressive halls of the old kings. Once, great feasts were\nheld here, but now, there is nothing that seems joyous about it. Where once\ngreat chandeliers lit the halls, tables now lie broken on the floor. The hall\ncontinues to the north and the west. A wide staircase leads down to the east, to\nthe gate of the citadel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3109"
+                ],
+                "name": "",
+                "out": [
+                    "3109"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3110"
+                ],
+                "name": "",
+                "out": [
+                    "3110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3107"
+                ],
+                "name": "",
+                "out": [
+                    "3107"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3108",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Great Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 197,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "This is the north east part of the large hall. There are piles of dust and old\ncobwebs on the floor, and you feel very small as you walk through the dark halls\nof the Arthedain kings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3108"
+                ],
+                "name": "",
+                "out": [
+                    "3108"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25892"
+                ],
+                "name": "",
+                "out": [
+                    "25892"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3109",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Great Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 197,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "The south west corner of the hall lies in complete darkness, but you can make\nout some kind of tunnel or passage leading south of here. It certainly doesn't\nlook very inviting. A broken stone table lies on the floor, covered with ugly\nmarks made by foul orcs long ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25892"
+                ],
+                "name": "",
+                "out": [
+                    "25892"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3111"
+                ],
+                "name": "",
+                "out": [
+                    "3111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3108"
+                ],
+                "name": "",
+                "out": [
+                    "3108"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3110",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Great Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 13,
+        "z": 0
+    },
+    {
+        "desc": "Darkness surrounds you as you try to make your way south through the passage.\nYour flickering light is not strong enough to give any signs of what awaits you\nin the pitch black tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3110"
+                ],
+                "name": "",
+                "out": [
+                    "3110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3115"
+                ],
+                "name": "",
+                "out": [
+                    "3115"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3111",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Dark Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "This room really gives you the creeps. The dungeons hidden way down in the\nground below the citadel above haven't been used by living beings in nearly a\nthousand years. Rusted chains are fastened to the walls and in them, skeletons\nof tortured men still hang - the result from the cruelty of the horrid orcs that\novertook Fornost in the year of 1974.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3113"
+                ],
+                "name": "",
+                "out": [
+                    "3113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3112",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "In a Prison Cell",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 197,
+        "y": 14,
+        "z": 0
+    },
+    {
+        "desc": "You have now entered what seems to be the dungeons of the old castle. There are\nremains of since long dead prisoners, left to die in here by the foul orcs in a\nforgotten past. Metal doors are to the south and the north, and to the east the\ncorridor leads into a small room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3112"
+                ],
+                "name": "",
+                "out": [
+                    "3112"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3126"
+                ],
+                "name": "",
+                "out": [
+                    "3126"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3114"
+                ],
+                "name": "",
+                "out": [
+                    "3114"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3115"
+                ],
+                "name": "",
+                "out": [
+                    "3115"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3113",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Dungeons",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 197,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "Once, the prison keeper lived in this square chamber. Strange and abhorrent\ntorturing tools lie rusting and withering on a bench. In one corner you see\ncharred bits of a wooden bed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3113"
+                ],
+                "name": "",
+                "out": [
+                    "3113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3114",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Prison Keeper's Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 198,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "A small stone stair reaches down from the dark tunnel above and ends in this\nmoist cellar. The air is very heavy to breathe, and you have much trouble trying\nto find your way through the small passages.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3118"
+                ],
+                "name": "",
+                "out": [
+                    "3118"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3113"
+                ],
+                "name": "",
+                "out": [
+                    "3113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3116"
+                ],
+                "name": "",
+                "out": [
+                    "3116"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3111"
+                ],
+                "name": "",
+                "out": [
+                    "3111"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3115",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "In the Damp Cellar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "This old cellar was obviously razed in the raging battles that once took place\nin the castle. The north and west walls lie in a pile of rubble, the south wall\nstill stands, and you can go back to the rest of the cellar to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3115"
+                ],
+                "name": "",
+                "out": [
+                    "3115"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3116",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Damp Cellar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 195,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "The air is getting heavier and heavier to breathe. It is very moist, and you\nfeel your clothes clinging to your body as you carefully move around in the old\ncellar. In the flickering light of your lantern, you see no other way out, but\nback to the east. A sudden gust of air makes you aware of a terrible stench\ncoming from somewhere in the darkness that surrounds you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3118"
+                ],
+                "name": "",
+                "out": [
+                    "3118"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3119"
+                ],
+                "name": "floorstone",
+                "out": [
+                    "3119"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3117",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Damp Cellar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 195,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "Dark rock walls surround you, as you walk around in the cellar. The rooms are\ncut directly out of the high hill that the castle stands upon. However, from the\nperfectly smooth walls, you can easily tell that these cellars were made by\nskilled Dunedain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3115"
+                ],
+                "name": "",
+                "out": [
+                    "3115"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3117"
+                ],
+                "name": "",
+                "out": [
+                    "3117"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3118",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Damp Cellar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "The stench in here is barely bearable. You find yourself standing on the\nbeginning of some kind of marble quay that leads out in a pool with black, oily\nwater.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3120"
+                ],
+                "name": "",
+                "out": [
+                    "3120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3117"
+                ],
+                "name": "stoneslab",
+                "out": [
+                    "3117"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3119",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By the Stinking Pool",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 195,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "This is the end of the quay. To the east, the underground pool stretches into\nthe darkness. Watching the water carefully, you see that small ripples keep\ncoming in against the stones. Silently, you wonder what might be out there, in\nthe black water of the pool.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3119"
+                ],
+                "name": "",
+                "out": [
+                    "3119"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3121"
+                ],
+                "name": "",
+                "out": [
+                    "3121"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3120",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 4096,
+        "name": "By the Stinking Pool",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 195,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "Slowly you paddle your way through the black water. The oily surface lies\nsilent, except for slow ripples that keep coming from the centre of the pool\nsomewhere out there. You are amazed at how very how large this cave is and\nindeed, large is its inhabitant too...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3122"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3120"
+                ],
+                "name": "",
+                "out": [
+                    "3120"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3121",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 65536,
+        "name": "In the Stinking Pool",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 196,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "The water quickly rushes down the sloping tunnel, carrying you away from the\nhorrible kraken that lies dead above. What is that? Suddenly you catch a glimpse\nof something standing on a small ledge next to the stream that carries you\nforward. If you hurry, you might have time to grab it...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "3121"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3123"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3122",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "In the Quick Stream of Water",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 197,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "Terror creeps upon you as you look around in the chamber of death and violence.\nHere, many prisoners suffered a fate worse than death itself, under the\nsupervision of the skilled orkish torturers. This room is no place for someone\nof the living world...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3113"
+                ],
+                "name": "",
+                "out": [
+                    "3113"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3126",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "In a Prison Cell",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 197,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "Looking up, you see that the staircase ends here, and leads out in some kind of\nroom above you. You cannot see anything of what the room contains, but a thick\nlayer of dust tells you that no one has walked here in many, many years.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3130"
+                ],
+                "name": "",
+                "out": [
+                    "3130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3133"
+                ],
+                "name": "",
+                "out": [
+                    "3133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3127",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The End of the Winding Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 199,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "The wide staircase leads you up, into a tower in the north-west side of the\ncastle. Looking back down, you see the beginning of the great hall, but you can\nsee nothing of what lies ahead of you as you gaze into the darkness of the\nstairs to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3129"
+                ],
+                "name": "",
+                "out": [
+                    "3129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25892"
+                ],
+                "name": "",
+                "out": [
+                    "25892"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3128",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Winding Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 198,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "Still climbing upwards, progress is very hard. The staircase takes you in a\nspiral up the circular tower. You can go either down, to the north, or up to the\neast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3128"
+                ],
+                "name": "",
+                "out": [
+                    "3128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3130"
+                ],
+                "name": "",
+                "out": [
+                    "3130"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3129",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Winding Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 198,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "The stairs slowly circle their way upwards in the tower to the north and down to\nthe west. A small window in the thick stone wall lets some fresh air in here,\nand you see that the layer of dust is somewhat thinner ...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3127"
+                ],
+                "name": "",
+                "out": [
+                    "3127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3129"
+                ],
+                "name": "",
+                "out": [
+                    "3129"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3130",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Winding Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 199,
+        "y": 10,
+        "z": 0
+    },
+    {
+        "desc": "The balcony you are standing on is large and robust. It is fifty feet wide and\nreaches some ten feet from the tower wall behind you. Turning your gaze to the\nsouth, you see a forest covered area, with the Iaur Men Formen, the Old North\nRoad, reaching south, towards Bree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3132"
+                ],
+                "name": "",
+                "out": [
+                    "3132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3131",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Balcony",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 196,
+        "y": 9,
+        "z": 0
+    },
+    {
+        "desc": "You push disgusting thick cobwebs to the side and try to make your way forward\nwithout falling on any hidden objects (or treasures?) on the floor. A rusty iron\ndoor leads out onto an old balcony to the south. The dark hall continues to the\nnorth and the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3133"
+                ],
+                "name": "",
+                "out": [
+                    "3133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3131"
+                ],
+                "name": "",
+                "out": [
+                    "3131"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3135"
+                ],
+                "name": "",
+                "out": [
+                    "3135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3132",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Large Hall in the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "You have reached the north-eastern corner of the large hall. A winding staircase\ncan take you back down to the more inviting safety below you. The wind howls\naround the tower making you feel slightly frightened of entering this large\ncobweb filled room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3132"
+                ],
+                "name": "",
+                "out": [
+                    "3132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3134"
+                ],
+                "name": "",
+                "out": [
+                    "3134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3127"
+                ],
+                "name": "",
+                "out": [
+                    "3127"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3133",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Large Hall in the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "This large hall is situated about half-way up the unusually well preserved\nnorthwestern tower of the citadel. Large cobwebs hang across the walls, and in\neach corner of this long since abandoned room, and an occasional strange\ncreaking noise can be heard, as if something were crossing the uneven wooden\nfloor behind you.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3136"
+                ],
+                "name": "cobweb",
+                "out": [
+                    "3136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3135"
+                ],
+                "name": "",
+                "out": [
+                    "3135"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3133"
+                ],
+                "name": "",
+                "out": [
+                    "3133"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3134",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Large Hall in the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 195,
+        "y": 7,
+        "z": 0
+    },
+    {
+        "desc": "Cobwebs cling to everything in this room, and you feel yourself entangled by\ntheir soft silk every time you move. The sticky strands seem to be stronger than\nany normal spider's web however. Faint scuffling and an occasional louder\nclattering can be heard from somewhere in the darkness nearby.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3134"
+                ],
+                "name": "",
+                "out": [
+                    "3134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3132"
+                ],
+                "name": "",
+                "out": [
+                    "3132"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3135",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Large Hall in the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 195,
+        "y": 8,
+        "z": 0
+    },
+    {
+        "desc": "Ah! You have found a secret staircase behind the curtain. You carefully peer up\nthe stairs, but the darkness above is impenetrable by your weak eyes. A very\nthick layer of dust lies on the ground, with no traces of any being of flesh and\nblood having walked here in hundreds of years.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3134"
+                ],
+                "name": "",
+                "out": [
+                    "3134"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25893"
+                ],
+                "name": "",
+                "out": [
+                    "25893"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3136",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Secret Staircase",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 195,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "A breathtaking view lies below you, as you look over the walls that prevent you\nfrom falling down on the castle yard several hundred feet below. Looking around,\nyou see all of Arthedain stretching into the horizon. Below you, the city of\nFornost lies quietly, with the ruined western part and the rebuilt eastern part.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25893"
+                ],
+                "name": "",
+                "out": [
+                    "25893"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3137",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "The Top of the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 197,
+        "y": 6,
+        "z": 0
+    },
+    {
+        "desc": "You have reached the last room in the tower. In the middle of the room stands a\nsturdy stone pillar, with a perfect half sphere cut out of it. Recalling the old\ntales of the wise men at home, you realise that this must be the site of the\nPalantir that once was kept in Fornost Erain to communicate with the southern\nkingdom, Gondor. However, Arvedui, the last king of Arthedain, took it with him\ninto the cold depths of the icy waters of Forochel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "25893"
+                ],
+                "name": "wall",
+                "out": [
+                    "25893"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3138",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Hidden Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 5,
+        "z": 0
+    },
+    {
+        "desc": "An enormous hall stretches to the south and the east. This was once the great\nbanquet hall of the kings of Arthedain, told to have been one of the finest\nplaces ever built by men in Eriador. There is not much to remind you of its\ngreatness left. The hall lies shrouded in darkness, and the thick air makes it\nheavy to breathe. West of here, you see a small, winding staircase making its\nway up into some kind of tower.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3110"
+                ],
+                "name": "",
+                "out": [
+                    "3110"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3109"
+                ],
+                "name": "",
+                "out": [
+                    "3109"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3128"
+                ],
+                "name": "",
+                "out": [
+                    "3128"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25892",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Great Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 12,
+        "z": 0
+    },
+    {
+        "desc": "You are now in a small room very near the top of the tower. You shiver as a\nhowling sound breaks the silence, and you desperately try to convince yourself\nthat it was nothing but the wind trying to tear down the old castle. It doesn't\nlook as if there was a battle fought in this room, since it, as opposed to the\nrest of the castle, doesn't have bones and rusted weapons lying all over the\nfloor.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3138"
+                ],
+                "name": "tapestry",
+                "out": [
+                    "3138"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3137"
+                ],
+                "name": "",
+                "out": [
+                    "3137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3136"
+                ],
+                "name": "",
+                "out": [
+                    "3136"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25893",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Tower Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 196,
+        "y": 6,
+        "z": 0
+    }
+]

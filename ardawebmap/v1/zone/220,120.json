@@ -1,0 +1,930 @@
+[
+    {
+        "desc": "The tunnel splits here, with a small passage leading to the south while the main\ntunnel continues to the east and west. Mud lies in all directions, damp and\nbrown. A few roots poke through the ceiling, but fauna is otherwise lacking.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29776"
+                ],
+                "name": "",
+                "out": [
+                    "29776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29777"
+                ],
+                "name": "",
+                "out": [
+                    "29777"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29778"
+                ],
+                "name": "",
+                "out": [
+                    "29778"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29774"
+                ],
+                "name": "",
+                "out": [
+                    "29774"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29775",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Muddy Junction",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 221,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A round, muddy cave has hollowed out here, perhaps the result of some occasional\nflooding. The mud-covered walls are still slick and wet, and dank air penetrates\nthe senses. A small bit of water has pooled on the floor, but barely a handful\nin any particular spot.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29775"
+                ],
+                "name": "",
+                "out": [
+                    "29775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29776",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Mud-slick Cave",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 221,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "Slick mud covers the walls, floor, and ceiling of this dank tunnel. Deep grooves\nhave been carved through the mud by the passage of water over time. A few\nburrows can be seen in the walls, apparently home to some creatures who prefer\nthe damp and dark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29775"
+                ],
+                "name": "",
+                "out": [
+                    "29775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29777",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 4096,
+        "name": "Muddy Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 222,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "The dark river creeps out over the tunnel floor here like blood oozing from a\ndeep wound. Large grooves line the walls, indicating the river is far from its\nhigh water mark. To the east and west, the tunnel continues its way through the\nmud.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29782"
+                ],
+                "name": "",
+                "out": [
+                    "29782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29775"
+                ],
+                "name": "",
+                "out": [
+                    "29775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29779"
+                ],
+                "name": "",
+                "out": [
+                    "29779"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29778",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Muddy Tunnel by an Underground River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 220,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "The underground river narrows here as the walls close in on both sides. To the\nnorth, the river opens up to a wider passage. To the south, the shore of a dark\ntunnel marks the edge of the river. The walls are smooth, apparently polished\nthat way by significantly more water than flows today.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29783"
+                ],
+                "name": "",
+                "out": [
+                    "29783"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29778"
+                ],
+                "name": "",
+                "out": [
+                    "29778"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29782",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Watery Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 220,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "The river flows on and on here, with slick brown walls guiding it on either\nside. A few holes can be seen in various spots in the wall. Perhaps the homes of\nsome small creatures. The river is deep, and no light can penetrate to the\nbottom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29782"
+                ],
+                "name": "",
+                "out": [
+                    "29782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29786"
+                ],
+                "name": "",
+                "out": [
+                    "29786"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29784"
+                ],
+                "name": "",
+                "out": [
+                    "29784"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29783",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Underground River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 220,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "The river twists and turns here, with the tunnel walls bulging in a hazardous\nfashion. A few stalactites hang from the ceiling, almost dipping into the water\nand providing further obstacles to safe passage. The current of murky water is\nsteady.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29787"
+                ],
+                "name": "",
+                "out": [
+                    "29787"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29783"
+                ],
+                "name": "",
+                "out": [
+                    "29783"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29786",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bends of an Underground River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 221,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "The walls close in on the river here, leaving little room for air in the damp\npassage. The current is steady, but only the occasional splash against the wall\ncan be heard. The river continues to the south, but to the north it runs below a\nrocky outcropping.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29788"
+                ],
+                "name": "",
+                "out": [
+                    "29788"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29786"
+                ],
+                "name": "",
+                "out": [
+                    "29786"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29787",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 221,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "A jagged slab of rock juts out from the wall here to form a rocky outcropping\nabove the water. The floor is slick, making sure footing tough to come by. The\nriver flows by to the south, while a pool of water sits to the west. A dank\nsmell permeates the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29787"
+                ],
+                "name": "",
+                "out": [
+                    "29787"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29789"
+                ],
+                "name": "",
+                "out": [
+                    "29789"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29788",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Short Outcropping",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 221,
+        "y": 134,
+        "z": 0
+    },
+    {
+        "desc": "The water here forms a large pool, surrounded by rock on all sides. Although no\nsource is visible, a barely perceptible movement in the water indicates this\npool is not stagnant. No bottom is visible, and the only ways out appear to be\nsome rocky ledges to the north and east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29794"
+                ],
+                "name": "",
+                "out": [
+                    "29794"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29788"
+                ],
+                "name": "",
+                "out": [
+                    "29788"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29789",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Underground Pool",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 220,
+        "y": 134,
+        "z": 0
+    },
+    {
+        "desc": "Thick mud covers the floor of this ledge, making each step squish and squick. A\nfew large boulders line the walls, but there is little else here. A large pool\nsits to the south, while the ledge continues to the west. The faint sound of\nmoving water fills the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29789"
+                ],
+                "name": "",
+                "out": [
+                    "29789"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29793"
+                ],
+                "name": "",
+                "out": [
+                    "29793"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29794",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Water-soaked Ledge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 220,
+        "y": 133,
+        "z": 0
+    }
+]

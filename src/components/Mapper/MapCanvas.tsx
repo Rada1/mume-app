@@ -22,6 +22,9 @@ interface MapCanvasProps {
     stableRoomsRef: React.MutableRefObject<Record<string, any>>;
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
+    exploredVnums: Set<string>;
     onMouseDown?: (e: React.MouseEvent) => void;
     onMouseMove?: (e: React.MouseEvent) => void;
     onMouseUp?: (e: React.MouseEvent) => void;
@@ -29,6 +32,8 @@ interface MapCanvasProps {
     onPointerMove?: (e: React.PointerEvent) => void;
     onPointerUp?: (e: React.PointerEvent) => void;
     triggerRender?: () => void;
+    unveilMap?: boolean;
+    viewZ?: number | null;
 }
 
 export const MapCanvas = forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -52,7 +57,12 @@ export const MapCanvas = forwardRef<HTMLCanvasElement, MapCanvasProps>((props, r
         playerTrailRef: props.playerTrailRef,
         stableRoomsRef: props.stableRoomsRef,
         stableRoomIdRef: props.stableRoomIdRef,
-        stableMarkersRef: props.stableMarkersRef
+        stableMarkersRef: props.stableMarkersRef,
+        preloadedCoordsRef: props.preloadedCoordsRef,
+        spatialIndexRef: props.spatialIndexRef,
+        exploredVnums: props.exploredVnums,
+        unveilMap: props.unveilMap,
+        viewZ: props.viewZ
     });
 
     useMapAnimation({

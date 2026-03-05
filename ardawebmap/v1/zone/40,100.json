@@ -1,0 +1,1424 @@
+[
+    {
+        "desc": "Within the shelter of the enclosed cliffs stands the stone harbour with its\nattendant ships. Diffuse lamps of pale colour are affixed to the dark walls of\nthe cliff behind, lighting the crests of waves upon the sea. Dotted along the\nwharf are the white timber housings of goods and materials. Towards the eastern\nend, two silvery chains provide access for heavy loads to the platform at the\ntop of the cliff. For others, the means of ascent is via a twisting marble stair\nat the harbour's western end.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                    "18335"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "1431"
+                ],
+                "name": "",
+                "out": [
+                    "1431"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25569"
+                ],
+                "name": "",
+                "out": [
+                    "25569"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1512"
+                ],
+                "name": "",
+                "out": [
+                    "1512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1511",
+        "light": 2,
+        "loadflags": 8388608,
+        "mobflags": 0,
+        "name": "Lamplit Quays of Avallone",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 40,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "Set some way back from the edge of the cliff, the white platform nevertheless\noffers a view of the bay of Avallone. A single silver lamp illuminates the first\nsteps on the way down to the harbour; others of its kin do likewise along the\nsteep twisting marble route.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1514"
+                ],
+                "name": "",
+                "out": [
+                    "1514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1512"
+                ],
+                "name": "",
+                "out": [
+                    "1512"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1513",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of the Winding Stairs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 41,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "Lined with white-faced stone, a large arch supports the earthen works above.\nThrough the corridor whistles the wind, and its howl is mingled with the mewing\nof gulls. The wind brings with it the tang of the sea, and a fine spray of mist.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1515"
+                ],
+                "name": "",
+                "out": [
+                    "1515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1513"
+                ],
+                "name": "",
+                "out": [
+                    "1513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1514",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arch under the Mound",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 42,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "Within the curving earthen work mound that circles the city is this open\ncourtyard. Open and exposed, a strong breeze whirls about the alabaster\nsculptures that line the paths which meet at a fountain in the centre. The forms\nof birds above are cast as shadows upon the stones. Chimes of pearl-inlaid\nsilver tinkle, but their strong tones bring a weariness to the spirit and the\nurge to tarry awhile and dream of latter days.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1517"
+                ],
+                "name": "",
+                "out": [
+                    "1517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1514"
+                ],
+                "name": "",
+                "out": [
+                    "1514"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1516"
+                ],
+                "name": "",
+                "out": [
+                    "1516"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1515",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Court of Chimes",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 43,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "Steps from the court below lead up to this terrace upon which the great tower of\nAvallone stands. Unique in construction, the tower is hollow, the halls of the\nlevels being but the outer shell. The base of the tower is in fact raised upon\nfour great stone columns, each some four score paces in circumference.\nTransparent crystalline stairs spiral up each column into halls of the first\nlevel. In the centre of the terrace, there is a silver pool, but it does not\nlook like it contains water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1515"
+                ],
+                "name": "",
+                "out": [
+                    "1515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1516",
+        "light": 2,
+        "loadflags": 16392,
+        "mobflags": 0,
+        "name": "Under the Great Tower",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 43,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "Passing inside the western turfed heights, the path forms part of the route\nalong the top of the cliff overlooking the harbour below. Along much of the\nprecarious route, a white wall provides some protection from the worst of the\nsalty wind, but in two places it is broken by elegant winching mechanisms which\nrelay silvery chains down the face of the cliff.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1515"
+                ],
+                "name": "",
+                "out": [
+                    "1515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1519"
+                ],
+                "name": "",
+                "out": [
+                    "1519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1518"
+                ],
+                "name": "",
+                "out": [
+                    "1518"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1517",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Coastal Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 43,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "Three-storied and many-spired, the watchtower stands atop the earthen wall which\nsurrounds the city on three sides. Narrow crystalline windows set in walls of\ngleaming mother-of-pearl look north, west, east and south. Yet, the path which\nclimbs the turf from the east leads not to any portal, but merely circles the\nbase.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1517"
+                ],
+                "name": "",
+                "out": [
+                    "1517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1518",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Watchtower",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 42,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "The path follows the south-facing cliff, its edge protected from a white wall.\nInterspersed along the route small golden trees bear spice-scented fruit\nresembling figs, while marigolds and violets grow in plots, watered by the sea\ndews.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1520"
+                ],
+                "name": "",
+                "out": [
+                    "1520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1517"
+                ],
+                "name": "",
+                "out": [
+                    "1517"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1519",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Coastal Path",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 44,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "The white path passes through a short mosaic tunnel which cuts through the high\nearthen bank which surrounds Avallone. The mosaic projects the boughs of\nsilver-leafed trees upon the arched ceiling, with nightingales passing under the\neaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1521"
+                ],
+                "name": "",
+                "out": [
+                    "1521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1519"
+                ],
+                "name": "",
+                "out": [
+                    "1519"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1520",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Through the Bank",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 45,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "The path continues east of the grass-covered bank, spawning another which leads\nnorth to other halls of the city. Trees heady with scarlet blossom line the\nroute from the city to the eastern promontory of the island.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1522"
+                ],
+                "name": "",
+                "out": [
+                    "1522"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1520"
+                ],
+                "name": "",
+                "out": [
+                    "1520"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1521",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Path to the Headland",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 46,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "Jutting out into the sea, this treeless high-cliffed promontory is the nesting\nplace of uncounted numbers of gulls, petrels and pale cormorants. Many of these\nbirds wheel above or cruise the near sea, diving for silvery fish, and their\nwails and calls fill the ears. Mixed with the sharp smells of the sea or the\nmany subtle fragrances which waft from Avallone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1521"
+                ],
+                "name": "",
+                "out": [
+                    "1521"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "1522",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Eastern Promontory",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 47,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "Long ago did the Teleri make a home upon the strands of Eldamar, and chief of\ntheir towns was Alqualonde, the Haven of the Swan-ships. Like a bason of quiet\nwaters is Swanhaven, save that towards the eastward and the seas the ring of\nrocks that encloses it sinks somewhat, and there does the sea pierce through, so\nthat there is a mighty arch of living stone. By reason of the surrounding wall,\nand that the light of the Two Trees never shone on the haven, the town was ever\nlit by a ring of lamps of gold, and shines to this day. Moreover, upon the\nquays, lanterns there are too of many colours tokening the wharves and landings\nof the different houses. Very beautiful is this harbour to gaze upon, as the\nwaters of the harbour mirror the radiance of the lamps into rippling lights,\nweaving strange patterns of many twinkling lines. Reflected also in this inner\nsea are the many ships of the elves, more wondrous than any that have ever\nsailed mortal lands, though they are a mere echo of those that were seized by\nthe Host of the Noldor in the dread events of the Kinslaying.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18334",
+                    "18335"
+                ],
+                "name": "",
+                "out": [
+                    "18334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18333",
+        "light": 2,
+        "loadflags": 8388608,
+        "mobflags": 0,
+        "name": "Upon the Lamplit Quay",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 40,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "Under the shadow of the southern arm of the rocky cove, a steep stair carved of\nthe living rock climbs to the higher terraces of the Haven. Lengths of flaxen\ncord, passing through the eyes of silver balusters, provide a flexible support\non the narrow steps. The ring of golden lights on the rocky wall of the cove\nprovide plenty of illumination.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18333"
+                ],
+                "name": "",
+                "out": [
+                    "18333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1510"
+                ],
+                "name": "",
+                "out": [
+                    "1510"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18334",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of the Stairs",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 40,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Small but robust is this sailing boat of pale timbers and silver fittings.\nGolden ropes reach up to the single fore-and-aft sail. The boom of the furled\nsails is currently secured while the boat is drawn along steep steps that lead\nup to the quays of Avallone. A small rudder of golden wood moves in to-and-fro\nmotions as the waves lap within the harbour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "1511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18335",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ferry at Avallone",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 42,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "A lit room, lined with round windows, opens up from its entrance on the wharf as\nthe building expands onto a pier reaching into the harbour. White benches and\ntables sit throughout the building, allowing customers to see ships coming and\ngoing as they relax. A marble stair connects to the inn's reception above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "1511"
+                ],
+                "name": "",
+                "out": [
+                    "1511"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25570"
+                ],
+                "name": "",
+                "out": [
+                    "25570"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25569",
+        "light": 0,
+        "loadflags": 65536,
+        "mobflags": 2,
+        "name": "Tol Eressea Wharf Inn",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 41,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "Large windows line the walls of the inn, rewarding guests with a breathtaking\nview of the harbour. The inn was built on a pier and expands from the wharf into\nthe sea where waves pass underneath it. A few open windows let in a salty,\nrelaxing breeze which flows down the hall into a corridor of cosy rooms.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25569"
+                ],
+                "name": "",
+                "out": [
+                    "25569"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25570",
+        "light": 0,
+        "loadflags": 24,
+        "mobflags": 1,
+        "name": "Tol Eressea Wharf Reception",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 41,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "There is substantial evidence of men camping here in this larger section of the\ntunnel. A makeshift table covered with cooking supplies surrounds a tiny fire\npit. A canvas from a ship's sail has been spread across the ground at the end of\nthe tunnel upon which several straw pallets have been placed for sleeping.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28716"
+                ],
+                "name": "",
+                "out": [
+                    "28716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28719",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 4096,
+        "name": "Warm Shale Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 55,
+        "y": 100,
+        "z": 0
+    }
+]

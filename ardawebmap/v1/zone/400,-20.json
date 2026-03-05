@@ -1,0 +1,168 @@
+[
+    {
+        "desc": "A large mirror covers the northern wall, exquistily carved in ebony. Some worn\ncloaks hang from a clothes hanger made from a large oakbranch. The floor is\ncovered by a large cavebear fur and a window showing the valley outside is\nsituated in the southern wall. Looking west you see a large library.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6463"
+                ],
+                "name": "",
+                "out": [
+                    "6463"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6462"
+                ],
+                "name": "",
+                "out": [
+                    "6462"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6464",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 400,
+        "y": -2,
+        "z": 0
+    },
+    {
+        "desc": "Here is an bedchamber, there is only a bed in here. The room has no windows so\nthe owner can sleep at anytime with out being botherd by the sun. Along the bed\na small lamp stands giving a pleasent light in the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6468"
+                ],
+                "name": "",
+                "out": [
+                    "6468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6469",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bedchamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 400,
+        "y": -1,
+        "z": 0
+    }
+]

@@ -48,7 +48,7 @@ const MudClient = () => {
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
 
-    const [heldButton, setHeldButton] = useState<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean } | null>(null);
+    const [heldButton, setHeldButton] = useState<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>(null);
     const [commandPreview, setCommandPreview] = useState<string | null>(null);
     const [joystickGlow, setJoystickGlow] = useState(false);
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });

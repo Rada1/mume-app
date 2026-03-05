@@ -1,0 +1,422 @@
+[
+    {
+        "desc": "A wide ventilation shaft has been cut into the rock. The steep shaft has had\ncrude steps hacked out of the stone to allow miners to climb the shaft and\naccess the machinery that lines the passageway. All that now remains are\ntattered fragments of twisted iron and a sturdy hand-rail that has been deeply\nanchored into the rock. A wide cavern opens up to the south where the bulk of\nthe excavations have taken place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23831"
+                ],
+                "name": "",
+                "out": [
+                    "23831"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23813"
+                ],
+                "name": "",
+                "out": [
+                    "23813"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23830",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "A Mineshaft",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 100,
+        "y": 56,
+        "z": 0
+    },
+    {
+        "desc": "Here the cavern branches with a side-tunnel running off to the east away from\nthe main north-south passage. Red staining around the ceiling to the east\nindicates that there was once a rich seam of iron ore in the rock but it has\nlong been exhausted leaving only traces of rust deposits in the puddles that\naccumulate on the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23830"
+                ],
+                "name": "",
+                "out": [
+                    "23830"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23834"
+                ],
+                "name": "",
+                "out": [
+                    "23834"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23832"
+                ],
+                "name": "",
+                "out": [
+                    "23832"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23831",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Junction in the Mine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 100,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel opens out into a vast, circular cavern. The mineral deposits that\nmake up this mine are very distinctive and are showcased in the walls here.\nBands of minerals alternate from sparkling quartz to the reddish-brown hue of\niron-ore to the black of plain bedrock creating a rainbow-like effect in earthy\ntones. Some thin bands of the iron-ore that the miners sought still remain in\nthe walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23833"
+                ],
+                "name": "",
+                "out": [
+                    "23833"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23831"
+                ],
+                "name": "",
+                "out": [
+                    "23831"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23832",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Rich Mine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 101,
+        "y": 57,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel narrows here, twisting and turning to follow the route of the mineral\nseam that the miners were following until it eventually stops completely. The\nminers, having exhausted the minerals, discarded their worn-out tools before\nabandoning the mine forever. The sheer number of broken picks and discarded\ncrowbars indicate that this was a very active area in the past.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23832"
+                ],
+                "name": "",
+                "out": [
+                    "23832"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23833",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Depleted Ore Vein",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 101,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The rough-cut tunnel extends far into the gloom to the north while to the south\nfresh air flows through a wide opening. The remains of grooves in the floor\nindicate where a mining cart one ran on rails but the rails are long gone,\nseemingly having fallen victim to metal scavengers. The uneven walls are covered\nwith pick marks with niches and crevices where the miners have searched for ore.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23831"
+                ],
+                "name": "",
+                "out": [
+                    "23831"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23835"
+                ],
+                "name": "",
+                "out": [
+                    "23835"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23834",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Mine Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 100,
+        "y": 58,
+        "z": 0
+    }
+]

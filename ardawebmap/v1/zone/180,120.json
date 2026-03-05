@@ -1,0 +1,1754 @@
+[
+    {
+        "desc": "The small hole in the roof is directly over a substantial pile of rotting leaves\nand twigs, so scrambling out should not be difficult. This ancient cellar is\nactually quite cosy -- the hard earth floor is dry, and the moss growing on the\nwalls is quite soft. The walls are hard earth, except for the eastern wall,\nwhere some ancient masonry still stands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "29670"
+                ],
+                "name": "loosestone",
+                "out": [
+                    "29670"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29666"
+                ],
+                "name": "",
+                "out": [
+                    "29666"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29669",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Mossy Cellar",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 193,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Even a halfling would have to crawl to make use of this tunnel. The earthen roof\nhangs low, giving only a few feet of clearance. To the west, the tunnel ends in\na wall of masonry, while to the east it enters a chamber of some sort.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29671"
+                ],
+                "name": "",
+                "out": [
+                    "29671"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29669"
+                ],
+                "name": "",
+                "out": [
+                    "29669"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29670",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 194,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "This small hemispherical chamber is literally packed with the skeletal remains\nof humans. From the sizes, it appears most of them belonged to women and\nchildren. The roof of the chamber is hardened earth, and upon closer inspection,\nit appears that whoever these people were, they were desperately trying to dig\ntheir way out. One skeleton lies alone in a corner, propped in a sitting\nposition.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29670"
+                ],
+                "name": "",
+                "out": [
+                    "29670"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29671",
+        "light": 0,
+        "loadflags": 6,
+        "mobflags": 4096,
+        "name": "Mass Grave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 195,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "This farmhouse is quaint and cosy. There is a small room, which seems to be both\nthe bedroom and living room. Two small beds rest in the northern corner, and a\nsofa in the southwest corner. The windows are like small circular holes in the\nwalls, and the glass is glazed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29710"
+                ],
+                "name": "",
+                "out": [
+                    "29710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29661"
+                ],
+                "name": "",
+                "out": [
+                    "29661"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29709",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cosy Farmhouse",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 199,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "This farmhouse kitchen is huge and openly connected to the rest of the house.\nThere is a huge stove against the western wall, with the smell of food emanating\nfrom it. There is a table in the centre of the room, with some old, wooden\nchairs around it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29709"
+                ],
+                "name": "",
+                "out": [
+                    "29709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29710",
+        "light": 0,
+        "loadflags": 20,
+        "mobflags": 0,
+        "name": "Farmhouse Kitchen",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 199,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Once a grand hallway, it seems even the sheer stone walls have succumbed to\ntime. A long row of pillars barely supports the vaulted ceiling that spans the\nlong passageway. The only exit which has not collapsed leads southward through a\nset of rusted double doors. Muddy water trickles through a gash in the wall,\nleading upward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29712"
+                ],
+                "name": "",
+                "out": [
+                    "29712"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29662"
+                ],
+                "name": "",
+                "out": [
+                    "29662"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29711",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crumbling Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Huge blocks of granite and marble lie in decay upon the floor of this\nonce-majestic room. Light streams from the many cracks in the decaying ceiling,\ntorn and rotted tapestries hang from the walls. In the centre of the chamber\nrests a dusty marble throne, toppled over on its side, perhaps a tribute to so\nmany wasted dreams.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29711"
+                ],
+                "name": "",
+                "out": [
+                    "29711"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29712",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 266240,
+        "name": "Collapsed Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "A tunnel stretches to the east, its walls naturally smooth from ancient erosion.\nFaint striations in the sandstone form subtle patterns, interrupted only by\noccasional cracks. Fine grains of sand coat the flat floor, carried in by\ndraughts that sweep through unseen crevices.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29714"
+                ],
+                "name": "",
+                "out": [
+                    "29714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29673"
+                ],
+                "name": "",
+                "out": [
+                    "29673"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29713",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Sandstone Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 195,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "The straight passage splits abruptly into a T-shaped junction, the three tunnels\ndisappearing into shadow to the north, east, and west. The walls at the\nintersection are slightly curved, as if worn by centuries of water flow.\nScattered stones lie in small piles, remnants of minor collapses over time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29720"
+                ],
+                "name": "",
+                "out": [
+                    "29720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29715"
+                ],
+                "name": "",
+                "out": [
+                    "29715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29713"
+                ],
+                "name": "",
+                "out": [
+                    "29713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29714",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Sandstone Tunnel Junction",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 196,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel broadens slightly, its straight course interrupted only by a shallow,\nnatural depression in the floor. The sandstone walls are dotted with small\nhollows, formed by uneven erosion over centuries. The air feels calm, with the\nfaintest whisper of a breeze moving steadily through the open span.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29716"
+                ],
+                "name": "",
+                "out": [
+                    "29716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29714"
+                ],
+                "name": "",
+                "out": [
+                    "29714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29715",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Sandstone Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel follows a gentle curve westward, but comes to an abrupt end in other\ndirections. Its walls are smooth and uniform, suggesting the patient work of\nancient water. The ceiling remains steady in height, while faint grooves in the\nsandstone trace the path of slow erosion. Loose sand collects at the base,\nhinting at subtle shifts in airflow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29715"
+                ],
+                "name": "",
+                "out": [
+                    "29715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29875"
+                ],
+                "name": "",
+                "out": [
+                    "29875"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29716",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Sandstone Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 198,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "This segment of the tunnel feels narrower, the ceiling dipping slightly lower as\nit passes through a dense layer of sandstone. The moist walls reveal faint\ntraces of mineral deposits, pale streaks standing out against the golden rock.\nSteady trickles of water run down, forming large pools on the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29721"
+                ],
+                "name": "",
+                "out": [
+                    "29721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29714"
+                ],
+                "name": "",
+                "out": [
+                    "29714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29720",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 4096,
+        "name": "Wet Sandstone Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 196,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "The floor dips gently downward toward the north, the incline barely noticeable\nbut steady. The walls grow darker and damper as the descent continues, with\nstreaks of moisture reflecting faint glimmers of light. Water pools at the\nfloor, flowing in from the higher ground to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29720"
+                ],
+                "name": "",
+                "out": [
+                    "29720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29721",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 4096,
+        "name": "Subterranean Pool",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 196,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel's walls are composed of dark, jagged layers of slate, fractured and\nsharp in places. Thin sheets have peeled away over time, leaving shards\nscattered across the uneven floor. A faint metallic scent lingers in the cool,\nstill air, mingled with the sound of occasional drips echoing softly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29723"
+                ],
+                "name": "",
+                "out": [
+                    "29723"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29681"
+                ],
+                "name": "",
+                "out": [
+                    "29681"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29722",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slate Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 199,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel widens into a rough chamber where large slabs of slate have fallen\nfrom the ceiling, forming jagged piles. The walls are irregular, their layers\ntilting at odd angles, revealing the forces that shaped them long ago. Moisture\nclings to the stone, highlighting the deep grey and bluish tones of the rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29722"
+                ],
+                "name": "",
+                "out": [
+                    "29722"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29723",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 266240,
+        "name": "Slate Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 198,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel bends in a wide arc, its walls flowing smoothly as though shaped by a\nriver's patient hand. Shallow grooves mark the sandstone, their patterns\nmirroring the curve. Sand drifts collect at the base of the walls, disturbed\nonly by faint draughts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29725"
+                ],
+                "name": "",
+                "out": [
+                    "29725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29682"
+                ],
+                "name": "",
+                "out": [
+                    "29682"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29724",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 199,
+        "y": 127,
+        "z": 0
+    },
+    {
+        "desc": "The passage grows tight as it twists sharply, its walls pressing closer together\nwith jagged edges from uneven erosion. No natural light nor vegetation are\npresent here, and the atmosphere is stale and dark. A faint trickling sound\nechoes, hinting at unseen water deeper within.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29726"
+                ],
+                "name": "",
+                "out": [
+                    "29726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29724"
+                ],
+                "name": "",
+                "out": [
+                    "29724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29725",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Winding Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 198,
+        "y": 127,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel twists into a gentle curve before opening into a natural junction\nwhere three passages meet. The sandstone walls at the intersection are smooth,\nwith faint striations radiating outward as if shaped by converging streams. Fine\nsand and small stones have accumulated at the base of the junction, creating\nsubtle ridges that hint at the path water once took through the branching\ntunnels.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29725"
+                ],
+                "name": "",
+                "out": [
+                    "29725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29728"
+                ],
+                "name": "",
+                "out": [
+                    "29728"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29727"
+                ],
+                "name": "",
+                "out": [
+                    "29727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29726",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel Junction",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 198,
+        "y": 128,
+        "z": 0
+    },
+    {
+        "desc": "A slight widening in the tunnel at a curve reveals a shallow alcove, its walls\nrougher and darker than the main passage. Fine debris has collected here, as\nthough caught by the winding flow of air. The space feels quieter, a brief\nreprieve from the outside world.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29726"
+                ],
+                "name": "",
+                "out": [
+                    "29726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29727",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Shallow Alcove",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 128,
+        "z": 0
+    },
+    {
+        "desc": "The winding path descends slightly, its curves soft and gradual as the floor\ndips. Moisture clings to the sandstone walls, darkening their hue and creating a\ncool, damp atmosphere. Loose rocks gather in shallow pockets, swept into place\nby centuries of shifting water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29726"
+                ],
+                "name": "",
+                "out": [
+                    "29726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29728",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Moist Alcove",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 198,
+        "y": 129,
+        "z": 0
+    },
+    {
+        "desc": "The cave is small and dark, with only a few rays of light filtering through the\nnarrow entrance. The walls are rough and jagged, covered with moss and lichen.\nThe floor is littered with bones, fur, and other signs of the cave's inhabitant.\nA faint smell of musk and blood lingers in the air. The cave is silent, except\nfor the occasional drip of water from the ceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29208"
+                ],
+                "name": "",
+                "out": [
+                    "29208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29750",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Small Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 199,
+        "y": 136,
+        "z": 0
+    }
+]

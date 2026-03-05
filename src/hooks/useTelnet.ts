@@ -109,7 +109,8 @@ export function useTelnet(options: TelnetOptions) {
         const prompt = bufferRef.current;
         setPrompt(prompt);
         if (prompt && handlers.detectLighting) {
-            handlers.detectLighting(prompt);
+            const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '');
+            handlers.detectLighting(cleanPrompt);
         }
     }, [processLine, setPrompt, handlers]);
 

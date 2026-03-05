@@ -32,15 +32,18 @@ export const getButtonCommand = (
         const hasBase = !!(button.swipeCommands?.[dir] && button.swipeCommands[dir]!.trim());
         const hasLong = !!(isLong && button.longSwipeCommands?.[dir] && button.longSwipeCommands[dir]!.trim());
 
-        if (hasBase || hasLong) {
-            if (hasBase) {
-                cmd = button.swipeCommands![dir]!;
-                actionType = button.swipeActionTypes?.[dir] || 'command';
-            }
+        if (isLong) {
             if (hasLong) {
                 cmd = button.longSwipeCommands![dir]!;
                 actionType = button.longSwipeActionTypes?.[dir] || 'command';
+            } else {
+                // If in Long mode but NO long swipe is defined, don't fall back to short swipe menus
+                cmd = '';
+                actionType = 'command';
             }
+        } else if (hasBase) {
+            cmd = button.swipeCommands![dir]!;
+            actionType = button.swipeActionTypes?.[dir] || 'command';
         } else {
             // Visual feedback only - no command execution
             cmd = '';

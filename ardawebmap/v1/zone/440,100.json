@@ -1,0 +1,765 @@
+[
+    {
+        "desc": "The rough stone walls and floor of this tunnel are lined with moisture which\nmust come from the mighty Anduin River which flows above here. The ceiling is\nvery low in some areas, which could cause difficulty for those traversing\nthrough this tunnel. Here the floor of the tunnel slopes steadily downwards,\nfrom east to the west. The tunnel's walls have collapsed at its eastern end, yet\nit seems someone could move the rubble with a lot of effort.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                    "21048"
+                ],
+                "name": "",
+                "out": [
+                    "21048"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21066"
+                ],
+                "name": "",
+                "out": [
+                    "21066"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21065",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wet Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 459,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "The walls spread apart as the ceiling gets lower in this small underground\nnexus. The dark rock which this small tunnel cuts through seems to have been\nworn away from years and years of water flowing through, eroding the rock from\nthe floor up. The floor slopes up in all directions except for south, where it\ncontinues its slight downward decline.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21067"
+                ],
+                "name": "",
+                "out": [
+                    "21067"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21065"
+                ],
+                "name": "",
+                "out": [
+                    "21065"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21068"
+                ],
+                "name": "",
+                "out": [
+                    "21068"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21066",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fork in a Wet Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 458,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "The air is stagnant and still here in this small cavern. The only exit is to the\nnorth, up a small slope. Due to the lower elevation of this cavern, a dark pool\nof water has formed at the southern end from all the water which trickles down\ninto here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21066"
+                ],
+                "name": "",
+                "out": [
+                    "21066"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21067",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Dead End",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 458,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "The walls of the tunnel are getting closer and closer to each other, making the\npassageway only a few yards wide at the narrowest point. The uneven floor\ncombined with the rough ceiling cause the height of this tunnel to vary, causing\nit to be very cramped.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21066"
+                ],
+                "name": "",
+                "out": [
+                    "21066"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21069"
+                ],
+                "name": "",
+                "out": [
+                    "21069"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21068",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Narrow Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 457,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "This passage is very narrow, and seems to be natural, rather than cut into the\nstone. While the tunnel continues toward the east, one can exit by climbing out\nwithout much difficulty, as the jagged edges make for great footholds for bipeds\nto use. Many small bones are scattered on the floor, in solemn tribute to\nsmaller animals which have fallen in and been unable to exit.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21068"
+                ],
+                "name": "",
+                "out": [
+                    "21068"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "21070"
+                ],
+                "name": "",
+                "out": [
+                    "21070"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21069",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of a Small Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 456,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "Hundreds and again hundreds of old, sturdy logs have gathered and and become\nstuck together, creating a massive log jam which seems to span across the whole\nAnduin. The logs are intertwined into each other in several layers, forming a\ndangerous, rickety, but possibly passable, passageway across. Some of the logs\nare more than eight yards long, and as thick as a medium-sized stone troll.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "21159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "21151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22908"
+                ],
+                "name": "",
+                "out": [
+                    "22908"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21080"
+                ],
+                "name": "",
+                "out": [
+                    "21080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21081",
+        "light": 0,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Log Jam in the Anduin River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 457,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "Partly underwater, partly afloat, an enormous log jam stretches across the river\nAnduin. The logs lie side by side and they overlap each other, with individual\nlogs protruding in all possible directions; forming a mostly solid but\ndefinitely rough and tricky path over the river. The whole construction is in a\nstate of slight, continuous movement, being rocked as it is by the currents and\nwaves of the Anduin.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "21159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "21151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20764"
+                ],
+                "name": "",
+                "out": [
+                    "20764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22908"
+                ],
+                "name": "",
+                "out": [
+                    "22908"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21082",
+        "light": 0,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Log Jam in the Anduin River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 459,
+        "y": 116,
+        "z": 0
+    },
+    {
+        "desc": "It is unclear if the roots of the surrounding trees and bushes have grown into a\nnatural cavern, if this here are the remains of a once mighty tree that has\ncompletely decayed by now, or if the tight space here has formed due to other\nmeans. All around are rotting roots that are mixed with dark, wet and somewhat\nmuddy soil. A very strong stench of foulness and decay fill the air and nearly\nmakes it unbreathable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21186"
+                ],
+                "name": "",
+                "out": [
+                    "21186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20762"
+                ],
+                "name": "",
+                "out": [
+                    "20762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21185",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Rotting Roots",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 458,
+        "y": 119,
+        "z": 0
+    },
+    {
+        "desc": "A seemingly endless amount of wet, black logs have formed a huge log jam in the\nAnduin. There is so much timber here that it actually appears possible to cross\nthe mighty river with dry feet, provided that one can maintain ones balance on\ntop of the slippery and deceptive path; a path that zig-zags from one log to\nanother, sometimes rising, sometimes descending.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "21159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21151"
+                ],
+                "name": "",
+                "out": [
+                    "21151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21082"
+                ],
+                "name": "",
+                "out": [
+                    "21082"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21081"
+                ],
+                "name": "",
+                "out": [
+                    "21081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22908",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Log Jam in the Anduin River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 458,
+        "y": 116,
+        "z": 0
+    }
+]

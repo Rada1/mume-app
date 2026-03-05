@@ -1,0 +1,333 @@
+[
+    {
+        "desc": "You just reached the highest point in Rivendell the land of the elves. From this\nplace you are able to gaze all the nice spots in Rivendell. On a cloudless day\nor a night with a high moon, you can glance over the ferocious battles around\nthe vicious ford.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6465"
+                ],
+                "name": "",
+                "out": [
+                    "6465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6466",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Magnolia's Look-Out",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 400,
+        "y": 1,
+        "z": 0
+    },
+    {
+        "desc": "This is a large, well-lit room with a high ceiling. In the centre is a circular\nexercise mat that has been worn thin from frequent use. A medium-sized bed sits\nagainst the east wall. A rectangular oil painting has been placed above the bed.\nHanging from the south wall are the weapons of vanquished foes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25162"
+                ],
+                "name": "",
+                "out": [
+                    "25162"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25163",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Zaber's Training Area",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 400,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "The terrace on this roof of the Guards' Office has no wall on the western side,\nnot even a rail - seems the Elf who built it is deft enough to not care about\nfalling off. Half of the terrace is protected with a wooden cover, and the\nwestern part is open. To the east a simple door leads into the house. A round,\nreliable hatch can be used to descend down.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28545"
+                ],
+                "name": "",
+                "out": [
+                    "28545"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "6423"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25073"
+                ],
+                "name": "",
+                "out": [
+                    "25073"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28544",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Terrace",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 400,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "The eastern wall of this small, quiet home is decorated as part of a tree's\ntrunk, crooked and bark-like. The backrest of the cushiony sofa standing nearby\nmatches well, replicating the crook of a tree's trunk. In the centre of the room\nstands a round three-legged table, covered with a green spread woven from sweet\nsmelling leaves. On the table has been placed a crystal vase filled with fruit.\nOn the southern wall there is a bookshelf filled with books. At first glance,\nsome of the books look plain, but with a skilled eye one recognizes the fine\nwork of a true master.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28544"
+                ],
+                "name": "",
+                "out": [
+                    "28544"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28545",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gray's Dwelling",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 401,
+        "y": 19,
+        "z": 0
+    }
+]

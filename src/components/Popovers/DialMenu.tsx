@@ -53,7 +53,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
             const dy = e.clientY - initialY;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (dist < 40) {
+            if (dist < 20) {
                 if (activeIndexRef.current !== null) {
                     setActiveIndex(null);
                     activeIndexRef.current = null;

@@ -1,0 +1,1432 @@
+[
+    {
+        "desc": "This hall is fifteen yards wide, twenty yards long, and at least thirty six feet\nhigh. In the north-western corner there is a large staircase leading up, and the\nremnants of a balcony clings to the southern wall. It appears that there used to\nbe a staircase up to this balcony, but it is no longer possible to reach it as\nthe walls are smooth, with no support to enable climbing. The floor is tiled\nwith flat stones and a large picture of a battle between dwarves and orcs is\ncarved into it. There is a small portal in the eastern wall, with a flooded\nstaircase leading down from it. Another portal leads into a corridor in the\nnorthern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24373"
+                ],
+                "name": "",
+                "out": [
+                    "24373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23804"
+                ],
+                "name": "",
+                "out": [
+                    "23804"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23806",
+                    "28904"
+                ],
+                "name": "",
+                "out": [
+                    "23806"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23803",
+        "light": 1,
+        "loadflags": 2097154,
+        "mobflags": 0,
+        "name": "Stone-walled Hall at the Base of a Staircase",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 64,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "This narrow corridor is only about a yard and a half wide and is entirely filled\nwith water. The corridor links two staircases, both of which lead up. The\nwestern staircase runs straight, whereas the eastern staircase spirals tightly,\na design choice that would enable easy defence. There are rough holes in the\nwalls, which are overgrown with algae. The water flooding the corridor is\nremarkably clear, but makes the steps and floor slippery and difficult to\nnavigate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23803"
+                ],
+                "name": "",
+                "out": [
+                    "23803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23805"
+                ],
+                "name": "",
+                "out": [
+                    "23805"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23804",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Flooded Corridor between Halls",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 2,
+        "x": 65,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "In a distant past, a set of steep wooden stairs were constructed in this nearly\nvertical shaft. Since then, parts of it have crumbled and what remains looks\nwobbly. The staircase has likely not been used for ages, but it was once solid\nand well crafted. Remains of dwarven runes and ornaments are still visible on\nthe walls. There are empty torch holders every few yards along the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23807"
+                ],
+                "name": "",
+                "out": [
+                    "23807"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23803"
+                ],
+                "name": "",
+                "out": [
+                    "23803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23806",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Unstable Staircase",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 63,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "Major parts of this tunnel are partly collapsed. The remaining walls look very\nunstable as several of the trunk-like wooden pillars that support it have\ncrumbled and those still standing look very decrepit. The tunnel slowly descends\nto the south where it turns into a shaft with almost vertical stairs. A thick\nlayer of dust, mixed with dirt and rubble, covers the ground. However, close to\nthe stairs, the tunnel becomes more solid as it was dug through solid rock. Some\nof the steps, visible from the top of the stairs, do not look very solid and\nseem risky to use.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22543"
+                ],
+                "name": "",
+                "out": [
+                    "22543"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23806"
+                ],
+                "name": "",
+                "out": [
+                    "23806"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23807",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By an Old Dwarven Rune Stone",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 63,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "This dark corridor runs from north to south, descending from a large hall to the\nsouth, halting abruptly above a vertical shaft at its northern end. The shaft is\nlong, and has smooth, rounded walls. A few scattered steps are visible sticking\nout of the sides of the shaft. The walls of the corridor are very smooth,\nlacking any sign of chisel or pickax.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23803"
+                ],
+                "name": "",
+                "out": [
+                    "23803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "24374"
+                ],
+                "name": "",
+                "out": [
+                    "24374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24373",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Corridor",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 64,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "This dark corridor climbs steeply from a huge cavern to the east, halting\nabruptly beneath a vertical shaft at its western end. The shaft is long and has\nsmooth, rounded walls. A few scattered steps are visible sticking out of the\nsides of the shaft. The corridor walls are very smooth, lacking any sign of\nchisel or pickax.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24375"
+                ],
+                "name": "",
+                "out": [
+                    "24375"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "24373"
+                ],
+                "name": "",
+                "out": [
+                    "24373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24374",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Corridor at the Bottom of a Shaft",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 65,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "This hall is gigantic, spreading dozens of yards in all directions. Massive\npillars tower over the floor, rising into murky darkness. Many pillars are\nbroken, their bases surrounded by piles of shattered stone. Ornamented tiles\ncover the floor between piles of rubble; many are cracked or broken. There is a\nsmall portal in the western wall that leads to a dark corridor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24374"
+                ],
+                "name": "",
+                "out": [
+                    "24374"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24375",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Large Hall with Massive Pillars",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 66,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "This tomb is small and cramped, with little room for anything other than the\nsarcophagi resting against the walls. The sarcophagi are covered with heavy\nlids. All of them are made from marble, with nearly illegible runes carved into\ntheir surfaces. There are several shallow niches in the walls in the gaps\nbetween sarcophagi. Two corridors exit the tomb; one leads north and the other\neast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24379"
+                ],
+                "name": "",
+                "out": [
+                    "24379"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24386"
+                ],
+                "name": "",
+                "out": [
+                    "24386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24380",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Tomb",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 72,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "This cavern is roughly circular, and has a diameter of roughly twenty yards. The\nwalls and floor are solid and smooth, even though the composition of the rock\nvaries significantly throughout the chamber. The rock is predominantly granite,\nwith various hues ranging from dark green to grey. There is a pair of identical\nniches in the south-eastern part of the wall. Both are empty, and might seem to\nserve no purpose.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24383"
+                ],
+                "name": "",
+                "out": [
+                    "24383"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24386"
+                ],
+                "name": "",
+                "out": [
+                    "24386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24385",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Cavern",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 74,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "This corridor is dominated by a large portal in the southern wall that has\nmassive metal doors. The doors have neither handle nor keyhole, and radiate a\npalpable magical aura. A small tile protrudes from the wall next to the doors,\nand there are two niches to either side of the portal. The corridor to the west\nappears to be well crafted, with a paved floor and tiled walls. To the east,\nhowever, the corridor is rough and unfinished.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24388"
+                ],
+                "name": "",
+                "out": [
+                    "24388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24385"
+                ],
+                "name": "",
+                "out": [
+                    "24385"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24380"
+                ],
+                "name": "",
+                "out": [
+                    "24380"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24386",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Corridor by Massive Metal Doors",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 73,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "A long hall leads from the north to the south; it is well built with walls of\nsmooth tiles. Massive doors of metal stand as a portal in the northern wall of\nthe hall. A roughly dug tunnel with crude steps carved from the bedrock leads\nsteeply down at the southern end; the state of the tunnel down in comparison\nwith this fine-looking corridor gives the impression of work in progress that\nwas interrupted before it could be completed. The steps look wet and slippery,\nand a few show cracks. All things considered, it does not look too safe or\nstable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24386"
+                ],
+                "name": "",
+                "out": [
+                    "24386"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24389"
+                ],
+                "name": "",
+                "out": [
+                    "24389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24388",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall at a Steep Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 73,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "This crudely excavated tunnel runs mostly up and down. There are a number of\nrough steps in the tunnel walls, but these are slippery due to water dripping\ndown on them from above. Some of the steps wobble dangerously when trod upon,\nand others are simply missing. The top of the tunnel ends in a small hall, and\nthe bottom end expands into a damp cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24388"
+                ],
+                "name": "",
+                "out": [
+                    "24388"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24390"
+                ],
+                "name": "",
+                "out": [
+                    "24390"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24389",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep, Wet, Roughly-mined Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 73,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "There are many natural structures on the floor and ceiling here as water has\npenetrated into the cavern from above. Between the stalagmites, oddly-shaped\ncolumns and even a pool, the cavern's floor is a veritable obstacle course. None\nof the stalactites on the ceiling hang low enough be a danger; should one fall\nhowever, it might prove fatal for anyone below it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24391"
+                ],
+                "name": "",
+                "out": [
+                    "24391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24389"
+                ],
+                "name": "",
+                "out": [
+                    "24389"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24390",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Elongated Cavern with a Small Pool",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 73,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "A long cavern extends here from the east. The ground is level in this part of\nthe cave, but to the east it grows rugged where dripping water has created many\nstalagmites. There is a large hole, roughly ten yards in diameter, in the\nceiling. The hole is both too high and too far from any nearby walls for it to\nbe possible to climb up into it. A tunnel opens in the western wall of the cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24390"
+                ],
+                "name": "",
+                "out": [
+                    "24390"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24392"
+                ],
+                "name": "",
+                "out": [
+                    "24392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24391",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrowing Cavern",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 72,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel cuts straight through solid rock. The walls are smooth and\nunadorned. There are small recesses in the walls every few yards, possibly used\nfor placement of light sources. To the east, the tunnel slowly widens as it\nenters a cavern. To the west, it ends under a spiral set of stairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24391"
+                ],
+                "name": "",
+                "out": [
+                    "24391"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24393"
+                ],
+                "name": "",
+                "out": [
+                    "24393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24392",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel at the Foot of Spiral Stairs",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 71,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "A short corridor runs from north to south. To the south, the corridor ends at a\nstaircase leading down, but to the north it meets a dead-end at a stone wall.\nThe walls and floor are tiled with flat stones that fit closely together. One\ntile protrudes above the rest near the northern end of the corridor.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "28904"
+                ],
+                "name": "stonepanel",
+                "out": [
+                    "28904"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "24392"
+                ],
+                "name": "",
+                "out": [
+                    "24392"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24393",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "At the Top of Spiral Stairs",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 71,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "This balcony would have provided an excellent vantage point to observe the hall\nbeneath it. Alas, little remains of it now, as most of its floor has collapsed,\nforming a pile of debris in the hall below. Unstable stone blocks are all that\nremain of the floor, and these seem unlikely to support any significant weight.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "24393"
+                ],
+                "name": "",
+                "out": [
+                    "24393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1025,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28904",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Collapsed Balcony",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 71,
+        "y": 101,
+        "z": 0
+    }
+]

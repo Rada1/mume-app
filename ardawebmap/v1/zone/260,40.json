@@ -1,0 +1,1014 @@
+[
+    {
+        "desc": "This small chamber is hemispherical in shape and built from thick limestone\nblocks which show a few lichens on their pale surface. This is no tomb for\nburial and there are no markings on the walls or floor. No light enters this\nplace save the strong light which climbs up the narrow stairs from below casting\nstrong shadows on the inside of the cairn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3497"
+                ],
+                "name": "door",
+                "out": [
+                    "3497"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18222"
+                ],
+                "name": "",
+                "out": [
+                    "18222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18221",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Cairn",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 267,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "This is a small circular chamber of simple faced-stone, while the ground is a\nseries of flagstones. A remarkable portal faces eastwards and is covered in\nunusual runes and glyphs. These symbols emit a quiet hum and shed a strong light\ninto the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18223"
+                ],
+                "name": "runedoor",
+                "out": [
+                    "18223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18221"
+                ],
+                "name": "",
+                "out": [
+                    "18221"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18222",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Antechamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 267,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This room east of the runed door marks the beginning of a narrow passage. The\ndoor on this side is similar to the side in the antechamber but with far fewer\nglyphs and no visible lock. This side of the door, the floor continues to be\npaved with small flagstones. However, the walls of the room are of an irregular\nnature with large blocks of rough stone protruding. Perhaps these blocks are the\nformer foundations of the Tower of Amon Sul.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18224"
+                ],
+                "name": "",
+                "out": [
+                    "18224"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "18222"
+                ],
+                "name": "",
+                "out": [
+                    "18222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18223",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beyond the Runed Door",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 268,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The passage runs straight in an east-west direction even though large stone\ncolumns protrude into the tunnel. A sconce is fixed to the south wall although\nit contains no torch as the fixture has been twisted beyond repair. The ceiling\nabove continues to be low for a tunnel of mannish construction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18225"
+                ],
+                "name": "",
+                "out": [
+                    "18225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18223"
+                ],
+                "name": "",
+                "out": [
+                    "18223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18224",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Narrow Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 269,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The passage goes from west to east, but the continuity of the north wall is at\none point broken by a thin opening from roof to floor. A few small flinders of\nwood also litter the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18226"
+                ],
+                "name": "",
+                "out": [
+                    "18226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18227"
+                ],
+                "name": "",
+                "out": [
+                    "18227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18224"
+                ],
+                "name": "",
+                "out": [
+                    "18224"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18225",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Narrow Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 270,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This small chamber is oft visited, as indicated by the large number of small\nprints in the dirt on the floor. The floor is also littered with several nests\nmade of all manner of debris, which have been purposely dumped here. The walls\nand ceiling are severely blackened suggesting some kind of fire in the past.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18225"
+                ],
+                "name": "",
+                "out": [
+                    "18225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18226",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Alcove",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 270,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "The passage here increases in width and becomes more worked compared to the\npassage west. The walls show signs of fittings which have since been removed so\nno light illuminates the surfaces and probably hasn't for centuries. The floor\nhas a circle of small blue and greenish stones inlaid into it, although many of\nthe tiles have been shattered by something. Finally, the ceiling of the passage\nis finished with fine traceries, a product of the high skill of the Dunedain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18228"
+                ],
+                "name": "",
+                "out": [
+                    "18228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18225"
+                ],
+                "name": "",
+                "out": [
+                    "18225"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18227",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Wide Passageway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 271,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Here three rather different passageways come together. The floor, walls and\nceiling are a strange blending of the qualities of all three. Depending upon\nones views, this blending is the work of a crude and unfocussed artisan, or a\nglorious balance of all three elements into a greater whole.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18229"
+                ],
+                "name": "",
+                "out": [
+                    "18229"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18230"
+                ],
+                "name": "",
+                "out": [
+                    "18230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18227"
+                ],
+                "name": "",
+                "out": [
+                    "18227"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18228",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Junction",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 272,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This hallway looks to have been some kind of gallery long ago. Although the\npictures and paintings that might have stood here have long gone, the frames\nremain, being an integral part of the wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18231"
+                ],
+                "name": "",
+                "out": [
+                    "18231"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18228"
+                ],
+                "name": "",
+                "out": [
+                    "18228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18230",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hallway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 273,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "To the south of this hallway is a room which was once secured by a pair of\nthick, riveted doors. They were not sufficient for the task, as some great force\nhas smote the wood, sundering the portals. These doors now lie strewn on the\nfloor. Picture frames of stone in a variety of sizes line the north wall of the\nhallway, though several directly opposite the doorway have been smashed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18236"
+                ],
+                "name": "",
+                "out": [
+                    "18236"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18232"
+                ],
+                "name": "",
+                "out": [
+                    "18232"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18230"
+                ],
+                "name": "",
+                "out": [
+                    "18230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18231",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Sundered Doors",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 274,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "The hallway ends at a great steel door, which is framed by stout black pillars.\nThe door is completely devoid of any markings excepting a great lock on the\nright edge of the door. A lintel of silvery metal hangs over the portal with\nsmall inscriptions on it. The walls and ceiling are covered with a thin layer of\nsoot, this soot on the floor revealing footprints both large and small.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18233"
+                ],
+                "name": "",
+                "out": [
+                    "18233"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18231"
+                ],
+                "name": "",
+                "out": [
+                    "18231"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18232",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Great Portal",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 275,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "This looks like a cellar of old, before the destruction was wrought upon it.\nHuge blocks of white stone have fallen through the ceiling from above, bringing\ndown much of the roof. An open circular stair can be glimpsed leading upwards\ninto what probably was the Tower of Amon Sul. In the west of the chamber a steel\ndoor is held between great black pillars. Stairs lead further down. The last\nroute is southwards through a broken doorway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18255"
+                ],
+                "name": "",
+                "out": [
+                    "18255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "18232"
+                ],
+                "name": "",
+                "out": [
+                    "18232"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18233",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Rubble-filled Cellar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 276,
+        "y": 59,
+        "z": 0
+    }
+]

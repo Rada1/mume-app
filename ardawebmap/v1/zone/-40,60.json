@@ -1,0 +1,4536 @@
+[
+    {
+        "desc": "As the shaft continues its vertical journey through the underground, a tunnel\nsuddenly opens to the north. A ledge has been cut into the wall allowing easy\naccess to the tunnel. From the ledge wooden ladders leave both up through the\nshaft and further down into the mines. Thick ropes, emerging from the darkness\nabove, continue down towards the bottom of the shaft.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14306"
+                ],
+                "name": "",
+                "out": [
+                    "14306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "33"
+                ],
+                "name": "",
+                "out": [
+                    "33"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28738"
+                ],
+                "name": "",
+                "out": [
+                    "28738"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14307",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mine Shaft",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -27,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "There is no ceiling in this tunnel, instead the dark walls leap upward into a\nbroad shaft looming above the tunnel. Thick ropes dangle in the darkness from\nthe shaft above. Sturdy wooden ladders mounted on the walls by the use of iron\nhoops ascend into the shaft above. The worn floor is smooth to the touch, worn\ndown by busy feet labouring in the mine.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28750"
+                ],
+                "name": "",
+                "out": [
+                    "28750"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28756"
+                ],
+                "name": "",
+                "out": [
+                    "28756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28739"
+                ],
+                "name": "",
+                "out": [
+                    "28739"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28754"
+                ],
+                "name": "",
+                "out": [
+                    "28754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14307"
+                ],
+                "name": "",
+                "out": [
+                    "14307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28738",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Beneath a Mine Shaft",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "The old tunnel leads onward through the underground, connecting the various\nparts of the dwarven mine. The worn floor is made of hard mountain rock, and any\nsound made seems to echo through the tunnel bouncing between the walls. A faint\ndraft sweeps through the tunnel, indicating that some sort of exit must be near.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28749"
+                ],
+                "name": "",
+                "out": [
+                    "28749"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28741"
+                ],
+                "name": "",
+                "out": [
+                    "28741"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28740"
+                ],
+                "name": "",
+                "out": [
+                    "28740"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28738"
+                ],
+                "name": "",
+                "out": [
+                    "28738"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28739",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "As a bearer of the gift of Aule the tunnel wanders onward heedless of the slowly\nincreasing slope. The surrounding walls follow the descent without curving the\nleast. The well-crafted tunnel is used mainly for transportation of ore and\nother goods about the mine. A few holes near a darker spot on one of the walls\ntestify to the fruitless attempts to find iron in this tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28748"
+                ],
+                "name": "",
+                "out": [
+                    "28748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28747"
+                ],
+                "name": "",
+                "out": [
+                    "28747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28781"
+                ],
+                "name": "",
+                "out": [
+                    "28781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28739"
+                ],
+                "name": "",
+                "out": [
+                    "28739"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28740",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "Beneath a broad ceiling the old tunnel continues through the core of the Blue\nMountains. The carved halls and tunnels built by dwarven hands seems to go on\nforever. Deep inside the mountains the dwarves have dwelt for ages now, and with\neach change of season the mines expand and the glorious dwarven carving skill is\npreserved.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28739"
+                ],
+                "name": "",
+                "out": [
+                    "28739"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28742"
+                ],
+                "name": "",
+                "out": [
+                    "28742"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28747"
+                ],
+                "name": "",
+                "out": [
+                    "28747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28756"
+                ],
+                "name": "",
+                "out": [
+                    "28756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28741",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "This mine was apparently created during the first attempts to extract the ore\nfrom the mountain. The surrounding walls show the signs of these efforts.\nPrecise and careful was the work of the dwarves here, as almost all of the ore\nwas removed and the mine is near empty.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28741"
+                ],
+                "name": "",
+                "out": [
+                    "28741"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28743"
+                ],
+                "name": "",
+                "out": [
+                    "28743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28746"
+                ],
+                "name": "",
+                "out": [
+                    "28746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28757"
+                ],
+                "name": "",
+                "out": [
+                    "28757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28742",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "Layers of dust have settled in the old mine. Once the sound of splitting stone\nfilled the tunnels as dwarves extracted the iron ore from the mountain. Now the\nmine is abandoned, left to spiders who spin their webs in every corner. In the\ndistance can be heard the sound of metal tools thrust against the hard mountain\nrock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28742"
+                ],
+                "name": "",
+                "out": [
+                    "28742"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28770"
+                ],
+                "name": "",
+                "out": [
+                    "28770"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28745"
+                ],
+                "name": "",
+                "out": [
+                    "28745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28744"
+                ],
+                "name": "",
+                "out": [
+                    "28744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28743",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abandoned Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "This unfinished tunnel seems to have been abandoned long ago. Bleak cobwebs form\nlight bridges spanning across the unfinished stone walls for the marching army\nof dust that covers the tunnel. There are many old mining tools scattered about\nhere, but all are cracked and pitted by the weight of many centuries of disuse.\nIt would appear that the tunnel was abandoned in a hurry.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28757"
+                ],
+                "name": "",
+                "out": [
+                    "28757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28769"
+                ],
+                "name": "",
+                "out": [
+                    "28769"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28743"
+                ],
+                "name": "",
+                "out": [
+                    "28743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28759"
+                ],
+                "name": "",
+                "out": [
+                    "28759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28744",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "The solemn decrepitude of the worn tunnel was born with the passing of the mine\nworkers. In times long gone the tunnel was mined by dwarven craftsmen, but now\nthat the ore has been extracted and only empty walls are left the tunnel has\nbeen abandoned. The walls and ceiling are held in place by thick beams of wood\nto prevent a cave-in in what seems a fairly unstable region of the mine.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28746"
+                ],
+                "name": "",
+                "out": [
+                    "28746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28771"
+                ],
+                "name": "",
+                "out": [
+                    "28771"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28773"
+                ],
+                "name": "",
+                "out": [
+                    "28773"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28743"
+                ],
+                "name": "",
+                "out": [
+                    "28743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28745",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abandoned Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "Your journey through the dwarven mines has taken you to a little used area. This\npart of the mine must have been one of the first excavations and has probably\nbeen abandoned for a long time. It would appear that the departing of the\ndwarves and the depletion of ore were closely related events. This tunnel is not\nused for transportation either, as dwarven interest has found new roots\nelsewhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28747"
+                ],
+                "name": "",
+                "out": [
+                    "28747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28745"
+                ],
+                "name": "",
+                "out": [
+                    "28745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28774"
+                ],
+                "name": "",
+                "out": [
+                    "28774"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28742"
+                ],
+                "name": "",
+                "out": [
+                    "28742"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28746",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abandoned Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel reveals many signs of careless mining. Although great persistence\ndrove the dwarves to seek wealth in the mountain, they must have been somewhat\ndisappointed with the obvious lack of ore in this region. The surrounding walls\nlook unstable and ready to cave in at any moment. The ceiling however looks\nquite strong.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28740"
+                ],
+                "name": "",
+                "out": [
+                    "28740"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28746"
+                ],
+                "name": "",
+                "out": [
+                    "28746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28775"
+                ],
+                "name": "",
+                "out": [
+                    "28775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28741"
+                ],
+                "name": "",
+                "out": [
+                    "28741"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28747",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Worn Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "Straight walls of hard rock stand like solemn guardians supporting a broad\nceiling that is full of scars from digging done long ago. The old tunnel appears\nto have been dug in the time when the dwarves first began mining the Blue\nMountains. There are no signs of ore in the tunnel and it would seem that it has\nnever been mined actively, but it still has its function in the mine.\nApparently, it is used regularly for transportation as ore is brought out and\nsupplies and tools return the other way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28740"
+                ],
+                "name": "",
+                "out": [
+                    "28740"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28751"
+                ],
+                "name": "",
+                "out": [
+                    "28751"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28749"
+                ],
+                "name": "",
+                "out": [
+                    "28749"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28748",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "A passage branches off from the main tunnel to the north, passing under a stone\narch which leaps across the ceiling with a broad curve and then leans on sturdy\nstone pillars with many intricate carvings. The floor is perfectly smooth here,\nyet not entirely due to extensive labour, but apparently also to being worn down\nby busy feet. Except for the carved pillars under the arch the tunnel is quite\nordinary.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28752"
+                ],
+                "name": "",
+                "out": [
+                    "28752"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28739"
+                ],
+                "name": "",
+                "out": [
+                    "28739"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28748"
+                ],
+                "name": "",
+                "out": [
+                    "28748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28750"
+                ],
+                "name": "",
+                "out": [
+                    "28750"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28749",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel digging its way through the depths of the mountain passes through\ndark walls of hard rock carved with the precision only the Dwarves possess. The\ntunnel is otherwise quite plain. No ornamentations or expensive decorations can\nbe seen. Most likely, this tunnel was constructed a long time ago as a part of\nthe first explorations into the mountain conducted by Thorin and Thrain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28738"
+                ],
+                "name": "",
+                "out": [
+                    "28738"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28749"
+                ],
+                "name": "",
+                "out": [
+                    "28749"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28753"
+                ],
+                "name": "",
+                "out": [
+                    "28753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28750",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "The old tunnel plunges through the underground as though it has inherited the\nobduracy of its dwarven creators. There is little ore in this part of the mine,\nyet the dwarves apparently continued digging through this region in hope of\nfinding riches further on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28781"
+                ],
+                "name": "",
+                "out": [
+                    "28781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28819"
+                ],
+                "name": "",
+                "out": [
+                    "28819"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28748"
+                ],
+                "name": "",
+                "out": [
+                    "28748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28751",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "In a dusty recess of the elaborate dwarven tunnel-systems beneath the vast bulk\nof the Blue Mountains lies a small corridor in the mountainside. Carved\nmeticulously, with skills and determination given the Dwarves by Aule, the\ncorridor is a proud display of dwarven history told by many murals on the stone\nwalls. Between the murals are arrayed various types of axes securely mounted\ninto the wall. A strong oaken door rests comfortably fitting into a stone-set\ndoor-frame to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28837"
+                ],
+                "name": "",
+                "out": [
+                    "28837"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28749"
+                ],
+                "name": "",
+                "out": [
+                    "28749"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28752",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Corridor",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 60,
+        "z": 0
+    },
+    {
+        "desc": "A curving stone ceiling looms above the tunnel. The hard rock has been polished\nby skilful hands and appears perfectly smooth, yet on the northern wall fine\nlines carved into the stone depict some sort of mural. The cold stone floor is\neven and without any cracks or other damage. This tunnel was undoubtedly carved\nwith the intention that it should last far beyond the lifespan of its creator.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28754"
+                ],
+                "name": "",
+                "out": [
+                    "28754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28750"
+                ],
+                "name": "",
+                "out": [
+                    "28750"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28753",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 61,
+        "z": 0
+    },
+    {
+        "desc": "The craftsmanship of the Dwarves is fully revealed as the faint light from oil\nlanterns hanging from the ceiling is reflected in the smooth surface of the\ntunnel walls. The ceiling in the dry tunnel is supported only by the walls; the\nweight of the mountain alone holds everything in place. In ages long gone, this\ntunnel had probably been a part of the first dwarven explorations into the\ndepths of the Blue Mountains.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28753"
+                ],
+                "name": "",
+                "out": [
+                    "28753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28755"
+                ],
+                "name": "",
+                "out": [
+                    "28755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28738"
+                ],
+                "name": "",
+                "out": [
+                    "28738"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28754",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Dwarven Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "Dark walls of hard mountain rock make a solid foundation for the broad ceiling\nthat spans across the tunnel. The even floor is tinged with a blue colour that\nseems to originate in the depths of the mountain itself. The immaculate\nsurroundings have been carved with the utmost precision that can only be found\nin the work of Dwarves. A niche is carved into the west wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28754"
+                ],
+                "name": "",
+                "out": [
+                    "28754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28758"
+                ],
+                "name": "",
+                "out": [
+                    "28758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28756"
+                ],
+                "name": "",
+                "out": [
+                    "28756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28755",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mine Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "The dwarves busy themselves in the labour of the mine as you can hear by the\ndistant sounds of metal upon hard rock passing through the air. Under the Blue\nMountains lie vast treasures which the dwarves mine with a determination beyond\nthat of men and elves. This tunnel seems to have been mined dry without much\ngain, but it is skilfully crafted with strong beams of wood supporting the\nceiling and the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28738"
+                ],
+                "name": "",
+                "out": [
+                    "28738"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28757"
+                ],
+                "name": "",
+                "out": [
+                    "28757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28741"
+                ],
+                "name": "",
+                "out": [
+                    "28741"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28755"
+                ],
+                "name": "",
+                "out": [
+                    "28755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28756",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mine Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "The ageing of this mine must have started a long time ago when the dwarves made\ntheir first explorations into the depths of the mountain. Judging by the marks\nalong the sides of the tunnel, heavy mining took place here once, and at that\ntime the mine probably played an active part in the consolidation of wealth\namong the dwarves. Now it appears to be more or less abandoned and it is only\nseldom that any dwarf might pass here when duties require that goods are brought\nto the outer parts of the mines.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28756"
+                ],
+                "name": "",
+                "out": [
+                    "28756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28744"
+                ],
+                "name": "",
+                "out": [
+                    "28744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28742"
+                ],
+                "name": "",
+                "out": [
+                    "28742"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28758"
+                ],
+                "name": "",
+                "out": [
+                    "28758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28757",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "A curve in the stone stretches the scars of dwarven pickaxes across the ceiling\nof the tunnel. This area was hewed through the core of the Blue Mountains by the\nhands of busy dwarves searching for ore. Now the tunnel is abandoned and closer\ninspection reveals that it was actually never quite finished.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28755"
+                ],
+                "name": "",
+                "out": [
+                    "28755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28759"
+                ],
+                "name": "",
+                "out": [
+                    "28759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28757"
+                ],
+                "name": "",
+                "out": [
+                    "28757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28758",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "The skill of dwarven pickaxes tells on the surrounding walls the story of the\ndwarven effort to mine the underground of the Blue Mountains. Yet the effort\nappears to have stopped here. On the floor of the almost completed tunnel lie\nseveral discarded pickaxes, and broken rocks produced by the mining are\nscattered along the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28758"
+                ],
+                "name": "",
+                "out": [
+                    "28758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28760"
+                ],
+                "name": "",
+                "out": [
+                    "28760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28744"
+                ],
+                "name": "",
+                "out": [
+                    "28744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28759",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Mine",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "Between huge stones towering around you like giants runs a narrow fissure in the\nmountain. The walls are very close, and moving through the fissure would shift\nbetween crawling on all fours and climbing up steep rocks. This fissure is\nnatural and there are no signs that dwarves were ever active in this area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28759"
+                ],
+                "name": "",
+                "out": [
+                    "28759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28761"
+                ],
+                "name": "",
+                "out": [
+                    "28761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28769"
+                ],
+                "name": "",
+                "out": [
+                    "28769"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28760",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Twisting Fissure",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "A narrow fissure between towering boulders proceeds through the underground.\nDarkness reigns here, feeding on any source of light that may pass. Grumbling\nand bickering, the mountain narrows the fissure making passage hard and\ntroublesome.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28760"
+                ],
+                "name": "",
+                "out": [
+                    "28760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28762"
+                ],
+                "name": "",
+                "out": [
+                    "28762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28768"
+                ],
+                "name": "",
+                "out": [
+                    "28768"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28761",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Fissure",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "In the inner depths of the Blue Mountains your most trusty follower is the\nrumbling echo carrying the sound of every footstep through the turning tunnels.\nThe tunnels here are natural and worn with the passing of time. Steep walls of\nflint, cracked and torn with sharp spikes, rise on every side of you. The black\npassage reveals no apparent signs of life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28761"
+                ],
+                "name": "",
+                "out": [
+                    "28761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28763"
+                ],
+                "name": "",
+                "out": [
+                    "28763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28767"
+                ],
+                "name": "",
+                "out": [
+                    "28767"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28762",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "Mouldering walls of flint rise high in the darkness that holds a rocky ceiling\nfar above your head. The natural tunnel is filled with debris broken loose from\nthe crumbling surroundings. A yawning silence lies over the tunnel, yet there is\nsomething, somewhere in the distance, making faint repetitive noises.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28762"
+                ],
+                "name": "",
+                "out": [
+                    "28762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28764"
+                ],
+                "name": "",
+                "out": [
+                    "28764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28766"
+                ],
+                "name": "",
+                "out": [
+                    "28766"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28763",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "As you glance at the torn stone walls from which deep darkness seems to emanate,\ntiny gleaming dots appear like stars slowly taking form behind passing clouds in\nthe night. As your vision is adjusted, the shining eyes reveal themselves as\nreflections in the rock. A big lode of iron ore is located just beneath the\nsurface of the rock awaiting only a swift stroke of a pickaxe to free it from\nthe rock that has bound it for ages.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28763"
+                ],
+                "name": "",
+                "out": [
+                    "28763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28765"
+                ],
+                "name": "",
+                "out": [
+                    "28765"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28764",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Corner",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -25,
+        "y": 70,
+        "z": 0
+    },
+    {
+        "desc": "Passage through the tunnel becomes troublesome as the walls narrow in and the\nceiling descends, bearing closer and closer to the rising floor. The rough walls\ngleam in the darkness with a metallic shine indicating rich deposits of iron\nore. A whispering echo of dripping water pervades the silence in the tunnel; the\nsound appears to be louder to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28766"
+                ],
+                "name": "",
+                "out": [
+                    "28766"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28809"
+                ],
+                "name": "",
+                "out": [
+                    "28809"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28764"
+                ],
+                "name": "",
+                "out": [
+                    "28764"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28765",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 70,
+        "z": 0
+    },
+    {
+        "desc": "Nestled within the dark curves of the Dwarven tunnel system, this storage room\nprovides a little light. Old, rundown tools and supplies litter the shelves on\nthe walls mixing with other goods. Hanging from the ceiling is a simple torch\nwhich sometimes flickers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28767"
+                ],
+                "name": "",
+                "out": [
+                    "28767"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28765"
+                ],
+                "name": "",
+                "out": [
+                    "28765"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28810"
+                ],
+                "name": "",
+                "out": [
+                    "28810"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28763"
+                ],
+                "name": "",
+                "out": [
+                    "28763"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28766",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "A Supply Room within the Mines",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "The looming darkness makes it hard to see your surroundings. Black creeping\nrocks line the floor making any journey difficult. The natural passage lies deep\nbeneath the Blue Mountains, where the secret of its presence eludes most regular\nvisitors. A rough ceiling above can barely be seen in the enshrouding darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28768"
+                ],
+                "name": "",
+                "out": [
+                    "28768"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28766"
+                ],
+                "name": "",
+                "out": [
+                    "28766"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28813"
+                ],
+                "name": "",
+                "out": [
+                    "28813"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28762"
+                ],
+                "name": "",
+                "out": [
+                    "28762"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28767",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "The wiry passage suddenly changes its route digging up through the mountain. The\ncolour of the rocky walls slowly changes from black to blue as the passage\nclimbs through different layers of stone. Fresh air comes from a narrow shaft\nleading up.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28769"
+                ],
+                "name": "",
+                "out": [
+                    "28769"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28767"
+                ],
+                "name": "",
+                "out": [
+                    "28767"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28814"
+                ],
+                "name": "",
+                "out": [
+                    "28814"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28761"
+                ],
+                "name": "",
+                "out": [
+                    "28761"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28768",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Climbing Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "The ground rises steeply under a low ceiling. The ceiling is only a few feet\nfrom the rubble-strewn rocky floor that twists upwards silently warning you to\nlook out for a slide. It is worn with deep cracks, and seems to be only waiting\nfor a chance to cause a cave-in. Crawling either up or down the tilting ground\nwill require great effort.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28744"
+                ],
+                "name": "",
+                "out": [
+                    "28744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28768"
+                ],
+                "name": "",
+                "out": [
+                    "28768"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28770"
+                ],
+                "name": "",
+                "out": [
+                    "28770"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28760"
+                ],
+                "name": "",
+                "out": [
+                    "28760"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28769",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crumbling Incline",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -24,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "The slanting tunnel begins to narrow in, and gradually light fades as the dark\nrock of the tunnel walls seems to absorb every colour. Moving through the tunnel\nwould be easy, yet many cobwebs hanging from the ceiling are a constant nuisance\nas they cling to your head. A faint repeating noise can occasionally be heard,\nbut it always fades quickly.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28743"
+                ],
+                "name": "",
+                "out": [
+                    "28743"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28814"
+                ],
+                "name": "",
+                "out": [
+                    "28814"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28771"
+                ],
+                "name": "",
+                "out": [
+                    "28771"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28769"
+                ],
+                "name": "",
+                "out": [
+                    "28769"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28770",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel slowly makes its way upwards, passing under a low ceiling of dark\nrock. In some places the incline is barely noticeable, so the tunnel can be\neasily traversed, yet constant dodging would be needed to avoid the old\ndust-covered cobwebs that hang from the ceiling. Far away a weak sound of metal\nagainst stone can be heard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28745"
+                ],
+                "name": "",
+                "out": [
+                    "28745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28815"
+                ],
+                "name": "",
+                "out": [
+                    "28815"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28772"
+                ],
+                "name": "",
+                "out": [
+                    "28772"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28770"
+                ],
+                "name": "",
+                "out": [
+                    "28770"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28771",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "The black rock walls close together, leaving barely enough room to allow\npassage. The ruined roof covers the tunnel, pointed ends of splinters directed\nat any intruder. Sharp rocks on the ground make movement even more difficult. A\nfaint sound of mining taking place far off in the mountain can be heard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28773"
+                ],
+                "name": "",
+                "out": [
+                    "28773"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28816"
+                ],
+                "name": "",
+                "out": [
+                    "28816"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28818"
+                ],
+                "name": "",
+                "out": [
+                    "28818"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28771"
+                ],
+                "name": "",
+                "out": [
+                    "28771"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28772",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 66,
+        "z": 0
+    },
+    {
+        "desc": "Bleak walls of smooth rock leap upwards in a curving motion bending inwards to\nconjoin with the cavern ceiling about sixteen feet above the floor. The cavern\nis fairly large and obviously carved with much determination and skill. The\nlevel floor is hard and rings out in alarm with every step you take, the echoes\nbouncing from wall to wall all around you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28774"
+                ],
+                "name": "",
+                "out": [
+                    "28774"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28772"
+                ],
+                "name": "",
+                "out": [
+                    "28772"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28776"
+                ],
+                "name": "",
+                "out": [
+                    "28776"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28745"
+                ],
+                "name": "",
+                "out": [
+                    "28745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28773",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cavern in the Mines",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": -21,
+        "y": 65,
+        "z": 0
+    },
+    {
+        "desc": "The walls of the tunnel bend inwards towards each other slowly transforming into\na crumbling ceiling above. The floor is lined with loose rocks from a recent\ncollapse. A wooden structure of planks and thick beams has been constructed to\nprevent the tunnel from caving in completely. There are no apparent signs of ore\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28775"
+                ],
+                "name": "",
+                "out": [
+                    "28775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28773"
+                ],
+                "name": "",
+                "out": [
+                    "28773"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28780"
+                ],
+                "name": "",
+                "out": [
+                    "28780"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28746"
+                ],
+                "name": "",
+                "out": [
+                    "28746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28774",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Worn Mine Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 64,
+        "z": 0
+    },
+    {
+        "desc": "Scars and chips in the sides of the tunnel show obvious signs of heavy mining\nover the long years. Now the tunnel walls stand bare and cracked, and knowing\nthe thoroughness of the dwarves, one should not expect too much from mining\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28781"
+                ],
+                "name": "",
+                "out": [
+                    "28781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28774"
+                ],
+                "name": "",
+                "out": [
+                    "28774"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28783"
+                ],
+                "name": "",
+                "out": [
+                    "28783"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28747"
+                ],
+                "name": "",
+                "out": [
+                    "28747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28775",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Worn Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 63,
+        "z": 0
+    },
+    {
+        "desc": "With the skill bestowed in the Dwarves, they picked a tunnel through this region\nof loose rock and rubble. The tunnel walls has been fortified with a wooden\nstructure of strong oak beams that span across the ceiling to keep the tunnel\nfrom caving in. Now the tunnel must be merely a part of the route by which the\nDwarves transport raw materials and various tools and supplies through the mine.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28751"
+                ],
+                "name": "",
+                "out": [
+                    "28751"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28775"
+                ],
+                "name": "",
+                "out": [
+                    "28775"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28782"
+                ],
+                "name": "",
+                "out": [
+                    "28782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28740"
+                ],
+                "name": "",
+                "out": [
+                    "28740"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28781",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Worn Mine Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 62,
+        "z": 0
+    },
+    {
+        "desc": "In the vaporous air breathing is troubled by a salty taste that combined with a\nfusty smell invokes a nauseating sensation. The rugged floor is slippery and\ntreacherous, covered by slimy fungi and pale moss and soaked by a never-ending\nstream of water beads inching their way down the cold walls. Nowhere is to be\nseen even a slightest hint of dwarven activity.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28816"
+                ],
+                "name": "",
+                "out": [
+                    "28816"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28805"
+                ],
+                "name": "",
+                "out": [
+                    "28805"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28803"
+                ],
+                "name": "",
+                "out": [
+                    "28803"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28812"
+                ],
+                "name": "",
+                "out": [
+                    "28812"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28804",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Moist Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "Water drips from every conceivable irregularity in the stone ceiling and forms\nshallow pools on the ground. The air is moist and leaves a slight acidic taste\nin your mouth. Various fungi thrive in the wet environment at the base of the\ncold stone walls. Some caution is needed to avoid slipping on the wet floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28804"
+                ],
+                "name": "",
+                "out": [
+                    "28804"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28807"
+                ],
+                "name": "",
+                "out": [
+                    "28807"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28806"
+                ],
+                "name": "",
+                "out": [
+                    "28806"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28811"
+                ],
+                "name": "",
+                "out": [
+                    "28811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28805",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Moist Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "Tiny streams of water flow down the cracks in the moss-covered walls. The air\nsmells damp and stale, mainly due to a foul stench emanating from the southern\nwall. Water is gathering in bleak pools on the rough floor which becomes very\nslippery to the south. Supporting the weight of the Blue Mountains, the ceiling\nrests heavily on the surrounding walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28805"
+                ],
+                "name": "",
+                "out": [
+                    "28805"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28729"
+                ],
+                "name": "",
+                "out": [
+                    "28729"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28808"
+                ],
+                "name": "",
+                "out": [
+                    "28808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28807",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Moist Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 70,
+        "z": 0
+    },
+    {
+        "desc": "Bleak puddles of stale-smelling water dominate the broken floor of the tunnel.\nThe sound of water dripping slowly from the tips of rocks protruding from the\nceiling can be heard. Veins of glistening ore run over the tunnel walls yet\nthere are no signs indicating the tunnel was ever mined.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28811"
+                ],
+                "name": "",
+                "out": [
+                    "28811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28807"
+                ],
+                "name": "",
+                "out": [
+                    "28807"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28809"
+                ],
+                "name": "",
+                "out": [
+                    "28809"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28808",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wet Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 70,
+        "z": 0
+    },
+    {
+        "desc": "Movement in the narrow tunnel is difficult, complicated by many rocks protruding\nfrom the ceiling. From the gaps in the cracked stone dim reflections of light\nsparkle in the richness of the underground. A pesky odour sweeps across the\nrugged stone walls with an intrusive determination.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28810"
+                ],
+                "name": "",
+                "out": [
+                    "28810"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28808"
+                ],
+                "name": "",
+                "out": [
+                    "28808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28765"
+                ],
+                "name": "",
+                "out": [
+                    "28765"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28809",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 70,
+        "z": 0
+    },
+    {
+        "desc": "Condensed water streams down the tattered stone walls. Deep cracks and holes in\nthe flint decorate the whole passage, yet no signs of any Dwarven activity are\nto be seen anywhere. In the misty air there is a strange smell, as of rotting\nflesh mixed with mouldy fabric; there is no telling where the smell comes from.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28813"
+                ],
+                "name": "",
+                "out": [
+                    "28813"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28809"
+                ],
+                "name": "",
+                "out": [
+                    "28809"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28811"
+                ],
+                "name": "",
+                "out": [
+                    "28811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28766"
+                ],
+                "name": "",
+                "out": [
+                    "28766"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28810",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Damp Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "A musty smell fills the moist air in the passage, and the black rock gleams with\na thin layer of condensed water. The water slowly gathers in faint lines and\ntravels down the walls creating tiny pools in the uneven floor. A crack in the\nwall reveals a high concentration of minerals as light is reflected from inside\nit with a metallic shine.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28812"
+                ],
+                "name": "",
+                "out": [
+                    "28812"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28808"
+                ],
+                "name": "",
+                "out": [
+                    "28808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28805"
+                ],
+                "name": "",
+                "out": [
+                    "28805"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28810"
+                ],
+                "name": "",
+                "out": [
+                    "28810"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28811",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Damp Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 69,
+        "z": 0
+    },
+    {
+        "desc": "Beneath a low ceiling of sharp rocks runs a low passage through the mountain.\nTravel here is treacherous, as the passage twists and turns beneath the ever\nimpending rocks in the ceiling. A distant sound of metal against hard rock can\nbe heard as it repeats over and over. The humidity suddenly increases from\nbarely noticeable until it is quite evident and makes breathing stressful.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28815"
+                ],
+                "name": "",
+                "out": [
+                    "28815"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28811"
+                ],
+                "name": "",
+                "out": [
+                    "28811"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28804"
+                ],
+                "name": "",
+                "out": [
+                    "28804"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28813"
+                ],
+                "name": "",
+                "out": [
+                    "28813"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28812",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "Shrouded in darkness, the crumbling passage makes its way through an area of\nflint. In every corner the darkness lurks as if hiding something. The passage\nseems natural, formed long ago when the mountain was still young.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28814"
+                ],
+                "name": "",
+                "out": [
+                    "28814"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28810"
+                ],
+                "name": "",
+                "out": [
+                    "28810"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28812"
+                ],
+                "name": "",
+                "out": [
+                    "28812"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28767"
+                ],
+                "name": "",
+                "out": [
+                    "28767"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28813",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 68,
+        "z": 0
+    },
+    {
+        "desc": "Cramped between the rough surfaces of the surrounding stone walls is a tight\nspace that snakes its way up and down through endless formations of blue rock\nthat shines with a crystalline glitter as light exposes its surface. Rocky edges\nin the stone make passage difficult as they seize anything trying to make its\nway through.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28770"
+                ],
+                "name": "",
+                "out": [
+                    "28770"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28813"
+                ],
+                "name": "",
+                "out": [
+                    "28813"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28815"
+                ],
+                "name": "",
+                "out": [
+                    "28815"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28768"
+                ],
+                "name": "",
+                "out": [
+                    "28768"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28814",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Crawlspace",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -23,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "A low passage hews its way through different layers of hard rock. The colour of\nthe stone shifts from blue to black as the passage continues up and down through\nthe underground. Cobwebs are plentiful in every corner and crack, and a stale\nsmell is in the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28771"
+                ],
+                "name": "",
+                "out": [
+                    "28771"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28812"
+                ],
+                "name": "",
+                "out": [
+                    "28812"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28816"
+                ],
+                "name": "",
+                "out": [
+                    "28816"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28814"
+                ],
+                "name": "",
+                "out": [
+                    "28814"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28815",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -22,
+        "y": 67,
+        "z": 0
+    },
+    {
+        "desc": "Stooping low beneath a ceiling of fierce rocks, movement becomes difficult as\nthe tunnel gradually narrows in. The hard rocks shift in colour as the passage\nslowly advances, up and down, through the heart of the mountain. The air is\ndense and moist, making breathing tiresome.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28772"
+                ],
+                "name": "",
+                "out": [
+                    "28772"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28804"
+                ],
+                "name": "",
+                "out": [
+                    "28804"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28817"
+                ],
+                "name": "",
+                "out": [
+                    "28817"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                    "28815"
+                ],
+                "name": "",
+                "out": [
+                    "28815"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28816",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Low Passage",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": -21,
+        "y": 67,
+        "z": 0
+    }
+]

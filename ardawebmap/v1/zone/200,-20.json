@@ -1,0 +1,2260 @@
+[
+    {
+        "desc": "Along the smooth granite walls, some small closets and a chest of drawers are\nsituated. A large cavebear-fur covers most of the floor, complete with paws and\nhead. Right in front of the entrance, a man-sized mirror hangs beside a large\nclothes hanger filled with worn cloaks and shirts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3015"
+                ],
+                "name": "",
+                "out": [
+                    "3015"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14456"
+                ],
+                "name": "",
+                "out": [
+                    "14456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3043",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Entrance Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 214,
+        "y": -5,
+        "z": 0
+    },
+    {
+        "desc": "Small, exquisitely carved, ebony lamps hang every few feet around the smooth,\nstone walls. Around two large oaken tables stand eight robust chairs,\nembellished with delicate inlays of ivory and small glistening gems. On the\nfloor, a couple large, soft carpets efficiently reduce the echoes in the large\nliving room. The spiral staircase continues up and down.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3043"
+                ],
+                "name": "",
+                "out": [
+                    "3043"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14457"
+                ],
+                "name": "",
+                "out": [
+                    "14457"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14456",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Living Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 214,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "A large fireplace is situated in the middle of the room just a few feet to the\nleft of where the spiral staircase ends. In front of the fireplace, two large\nchairs stand beside a low table. The light from the fireplace is reflected by\nsmall gems inlaid in the snow-white, arched roof. By the northern wall, beside a\nlarge closet, stands a large bed made of finest oak.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14456"
+                ],
+                "name": "",
+                "out": [
+                    "14456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14457",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Bed Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 214,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "This is a rather large garden full of flowering plants and shrubs. There are so\nmany different kinds of blooms it is hard to imagine any variety or colour of\nflower not represented. Zack, the owner of this garden, clearly must have some\nstrange fixation with flowers. Most likely a well kept secret to all but those\nfriends that know him well enough to merit an invitation to his home. To the\nnorth, there is the entrance to a large armoury.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20064"
+                ],
+                "name": "",
+                "out": [
+                    "20064"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20051"
+                ],
+                "name": "",
+                "out": [
+                    "20051"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20063",
+        "light": 0,
+        "loadflags": 262152,
+        "mobflags": 0,
+        "name": "A Decorative Garden",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 213,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "This large armoury has rows upon rows of weapon racks arranged in such a way\nthat each is displayed so it can be seen clearly, as well as taken down quickly,\nin time of need. Beyond the weapons, at the rear of the structure, are suits of\narmour, shields and helmets. What is most notable about this collection is the\nvariety of unique styles, clearly this armoury's owner is serious about his\nweaponry. At the centre of the room is a large wooden platform.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20063"
+                ],
+                "name": "",
+                "out": [
+                    "20063"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20064",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Zack's Armoury",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 213,
+        "y": -2,
+        "z": 0
+    },
+    {
+        "desc": "All the walls of this room are filled with bookcases, except for the west wall\nthat leads into Utgbalds bedroom. There is a nice set of comfy couches there,\nwith a really neat table in between them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20065"
+                ],
+                "name": "",
+                "out": [
+                    "20065"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20067"
+                ],
+                "name": "",
+                "out": [
+                    "20067"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20066",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Utgbald's Livingroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 218,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "In one of the corners of the room there is a really huge bed. Maybe Utgbald is\nlooking for a companion that wants to share his bed, since it really is huge.\nThe walls in here are covered with all different kind of pictures.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20066"
+                ],
+                "name": "",
+                "out": [
+                    "20066"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20067",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Utgbald's Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 217,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "A long, spiralling stairwell extends down from the corridor above and leads into\nthese spacious living quarters. The ceilings are very high, yet well lit from\ntop to bottom. Small shafts inserted into the ceilings help to circulate the\nroom, bringing in fresh air from the outside all the time. The floor is smooth,\npolished by the wise and skillful hands of master Dwarven craftsmen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20077"
+                ],
+                "name": "",
+                "out": [
+                    "20077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20076"
+                ],
+                "name": "",
+                "out": [
+                    "20076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20080"
+                ],
+                "name": "",
+                "out": [
+                    "20080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20075"
+                ],
+                "name": "",
+                "out": [
+                    "20075"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20050"
+                ],
+                "name": "",
+                "out": [
+                    "20050"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20081"
+                ],
+                "name": "",
+                "out": [
+                    "20081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20074",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "A Dwarven Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 208,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "This large cave is well lit by various size lamps on all sides. Ornamented\nshields and shiny armour hang from pegs built into the walls. A sword rack leans\nup against the south wall, full of blades both sharp and dull. To the east, the\ncave opens up to a large hall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20074"
+                ],
+                "name": "",
+                "out": [
+                    "20074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20075",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Large Armoury",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 207,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "Though at the entrance this hallway looks narrow, from within it can be seen\nexpanding to a cavernous size. The smooth, polished floor slopes gently down to\nthe north. The walls are covered in mosaics of semi-precious stones, forming\nimages of Dwarven lords and heroes. With their eyes made of shining rubies, they\nlook down at all those who pass beneath them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20074"
+                ],
+                "name": "",
+                "out": [
+                    "20074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20078"
+                ],
+                "name": "",
+                "out": [
+                    "20078"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20077",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dwarven Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 208,
+        "y": -2,
+        "z": 0
+    },
+    {
+        "desc": "A stalactite hangs down from the roof, a bright gem suspended from its tip. A\nfaint light emanates from the gem, flickering and making shadows dance on the\nwalls. In the middle of the room stands a giant stalagmite masterfully carved\ninto a statue depicting the stout Dwarven warrior Khozdul. One could linger here\nfor many an hour, simply sitting and pondering, perhaps smoking pipe-weed and\nabsorbing the past as if to gain from it strength for the future.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20079"
+                ],
+                "name": "",
+                "out": [
+                    "20079"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20077"
+                ],
+                "name": "",
+                "out": [
+                    "20077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20078",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Meeting Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 208,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "The walls and the floor of this large hall are made of black stone streaked with\ngold. Suits of armour line the walls, glittering in the soft light. A couple of\nregal carpets cover the floor. Several pillars decorated with sapphires, opals,\ndiamonds, and other precious jewels stretch towards the smooth marble roof. The\nroom is so neat and clean that it could probably accomodate even the fairest of\nElves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20078"
+                ],
+                "name": "",
+                "out": [
+                    "20078"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20079",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Khozdul's Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 209,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "This chamber is inhabited by the dwarf Khazdul. It is a spacious room, yet dimly\nlit in comparison to the brightness of the main hall to the west. The light from\nvarious candles bounces and flickers as the flames cast shadows on the walls\nfrom all sides. A large bed sits in one corner, on top of an old, woven rug.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20074"
+                ],
+                "name": "",
+                "out": [
+                    "20074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20080",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Khazdul's Bed Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 209,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this passage are made of large stone blocks placed upon one\nanother. The blocks are piled from the floor to the ceiling where they form a\ndome. Inside the dome, bricks of dark and light marble create a intricate\npattern across the ceiling. Small bronze lanterns provide the cavern with a\nbright but yet warm light.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20082"
+                ],
+                "name": "",
+                "out": [
+                    "20082"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20074"
+                ],
+                "name": "",
+                "out": [
+                    "20074"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20081",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Basement Entrance",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 207,
+        "y": -2,
+        "z": 0
+    },
+    {
+        "desc": "Candles and lanterns light this huge hall which is cut deep into the rock.\nAcross the western wall hangs a large beautifully carved pine branch. Centered\nbelow the branch hangs an oil-painting of Bagger. Below the painting a fireplace\nis situated. In front of the fireplace stands a comfortable chair. From the\nmidst of the northern wall, an old table made out of teak stretches towards the\ncentre of the room, and along the table some chairs stand. Axes and shields of\ndifferent origin are on displayed all over the eastern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20081"
+                ],
+                "name": "",
+                "out": [
+                    "20081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20082",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cosy Livingroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 207,
+        "y": -3,
+        "z": 0
+    },
+    {
+        "desc": "The solid oaken doors open up into a large, high-ceilinged hall with a strange\nconstruction of metal and glass in the centre of the roof. This dome allows the\nlight of day to illuminate the interior of the hall. Two statues of bronze\ndragons with ruby eyes stand in eternal watch for their master on either side of\nthe door. In the centre of the northern wall, a well-decorated oaken door gives\npassage to another room. On either side of the door carpets can be seen hanging\non the wall. The left carpet portrays a golden dragon on a field of crimson and\nthe right carpet shows a battle scene on which one man is battling a threesome\nof orcs. In the northeastern and northwestern corners of the hall there are\nfireplaces, which often give warmth to the place. Near the northwestern\nfireplace a comfortable sofa has been placed making it an ideal place for\nreading. A pile of books, neatly stacked atop each other, lie next to it. Beside\nthe northeastern fireplace a large table has been set with eight comfortable,\nbut functional, leather chairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "20084"
+                ],
+                "name": "",
+                "out": [
+                    "20084"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20049"
+                ],
+                "name": "",
+                "out": [
+                    "20049"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20083",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Entrance Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 211,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "In the northern wall there are two large windows which allow the day light to\nilluminate the whole room. Set between them is a large, very comfortable\nlooking, bed. On the right side of the room a desk has been placed facing the\ndoor. All sorts of maps, covering all of Arda, are laid out on it. On the left\nside of the room stands a peg for armour, covered with a gleaming suit of\nmithril chain mail. Next to that stands a weapon rack with a master's choice of\nhammers and swords. Two small fireplaces, one in the southeastern corner and one\nin the southwestern corner of the room, maintain a comfortable temperature in\nhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20083"
+                ],
+                "name": "",
+                "out": [
+                    "20083"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20084",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rhand's Private Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 211,
+        "y": -2,
+        "z": 0
+    },
+    {
+        "desc": "A musty odour fills the grey quarters, which are nothing more but a small room\nwith few furniture. A small bed, covered with prickly straw, has been placed in\nthe centre, some of the straw littering the grey stone floor, forming a partial\ncarpet leading towards the door. The door has a window on each side, not\noffering a view yet allowing the light of day to enter. The walls are as bare\nand cold as the floor, yet save for the musty odour, the place is relatively\nclean and well-maintained. A few niches are set in the walls, each set with a\nlantern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20052"
+                ],
+                "name": "",
+                "out": [
+                    "20052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20229",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Babai's Sleeping Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 215,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "These palatious ruins show that before the fall of the kingdom of Arthedain\nArnor Lane probably was one of the most noble areas in the city. Today, many of\nthe old ruins have been removed, while the pavement has been renewed with white\nstone, possibly imported from the White Hills near Forlond. The coat-of-arms of\nthe Eketta family, one of the seven major houses of Arthedain, has been inlaid\ninto the pavement in coloured stones, faded over time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20357"
+                ],
+                "name": "",
+                "out": [
+                    "20357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3011"
+                ],
+                "name": "",
+                "out": [
+                    "3011"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20352"
+                ],
+                "name": "",
+                "out": [
+                    "20352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20355"
+                ],
+                "name": "",
+                "out": [
+                    "20355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20349",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arnor Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 219,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "This large structure with a loft ceiling is the main meeting and dining area.\nAlong the walls you see several paintings. To the north there is a passage to a\nkitchen and near the south wall you notice a small chapel. Oftentimes you can\nhear a minstrel, on a raised gallery overlooking the Great Hall, singing\nPedrag's favourite songs about the mysteries of Arda.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20349"
+                ],
+                "name": "",
+                "out": [
+                    "20349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20356"
+                ],
+                "name": "",
+                "out": [
+                    "20356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20355",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Great Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 218,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "A small fireplace gives this cosy room a warm glow. In the western corner you\nsee a king-sized bed, covered in warm blankets. A small wardrobe, filled with\nPedrag's clothes and weaponry, can be seen on the northern wall. Near the\nfireplace stand a comfortable chair and an elegant bookshelf stacked with Tales\nof Arda.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20355"
+                ],
+                "name": "",
+                "out": [
+                    "20355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20356",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Pedrag's Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 217,
+        "y": -4,
+        "z": 0
+    },
+    {
+        "desc": "A few ruins, reminiscent of great architecture, remain along this straight part\nof Arnor Lane; many of the old ruins have either been removed or changed to be\nused for housing. The colourful coat-of-arms of the Orros family, one of the\nseven major noble houses of the fallen Kingdom of Arthedain, has been inlaid\ninto the white pavement.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21865"
+                ],
+                "name": "",
+                "out": [
+                    "21865"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20349"
+                ],
+                "name": "",
+                "out": [
+                    "20349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "22279"
+                ],
+                "name": "",
+                "out": [
+                    "22279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20357",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arnor Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 219,
+        "y": -5,
+        "z": 0
+    },
+    {
+        "desc": "Battle-scarred shields and war-worn furs hang along the walls in this round\nchamber. A pair of crossed axes is secured above the doorway, whereas a low,\nsombre lantern is hanging from the slanted wall. The lantern slightly brightens\nthe room and throws long shadows along the room. There is a thick, worn rug on\nthe floor. The rug shows a barely discernible figure of a brave, scarred warrior\nin combat, only his slightly crazed look clearly discernible.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20052"
+                ],
+                "name": "",
+                "out": [
+                    "20052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21864",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Aratha's Domed Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 216,
+        "y": -1,
+        "z": 0
+    },
+    {
+        "desc": "The lane bends in a wide curve and thus forms a right angle around a ruin that\nlooks like it was once a magnificant building. The coat-of-arms of the Hyarrs\nfamily can be seen here, inlaid into the white pavement. The coloured stones\nhave faded over time. A few massive carts loaded with heavy blocks of stone have\nbeen left along the road, they seem to be used to deliver material to build new\nhousing where ruins have been removed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21869"
+                ],
+                "name": "",
+                "out": [
+                    "21869"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20357"
+                ],
+                "name": "",
+                "out": [
+                    "20357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "21866"
+                ],
+                "name": "",
+                "out": [
+                    "21866"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21868"
+                ],
+                "name": "",
+                "out": [
+                    "21868"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21865",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Bend in Arnor Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 219,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "A square rug made of soft, brown fur covers a majority of the floor here in the\nhome of Logazor the Dwarf. The room consists of a wooden-framed bed, a small\ntable, and a dresser all carved alike by the same maker it would appear. Along\nthe walls there are several animal trophies displayed from the hunting skills of\nthe home's owner. A shelf near the back of the room has several different\nhunters knives and other trinkets upon it for show.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21865"
+                ],
+                "name": "",
+                "out": [
+                    "21865"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21868",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Logazor's Private Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 218,
+        "y": -6,
+        "z": 0
+    },
+    {
+        "desc": "Unlike the ruins of once so proud city of Fornost, this surprisingly large and\nlight house is in perfect condition. It has been built from smooth, large stones\nand gives out a safe and cosy impression. A large fire pit used for cooking and\nwarming dominates the western part of the room. The other furniture consists of\na huge, oaken desk, a group of chairs around a table, and a soft-looking sofa.\nThere is a bed under the windows, and some paintings have been hung between\nthem. The most curious thing in this room is a bronze figure of a valiant man,\nwielding a shining sword and fighting a horrible beast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "21865"
+                ],
+                "name": "",
+                "out": [
+                    "21865"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "21869",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Obbah's Corner",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 219,
+        "y": -7,
+        "z": 0
+    },
+    {
+        "desc": "The dimly lit hall, built from solid rock, has a cavernous resemblance. It is\nelaborately decorated with several coat of arms and precious gems. Torches\nadorning the walls provide a flickering light, and give the home a warm\nwelcoming quality. Between the torches hang various paintings which alude to the\nNumenorean ancestry of Arvegil. The largest of the Numenorean paintings hangs\nover the banquet table, very majestic and immaculate. The Lord of the Hall\npresides from the throne in the centre of the hall, which is cut from the same\nrare stone surrounding you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20357"
+                ],
+                "name": "",
+                "out": [
+                    "20357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22279",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Arvegil's Stone Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 218,
+        "y": -5,
+        "z": 0
+    }
+]

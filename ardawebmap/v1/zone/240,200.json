@@ -1,0 +1,932 @@
+[
+    {
+        "desc": "The smell here makes you want to vomit. All around you lies death and decay.\nThere are bits of rotting food lying about as well as bits of rotting slaves.\nWhoever the slaver is he certainly has no care about his slaves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9332"
+                ],
+                "name": "",
+                "out": [
+                    "9332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9323"
+                ],
+                "name": "",
+                "out": [
+                    "9323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9322",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slave Quarters",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 242,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "This room has been well furnished by its owners with soft and comfortable\nlooking chairs. In the centre of the room stands a large table with the remains\nof what must have been quite a lavish meal. Gaudy lamps light the room, giving\nit a sense of misplaced wealth. To the west is a large and strong-looking door,\nwhile to the south is the smugglers' bunk room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9331"
+                ],
+                "name": "",
+                "out": [
+                    "9331"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9324"
+                ],
+                "name": "",
+                "out": [
+                    "9324"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9322"
+                ],
+                "name": "",
+                "out": [
+                    "9322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9323",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Smuggler Living Quarters",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 243,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "A large cavern opens up before you, in it all around you are crates and boxes of\nmerchandise. Some of the crates are stacked neatly into columns which reach up\nalmost to the ceiling, while some of the others lie littered around you. The\nwarehouse continues east and south from here, but you notice a small door to the\nwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9321"
+                ],
+                "name": "",
+                "out": [
+                    "9321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9330"
+                ],
+                "name": "",
+                "out": [
+                    "9330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9325"
+                ],
+                "name": "",
+                "out": [
+                    "9325"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9323"
+                ],
+                "name": "",
+                "out": [
+                    "9323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9324",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Large Warehouse",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 244,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "As you proceed through the warehouse you notice signs of an active slave trade\nhere. Amongst the boxes and crates lie some empty manacles and chains probably\nused by some slave who has outlived his usefulness. From here the cavern\ncontinues east, south, and west\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9329"
+                ],
+                "name": "",
+                "out": [
+                    "9329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9326"
+                ],
+                "name": "",
+                "out": [
+                    "9326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9324"
+                ],
+                "name": "",
+                "out": [
+                    "9324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9325",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Large Warehouse",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 245,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The walls of the cavern loom up to the east and north here blocking off any\nfurther passage in those directions. There are many boxes and crates stacked\nvery close together making your life very difficult as you try to squeeze\nbetween them. All around you can hear echoes of screams as the slaves are beaten\non with their work.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9327"
+                ],
+                "name": "",
+                "out": [
+                    "9327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9325"
+                ],
+                "name": "",
+                "out": [
+                    "9325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9326",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Large Warehouse",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 246,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "You have reached the far corner of the cavern and the heart of the Smuggler's\ndomain. To the east you notice a small inconspicuous door. From behind the door\nyou can hear some heated arguments on various topics of smuggling. The cavern\ncontinues north and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9326"
+                ],
+                "name": "",
+                "out": [
+                    "9326"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9328"
+                ],
+                "name": "",
+                "out": [
+                    "9328"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9329"
+                ],
+                "name": "",
+                "out": [
+                    "9329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9327",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Large Warehouse",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 246,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "This is a small room with a large table in the centre of it. Across the table\nare littered some large maps an drawings. Across the walls are more maps, there\nare also many timetables and plans crudely hanging on it. The room is lit by a\nsolitary lantern standing on the table.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9327"
+                ],
+                "name": "",
+                "out": [
+                    "9327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9328",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Smuggler Operations Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 247,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "The cavern widens out a bit here and the crates and boxes aren't packed so close\ntogether, making your progress easier. Around you slaves and smugglers run about\ntheir business. You receive agonising looks from the slaves and evil glares from\nthe smugglers. The Warehouse continues north, east and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9325"
+                ],
+                "name": "",
+                "out": [
+                    "9325"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9327"
+                ],
+                "name": "",
+                "out": [
+                    "9327"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9330"
+                ],
+                "name": "",
+                "out": [
+                    "9330"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9329",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Large Warehouse",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 245,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "The cavern sides rise up to your south and west here, blocking all further\npassage in those directions. You have to breathe in deeply in order to squeeze\nthrough the gaps in the columns of crates and boxes. The warehouse continues to\nthe east and to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9324"
+                ],
+                "name": "",
+                "out": [
+                    "9324"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9329"
+                ],
+                "name": "",
+                "out": [
+                    "9329"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9330",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Large Warehouse",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 244,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "This room is quite lavishly furnished, there are some soft and comfortable\nlooking beds against the eastern wand western walls. The room is lit by some\nexpensive looking lanterns. Across the southern wall is a large tapestry\ndepicting events from Arda's history. The only exit is back to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9323"
+                ],
+                "name": "",
+                "out": [
+                    "9323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9331",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Smuggler Bunk Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 243,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "The room is very bare and spartan apart from a few shackles chained to the wall\nthe room has no other fixtures at all. A few straw beds lie in the corners of\nthe room. All the slaves seem to have to eat is a few rotting morsels littered\nabout the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9322"
+                ],
+                "name": "",
+                "out": [
+                    "9322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9332",
+        "light": 2,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Slave Sleeping Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 242,
+        "y": 201,
+        "z": 0
+    }
+]

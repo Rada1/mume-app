@@ -25,13 +25,18 @@ interface InteractionProps {
     setIsDragging: (dragging: boolean) => void;
     handleAddRoom: (wx: number, wy: number, z: number) => string;
     triggerRender: () => void;
+    viewZ: number | null;
+    setViewZ: React.Dispatch<React.SetStateAction<number | null>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
 }
 
 export const useMapperInteractions = ({
     rooms, setRooms, markers, setMarkers, selectedRoomIds, setSelectedRoomIds,
     selectedMarkerId, setSelectedMarkerId, cameraRef, mode, currentRoomId,
     isDesignMode, isMinimized, setAutoCenter, setContextMenu, setInfoRoomId,
-    triggerHaptic, canvasRef, cardRef, setIsDragging, handleAddRoom, triggerRender
+    triggerHaptic, canvasRef, cardRef, setIsDragging, handleAddRoom, triggerRender,
+    viewZ, setViewZ, preloadedCoordsRef, spatialIndexRef
 }: InteractionProps) => {
 
     const isDraggingInternalRef = useRef(false);
@@ -43,6 +48,7 @@ export const useMapperInteractions = ({
     const hasDraggedRef = useRef(false);
     const longPressTimerRef = useRef<any>(null);
     const scrollLockRef = useRef(false);
+    const contextMenuTriggeredRef = useRef(false);
 
     const [marqueeStart, setMarqueeStart] = useState<{ x: number, y: number } | null>(null);
     const [marqueeEnd, setMarqueeEnd] = useState<{ x: number, y: number } | null>(null);
@@ -72,11 +78,12 @@ export const useMapperInteractions = ({
 
     const getRoomAt = useCallback((wx: number, wy: number, strictZ = false) => {
         const roomsToSearch = roomsRef.current;
-        const currentZ = currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0;
+        const currentZ = viewZ !== null ? viewZ : (currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0);
         const margin = 2;
         let foundRoom: string | null = null;
         let bestDist = Infinity;
 
+        // 1. Search Local State first
         for (const key in roomsToSearch) {
             const r = roomsToSearch[key];
             const rx = r.x * GRID_SIZE, ry = r.y * GRID_SIZE;
@@ -89,8 +96,33 @@ export const useMapperInteractions = ({
                 }
             }
         }
+
+        // 2. Search Master Map if nothing in local
+        if (spatialIndexRef.current && preloadedCoordsRef.current) {
+            const floor = Math.round(currentZ);
+            const floorBuckets = spatialIndexRef.current[floor];
+            if (floorBuckets) {
+                const bx = Math.floor(wx / GRID_SIZE / 5);
+                const by = Math.floor(wy / GRID_SIZE / 5);
+                // Check current bucket and neighbors
+                for (let dx = -1; dx <= 1; dx++) {
+                    for (let dy = -1; dy <= 1; dy++) {
+                        const vnums = floorBuckets[`${bx + dx},${by + dy}`];
+                        if (vnums) {
+                            for (const vnum of vnums) {
+                                const [rx_g, ry_g] = preloadedCoordsRef.current[vnum];
+                                const rx = rx_g * GRID_SIZE, ry = ry_g * GRID_SIZE;
+                                if (wx >= rx - margin && wx <= rx + GRID_SIZE + margin && wy >= ry - margin && wy <= ry + GRID_SIZE + margin) {
+                                    return `m_${vnum}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return foundRoom;
-    }, []);
+    }, [viewZ, preloadedCoordsRef, spatialIndexRef]);
 
     const getMarkerAt = useCallback((wx: number, wy: number) => {
         const markersToSearch = markersRef.current;
@@ -138,10 +170,12 @@ export const useMapperInteractions = ({
             if (pointers.length === 1) {
                 if (e.button !== 0) return;
                 hasDraggedRef.current = false;
+                contextMenuTriggeredRef.current = false;
 
                 if (mode === 'edit') {
                     longPressTimerRef.current = setTimeout(() => {
                         triggerHaptic(40);
+                        contextMenuTriggeredRef.current = true;
                         setContextMenu({ x: mx, y: my, wx: world.x, wy: world.y, roomId: clickedRoomId });
                     }, 500);
                 }
@@ -225,7 +259,7 @@ export const useMapperInteractions = ({
                 const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }, lastMid = { x: (lp1.x + lp2.x) / 2, y: (lp1.y + lp2.y) / 2 };
                 if (lastDist > 1 && dist > 1) {
                     const cam = cameraRef.current, oldZoom = cam.zoom;
-                    const newZoom = Math.max(0.1, Math.min(oldZoom * (1 + (dist / lastDist - 1) * ZOOM_SENSITIVITY), 5));
+                    const newZoom = Math.max(0.01, Math.min(oldZoom * (1 + (dist / lastDist - 1) * ZOOM_SENSITIVITY), 5));
                     cam.x -= ((mid.x - lastMid.x) * DRAG_SENSITIVITY) / oldZoom; cam.y -= ((mid.y - lastMid.y) * DRAG_SENSITIVITY) / oldZoom;
                     cam.x += (mid.x / oldZoom) - (mid.x / newZoom); cam.y += (mid.y / oldZoom) - (mid.y / newZoom); cam.zoom = newZoom;
                     setAutoCenter(false);
@@ -252,7 +286,7 @@ export const useMapperInteractions = ({
                         if (rx >= x1 - GRID_SIZE && rx <= x2 && ry >= y1 - GRID_SIZE && ry <= y2 && (r.z || 0) === currentZ) newSelection.add(r.id);
                     });
                     setSelectedRoomIds(newSelection);
-                } else if (!hasDraggedRef.current && dragTypeRef.current === 'room') {
+                } else if (!hasDraggedRef.current && dragTypeRef.current === 'room' && !contextMenuTriggeredRef.current) {
                     const world = screenToWorld(startMouseRef.current.x, startMouseRef.current.y);
                     const clickedRoomId = getRoomAt(world.x, world.y);
                     if (clickedRoomId) setInfoRoomId(clickedRoomId);
@@ -275,10 +309,20 @@ export const useMapperInteractions = ({
 
         const onWheel = (e: WheelEvent) => {
             e.preventDefault();
+            if (e.ctrlKey) {
+                const dir = e.deltaY > 0 ? -1 : 1;
+                setViewZ(prev => {
+                    const currentZ = currentRoomIdRef.current ? (roomsRef.current[currentRoomIdRef.current]?.z || 0) : 0;
+                    return (prev !== null ? prev : currentZ) + dir;
+                });
+                setAutoCenter(false);
+                triggerRender();
+                return;
+            }
             const rect = cvs.getBoundingClientRect();
             const mx = e.clientX - rect.left, my = e.clientY - rect.top;
             const cam = cameraRef.current, oldZoom = cam.zoom;
-            const factor = Math.pow(1.05, -e.deltaY / 120), newZoom = Math.max(0.1, Math.min(oldZoom * factor, 5));
+            const factor = Math.pow(1.05, -e.deltaY / 120), newZoom = Math.max(0.01, Math.min(oldZoom * factor, 5));
             if (Math.abs(newZoom - oldZoom) < 0.001) return;
             const wx = (mx / oldZoom) + cam.x, wy = (my / oldZoom) + cam.y;
             cam.x = wx - (mx / newZoom); cam.y = wy - (my / newZoom); cam.zoom = newZoom;

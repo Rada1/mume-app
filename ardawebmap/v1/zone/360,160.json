@@ -1,0 +1,2920 @@
+[
+    {
+        "desc": "This narrow ledge has a dizzying view of the cirque to the north. The valley\ncontains a dark lake that almost totally fills the bottom of the bowl-shaped\narea. To the west the ledge quickly peters out, but to the south it is possible\nto maneuver among the rocky formations.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12300"
+                ],
+                "name": "",
+                "out": [
+                    "12300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12298"
+                ],
+                "name": "",
+                "out": [
+                    "12298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12297",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Rocky Ledge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 363,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "To the north, this narrow trail descends to a relatively wide ledge over-\nlooking a bowl-shaped valley. The valley below contains a dark lake - only a\nnarrow stretch of land along the northern edge allows access to the head of the\nvalley. To the south, the trail climbs upward to the crest of a ridge, while to\nthe west a narrow ledge clings to the cliff wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "12410"
+                ],
+                "name": "",
+                "out": [
+                    "12410"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12299"
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12297"
+                ],
+                "name": "",
+                "out": [
+                    "12297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12298",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Goats Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 364,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "It is not unusual to find goats this high up in the mountains and you can follow\nthe muddy goats trail around the back of the pinnacle. The trail is still\nclimbing high onto the back of Celebdil. There is snow on the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12298"
+                ],
+                "name": "",
+                "out": [
+                    "12298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12300"
+                ],
+                "name": "",
+                "out": [
+                    "12300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12405"
+                ],
+                "name": "",
+                "out": [
+                    "12405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12299",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Goats Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 364,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "To the north-east there is a large stack of rock extending to the sky for\nseveral hundreds of feet. There is no way over it, you will have to go around\none way or the other.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12297"
+                ],
+                "name": "",
+                "out": [
+                    "12297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12299"
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12426"
+                ],
+                "name": "",
+                "out": [
+                    "12426"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12300",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountainous Terrain",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 363,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "This high on the slopes of Celebdil, the world is encased in a permanent blanket\nof snow and ice. The air grows thinner and more difficult to breathe. Each step\nupward is more and more of an exertion, and the narrow trail still climbs above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12406"
+                ],
+                "name": "",
+                "out": [
+                    "12406"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12299"
+                ],
+                "name": "",
+                "out": [
+                    "12299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12405",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Snow Line",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 365,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The footing on this trail is treacherous, as the rocks are covered in a thin\ncasing of ice. Only a few hardy lichens subsist on the occasional patches of\nexposed rocky soil, and even the mountain goats seem to shun this harsh area.\nThe trail continues leading steadily upward, toward an unknown destination,\nwhile below it passes into a milder clime.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12407"
+                ],
+                "name": "",
+                "out": [
+                    "12407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12405"
+                ],
+                "name": "",
+                "out": [
+                    "12405"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12406",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Icy Trail",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 366,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "High on the shoulder of a spur of Celebdil, this ice-covered ledge is buffeted\nby high winds. A small cavern to the east offers a modicum of shelter from the\nharsh climate. A narrow trail leads down the side of the mountain, but it\nappears to be impossible to scale the cliffs above. Far below to the west, the\nhills of Eregion can be seen in the distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12408"
+                ],
+                "name": "",
+                "out": [
+                    "12408"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12406"
+                ],
+                "name": "",
+                "out": [
+                    "12406"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12407",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Icy Ledge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 367,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "This cave, high on the flank of Celebdil, is apparently the home of some\nintelligent creature, for there is a small fire burning here in a small circle\nof stones. There is no hint as to what would motivate someone to live in such a\nharsh locale, and whoever does dwell here must have a difficult life.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12409"
+                ],
+                "name": "",
+                "out": [
+                    "12409"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12407"
+                ],
+                "name": "",
+                "out": [
+                    "12407"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12408",
+        "light": 1,
+        "loadflags": 4,
+        "mobflags": 4096,
+        "name": "Rimy Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 368,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The room is essentially a natural cavern - it has had little if any work done to\nimprove upon its natural state. The walls are cold stone that is encrusted in\nmany places by a thin layer of ice. The temperature here is just below freezing,\nand this place is apparently used as cold storage for perishable food by whoever\ninhabits this place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12408"
+                ],
+                "name": "",
+                "out": [
+                    "12408"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12409",
+        "light": 1,
+        "loadflags": 19,
+        "mobflags": 0,
+        "name": "Storage Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 369,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The wide area atop the cliffs over Durin's Gate narrows quickly to the south.\nDirectly below is the cirque that forms the head of the valley of the Sirannon -\nexcept for a narrow strip of land along the northeast portion, it is flooded\nwith dark water. The ground is littered with droppings of goats and elk, and\ntheir frequent wanderings have worn a trail leading up to the southwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12415"
+                ],
+                "name": "",
+                "out": [
+                    "12415"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "12298"
+                ],
+                "name": "",
+                "out": [
+                    "12298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12410",
+        "light": 2,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "The Top of Moria Walls",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 364,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "Dark and silent, the smooth grey cliffs rise from the water of the lake, looming\noverhead with a forbidding solemnity. The cliffside to the east is smooth and\nunbroken by any seam or crack. A narrow strip of dry land clings to the base of\nthe cliff - cluttered with fallen rock and rubble, it provides a means of\nskirting the dark lake to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12413"
+                ],
+                "name": "",
+                "out": [
+                    "12413"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 61,
+                "flags": 3,
+                "in": [
+                    "16941"
+                ],
+                "name": "gate",
+                "out": [
+                    "16941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "12301"
+                ],
+                "name": "",
+                "out": [
+                    "12301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "12414",
+        "light": 2,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Under a Grey Stone Cliff",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 5,
+        "sundeath": 1,
+        "x": 360,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "A damp and murky tunnel has been dug under the mountain. The walls and floor are\ncovered with mould and slime due to the dampness in the air. The ceiling is very\nlow and there is not much room for movement. The air is stuffy and unclean. The\ntunnel continues to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13456"
+                ],
+                "name": "",
+                "out": [
+                    "13456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13379"
+                ],
+                "name": "",
+                "out": [
+                    "13379"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13455",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Tunnel in the Mountain",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 379,
+        "y": 160,
+        "z": 0
+    },
+    {
+        "desc": "A damp and murky tunnel has been dug under the mountain. The walls and floor are\ncovered with mould and slime due to the dampness in the air. The ceiling is very\nlow and there is not much room for movement. The air is stuffy and unclean. The\ntunnel continues to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13455"
+                ],
+                "name": "",
+                "out": [
+                    "13455"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13457"
+                ],
+                "name": "",
+                "out": [
+                    "13457"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13456",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Tunnel in the Mountain",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 379,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "Here the tunnel makes an abrupt bend. Gnawing sounds come from the darkness and\necho from the walls. No daylight penetrates into this tunnel system, and all\nconnections with the upper world seem severed. The tunnel continues to the west\nand to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13456"
+                ],
+                "name": "",
+                "out": [
+                    "13456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13458"
+                ],
+                "name": "",
+                "out": [
+                    "13458"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13457",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Murky Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 379,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "The wide tunnel ends here, and all that remains of it is a small and narrow\ncrawlway that leads north into the darkness. The floor under your feet is\nslippery, and the walls drip with moisture. A stench of decaying flesh and\nrotting cadavers attacks your nose.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13459"
+                ],
+                "name": "",
+                "out": [
+                    "13459"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13457"
+                ],
+                "name": "",
+                "out": [
+                    "13457"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13458",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Murky Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 378,
+        "y": 162,
+        "z": 0
+    },
+    {
+        "desc": "This is a gargantuan cavern, the surrounding walls are so far apart that from\none side the other side seems non-existent. Skulls and bones from all kinds of\ncreatures are strewn on the floor, traces of dried and matted blood are also\nevident on the ground. Rotted wooden and rusted metal equipment are heaped in\nsmall piles all over the place. The entire cavern carries the stink of death.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13458"
+                ],
+                "name": "",
+                "out": [
+                    "13458"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13459",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Great Cavern",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 378,
+        "y": 161,
+        "z": 0
+    },
+    {
+        "desc": "This tiny cave is little more than a small rocky niche, and its walls and\nceiling are cracked all over. Tiny rivulets of ice-cold water trickle through\nmany of the deeper fissures, gathering in a small pool on the floor, which\noverflows at one end, to run out of the cavern through a larger crack.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "13393"
+                ],
+                "name": "",
+                "out": [
+                    "13393"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13463",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Cave behind the Waterfall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 379,
+        "y": 166,
+        "z": 0
+    },
+    {
+        "desc": "From this vantage it is clear that this is no mere mountain. There is no doubt\nthat these caverns and corridors were formed by a great eruption of molten lava.\nThe hot liquid burned through the mountainous rock on its journey to escape\nthrough the crack in the mountain's summit. In some places, such as this one,\nthe lava's path was halted and the pressure formed a cavernous hole.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13282"
+                ],
+                "name": "",
+                "out": [
+                    "13282"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13465"
+                ],
+                "name": "",
+                "out": [
+                    "13465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13467"
+                ],
+                "name": "",
+                "out": [
+                    "13467"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13464",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Volcanic Cavern",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 379,
+        "y": 172,
+        "z": 0
+    },
+    {
+        "desc": "This place resembles a great staircase as it is home to a cascade of uneven\nsteps. Some are only a few feet wide, others much larger. What began as a fast\nflowing stream of lava, here slowed and formed these steps with each hesitation.\nThe surface of each step is rough and charred, with small holes where the hot\nliquid seeped farther into the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13464"
+                ],
+                "name": "",
+                "out": [
+                    "13464"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13468"
+                ],
+                "name": "",
+                "out": [
+                    "13468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13465",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cinder Steps",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 378,
+        "y": 172,
+        "z": 0
+    },
+    {
+        "desc": "Even holding a torch, a non-nocturnal creature, venturing into the dark cave,\ncould not see more than a few feet in front of themselves. The walls, burned\nblack by the violent fires of this volcano, reflect firelight no more. They have\nthe texture of rock scalded smooth. The ground is covered with a layer of ash.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13467"
+                ],
+                "name": "",
+                "out": [
+                    "13467"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13466",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Charcoal Alcove",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 378,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "This place is even more lacking in light than the cavern above. The walls, floor\nand ceiling are a deep black ash colour. It is difficult to discern for certain\nbut one can estimate being about half a mile down from the crack in the summit.\nJust as in the chamber above, no plant life can be found.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13466"
+                ],
+                "name": "",
+                "out": [
+                    "13466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28858"
+                ],
+                "name": "",
+                "out": [
+                    "28858"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13464"
+                ],
+                "name": "",
+                "out": [
+                    "13464"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13467",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Descending into the Depths",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 379,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "Pools of lava unable to burst free formed these large black chambers. Where the\nfloor meets the walls, the ground curls upward unlike structures made by mortals\nthat have sharp corners. The cavern resembles the inside of a bubble of blown\nglass, fittingly so since both are created by intense heat.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13469"
+                ],
+                "name": "",
+                "out": [
+                    "13469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13465"
+                ],
+                "name": "",
+                "out": [
+                    "13465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13468",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scorched Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 378,
+        "y": 173,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this cavern are as smooth as glass. Molten lava from the volcanic\neruption pooled here and waited for a fissure to open allowing it to continue\nits upward journey. The intense heat cauterized and blackened the walls of this\nchamber. There seem to be some cracks in the floor toward the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13468"
+                ],
+                "name": "",
+                "out": [
+                    "13468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13470"
+                ],
+                "name": "",
+                "out": [
+                    "13470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13469",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scorched Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 377,
+        "y": 173,
+        "z": 0
+    },
+    {
+        "desc": "Pulverised bone covers the floor of this chamber like chalk dust. Only a few\nstray bones stacked up against an inner wall are left intact. Amongst the dust\nlie the remnants of what must have been the armour of the owners of these bones.\nSmall shredded pieces of metal and wood beg the question if anything belonging\nto those vanquished here could be left in its entirety hidden among the remains.\nOn one wall, there is a strange indentation that merits closer investigation.\nAnother wall seems to bulge outward in a similar shape.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13471"
+                ],
+                "name": "",
+                "out": [
+                    "13471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13469"
+                ],
+                "name": "",
+                "out": [
+                    "13469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13470",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Chamber of the Beast",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 376,
+        "y": 173,
+        "z": 0
+    },
+    {
+        "desc": "The gashes in the passage walls look to have been made by claws and the sharp\nslashing of evil weapons. The depth of the cuts gives evidence that whatever\nmade such marks did so quickly with strong and eager sense of purpose. It is\nalso evident, by the haphazard nature of the construction, they were carved with\nlittle regard for giving the tunnels any structural integrity.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13472"
+                ],
+                "name": "",
+                "out": [
+                    "13472"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13470"
+                ],
+                "name": "",
+                "out": [
+                    "13470"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13471",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Northern Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 376,
+        "y": 172,
+        "z": 0
+    },
+    {
+        "desc": "The crumbling bits of this passage's ceiling show those building it gave no\nconsideration to the weight of the mountain above. It appears that it was not\nlong after dirt and rock that once filled this place was removed, that the\nstrain on the ceiling became too much. The blockage of the passage northward\nappears to have occurred about the same time as construction judging by the\namount of ash covering the rock. Air escapes through the cracks. Peering into\nthose same cracks one can see the passage once continued farther northward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13471"
+                ],
+                "name": "",
+                "out": [
+                    "13471"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "13472",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of the Passage",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 376,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "The cave opens up from the narrow entrance. A tunnel-like descent leads down to\nthe depths of the mountain. A small trickle of water drops on the floor from the\ncondensation on the ceiling. The cave appears as if it had been carved on\npurpose, but neither by nature nor time. The cave walls seem slimy and are cold\nif touched.\n",
+        "exits": [
+            {
+                "dflags": 17,
+                "flags": 3,
+                "in": [
+                    "16118"
+                ],
+                "name": "slit",
+                "out": [
+                    "16118"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16159"
+                ],
+                "name": "",
+                "out": [
+                    "16159"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16158",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dirty Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 379,
+        "y": 178,
+        "z": 0
+    },
+    {
+        "desc": "The filthy cavern is wide, its walls jagged, covered with slimy algae of some\nsort. The floor is covered with refuse and decaying remains of corpses. Besides\nthe thick and nauseating stench, the air is stale and thin. A few small puddles\nof water are on the ground, filling small holes in the otherwise plain cave\nfloor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16158"
+                ],
+                "name": "",
+                "out": [
+                    "16158"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16159",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Dark Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 379,
+        "y": 179,
+        "z": 0
+    },
+    {
+        "desc": "The dark subterranean passage contains a liquid as cold and viscous as if it has\npoured through the mountain since the day it was carved out from the filthy\nearth. The distinctive currents breaking through the cracked foundation agitate\nan unnumbered amount of particles that struggle to fit between the sharp and\nsedimented walls of the cavity. Embedded in a bleary breadth of view, the sludge\nis accompanied by the constant sound of splattering, making it extremely\ndifficult to perceive the surroundings.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20289"
+                ],
+                "name": "",
+                "out": [
+                    "20289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20290",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Turbulent Sludge",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 363,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20292",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 367,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20293",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 363,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20294",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 363,
+        "y": 168,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20297",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 367,
+        "y": 171,
+        "z": 0
+    },
+    {
+        "desc": "",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20299",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 367,
+        "y": 165,
+        "z": 0
+    },
+    {
+        "desc": "The air is a bit stale in the vast cavernous hole. The walls are as black as\nnight. This inner sanctum appears to stretch for miles across and the entrance\ncrack above is too high to let in any illumination. The ground is covered in a\nblack charred material that crumbles easily. Under that layer is a black\nsubstance hard as rock. Nothing grows here, not even moss or mildew.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "13283"
+                ],
+                "name": "",
+                "out": [
+                    "13283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "13467"
+                ],
+                "name": "",
+                "out": [
+                    "13467"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28858",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Descending into the Depths",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 379,
+        "y": 170,
+        "z": 0
+    }
+]

@@ -75,9 +75,29 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                             if (result) {
                                 if (result.actionType === 'nav') setActiveSet(result.cmd);
                                 else if (['assign', 'menu', 'select-assign'].includes(result.actionType || '')) {
-                                    setPopoverState({ x: window.innerWidth / 2, y: window.innerHeight / 2, setId: result.cmd, context: result.modifiers || button.label, assignSourceId: button.id, executeAndAssign: result.actionType === 'select-assign' });
+                                    const isDial = button.menuDisplay === 'dial';
+                                    const initialX = heldButton.initialX ?? window.innerWidth / 2;
+                                    const initialY = heldButton.initialY ?? window.innerHeight * 0.8;
+
+                                    // For list menus triggered via combo, appear at the BUTTON finger, not joystick
+                                    const fingerX = (heldButton.initialX || 0) + (heldButton.dx || 0);
+                                    const fingerY = (heldButton.initialY || 0) + (heldButton.dy || 0);
+
+                                    setPopoverState({
+                                        x: isDial ? window.innerWidth / 2 : fingerX,
+                                        y: isDial ? window.innerHeight / 2 : fingerY,
+                                        setId: result.cmd,
+                                        context: result.modifiers || button.label,
+                                        assignSourceId: (result.actionType === 'assign' || result.actionType === 'select-assign') ? button.id : undefined,
+                                        executeAndAssign: result.actionType === 'select-assign',
+                                        menuDisplay: button.menuDisplay,
+                                        initialPointerX: isDial ? initialX : undefined,
+                                        initialPointerY: isDial ? initialY : undefined
+                                    });
                                 } else executeCommand(result.cmd);
-                                setHeldButton(null); setCommandPreview(null); triggerHaptic(50);
+                                setHeldButton(prev => prev ? { ...prev, didFire: true } : null);
+                                setCommandPreview(null);
+                                triggerHaptic(60);
                             }
                         }
                     }

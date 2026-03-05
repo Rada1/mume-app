@@ -1,0 +1,7248 @@
+[
+    {
+        "desc": "This chamber hosts a thriving population of varied fungi. Bulbous toadstools\ncrowd in patches on the floor and phosphorescent mosses shimmer along the smooth\nrock walls. Hidden beneath the proliferation of fungi are indistinct piles of\nrot in many forms of unclear vegetal or animal origin. A narrow, twisting\npassageway exits to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28137"
+                ],
+                "name": "",
+                "out": [
+                    "28137"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28139",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Fungal Profusion",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 380,
+        "y": 127,
+        "z": 0
+    },
+    {
+        "desc": "Piled on either side of a central walkway are stacks and stacks of broken or old\nweapons, armour, goblin clothing as well as general refuse. Some of the items\nhave spilled out onto the path, making fast travel here dangerous. The footpath\nleads from the west to a rough-hewn stairway leading down.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28419"
+                ],
+                "name": "",
+                "out": [
+                    "28419"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28112"
+                ],
+                "name": "",
+                "out": [
+                    "28112"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28151",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scrap Heap",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 384,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "A swiftly, sweeping icy stream courses from south to north here, filling half\nthe chamber with a chilly, dark liquid. The strange thing is how silent the\nriver is flowing. To the east, a black eddy swirls into a deep pool.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28153"
+                ],
+                "name": "",
+                "out": [
+                    "28153"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28320"
+                ],
+                "name": "",
+                "out": [
+                    "28320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28321"
+                ],
+                "name": "",
+                "out": [
+                    "28321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28154",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dark Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 386,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Curving northward as the tunnel continues from the west, the darkness seems to\nswell thickest in that direction. Downward, the jagged floor begins to descend\nrapidly into a veil of shadow, beyond which even the strongest light seems\nunable to touch.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28294"
+                ],
+                "name": "",
+                "out": [
+                    "28294"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28291"
+                ],
+                "name": "",
+                "out": [
+                    "28291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28293"
+                ],
+                "name": "",
+                "out": [
+                    "28293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28292",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 380,
+        "y": 131,
+        "z": 0
+    },
+    {
+        "desc": "The jagged stone floor gradually becomes more level here, from where it sloped\ndown unevenly from the passage above. Toward the east, the darkness swells\nthickest, indicating the tunnel advances in that direction. Faint sounds of\ndripping water can be heard echoing strange patterns across the walls,\noccasionally mixed with other strange, unfamiliar noises.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28295"
+                ],
+                "name": "",
+                "out": [
+                    "28295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28292"
+                ],
+                "name": "",
+                "out": [
+                    "28292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28293",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 380,
+        "y": 132,
+        "z": 0
+    },
+    {
+        "desc": "Here the cold stone tunnel, with jagged teeth of rock overhead and along the\nwalls, meets a sudden dead-end. Strewn about the floor are pieces of broken bone\nmixed with half-finished and broken tools, crafted from the surrounding hard\nstone. The only way out is south, where the darkness seems to wait in welcome\nfor any light to foolishly challenge it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28292"
+                ],
+                "name": "",
+                "out": [
+                    "28292"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28294",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel End",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 380,
+        "y": 130,
+        "z": 0
+    },
+    {
+        "desc": "The cold, jagged walls of rock that comprise the walls of this tunnel begin to\nnarrow slightly towards the south, where the tunnel appears to continue on into\nthe darkness. Towards the east, the tunnel continues its solemn, cold march into\nthe blackness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28296"
+                ],
+                "name": "",
+                "out": [
+                    "28296"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28297"
+                ],
+                "name": "",
+                "out": [
+                    "28297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28293"
+                ],
+                "name": "",
+                "out": [
+                    "28293"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28295",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Branching Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 381,
+        "y": 132,
+        "z": 0
+    },
+    {
+        "desc": "A narrow tunnel opening lies to the north, where the cold, jagged walls of\ndark-coloured stone also comprise the surrounding cave-end here. Upon the ground\nlie fragments of shale-like rock, scattered throughout piles of discarded pieces\nof bone. What appears to have been a failed attempt at making crude weaponry out\nof bone and stone now serves as litter upon the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28295"
+                ],
+                "name": "",
+                "out": [
+                    "28295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28296",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abrupt Dead-End",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 381,
+        "y": 133,
+        "z": 0
+    },
+    {
+        "desc": "Here, the cold stone walls that largely make up these dark, damp tunnels turns\nnorthward, where the darkness seems to swell into an opening; no sounds or faint\nglistens of sharp rock can be seen in that direction, as is present to the east\nand south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28298"
+                ],
+                "name": "",
+                "out": [
+                    "28298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28295"
+                ],
+                "name": "",
+                "out": [
+                    "28295"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28297",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel Bend",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 382,
+        "y": 132,
+        "z": 0
+    },
+    {
+        "desc": "Sloping upwards, the ground here becomes ever-scattered with broken sheets of\nrock, amongst which several small bones are mixed. As the hard, rocky floor\nrises, so the space between the jagged walls become smaller, making for uneasy\ntravels as the elevation rises. The tunnel bends in from the south, where very\nlittle can be seen in the engulfing darkness that seems to thicken with distance\nin that direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28297"
+                ],
+                "name": "",
+                "out": [
+                    "28297"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28299"
+                ],
+                "name": "",
+                "out": [
+                    "28299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28298",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ascending Tunnel Bend",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 382,
+        "y": 131,
+        "z": 0
+    },
+    {
+        "desc": "Rising from below and to the south, the rocky floor, littered with stones and\nthe random bones of small creatures, levels out and begins to swing eastward.\nWhile the tunnel walls are much more narrow as it follows the descent, they\nbegin to widen out the further east one travels. Several rocky protrusions\nthrust out from the cave walls, threatening any whom pass close to them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28300"
+                ],
+                "name": "",
+                "out": [
+                    "28300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28298"
+                ],
+                "name": "",
+                "out": [
+                    "28298"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28299",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Tunnel Bend",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 382,
+        "y": 133,
+        "z": 0
+    },
+    {
+        "desc": "Descending from above, the stone and bone-laden tunnel floor evens out\nmomentarily before turning westward, where the view yields nothing but the\nawaiting darkness. Toward the west the tunnel expands outwards, jagged fingers\nof rock protruding from the stone walls await any unaware travellers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28299"
+                ],
+                "name": "",
+                "out": [
+                    "28299"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28301"
+                ],
+                "name": "",
+                "out": [
+                    "28301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28300",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Tunnel Bend",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 383,
+        "y": 133,
+        "z": 0
+    },
+    {
+        "desc": "Ascending from below, the stone and bone-laden tunnel floor evens out\nmomentarily, before splitting toward the north and south where the view yields\nnothing but the awaiting darkness. Small droplets of water drip from the damp\nceiling above, forming a small puddle from which runs a tiny stream downwards,\nflanking the rocky descent to one side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28303"
+                ],
+                "name": "",
+                "out": [
+                    "28303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28302"
+                ],
+                "name": "",
+                "out": [
+                    "28302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28300"
+                ],
+                "name": "",
+                "out": [
+                    "28300"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28301",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Tunnel Fork",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 384,
+        "y": 133,
+        "z": 0
+    },
+    {
+        "desc": "The sound of dripping water is ever-present here, where moisture can be seen\npooling upon the ceiling before dripping into the puddle-covered stone floor\nbelow. From these puddles, small streams constantly flow downward where the\nwalls of rock disappear under a cold, dark waterline.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28301"
+                ],
+                "name": "",
+                "out": [
+                    "28301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28448"
+                ],
+                "name": "",
+                "out": [
+                    "28448"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28304"
+                ],
+                "name": "",
+                "out": [
+                    "28304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28302",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Watery Descent",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 384,
+        "y": 134,
+        "z": 0
+    },
+    {
+        "desc": "Dripping water and bat droppings merge here to coat a treacherous, slippery,\nsloping tunnel. The water has no apparent source besides the ceiling above, from\nwhich it slowly accumulates to fall noiselessly on the guano-softened ground.\nThe tunnel opens up into a broader cavern to the north and steepens further to\nthe south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28306"
+                ],
+                "name": "",
+                "out": [
+                    "28306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28301"
+                ],
+                "name": "",
+                "out": [
+                    "28301"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28303",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guano-Slickened Slope",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 384,
+        "y": 132,
+        "z": 0
+    },
+    {
+        "desc": "Unbearably cold water entirely fills this passageway. The channel flows slowly\nsouthward, where it broadens into a larger chamber. The flow is fed by several\nnarrow cracks up and to the north. One of the cracks broadens into an open air\ntunnel above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28305"
+                ],
+                "name": "",
+                "out": [
+                    "28305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28302"
+                ],
+                "name": "",
+                "out": [
+                    "28302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28304",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chilly Channel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 2,
+        "x": 383,
+        "y": 134,
+        "z": 0
+    },
+    {
+        "desc": "Icy water fills a large chamber floor-to-ceiling. A slow current, entering from\na channel to the north and exiting through several cracks to the south, gives\nthe water an even chillier and more dangerous aspect, and no creature not born\nto the cold could abide here for very long. Bobbing slabs of ice at the surface\nof the water reveal that there is open air above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28304"
+                ],
+                "name": "",
+                "out": [
+                    "28304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28448"
+                ],
+                "name": "",
+                "out": [
+                    "28448"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28305",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Chilly Channel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 2,
+        "x": 383,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "The strong presence of bats is unmistakable as great mounds of guano and its\naccompanying odour fill this expansive cavern. Far above, a broad crack in the\nmountainside shows their path of ingress and egress. The floor of the cavern is\nfairly level, though mounded here and there with waste. The cave narrows to a\ntunnel to the south, and a narrow crack leads downward further into the\nmountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28303"
+                ],
+                "name": "",
+                "out": [
+                    "28303"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28307"
+                ],
+                "name": "",
+                "out": [
+                    "28307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28306",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Guano-Filled Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 384,
+        "y": 131,
+        "z": 0
+    },
+    {
+        "desc": "The rock of this chamber is oddly smooth, rising upward like a bowl from a\nshallow depression in its centre. A remarkably straight and level tunnel cuts\nnorthward through a door bordered with weathered runes. Mounds of guano pile\nbeneath a narrow crack in the otherwise polished ceiling, coating a pile of\nrubble that rises up to the crack to create an unintended exit from this room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28308"
+                ],
+                "name": "",
+                "out": [
+                    "28308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28306"
+                ],
+                "name": "",
+                "out": [
+                    "28306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28307",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Befouled Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 383,
+        "y": 131,
+        "z": 0
+    },
+    {
+        "desc": "A steep tunnel descends from the west to join a larger north-south passage.\nRegularly spaced steps lead upward, shallow enough to befit the strides of\ndwarves. The floor and walls are smooth and polished, yet dusty with disuse.\nHowever, a few footprints of varying apparent age indicate these tunnels have\nnot been completely abandoned.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28309"
+                ],
+                "name": "",
+                "out": [
+                    "28309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28307"
+                ],
+                "name": "",
+                "out": [
+                    "28307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28310"
+                ],
+                "name": "",
+                "out": [
+                    "28310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28308",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Branching Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 383,
+        "y": 130,
+        "z": 0
+    },
+    {
+        "desc": "A passageway leading in from the south meets a winding stone staircase that\ndescends steeply northward. The rough, natural ceiling suggests the builders\nsimply took advantage of a natural opening in the rock. In several places along\nthe stairs, deep gouges indicate exploratory mines of ore veins that apparently\nproved to be a disappointment.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28308"
+                ],
+                "name": "",
+                "out": [
+                    "28308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28314"
+                ],
+                "name": "",
+                "out": [
+                    "28314"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28309",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 383,
+        "y": 129,
+        "z": 0
+    },
+    {
+        "desc": "While the tunnel runs almost perfectly straight from this point eastwards, its\nfloor slopes with frequent changes, and even slight reversals of the grade to a\ngeneral trend of a westward descent. The walls of this sloped tunnel are made of\nnatural rock formations.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28311"
+                ],
+                "name": "",
+                "out": [
+                    "28311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28308"
+                ],
+                "name": "",
+                "out": [
+                    "28308"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28310",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloped Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 384,
+        "y": 130,
+        "z": 0
+    },
+    {
+        "desc": "There is a sense that this tunnel continues for an eternity in both the east and\nwest directions. The walls are made of natural rock with some thin fractures\nseparating the geologic formation now and then. The floor is covered with layers\nof dust, concealing shards of crushed rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28312"
+                ],
+                "name": "",
+                "out": [
+                    "28312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28310"
+                ],
+                "name": "",
+                "out": [
+                    "28310"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28311",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dusty Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 385,
+        "y": 130,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel extends to the west, nearly ten feet high and widest in the middle,\nbefore terminating at two massive bronze doors that have fallen. A gaping hole\ncan be seen where the gates used to sit. The northern side of the tunnel ends in\nanother two massive bronze gates that have been set into the wall of smooth\npolished white rock.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28313"
+                ],
+                "name": "",
+                "out": [
+                    "28313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28311"
+                ],
+                "name": "",
+                "out": [
+                    "28311"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28312",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broken Double Gates",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 386,
+        "y": 130,
+        "z": 0
+    },
+    {
+        "desc": "A large hallway artificially created by master craftsmen extends to the south\ntoward a wall. The northern side of the hallway is caved in and rubble now\nblocks it completely. To the eastern side of the hallway there is the entrance\nto what seems to be a larger hall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 28,
+                "flags": 3,
+                "in": [
+                    "28312"
+                ],
+                "name": "",
+                "out": [
+                    "28312"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28349"
+                ],
+                "name": "",
+                "out": [
+                    "28349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28313",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Caved-in Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 389,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "A long, steep staircase zigzags downward along the floor of a natural opening in\nthe rock, following the slanting cavern as it bends eastward at the bottom. The\ncadence of the steps appears best suited for dwarf legs, though the clearance\nabove the staircase would admit a much larger creature. Broken picks and shovels\nrest inside shallow delvings along the northern wall, none of which seems to\nhave been particularly fruitful.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28315"
+                ],
+                "name": "",
+                "out": [
+                    "28315"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28309"
+                ],
+                "name": "",
+                "out": [
+                    "28309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28314",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 384,
+        "y": 129,
+        "z": 0
+    },
+    {
+        "desc": "A long stone staircase zigzags its way along the natural contours of a vast\ncavern descending from southwest to the north. The stairs consequently both rise\nand fall with steep undulations in the cavern floor. While the top of the cavern\nis in most places no more than twenty feet above the floor, several great gaps\nextend to distances unfathomable high above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28316"
+                ],
+                "name": "",
+                "out": [
+                    "28316"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28314"
+                ],
+                "name": "",
+                "out": [
+                    "28314"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28315",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 385,
+        "y": 129,
+        "z": 0
+    },
+    {
+        "desc": "Many stone tables fill a large, square feasting hall delved into the rock.\nThough all is covered in dust, a great degree of care and art is evident in its\nconstruction, from intricate bas reliefs of dwarf feasts and battles along the\nwalls to elaborate patterns carved into the tables themselves. To the north, a\npassageway descends through the ruins of a stone gate. A long, winding staircase\nascends into a vast cavern to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28315"
+                ],
+                "name": "",
+                "out": [
+                    "28315"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28317"
+                ],
+                "name": "",
+                "out": [
+                    "28317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28316",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Ornate Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 385,
+        "y": 128,
+        "z": 0
+    },
+    {
+        "desc": "The ruined remnants of a forge line the eastern wall of this large, square\nchamber. The bottom half of a massive broken cogwheel rests in a long, narrow\nsluice that vanishes beneath a pile of rubble to the north. The shattered pieces\nof the forge itself would be scarcely recognisable except for the surprisingly\nintact bellows nearby. The only anvils that remain are broken beyond repair. A\nvast arcade extends westward from this chamber, and an ornate stone stairway\nruns upward and to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28318"
+                ],
+                "name": "",
+                "out": [
+                    "28318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28319"
+                ],
+                "name": "",
+                "out": [
+                    "28319"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28316"
+                ],
+                "name": "",
+                "out": [
+                    "28316"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28317",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shattered Forge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 384,
+        "y": 128,
+        "z": 0
+    },
+    {
+        "desc": "Water drips through numerous cracks in the ceilings and walls of this chamber,\nforming runnels that merge to flow down a set of steps leading to an underground\nriver below. Stalactites in plenty hang from the ceiling, dripping frequently to\nadd their contributions to the stream. A squared passage rises upward to the\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28317"
+                ],
+                "name": "",
+                "out": [
+                    "28317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28320"
+                ],
+                "name": "",
+                "out": [
+                    "28320"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28318",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Watery Descent",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 384,
+        "y": 127,
+        "z": 0
+    },
+    {
+        "desc": "An arched hall of magnificently carved obsidian ends abruptly at a great\ncollapse along the western wall. Fine debris spreads away from the rubble,\ncovering the broad, meticulously smooth floor. Efforts to break through the\nrubble appear to have ended in failure, a story told by crushed remains of both\ndwarves and goblins.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28317"
+                ],
+                "name": "",
+                "out": [
+                    "28317"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28319",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Collapsed Arcade",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 383,
+        "y": 128,
+        "z": 0
+    },
+    {
+        "desc": "Emerging from a grey rockface to the south through a dark opening worn smooth by\nuntold aeons of wear, a swift and icy river flows through the wide, open tunnel.\nThe strong current carries from south to north in a silent race to unknown\ndestinations. A rough stairway has been cut into the bare slate on the eastern\nrockwall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28154"
+                ],
+                "name": "",
+                "out": [
+                    "28154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28318"
+                ],
+                "name": "",
+                "out": [
+                    "28318"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28320",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Subterranean River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 386,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Dark, grey waters swirl and eddy here, fed by the current to the west. A gentle\nsuction pulls the dark water downward in an unstable spiral to an underground\nchamber from which a faint glimmer can be seen. Along the edge of the eddy, a\ncrude path has been chiselled, winding upward to a dark room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28154"
+                ],
+                "name": "",
+                "out": [
+                    "28154"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28322"
+                ],
+                "name": "",
+                "out": [
+                    "28322"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28323"
+                ],
+                "name": "",
+                "out": [
+                    "28323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28321",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Swirling Pool",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 387,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "The chilly and murky water in this chamber makes it difficult to see more than a\nfew feet in any direction. Coating the floor is a thick layer of soft, dark\nbrown sediment. Occasionally, a glimmer shines through the murk.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28321"
+                ],
+                "name": "",
+                "out": [
+                    "28321"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "28482"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28323",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Submerged Chamber",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 2,
+        "x": 387,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Shadows draping from the enormous pillars in this room hint at the former\ngrandeur before the northern and western side partly collapsed. Now this part of\nthe room is covered with rubble and the walls are partly covered in mould. In\nthe centre of the room, stairs vanish into the floor leading deeper underground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28354"
+                ],
+                "name": "",
+                "out": [
+                    "28354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28369"
+                ],
+                "name": "",
+                "out": [
+                    "28369"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28313"
+                ],
+                "name": "",
+                "out": [
+                    "28313"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28350"
+                ],
+                "name": "",
+                "out": [
+                    "28350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28349",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Partly Collapsed Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 390,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "A narrow stairway made of simple stone descends deeper under the ground toward\nthe east. The stairs and walls are covered with small cracks. Some chunks of\nrock and smaller pebbles make it hard to actually move on the stairs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28349"
+                ],
+                "name": "",
+                "out": [
+                    "28349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "28351"
+                ],
+                "name": "",
+                "out": [
+                    "28351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28350",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Narrow Stairway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 391,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "The floor and walls of this chamber are made of polished stone. On the west side\nof the chamber there are quite some chunks of rocks and rubble before a narrow\nstairway that leads out of the chamber. The walls have some cracks which are\nalso the source of some moisture making it possible for mould to grow and cover\nmost of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28353"
+                ],
+                "name": "",
+                "out": [
+                    "28353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28352"
+                ],
+                "name": "",
+                "out": [
+                    "28352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28350"
+                ],
+                "name": "",
+                "out": [
+                    "28350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28351",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Wet Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 392,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "The entire tomb is covered in slime and mould, growing especially thick on the\nwet walls. A sarcophagus stands on a small pedestal in the centre of the room.\nBeside the sarcophagus a mould covered statue of a female scholar rests in a\nthinking pose.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28351"
+                ],
+                "name": "",
+                "out": [
+                    "28351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28352",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 16384,
+        "name": "Mould Covered Tomb",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 392,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "A large sarcophagus made of stone is standing on the floor in the middle of the\nroom. Behind the sarcophagus toward the wall stands a statue of a male dwarven\npriest. The walls and ceiling behind the statue are covered with smaller cracks\nand the floor is overcast with rock pebbles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28351"
+                ],
+                "name": "",
+                "out": [
+                    "28351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28353",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 16384,
+        "name": "Crumbling Tomb",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 392,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "At the northern side of this alcove there is the bottom end of a large and steep\nchute which seems to be impossible to ascend. The alcove itself is unadorned and\nseems to have the practical purpose to storage materials that are transported\nwith the chute. The western side of the alcove is covered with fungi.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "28357"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28349"
+                ],
+                "name": "",
+                "out": [
+                    "28349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "28355"
+                ],
+                "name": "exit",
+                "out": [
+                    "28355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28354",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bottom of a Chute",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 390,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "A large hallway artificially created by master craftsmen extends to the north.\nThe southern side of the hallway is caved in from the western side and the\nhallway is now blocked by earth and rubble. Between the rubble some water seems\nto be flowing out of the western wall into a small natural basin. Everything\naround that basin is covered by mould including the eastern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28356"
+                ],
+                "name": "",
+                "out": [
+                    "28356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "28354"
+                ],
+                "name": "exit",
+                "out": [
+                    "28354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28355",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 4096,
+        "name": "Mould Covered Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 389,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "A divergence in the masterfully crafted hallway ascends to a very large stone\nhall to the east. The hallway continues from south to north while the northern\nside features a simple mechanism to block off the hallway with a heavy slab.\n",
+        "exits": [
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                    "28359"
+                ],
+                "name": "",
+                "out": [
+                    "28359"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28355"
+                ],
+                "name": "",
+                "out": [
+                    "28355"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28357"
+                ],
+                "name": "",
+                "out": [
+                    "28357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28356",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Divergence in a Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 389,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "This astonishing stone hall features marble floors and stunning ornamentation.\nThis room is at least a hundred feet high and the most distinct feature is a\nhuge dwarven statue standing next to the eastern wall. Between the statue's legs\nsits an entrance to what might be a tomb. A wooden door is set within the stone\nwall to the north, and a chute descends rapidly to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28368"
+                ],
+                "name": "",
+                "out": [
+                    "28368"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "28354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28358"
+                ],
+                "name": "",
+                "out": [
+                    "28358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28356"
+                ],
+                "name": "",
+                "out": [
+                    "28356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28357",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 390,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Towering above is a huge dwarven statue, its legs to the south and to the north\nforming a gangway. The gangway is made of simple yet beautiful black stone\nleading from the stone hall to the west to a stairway east, which seems to lead\ndeeper under the ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28357"
+                ],
+                "name": "",
+                "out": [
+                    "28357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28370"
+                ],
+                "name": "",
+                "out": [
+                    "28370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28358",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gangway into a Tomb",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 391,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "A large hallway created by master craftsmen extends from south to north. The\nfloor is laid out with ornate stone tiles, and the walls are made of smooth\npolished rock. Toward the southern side there is a mechanism to block off the\nhallway with a huge slab.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28360"
+                ],
+                "name": "",
+                "out": [
+                    "28360"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28356"
+                ],
+                "name": "",
+                "out": [
+                    "28356"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28359",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Long Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 389,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "A black stone statue of a female dwarven overseer with a hammer in hands stands\ninfront of a sarcophagus. The stone walls are decorated with small mosaics made\nof different metals giving the alcove a very elegant design. The only visible\nexit out of this alcove is to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28365"
+                ],
+                "name": "",
+                "out": [
+                    "28365"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28367",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 16384,
+        "name": "Southern Alcove",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 392,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Behind a wooden door there is a small room which seems to be a storage. Although\nthe room is mostly empty now, it was probably used to store materials and tools\na very long time ago. Now the only thing left here is a lot of dust on the\nfloor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28357"
+                ],
+                "name": "",
+                "out": [
+                    "28357"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28368",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Storage Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 390,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "A small alcove has been skilfully carved into the stone. A decorated fountain\nmade of quartz stone stands at the southern side of the alcove. Above the\nfountain the face of a dwarf is chiselled into the stone. The mouth of the stone\nface has a little hole which seems to have been the source of water for the\nfountain which is now totally dry.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28349"
+                ],
+                "name": "",
+                "out": [
+                    "28349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28369",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Alcove",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 390,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "The staircase, made of polished marble stone, spirals deeper under the ground.\nThe colour of the walls and stairs change between white and black while a single\nline of golden ornamentation helps with the general sense of direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28358"
+                ],
+                "name": "",
+                "out": [
+                    "28358"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "28371"
+                ],
+                "name": "",
+                "out": [
+                    "28371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28370",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Plain Stairway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 392,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "The floor and walls of this tomb are made of marble stone with thin golden\nornaments. The most distinct feature of the room are the colours of the floor\nand walls which are black to the northern side and white to the south. In the\ncentre of the walls there are entrances leading deeper into the tomb.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28372"
+                ],
+                "name": "",
+                "out": [
+                    "28372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28373"
+                ],
+                "name": "",
+                "out": [
+                    "28373"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28370"
+                ],
+                "name": "",
+                "out": [
+                    "28370"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28371",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Vestibule in a Tomb",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 393,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "A large sarcophagus made of black metal is standing on the floor in the middle\nof the room. Behind the sarcophagus toward the wall of the alcove stands a black\nstatue of a male dwarven lord. The walls behind the statue are covered with thin\ngolden ornaments giving the room a very elegant feeling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28371"
+                ],
+                "name": "",
+                "out": [
+                    "28371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28372",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 16384,
+        "name": "Black Tomb",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 393,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "A sarcophagus made of silvery white metal is standing on the floor at the back\nof the room. The white marble statue of a fierce dwarven lady stands in the\ncentre of the tomb, arms crossed. The walls behind the statue are neatly\nembellished with golden ornaments.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28371"
+                ],
+                "name": "",
+                "out": [
+                    "28371"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28373",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 16384,
+        "name": "White Tomb",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 393,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "This large cavern branches off to the north, south, and east. The stone floor\nshows the wear and tear of many goblin claws. On the western wall is inset the\ngoblin equivalent of a bulletin board. Presumably, it is used to post edicts\nfrom the Chief, patrol duties, shift changes and the latest enemies killed - of\nwhich there are none at the moment.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28436"
+                ],
+                "name": "",
+                "out": [
+                    "28436"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28425"
+                ],
+                "name": "",
+                "out": [
+                    "28425"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28151"
+                ],
+                "name": "",
+                "out": [
+                    "28151"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28419",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Goblin Junction",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 383,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Crude chiselling and chipping have resulted in jagged and craggy walls framing\nthis passageway. The only smooth thing here is the hard stone floor showing the\nwear of much traffic over many years. Passages lead north, south, and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28419"
+                ],
+                "name": "",
+                "out": [
+                    "28419"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28426"
+                ],
+                "name": "",
+                "out": [
+                    "28426"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28427"
+                ],
+                "name": "",
+                "out": [
+                    "28427"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28425",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crude Passageway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 383,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "Several heads, most of them old and little more than bones, adorn the walls of\nthis long, low-ceilinged tunnel. Several torches, long burnt out, are mounted\nalongside the skulls and must have given a ghastly atmosphere to the tunnel when\nlit. Most of the heads are human or display the nasty fangs of orc or goblin.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28425"
+                ],
+                "name": "",
+                "out": [
+                    "28425"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28428"
+                ],
+                "name": "",
+                "out": [
+                    "28428"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28426",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel of Heads",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 383,
+        "y": 123,
+        "z": 0
+    },
+    {
+        "desc": "The western wall of this cave is one of many goblin worksites scattered\nthroughout the caverns. Recent excavations show where the goblins have dug for\nore or gemstones. The walls are shored up by uneven, roughly hewn timber that\nlooks anything but stable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28425"
+                ],
+                "name": "",
+                "out": [
+                    "28425"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28427",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Goblin Worksite",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 382,
+        "y": 122,
+        "z": 0
+    },
+    {
+        "desc": "The passageway bends from north to east with a ceiling low enough to make a cave\ntroll stoop. Running through the dark, craggy stone of the walls are veins of\nglossy, black rock with corners and edges deadly sharp to the touch.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28426"
+                ],
+                "name": "",
+                "out": [
+                    "28426"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28429"
+                ],
+                "name": "",
+                "out": [
+                    "28429"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28428",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gloomy Bend",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 383,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "In this well-lit and spacious cavern, a huge wooden desk dominates with\nauthority. Functioning as a guardpost before a wide stairwell set in the eastern\nwall, no one gets by without the guards say so. On either side of the stairway\nare leering goblin heads of stone, carved to instil fear in the lowly. A couple\nof lanterns hang on hooks on the wall opposite the desk, their flames steady and\nbright.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28428"
+                ],
+                "name": "",
+                "out": [
+                    "28428"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28430"
+                ],
+                "name": "",
+                "out": [
+                    "28430"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28429",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Security Checkpoint",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 384,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "In the corner, a wide stairway leads down to a well-lit chamber below. Over the\ntop of the stairwell is a grinning goblin head. Shields and faded wall hangings\nintersperse with glowing torches, denoting this area is of some importance. The\nhard stone floor shows scuffs and claw marks leading east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28432"
+                ],
+                "name": "",
+                "out": [
+                    "28432"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28431"
+                ],
+                "name": "",
+                "out": [
+                    "28431"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28429"
+                ],
+                "name": "",
+                "out": [
+                    "28429"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28430",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 385,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "This chamber, connected through empty doorways to the west and south, is large\nbut sparsely furnished. Some simple benches line one wall and an empty table\nstands in front of them. A trophy is mounted on the wall next to the southern\ndoorway, the remains of a very large humanoid head, but barely recognisable as\nsuch.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28435"
+                ],
+                "name": "",
+                "out": [
+                    "28435"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28430"
+                ],
+                "name": "",
+                "out": [
+                    "28430"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28431",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crude Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 386,
+        "y": 124,
+        "z": 0
+    },
+    {
+        "desc": "Large flaming torches brightly illuminate this large cavern. Along the walls\nhang shields and dusty tapestries in disrepair. A large rectangular table\ndominates the space, cluttered with dirty plates, spilled goblets, and other\nsigns of recent use.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28430"
+                ],
+                "name": "",
+                "out": [
+                    "28430"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28433"
+                ],
+                "name": "",
+                "out": [
+                    "28433"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28435"
+                ],
+                "name": "",
+                "out": [
+                    "28435"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28432",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Great Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 385,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "Fading parchments show rough sketches detailing past plans for raids on a\nvariety of regional targets. The chieftain of this goblin tribe is obviously\nvery bold and arrogant. A large square table sits here, holding up a large pile\nof these papers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28432"
+                ],
+                "name": "",
+                "out": [
+                    "28432"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28434"
+                ],
+                "name": "",
+                "out": [
+                    "28434"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28433",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Planning Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 385,
+        "y": 126,
+        "z": 0
+    },
+    {
+        "desc": "The east wall is covered with several different sets of rusted, worn out body\narmour: chain mail, brigandines, and the like in massive sizes. On the south\nwall is a large display of weapons ranging from twin-bladed axes to jagged\nlongswords to all sorts of crushing devices - all in disrepair.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28435"
+                ],
+                "name": "",
+                "out": [
+                    "28435"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28433"
+                ],
+                "name": "",
+                "out": [
+                    "28433"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28434",
+        "light": 1,
+        "loadflags": 2097154,
+        "mobflags": 4096,
+        "name": "Armoury",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 386,
+        "y": 126,
+        "z": 0
+    },
+    {
+        "desc": "Great braziers mounted on four basalt columns light up every part of this throne\nhall, bathing it in a deep, orange glow. Intricate designs carved into the domed\nceiling dance in the flickering light, while dark statues look down upon a\ncrimson rug that splits the entire cave in half from the doors to the throne.\nThe attempt at grandeur in this chamber bespeaks an arrogance as large as its\nowner, the goblin chieftain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28431"
+                ],
+                "name": "",
+                "out": [
+                    "28431"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28434"
+                ],
+                "name": "",
+                "out": [
+                    "28434"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28432"
+                ],
+                "name": "",
+                "out": [
+                    "28432"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28435",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 32768,
+        "name": "Chieftain's Throneroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 386,
+        "y": 125,
+        "z": 0
+    },
+    {
+        "desc": "Wide enough for six goblin troopers to march abreast, this long passage has\nfairly low ceiling. Dotting the rough, chipped walls on either side are\nflickering torches set in rough metal sconces. The well-trodden walkway curves\nfrom the south to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28419"
+                ],
+                "name": "",
+                "out": [
+                    "28419"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28437"
+                ],
+                "name": "",
+                "out": [
+                    "28437"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28436",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Curving Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 383,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Many pairs of goblin feet have clawed their way to the east and west. The stone\nfloor has been pounded by all the foot-traffic. No dust along the walkway\nindicates this tunnel has been recently used. Dimly flickering torches line the\nwalls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28436"
+                ],
+                "name": "",
+                "out": [
+                    "28436"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28438"
+                ],
+                "name": "",
+                "out": [
+                    "28438"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28437",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Trampled Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 382,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "After resting, eating and enjoying some off-duty time in the caves to the west\nand south, this is where small troops form up before moving out on patrol. A\nlarge assortment of weapons and other necessary gear hang on the north wall,\ndimly lit by several torches along the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28445"
+                ],
+                "name": "",
+                "out": [
+                    "28445"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28437"
+                ],
+                "name": "",
+                "out": [
+                    "28437"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28439"
+                ],
+                "name": "",
+                "out": [
+                    "28439"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28438",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Assembly Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 381,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "Various sorts of tables and contraptions are laid out here, designed to\nentertain and challenge the goblins in their down time. From throwing knives at\na bloody wall target to claw-wrestling, goblins enjoy what little off-duty time\nthey can get here. Torch-light spilling in from the east casts gloomy shadows\nthroughout this cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28440"
+                ],
+                "name": "",
+                "out": [
+                    "28440"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28441"
+                ],
+                "name": "",
+                "out": [
+                    "28441"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28438"
+                ],
+                "name": "",
+                "out": [
+                    "28438"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28439",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Game Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 380,
+        "y": 120,
+        "z": 0
+    },
+    {
+        "desc": "A single long, wide table occupies the central area of this part of an expansive\ncavern. Various food items, mostly large wooden plates with meats occupy the\ntable. Several large mugs stand on the table, or lie on their sides, spilled\ncontents staining a table that's seen better days.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28439"
+                ],
+                "name": "",
+                "out": [
+                    "28439"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28445"
+                ],
+                "name": "",
+                "out": [
+                    "28445"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28442"
+                ],
+                "name": "",
+                "out": [
+                    "28442"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28441",
+        "light": 1,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Food Dump",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 380,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "Though not known for cleanliness, even goblins understand that fouling the\ncaverns make them unlivable. In the walls and along the baselines, are a series\nof small openings and pits for relieving oneself. The stench emanating from\nthese areas is overwhelming and intense.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28438"
+                ],
+                "name": "",
+                "out": [
+                    "28438"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28441"
+                ],
+                "name": "",
+                "out": [
+                    "28441"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28445",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Goblin Latrine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 381,
+        "y": 121,
+        "z": 0
+    },
+    {
+        "desc": "A vast glacier stretches down from a mountain to the north to end at a chill,\nclear lake. Water trickles into the lake from the glacier snout, and several\nlarge chunks of ice float on the surface. Steep, narrow moraines to either side\noffer no purchase for any traveller who would wish to continue up the\nmountainside.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28302"
+                ],
+                "name": "",
+                "out": [
+                    "28302"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28449"
+                ],
+                "name": "",
+                "out": [
+                    "28449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28305"
+                ],
+                "name": "",
+                "out": [
+                    "28305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28448",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Glacier Lake",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 384,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "Parallel ridges run across a broad, U-shaped valley, each evidence of a\nglacier's retreat. The ridges are shallow and easy to traverse, and are composed\nof soil, gravel, and small rocks. The glacier that abandoned this debris long\nago stands to the north at the edge of an icy lake. The deep valley it carved\nbends westward as it descends.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28448"
+                ],
+                "name": "",
+                "out": [
+                    "28448"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28450"
+                ],
+                "name": "",
+                "out": [
+                    "28450"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28449",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Recessional Moraine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 384,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "A gently rolling till plain covers the floor of a deep, curved valley with\nsteeply sloped sides. The pebbles, rocks, and boulders that litter the plain\nwere abandoned long ago in the rapid retreat of a glacier. A careful eye will\nnote that a faint pattern of parallel curves can be discerned among the debris,\neach following the bend of this valley as it descends from east to south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28451"
+                ],
+                "name": "",
+                "out": [
+                    "28451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28449"
+                ],
+                "name": "",
+                "out": [
+                    "28449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28450",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ground Moraine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 383,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "Two glacial valleys originating higher up in the Misty Mountains merge to form a\nbroad valley that descends to the east. The meeting of the glaciers that formed\nthese valleys left a long ridge of debris, as if to attempt to keep apart the\ntwo competing siblings. To the west, the farthest march of the combined glacier\nis evident in a tall terminal moraine.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28450"
+                ],
+                "name": "",
+                "out": [
+                    "28450"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28452"
+                ],
+                "name": "",
+                "out": [
+                    "28452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28461"
+                ],
+                "name": "",
+                "out": [
+                    "28461"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28451",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Medial Moraine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 383,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "Peculiar, teardrop-shaped hills dot a broad glacial valley. The hills are\ndivided neatly down the middle by a tall ridge of sundry debris marking the\nseparate paths carved by two distinct glaciers to the south and east. The\nsteepest slopes of the hills face the path of glacial retreat, whereas their\ntails descend gently to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28454"
+                ],
+                "name": "",
+                "out": [
+                    "28454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28453"
+                ],
+                "name": "",
+                "out": [
+                    "28453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28451"
+                ],
+                "name": "",
+                "out": [
+                    "28451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28452",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scattered Drumlins",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 384,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "A tall glacier looms at the head of a U-shaped valley, sloping steeply to where\nits snout meets scattered, chill pools amid rocks and debris. Further down the\nvalley, isolated patches of ice have been abandoned in the glacier's retreat,\ndoomed eventually to melt. Tall ridges composed of the same glacial detritus\nmake for impassable ascents to either north or south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28452"
+                ],
+                "name": "",
+                "out": [
+                    "28452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28453",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Glacier Snout",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 385,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "A vast glacier looms at the head of a broad valley, its terminus steep and\nimpossible to climb. Fallen blocks of ice mingle with varied rocky debris\nbeneath the ice wall. To the north, the glacier valley broadens as it merges\nwith another. The only passage eastward would follow a shallow ascent up to the\nnorthern rocky ridge built up by the glacier.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28452"
+                ],
+                "name": "",
+                "out": [
+                    "28452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28455"
+                ],
+                "name": "",
+                "out": [
+                    "28455"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28454",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Terminus of a Glacier",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 384,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A flat, narrow ridge overlooks a massive glacier to its south which was\nresponsible for its creation. This vantage point affords a striking view down\nthe valley to the west and of the debris that marked the glacier's long-ago\nretreat. Narrow crevasses cut across the glacier, none large enough to admit any\ncurious creature foolish enough to investigate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28456"
+                ],
+                "name": "",
+                "out": [
+                    "28456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28454"
+                ],
+                "name": "",
+                "out": [
+                    "28454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28455",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lateral Moraine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 385,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A tall ridge running along the northern edge of a glacier meets a crevasse\ncutting across the entire valley. The ridge dips where it has eroded to form a\nshallow slope that descends to meet the icy crack in the glacier. Rubble and\nblocks of ice clutter the swiftly narrowing entrance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 32,
+                "flags": 3,
+                "in": [
+                    "28457"
+                ],
+                "name": "",
+                "out": [
+                    "28457"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28455"
+                ],
+                "name": "",
+                "out": [
+                    "28455"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28456",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before a Crevasse",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 386,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A narrow crevasse cuts through icy walls that extend apparently beyond limit to\nheights far above. Numerous cracks run upward along the walls, and long,\nprecarious-looking icicles extend from jagged points left by fallen ice. The\nground is slick with refrozen meltwater.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28458"
+                ],
+                "name": "",
+                "out": [
+                    "28458"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28456"
+                ],
+                "name": "",
+                "out": [
+                    "28456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28457",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Crevasse",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 387,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A wide cleft in glacial ice broadens as it runs southward. Here and there, gaps\nin the glacier hundreds of feet above reveal glimpses of a sky, and a world\nbeyond this endless ice. Rubble intermingles with shattered ice blocks to form a\nrough but navigable passage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28457"
+                ],
+                "name": "",
+                "out": [
+                    "28457"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28459"
+                ],
+                "name": "",
+                "out": [
+                    "28459"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28458",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Broad Crevasse",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 387,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "A tall, rocky ridge cuts across the middle of a broad valley, marking the\nfarthest conquest of a glacier originating higher up in the mountains to the\neast. The ground is covered in small pebbles and sand, making for poor footing.\nTo the north, the ridge leads up to a narrow ledge that cuts across the steep\nmountain slopes, whereas a slide down the unstable far slope of the ridge would\nseem to be a one-way trip to a valley cutting southeastward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28462"
+                ],
+                "name": "",
+                "out": [
+                    "28462"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28451"
+                ],
+                "name": "",
+                "out": [
+                    "28451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "28278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28461",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Terminal Moraine",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 382,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "A nearly vertical slope curves from the north to the east, sloping away from a\npair of peaks high above. The cliff is broken only by a thin shelf no wider than\nthe breadth of three men. A faint trail is barely visible in the shadowy depths\nof a valley below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28461"
+                ],
+                "name": "",
+                "out": [
+                    "28461"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28463"
+                ],
+                "name": "",
+                "out": [
+                    "28463"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28462",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Mountainside",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 382,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "A narrow ledge zigs and zags back and forth along the face of a cliff. Its outer\nedge is crumbling, leaving great, jagged gaps that leave only a few feet of\npassable terrain between a steep slope and steeper drop-off. Debris from the\nledge, boulders, and scree litters the mountainside below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28462"
+                ],
+                "name": "",
+                "out": [
+                    "28462"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28464"
+                ],
+                "name": "",
+                "out": [
+                    "28464"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28463",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Jagged Ledge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 381,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "Smooth, flat rock juts outward from a mountain peak to the north, coming to a\njagged edge where large slabs of rock have broken off to crumble into boulders\nstrewn along the slope below. Far below, a trail winds back and forth between\nthis precipice and a similarly steep set of cliffs on the opposite side. A\nnarrow, rocky ledge descends eastward along the slope of the mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28463"
+                ],
+                "name": "",
+                "out": [
+                    "28463"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28464",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Jagged Precipice",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 380,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "The chilly waters within this subterranean river are swift and strong. They pull\non everything, carrying it downwards while the rocky ceiling gets progressively\nlower until nothing but claustrophobic, murky water exists. The water swirls and\ndescends through a series of fast bends, painfully striking everything against\nthe tunnel's rocky walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28361"
+                ],
+                "name": "",
+                "out": [
+                    "28323"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28482",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Subterranean River",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 387,
+        "y": 122,
+        "z": 0
+    }
+]

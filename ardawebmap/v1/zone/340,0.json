@@ -1,0 +1,2282 @@
+[
+    {
+        "desc": "The caves open up here, going from tighter tunnels to spacious halls. Tall,\nblack pillars, crudely carved from the surrounding rocks support the vast\nceilings. In some areas, the pillars have been replaced by enormous, old,\nwithered logs. A long, centrally-located table rises from the floor, hewn\ndirectly from the black stone that forms these caves. It is covered by the\nremains of once-living creatures: long-dried entrails, cracked skulls, and\npulverized bones. The vast halls extend to the north and west. To the east a\ncracked entranceway leads into a tapering tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22185"
+                ],
+                "name": "",
+                "out": [
+                    "22185"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "22186"
+                ],
+                "name": "hallwall",
+                "out": [
+                    "22186"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22182"
+                ],
+                "name": "",
+                "out": [
+                    "22182"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22184"
+                ],
+                "name": "",
+                "out": [
+                    "22184"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22183",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hewn Halls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "The ceilings extend far above, creating halls dozens of feet tall. Pillars of\nblack stone, bordering on a deep purple, have been carved directly from the\nsurrounding rock. In some areas, the walls have been reinforced with massive\nplanks and boulders to prevent a cave-in. The entire area is scattered with\ndecomposing remains; the smell permeates the humid air. The halls continue to\nthe east and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22189"
+                ],
+                "name": "",
+                "out": [
+                    "22189"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22183"
+                ],
+                "name": "",
+                "out": [
+                    "22183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22184",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hewn Halls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 358,
+        "y": 19,
+        "z": 0
+    },
+    {
+        "desc": "The succession of big, roomy halls appear to end here. A chair of sorts has been\nshaped from the stone that forms the northern wall. Its dark stone surface is\ncovered with dry soil and slimy sediment. The roof is supported by massive, hewn\ntree trunks and pillars cut directly from the stone of the mountain. A bonfire\nflickers with a fading light at the centre of the cave. The halls continue to\nthe south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22183"
+                ],
+                "name": "",
+                "out": [
+                    "22183"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22185",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Hewn Halls",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 359,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "The stairs lead down, deeper into the dark mountain. The cave is crude, with\nrough edges protruding from the walls. The unevenly-cut stairs are covered with\ndust, rocks and random debris. Little bugs, roaches and spiders climb the walls\nalong the stairs. The dark, murky tunnel to the east appears passable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22192"
+                ],
+                "name": "",
+                "out": [
+                    "22192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22187"
+                ],
+                "name": "",
+                "out": [
+                    "22187"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22191",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Descending Staircase",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 351,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "A roughly-cut tunnel makes its way through the dark, cold mountain. Nothing\nreflects from the poorly dug-out walls. Sharp, pointy edges protrude from all\nsurfaces. The ground is covered by a thin layer of dust and dirt. Several small\nbat skeletons lie in one corner of the cave, and another has been crushed under\nfalling stones. East and west are staircases, and to the north the tunnel rises\ninto a slanting burrow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22193"
+                ],
+                "name": "",
+                "out": [
+                    "22193"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22195"
+                ],
+                "name": "",
+                "out": [
+                    "22195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22191"
+                ],
+                "name": "",
+                "out": [
+                    "22191"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22192",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Murky Tunnel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 352,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "The ground is even, worn smooth from many decades of use. A shallow gutter has\nbeen worn in the centre of the tunnel. The burrow rises fifteen or so feet tall,\nwith a ceiling of exposed, sharp, dark stone edges. The pathway runs up and\ndown, making it a strenuous route of travel. It extends further into darkness to\nthe east and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22192"
+                ],
+                "name": "",
+                "out": [
+                    "22192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22194"
+                ],
+                "name": "",
+                "out": [
+                    "22194"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22193",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 352,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "A concave trail has been worn in the black stone underfoot, the result of heavy\nuse over many years. The burrow slopes down from the west and rises again to the\neast, creating a small dip right here. To the north the cave opens up into a\ndeep chasm, the result of the burrow having been mined too deeply. Some twenty\nfeet across the deep pit is another ledge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22197"
+                ],
+                "name": "",
+                "out": [
+                    "22197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22196"
+                ],
+                "name": "",
+                "out": [
+                    "22196"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22193"
+                ],
+                "name": "",
+                "out": [
+                    "22193"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22194",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 353,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "A roughly-hewn staircase has been dug out of the deep, dark mountain. Its ascent\nis steep, and it turns sharply to the northwest. The steps are quite high,\nuneven, and worn-down. The exit to the west holds old hinges, set for a door;\nthe door frame has long since been shattered. At the bottom of the stairs lies a\nstone door, broken into many pieces.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22192"
+                ],
+                "name": "",
+                "out": [
+                    "22192"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22201"
+                ],
+                "name": "",
+                "out": [
+                    "22201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22195",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone Stairs",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 353,
+        "y": 18,
+        "z": 0
+    },
+    {
+        "desc": "A ledge of black slate follows the southern wall of the cavern here. To the\nnorth the architects of this cavern have dug far too deep, exposing a crevice\nblack as night, and with its bottom too far away to be visible. A similar ledge\nas this one can be seen on the other side of the chasm, well out of reach to the\nnorth. The burrow makes its way upwards, both to the east and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22198"
+                ],
+                "name": "",
+                "out": [
+                    "22198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22199"
+                ],
+                "name": "",
+                "out": [
+                    "22199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22194"
+                ],
+                "name": "",
+                "out": [
+                    "22194"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22196",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 354,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "Black, surprisingly fresh air rushes past your face as you plunge downwards,\ndeep, deep down towards the unfathomable depths of this broad crack in the\nbedrock of the mountain. Were you not preoccupied with falling to your death,\nyou would notice that the rock walls appear to be of natural origin, with basalt\ncolumns interspersed with clear mountain crystals and tourmalines.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22194"
+                ],
+                "name": "",
+                "out": [
+                    "22194"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22197",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "Certain Death",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 353,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "Black, surprisingly fresh air rushes past your face as you plunge downwards,\ndeep, deep down towards the unfathomable depths of this broad crack in the\nbedrock of the mountain. Were you not preoccupied with falling to your death,\nyou would notice that the rock walls appear to be of natural origin, with basalt\ncolumns interspersed with clear mountain crystals and tourmalines.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22206"
+                ],
+                "name": "",
+                "out": [
+                    "22206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22196"
+                ],
+                "name": "",
+                "out": [
+                    "22196"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22198",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "Certain Death",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 354,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "A smooth pathway runs through the burrow, rising and falling with regularity.\nThe path has a concave shape to it, worn down in the middle after many years of\nuse. The black walls are rough, with sharp edges poking out here and there. A\nsmall gust of air blows through the burrow every now and then.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22200"
+                ],
+                "name": "",
+                "out": [
+                    "22200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22196"
+                ],
+                "name": "",
+                "out": [
+                    "22196"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22199",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 355,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "A small crack in the burrow's southern wall allows access to a staircase leading\ndown. The tunnels through the mountain here have low, rough ceilings, and crude\nwalls. Cockroaches and little bugs dart across the ground, aiming for the safety\nof small cracks and holes in the rock. Low, slanting tunnels extend to the north\nand west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22209"
+                ],
+                "name": "",
+                "out": [
+                    "22209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22199"
+                ],
+                "name": "",
+                "out": [
+                    "22199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22181"
+                ],
+                "name": "",
+                "out": [
+                    "22181"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22200",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 4096,
+        "name": "Confluence of Tunnels",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "This rounded tunnel, dug out from the black bedrock, ends southward at a steep\nstaircase. The tunnel is quite snug and cumbersome to travel. Bat droppings can\nbe seen here and there. A thin layer of dust covers most of the tunnel. The\naccessway continues in a northernly direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22202"
+                ],
+                "name": "",
+                "out": [
+                    "22202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22195"
+                ],
+                "name": "",
+                "out": [
+                    "22195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22201",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Accessway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 351,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "Three tunnels split apart here, with two of them slowly descending to the north\nand south. The ceiling and floor slant from west to east, and a troll burrow\ntakes shape to the north. The black slate of the tunnel floor is solid\nunderfoot. The area appears to have been dug out solely for the purpose of\ntransport; and no embellishments or other niceties are present.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22203"
+                ],
+                "name": "",
+                "out": [
+                    "22203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22201"
+                ],
+                "name": "",
+                "out": [
+                    "22201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22204"
+                ],
+                "name": "",
+                "out": [
+                    "22204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22202",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Accessway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 351,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "It is clear this passage through the burrow has been in use for decades, as a\nsmall concave trail has been worn down the middle of the tunnel by creatures\npassing through. The cave is black stone, crudely dug out. Fragments from the\nceiling and walls lie scattered along the sides of the tunnel. The pathway\ndescends below, and rises slightly to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22202"
+                ],
+                "name": "",
+                "out": [
+                    "22202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22205"
+                ],
+                "name": "",
+                "out": [
+                    "22205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22203",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 351,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "This narrow, winding tunnel makes its way through the black mountain, twisting\nand turning through the bedrock. The ceiling and walls have a rounded shape to\nthem, and their surfaces are rough and black. The air is damp, and small pearls\nof dew have condensed on the walls. Thick layers of bat droppings can be seen on\nthe ground. The tunnel continues in an easterly direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22202"
+                ],
+                "name": "",
+                "out": [
+                    "22202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28607"
+                ],
+                "name": "",
+                "out": [
+                    "28607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22204",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Accessway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 350,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "A concave trail runs through the centre of the burrow, the hard black rock\nunderfoot worn down by time and use. The burrow slopes up and down, as if it\nwere dug without proper guidance. The pathway is quite arduous to traverse; in\naddition to the steep slopes, there are rocks and boulders jutting out from the\nwalls, creating obstacles that nearly block some stretches of the tunnel. The\nburrow continues east and west, and to the south abruptly rises and continues\nupwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22206"
+                ],
+                "name": "",
+                "out": [
+                    "22206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22207"
+                ],
+                "name": "",
+                "out": [
+                    "22207"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22203"
+                ],
+                "name": "",
+                "out": [
+                    "22203"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22205",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 353,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "A smooth, black rock ledge runs east to west along the northern wall of the\nburrow. The cave complex has been mined too deeply to the south, and drops away\ninto a giant chasm, the bottom hidden in darkness. Another ledge can be seen to\nthe south, across the deep pit. Small webs stretch between sharp edges\nprotruding from the rough wall to the north, and some of the webs appear to have\nentangled some of the small bugs that are ever-present in these caves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22198"
+                ],
+                "name": "",
+                "out": [
+                    "22198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22208"
+                ],
+                "name": "",
+                "out": [
+                    "22208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22205"
+                ],
+                "name": "",
+                "out": [
+                    "22205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22206",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 354,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "The burrow comes to an end here, in this foul, unpleasant dugout. The black rock\nfloor is covered with many broken, yellowed bones and dusty old tools. A small\nbonfire lights the area, partially illuminating it with a dying, flickering\nlight. The crudely made burrow inclines slightly towars the east as it heads\ndeep into the mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22205"
+                ],
+                "name": "",
+                "out": [
+                    "22205"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22207",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 352,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "The burrow floor rises sharply here, as if it were passing over an underground\nhill. The black slate underfoot has been worn down, creating a concave trail\nleading east and west. Heaps of bat guano cover some of the loose rocks\nscattered about the area. The burrow walls are rounded, gradually curving\nupwards to become the ceiling in an overhead arc.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22209"
+                ],
+                "name": "",
+                "out": [
+                    "22209"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22206"
+                ],
+                "name": "",
+                "out": [
+                    "22206"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22208",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 355,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "The dark burrow makes a north-west turn here, coming from the south. A putrid,\nstingy smell spreads across the area, with a swift breeze coming in from the\nwest. The burrow slopes slightly to the west and south. The cave has been\nreinforced with thick tree logs to keep the ceiling from caving in. The black\nstone walls are cold and dry.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22200"
+                ],
+                "name": "",
+                "out": [
+                    "22200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22208"
+                ],
+                "name": "",
+                "out": [
+                    "22208"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22209",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Slanting Burrow",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 356,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "A tiny pocket of air has been created in the aftermath of the cave-in. Large\nbeams of broken wood lie criss-crossed in the small space, leaving enough\nleverage and support to keep the ceiling from collapsing further. There are\nseveral troll-like limbs and bodyparts crushed underneath the black, sharp\nrocks. The dust is dense in the air, and the lukewarm temperature creates a\nperfect atmosphere for mould, larvae, and worms to infest the decaying bodies.\nThe stench is beyond putrid. A narrow gap through the black mountain rocks can\nbe seen to the east. A tiny hole lined by razor-sharp rocks opens up into a\nlarge, vast cavern to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26054"
+                ],
+                "name": "",
+                "out": [
+                    "26054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22230"
+                ],
+                "name": "",
+                "out": [
+                    "22230"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22231",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Crawlspace",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "A giant crack opens up here, far inside the mountain. The height of the fissure\nindicates the true depth of these caves, and gazing upwards one can see massive\nblack stalactites hanging down from the high ceiling. Coarse stone, black as\nnight, forms the surfaces of the walls. The floor is covered by a layer of black\ngrit, criss-crossed with large footprints. Broken, twisted skeletons, completely\nstripped of all soft tissues, lie tossed aside into the corners. The place is\nmassive, and stretches further east and south. To the north a cave-in has\noccurred, leaving no discernible exits.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "22231"
+                ],
+                "name": "",
+                "out": [
+                    "22231"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26055"
+                ],
+                "name": "",
+                "out": [
+                    "26055"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26057"
+                ],
+                "name": "",
+                "out": [
+                    "26057"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "28907"
+                ],
+                "name": "blackboulder",
+                "out": [
+                    "28907"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26054",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Heart of the Mountain",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 16,
+        "z": 0
+    },
+    {
+        "desc": "An old stone table sits cracked in the centre of the cave. Wiped clean of any\nfoodstuffs, only mould and fungi cover it now. A skeleton the size of a\nman-child lies broken in several pieces in a corner of the cave. It has been\ncompletely picked clean of any soft tissue. Trickles of dirt and pebbles have\nlanded in piles across the expanse of the cave - clear evidence of recent,\nongoing seismic activities. An enormous cave opens up to the north, and the\ncavern also expands further to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26054"
+                ],
+                "name": "",
+                "out": [
+                    "26054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26056"
+                ],
+                "name": "",
+                "out": [
+                    "26056"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26055",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ruined Troll-Hole",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 359,
+        "y": 17,
+        "z": 0
+    },
+    {
+        "desc": "A huge black portal, forged from seven massive stone blocks tethered together by\niron bars and rusted bolts, blocks the northern exit from the cave. A row of\nfour thick, oxidized iron rings hangs from the gate. The cavern itself is both\nwide and tall, with sharp edges of black stone protruding from the ceiling and\nwalls. Shards of shattered stone lie spread across the ground. Remnants of\nman-like bodies have been left here, rotting away in the lukewarmth. In the\nsoutheastern corner a tunnel accessway takes a sharp turn, leading further down\ninto the depths of Ettenmoors.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1025,
+                "in": [
+                    "22204"
+                ],
+                "name": "",
+                "out": [
+                    "22204"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28607",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before a Great Portal",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 350,
+        "y": 15,
+        "z": 0
+    },
+    {
+        "desc": "Rows of hewn shelves line the northern, southern, and western walls. Empty\nbarrels stand in deep rows against the walls of the black stone chamber. Chests\nof various sizes have been placed here in haphazard manners: some are closed,\nothers have been cracked open and emptied. Shelves of broken clay urns and jars\nhave been overturned. Everything is in complete disarray, as if an earthquake\nhad tossed everything up in the air not too long ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "26054"
+                ],
+                "name": "",
+                "out": [
+                    "26054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28907",
+        "light": 1,
+        "loadflags": 2097159,
+        "mobflags": 0,
+        "name": "Troll's Treasure Heap",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 358,
+        "y": 16,
+        "z": 0
+    }
+]

@@ -1,0 +1,1515 @@
+[
+    {
+        "desc": "Down a few stone steps is this small chamber. The walls are made of stone, so it\nhas managed to survive better than many of the wooden constructions outside.\nThis may have been some kind of treasure room for the innkeeper, and also a\nstorage room. Judging by the cool air and the cobwebs around the door, it looks\nlike this room hasn't been disturbed in a long time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3380"
+                ],
+                "name": "",
+                "out": [
+                    "3380"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3383",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Secret Back Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 245,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "About five yards wide, this platform hovers in the air several yards up from the\nearth covered ground below supported by a single thin stone pillar. A dark dome\nwith wooden walls surrounds this flat surface, and any words uttered reverberate\nstrongly throughout the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3465"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "3468"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "3465"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3466",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "On a Stone Platform",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 240,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in a small basket hanging from a rope attached to the southern\nand northern walls of this large dome. The basket jerks a little, and you cling\nto the ropes that support the wooden planks you are standing on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "3470"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3466"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3468",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In a Sturdy Basket",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 241,
+        "y": 58,
+        "z": 0
+    },
+    {
+        "desc": "When stepped upon, this balcony complains with a stern creak. However built with\nthick logs running into the south wall, the planks are thin and brittle and the\nwhole structure leans slightly downwards. A slender railing runs along its edge,\nbut there is reasonable doubt whether it would support the weight of more than a\nsmall dog. A large wooden dome lies northwards and beneath you, with a platform\nin the middle. A thick rope is fastened in a hook just above the archway to the\nsouth, and passes over the platform to the barely visible opposite wall. A\nbasket hangs in a tackle from this thick rope. Another, thinner rope is attached\nto a small winch on the railing, with the other end attached to the basket. The\npoint seems to be to make a sensational entrance to the platform by flying in\nthe air standing in the basket.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3468"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3469"
+                ],
+                "name": "",
+                "out": [
+                    "3469"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3470",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Creaking Balcony",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 241,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "Spiders and dust shroud just about everything in this dimly lit room. In the\ncentre is a small round wooden table, with hard chairs arranged around it.\nVarious footprints in the thick dust suggest that this may be a meeting room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15248"
+                ],
+                "name": "curtain",
+                "out": [
+                    "15248"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15249",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 4096,
+        "name": "Back of the Cellar",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 244,
+        "y": 59,
+        "z": 0
+    },
+    {
+        "desc": "It is rather dark and damp inside this cave. You can see some stirring in the\nback of the cave. You can feel the presence of something else inside the cave\nalong with you, but with all the signs of snake presence around, most likely it\nis no more than another snake. There are some rocks towards the side that appear\nto move slightly as if something live was hiding between them.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "19443"
+                ],
+                "name": "hole",
+                "out": [
+                    "19443"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3398"
+                ],
+                "name": "",
+                "out": [
+                    "3398"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "15250",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Inside a Large Water Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 244,
+        "y": 54,
+        "z": 0
+    },
+    {
+        "desc": "Behind the rocks is this little room. Nothing seems to have been here and you\nseem to be the first to disturb its resting. You might as well leave here or\ntake a small break, after getting past that snake you deserve a break. This is\nnothing more than a natural hole in the wall of the cave where nothing seems to\ngo. It is of very little interest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19444"
+                ],
+                "name": "",
+                "out": [
+                    "19444"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "15250"
+                ],
+                "name": "hole",
+                "out": [
+                    "15250"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19443",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Hole in the Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 244,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "Back in here there seems to be a cave that goes on further, the light from\nbeyond is dimming and it is hard to know what might be back there, more of the\nsnakes could be laying in there waiting for you to come along. Rustling can be\nheard in the distance, a cool breeze from inside penetrates you. It is not a\nlovely place to visit, but traveling in there seems possible.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19447"
+                ],
+                "name": "",
+                "out": [
+                    "19447"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19443"
+                ],
+                "name": "",
+                "out": [
+                    "19443"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19445"
+                ],
+                "name": "",
+                "out": [
+                    "19445"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19444",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Snake's Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 244,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "This part of the cave seems to make it's way to a larger more comfortable cave,\nbeyond it grows narrow. There is no light in here, just the cool feel of the\nbreeze hitting your neck as you move along, and the wet feel of the water\ndripping on your head from the cave ceiling above. Slime grows along the walls\nand it is easy to see why in this atmosphere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19444"
+                ],
+                "name": "",
+                "out": [
+                    "19444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19446"
+                ],
+                "name": "",
+                "out": [
+                    "19446"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19445",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Snake Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 243,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "A small passageway is here, moving along it is difficult. It is growing narrower\nand narrower as you move along it. Going down to your hands and knees seems to\nbe the only way to move along it now. Trying to fight in here against the things\ncrawling around here would be impossible. You are better off leaving here and\nmoving along, even trying to concentrate in here is difficult as you feel slimy\nthings crawling along your hands.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19445"
+                ],
+                "name": "",
+                "out": [
+                    "19445"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19451"
+                ],
+                "name": "",
+                "out": [
+                    "19451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19446",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Snake's Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 242,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "Back in here there seems to be a cave that goes on further, the light from\nbeyond is dimming and it is hard to know what might be back there, more of the\nsnakes could be laying in there waiting for you to come along. Rustling can be\nheard in the distance, a cool breeze from inside penetrates you. It is not a\nlovely place to visit, but traveling in there seems possible.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19444"
+                ],
+                "name": "",
+                "out": [
+                    "19444"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19448"
+                ],
+                "name": "",
+                "out": [
+                    "19448"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19447",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Snake Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 244,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "Bodies of poor new adventurers lay with only the bones remaining, snake skins\nlay all around here, shedded from previous snakes. The cave is filled with the\nbodies of their prey. A few skulls lay along the walls, bones have been piling\nup in here for some time now, it is no wonder there are so many snakes in these\ncaves. The poor adventurer whose resting place became final.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19447"
+                ],
+                "name": "",
+                "out": [
+                    "19447"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19449"
+                ],
+                "name": "",
+                "out": [
+                    "19449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19448",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Snake's Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 243,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "The wet feel of the cave cools your feet as you walk along in this cave. The air\nin here is moist and there is a rustling sound off somewhere. It is not much of\na place to stay. The darkness makes it hard to move around and trying to feel\nyou way around is not a good idea from the feel of the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19448"
+                ],
+                "name": "",
+                "out": [
+                    "19448"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19450"
+                ],
+                "name": "",
+                "out": [
+                    "19450"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19449",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 242,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "Darkness fills the cave with drops of water falling from the top of the cave.\nThere are many squeaks and rustling sounds echoing from the cave. A pungent odor\nmoves slowly through the cavern, filling it with its strong scent. Loud splashes\nsound throughout the cave from places distant to here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19451"
+                ],
+                "name": "",
+                "out": [
+                    "19451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19449"
+                ],
+                "name": "",
+                "out": [
+                    "19449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19450",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 241,
+        "y": 51,
+        "z": 0
+    },
+    {
+        "desc": "You are in the back of a cave. Huge rocks block what look to be a way out of\nhere. The stench of the mold overpowers your senses and keeps you from being\nable to think clearly. Little creatures crawl around on the floor, moving around\nyour legs. The darkness is uncomforting and the sound of water can be heard in\nthe distance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19450"
+                ],
+                "name": "",
+                "out": [
+                    "19450"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19446"
+                ],
+                "name": "",
+                "out": [
+                    "19446"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "19452"
+                ],
+                "name": "snake",
+                "out": [
+                    "19452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19451",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Back of the Snake Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 241,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "A large boulder seems to block the entrance to some more caves. The rustling\nsounds can be heard from there and a cool breeze comes from behind the\npassageway's blocked entrance. Dripping water can be heard nearby, as apparently\nthis is a water cave. The slime is beginning to grow even in this part of the\ncave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19453"
+                ],
+                "name": "",
+                "out": [
+                    "19453"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "19451"
+                ],
+                "name": "snake",
+                "out": [
+                    "19451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19452",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to a Snake Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 240,
+        "y": 52,
+        "z": 0
+    },
+    {
+        "desc": "You are in a cave, it's walls are slimy and caked with some sort of green living\nthing. The sounds of footsteps can barely be heard above as water drowns them\nout from some where. Things seem to be crawling around by your feet maybe you\nbest take a look around. Staying here could be a bad idea. There are some exits\naround here, this cave may not be all that small.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19452"
+                ],
+                "name": "",
+                "out": [
+                    "19452"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19454"
+                ],
+                "name": "",
+                "out": [
+                    "19454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19456"
+                ],
+                "name": "",
+                "out": [
+                    "19456"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19453",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Water Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 240,
+        "y": 53,
+        "z": 0
+    },
+    {
+        "desc": "A rustling sound can be heard moving closer towards you. The cave is so dark,\nmaybe coming in here was not such a good idea. On your feet you can feel some\nslimy creatures sliding across them. Touching the sides of the cavern, you get a\nmoldy film on your hands. Water can be heard coming from somewhere.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19453"
+                ],
+                "name": "",
+                "out": [
+                    "19453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19455"
+                ],
+                "name": "",
+                "out": [
+                    "19455"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19454",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Water Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 240,
+        "y": 54,
+        "z": 0
+    }
+]

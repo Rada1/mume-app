@@ -1,0 +1,3423 @@
+[
+    {
+        "desc": "Here, in a crown high above the other tree tops, the foliage is crawling with\nspiders spinning their small webs. Dozens of dark butterflies flutter about\nhere, looking for nectar. As far as the eye can see, the forest spreads out\nendlessly in all directions. Only to the south can a small line be seen marking\nwhere the road is.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "22977"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "22975"
+                ],
+                "name": "",
+                "out": [
+                    "22975"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "22976",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of a Sprawling Black Yew",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 586,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Dark vines cling to low branches in this gloomy forest. In the shade of the\ntrees, bushes and ferns thrive, as though the lack of light does not bother them\nat all. To the south and west the forest and dense foliage continues without\nreprieve.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23331"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23335"
+                ],
+                "name": "",
+                "out": [
+                    "23335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23333"
+                ],
+                "name": "",
+                "out": [
+                    "23333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23332",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Stygian Depths of Mirkwood",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 584,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "A grove of twisted oaks, with an almost malevolent aura about them, rise up\namidst thorny thickets and sprawling bushes. To the north, a craggy outcrop of\ndark rock thrusts up suddenly through the forest floor. It is covered in\ndeep-red flowers that give it the appearance of a broken, uneven row of\nmonstrous blood-soaked teeth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23352"
+                ],
+                "name": "",
+                "out": [
+                    "23352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23334"
+                ],
+                "name": "",
+                "out": [
+                    "23334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23332"
+                ],
+                "name": "",
+                "out": [
+                    "23332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23781"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23333",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 4096,
+        "name": "Stygian Depths of Mirkwood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 583,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "Old and gnarled ash trees grow here, watching over a forest landscape overgrown\nwith thorny bushes. There is enough space between these gloomy sentinels to\nsqueeze through in single file. A faint odour of decay and putrifying plants\nhangs in the air, refusing to give way for weather or wind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23333"
+                ],
+                "name": "",
+                "out": [
+                    "23333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23339"
+                ],
+                "name": "",
+                "out": [
+                    "23339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23335",
+                    "23493"
+                ],
+                "name": "",
+                "out": [
+                    "23335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23336"
+                ],
+                "name": "",
+                "out": [
+                    "23336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23334",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Stygian Shadows beneath a Dark Canopy",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 583,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "A strange band of unidentifiable mottled trees encircle a small patch of grass.\nLong vines hang down from above and lie in tangled coils on an ancient,\npetrified stump in the centre of the small clearing. Around and beyond the\nstrange grove of trees, Mirkwood awaits, gloomy and veiled in shadows.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23332"
+                ],
+                "name": "",
+                "out": [
+                    "23332"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 96,
+                "in": [
+                    "23492"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23334"
+                ],
+                "name": "",
+                "out": [
+                    "23334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23335",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 4096,
+        "name": "Shifting Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 584,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "The lower end of vines sway gently in the trees here, like some strange creature\nwaiting for a hapless victim to wander into its trap. It is difficult to see\nfurther than half-way up the canopy as the higher parts are hidden in gloom. The\ntrees seem to be leaning slightly to the west, where it looks like the forest\ngrows darker and more ominous.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23782"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23337"
+                ],
+                "name": "",
+                "out": [
+                    "23337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23334"
+                ],
+                "name": "",
+                "out": [
+                    "23334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23338"
+                ],
+                "name": "",
+                "out": [
+                    "23338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23336",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stygian Darkness within the Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 582,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "The ground slopes slightly downwards here forming a valley in the forest. At the\nbottom of the valley, there is a huge black elm standing in lone majesty. Its\nbranches seem to rustle threateningly as if warning away creatures or indeed the\nvery forest itself from approaching.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23336"
+                ],
+                "name": "",
+                "out": [
+                    "23336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23339"
+                ],
+                "name": "",
+                "out": [
+                    "23339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23340"
+                ],
+                "name": "",
+                "out": [
+                    "23340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23337",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stygian Depths of Mirkwood",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 582,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "An impressive and solitary fir tree stands here, resolute against the\nsurrounding forest of twisted, corrupted trees. It gives the impression of the\nlast soldier, surrounded by a tainted force. The largest boughs of the fir are\nspread on an east-west axis like arms, and the powerful roots are drawn up\nslightly out of the ground as though it has been preparing itself to flee from\nassailants.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23343"
+                ],
+                "name": "",
+                "out": [
+                    "23343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23340"
+                ],
+                "name": "",
+                "out": [
+                    "23340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23336"
+                ],
+                "name": "",
+                "out": [
+                    "23336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23345",
+                    "23487"
+                ],
+                "name": "",
+                "out": [
+                    "23345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23338",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stygian Darkness within the Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 581,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "The ancient trees are covered by layers of long, grey lichen which makes the\nforest appear as if there are hundreds of gnarled, hunched figures with long\nbeards standing in the gloom. The lichen sways slowly in the wind, and vines\ndangling from the branches above caress the ground. Most of the vines have\nnatural, green shades, but one species stands out for its inflamed red colour.\nThis vine winds itself tightly around some of the trunks. The impression is that\nof ongoing strangulation, and although the effect might be an illusion, the\ntrees suffering the red vines seem less hale than the rest of the forest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23334",
+                    "23493"
+                ],
+                "name": "",
+                "out": [
+                    "23334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23494"
+                ],
+                "name": "",
+                "out": [
+                    "23494"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23337"
+                ],
+                "name": "",
+                "out": [
+                    "23337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23339",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stygian Depths of Mirkwood",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 583,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "In this havoc of untamed, shifting vegetation, it is unlikely that any permanent\npaths or trails can be found. Even as an opening between thorny bushes seems to\nmaterialise, it begins to disappear again. There is a constant background noise\nof faint but distinct hissing sounds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23338",
+                    "23487"
+                ],
+                "name": "",
+                "out": [
+                    "23338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23337"
+                ],
+                "name": "",
+                "out": [
+                    "23337"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23342"
+                ],
+                "name": "",
+                "out": [
+                    "23342"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "23341"
+                ],
+                "name": "twistedbranches",
+                "out": [
+                    "23341"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23340",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Stygian Depths of Mirkwood",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 581,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "This huge linden tree is very easy to climb, because of the thick and rough\nbark. The linden starts branching at low height with several very thick branches\nthat can easily be reached from the ground, which makes the climb even easier.\nIn one branching point, there is an almost flat area. Apparently some creatures\nhave found the place and made it their home, since there is a nest made of\npieces of vine, hay, and other vegetation in there.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "23340"
+                ],
+                "name": "branches",
+                "out": [
+                    "23340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23341",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 266240,
+        "name": "Tree-top Nest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 581,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "The forest and undergrowth have created a mayhem of gnarled trunks, thorn-clad\nbranches, entangled vines, and dense bushes. Paths through the undergrowth seem\nto appear only to vanish instants later, as the foliage shifts in ways no wind\ncould accomplish. The forest floor is barely visible and these woods are perfect\nhiding places for any manner of wild animal that slithers or crawls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23485"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23340"
+                ],
+                "name": "",
+                "out": [
+                    "23340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23342",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Dead-end in a Stygian Wood",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 580,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "The bed of the gully is wet with mud and decaying leaves, and the air is filled\nwith the stench of putrifying plantlife. Vicious-looking, thorn-covered bushes\nline the steep ridges of the gully, their thick branches leaning out above as if\nthreatening to leap down into the gully and attack trespassers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23344"
+                ],
+                "name": "",
+                "out": [
+                    "23344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23338"
+                ],
+                "name": "",
+                "out": [
+                    "23338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23782"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23346"
+                ],
+                "name": "",
+                "out": [
+                    "23346"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23343",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shallow Gully in a Stygian Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 581,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "Ashes and oaks, gnarled with age, loom overhead, lining the sides of this\nfissure. Fiercely tangled brambles, thorns gleaming with dew, obstruct the way\nnorth. The ground continues to slope gently downwards to the south as the\ntwisting fissure disappears from view. On the ground, a narrow crack between\ncliff and rocks is visible and there is a passage down into darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23343",
+                    "23489"
+                ],
+                "name": "",
+                "out": [
+                    "23343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23351",
+                    "23354"
+                ],
+                "name": "",
+                "out": [
+                    "23354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23353"
+                ],
+                "name": "",
+                "out": [
+                    "23353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23344",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Fissure in a Stygian Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 581,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The trees seem to form a natural cavern-like room from apparently dead branches,\nvines, and other vegetation. The decaying vegetation has interwoven into a sort\nof curtain preventing almost any sunlight from shining through. Thorny shrubs\nand thickets below the trees complement the curtain of decaying vegetation,\nperfecting the area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23346"
+                ],
+                "name": "",
+                "out": [
+                    "23346"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 96,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23338"
+                ],
+                "name": "",
+                "out": [
+                    "23338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23345",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stygian Darkness within a Decaying Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 580,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "Oak and ash, interspersed with an occasional dark alder, spread out in all\ndirections. A powerful malignant aura seems to encompass these woods. The trees\nlook unhealthy and are spotted with patches of mould and strange growths. Vines\ndangle from branches above, trembling with inner life and shifting about as if\nthey were tendrils. The ground is unusually soft and covered in rotting leaves,\nabsorbing the sound of footfalls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23488"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23345",
+                    "23486"
+                ],
+                "name": "",
+                "out": [
+                    "23345"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23343"
+                ],
+                "name": "",
+                "out": [
+                    "23343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23784"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23346",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stygian Depths of Mirkwood",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 580,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "This channel is formed in the rock deep beneath Mirkwood. There is a bit of\nmoisture on the ground, but the water is not flowing. The surface is smooth and\ncorners are rounded by something probably many years ago. The rounded tunnel\ncontinues to the east, while its other end to the south has collapsed, leaving\npiles of rubble on the floor of the tunnel and dark openings in the ceiling\nabove. The air is cool and humid here, dozens of feet beneath the forest floor\nof Mirkwood.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23348"
+                ],
+                "name": "",
+                "out": [
+                    "23348"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23344",
+                    "23490",
+                    "23785"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23347",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Channel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 581,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "This underground channel, is embedded in the rock dozens of feet beneath\nMirkwood. The tunnel leads off in three directions. The walls have been\nsmoothened by something long years ago, perhaps water, and a flora of lichen and\nfungi grows on the walls of the tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23349"
+                ],
+                "name": "",
+                "out": [
+                    "23349"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23350"
+                ],
+                "name": "",
+                "out": [
+                    "23350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23347"
+                ],
+                "name": "",
+                "out": [
+                    "23347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23786"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23348",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fork in a Channel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 582,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "This is a cavern with smooth walls and there is a very narrow trough in the\nwestern wall. The trough is not big enough to enter. There is a crevice in the\nceiling to the north. Its surface is smooth and slippery, but the walls are not\nvery steep, so it's easy to traverse there. A thin layer of stagnant water\ngathers on the bottom of the channel, but it is muddy and there is too little\nfor a drink. Sound echoes strangely here in the rocky channel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23351"
+                ],
+                "name": "",
+                "out": [
+                    "23351"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23348"
+                ],
+                "name": "",
+                "out": [
+                    "23348"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23349",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Channel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 582,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel has smooth walls, and a large bowl-like depression in the floor\nsuggests that water fell from above. There is an unreachable fissure in the\nceiling. A pile of leaves and branches lie in the depression where they've\nfallen through, and from the sides of the fissure, roots can be seen poking\nthrough the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23348"
+                ],
+                "name": "",
+                "out": [
+                    "23348"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "23352",
+                    "23799"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23350",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Channel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 583,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "An outcrop of broken rock rises from the forest floor but even at its pinnacle\nthe outcrop does not break through the canopy of Mirkwood. Wide branches from\nthe surrounding forest intertwine above and hide the sky from view. Seregon\ncovers much of the dark rock, its blood-red flowers rising up from the clefts\nlike a wound in the rock itself.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23333"
+                ],
+                "name": "",
+                "out": [
+                    "23333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23351",
+                    "23354"
+                ],
+                "name": "",
+                "out": [
+                    "23354"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23352",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shattered Outcrop in a Stygian Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 583,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The forest here is filled with dense tangles of thorny bushes and thickets. The\nground is a maze of roots snaking around each other, and most of the trees are\novergrown with vines. The vines seem to be of a strange sort with rows of\nneedle-like thorns growing along their lengths.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23488"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23488"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23344"
+                ],
+                "name": "",
+                "out": [
+                    "23344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23353",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 4096,
+        "name": "Stygian Shadows beneath a Dark Canopy",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 580,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The forest thins out to the east and west where dark groves of alder trees keep\nthe undergrowth to a minimum. To the east, a jagged outcrop rises from the\nforest floor, making movement in that direction seem difficult. Decaying vines\nhang limp in the shadow of the outcrop like the tentacles of a thousand\nlong-dead octopi.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23352"
+                ],
+                "name": "",
+                "out": [
+                    "23352"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23344"
+                ],
+                "name": "",
+                "out": [
+                    "23344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23354",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stygian Shadows of an Ominous Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 582,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "Dark trees rise high in the gloom of their own canopy, from which a plethora of\nvines reach down in odd, intertwined patterns. The impression is that of a\ngigantic cobweb made of plantlife, each silken thread of the web as thick as a\nwrist. The undergrowth of ferns and thorny bushes is dense and inhospitable,\nalthough a perfect habitat for snakes and lizards, and anything else that\nslithers or crawls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23486"
+                ],
+                "name": "",
+                "out": [
+                    "23486"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23342"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23342"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23487"
+                ],
+                "name": "",
+                "out": [
+                    "23487"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23485",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Border of a Fell, Stygian Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 586,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "The aged trees that dominate most ancient forest are largely absent here. Only a\nfew scattered oaks, ancient and gnarled sentinels, remain standing. Between\nthorny bushes and those few sprawling ancients, a vast number of saplings grow.\nThe young trees grow in odd shapes, leaning and twisting against and around each\nother as if involved in a physical struggle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23346"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23485"
+                ],
+                "name": "",
+                "out": [
+                    "23485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23486",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep within a Fell Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 586,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "The forest here is hidden in shadows and gloom. The canopy above is impenetrable\nand the undergrowth consists mainly of ferns and other plants that need little\nlight. There is an open area, free of other trees and plants, around a twisted\nblack tree, as if it consumes the light with such absoluteness that nothing else\ncan survive near it. Though no greater in stature than the other trees, it seems\nto loom over them as the queen of this region of Mirkwood.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23785"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23785"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23340"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23338"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23485"
+                ],
+                "name": "",
+                "out": [
+                    "23485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23487",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Shadow of a Fell Tree",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 587,
+        "y": 89,
+        "z": 0
+    },
+    {
+        "desc": "The forest here is completely overgrown and moving through it is almost\nimpossible. Especially the thickets and bushes, equipped with sharp, black\nthorns, hinder movement. The branches of the ancient oaks growing here shift and\nrustle in the wind, but sometimes louder noises are heard as unseen animals move\nthrough the undergrowth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23353"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23353"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23346"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23489"
+                ],
+                "name": "",
+                "out": [
+                    "23489"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23488",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fringe of a Fell, Stygian Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 584,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "The thorns on the thickets here are black and sharp. From the tips of the\nthorns, there is some sort of liquid seeping out. The undergrowth is almost\nimpassable, although it is slightly less dense to the west, where the crowns of\nseveral ancient, sprawling oaks block the sunlight with such finality that only\nsmaller ferns grow under them. In the bushes and thickets, there's the\noccasional rustling sound as something moves through it unseen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23344"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23490"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23490"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23488"
+                ],
+                "name": "",
+                "out": [
+                    "23488"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23489",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Maze in a Fell Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 585,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "The forest growth has become a mayhem of entangled branches, vines, and\nthorn-clad bushes. The mere act of walking ten feet in a straight line presents\nan almost impossible challenge. Thick, gnarled roots crawl across the ground,\nlargely hidden underneath the foliage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23808"
+                ],
+                "name": "",
+                "out": [
+                    "23808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23489"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23489"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23490",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Thorns and Brambles in a Fell Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 586,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "The canopy of Mirkwood allows for some glimpses of sky between boughs and\nleaves. Even so, not even the brightest summer day could lift the shadows that\nrest over these woods like a suffocating blanket. The trees, ancient and\ngnarled, are chiefly a mix of oak and aspen with the odd sprawling linden\ninterspersed with them. High ferns thrive in the space between the tree trunks\nand the forest floor is completely obscured.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23492"
+                ],
+                "name": "",
+                "out": [
+                    "23492"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23494"
+                ],
+                "name": "",
+                "out": [
+                    "23494"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23493"
+                ],
+                "name": "",
+                "out": [
+                    "23493"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23491",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of a Fell, Stygian Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 589,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "Towering ancient oaks dominate the forest here. Some of these have stood rooted\nin the same spot for thousands of years. Massive, gnarled roots crawl across the\nforest floor. The largest are thick and high enough to conceal a pony standing\non the other side. Few species of plants grow beneath the dense foliage of the\noaks, but these are ideal conditions for the ferns that thrive here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23335"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23491"
+                ],
+                "name": "",
+                "out": [
+                    "23491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23492",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fell Oaks within a Shadowy Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 589,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "This part of Mirkwood is overrun by infernal bushes reaching more than ten feet\nhigh. They are covered in wicked thorns and form thick walls that completely\nobscure the other side from view. What might be narrow paths can be seen in some\nplaces, although it is impossible to say if they lead anywhere. A lifetime could\nbe spent being scratched and torn while trying to find a way out of here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23799"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23799"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23491"
+                ],
+                "name": "",
+                "out": [
+                    "23491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23334"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23493",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tangled Maze in a Fell Forest",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 588,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "In this corner of the forest, there are a lot of broken branches and fallen\ntrees on the ground. Something huge has crashed mindlessly through the forest,\nnot caring about neither the thorny bushes nor the trees. The forest seems to be\npassable only to the west, although the ever-shifting foliage makes it hard to\nsee a clear path.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23491"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23491"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23339"
+                ],
+                "name": "",
+                "out": [
+                    "23339"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23494",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Dead-end in a Stygian Wood",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 584,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "A wide variety of trees thrive here, growing in an entangled chaos as they\ncompete for the sun's light. There is a small pond in the centre of the area,\nnestled in-between looming trunks. Several corpses of unidentifiable creatures,\nbadly decayed and falling into pieces, float in the water and swarms of flies\nhover above them. A strong odour of death and decay fills the air, and at times\none of the corpses is jerked about as if something in the pool was tugging at\nthem.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23783"
+                ],
+                "name": "",
+                "out": [
+                    "23783"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23333"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23333"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23782"
+                ],
+                "name": "",
+                "out": [
+                    "23782"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23781",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outskirt of a Fell, Stygian Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 587,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "The willows in this part of Mirkwood are twisted and bent in ways that only a\nsick, malevolent mind could possibly envisage. The trunks scrape and chafe\nagainst each other, with some looking as if they would fall over if not for\nbeing deeply entangled in the dense canopy above. Thick vines are wrapped about\ntrunks and branches, giving an impression of ropes that shackle the trees to\nkeep them from escaping.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23336"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23781"
+                ],
+                "name": "",
+                "out": [
+                    "23781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23343"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23782",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Among Twisted, Fell Willows",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 586,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "This part of Mirkwood is an entanglement of bushes, twisted willows, and thorny\nbriars. Only a narrow path is visible to the north through the forest.\nOccasional rustling noises are audible, originating from somewhere deep in the\nforest. Some of the willow branches, along with the thorns of the briars, have\nbrownish stains upon them which resemble dried blood.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "23781"
+                ],
+                "name": "",
+                "out": [
+                    "23781"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23786"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23786"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23783",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep inside a Fell, Stygian Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 587,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "The forest here is largely birch. They might have been ordinary trees once, but\nnow they are gnarled and withered. Their branches rustle and the twisted trunks\ncreak dangerously whenever approached as if the forest itself is aware of\nintruders. The ground is covered by ferns, tangled brambles and round,\nmoss-covered boulders.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23808"
+                ],
+                "name": "",
+                "out": [
+                    "23808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23487"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23487"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23347"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23785",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Thorns and Brambles in a Fell Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 587,
+        "y": 88,
+        "z": 0
+    },
+    {
+        "desc": "This part of the forest is completely overgrown by stunted, deformed willows.\nThe trunks bend and twist in ways that should be impossible for a tree. The\ncanopy is very dense, leaving only hints of a sky visible. Beneath this foliage,\nonly ferns thrive, but as if to compensate, they do so in abundance.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 99,
+                "in": [
+                    "23783"
+                ],
+                "name": "hack bush",
+                "out": [
+                    "23783"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23808"
+                ],
+                "name": "",
+                "out": [
+                    "23808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23348"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23786",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Thorns and Brambles in a Fell Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 587,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "Enormous thorny bushes grow everywhere. They are so sprawling and entangled with\none another that it is impossible to say where one bush starts and the next one\nbegins. Few trees grow here, but those that do have huge crowns, large enough to\nblot out most of the sky and cast the bushes into perpetual gloom. Rustling\nnoises are ever-present deep in the bushes; an aura of malevolence and the\nforebodings of imminent doom seem to hang heavily in the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23493"
+                ],
+                "name": "",
+                "out": [
+                    "23493"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23808"
+                ],
+                "name": "",
+                "out": [
+                    "23808"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "23350"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23799",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Thorns and Brambles in a Fell Forest",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 588,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "Twisted elms stand huddled together in groups around this hollow. Shrouded in\nshadows with crowns of mottled green, they lean inwards creating an enclosed\ncircle-like area inside the forest. The lair between the elms is at least a\nhundred feet across and overgrown with tall bushes. Bloated, distended cadavers\nthat have started to putrefy, hang from the lower branches. Strewn amidst the\nrazor-sharp thorns, crumbling husks and the dismembered skeletal remains of\nlong-dead creatures litter the area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23786"
+                ],
+                "name": "",
+                "out": [
+                    "23786"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23785"
+                ],
+                "name": "",
+                "out": [
+                    "23785"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23799"
+                ],
+                "name": "",
+                "out": [
+                    "23799"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "23490"
+                ],
+                "name": "",
+                "out": [
+                    "23490"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "23808",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 327680,
+        "name": "Fell Lair",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 587,
+        "y": 87,
+        "z": 0
+    }
+]

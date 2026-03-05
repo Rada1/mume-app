@@ -34,42 +34,43 @@
     transform: scale(0.92) !important;
 }
 
-/* Individual positions within the 170x170 cluster - Tight Quarter Arc with Z in the corner */
+/* Individual positions within the 170x170 cluster - Perfect Geometric Quarter Arc */
 .xbox-btn.center {
-    left: 90px;
-    top: 90px;
+    left: 100px;
+    top: 100px;
     width: 70px;
     height: 70px;
     z-index: 100;
 }
 
+/* Ranger (Top of Arc) */
 .xbox-btn.top {
-    left: 100px;
-    top: 15px;
+    left: 110px;
+    top: 8px;
 }
 
-/* Cleric (North) */
+/* Cleric */
 .xbox-btn.right {
-    left: 60px;
-    top: 35px;
+    left: 59px;
+    top: 22px;
 }
 
-/* Ranger (North-West) */
+/* Mage */
 .xbox-btn.left {
-    left: 25px;
-    top: 75px;
+    left: 22px;
+    top: 59px;
 }
 
-/* Mage (West-North-West) */
+/* Thief (Bottom of Arc) */
 .xbox-btn.bottom {
-    left: 15px;
-    top: 115px;
+    left: 8px;
+    top: 110px;
 }
 
-/* Thief (West) */
+/* Door (Outside utility) */
 .xbox-btn.outside {
-    left: -40px;
-    top: 40px;
+    left: -48px;
+    top: 48px;
     width: 44px;
     height: 44px;
 }

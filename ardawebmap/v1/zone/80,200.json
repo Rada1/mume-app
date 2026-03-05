@@ -1,0 +1,4325 @@
+[
+    {
+        "desc": "The broad once-beautiful avenue bends from south to east, flanked on the outside\nof the curve by an ornamental marble colonnade. Behind the columns there was\nonce a monumental bas-relief. Someone has taken an exceptional dislike to this\nwork; it has been systematically chiselled away, and marble chips litter the\nfloor of the tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16926"
+                ],
+                "name": "",
+                "out": [
+                    "16926"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16924"
+                ],
+                "name": "",
+                "out": [
+                    "16924"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16925",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Curving Underground Avenue",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 99,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "The underground avenue identified as Durin's Way makes a broad bend to the\nnorth, from the point of view of an eastbound traveller. East of the bend is a\nsquarish side chamber parallel to the road, possibly a siding for the unloading\nof freight. Some large stone bins are here with runners on the bottoms. In the\neast wall are four stone openings large enough for the bins to fit within.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16925"
+                ],
+                "name": "",
+                "out": [
+                    "16925"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "16961"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18288"
+                ],
+                "name": "",
+                "out": [
+                    "18288"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16926",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in Durin's Way",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 99,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "A broad underground road makes a turn here from westward to northward. The walls\nhave been much battered and pitted, but it seems that some mosaics showing the\nindustry of the dwarves and the victories they had won with their axes still\nremain visible on the tunnel's walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16928"
+                ],
+                "name": "",
+                "out": [
+                    "16928"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18288"
+                ],
+                "name": "",
+                "out": [
+                    "18288"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16927",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in an Underground Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 97,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "This is the end of an underground road which comes from the south and stops here\nin a square chamber, broad though low, with a strong-looking metal door in the\nnorth wall. The four corners of the chamber bear lamps mounted on struts which\nlean toward the centre. A plain corridor departs westward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16927"
+                ],
+                "name": "",
+                "out": [
+                    "16927"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16929"
+                ],
+                "name": "",
+                "out": [
+                    "16929"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "17799"
+                ],
+                "name": "stonesquare",
+                "out": [
+                    "17799"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16928",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Square",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 97,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "The level corridor continues straight east and west through the mountain. Above\nyou there is a great hole in the ceiling; not the result of a collapse, but a\ntunnel of the same dimensions as this one, which seems to ascend straight\nupwards. The air that blows down from above is cooler, but it bears a mixture of\npungent animal smells.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16928"
+                ],
+                "name": "",
+                "out": [
+                    "16928"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16930"
+                ],
+                "name": "",
+                "out": [
+                    "16930"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16929",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Way",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 96,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel is like a narrow corridor which has been delved through the stone in\nan east-west direction. Its walls, floor, and ceiling are flat and meet at\nprecise right angles, but there is little ornamentation. Perhaps it was awaiting\nfurther work when the dwarves were driven from Khazad-dum long ago.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16929"
+                ],
+                "name": "",
+                "out": [
+                    "16929"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16931"
+                ],
+                "name": "",
+                "out": [
+                    "16931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16930",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Way",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 95,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "You are in a draughty, high-ceilinged chamber where a passage from the west\ndivides into three eastward-trending ways. To the left, a wide road descends a\nramp; to the right, a similar road ascends into blackness. Connecting the upward\nand downward paths is a curved patch of stone floor which was actually worn down\nabout two inches by the traffic long ago. Between the two, a narrower level\npassage proceeds straight eastward. On the walls are mounted some lamps in\npairs. This was apparently a well- travelled junction once. There is a low\narchway in the north wall of the chamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16959"
+                ],
+                "name": "",
+                "out": [
+                    "16959"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16930"
+                ],
+                "name": "",
+                "out": [
+                    "16930"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16932"
+                ],
+                "name": "",
+                "out": [
+                    "16932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17287"
+                ],
+                "name": "",
+                "out": [
+                    "17287"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17606"
+                ],
+                "name": "",
+                "out": [
+                    "17606"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16931",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Intersection of Roads",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 94,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "A deep fissure has opened in the rock here, perpendicular to the direction of\nthe tunnel. In the ceiling it is a noticeable crack; on the walls it is about a\nfoot wide. Where it crosses the path you are on, it makes a four- foot gap.\nHowever, at the moment the gap is bridged by a huge flat stone slab which\nsomeone has placed across it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16931"
+                ],
+                "name": "",
+                "out": [
+                    "16931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16933"
+                ],
+                "name": "",
+                "out": [
+                    "16933"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18289"
+                ],
+                "name": "",
+                "out": [
+                    "18289"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18289"
+                ],
+                "name": "",
+                "out": [
+                    "18289"
+                ]
+            }
+        ],
+        "id": "16932",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Level Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 93,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "The road continues eastward into the darkness. On the north and south the way is\nmarked by the openings of ore-chutes, by uninviting stairways, and by black\ndoorways whose doors swing vacantly wide. Cracks are beginning to appear in the\nwalls and floor, and every so often a chunk of the roadway is found to have\ncollapsed inward into some vacancy of unknown depth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16932"
+                ],
+                "name": "",
+                "out": [
+                    "16932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16934"
+                ],
+                "name": "",
+                "out": [
+                    "16934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16933",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Level Tunnel",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 92,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "A circular chamber about forty feet across with a central stone pier has been\nexcavated at the intersection of four ways. The floors of the circle and of the\nfour tunnels are very flat and coated with dried mud. The tunnels leading\noutward are about sixteen feet in width; about two feet above the floor narrow\nwalkways have been cut on either side.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16948"
+                ],
+                "name": "",
+                "out": [
+                    "16948"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16944"
+                ],
+                "name": "",
+                "out": [
+                    "16944"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16933"
+                ],
+                "name": "",
+                "out": [
+                    "16933"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16935"
+                ],
+                "name": "",
+                "out": [
+                    "16935"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16934",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Intersection of Four Ways",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 91,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "The east-west passage continues as before. On the north and south sides are some\nbays or sidings, some of which contain stone bins or notches for partitions. To\nthe east, the passageway opens out into a large intersection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16934"
+                ],
+                "name": "",
+                "out": [
+                    "16934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16936"
+                ],
+                "name": "",
+                "out": [
+                    "16936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16935",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "East-West Tunnel",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 90,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "The east-west tunnel continues through the stone of the mountain, ascending to\nthe west, descending to the east. Here and there the roof of the tunnel is\nmarked by the black opening of a vent or chute. Stairways, ladders, and doorways\nare frequently encountered, but in this part of the tunnel they are usually\nblocked or damaged.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16935"
+                ],
+                "name": "",
+                "out": [
+                    "16935"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16937"
+                ],
+                "name": "",
+                "out": [
+                    "16937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16936",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "East-West Tunnel",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 89,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "An east-west tunnel is hewn through the solid stone here. Its walls and ceiling\nare unadorned; its floor is caked with dirt. At irregular intervals, the mouths\nof smaller tunnels open to either side of the main passage. The air is\nsoundless, warm and oppressive.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16943"
+                ],
+                "name": "",
+                "out": [
+                    "16943"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16936"
+                ],
+                "name": "",
+                "out": [
+                    "16936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16938"
+                ],
+                "name": "",
+                "out": [
+                    "16938"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16937",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "East-West Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 88,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "You are following an underground road or tunnel which winds through the rock in\ngreat sloping bends. North of here the course is generally upward; to the east,\ndownward. Here and there great bays open in the rock, in which large lampposts\nstand, stone benches, offer rest to the traveller, and doors and windows signal\nthe presence of an inn, an eating-place, a public store. Now all are of course\nabandoned. In the lightless gloom the bays are silent and watchful, and the\nabsolute blackness of the doors and windows is like that of the eyes of skulls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16939"
+                ],
+                "name": "",
+                "out": [
+                    "16939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16937"
+                ],
+                "name": "",
+                "out": [
+                    "16937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16938",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Bend in the Underground Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 87,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "You have arrived at a broad plaza whose surface is formed of heavy hexagonal\nstone slabs - white, black, and pink marble, greenish gabbro, and other types\nyou do not recognise. A white marble stairway, the width of the entire plaza,\ndescends to the west. At the top of the stair are two damaged statues. To the\nnorth and east you dimly perceive what seem to be white trees. Above them you\nsee some carvings on the walls which rise out of sight in great vaulting curves,\nskilfully designed to bear the unimaginable weight of the mountain which rises\nfar above you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16938"
+                ],
+                "name": "",
+                "out": [
+                    "16938"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16940"
+                ],
+                "name": "",
+                "out": [
+                    "16940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16939",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Ruined Plaza",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 87,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "You are on a monumental stairway, two hundred feet wide, which ascends eastward.\nThe steps are strewn with rubble. You cannot make out a landing either below or\nabove, no matter how hard you peer into the darkness. A great ornamental window\ncan be dimly seen above you to the west. The north and south walls are lined\nwith rune-carved panels, with sconces above them; you also notice some odd holes\nin the walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16939"
+                ],
+                "name": "",
+                "out": [
+                    "16939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16941"
+                ],
+                "name": "",
+                "out": [
+                    "16941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16940",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Great Stairway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 86,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "This is a great, once-magnificent entrance hall, whose farthest reaches are\nshrouded in impenetrable blackness. Sconces and lamps, unused now for centuries,\ncan be dimly seen on the walls nearest to you. In the west wall are the great\nportals of the Doors of Durin. Opposite them, across a broad marble floor, a\nwide stairway rises into the gloom and vanishes. The air is still and stale; the\nechoes of your footfalls are weak, and all sounds are hushed by the immensities\nof space and age. Once, long ago, this hall was well-lit, festive, and\ncompanionable, a meeting-place for elves and dwarves and the gateway to the\nglory of Khazad-dum. Today it is dark, bleak, and watchful. Some bones lie\nscattered against the base of the north wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16942"
+                ],
+                "name": "",
+                "out": [
+                    "16942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16940"
+                ],
+                "name": "",
+                "out": [
+                    "16940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "12414"
+                ],
+                "name": "",
+                "out": [
+                    "12414"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16941",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside Durin's Gate",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 85,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "You are where a broad underground road widens into an underground chamber, whose\nroof is supported by a line of square pillars on either side of the roadway. The\nedges of the chamber are lined with low loading platforms and freight docks.\nBeyond them, in the darkness the black doorways of vacant looted warehouses can\nbe vaguely seen.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16941"
+                ],
+                "name": "",
+                "out": [
+                    "16941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16943"
+                ],
+                "name": "",
+                "out": [
+                    "16943"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16942",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cargo Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 85,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "The ceiling soars upward and the pillars lining the road disappear in the gloom\nabove, as the road passes directly through a huge underground room - obviously a\nwarehouse. The upper levels are wider than the lower ones, and a ramp spirals\nupward along the west, north, and east wall, reaching the top level just above\nthe east entrance. In the great days of the Dwarves, this warehouse was full of\ngoods received from all the peoples of the world. Now it is empty, still, and\nblack.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16937"
+                ],
+                "name": "",
+                "out": [
+                    "16937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16942"
+                ],
+                "name": "",
+                "out": [
+                    "16942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16943",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Warehouse",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 88,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "This road is surfaced with a very dark stone, black flecked with green. So are\nthe walls up to about the height of a dwarf. The ceiling is covered with small\nrectangular tiles of a much lighter stone. Other than floor and ceiling, there\nis not much to see in this tunnel, which slopes downward to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16934"
+                ],
+                "name": "",
+                "out": [
+                    "16934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16945"
+                ],
+                "name": "",
+                "out": [
+                    "16945"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16944",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 91,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "The dark-surfaced road slopes upward to the north and downward to the south.\nWater drips from around some of the ceiling tiles; some have become detached,\nrevealing wet cracked stone. The drips form a rivulet which runs down the base\nof the east wall of the tunnel, meandering and depositing a layer of silt. There\nseem to be some bipedal tracks there, but the silt does not hold the outline\nwell.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16944"
+                ],
+                "name": "",
+                "out": [
+                    "16944"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16946"
+                ],
+                "name": "",
+                "out": [
+                    "16946"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16945",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 91,
+        "y": 210,
+        "z": 0
+    },
+    {
+        "desc": "The dark road bends here, turning left in its downward course. The floor of the\ntunnel has become coated with silt and slime and is quite slippery. The stones\nof the walls are also wet. Clearly this location is partially submerged from\ntime to time.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16945"
+                ],
+                "name": "",
+                "out": [
+                    "16945"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16947"
+                ],
+                "name": "",
+                "out": [
+                    "16947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16946",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 91,
+        "y": 211,
+        "z": 0
+    },
+    {
+        "desc": "Here a dark-surfaced underground road comes to an abrupt end at the shore of a\nsubterranean lake - at least that is your first impression. In fact, the\npavement continues eastward beneath the surface, dropping rapidly off into\nunknown depths. A great void has opened up above you. Perhaps the cave-in that\ncreated this cavern also blocked the drainage somehow so as to form the lake.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18287"
+                ],
+                "name": "",
+                "out": [
+                    "18287"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16946"
+                ],
+                "name": "",
+                "out": [
+                    "16946"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16947",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Edge of an Underground Lake",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 92,
+        "y": 211,
+        "z": 0
+    },
+    {
+        "desc": "This roadway is surfaced with a smooth dark stone, which also lines the walls to\na height of three feet. Above that level the unfinished surface of the hard\nstone through which the road is bored arches overhead in broken curves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16949"
+                ],
+                "name": "",
+                "out": [
+                    "16949"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16934"
+                ],
+                "name": "",
+                "out": [
+                    "16934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16948",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 91,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "The hard dark-surfaced road bends here, seemingly to avoid a great mass of white\ncrystalline rock on the northwest side of the passage. From this point it\nascends to the east and descends to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16948"
+                ],
+                "name": "",
+                "out": [
+                    "16948"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16950"
+                ],
+                "name": "",
+                "out": [
+                    "16950"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16949",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 91,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "The road bends here, following the path of a natural crevice in the rock which\nscars the roof of the tunnel, zigzagging from one side to the other and back.\nThe rock here is a dark grey shot through with bright crystalline veins. Some of\nthe outcroppings of the lighter stone in the walls of the tunnel have been\ncrudely chipped and dug into.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16951"
+                ],
+                "name": "",
+                "out": [
+                    "16951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16949"
+                ],
+                "name": "",
+                "out": [
+                    "16949"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16950",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 92,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "The roof and west wall of the tunnel have disappeared. The road hugs the face of\na west-facing precipice; above and westward are only a lightless void. Yet you\nare still underground. The wall to your east does not look like part of any\nnatural cave. There are no natural sounds; all around is black and still. A curb\nhalf a foot high guards the western edge of the roadway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16952"
+                ],
+                "name": "",
+                "out": [
+                    "16952"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16950"
+                ],
+                "name": "",
+                "out": [
+                    "16950"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16954"
+                ],
+                "name": "",
+                "out": [
+                    "16954"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16951",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Mines of Khulakal",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 92,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "A tremendous cave-in has happened here. A dark-surfaced road arrives from the\nsouth, begins an eastward turn, and at that point disappears completely, running\nat an angle into a great rock face. A second look shows that the rock is a\nsingle great slab of the mountain which has fallen from above, obliterating the\nroad. The precipice to the west is too steep to descend, but there is a footpath\nwhich climbs up to the east and north along the junction between the fallen rock\nand the cliff above where the road used to be. The rock here is veined with\nblue-white quartz.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16951"
+                ],
+                "name": "",
+                "out": [
+                    "16951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16953"
+                ],
+                "name": "",
+                "out": [
+                    "16953"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16952",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Mines of Khulakal",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 92,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "This path winds over, around, between, and under massive slabs of fallen stone.\nHere it leads through a crack between two boulders each the size of a hill.\nThere it burrows under a great stone through a pile of fine rubble. And there\nagain the roof opens out exposing you to the awesome blackness overhead, which\nmight collapse on you at any time, of course.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16954"
+                ],
+                "name": "",
+                "out": [
+                    "16954"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16952"
+                ],
+                "name": "",
+                "out": [
+                    "16952"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16953",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Partly Buried Path",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 93,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "A great supporting column of the mine lies here, broken like the stem of a\ngoblet. Its base juts up just here; the rest of it lies here, extended northward\nalong a rock face. The column was hewn from the stone by the Dwarves; it is\nsmoothly tapered and bent to carry and distribute the weight of the shoulder of\nthe mountain overhead, as if it were an ornamental column in a king's palace.\nThe base, however, shows signs of a later, less skilful mining operation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16953"
+                ],
+                "name": "",
+                "out": [
+                    "16953"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16955"
+                ],
+                "name": "",
+                "out": [
+                    "16955"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16951"
+                ],
+                "name": "",
+                "out": [
+                    "16951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16954",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Mines of Khulakal",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 93,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "You are on a slender, railless, east-west path surrounded by nothingness in all\ndirections. All around you is a great black vacancy, the central digging of a\nDwarven mine. The path runs along the top of a structural buttress, and is not\ndesigned for ease of travel. Travelling between two elevated points, it makes a\nlong downward curve, at the low point of which you are.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16956"
+                ],
+                "name": "",
+                "out": [
+                    "16956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16954"
+                ],
+                "name": "",
+                "out": [
+                    "16954"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16955",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 94,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "You are at the base of a mighty supporting column in a Dwarven mine. Because of\ntheir peerless science of stone and force, the Khazad were able to delve\nincredible caverns such as this within the northwest shoulder of the peak called\nSilvertine. The column and the buttresses that lead away from it are carefully\nshaped to bear the weight of the rock above and transmit it into the roots of\nthe mountain. Doubtless they left behind no more ore- bearing rock than they had\nto; if anyone were to become greedy and dig more, it would produce a\ncatastrophe.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16957"
+                ],
+                "name": "",
+                "out": [
+                    "16957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16955"
+                ],
+                "name": "",
+                "out": [
+                    "16955"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16956",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Base of a Pillar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 95,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "A road surfaced with smooth dark stone abruptly becomes impassable here, as it\nand the rock supporting it have collapsed into the depths below. The road may be\nfollowed back to the east, and a plain side road follows a spur of the walls\nsouthward. Surrounding you is the oppressive and threatening blackness of the\ninterior of the mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16956"
+                ],
+                "name": "",
+                "out": [
+                    "16956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16958"
+                ],
+                "name": "",
+                "out": [
+                    "16958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16957",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 95,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "You are at the working face of the Mine of Khulakal. Shallow tunnels are dug\ninto the stone. Some are precisely hewn in Dwarvish fashion for part of their\nlength, then become clumsy and misshapen. The ground drops off sharply to the\nsouthwest, heaped with mounds of stone. A narrow road slithers precariously up\nthe face, northward and eastward. A larger road, surfaced in dark stone, begins\nhere and goes west along the north wall of the great excavation.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "17960"
+                ],
+                "name": "stonypath",
+                "out": [
+                    "17960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16957"
+                ],
+                "name": "",
+                "out": [
+                    "16957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17309"
+                ],
+                "name": "",
+                "out": [
+                    "17309"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16958",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "The Mines of Khulakal",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 96,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "This plain stone room was apparently once used for the housing of guards who\nwatched over the intersection outside. Near the door is a well-mouth surrounded\nby a stone curb. The heavy stone lid lies nearby. On the western wall is an\nancient empty weapons-rack, and in the north wall are niches that served as\nbeds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16931"
+                ],
+                "name": "",
+                "out": [
+                    "16931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16959",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Guardroom",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 94,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "A broad dark-surfaced underground road or tunnel runs north and south here. On\neither side is a narrow walkway about two feet above the pavement. The roof here\nis the native rock of the mountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17855"
+                ],
+                "name": "",
+                "out": [
+                    "17855"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18288"
+                ],
+                "name": "",
+                "out": [
+                    "18288"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16960",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 98,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "The smooth-surfaced road continues north and south from here, sloping downward\nto the north. Here the road is partially blocked by a group of skids which are\npiled high with rock. Each skid is about fourteen feet long and eight feet wide,\nand they have clearly been in their present position for a very long time. On\nthe west side of the tunnel is the open mouth of a chute of some kind which\nleads down from above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17853"
+                ],
+                "name": "",
+                "out": [
+                    "17853"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16960"
+                ],
+                "name": "",
+                "out": [
+                    "16960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "17836"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "17836"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17855",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Smooth Road",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 0,
+        "x": 98,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "This is a steep, somewhat insecure path over rubble which has fallen from the\nroof of the great mine cavern. Despite the fact that it does not obviously go\nanywhere important, it has apparently attracted some foot traffic which has worn\na sort of shallow trench. Northwards the path ascends until it reaches some\nboulders; southwards it plunges downward into a small tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16958"
+                ],
+                "name": "",
+                "out": [
+                    "16958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "17806"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "17806"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "17960",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Well-trodden Passageway",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 96,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "The road abruptly becomes submerged here as it descends southward. The water is\nshallow and calm here, but the pavement drops off quickly. Out of the darkness\nto your south you hear the sound of splashing water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18288"
+                ],
+                "name": "",
+                "out": [
+                    "18288"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18279"
+                ],
+                "name": "",
+                "out": [
+                    "18279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18278",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Road",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 7,
+        "sundeath": 2,
+        "x": 98,
+        "y": 212,
+        "z": 0
+    },
+    {
+        "desc": "The current of the stream picks up pace here, as it tumbles eastward into the\ndarkness. However, here there is an opening to the north, where it is possible\nto leave the waterway, and return, once more, to the security of solid ground.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18278"
+                ],
+                "name": "",
+                "out": [
+                    "18278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18280"
+                ],
+                "name": "",
+                "out": [
+                    "18280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18281"
+                ],
+                "name": "",
+                "out": [
+                    "18281"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18279",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 98,
+        "y": 213,
+        "z": 0
+    },
+    {
+        "desc": "Two waterways clash violently here, whirling and raging all about. The air is\nfilled with an icy cold spray, and the roar of falling water assails you from\nthe south, where this torrent gushes over a sharp rocky cliff, into a deep gully\nbeyond.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18290"
+                ],
+                "name": "",
+                "out": [
+                    "18290"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "17460"
+                ],
+                "name": "",
+                "out": [
+                    "17460"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18279"
+                ],
+                "name": "",
+                "out": [
+                    "18279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18280",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Meeting of Two Waterways",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 99,
+        "y": 213,
+        "z": 0
+    },
+    {
+        "desc": "The water here is swirling eastward. Occasionally, you bump your head against\nthe roof of the cave when the water level rises. The stream seems to be\nshallower to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18279"
+                ],
+                "name": "",
+                "out": [
+                    "18279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18282"
+                ],
+                "name": "",
+                "out": [
+                    "18282"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18281",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 97,
+        "y": 213,
+        "z": 0
+    },
+    {
+        "desc": "The stream makes a sharp bend here, causing the path to bend likewise. The\nwater's speed at the bend is so high, that some water splashes against the rocks\nand you notice some barnacles growing on the ceiling, suggesting that this\ntunnel sometimes gets filled with water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18283"
+                ],
+                "name": "",
+                "out": [
+                    "18283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18281"
+                ],
+                "name": "",
+                "out": [
+                    "18281"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18282",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 94,
+        "y": 211,
+        "z": 0
+    },
+    {
+        "desc": "Twisting and turning, the underground stream continues its centuries-old task of\neroding the underlying rocks. The air is heavy with moisture from the spray of\nthe stream as it rushes onwards through the underground tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18282"
+                ],
+                "name": "",
+                "out": [
+                    "18282"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18284"
+                ],
+                "name": "",
+                "out": [
+                    "18284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18283",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 94,
+        "y": 210,
+        "z": 0
+    },
+    {
+        "desc": "A small underground stream begins its journey from the cold, dark lake, twisting\nand bending, and washing rapidly over rocks, slick with moss, and all manner of\nother things, unseen beneath the water's surface.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18285"
+                ],
+                "name": "",
+                "out": [
+                    "18285"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18283"
+                ],
+                "name": "",
+                "out": [
+                    "18283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18284",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Stream",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 93,
+        "y": 210,
+        "z": 0
+    },
+    {
+        "desc": "This is the eastern end of a deep underground lake. The dark mirror-like surface\nis occasionally broken by some ripples of water of some creature swimming\nbeneath the surface. To the south, a small stream begins its journey into the\nmountain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18284"
+                ],
+                "name": "",
+                "out": [
+                    "18284"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18286"
+                ],
+                "name": "",
+                "out": [
+                    "18286"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18289"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 4097,
+                "in": [
+                    "18289"
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18285",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Lake",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 93,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "The icy cold waters of this underground lake surround you. They exude a strange,\nunpleasant aroma, at once musky and fishy. The shore is unclimbable here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18287"
+                ],
+                "name": "",
+                "out": [
+                    "18287"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18285"
+                ],
+                "name": "",
+                "out": [
+                    "18285"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18286",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Underground Lake",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 92,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "An underground lake extends northward from here. Its dark, heavy, oily waters\nlap at a rock wall to the west. Mounds of rubble stick up from the surface. All\nis still. Whatever spring fills the lake works quietly, unobtrusively.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18286"
+                ],
+                "name": "",
+                "out": [
+                    "18286"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16947"
+                ],
+                "name": "",
+                "out": [
+                    "16947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18287",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Lake",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 92,
+        "y": 210,
+        "z": 0
+    },
+    {
+        "desc": "You are at the intersection of two underground roads. One is a dark-surfaced\nroad, smooth but without much adornment, that leads north and south from here.\nThe east-west road which crosses it here must have been a major highway in its\ntime. Its walls are faced with marble, and lined with carvings and ornaments\nwhich someone has done their best to destroy through the centuries.\nLamp-standards rise at the corners of the crossroad.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16960"
+                ],
+                "name": "",
+                "out": [
+                    "16960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18278"
+                ],
+                "name": "",
+                "out": [
+                    "18278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16926"
+                ],
+                "name": "",
+                "out": [
+                    "16926"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16927"
+                ],
+                "name": "",
+                "out": [
+                    "16927"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18288",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Intersection",
+        "portable": 0,
+        "rideable": 1,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 98,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "The fissure broadens into an underground chamber about twenty feet wide. North\nand south, the chamber narrows to an impassable crevice. Overhead, the fissure\nrises into a network of broad cracks and openings, none of which are reachable\nat all from where you are. Nearly every surface is caked with pungent guano;\nwith every step, stinking dust rises up around you and chokes you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "16932"
+                ],
+                "name": "",
+                "out": [
+                    "16932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18285"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16932"
+                ],
+                "name": "",
+                "out": [
+                    "16932",
+                    "18285"
+                ]
+            }
+        ],
+        "id": "18289",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Down a Fissure",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 94,
+        "y": 209,
+        "z": 0
+    },
+    {
+        "desc": "Water from the north pitches over a deep descent into this gully, throwing great\nsprays of droplets onto the rocky walls of the tunnel. The surface of the water\nis white with foam as the torrent twists east and flows rapidly away.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18280"
+                ],
+                "name": "",
+                "out": [
+                    "18280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18291"
+                ],
+                "name": "",
+                "out": [
+                    "18291"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18290",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Underground Torrent",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 99,
+        "y": 214,
+        "z": 0
+    }
+]

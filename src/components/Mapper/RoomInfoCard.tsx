@@ -9,13 +9,69 @@ interface RoomInfoCardProps {
     mode: 'play' | 'edit';
     onClose: () => void;
     cardRef: React.RefObject<HTMLDivElement>;
+    preloadedCoordsRef?: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    setViewZ?: (z: number | null) => void;
 }
 
 export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
-    roomId, rooms, setRooms, mode, onClose, cardRef
+    roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, setViewZ
 }) => {
-    const room = rooms[roomId];
+    let room = rooms[roomId];
+
+    React.useEffect(() => {
+        if (room && setViewZ) {
+            setViewZ(room.z || 0);
+        }
+    }, [roomId, room?.z, setViewZ]);
+
+    // Virtual Master Room derivation
+    if (!room && roomId.startsWith('m_') && preloadedCoordsRef?.current) {
+        const vnum = roomId.substring(2);
+        const data = preloadedCoordsRef.current[vnum];
+        if (data) {
+            const [x, y, z, terrain, exits, name, area] = data;
+            // Map the strange numbers/objects to our internal exit format
+            const mappedExits: Record<string, import('./mapperTypes').MapperExit> = {};
+            if (exits) {
+                for (const d in (exits as any)) {
+                    let dirKey = d.toLowerCase();
+                    // Normalize full direction names if they exist in master data
+                    if (dirKey === 'north') dirKey = 'n';
+                    else if (dirKey === 'south') dirKey = 's';
+                    else if (dirKey === 'east') dirKey = 'e';
+                    else if (dirKey === 'west') dirKey = 'w';
+                    else if (dirKey === 'up') dirKey = 'u';
+                    else if (dirKey === 'down') dirKey = 'd';
+
+                    const dest = (exits as any)[d];
+                    const destId = typeof dest === 'number' ? dest : (typeof dest === 'object' ? (dest as any).id : null);
+                    if (destId) mappedExits[dirKey] = { target: `m_${destId}`, closed: false };
+                }
+            }
+
+            room = {
+                id: roomId,
+                gmcpId: Number(vnum),
+                name: String(name) || 'Unknown Room',
+                x, y, z,
+                terrain: String(terrain) || 'Field',
+                exits: mappedExits,
+                desc: '',
+                zone: String(area) || '',
+                notes: '',
+                createdAt: Date.now()
+            };
+        }
+    }
+
     if (!room) return null;
+
+    const updateRoom = (patch: Partial<MapperRoom>) => {
+        setRooms(prev => ({
+            ...prev,
+            [roomId]: { ...(prev[roomId] || room), ...patch }
+        }));
+    };
 
     return (
         <div
@@ -44,7 +100,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 <input
                     type="text"
                     value={room.name || ''}
-                    onChange={(e) => setRooms(prev => ({ ...prev, [roomId]: { ...prev[roomId], name: e.target.value } }))}
+                    onChange={(e) => updateRoom({ name: e.target.value })}
                     style={{ backgroundColor: '#1c1c1f', border: '1px solid #3f3f46', padding: '10px 14px', borderRadius: '8px', color: 'white', fontWeight: 'bold', fontSize: '15px' }}
                     readOnly={mode !== 'edit'}
                     placeholder="Room Name"
@@ -57,7 +113,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     <input
                         type="text"
                         value={room.zone || ''}
-                        onChange={(e) => setRooms(prev => ({ ...prev, [roomId]: { ...prev[roomId], zone: e.target.value } }))}
+                        onChange={(e) => updateRoom({ zone: e.target.value })}
                         style={{ backgroundColor: 'transparent', border: 'none', color: '#d4d4d8', width: '100%', outline: 'none', fontSize: '12px' }}
                         readOnly={mode !== 'edit'}
                         placeholder="Zone"
@@ -68,7 +124,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     {mode === 'edit' ? (
                         <select
                             value={room.terrain || 'Field'}
-                            onChange={(e) => setRooms(prev => ({ ...prev, [roomId]: { ...prev[roomId], terrain: e.target.value } }))}
+                            onChange={(e) => updateRoom({ terrain: e.target.value })}
                             style={{ backgroundColor: 'transparent', border: 'none', color: '#10b981', fontWeight: 'bold', cursor: 'pointer', outline: 'none', fontSize: '12px' }}
                         >
                             {Array.from(new Set(Object.values(TERRAIN_MAP))).map(t => (
@@ -95,7 +151,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     {mode === 'edit' && <span style={{ fontSize: '9px', color: '#52525b' }}>Shift+Click to delete</span>}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                    {['nw', 'n', 'ne', 'w', 'u', 'e', 'sw', 's', 'se', 'd'].map(d => {
+                    {['n', 'u', 's', 'w', 'd', 'e'].map(d => {
                         const exit = room.exits[d];
                         const isActive = !!exit;
                         return (
@@ -113,22 +169,26 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                                             nextRooms[roomId] = { ...r, exits: nextExits };
                                             if (targetId && nextRooms[targetId]) {
                                                 const targetExits = { ...nextRooms[targetId].exits };
-                                                delete targetExits[DIRS[d].opp];
+                                                const opp = DIRS[d]?.opp;
+                                                if (opp) delete targetExits[opp];
                                                 nextRooms[targetId] = { ...nextRooms[targetId], exits: targetExits };
                                             }
                                             return nextRooms;
                                         }
                                         if (!r.exits[d]) {
                                             const dir = DIRS[d];
+                                            if (!dir) return prev;
                                             const tx = r.x + dir.dx, ty = r.y + dir.dy, tz = (r.z || 0) + (dir.dz || 0);
                                             let tId = Object.keys(prev).find(id => Math.round(prev[id].x) === Math.round(tx) && Math.round(prev[id].y) === Math.round(ty) && (prev[id].z || 0) === tz);
                                             const nextRooms = { ...prev };
                                             if (!tId) {
                                                 tId = generateId();
-                                                nextRooms[tId] = { id: tId, gmcpId: 0, name: 'New Room', desc: '', x: tx, y: ty, z: tz, terrain: 'Field', exits: {}, zone: r.zone, notes: "", createdAt: Date.now() };
+                                                nextRooms[tId] = { id: tId, gmcpId: 0, name: 'New Room', desc: '', x: tx, y: ty, z: tz, terrain: 'Field', exits: {}, zone: r.zone || '', notes: "", createdAt: Date.now() };
                                             }
                                             nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { target: tId, closed: false } } };
-                                            nextRooms[tId] = { ...nextRooms[tId], exits: { ...nextRooms[tId].exits, [dir.opp]: { target: roomId, closed: false } } };
+                                            if (dir.opp) {
+                                                nextRooms[tId] = { ...nextRooms[tId], exits: { ...nextRooms[tId].exits, [dir.opp]: { target: roomId, closed: false } } };
+                                            }
                                             return nextRooms;
                                         } else {
                                             const targetId = r.exits[d].target;
@@ -136,8 +196,10 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                                             const nextRooms = { ...prev };
                                             nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { ...r.exits[d], closed } } };
                                             if (targetId && nextRooms[targetId]) {
-                                                const opp = DIRS[d].opp;
-                                                nextRooms[targetId] = { ...nextRooms[targetId], exits: { ...nextRooms[targetId].exits, [opp]: { ...(nextRooms[targetId].exits[opp] || {}), closed, target: roomId } } };
+                                                const opp = DIRS[d]?.opp;
+                                                if (opp) {
+                                                    nextRooms[targetId] = { ...nextRooms[targetId], exits: { ...nextRooms[targetId].exits, [opp]: { ...(nextRooms[targetId].exits[opp] || {}), closed, target: roomId } } };
+                                                }
                                             }
                                             return nextRooms;
                                         }

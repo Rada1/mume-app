@@ -1,0 +1,4670 @@
+[
+    {
+        "desc": "The spectacle that is the confluence of the rushing rivers to the south and east\ncan be best viewed here by standing close to a twisted iron railing. The white\nfoam created by the meeting of the turbulent waters looks almost like a sea of\nclouds resting upon the waters. Much of the rail hangs down over the edge,\nteasing the swirling confluence of rivers below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10901"
+                ],
+                "name": "",
+                "out": [
+                    "10901"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10903"
+                ],
+                "name": "",
+                "out": [
+                    "10903"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10902",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 297,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "This narrow walk travels along the outer rim of the sunken hillside. Carved high\ninto the granite bluff here it meets a small footpath leading north. A mangled\nwrought iron railing coloured so dark it cannot be seen at night lines the\nsouthern edge of the walk. Perhaps the residents of this city did not walk this\npath after sunset or perhaps they had walked so many times admiring the rivers\nbeauty they needed no rail to warn them of the bluff's edge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10900"
+                ],
+                "name": "",
+                "out": [
+                    "10900"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10902"
+                ],
+                "name": "",
+                "out": [
+                    "10902"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10908"
+                ],
+                "name": "",
+                "out": [
+                    "10908"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10903",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 296,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "Specks of dirt and granite flakes, from the path to the north, have drifted down\nthe hillside and cover the northern side of this narrow walkway. A large tree\nhas fallen diagonally across the walkway and continues on to hang over the cliff\nto the south. Tangled in the branches are the remains of a wrought iron railing\nthat once warned weary travellers of the abrupt edge. From its size the tree\nappears to be at least a thousand years old. An odd place for a tree to have\ngrown so close, this one obviously took root and died all in the interim of time\npassed since this city's downfall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10898"
+                ],
+                "name": "",
+                "out": [
+                    "10898"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10905"
+                ],
+                "name": "",
+                "out": [
+                    "10905"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19304"
+                ],
+                "name": "",
+                "out": [
+                    "19304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10904",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 294,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "A wrought iron railing to the southwest and this once smooth walkway is the only\nevidence that this land was ever inhabited. This part of the walk is badly\novergrown. The wild bushes block most of the walk and have entangled themselves\nin and around the railing obscuring it. The walkway continues up some overgrown\nand mildewed stone steps to the north and continues on eastward perhaps to\nbetter preserved areas of this kingdom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10897"
+                ],
+                "name": "",
+                "out": [
+                    "10897"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10904"
+                ],
+                "name": "",
+                "out": [
+                    "10904"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10905",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 293,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "Various fungi and spores flourish here covering every inch of the decaying\nfoundation. Metal spools indicate that this might once have been a ropeworks.\nBeing so close to the river it is quite possible this was a place to purchase\nand repair fishing nets. Perhaps the algae on nets that long ago dissolved into\nnothingness is what gave birth to the rampant mould.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19304"
+                ],
+                "name": "",
+                "out": [
+                    "19304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10906",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Decaying Ropeworks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 294,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "Perhaps this was once a beautiful, low-arched granite causeway which spanned the\nnorthern edge of the harbour down below. Through the ages, however, time has\nerased all of the grandeur it once held. Several thick stone support beams jut\nout irregularly to the side causing the bridge to lean precariously sideways,\nreminding the cautious traveller that too much weight here would not be prudent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10908"
+                ],
+                "name": "",
+                "out": [
+                    "10908"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "19304"
+                ],
+                "name": "",
+                "out": [
+                    "19304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10907",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Skewed Stone Causeway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 295,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "Carved into the riverside bluff, this narrow path is bordered on the north by\nhillside and south by the rushing river. Even after centuries of abandonment,\nthe path is still visible through the mass of weeds and clumps of dirt that have\nfallen from higher ground. From this point one cannot help but hear the rumbling\nriver flow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10909"
+                ],
+                "name": "",
+                "out": [
+                    "10909"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19307"
+                ],
+                "name": "",
+                "out": [
+                    "19307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10907"
+                ],
+                "name": "",
+                "out": [
+                    "10907"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10903"
+                ],
+                "name": "",
+                "out": [
+                    "10903"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10908",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "Riverbluff Walk",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 296,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "Metal rods welded together to form the frame of a boat lay here, untouched for\nages on the exposed foundation of this structure. Perhaps long ago a shipwright\ncarefully built this boat here in his shop. He may have sat carefully fitting\npieces of wood into the frame forming the curved base of a small sailing vessel.\nWound on a metal stand are several lengths of chain accompanied by several\nanchors of varying sizes. Most of the metal chain has turned a bright, rusted\namber colour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10908"
+                ],
+                "name": "",
+                "out": [
+                    "10908"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10909",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Perishing Depot",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 296,
+        "y": 201,
+        "z": 0
+    },
+    {
+        "desc": "As you step off the edge of the tower ruins you feel a momentary euphoria\ncomparable to flying before you plummet downward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10932"
+                ],
+                "name": "",
+                "out": [
+                    "10932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "10940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10931",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Airy Descent",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 294,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "Not only has the roof been sheared off the top of this tower, but two of this\nupper chamber's walls are completely gone as well. The remaining walls, south\nand west, are not much more than piles of cracked and crumbling granite bricks.\nEven after centuries of decay scoring on the bricks is a monument to the weapons\nof destruction launched against this once fair city. One can imagine the high\nelves standing before the now severed rectangular windows observing the day to\nday activities all over the city.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                    "10931"
+                ],
+                "name": "",
+                "out": [
+                    "10931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                    "10933"
+                ],
+                "name": "",
+                "out": [
+                    "10933"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10934"
+                ],
+                "name": "",
+                "out": [
+                    "10934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10932",
+        "light": 2,
+        "loadflags": 32769,
+        "mobflags": 4096,
+        "name": "Sheared Observatory",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 294,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "As you step off the edge of the tower ruins you feel a momentary euphoria\ncomparable to flying before you plummet downward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10932"
+                ],
+                "name": "",
+                "out": [
+                    "10932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "10936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10933",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Airy Descent",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 295,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "A large oval-shaped table made of granite has fallen off two of its four legs\nand splintered a portion of the floor. Piles of dust surrounding the table look\nto be the remnants of many wooden chairs broken down by the elements. Two large\nsilver hooks are embedded into the northern wall, much like the sets of smaller\nhooks above windows throughout this tower. However here no windows exist. It is\nquite possible these hooks once held up a grand tapestry.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10932"
+                ],
+                "name": "",
+                "out": [
+                    "10932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10939"
+                ],
+                "name": "",
+                "out": [
+                    "10939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10934",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forsaken Council Chamber",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 293,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "Worse to the west than in other directions, the plaza tiles are badly damaged.\nWhile age has clearly taken its toll on these exposed slabs of granite most of\nthis damage seems to be the ravages of war. The facade of the shop to the west\nhas been breached in several places as if the small shop took the more of the\nattackers energy than the rest of this area.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10936"
+                ],
+                "name": "",
+                "out": [
+                    "10936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10940"
+                ],
+                "name": "",
+                "out": [
+                    "10940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10935",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plaza Engulfed in Ruin",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 292,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "Even in its ruinous condition the once four-story citadel casts a wide shadow\nover the plaza below. Only in the very early hours of the morning does sunlight\nshine on this eastern side of the great tower unobstructed. By noon the lack of\nlight hides the vast damage to the two-tone granite tiles that make up the plaza\ngrounds. To the west is a great doorway made wider by what must have been some\nuninvited guests using powerful weaponry.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10935"
+                ],
+                "name": "",
+                "out": [
+                    "10935"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10937"
+                ],
+                "name": "",
+                "out": [
+                    "10937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10939"
+                ],
+                "name": "",
+                "out": [
+                    "10939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "10933"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10914"
+                ],
+                "name": "",
+                "out": [
+                    "10914"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10936",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Shadow of the Citadel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 292,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "Thick granite tiles, a mix of light and dark, lying shattered on the ground were\nonce a part of this plaza ground. So severely damaged are the once smooth\npolished tiles that they are now little more than flakes of rock holding\ntenuously on to their position as part of a grand checkerboard design. The\npatterned tiles end at the doorways of several crumbling structures. Bricks made\nof a similar granite, fallen over centuries from the citadel above, lay\nscattered about.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10936"
+                ],
+                "name": "",
+                "out": [
+                    "10936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10938"
+                ],
+                "name": "",
+                "out": [
+                    "10938"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10937",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Shattered Plaza",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 292,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "Iron rods twisted into floral designs form at least twenty tables and numerous\nchairs that are scattered all over this enclosure. It is clear they were\ncarefully constructed for outdoor use. There is no sign they were ever adorned\nby fabric or upholstery yet they look to have been quite comfortable. Part of\nwhat seems to have been an outdoor cafe, these ancient furnishings have\nwithstood the centuries. A wall half as high as the ones that form this room\nobscure what is left of a stone stairway leading downward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10937"
+                ],
+                "name": "",
+                "out": [
+                    "10937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10943"
+                ],
+                "name": "",
+                "out": [
+                    "10943"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10917"
+                ],
+                "name": "",
+                "out": [
+                    "10917"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10938",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Desolate Eatery",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 291,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "Almost two stories high, this single room must have once welcomed many honoured\nguests to this centre of elven culture, and some very unwelcome ones. The\nmeticulously etched silver doors lie far against the western wall, severely\nbattered. The doors were hit so hard that several feet of the surrounding wall\nwas knocked in with them. A chandelier of hand blown glass has long ago fallen\nfrom its high perch and shattered in a million tiny shards all over the floor. A\nwinding stair attached to the southern wall leads up toward this structure's\ncrest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10936"
+                ],
+                "name": "",
+                "out": [
+                    "10936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10934"
+                ],
+                "name": "",
+                "out": [
+                    "10934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10962"
+                ],
+                "name": "",
+                "out": [
+                    "10962"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10939",
+        "light": 2,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Venerable Rotunda",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 291,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "A single stone counter lays cracked here upon the floor amidst layer upon layer\nof the dusty remains of wood and shattered glass cases. A variety of small\nornate stone boxes together with the shattered glass showcases give evidence\nthat this was a jewellery shop. This place seems to have been violently torn\napart. Every brick making up the walls has been punctured or cracked in the\nmiddle, as if someone was looking for a hidden compartment or chamber. Even the\nbricks in the floor have been searched. With the amount of force used to break\nthese stones it's amazing that the floor has not collapsed. The walls have not\nwithstood the destruction and ages so well; to the north and south they only\nstand half their original height.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10935"
+                ],
+                "name": "",
+                "out": [
+                    "10935"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10941"
+                ],
+                "name": "",
+                "out": [
+                    "10941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "10931"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10928"
+                ],
+                "name": "",
+                "out": [
+                    "10928"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10940",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Dismantled Shop",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 291,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "A crack in the ground emanating from the east ends here in a sunken crater\nseveral feet wide. Many of the alternating dark and light coloured granite tiles\nthat make up this plaza's surface have over the centuries fallen into this hole.\nScoring on the surrounding stone and along the crack gives evidence of a great\nimpact of a deliberate nature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10942"
+                ],
+                "name": "",
+                "out": [
+                    "10942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10940"
+                ],
+                "name": "",
+                "out": [
+                    "10940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10941",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Perishing Plaza",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 290,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "What looks to be the top of the citadel above has found a new home after\ncrashing through the ceiling of this small shop. Only two walls of the shop\nremain even partially intact. This portion of stone tower that fell from the sky\nwas so heavy that not only did it destroy everything left inside here but it\nalso pierced the floor leading to the room below. There is no way to discern\nwhat type of wares this place once sold. Judging by the amount of shattered\nglass that litters the ground, whatever it was must have been in liquid form.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10941"
+                ],
+                "name": "",
+                "out": [
+                    "10941"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10943"
+                ],
+                "name": "",
+                "out": [
+                    "10943"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10923"
+                ],
+                "name": "",
+                "out": [
+                    "10923"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10942",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Resting Place of the Toppled Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 290,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "Covered in the debris of falling bricks from the citadel above one can barely\ndiscern the alternating light and dark granite tile design that cover this\nancient plaza. Whole sections of the tower above in the form of crumbling stone\nfell upon this area with such great force they are embedded a foot into the\nground. Tiny flakes of granite float up in the air on the occasional gusts of\nwind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10942"
+                ],
+                "name": "",
+                "out": [
+                    "10942"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10938"
+                ],
+                "name": "",
+                "out": [
+                    "10938"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10943",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Amidst the Broken Tiles",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 290,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "Three vertical bookcases containing a vast amount of both horizontal and\nvertical storage areas stand here, looking as sturdy as the granite walls that\nform this room. Etched out of granite themselves, with decorative accents around\neach section, they were designed to showcase, store and protect the manuscripts,\ntomes, and sketches that described the art of the elven smiths. Whereas at one\ntime each leaf of paper must have been carefully filed, its proper place\nannotated by small letters carved into the bookcase, now all is a shambles.\nShreds of paper line the floor and not a single book or scroll remains on the\nornate shelves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10945"
+                ],
+                "name": "",
+                "out": [
+                    "10945"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10944",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Master Repository",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 288,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "This hallway's etched columns, like the arched entranceway to this wing,\nshowcases the grandeur and elegance of this place crafted by its elven\ninhabitants. More artful than functional, this large hall's only purpose is to\nprovide entry to the northern vault and the library to the south. Every detail\nfrom the carved mouldings that line the floor to the stone picture frames carved\ninto the walls shows how important it was for the Gwaith-i-Mirdain to spare no\neffort and settle for nothing less than perfection in their crafts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10946"
+                ],
+                "name": "",
+                "out": [
+                    "10946"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10944"
+                ],
+                "name": "",
+                "out": [
+                    "10944"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10947"
+                ],
+                "name": "",
+                "out": [
+                    "10947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10945",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The East Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 288,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "Steel shelves of varying depths protrude from the north and east walls. The west\nwall is lined with hooks of adequate size to hold metal shields. Looking closer\nat the shelves one can see threads of material, seeming to have been torn from\nsilken cloths. Under foot are the bashed and battered remains of what might have\nonce been considered an impenetrable metal cabinet's doors. Some great force\nseems to have sent them sprawling giving the intruders access to the many small\nsections of this vault. They stole whatever was contained ripping the silken\ncloths that covered the smaller swords and ornaments.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10945"
+                ],
+                "name": "",
+                "out": [
+                    "10945"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10946",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 4096,
+        "name": "Inside an Engraved Vault",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 288,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "A meticulously carved granite arch forms the entrance to this wing of the\nunderground halls. Higher than could be reached by two elves, one standing on\nthe other's shoulders, it has remained undisturbed since its construction. This\narch is supported by the same squared granite spires that support the domed\nceiling. It must have taken careful work to carve such a ceiling out of the\nsolid granite bluff while preserving the strength needed for the bluff to\nsupport the city above. Everything about this place is a work of art. Those that\nbuilt these halls must have taken great pride in each detail.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10945"
+                ],
+                "name": "",
+                "out": [
+                    "10945"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "10948"
+                ],
+                "name": "",
+                "out": [
+                    "10948"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10947",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Arch of the Jewelsmiths",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 287,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "Inside an arched granite frame sit two formidable tall bronze doors. Left\nunpolished for centuries the metal is discoloured in a few places. While the\ndeep carvings that accent these doors draw some attention, far more noticeable\nhere is the lack of a door handle of any sort. In the place of a handle, on the\nright door, seems to be an oval shaped recess with some elven runes carved into\nthe door around the opening. Turning away from the doors one can see the large\ncolumns that run the course of this great hall and hear the rush of water from\nthe water wall to the northwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10950"
+                ],
+                "name": "",
+                "out": [
+                    "10950"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10949"
+                ],
+                "name": "",
+                "out": [
+                    "10949"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "10947"
+                ],
+                "name": "",
+                "out": [
+                    "10947"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10957"
+                ],
+                "name": "",
+                "out": [
+                    "10957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10948",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Bronze Doors",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 286,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "Along the smooth granite wall to the south are three large statues of Noldor\nelves. Equally spaced from one another they are all similar in size and none is\ngiven more importance than the others are. The carefully carved features\nshowcase the work of a master sculptor. Each figure is carved in full attire\nwith sheathed sword and crested shield lying at their feet. The writings etched\nin pedestals, apparently the names of these three, read Finwe, Ingwe and Elwe.\nSome smaller writing appears on the eastern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10948"
+                ],
+                "name": "",
+                "out": [
+                    "10948"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10958"
+                ],
+                "name": "",
+                "out": [
+                    "10958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10949",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Presence of the Eldar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 286,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "Slight splashes of water from the harnessed geyser to the west have moistened\nthe floor. The cascade of white water rises with great force, hitting the domed\nceiling above and falling back down upon its source. It forms a wall of water\nthat is quite a marvel to behold. The elves through a feat of engineering have\nmanage to harness this underground water source as it shot up toward the surface\nand redirected it so it not only could not continue its ascent but also was\naesthetically pleasing to them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10951"
+                ],
+                "name": "",
+                "out": [
+                    "10951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10948"
+                ],
+                "name": "",
+                "out": [
+                    "10948"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10953"
+                ],
+                "name": "",
+                "out": [
+                    "10953"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10950",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ledge along a Water Wall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 286,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "Like its counterpart corner to the west, this partial granite column fills the\ngap where the north and east walls would meet. Its smooth round surface seems to\nhave been polished to a flawless shine. The column portion rests upon an etched\npedestal that along with the walls supports its weight. About eye level up the\ncolumn is a floral etching that when examined closely appears to in fact be some\nelven runes written in a way as to conceal themselves. A light mist of water\nfills this area, emanating from the fountain water wall nearby.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10950"
+                ],
+                "name": "",
+                "out": [
+                    "10950"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10952"
+                ],
+                "name": "",
+                "out": [
+                    "10952"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10951",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Carved Corner",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 286,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "The granite tile floor, once polished to a perfect reflective surface so that\nnot a single pore remained to collect the water here, is not well preserved.\nLooking up one can see a small crack in the dome above used to channel the water\ndownward. So precise is this water design that the small crack has misguided the\nflow and allowed some of the water to fall on the floor here wearing it down\nover centuries of abandonment and neglect.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10968"
+                ],
+                "name": "",
+                "out": [
+                    "10968"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10953"
+                ],
+                "name": "",
+                "out": [
+                    "10953"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10951"
+                ],
+                "name": "",
+                "out": [
+                    "10951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10954"
+                ],
+                "name": "",
+                "out": [
+                    "10954"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10952",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Concealed Precipice",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 285,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "A tremendous thrust of water current propels you up into the domed granite\nceiling with such force that it shatters every bone in your body.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10952"
+                ],
+                "name": "",
+                "out": [
+                    "10952"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10957"
+                ],
+                "name": "",
+                "out": [
+                    "10957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10950"
+                ],
+                "name": "",
+                "out": [
+                    "10950"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10955"
+                ],
+                "name": "",
+                "out": [
+                    "10955"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10953",
+        "light": 1,
+        "loadflags": 16777216,
+        "mobflags": 0,
+        "name": "Captured Geyser",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 285,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "One quarter of a carved column sticks out in place of what would be the sharp\nedge of two walls meeting. A meticulously etched pedestal at the base of the\nplatform along with its position in the corner space supports the solid granite\ncolumn's weight. Some markings carved at eye level seem to be runes but the\netchings are so fanciful these could easily be mistaken for decorative\nflourishes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10955"
+                ],
+                "name": "",
+                "out": [
+                    "10955"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10952"
+                ],
+                "name": "",
+                "out": [
+                    "10952"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10954",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Carved Corner",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 284,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "A light spray of water from the wall of water to the east keeps this narrow\nledge moist. The vertical stream shoots up from a forceful geyser below, crashes\ninto the domed roof above and cascades back down upon its source. Other than the\nmisty spray, the precise curvature of the roof keeps the surrounding areas dry.\nLooking downward over the edge of this shelf, one can see nothing but foamy\nwhite water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10954"
+                ],
+                "name": "",
+                "out": [
+                    "10954"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10956"
+                ],
+                "name": "",
+                "out": [
+                    "10956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10953"
+                ],
+                "name": "",
+                "out": [
+                    "10953"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10955",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ledge along a Water Wall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 284,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "Two tall stately silvery doors sit inside an arched frame in the western wall. A\nbit tarnished with age, the base of the doors shows some rust from the moisture\nin the air and a lack of polishing. Even more noticeable than the carvings in\nthe thick doors is the fact they are missing any semblance of handles. In the\nplace of a handle, on the left door, seems to be an oval shaped recess with some\nelven runes carved into the door around the opening. Turning away from the doors\none can see the large columns that run the course of this great hall and hear\nthe rush of water from the water wall to the northeast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10955"
+                ],
+                "name": "",
+                "out": [
+                    "10955"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10959"
+                ],
+                "name": "",
+                "out": [
+                    "10959"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10957"
+                ],
+                "name": "",
+                "out": [
+                    "10957"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "10963"
+                ],
+                "name": "",
+                "out": [
+                    "10963"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10956",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Silvery Doors",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 284,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "The sight to the north dominates this entire room. What appears to be a wall\nmade of water blocks passage northward. Looking down you see the water shoots up\nthrough the floor and with an enormous thrust hits the domed ceiling above. The\ncurvature of the ceiling then forces the water back downward in a mass of\ncascading waterfalls. Some water has escaped this feat of elven engineering and\nlays still upon the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10953"
+                ],
+                "name": "",
+                "out": [
+                    "10953"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10958"
+                ],
+                "name": "",
+                "out": [
+                    "10958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10948"
+                ],
+                "name": "",
+                "out": [
+                    "10948"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10956"
+                ],
+                "name": "",
+                "out": [
+                    "10956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10957",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Concourse Amidst the Spray",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 285,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "This is the entrance point into the grand underground hall. The hall itself is\nas extraordinarily ornate as it is enormous. Columns more than three elves tall\nand about half as wide give support to the ceiling. They form two horizontal\nrows dividing this vast hall into several sections. Where the arched ceiling\nmeets the smooth granite columns are elaborate etchings, some with carefully\napplied gold leaf laid so thin it cannot be scraped off. Each column is adorned\nwith a decorative vine pattern in a serpentine arrangement from top to base. The\nhall, complete with its own large mural size etched patterns, stretches out in\nall directions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10957"
+                ],
+                "name": "",
+                "out": [
+                    "10957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10960"
+                ],
+                "name": "",
+                "out": [
+                    "10960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10949"
+                ],
+                "name": "",
+                "out": [
+                    "10949"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10959"
+                ],
+                "name": "",
+                "out": [
+                    "10959"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10958",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of the Mirdain",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 285,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "The eight greatest of the Valar are represented here in statue, four along the\nsouthern wall and three along the western and one in the corner. In order stand\nManwe, Varda, Ulmo, Yavanna, Aule, Mandos, Nienna and Orome. Though Manwe was\nheld to be the High King of Arda his statue is no larger than that of the\nothers, showing all eight were held in equal reverence. However, the statue of\nAule stands at an angle in the corner with stone benches at either side. Perhaps\nthis was done because Aule is the Vala concerned with the substance of Arda,\nrocks, metals, and minerals, endearing him to the elven smiths.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10956"
+                ],
+                "name": "",
+                "out": [
+                    "10956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10958"
+                ],
+                "name": "",
+                "out": [
+                    "10958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10959",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Presence of the Valar",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 284,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "Starting with a single narrow step, this stairway increases in width as it\nsweeps down gently northward to the hall below. Above the top step, engraved in\nthe granite archway, are some elven runes etched so smooth each letter appears\nto flow into the next. The steps, so well constructed they still look polished,\nhave well stood the ages. This place is, however, not without its scars. Sharp\ncuts in the steps and slices in the walls give evidence a great duel was fought.\nNo doubt these had to have been mythical swords to be able to penetrate the\nstone in such a fashion. The fine silver banister, running the length of the\nstairs on both sides, is misshapen in a way that suggests a mighty warrior may\nhave fallen upon it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10958"
+                ],
+                "name": "",
+                "out": [
+                    "10958"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "10961"
+                ],
+                "name": "",
+                "out": [
+                    "10961"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10960",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Threshold to the House of Mirdain",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 285,
+        "y": 207,
+        "z": 0
+    },
+    {
+        "desc": "Several broken stone bookcases lie on their sides having been knocked down\nagainst the west wall. Elven words carved in some rounded stone posts that once\nstood at the end of each bookshelf seem to denote an ancient filing system.\nLying on the floor are the remains of several stone boxes about the size of a\nlarge journal. It would have taken a rather strong person to have lifted these\nheavy stone containers high enough to have cracked them open against the floor\nexposing the manuscripts inside. Brown flaky dust covers the floor along with\nsome small brass fasteners, apparently all that is left of this library's\ncontents, eroded into nothingness over the course of centuries.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "10960"
+                ],
+                "name": "mirdaindoors",
+                "out": [
+                    "10960"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10962"
+                ],
+                "name": "",
+                "out": [
+                    "10962"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10961",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Toppled Stacks",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 285,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "Broad black smears cross the barren walls of this once great vaulted chamber of\nantiquities. When the sun or moon is aglow, bars of light cast through rents in\nthe walls making motes of dust glitter throughout. Scorch-marks mar the walls,\nthe floor, the ceiling. Shattered display cases of iron and glass litter the\nhall. It appears that whatever great heirlooms may have been housed here were\nlooted long ago. A formidable stone staircase angles both upwards to the room\nabove and twists downward to the room below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10939"
+                ],
+                "name": "",
+                "out": [
+                    "10939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10961"
+                ],
+                "name": "",
+                "out": [
+                    "10961"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10962",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Raided Lower Gallery",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 286,
+        "y": 208,
+        "z": 0
+    },
+    {
+        "desc": "This hall with its high ceiling and ornate granite arches serves little function\nother than allowing entrance into the chamber to the west. A small granite\nbench, perhaps long enough to seat two elves, is pushed against the eastern\nwall. One could assume that those having business with or being called before\nthe Gwaith-i-Mirdain were often kept waiting in this place. To the east are two\nextremely tall silver doors. Large murals cover the north and south walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "10956"
+                ],
+                "name": "",
+                "out": [
+                    "10956"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10964"
+                ],
+                "name": "",
+                "out": [
+                    "10964"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10963",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Ornate Archway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 283,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "This square chamber lies between two sets of grand doors at the north and south.\nThe granite walls stand like curtains between sets of large carved columns. The\nwall is constructed so it appears to be dividing the columns so only half of\neach can be seen within this room. The high domed ceiling carved out of the\nbluff above contains a beautiful painted mural that even time and the\ncondensation of this moist underground has not damaged.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10965"
+                ],
+                "name": "",
+                "out": [
+                    "10965"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10966"
+                ],
+                "name": "",
+                "out": [
+                    "10966"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10963"
+                ],
+                "name": "",
+                "out": [
+                    "10963"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10964",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside a Circular Antechamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 282,
+        "y": 205,
+        "z": 0
+    },
+    {
+        "desc": "Five large, elegant chairs of stone adorned with silver and gold are arranged in\na semi-circle along the northern wall. Large hand blown glass chandeliers hang\ndown in two long columns running north to south along the granite ceiling. The\nluminescence, though dimmed with age, is still rather brilliant leading one to\nbelieve they burn with a magical fire. A royal blue carpet runs the length of\nthe chamber, from the entrance all the way up to the throne chairs. Tattered and\nfrayed, it appears to have once cushioned visitors' knees as they paid homage to\nthe elven smiths. The walls are adorned with many finely engraved murals and\ndesigns depicting the history of the Noldor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10964"
+                ],
+                "name": "",
+                "out": [
+                    "10964"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10965",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Court of the Mirdain",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 282,
+        "y": 204,
+        "z": 0
+    },
+    {
+        "desc": "A long rectangular stone table takes up much of the area of this small room. A\nlarge hand-blown glass chandelier casts a pattern of soft circular lights on the\ntabletop. Five carved stone chairs are carefully tucked under each side of the\ntable ready to seat the elves long ago gone from this place. A tall chair at the\nsouthern end of the table commands a great presence over the rest of the table.\nUnlike the other rooms in these halls, the walls here are barren, giving\nevidence this was a place for serious discussions and distractions, even those\nof the simplest kind, were unwarranted. To the north lie two large metal doors;\nwhen closed their smooth surfaces line up perfectly with this chambers walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10964"
+                ],
+                "name": "",
+                "out": [
+                    "10964"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10966",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Councillors Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 282,
+        "y": 206,
+        "z": 0
+    },
+    {
+        "desc": "This spiral staircase made of iron is so well constructed that even under the\nweight of those using it, it makes no creaking sounds. The forty steps follow a\nprecise and equidistant cascading arrangement. A slightly tarnished silver\nhandrail, made from one piece of precisely curved metal, follows the steps from\ntop to bottom. This stairway was clearly designed to take up very little room,\nentirely contained in a five-foot wide cylindrical space. This hides it well\nbehind the wall of water a bit to the south. From the other side of the water\nthe staircase is completely concealed. Several people could use these steps at\nthe same time single file in the same direction, however passage up and down\nsimultaneously would be impossible.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10968"
+                ],
+                "name": "",
+                "out": [
+                    "10968"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10984"
+                ],
+                "name": "",
+                "out": [
+                    "10984"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10967",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of the Serpentine Stairs",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 284,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "From this short curved hall one can see the spiral staircase to the west and the\nwall of water just inside the room to the south. Along the carved granite walls\nare several square shaped insets about a foot deep. Inside one of the showcases\nare hooks and fasteners about the right size to have held swords and knives on\ndisplay. Another looks as if a shield could have been displayed in its recess.\nThe third inset is much smaller then the other two, seemingly to display\njewellery, judging by its size and some narrow platforms set within.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10952"
+                ],
+                "name": "",
+                "out": [
+                    "10952"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10967"
+                ],
+                "name": "",
+                "out": [
+                    "10967"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10968",
+        "light": 1,
+        "loadflags": 5,
+        "mobflags": 0,
+        "name": "Inner Aperture",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 285,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "This spacious, carved granite workshop once housed all that was necessary to\ntake raw materials and craft them into works of art. A small, extinguished forge\nextrudes from the west wall. Row upon row of miniature pegs line the sides of\nthe room securing detailing tools needed for the task of smithing. Wooden\nworkbenches lie splintered about in ruins. The great treasures that were\nundoubtedly housed here vanished long ago, still there might be some small items\nthat were overlooked.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10970"
+                ],
+                "name": "",
+                "out": [
+                    "10970"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10969",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 4096,
+        "name": "Artisan Works",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 284,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The air is humid in this place far below the great elven city. The only light\nsources are the dim blue flames from tiny iron lanterns that hang just below\nwhere the west wall meets the domed ceiling. The eastern edge of this wide\ngranite platform shows a bit of wear from the rush of the natural water\nforcefully redirected through this channel of elven make. Carved out of the\nwestern wall is an elegantly arched doorway. Deeply etched runes provide a\ndecorative border around the frame of this doorway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10980"
+                ],
+                "name": "",
+                "out": [
+                    "10980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10971"
+                ],
+                "name": "",
+                "out": [
+                    "10971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10969"
+                ],
+                "name": "",
+                "out": [
+                    "10969"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10970",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Candescence Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 285,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "This delicate looking bridge is a work of art as well as function. Suspended\nabove the watery channel it hangs from several woven chains. Each piece\nconsisting of six finely crafted silver chains around an iron support rod. The\nwalkway of the bridge is made of slats of heavy iron ore with fine silver folded\nover them several times. The entire presentation makes the bridge appear\nentirely made of silver. Adding to the illusion is the silvery reflection it\ncasts on the water below. The fast flowing current stirs up a gentle breeze\nheading southward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10972"
+                ],
+                "name": "",
+                "out": [
+                    "10972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10970"
+                ],
+                "name": "",
+                "out": [
+                    "10970"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10971",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Gilded Suspension Bridge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 286,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "From this dimly lit hall one can see straight across the elven-made channel to\nthe west. The fast flowing water shoots through the circular conduit with such\nintensity that the western edge of this platform's granite floor has been\nforever smoothed by erosion. One of the tiles has broken loose, giving evidence\nthat through neglect even the most well made of structures can fall prey to the\nelements. Two of the small iron lamps that run the course of the eastern wall\nare lacking their magical blue flames. A doorway carved out of the eastern wall\nis replete with runes surrounded by a decorative design.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10974"
+                ],
+                "name": "",
+                "out": [
+                    "10974"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10973"
+                ],
+                "name": "",
+                "out": [
+                    "10973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10971"
+                ],
+                "name": "",
+                "out": [
+                    "10971"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10972",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Coruscate Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 287,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "The absence of tools and artifacts from this workshop might lead one to believe\nthat any wealth once contained here has now departed. Whoever looted this shop\nseems to have been exceedingly interested in the detailing of gemstones. Several\nfractured bookshelves lie irreparable on the ground, stripped of any books they\nmay have contained. Perhaps upon close examination some small setting of gold or\nsilver might be found.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10972"
+                ],
+                "name": "",
+                "out": [
+                    "10972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "10973",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Gemstone Works",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 288,
+        "y": 200,
+        "z": 0
+    },
+    {
+        "desc": "There are several directions to chose from at this junction in the river bluff\nwalk. The walk curves a bit to the north, aiming travellers toward a decaying\nstructure. To the east one can ascend an aged causeway over the bluff. The sound\nof river water beckons to the south and this scenic walk continues upward. A\nplethora of choices in which one can walk in the long ago forgotten footsteps of\nthis once grand city's residents. There is a sticky substance covering the\nground to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10906"
+                ],
+                "name": "",
+                "out": [
+                    "10906"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19305"
+                ],
+                "name": "",
+                "out": [
+                    "19305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10907"
+                ],
+                "name": "",
+                "out": [
+                    "10907"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "10904"
+                ],
+                "name": "",
+                "out": [
+                    "10904"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19304",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Riverbluff Walk",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 0,
+        "x": 294,
+        "y": 202,
+        "z": 0
+    },
+    {
+        "desc": "Five rectangular stone pillars coming out of the water look to be part of an\nancient pier. A sixth pillar must have existed at some point but it is gone now,\neither crumbled or washed away. It is easy to imagine planks of wood running\nbetween these stones creating an S-shape landing stretching out over the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19304"
+                ],
+                "name": "",
+                "out": [
+                    "19304"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19306"
+                ],
+                "name": "",
+                "out": [
+                    "19306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19305",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Receding Pier",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 294,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "A long metal chain with links so strong they have withstood the centuries\nextends from a stone column into the depths of the river. Several other stone\ncolumns extend out in a line several feet into the river. The various water\nstages of the river have left their marks on the columns by eroding and\ndiscolouring the granite. One can imagine that in the past the citizens of this\nancient city docked their ships in this safe river harbour.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10372"
+                ],
+                "name": "",
+                "out": [
+                    "10372"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19307"
+                ],
+                "name": "",
+                "out": [
+                    "19307"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19305"
+                ],
+                "name": "",
+                "out": [
+                    "19305"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19306",
+        "light": 0,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Empty Harbour",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 295,
+        "y": 203,
+        "z": 0
+    },
+    {
+        "desc": "A few stone posts and some badly rusted chains are all that is left of this\nabandoned pier. So old is the chain, one good tug from a small child would\nsurely loosen several links. Much of the bluff has eroded over the centuries\nleaving some portions totally surrounded by water. Each time the river rises\nmuch of the southern section of this area floods leaving everything here\nknee-deep under water.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "10908"
+                ],
+                "name": "",
+                "out": [
+                    "10908"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "19306"
+                ],
+                "name": "",
+                "out": [
+                    "19306"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "19307",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Flooded Pier",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 7,
+        "sundeath": 0,
+        "x": 296,
+        "y": 203,
+        "z": 0
+    }
+]

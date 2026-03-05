@@ -11,64 +11,110 @@ interface MapperToolbarProps {
     onCenterClick: () => void;
     onAddRoom?: () => void;
     setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    unveilMap?: boolean;
+    setUnveilMap?: (unveil: boolean) => void;
+    onResetSync?: () => void;
 }
 
 export const MapperToolbar: React.FC<MapperToolbarProps> = ({
-    mode, setMode, autoCenter, setAutoCenter, setIsMinimized, isMobile, isExpanded, onCenterClick, onAddRoom, setIsDropdownOpen
+    mode, setMode, autoCenter, setAutoCenter, setIsMinimized, isMobile, isExpanded, onCenterClick, onAddRoom, setIsDropdownOpen,
+    unveilMap, setUnveilMap, onResetSync
 }) => {
     if (isMobile && !isExpanded) return null;
 
     return (
-        <div style={{ position: 'absolute', top: '8px', left: '8px', zIndex: 10, backgroundColor: 'rgba(30, 30, 46, 0.9)', padding: '4px', borderRadius: '4px', border: '1px solid #313244', display: 'flex', gap: '8px', alignItems: 'center', backdropFilter: 'blur(4px)', fontSize: '12px' }}>
-            <div style={{ display: 'flex', backgroundColor: '#313244', borderRadius: '4px', overflow: 'hidden' }}>
+        <div style={{
+            position: 'absolute',
+            top: '8px',
+            left: '8px',
+            right: '8px',
+            zIndex: 10,
+            backgroundColor: 'rgba(30, 30, 46, 0.9)',
+            padding: '4px',
+            borderRadius: '6px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            gap: '4px',
+            alignItems: 'center',
+            backdropFilter: 'blur(8px)',
+            fontSize: '11px',
+            flexWrap: 'nowrap',
+            overflow: 'hidden',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            maxWidth: 'fit-content'
+        }}>
+            <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
                 <button
-                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal' }}
+                    style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal', transition: 'all 0.2s' }}
                     onClick={() => setMode('edit')}
                 >
-                    Edit
+                    {isExpanded ? 'Edit' : 'E'}
                 </button>
                 <button
-                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal' }}
+                    style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal', transition: 'all 0.2s' }}
                     onClick={() => setMode('play')}
                 >
-                    Play
+                    {isExpanded ? 'Play' : 'P'}
                 </button>
             </div>
 
-            {mode === 'edit' && onAddRoom && (
+            <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+
+            <button
+                onClick={() => setUnveilMap?.(!unveilMap)}
+                style={{
+                    display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 6px', borderRadius: '4px',
+                    backgroundColor: unveilMap ? '#89dceb' : 'transparent', color: unveilMap ? '#11111b' : '#cdd6f4',
+                    border: 'none', cursor: 'pointer', flexShrink: 0, transition: 'all 0.2s'
+                }}
+                title={unveilMap ? "Hide unexplored rooms" : "Show all unexplored rooms"}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                {isExpanded && (unveilMap ? "OFF" : "ON")}
+            </button>
+
+            {onResetSync && (
                 <button
-                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: '#313244', color: '#89b4fa', display: 'flex', alignItems: 'center', gap: '4px' }}
-                    onClick={onAddRoom}
-                    title="Add Room at Center"
+                    onClick={onResetSync}
+                    style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#fab387', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}
+                    title="Reset local map and Sync to MMapper"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
-                    Add
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
+                    {isExpanded && "Sync"}
                 </button>
             )}
 
+            <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+
             <button
-                style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: autoCenter ? '#f9e2af' : '#313244', color: autoCenter ? '#11111b' : '#cdd6f4', display: 'flex', alignItems: 'center', gap: '4px' }}
+                style={{
+                    padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px',
+                    backgroundColor: autoCenter ? '#f9e2af' : 'transparent', color: autoCenter ? '#11111b' : '#cdd6f4',
+                    display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, transition: 'all 0.2s'
+                }}
                 onClick={onCenterClick}
                 title="Center on player"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
-                Center
+                {isExpanded && "Center"}
             </button>
-            <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '0 2px' }} />
+
+            <div style={{ flexGrow: 1 }} />
+
             <button
-                style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: '#313244', color: '#f38ba8', display: 'flex', alignItems: 'center' }}
+                style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#cdd6f4', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }}
+                onClick={() => setIsDropdownOpen(prev => !prev)}
+                title="More Options"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+            </button>
+
+            <button
+                style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#f38ba8', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }}
                 onClick={() => setIsMinimized(true)}
                 title="Minimize"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </button>
-            <div style={{ width: '1px', height: '16px', backgroundColor: 'rgba(255,255,255,0.1)', margin: '0 2px' }} />
-            <button
-                style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: '#313244', color: '#cdd6f4', display: 'flex', alignItems: 'center' }}
-                onClick={() => setIsDropdownOpen(prev => !prev)}
-                title="More Options"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
             </button>
         </div>
     );

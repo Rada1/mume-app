@@ -19,8 +19,8 @@ interface GameButtonProps {
     activePrompt: string | null;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean) => void;
     setCommandPreview: (cmd: string | null) => void;
-    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean } | null>>;
-    heldButton: { id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean } | null;
+    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>>;
+    heldButton: { id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null;
     joystick: { isActive: boolean, currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void };
     target: string | null;
     setActiveSet: (setId: string) => void;
@@ -127,6 +127,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     }
 
                     const el = e.currentTarget as any;
+                    const rect = el.getBoundingClientRect();
                     el._startX = e.clientX;
                     el._startY = e.clientY;
                     el._startTime = Date.now();
@@ -136,67 +137,23 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     setWheelPos({ x: e.clientX, y: e.clientY });
                     wasDraggingRef.current = false;
 
-                    // Long press for submenu/assignment or auto-repeat
-                    el._lpt = setTimeout(() => {
-                        if (el._maxDist < 15) {
-                            const action = button.longActionType || 'menu';
-                            const targetSetId = button.longCommand;
+                    // Immediate tap feedback
+                    triggerHaptic(15);
 
-                            if (!targetSetId && action !== 'command') {
-                                return;
-                            }
+                    const initialX = rect.left + rect.width / 2;
+                    const initialY = rect.top + rect.height / 2;
 
-                            if (action === 'command') {
-                                // For 'command' long-press, we start auto-repeat
-                                el._repeatInterval = setInterval(() => {
-                                    const preview = getButtonCommand(button, 0, 0, undefined, 0, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, true);
-                                    if (preview?.cmd) {
-                                        executeCommand(preview.cmd);
-                                        if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
-                                        triggerHaptic(10);
-                                    }
-                                }, 350);
-
-                                // Fire the first one immediately
-                                const firstPreview = getButtonCommand(button, 0, 0, undefined, 0, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, true);
-                                if (firstPreview?.cmd) {
-                                    executeCommand(firstPreview.cmd);
-                                    if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
-                                    triggerHaptic(40);
-                                }
-                                el._didFire = true;
-                                el._didLong = true;
-                            } else if (action === 'nav' && button.longCommand) {
-                                setActiveSet(button.longCommand);
-                                el._didFire = true;
-                                el._didLong = true;
-                                triggerHaptic(50);
-                            } else {
-                                el._didFire = true;
-                                el._didLong = true;
-                                triggerHaptic(50);
-                                const rect = el.getBoundingClientRect();
-                                setPopoverState({
-                                    x: rect.left,
-                                    y: rect.top,
-                                    setId: targetSetId,
-                                    context: button.label,
-                                    sourceHeight: rect.height,
-                                    menuDisplay: button.menuDisplay,
-                                    initialPointerX: rect.left + rect.width / 2,
-                                    initialPointerY: rect.top + rect.height / 2,
-                                    assignSourceId: action === 'assign' ? button.id : undefined
-                                });
-                            }
-                        }
-                    }, 500);
-
-                    // Continuous trigger logic for swipe/modifiers
-                    el._lst = setTimeout(() => {
-                        if (!el._didLong) {
-                            setHeldButton(prev => prev || { id: button.id, baseCommand: button.command, modifiers: [] });
-                        }
-                    }, 200);
+                    // Immediately register as held so joystick can see it
+                    setHeldButton({
+                        id: button.id,
+                        baseCommand: button.command,
+                        modifiers: [],
+                        dx: 0,
+                        dy: 0,
+                        didFire: false,
+                        initialX,
+                        initialY
+                    });
 
                     // Set initial ray and cancel states
                     el.style.setProperty('--ray-color', button.style.borderColor || button.style.backgroundColor || 'var(--accent)');
@@ -209,24 +166,18 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 const el = e.currentTarget as any;
                 if (!el._startX) return;
 
+                // Stop button visuals if the joystick already fired our action (e.g. opened a menu)
+                if (heldButton?.id === button.id && heldButton.didFire) {
+                    if (activeDir) setActiveDir(null);
+                    setCommandPreview(null);
+                    el.style.setProperty('--ray-opacity', '0');
+                    el.style.setProperty('--cancel-opacity', '0');
+                    return;
+                }
+
                 const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 el._maxDist = Math.max(el._maxDist || 0, dist);
-
-                if (dist > 15 && el._lpt) {
-                    clearTimeout(el._lpt);
-                    el._lpt = null;
-                }
-
-                if (dist > 15 && el._lst) {
-                    clearTimeout(el._lst);
-                    el._lst = null;
-                }
-
-                if (dist > 15 && el._repeatInterval) {
-                    clearInterval(el._repeatInterval);
-                    el._repeatInterval = null;
-                }
 
                 if (dist > 10) wasDraggingRef.current = true;
 
@@ -240,7 +191,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 }
 
                 const distToCenter = Math.sqrt(dx * dx + dy * dy);
-                const isLong = (Date.now() - el._startTime) > 500 && distToCenter < 25;
+                const isLong = joystick.isTargetModifierActive;
                 const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
                 setCommandPreview(preview?.cmd || null);
 
@@ -282,6 +233,32 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     el._lastSnappedAngle = snappedAngle;
                 }
 
+                // Live Menu Trigger: Swipe & Select
+                // The menu check uses button.actionType directly because once the finger moves >15px,
+                // getButtonCommand switches to swipe-direction mode and returns actionType='command'.
+                const isMenuButton = ['menu', 'assign', 'select-assign'].includes(button.actionType || '')
+                    || (isLong && ['menu', 'assign', 'select-assign'].includes(button.longActionType || ''));
+                const menuSetId = isLong ? (button.longCommand || button.command) : button.command;
+                if (isMenuButton && distToCenter > 25 && !el._didFire) {
+                    const rect = el.getBoundingClientRect();
+                    const initialX = rect.left + rect.width / 2;
+                    const initialY = rect.top + rect.height / 2;
+                    const isDial = button.menuDisplay === 'dial';
+                    el._didFire = true;
+                    setPopoverState({
+                        x: isDial ? window.innerWidth / 2 : e.clientX,
+                        y: isDial ? window.innerHeight / 2 : e.clientY,
+                        sourceHeight: rect.height, setId: menuSetId,
+                        context: button.label,
+                        assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
+                        executeAndAssign: button.actionType === 'select-assign',
+                        menuDisplay: button.menuDisplay,
+                        initialPointerX: isDial ? initialX : undefined,
+                        initialPointerY: isDial ? initialY : undefined
+                    });
+                    triggerHaptic(40);
+                }
+
                 el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
                 el.style.setProperty('--ray-length', `${distToCenter + 50}px`);
                 const timePassed = Date.now() - el._startTime;
@@ -289,29 +266,31 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                 // Keep ray visible during cancellation and turn it red for warning
                 const shouldShowRay = distToCenter > 20 && isHeld && (preview || isCancelZone);
-                el.style.setProperty('--ray-opacity', shouldShowRay ? '1' : '0');
+                el.style.setProperty('--ray-opacity', (shouldShowRay && !el._didFire) ? '1' : '0');
                 el.style.setProperty('--ray-color', isCancelZone ? '#ef4444' : (button.style.borderColor || 'var(--set-accent, var(--accent))'));
             }}
             onPointerUp={(e) => {
                 const el = e.currentTarget as any;
                 if (isEditMode) return;
 
+                if (heldButton?.id === button.id && heldButton.didFire) {
+                    setHeldButton(null);
+                    el._startX = null; el._startY = null; el._startTime = null; el._maxDist = 0;
+                    return;
+                }
+
                 const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 const isOverButton = dist < 25;
-                const isLong = (Date.now() - el._startTime) > 500 && isOverButton;
+                const isLong = joystick.isTargetModifierActive;
 
                 // If returned to center, we force a non-swipe check to trigger primary command
                 const isReturnToCenter = isOverButton && el._maxDist > 15;
                 const finalDx = isReturnToCenter ? 0 : dx;
                 const finalDy = isReturnToCenter ? 0 : dy;
-                const finalIsLong = isOverButton ? isLong : false;
 
-                const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, finalIsLong);
+                const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
 
-                clearTimeout(el._lpt); el._lpt = null;
-                clearTimeout(el._lst); el._lst = null;
-                if (el._repeatInterval) { clearInterval(el._repeatInterval); el._repeatInterval = null; }
                 setHeldButton(null);
                 setCommandPreview(null);
                 setActiveDir(null);
@@ -343,13 +322,24 @@ export const GameButton: React.FC<GameButtonProps> = ({
                         triggerHaptic(35);
                     } else if (previewCmd.actionType === 'assign' || previewCmd.actionType === 'menu' || previewCmd.actionType === 'select-assign') {
                         const rect = el.getBoundingClientRect();
+                        const isSwipe = el._maxDist > 15;
+                        const isDial = button.menuDisplay === 'dial';
+                        const initialX = rect.left + rect.width / 2;
+                        const initialY = rect.top + rect.height / 2;
+
                         triggerHaptic(40);
                         setPopoverState({
-                            x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: previewCmd.cmd,
+                            x: isSwipe ? (isDial ? window.innerWidth / 2 : e.clientX) : rect.right + 10,
+                            y: isSwipe ? (isDial ? window.innerHeight / 2 : e.clientY) : rect.top,
+                            sourceHeight: rect.height,
+                            setId: previewCmd.cmd,
                             context: previewCmd.actionType === 'select-assign' ? previewCmd.modifiers : button.label,
-                            assignSourceId: button.id, assignSwipeDir: previewCmd.dir,
+                            assignSourceId: (previewCmd.actionType === 'assign' || previewCmd.actionType === 'select-assign') ? button.id : undefined,
+                            assignSwipeDir: previewCmd.dir,
                             executeAndAssign: previewCmd.actionType === 'select-assign',
-                            menuDisplay: button.menuDisplay, initialPointerX: rect.left + rect.width / 2, initialPointerY: rect.top + rect.height / 2
+                            menuDisplay: button.menuDisplay,
+                            initialPointerX: (isSwipe && isDial) ? initialX : undefined,
+                            initialPointerY: (isSwipe && isDial) ? initialY : undefined
                         });
                     } else {
                         executeCommand(previewCmd.cmd, false, false);
@@ -360,8 +350,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 } else {
                     // No preview (cancelled, static tap, or returned to center)
                     if (el._maxDist < 15 || isReturnToCenter) {
-                        // Fire haptic and glow directly here — handleButtonClick's e.currentTarget may be null
-                        triggerHaptic(35);
+                        // Fire glow directly here — handleButtonClick's e.currentTarget may be null
                         el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
 
                         // Double-tap targeting: two taps within 300ms sets the button's command as target

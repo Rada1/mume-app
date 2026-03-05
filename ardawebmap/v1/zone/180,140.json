@@ -1,0 +1,928 @@
+[
+    {
+        "desc": "The tunnel seems to have collapsed here, with a large heap of rocks making\npassage further to the north impossible. Each movement stirs up clouds of\nage-old dust, and in the whirling eddies of small particles, something sticking\nout of the rock heap catches the eye.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8844"
+                ],
+                "name": "",
+                "out": [
+                    "8844"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "29216"
+                ],
+                "name": "ceiling",
+                "out": [
+                    "29216"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8843",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of a Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 198,
+        "y": 140,
+        "z": 0
+    },
+    {
+        "desc": "From the south, the tunnel bends quite sharply east here. The air is dry and\ndusty, making it hard to breathe. Some broken logs can be seen lying on the\nfloor. These must once have supported the ceiling here. Strangely, the ceiling\nis still where it ought to be.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8845"
+                ],
+                "name": "",
+                "out": [
+                    "8845"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8843"
+                ],
+                "name": "",
+                "out": [
+                    "8843"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8844",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in a Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 140,
+        "z": 0
+    },
+    {
+        "desc": "A gaping hole lies above. A ladder is propped against the wall here, but most of\nits rungs have long ago rotted away, rendering it useless to climb upwards from\nhere. A level tunnel leads north, its ceiling hanging low above your head, and\nits walls, at times, quite narrow.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8844"
+                ],
+                "name": "",
+                "out": [
+                    "8844"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "30015"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8845",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "End of a Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 141,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself in an abandoned hole. Dust covers everything, and yet the\nfurniture appears surprisingly whole. However, closer examination reveals\ncenturies of rot. Judging by its size, and the rusty and useless remains of\npickaxes and other mining tools, this must once have been the home of a group of\ndwarves. You find the torn remainders of a journal, yet little of it is now\nintact. It would seem that though this was once a natural cave, it was later\nenlarged as a living area; the room extends further north, sloping downward\nslightly, and ending in a rough door of wooden planks, which cover a wide\nopening. The walls seem to be sturdy and well built, save for the east wall,\nwhich has either collapsed over the course of time, or was perhaps constructed\nwith some haste, and little skill.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "30013"
+                ],
+                "name": "",
+                "out": [
+                    "30013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "8847"
+                ],
+                "name": "earthwall",
+                "out": [
+                    "8847"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8842"
+                ],
+                "name": "",
+                "out": [
+                    "8842"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8846",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Abandoned Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 197,
+        "y": 145,
+        "z": 0
+    },
+    {
+        "desc": "You enter a large cavernous area. A multitude of holes can be seen in the walls\nand the ceiling. Hundreds of slithering creatures can be seen, fleeing as they\nsense your presence. You see the room ending in an alcove just to the east, but\nthe floor looks rather unstable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "8847",
+                    "8848"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8846",
+                    "8847"
+                ],
+                "name": "earthwall",
+                "out": [
+                    "8846"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "8848"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8847",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "In a Dark, Damp Hole",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 198,
+        "y": 145,
+        "z": 0
+    },
+    {
+        "desc": "A putrid stench fills the air. The ground in this small burial chamber is\ncovered with an ankle-deep layer of blood-encrusted mud. A pedestal, crowned\nwith a large casket, stands in the middle of the room, its lid lying on the\nground beside it. Many bones litter the floor, jutting out of the stinking mud,\nyellowed by age. To the south, a small tunnel leads into the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8849"
+                ],
+                "name": "",
+                "out": [
+                    "8849"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "8847"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "rottenvines",
+                "out": [
+                    "8847"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8848"
+                ],
+                "name": "",
+                "out": [
+                    "8848"
+                ]
+            }
+        ],
+        "id": "8848",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 65536,
+        "name": "In a Hole beneath the Alcove",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 199,
+        "y": 145,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel stops quite abruptly, as the ceiling further on has collapsed. The\nwalls, floor and ceiling are rough and uneven, as if hewn in great haste,\nperhaps neglecting the use of timber props, and so precipitating the later\ncave-in. Small rivulets of water run down the walls, and pool in small\nindentations on the floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8848"
+                ],
+                "name": "",
+                "out": [
+                    "8848"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "8849",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Collapsed Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 199,
+        "y": 146,
+        "z": 0
+    },
+    {
+        "desc": "The interior of this building is dank and dusty, smelling of rotting wood and\nother unidentifiable decaying matter. Six chairs, now broken and useless, sit in\nthe centre of the room, around an old wooden table, and an assortment of ruined\nand rusted tools lie, broken, beside the door.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29215"
+                ],
+                "name": "",
+                "out": [
+                    "29215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 67,
+                "in": [
+                    "8843"
+                ],
+                "name": "planks",
+                "out": [
+                    "8843"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29216",
+        "light": 1,
+        "loadflags": 2097152,
+        "mobflags": 0,
+        "name": "Inside a Decaying Building",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 199,
+        "y": 140,
+        "z": 0
+    },
+    {
+        "desc": "This appears to have been a forge. In fact, there are three separate forges,\nwith a metal pipe leading up from each of them, joining at the centre of the\nroom, and vanishing up through the ceiling: smoke collectors. Some mining tools,\nnow decayed beyond any use, litter the floor. A tunnel leads off to the north,\ngently sloping downwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "30014"
+                ],
+                "name": "",
+                "out": [
+                    "30014"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "8846"
+                ],
+                "name": "",
+                "out": [
+                    "8846"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30013",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Forge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 197,
+        "y": 144,
+        "z": 0
+    },
+    {
+        "desc": "The mine drift is barely six feet at its highest. It is ten feet wide. The walls\nare buttressed by stout wooden logs that seem rather dry and rotten. Yet passage\nappears to be safe. The drift slopes downwards and twists slightly. Once, it\nmust have followed an ore vein.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "30015"
+                ],
+                "name": "",
+                "out": [
+                    "30015"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "30013"
+                ],
+                "name": "",
+                "out": [
+                    "30013"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30014",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mine Drift",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 143,
+        "z": 0
+    },
+    {
+        "desc": "The mine drift comes to a sudden stop here. There is some sort of mechanism over\na large hole in the ground. The rotten logs and the ropes must once have been\nused to haul heavy loads up from the shaft. The top of a ladder leading down is\nvisible, poking out of the hole.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "30014"
+                ],
+                "name": "",
+                "out": [
+                    "30014"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "8845"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30015",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Top of a Mine Shaft",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 197,
+        "y": 142,
+        "z": 0
+    }
+]

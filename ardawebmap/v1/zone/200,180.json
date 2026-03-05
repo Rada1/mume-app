@@ -1,0 +1,2122 @@
+[
+    {
+        "desc": "This narrow way twists and turns between the high stone walls of the buildings.\nPiles of refuse and rubbish litter the ground, and emit a putrid stench of rot\nand decay. Eastwards some small wooden docks provide landing spots for ships,\nwhile Chapman's Lane continues its stroll northwards.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9257"
+                ],
+                "name": "",
+                "out": [
+                    "9257"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9255"
+                ],
+                "name": "",
+                "out": [
+                    "9255"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9256",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chapman's Lane",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 219,
+        "y": 191,
+        "z": 0
+    },
+    {
+        "desc": "The narrow lane makes its way between the buildings facing onto Main Street and\nthe Old Tower Road. The buildings' stout back doors carry heavy padlocks. Piles\nof garbage decay beside the doors. A huge, green vine is crawling its way up the\nwall on the side of the street and it might be possible to climb it to get up to\nthe roof.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9219"
+                ],
+                "name": "",
+                "out": [
+                    "9219"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9256"
+                ],
+                "name": "",
+                "out": [
+                    "9256"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9215"
+                ],
+                "name": "",
+                "out": [
+                    "9215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9258"
+                ],
+                "name": "",
+                "out": [
+                    "9258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9257",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chapman's Lane",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 219,
+        "y": 190,
+        "z": 0
+    },
+    {
+        "desc": "Here you have a very good view over the street below. People are walking up and\ndown the street minding their own business and not paying attention to what\nhappens above them. A huge vine grows on the back wall of this building\nextending downward.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9260"
+                ],
+                "name": "",
+                "out": [
+                    "9260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9263"
+                ],
+                "name": "",
+                "out": [
+                    "9263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9257"
+                ],
+                "name": "",
+                "out": [
+                    "9257"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9258",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "On the Rooftop",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 217,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "You have entered a small, dimly lit room. In the vague light from a lantern you\nsee all kinds of knives gleaming on the northern wall. A fully dressed mannequin\nstands in the middle of the room and a complete black silk dress hangs over a\nchair in the northeast corner. A very small ladder on the western wall leads up\nto the roof, where it abruptly ends.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9268"
+                ],
+                "name": "",
+                "out": [
+                    "9268"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9263"
+                ],
+                "name": "hatch",
+                "out": [
+                    "9263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9259",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 8320,
+        "name": "Humble Workshop",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 218,
+        "y": 188,
+        "z": 0
+    },
+    {
+        "desc": "Here, high above the city, birds are circling around trying to find something to\neat or simply to stretch their wings. Below you the city is buzzing with life\nand from here it looks quite harmless, however, it is easy to watch who walks on\nthe street below. The sheer walls fall steeply to the street and it would be\nextremely difficult to try to climb down.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9222"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9258"
+                ],
+                "name": "",
+                "out": [
+                    "9258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9261"
+                ],
+                "name": "",
+                "out": [
+                    "9261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1545,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9220"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9260",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "High above the City",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 217,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "From here you have a good view over the city. To the east an old tower can be\nseen reaching high above the city. Seagulls and some other birds are circling\naround it, squawking loudly. Massive city walls surround the city and you can\nsee the northern gates from here. It is possible to climb up the roof west of\nyou to reach even higher above the city.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9223"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9263"
+                ],
+                "name": "",
+                "out": [
+                    "9263"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9262"
+                ],
+                "name": "",
+                "out": [
+                    "9262"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9260"
+                ],
+                "name": "",
+                "out": [
+                    "9260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9261",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Atop the Roof",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 218,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "Balancing atop the high roofs, it is possible to overlook the city, which\nstretches out below your feet. Looking down, the course of the Old Tower Street\nrunning west and south is clearly visible, while the massive stone wall of an\nold tower is just some yards to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9261"
+                ],
+                "name": "",
+                "out": [
+                    "9261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9265"
+                ],
+                "name": "",
+                "out": [
+                    "9265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9211"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9262",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "On the Roofs",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 219,
+        "y": 186,
+        "z": 0
+    },
+    {
+        "desc": "Above the roof birds circle and chirp trying to spot food or a good place to\nbuild a nest. The roof is made of wooden planks and a small hatch opens to a\nladder leading below. To the northeast, the old tower of Tharbad reaches up into\nthe sky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9261"
+                ],
+                "name": "",
+                "out": [
+                    "9261"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1545,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9210"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9258"
+                ],
+                "name": "",
+                "out": [
+                    "9258"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9259"
+                ],
+                "name": "",
+                "out": [
+                    "9259"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9263",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "Upon the Rooftops",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 218,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "You are falling down...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9265"
+                ],
+                "name": "",
+                "out": [
+                    "9265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9212"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9264",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Off the Tower-roof",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 217,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "The cylindrical roof is built of reddish bricks, while the very top is a small\nflat area of wooden, cracked planks. This is the highest place in Tharbad and\nfrom here it is easy to overlook the whole city. To the east the River Greyflood\nbegins its journey; first a huge irregular area of branching rivulets, then\ngetting smaller and smaller, it vanishes into the horizon.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                    "9267"
+                ],
+                "name": "",
+                "out": [
+                    "9267"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9266"
+                ],
+                "name": "",
+                "out": [
+                    "9266"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9264"
+                ],
+                "name": "",
+                "out": [
+                    "9264"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "9262"
+                ],
+                "name": "",
+                "out": [
+                    "9262"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9265",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "On the Tower-Roof",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 218,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "You are falling down...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9265"
+                ],
+                "name": "",
+                "out": [
+                    "9265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9494"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9266",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Off the Tower-roof",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 219,
+        "y": 184,
+        "z": 0
+    },
+    {
+        "desc": "You are falling down...\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9265"
+                ],
+                "name": "",
+                "out": [
+                    "9265"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1537,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "9704"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9267",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Off the Tower-roof",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 218,
+        "y": 183,
+        "z": 0
+    },
+    {
+        "desc": "Here in the narrow corridor, the tapestries on the walls are old and withered.\nBits and pieces of them lie on the floor where cockroaches have taken to hiding\nunder them. At one end of the corridor, a small door opens to a dimly lit room\nfrom which no details can be seen. Light comes from the bottom of the stairs\nwhere the noise of the common patrons in the inn can be heard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9259"
+                ],
+                "name": "",
+                "out": [
+                    "9259"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9215"
+                ],
+                "name": "",
+                "out": [
+                    "9215"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9268",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Narrow Corridor",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 219,
+        "y": 188,
+        "z": 0
+    },
+    {
+        "desc": "Dirty water flows westwards towards a wide stone bridge off in the distance.\nSeveral pipes dump an abundance of russet coloured sewage into the river from\nthe buildings on the north and south banks, producing a ripe smell of sewage.\nNotably, a wide path cuts between a few of the houses on the south bank.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9280",
+                    "9283"
+                ],
+                "name": "",
+                "out": [
+                    "9280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9272"
+                ],
+                "name": "",
+                "out": [
+                    "9272"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9274"
+                ],
+                "name": "",
+                "out": [
+                    "9274"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9273",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Greyflood",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 219,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "The wide stone bridge overhead provides little shelter from the elements. The\nwind still whistles as it slips under the bridge and past the rocks at the\nriver's edge. As putrid water laps against the rocks, a faint sound of running\nwater can be heard coming from the northern bank.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "24484"
+                ],
+                "name": "crack",
+                "out": [
+                    "24484"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9213",
+                    "9273"
+                ],
+                "name": "",
+                "out": [
+                    "9273"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9213",
+                    "9275"
+                ],
+                "name": "",
+                "out": [
+                    "9275"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9279"
+                ],
+                "name": "",
+                "out": [
+                    "9279"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9274",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Under the Bridge",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 218,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "A pungent odour rises from the river. The water is a concoction of sewage,\ngarbage, slime and unknown muck as it collects on the bank. The main part of the\nriver runs swiftly here, from the stone bridge towards the city gates in the\nwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "9312"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9274"
+                ],
+                "name": "",
+                "out": [
+                    "9274"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9276"
+                ],
+                "name": "",
+                "out": [
+                    "9276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9275",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Greyflood",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 217,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "The current slows and fragments momentarily as the river becomes choked with\nweed and debris, its force dispersed into small eddies and backwaters. Low banks\npatched with small clumps of hardy dun-coloured grasses border the polluted\nwaterway as it flows towards the gated entrance to the west. A resident\noccasionally adds to the current a helping of garbage or perhaps the contents of\na chamber-pot.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28598"
+                ],
+                "name": "",
+                "out": [
+                    "28598"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9275"
+                ],
+                "name": "",
+                "out": [
+                    "9275"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9277"
+                ],
+                "name": "",
+                "out": [
+                    "9277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9276",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Greyflood",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 216,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "Sheltered from the elements under the city's wide stone wall, this area serves\nas a checkpoint for watercraft coming into and out of Tharbad. On each side of\nthe narrow waterway three large torches chained to the high arch of the walls\nsway in the light breeze. Barely audible above the noise from the city echoing\nin the arch, the dirty Greyflood murmurs and gurgles past a rusted metal gate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9276"
+                ],
+                "name": "",
+                "out": [
+                    "9276"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9278"
+                ],
+                "name": "",
+                "out": [
+                    "9278"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9277",
+        "light": 2,
+        "loadflags": 64,
+        "mobflags": 4096,
+        "name": "Tharbad's West Gate",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 2,
+        "x": 215,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "Discoloured water and debris slowly pour out from the large, rusted metal gate\njust behind Tharbad's high stone wall, creating an opaque brown plume several\nhundred yards long. Occasionally a mutilated corpse surfaces for a second or two\nbefore diving beneath the murky waves to the unseen depths of the river.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "9277"
+                ],
+                "name": "",
+                "out": [
+                    "9277"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "8962"
+                ],
+                "name": "",
+                "out": [
+                    "8962"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9278",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outside the West Gate of Tharbad",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 1,
+        "x": 214,
+        "y": 192,
+        "z": 0
+    },
+    {
+        "desc": "The water is polluted and murky. Half-disintegrated garbage litters the bottom\nalong with slimy moss which collects on the loamy riverbed. Vision is obscured\nby the murkiness, and only the slight bumps from what feel like fishes can be\ndiscerned.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9274"
+                ],
+                "name": "",
+                "out": [
+                    "9274"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9279",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Below the Water Surface",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 10,
+        "sundeath": 0,
+        "x": 218,
+        "y": 193,
+        "z": 0
+    },
+    {
+        "desc": "The entire building seems to be a large warehouse. Narrow aisles wind between\nshelves piled to the rafters with crates and boxes. The only large spaces are at\nthe south and north ends of the room. To the south, two desks are facing a\ndoorway, and in the north there is a set of iron gates.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9273"
+                ],
+                "name": "",
+                "out": [
+                    "9273"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 27,
+                "flags": 3,
+                "in": [
+                    "9283"
+                ],
+                "name": "hatch",
+                "out": [
+                    "9283"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "9280",
+        "light": 2,
+        "loadflags": 2,
+        "mobflags": 0,
+        "name": "Warehouse",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 219,
+        "y": 193,
+        "z": 0
+    },
+    {
+        "desc": "Dark, damp and extremely cramped, this small tunnel seems to have been created\nby water flowing through a wide crack in the rocks on its way to the catacombs\nbelow. Stalactites hang from the low ceiling, formed from centuries of dripping\nwater. These rock formations meet along the wall with stalagmites forming this\ntunnel. The faint sound of flowing water can be heard from the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "9274"
+                ],
+                "name": "",
+                "out": [
+                    "9274"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "24484",
+        "light": 0,
+        "loadflags": 64,
+        "mobflags": 0,
+        "name": "A Dark Tunnel",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 218,
+        "y": 191,
+        "z": 0
+    },
+    {
+        "desc": "Wooden docks provide landing facilities for ships. Ropes pile up, some of them\nare tied to the docks and hang downwards, nearly reaching the water surface.\nLooking through the narrow space between the planks below, small waves of dirty\nand stinking water breaks against the riverbank.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9233"
+                ],
+                "name": "",
+                "out": [
+                    "9233"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "9276"
+                ],
+                "name": "",
+                "out": [
+                    "9276"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 65,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "28861"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28598",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Docks",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 216,
+        "y": 191,
+        "z": 0
+    },
+    {
+        "desc": "The wooden planks creak while standing upon them. The aftmast is located here\nand is nearly as tall as the mainmast. A huge grey sail in triangular shape\nhangs between them. Standing close to the railing which surrounds the whole\nship, are some barrels.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                    "28598"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28861",
+        "light": 0,
+        "loadflags": 24,
+        "mobflags": 0,
+        "name": "The Aftdeck",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 211,
+        "y": 187,
+        "z": 0
+    },
+    {
+        "desc": "Large wooden planks cover this part of the ship's deck. The main mast reaches\nfar into the sky and a huge grey sail hangs loosely between it and the rear\nmast. Numerous oars are neatly stacked close to the wooden railing, which\nsurrounds the ship at this end. The oars might be used when there is no wind for\nlong periods of time or in emergency cases.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                    "1387"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 64,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28862",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Grey Ship",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 211,
+        "y": 186,
+        "z": 0
+    }
+]

@@ -1,0 +1,924 @@
+[
+    {
+        "desc": "This small flet glitters and sparkles in the light. On display in cabinets are\nluxurious items, crafted by the last of the great artisans from the old Noldorin\ncity of Ost-in-Edhil. Wooden shelves and work benches are placed in a\nsemi-circle around a small stone hearth that stands off towards a corner. Tiny\nflames dance in the fireplace, allowing the smiths to heat and work their\nmaterial to perfection. A couple of wooden chests and a table are placed along\nthe edge of the flet. In a corner are a few sleeping mats.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 9,
+                "in": [
+                    "16661"
+                ],
+                "name": "",
+                "out": [
+                    "16661"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16663",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 2,
+        "name": "The Jewellers' Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 419,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Just north of the great trunk of the mallorn, this large wooden platform rests\namong the lower branches of the tree. Encircled by a low railing, with many\nwooden chairs surrounding round wooden tables, this flet is where most of the\nelves eat their meals. Alongside the western edge of the platform hang a few\nsilvery wind chimes that create soft, soothing music as the wind gently sways\nthe branches of the tall tree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16692"
+                ],
+                "name": "",
+                "out": [
+                    "16692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16691",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Northern Platform",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "Circling the massive trunk of the great mallorn, the wooden stairs lead high up\nin the tree. Several exits on the different levels lead to flets that have been\nbuilt among the great grey branches. From within the greenery, laughter and\nsinging can be heard as well as soft speech and the faint noises of kitchen\nstaff preparing a meal.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16691"
+                ],
+                "name": "",
+                "out": [
+                    "16691"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16693"
+                ],
+                "name": "",
+                "out": [
+                    "16693"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16695"
+                ],
+                "name": "",
+                "out": [
+                    "16695"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16694"
+                ],
+                "name": "",
+                "out": [
+                    "16694"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16698"
+                ],
+                "name": "",
+                "out": [
+                    "16698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16685"
+                ],
+                "name": "",
+                "out": [
+                    "16685"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16692",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Wooden Stairs",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Being close to the ground, this white platform is not encircled by any rail.\nInstead, beautiful draperies and tapestries hang from the many branches that\nsurround the flet. Swaying gently in the breeze, images on the colourful cloth\ncreate a place where one can stand and let the mind wander into the stories told\nby the everchanging patterns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16692"
+                ],
+                "name": "",
+                "out": [
+                    "16692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16693",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "Lower Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 416,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "This small talan is sturdy, constructed to withstand almost anything. In the\ncentre of the flet is a large oven, surrounded by a few smaller hearths that are\nthe source of all greater meals served in the home of Celeborn. Here also are\nmade meals for the guards and visiting woodsmen who are only in the city for a\nshort while. A small parchment note is secured to the trunk.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16692"
+                ],
+                "name": "",
+                "out": [
+                    "16692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16694",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "A Small Flet",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 415,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Small but still of great importance, this white flet rests high up in the tree,\ngently embraced by the strong branches. This is where the council meets to run\nthe normal affairs of the city. This is also where scouts and rangers report as\nthey arrive in the city with messages or dispatches from the borders. A great\nround table stands in the centre, surrounded by large wooden chairs. In a corner\nstands a large bookshelf, filled with maps and books.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16692"
+                ],
+                "name": "",
+                "out": [
+                    "16692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16695",
+        "light": 0,
+        "loadflags": 65536,
+        "mobflags": 0,
+        "name": "Talan of the Council",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 417,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "The sounds of the city recede slightly when one enters the great library of\nCaras Galadhon. Much of the great tree is used to create the walls and the\nceiling of this house of knowledge. Great boughs arch high above, forming a vast\ndome of whispering green or golden leaves. The grey bole of the mallorn,\ntogether with screens and curtains hanging from the lower branches, helps shield\nthe large chamber from the activities on the talan outside. Bookshelves and\ntables stand in ranks, filled with knowledge, both ancient and newly gained.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16698"
+                ],
+                "name": "",
+                "out": [
+                    "16698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16696",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "The Great Library",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 417,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "This great hall is a chamber of oval shape, in the middle of which is one of the\ntrunks of the great mallorn, tapering towards its crown and yet still making a\npillar of wide girth. The chamber is filled with a soft light; its walls are of\ngreen and silver and its roof of gold. Chairs enough for many elves to be seated\nstand on the wooden floor. Beside the bole of the tree and canopied by a living\nbough stand two thrones, gleaming and glittering in the sparkling light of\nsilver lamps.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16698"
+                ],
+                "name": "",
+                "out": [
+                    "16698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16697",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hall of Celeborn",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 418,
+        "y": 134,
+        "z": 0
+    },
+    {
+        "desc": "High up in the tree this large platform the size of an ocean-faring ship rests\nsecure in the embrace of the great mallorn. On the northern part of the flet\nlies a small palace built of the finest wood, while the southern part is wide\nopen and free. A low railing encircles the flet. A polished wooden stair runs\nalong the bole of the tree to ease the travel between its different levels.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16697"
+                ],
+                "name": "",
+                "out": [
+                    "16697"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16699"
+                ],
+                "name": "",
+                "out": [
+                    "16699"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "16696"
+                ],
+                "name": "",
+                "out": [
+                    "16696"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "29077"
+                ],
+                "name": "",
+                "out": [
+                    "29077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16692"
+                ],
+                "name": "",
+                "out": [
+                    "16692"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16698",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Great Talan",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "The great platform lies firm against the thick branches of the mallorn, not\nmoving even as gusts of winds sway the smaller branches. A narrow wooden railing\nruns all around the platform. The most prominent feature in sight is the great\nhall that lies on the northern part of the flet, although several other features\nattract attention. The polished floor is covered with beautiful carvings inlaid\nwith silver strands that glitter in vivid patterns, reflecting light from a\nmyriad of silver lamps and sending it to dance among the branches. The railing\nis meticulously crafted out of the finest wood by the finest artisans. It seems\ndelicate yet is strong and supportive, just like the elves themselves.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16698"
+                ],
+                "name": "",
+                "out": [
+                    "16698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "16699",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On a Great Talan",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 418,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "One of the highest places in the realm of the Golden Wood is the chamber of the\nLord and Lady of Lothlorien - Celeborn of the Teleri and Galadriel of the\nNoldor. Small but carefully furnished, the chamber is decorated by some of the\nfinest artefacts created by the great artisans of the history of Arda. On the\nwalls hang several beautiful gems, reflecting the light of several silver lamps.\nA small sapling of the great silver tree, whose name was given to the ruler of\nCaras Galadhon, stands here on a small silver pedestal. A large bed stands on\nthe side, covered by draping in sky-blue and white hanging from the ceiling.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29078"
+                ],
+                "name": "",
+                "out": [
+                    "29078"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "16698"
+                ],
+                "name": "",
+                "out": [
+                    "16698"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29077",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chamber of Celeborn and Galadriel",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 419,
+        "y": 135,
+        "z": 0
+    }
+]

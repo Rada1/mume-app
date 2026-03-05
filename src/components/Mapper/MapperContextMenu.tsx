@@ -9,10 +9,11 @@ interface MapperContextMenuProps {
     onInfo: () => void;
     onAddMarker: () => void;
     onAddRoom: () => void;
+    onSyncLocation: () => void;
 }
 
 export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
-    x, y, roomId, onClose, onDelete, onInfo, onAddMarker, onAddRoom
+    x, y, roomId, onClose, onDelete, onInfo, onAddMarker, onAddRoom, onSyncLocation
 }) => {
     return (
         <>
@@ -35,12 +36,22 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
                 flexDirection: 'column',
                 gap: '2px'
             }}>
-                {roomId && (
+                <button
+                    style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#cdd6f4', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    onClick={(e) => { e.stopPropagation(); onSyncLocation(); }}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16.2 7.8l-2 6.3-6.4 2.1 2-6.3 6.4-2.1z"></path></svg>
+                    Sync Player Here
+                </button>
+
+                {roomId ? (
                     <>
                         <button
-                            style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#cdd6f4', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
-                            onClick={onInfo}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
+                            style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#89b4fa', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                            onClick={(e) => { e.stopPropagation(); onInfo(); }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(137, 180, 250, 0.1)'}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
@@ -48,7 +59,7 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
                         </button>
                         <button
                             style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#f38ba8', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
-                            onClick={onDelete}
+                            onClick={(e) => { e.stopPropagation(); onDelete(); }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(243, 139, 168, 0.1)'}
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
@@ -56,29 +67,27 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
                             Delete Room
                         </button>
                     </>
+                ) : (
+                    <button
+                        style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#89b4fa', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        onClick={(e) => { e.stopPropagation(); onAddRoom(); }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(137, 180, 250, 0.1)'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        Add Room
+                    </button>
                 )}
-                {!roomId && (
-                    <>
-                        <button
-                            style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#89b4fa', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
-                            onClick={onAddRoom}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(137, 180, 250, 0.1)'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                            Add Room
-                        </button>
-                        <button
-                            style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#a6e3a1', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
-                            onClick={onAddMarker}
-                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(166, 227, 161, 0.1)'}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                            Add Marker
-                        </button>
-                    </>
-                )}
+
+                <button
+                    style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#a6e3a1', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    onClick={(e) => { e.stopPropagation(); onAddMarker(); }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(166, 227, 161, 0.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    Add Marker
+                </button>
             </div>
         </>
     );

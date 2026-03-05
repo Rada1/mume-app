@@ -1,0 +1,2031 @@
+[
+    {
+        "desc": "The earth opens up into a large black hallway, dominated by a few protruding\nboulders and a somewhat smooth rock floor. Though much of this area may have\nbeen a natural formation in the earth, its looks as though at least some of the\nrock has been broken and formed into the shape of a large entryway. A thick\nwhite mist sits subdued on the ground, stirred only by the occasional quick\nmovement of an unseen, low-lying creature. An atmosphere of evil lurks here with\na foreboding presence; it waits in the cracks and crevices to instil fear in any\nunwelcome visitors.\n",
+        "exits": [
+            {
+                "dflags": 513,
+                "flags": 3,
+                "in": [
+                    "25280"
+                ],
+                "name": "markedstones",
+                "out": [
+                    "25280"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25468"
+                ],
+                "name": "",
+                "out": [
+                    "25468"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25467",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Disturbed, Stone-laden Hallway",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 507,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "This was once a well-crafted passage. The walls are made of smooth slabs of grey\nstone, but time has not been kind to them. Many are cracked and a few lie\nshattered on the ground, showing the black basalt rock behind.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "25376"
+                ],
+                "name": "passageway",
+                "out": [
+                    "25376"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25912"
+                ],
+                "name": "",
+                "out": [
+                    "25912"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25913"
+                ],
+                "name": "",
+                "out": [
+                    "25913"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25911",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 510,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "This passageway continues to both the east and west. The walls are well-made and\nclad in slabs of grey stone. The walls encroach on the passageway on both sides,\nand the hall is three times as high as it is wide.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25914"
+                ],
+                "name": "",
+                "out": [
+                    "25914"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25911"
+                ],
+                "name": "",
+                "out": [
+                    "25911"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25912",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 511,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Ages old building material stands stacked against the walls in this chamber.\nEverything is caked in dust and it is clear nothing here has been used for a\nvery long time. Most of the material is slabs of grey stone, seemingly the same\nmaterial used for the walls here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25911"
+                ],
+                "name": "",
+                "out": [
+                    "25911"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25913",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Disused Storage Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 509,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "Dark and narrow, this underground passageway connects to a larger chamber to the\neast. Dust has gathered on the floor and many of the slabs the walls are made of\nare cracked.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25915"
+                ],
+                "name": "",
+                "out": [
+                    "25915"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25912"
+                ],
+                "name": "",
+                "out": [
+                    "25912"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25914",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Narrow Passage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 512,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A layer of dust cakes everything in this large, open chamber. The chamber is\nmostly empty, except for several statues that stand ready, clad in stone armour\nwith their swords drawn. Some of the statues have crumbled completely and lie on\nthe floor in piles of rubble, others are missing limbs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "25931"
+                ],
+                "name": "",
+                "out": [
+                    "25931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25914"
+                ],
+                "name": "",
+                "out": [
+                    "25914"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25915",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 16384,
+        "name": "Watchful Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 513,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "The ledge is clear of any rubble or debris, with a few skeletons decaying along\nedges of a cavern entrance. The ledge leads to the east, where the entrance\nalmost appears to be yawning widely. The ledge leading down is steep and it is\nhard to judge the distance below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25234",
+                    "25919"
+                ],
+                "name": "",
+                "out": [
+                    "25919"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "25226"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25918",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Precarious Ledge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 2,
+        "x": 500,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "Large slabs of rock and granite have fallen from above and formed gaping cracks\nand crevices in the cave floor. A small, murky pool of water has formed beneath\nwhere some of the slabs have punched through. A green film forms a slight sheen\non the surface of the water, and a green slime has accumulated around its edges.\nOccasional ripples can be seen on the surface.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25918"
+                ],
+                "name": "",
+                "out": [
+                    "25918"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25920"
+                ],
+                "name": "",
+                "out": [
+                    "25920"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25919",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Partially-collapsed Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 501,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "The cave to the north leads to this small niche near the murky pool. The water\nis dark and clouded deeper within the pool. Near the edges the stone of the\ncavern is more visible. Moss grows heavily along the stone walls here; bright\ngreen near edge of the water and darker green toward the western side of the\npool. The ground is damp and humidity fills the air.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25923"
+                ],
+                "name": "",
+                "out": [
+                    "25923"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25921"
+                ],
+                "name": "",
+                "out": [
+                    "25921"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25922",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 4096,
+        "name": "Niche by a Pool",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 502,
+        "y": 139,
+        "z": 0
+    },
+    {
+        "desc": "The cave is expansive to the north and east, with moss growing in patches along\nthe wall. Cobwebs hang in several places, most appearing to be abandoned long\nago. Almost the entire southern wall of the cave is covered by webs both old and\nnew, with natural debris being trapped within. The cave opens up along the\nwestern side where a ledge appears to be; the ground slightly inclined and less\ndamp as it leads to the ledge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25928"
+                ],
+                "name": "",
+                "out": [
+                    "25928"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25922"
+                ],
+                "name": "",
+                "out": [
+                    "25922"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25924"
+                ],
+                "name": "",
+                "out": [
+                    "25924"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25923",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Murky Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 502,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "The cavern walls are black basalt to the south and east, connecting to a low\nceiling that is both rough and uneven. The ground is rough and dark like the\nwalls, with dying moss scattered along the ground in patches. Humidity and\ndampness can be felt towards the northern area of the cave here and the air\nappears less thick toward the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25925"
+                ],
+                "name": "",
+                "out": [
+                    "25925"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25923"
+                ],
+                "name": "",
+                "out": [
+                    "25923"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25924",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Corner of a Murky Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 503,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "The dark cave expands in every direction other than the east, where there must\nhave been a large cave-in recently, judging from the dust still settling and the\nworn path that disappears under the rock and debris. The black basalt rubble\nfrom the cave-in looks to be impossible to clear.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25926"
+                ],
+                "name": "",
+                "out": [
+                    "25926"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25924"
+                ],
+                "name": "",
+                "out": [
+                    "25924"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25928"
+                ],
+                "name": "",
+                "out": [
+                    "25928"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25925",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 65536,
+        "name": "Murky Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 503,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "The air is damp within the cave here and it becomes quite thick towards the\neastern side. Although it is dark and murky, there are small patches of moss\ngrowing throughout the cave; the moss is a deep green and appears to be thriving\non the humidity and darkness here. The walls of the cave expand to the west and\nsouth, and a slow drip of water can be heard echoing off the cavern walls to the\neast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25929"
+                ],
+                "name": "",
+                "out": [
+                    "25929"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25925"
+                ],
+                "name": "",
+                "out": [
+                    "25925"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25930"
+                ],
+                "name": "",
+                "out": [
+                    "25930"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25927"
+                ],
+                "name": "",
+                "out": [
+                    "25927"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25926",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Murky Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 503,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "The dark ground is damp from humidity throughout the murky cave, which continues\nto both the south and east. The cavern wall rises beyond sight to the north and\nwest, with moss growing from the tiny cracks and crevices along the base of the\nwalls. The moss is a deep green in patches along the edges of the cave, making\nit appear as if a worn path was formed along the ground from the southern and\neastern areas of the cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25928"
+                ],
+                "name": "",
+                "out": [
+                    "25928"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25926"
+                ],
+                "name": "",
+                "out": [
+                    "25926"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25927",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Murky Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 502,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "The murky and dark cave is wide here, continuing in all directions other than\nthe west, where the cavern wall rises beyond sight into a deeper darkness. Moss\ngrows along the western wall, rooting into the rocks and crevices where it can.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25927"
+                ],
+                "name": "",
+                "out": [
+                    "25927"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25923"
+                ],
+                "name": "",
+                "out": [
+                    "25923"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25925"
+                ],
+                "name": "",
+                "out": [
+                    "25925"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25928",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "Murky Cave",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 502,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "The cave to the south widens here at a long and steep ledge. The damp and murky\nair from the southern cave lingers here, and a slight draft can be felt leading\ndownward beyond the ledge and out of sight. Moss grows along the mouth of the\ncave to the south, but the ledge itself is bare and the ground is dark. Some of\nthe ledge appears to be worn, as if often used to reach whatever is below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25926"
+                ],
+                "name": "",
+                "out": [
+                    "25926"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "25228"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25929",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Damp Ledge",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 5,
+        "sundeath": 2,
+        "x": 503,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "This lair has only one way out and that is to the west, where the black basalt\nwalls are covered by fresh and old webs. Several cocoons are suspended within\nthe webbing, with dry corpses decaying inside them. Although it is too high to\nreach, there are many holes in the ceiling above that appear to be tunnels that\ntwist beyond sight. Moss growing along the base of the cavern walls that lead to\nthe mass of cobwebs to the west is drying out and slowly dying. Cracked shells\nand other debris are scattered throughout the lair.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "25926"
+                ],
+                "name": "",
+                "out": [
+                    "25926"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25930",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Foul-smelling Lair",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 504,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "A chamber with walls of slabs of grey rock, well crafted but old. A passage to\nthe west exits the chamber, and there is another opening to the north. A huge\nskull has been forged into the walls around the northern opening, from the look\nof it a monstrous wyrm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 97,
+                "in": [
+                    "25932"
+                ],
+                "name": "",
+                "out": [
+                    "25932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25915"
+                ],
+                "name": "",
+                "out": [
+                    "25915"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25931",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dusty Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 514,
+        "y": 138,
+        "z": 0
+    },
+    {
+        "desc": "A vast cavern of epic proportions expands endlessly to the east and north. The\nwalls, if they even exist, are shrouded in veils of darkness and gloom. The\nfloor of the cavern is smooth but littered with old, crumbled items. Here and\nthere, something shiny glitters amongst the garbage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25933"
+                ],
+                "name": "",
+                "out": [
+                    "25933"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25931"
+                ],
+                "name": "",
+                "out": [
+                    "25931"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25937"
+                ],
+                "name": "",
+                "out": [
+                    "25937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25932",
+        "light": 1,
+        "loadflags": 16385,
+        "mobflags": 4096,
+        "name": "Dragon's Hoard",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 514,
+        "y": 137,
+        "z": 0
+    },
+    {
+        "desc": "The walls are covered with the scratches of giant claws. The ceiling so high\nit's lost in darkness and can't be seen. In one place, there are some narrow but\nvery deep cracks in the cavern's floor where the rock has split apart. A faint\nsulphurous stench wafts up from the unknown depths.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25934"
+                ],
+                "name": "",
+                "out": [
+                    "25934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25932"
+                ],
+                "name": "",
+                "out": [
+                    "25932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25936"
+                ],
+                "name": "",
+                "out": [
+                    "25936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25933",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Vast Dragon's Hoard",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 514,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "Once, these vast caves extended to the north and west. In a past age, the cave\nmust have collapsed, for a large cave-in blocks the way. The floor is mostly\nsmooth, aside from where rents of long deep grooves mar it. Scattered across the\nground are piles of what might have been treasure once upon a time, though it\nhas long since mostly rotted, rusted, and crumbled.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25933"
+                ],
+                "name": "",
+                "out": [
+                    "25933"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25935"
+                ],
+                "name": "",
+                "out": [
+                    "25935"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25934",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Dark Corner in a Dragon's Hoard",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 514,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "A large cavern expands to the west and south from this dark corner. Black rock\nmake up the walls and ceiling, and most likely the ground as well although it is\ncovered by millennia of dust and dirt. There is also an enormous amount of old,\ndecayed junk gathered in piles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25936"
+                ],
+                "name": "",
+                "out": [
+                    "25936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25934"
+                ],
+                "name": "",
+                "out": [
+                    "25934"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25935",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Far Corner in a Dragon's Hoard",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 515,
+        "y": 135,
+        "z": 0
+    },
+    {
+        "desc": "A slight depression in the floor here, the ground is slightly lower than the\nsurrounding caves. As a result, extra much dust and rubbage have gathered here.\nThe eastern wall is scored by deep gouge marks, it looks almost like an enormous\ncreature had a hissy fit here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25935"
+                ],
+                "name": "",
+                "out": [
+                    "25935"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25937"
+                ],
+                "name": "",
+                "out": [
+                    "25937"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25933"
+                ],
+                "name": "",
+                "out": [
+                    "25933"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25936",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Vast Dragon's Hoard",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 515,
+        "y": 136,
+        "z": 0
+    },
+    {
+        "desc": "Ancient items litter this cavern. Chests, ancient relics, glittering things\nresting amongst piles of rotted cloth, these halls seems to hide an unimaginable\nwealth. All of it appearingly unguarded, for a layer of dust coates everything.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25936"
+                ],
+                "name": "",
+                "out": [
+                    "25936"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25932"
+                ],
+                "name": "",
+                "out": [
+                    "25932"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25937",
+        "light": 1,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Treasure-filled part of a Dragon's Hoard",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 515,
+        "y": 137,
+        "z": 0
+    }
+]

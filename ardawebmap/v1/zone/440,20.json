@@ -1,0 +1,3925 @@
+[
+    {
+        "desc": "This ledge has a commanding view of the trails below. The cliff face to the east\nhas a large door sealing off what appears to be a cave. To the west, a steep\ntrail leads down to the other, larger, trails. A cave opens up to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "14482"
+                ],
+                "name": "",
+                "out": [
+                    "14482"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7003"
+                ],
+                "name": "",
+                "out": [
+                    "7003"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6979",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "High Ledge",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 446,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This cavern is wide at the centre but narrows to the east and north making it an\nideal place for defence. A large gate has been set into the western rockwall,\nimproving the chances to hold this cavern against intruders. Fresh markings in\nthe eastern stonewall surround a doorway.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "6986"
+                ],
+                "name": "",
+                "out": [
+                    "6986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6981"
+                ],
+                "name": "",
+                "out": [
+                    "6981"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "14482"
+                ],
+                "name": "",
+                "out": [
+                    "14482"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6980",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gate Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 448,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This is a square artificial cavern with fresh marks on the stone. It is very\ntidy and quite warm. A bed, two chairs and some shelves make up the furniture.\nThe only exit is back through the door.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6980"
+                ],
+                "name": "",
+                "out": [
+                    "6980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6981",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Secluded Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 449,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The rocky tunnel bends to and fro, stretching both to the north and to the\nsouth. The southmost end narrows and turns steeply downwards in the same place,\nmaking further travel in that direction impossible for any beast larger than a\nrat. Near this dip in the tunnel a metal ladder has been set into the grey rock\nwall, leading upwards into a cave.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6984"
+                ],
+                "name": "",
+                "out": [
+                    "6984"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6983"
+                ],
+                "name": "",
+                "out": [
+                    "6983"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6982",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Winding Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 450,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "This is a rather small cave, circular in shape and with a diameter slightly less\nthan thirty feet. The black rock walls are almost completely clad in blueish ice\nwhile numerous icicles and stalactites hang down from the cavern ceiling. Two\nmetal ladders disturb the natural air of this cave, one leading down into a\nnarrow hole and the other leading up to another cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6978"
+                ],
+                "name": "",
+                "out": [
+                    "6978"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6982"
+                ],
+                "name": "",
+                "out": [
+                    "6982"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6983",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Icy Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 451,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "The floor of this rocky tunnel is lined with numerous long and irregular rifts.\nSeveral massive stalactites hang from the ceiling high above. In a few spots,\nthe otherwise grey rock is graced with the sparkle of some other, more\nmetal-rich, mineral. The tunnel extends to the north and to the south.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6987"
+                ],
+                "name": "",
+                "out": [
+                    "6987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6982"
+                ],
+                "name": "",
+                "out": [
+                    "6982"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6984",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Natural Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 450,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "Large metal hooks have been set into the wall at various heights from the\nground. The rock walls around some of these hooks are stained with dried blood.\nSome weird machines are standing in the middle of the room, probably constructed\nwith one thing in mind - to make people talk. Fresh blood has been splattered on\nmost of the southern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6986"
+                ],
+                "name": "",
+                "out": [
+                    "6986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6985",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Torture Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 449,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The air in here is very moist, and small puddles of water cover the stony floor.\nA large hole has been barred off with steel bars in the eastern wall. Tiny piles\nof small stones cover the floor in the vicinity of the bars. A large hole in the\nsouthern wall seems to lead to another cavern, and a hole in the floor is the\nbeginning of a tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6980"
+                ],
+                "name": "",
+                "out": [
+                    "6980"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6985"
+                ],
+                "name": "",
+                "out": [
+                    "6985"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6997"
+                ],
+                "name": "",
+                "out": [
+                    "6997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6986",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mustering Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 448,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel has a very irregular floor, as if some unnatural beast had clawed\nrifts into it. The rock is almost black, and stalactites hang from the ceiling.\nSmall steps have been carved into the western solid rock wall, allowing an easy\nclimb into the extending tunnel. A massive gate is set into the southern wall.\nThe eastern wall is covered with cracks and crevices, scars from an ancient\nrockslide.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "6984"
+                ],
+                "name": "",
+                "out": [
+                    "6984"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "6988"
+                ],
+                "name": "",
+                "out": [
+                    "6988"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "6997"
+                ],
+                "name": "",
+                "out": [
+                    "6997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6987",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dried-up Underground Stream",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 450,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "This is a small chamber created by a rockslide not to long ago. The air is moist\nand the faint dripping of water can be heard. A bed has been placed in one\ncorner of the cave, it looks like its been used recently. Small mushrooms cover\nmost of the floor, many of them crushed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "6987"
+                ],
+                "name": "",
+                "out": [
+                    "6987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6988",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 128,
+        "name": "Dark Moist Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 451,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "Wooden targets resembling elves and orcs have been lined up on the far southern\nside of this square cavern. Cuts and markings have been slashed into the rock\nwalls, most likely by weapons missing their targets or glancing off shields. A\nfew fresh red stains on the stone floor indicate that combat with a bloody\noutcome occurred here recently.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6992"
+                ],
+                "name": "",
+                "out": [
+                    "6992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6990"
+                ],
+                "name": "",
+                "out": [
+                    "6990"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6989",
+        "light": 0,
+        "loadflags": 4,
+        "mobflags": 1024,
+        "name": "Battle Training Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 452,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "Four crude wooden tables have been situated in the middle of this cave, benches\nplaced around them to allow for a brief rest during meals. Glowing coals placed\nin a concavity in the ground warms a thin stone slab making it possible to cook\nfood on it. Large cupboards cover the eastern wall completely, most likely used\nto store huge amount of rations.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6989"
+                ],
+                "name": "",
+                "out": [
+                    "6989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6990",
+        "light": 0,
+        "loadflags": 16,
+        "mobflags": 0,
+        "name": "Mess Hall and Kitchen",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 453,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "This tunnel is very narrow. Sharp rocks are protruding from the walls,\nthreatening to pierce everything they come in contact with. A light draught can\nbe felt from the northern tunnel in this t-shaped junction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6993"
+                ],
+                "name": "",
+                "out": [
+                    "6993"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6992"
+                ],
+                "name": "",
+                "out": [
+                    "6992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6998"
+                ],
+                "name": "",
+                "out": [
+                    "6998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6991",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 450,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "This large cave seems to have been crafted by the powers of nature, ages ago.\nClose to the eastern wall, a wooden platform has been constructed. Exits lead\ndeeper into the mountain to both the north and the south. The air seems somewhat\nwarmer to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6994"
+                ],
+                "name": "",
+                "out": [
+                    "6994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6989"
+                ],
+                "name": "",
+                "out": [
+                    "6989"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20231"
+                ],
+                "name": "",
+                "out": [
+                    "20231"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6991"
+                ],
+                "name": "",
+                "out": [
+                    "6991"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6992",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gathering Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 452,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "The warm floor of this ledge slopes slightly inwards to the middle. Black trails\nof smoke slowly rise towards the ceiling high above, adding to the darkness of\nthis cave. To the south a tunnel slopes sharply downward into the depths of the\nmountain. Looking down, one can see a large forge cave below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6991"
+                ],
+                "name": "",
+                "out": [
+                    "6991"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6993",
+        "light": 0,
+        "loadflags": 131072,
+        "mobflags": 1,
+        "name": "Warm Ledge",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 450,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "A well has been built upon a stone dais in the middle of this small cavern,\nallowing access to water in case of a siege. The western wall of this cavern has\nbeen slightly blackened around a jagged opening leading deeper into the\nmountain. A constant jet of hot air flows into this chamber from this opening,\nwarming the surroundings. The cave grows larger to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6992"
+                ],
+                "name": "",
+                "out": [
+                    "6992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6995"
+                ],
+                "name": "",
+                "out": [
+                    "6995"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6994",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Well Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 452,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "A crude stone forge sits in a depression of the uneven floor of this cavern,\nsimple tools and firewood piled by its side. The fire in the forge blazes, its\noccasional flares turning the walls blood-red before letting them fade to black\nagain. The broken ceiling of the cavern is supported by a few blackened rafters\nwhich can barely be seen through the smoke.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6996"
+                ],
+                "name": "",
+                "out": [
+                    "6996"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6994"
+                ],
+                "name": "",
+                "out": [
+                    "6994"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6995",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Forge Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 451,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel is very finely crafted, with smooth walls and floor. It ends rather\nabruptly to the north, where a large cave-in has left only a small hole in the\nwall. A pair of solid iron rails lead into the low tunnel. To the south, the\ntunnel opens up to a large cave. Next to the tunnel entrance a huge wheel has\nbeen mounted into the wall, connecting to an extremely thick metal wire.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6995"
+                ],
+                "name": "",
+                "out": [
+                    "6995"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6996",
+        "light": 0,
+        "loadflags": 1,
+        "mobflags": 0,
+        "name": "Partially Caved-in Mine Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 451,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "Mushrooms cover the floor and most of the walls of this narrow, steep tunnel.\nThe tunnel rises to the north into what looks like a crossing. The air in here\nis very moist and seems to attach itself to everything it comes in contact with.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6998"
+                ],
+                "name": "",
+                "out": [
+                    "6998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6987"
+                ],
+                "name": "",
+                "out": [
+                    "6987"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6986"
+                ],
+                "name": "",
+                "out": [
+                    "6986"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6997",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 449,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "Here the tunnel branches into every compass direction except west. This tunnel\nis very narrow, but clearly not crafted by nature. It was probably dug to\nconnect two places with each other.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6999"
+                ],
+                "name": "",
+                "out": [
+                    "6999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6997"
+                ],
+                "name": "",
+                "out": [
+                    "6997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6991"
+                ],
+                "name": "",
+                "out": [
+                    "6991"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6998",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Branching Tunnels",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 449,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel slopes from the west into the mountain to the south, where it seems\nto become wider. Faint metallic sounds can ocasionally be heard from that\ndirection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6998"
+                ],
+                "name": "",
+                "out": [
+                    "6998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7000"
+                ],
+                "name": "",
+                "out": [
+                    "7000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "6999",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sloping Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 449,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "A faint draft can be felt from the western exit in this tunnel going east-west.\nThe tunnel is exceptionally straight and does not look like it was created by\nthe forces of nature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6999"
+                ],
+                "name": "",
+                "out": [
+                    "6999"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7001"
+                ],
+                "name": "",
+                "out": [
+                    "7001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7000",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 448,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel narrows and starts sloping upwards towards the surface of the\nmountain. The walls here have a dark red hue originating from some kind of\nmineral packed into them. Small piles of bat-droppings make progress upwards\nsomewhat harder.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7000"
+                ],
+                "name": "",
+                "out": [
+                    "7000"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7002"
+                ],
+                "name": "",
+                "out": [
+                    "7002"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7001",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 447,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "New markings on the rock forming this tunnel indicate that it was carved out of\nthis massive mountain recently. A trapdoor has been set into the roof at the\nhigher end of this steeply sloping tunnel.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "7004"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "25939"
+                ],
+                "name": "",
+                "out": [
+                    "25939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7001"
+                ],
+                "name": "",
+                "out": [
+                    "7001"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7002",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Steep Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 446,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "You are in the beginning of a large cave that extends far to the south. It is\nquite cold in here, and the water dripping from the ceiling quickly turns to ice\nas it is exposed to the frigid air. You can't see very far to the south...the\ncloud of steam and vapors from your breath obscures your vision.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7040"
+                ],
+                "name": "",
+                "out": [
+                    "7040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "7039"
+                ],
+                "name": "",
+                "out": [
+                    "7039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7038",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Freezing Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 441,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "You are in a crack in the mountains that leads back to the west, or if you are\ndaring, down further into the mountain. It is quite cold here, and you can see\nice forming on the walls and ceiling, the beginnings of a complex structure of\nice stalagmites and stalagtites.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7042"
+                ],
+                "name": "",
+                "out": [
+                    "7042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "7038"
+                ],
+                "name": "",
+                "out": [
+                    "7038"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7039",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Inside the Cold Crack",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 441,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "The walls in this place seem to be made from glass, but one painful touch lets\nyou know that it is in fact ice. As you look around, you see bones that appear\nto be from a game animal, and you wonder what kind of beast could live in this\ndesolate place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7038"
+                ],
+                "name": "",
+                "out": [
+                    "7038"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "7041"
+                ],
+                "name": "icicle",
+                "out": [
+                    "7041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7040",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Deep inside the Frozen Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 441,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "As you step into this large cave, your breath comes out in steamy clouds,\nfogging your view of what lies ahead. However, when you hear a loud growling\nfrom behind a ice stalagmite, you fear that you have made a mistake coming to\nthis frozen lair.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "7040"
+                ],
+                "name": "icicle",
+                "out": [
+                    "7040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7041",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 32768,
+        "name": "Ice-Demon's Lair",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 441,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "Thanks to your keen intelligence and eyesight, you managed to find the crack in\nthe mountain face. It is a very tight squeeze, but you can turn sideways and\ncontinue on to the east. As you look to continue, a strong blast of frigid air\nhits you from the east, and you wonder why you suddenly got very cold.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "7066"
+                ],
+                "name": "",
+                "out": [
+                    "7066"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7039"
+                ],
+                "name": "",
+                "out": [
+                    "7039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7042",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Crack in the Mountain Wall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 440,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "*WHEW* You have finally made it to the top. It was definitely worth the climb,\nbecause the view from here is amazing. You can see a great deal of Arda from\nyour position here. You really would like to stay up here much longer, but the\nthin air and high winds make it difficult to stay here and be safe.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "7042"
+                ],
+                "name": "crease",
+                "out": [
+                    "7042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "7054"
+                ],
+                "name": "",
+                "out": [
+                    "7054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "7066",
+        "light": 1,
+        "loadflags": 16384,
+        "mobflags": 0,
+        "name": "Top of the Misty Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 1,
+        "x": 440,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "Inside a hole stained with blood, you find a large cave. It shows signs of\nhabitation, with strewn bones and mouldy pieces of something even an orc will\nnot eat. Some chairs are put around a large table, which is covered with bones\nand other dead parts of animals or human beings. However, this cave does not\nseem like others you have seen in this area. Shields marked with strange\npictures and walls with strange colours mark this cave as an alien one. What\nonce must have been an opening in the northern wall is now completely covered\nwith debris. The only way out is to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "6980"
+                ],
+                "name": "",
+                "out": [
+                    "6980"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "6979"
+                ],
+                "name": "",
+                "out": [
+                    "6979"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "14482",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Collapsed Inner Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 13,
+        "sundeath": 2,
+        "x": 447,
+        "y": 39,
+        "z": 0
+    },
+    {
+        "desc": "You go on, and soon you feel lost. You make a turn and walk back, looking for\nthe path you left. You are pretty sure that you are walking the exact same route\nthat lead you to this place. Still, the area you are in seems unfamiliar. There\nis no sign of the path. Did you take the wrong turn somewhere? Hmm. The way back\nto he path must be around the hill east of here. It has to be.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "7007"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18195"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18194",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Soon Lost",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 455,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You were wrong! You find no path. You are far away from it and lost. Your only\noption is to walk on. So you do, firmly believing that you have to run into a\npath eventually.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18194"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18196"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18195",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hill",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 456,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "You walk a while. The hope of finding the path grows smaller. You are far and\ndeep into the Mountains. Snow covers the ground, and there is a strong wind.\nSnow drifts away by the wind, making the outlines of the landscape blurry. The\nwind is cold! Your cheeks are aching. You go at a good pace; your body and feet\nare still warm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18195"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18196",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mountains",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 456,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "You have no idea of where you are. Your range of vision is very limited. The\nwind is very strong. Snow is drifting in the wind at great speed. Tiny ice\ncrystals constantly bombard your face. It feels like someone pricks your face\nwith hundreds of small needles every second. You can barely see anything; you\nare forced to keep your eyes closed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18198"
+                ],
+                "name": "",
+                "out": [
+                    "18198"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18196"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18197",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lost in a Blizzard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 457,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "The wind makes walking very troublesome. At times you have to sit down, or else\nyou would be blown away. The ground is still covered by snow. It is dry and\nhard, almost like ice, polished by days of strong wind. Your strength drains\nrapidly. If you do not find any shelter quickly, you risk severe frostbite.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18197"
+                ],
+                "name": "",
+                "out": [
+                    "18197"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18199"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18198",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lost in a Blizzard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 457,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "You can't go any further in these extreme weather conditions. Your face already\nsuffers from frostbite. It's numb with cold. So are your fingers. Some you can't\nmove. For a while, they have had a deep purple colour and aching. Now they feel\nwarm, but large areas are of a white colour, and small black spots appear. You\ndoubt that is a good sign. It really is very cold, it's not only the wind making\nit feel like it. The snow is dry and crispy, squeaking beneath your feet. Any\nliquid from your mouth, nose or eyes freezes instantly, and even breathing is\ntroublesome. You'll have to find shelter fast. These conditions might kill you\nwithin the end of the day, no matter how hard you struggle against them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "snowdrift",
+                "out": [
+                    "18200"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18198"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18199",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Very Cold Place",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 458,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "You found a snowdrift well suited for making a cave. Even though you hardly can\ndo anything with your frozen fingers and the fact that you have no equipment\nmade for digging snow caves, you manage to dig a tunnel some metres into the\nsnowdrift. At the end, you widen it to make it possible to sit and turn yourself\naround. You are now protected by metres of packed snow, a perfect protection\nfrom the blizzard outside. The temperature inside your cave is really\ncomfortable, just below the freezing point and most important: no wind, of\ncourse. The frostbite seems to heal slowly, and you slowly regain some of your\nstrength. You stay here weatherbound, waiting for better weather conditions.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18199"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "18201"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18200",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Snow Cave",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 13,
+        "sundeath": 0,
+        "x": 458,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "You leave the cave behind you and feel a cold breeze in your face. This is a\nsnowfield high up in the Mountains, which gives you a good overlook over the\nsurroundings. It is hard to walk here, since every step you take makes you sink\ndown into the snow, and you have to struggle hard to get anywhere. As you walk\non, you suddenly see the the path you left below you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "18200"
+                ],
+                "name": "",
+                "out": [
+                    "18202"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18201",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outside the Cave",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 459,
+        "y": 37,
+        "z": 0
+    },
+    {
+        "desc": "It really is the path you left before! You have been pretty close to it all the\ntime, but no way you would ever find it during the blizzard. You walk back to\nthe path just a bit below you. Sometimes boulders comes galloping down besides\nyou, maybe let loose by mid-day sun on the snow above you.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "18201"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "6840"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "18202",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "By the Trail",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 6,
+        "sundeath": 0,
+        "x": 459,
+        "y": 38,
+        "z": 0
+    },
+    {
+        "desc": "The air here is warm and dry, leaving those who breathe it with a parched\nthroat. A heavy stench of decomposing flesh originates from the remains of\nhalf-eaten small animals and torn-off limbs hanging from chains that are nailed\nto the walls. The ground and the cavern walls are unusually jagged, and there\nseems to be no spot for a comfortable rest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "6992"
+                ],
+                "name": "",
+                "out": [
+                    "6992"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20231",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 8192,
+        "name": "Inside a Cell",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 453,
+        "y": 36,
+        "z": 0
+    },
+    {
+        "desc": "During the march of time this shallow cavern has been smoothened by decades of\nwind and rain. The ceiling slants sharply towards the sky, leaving minor\nprotection against the brute force of nature. The polished floor has been\nruptured close to the inner cavewall to establish a place for the trapdoor\nleading down into the mountain. At the centre of the cave, rather close to the\ntrapdoor, a large bell has been mounted.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25940"
+                ],
+                "name": "",
+                "out": [
+                    "25940"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "7002"
+                ],
+                "name": "",
+                "out": [
+                    "7002"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25939",
+        "light": 2,
+        "loadflags": 32768,
+        "mobflags": 2048,
+        "name": "Cave Overlooking a Trail",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 445,
+        "y": 35,
+        "z": 0
+    },
+    {
+        "desc": "Frost and ice line the sides and floor of this cavern, having been blown in by\nthe wind from the smoothed cave entrance to the south. The constant wear of the\nelements has caused a cascade of cracks to form in the domed ceiling where an\nenormous ring of icicles now hang; crowning the centre of the cavern.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25939"
+                ],
+                "name": "",
+                "out": [
+                    "25939"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25940",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Frost-rimmed Cavern",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 445,
+        "y": 34,
+        "z": 0
+    },
+    {
+        "desc": "Snow and ice, freezing cold. Winds whipping the mountains with hail as hard as\nsteel. The cold itself seems to have a soul, filled with hatred for all life.\nThere is a dwelling in this freezing inferno, the home of the Zaugurz orcs. This\nis where the Zaugurz orcs rest, to return later to their hunts and war.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29081"
+                ],
+                "name": "",
+                "out": [
+                    "29081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29080",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 1,
+        "name": "Frozen North",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 449,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "Deep inside the frozen, icy lands of the North, this cave has been dug as a\nshelter by the hands of the Zaugurz tribe. Now it is used solely by those\nbattle-tested Zaugurz who have need of rest and recovery before thrusting forth\nonce more into battle.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29082"
+                ],
+                "name": "",
+                "out": [
+                    "29082"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29080"
+                ],
+                "name": "",
+                "out": [
+                    "29080"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29081",
+        "light": 1,
+        "loadflags": 131072,
+        "mobflags": 0,
+        "name": "Frozen Cave",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 450,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "The cavern here is small and the air seems to freeze your lungs. Most of the\nsmall cavern within the shimmering ice is taken by a sky-blue pool of water. It\nis not frozen despite the temperature here feeling colder than anything else.\nDeep down, a faint light of silvery blue seems to shine, yet even that little\nbit that reaches up here promises a cold that lies even beyond the air's\ntemperature.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "29081"
+                ],
+                "name": "",
+                "out": [
+                    "29081"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29082",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Pool of Ice",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 14,
+        "sundeath": 2,
+        "x": 451,
+        "y": 29,
+        "z": 0
+    },
+    {
+        "desc": "Snow and ice, freezing cold. Winds whipping the mountains with hail as hard as\nsteel. The cold itself seems to have a soul, filled with hatred for all life.\nThere is a dwelling in this freezing inferno, the home of the Zaugurz orcs. In\none of these caves, the Zaugurz have discovered an old and very long mining\ntunnel, leading far to the south. The brave ones daring to fight for glory enter\na mine cart and race through the mountain to a new world. The ones braver yet,\nrisk the monstrous blizzards and thundering avalanches of the Misty Mountains\nand make the journey south on foot.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29083",
+        "light": 0,
+        "loadflags": 24,
+        "mobflags": 0,
+        "name": "The Frozen North",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 0,
+        "x": 449,
+        "y": 31,
+        "z": 0
+    }
+]

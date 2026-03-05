@@ -1,0 +1,6052 @@
+[
+    {
+        "desc": "The road's gentle eastward and southward curves become a humpback bridge that\nspans the dike. Following the bridge, a big hedge has been cut to make room for\ntraffic as the road goes through. To the east is a little field with a fence\naround it and oats growing there.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26449"
+                ],
+                "name": "",
+                "out": [
+                    "26449"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26451"
+                ],
+                "name": "",
+                "out": [
+                    "26451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26450",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Bridge over a Dike",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 241,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "A thick stone wall stretches far both north and south, framing a metal gate set\nwithin. The dirt-packed road transitions into stone slabs before the gate, just\nfar enough to cover the area the gate moves when it opens. A tower looming above\nthe gate is the first sight of Bree travellers from the east see.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26450"
+                ],
+                "name": "",
+                "out": [
+                    "26450"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "26453"
+                ],
+                "name": "",
+                "out": [
+                    "26453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26451",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Outside the East Gate of Bree",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 11,
+        "sundeath": 1,
+        "x": 241,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "Towards the east, a tall and thick stone wall stretches far both north and south\nand deeply rooted in the wall, a hinged gate is set. An equal note is shown on\nboth sides of the gate. Linked with the wall, a tower rises to the north. A\npaper note is attached to the gate.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26972"
+                ],
+                "name": "",
+                "out": [
+                    "26972"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26979"
+                ],
+                "name": "",
+                "out": [
+                    "26979"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "26451"
+                ],
+                "name": "",
+                "out": [
+                    "26451"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26454"
+                ],
+                "name": "",
+                "out": [
+                    "26454"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26453",
+        "light": 0,
+        "loadflags": 64,
+        "mobflags": 0,
+        "name": "East Gate of Bree",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 240,
+        "y": 101,
+        "z": 0
+    },
+    {
+        "desc": "The wooden floorboards here are slightly warped and grimy, and care must be\ntaken not to slip. The air is slightly damp and smells of mildew. Wooden walls\nframe this room in all directions but west. The ceiling is low and warped like\nthe floorboards, but provides enough height for the guards to gather needed\nrefreshment.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26453"
+                ],
+                "name": "",
+                "out": [
+                    "26453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26973"
+                ],
+                "name": "",
+                "out": [
+                    "26973"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26972",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Guard Watering Hole",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 240,
+        "y": 100,
+        "z": 0
+    },
+    {
+        "desc": "A small path to the north connects to a shallow pond here. The dirt surrounding\nthe pond is muddy and slick, and care must be taken not to fall into the water.\nA stone wall lines the park to the south and a neatly curated hill creates a\nnatural barrier to the west. The northern path connects this pond to a park to\nthe north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "26453"
+                ],
+                "name": "",
+                "out": [
+                    "26453"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26979",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Small Pond",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 240,
+        "y": 102,
+        "z": 0
+    },
+    {
+        "desc": "A large wooden archway marks the entrance to the Westhill. The weathered\ncobblestone streets are well-maintained, but starting to show their age. Houses\nand cottages can be seen dotting the hillside to the north, while the larger\nbuildings of central Bree cover the landscape to the south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28558"
+                ],
+                "name": "",
+                "out": [
+                    "28558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26997"
+                ],
+                "name": "",
+                "out": [
+                    "26997"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28502"
+                ],
+                "name": "",
+                "out": [
+                    "28502"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27005"
+                ],
+                "name": "",
+                "out": [
+                    "27005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "26998",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to the Westhill",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 247,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "The cobblestones of Westhill Way wind between the northern knolls of Bree here.\nA few houses have been built on the flatter portions of landscape, while other\nhomes are built directly into the hillside. To the south, the roof of the\nPrancing Pony is just visible between the hills.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27006"
+                ],
+                "name": "",
+                "out": [
+                    "27006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28839"
+                ],
+                "name": "",
+                "out": [
+                    "28839"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26998"
+                ],
+                "name": "",
+                "out": [
+                    "26998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27048"
+                ],
+                "name": "",
+                "out": [
+                    "27048"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27005",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 246,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "The road narrows here as it passes between a few of the a few closely packed\nhouses, each slightly different than the last. The cobblestone streets are worn,\nhaving seen the tread of many a foot over the years. The southwest side of the\nstreet is marked by a giant pothole where some wagons have attempted to cut the\ncorner a few too many times.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28863"
+                ],
+                "name": "",
+                "out": [
+                    "28863"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27005"
+                ],
+                "name": "",
+                "out": [
+                    "27005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29089"
+                ],
+                "name": "",
+                "out": [
+                    "29089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27007"
+                ],
+                "name": "",
+                "out": [
+                    "27007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27006",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 246,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "This portion of Westhill Way is a little worse for wear, evidenced mostly by a\nlarge, muddy pothole that mars one side of the road. A small pool of brown water\nlies in the bottom of the hole, and the grass beside the road has begun to\ndevelop deep ruts from wagons forced to detour around the damage.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28957"
+                ],
+                "name": "",
+                "out": [
+                    "28957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27006"
+                ],
+                "name": "",
+                "out": [
+                    "27006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27008"
+                ],
+                "name": "",
+                "out": [
+                    "27008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27007",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 245,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "Westhill Way turns here, leading into the heart of Westhill to the north and\nback toward Bree proper to the east. A few houses cover the hillside, most of\nwhich have carefully trimmed shrubbery lining the footpaths that lead to each\nfront door.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27009"
+                ],
+                "name": "",
+                "out": [
+                    "27009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27007"
+                ],
+                "name": "",
+                "out": [
+                    "27007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28841"
+                ],
+                "name": "",
+                "out": [
+                    "28841"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27008",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 244,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "This corner of Westhill Way marks the end of the main throughfare of the south\nside of Westhill. A few larger homes have been constructed in the hills here,\nwith tall, multi-paned windows displaying a bit of extravagance amid the\notherwise utiliarian achitecture that marks much of Bree.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30016"
+                ],
+                "name": "",
+                "out": [
+                    "30016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27008"
+                ],
+                "name": "",
+                "out": [
+                    "27008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29101"
+                ],
+                "name": "",
+                "out": [
+                    "29101"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27010"
+                ],
+                "name": "",
+                "out": [
+                    "27010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27009",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 244,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Here, the wide road of Westhill Way joins with the more narrow North Ridge\nAvenue. Large houses sit on each corner, with well-manicured, grassy lawns. Each\nhas a well-cut wooden fence marking the edge of each yard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27050"
+                ],
+                "name": "",
+                "out": [
+                    "27050"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27009"
+                ],
+                "name": "",
+                "out": [
+                    "27009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27051"
+                ],
+                "name": "",
+                "out": [
+                    "27051"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27010",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Junction of Westhill Way and North Ridge Avenue",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 243,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Statues carved from wood stand tall in the shapes of wild horses dotting the\nstreet. The flat, grassy road is bordered on either side by wooden planks laid\ndown neatly lengthwise. Wheel tracks can be seen having crushed the grass flat\ngoing north and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27038"
+                ],
+                "name": "",
+                "out": [
+                    "27038"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "26949"
+                ],
+                "name": "",
+                "out": [
+                    "26949"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30010"
+                ],
+                "name": "",
+                "out": [
+                    "30010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27045"
+                ],
+                "name": "",
+                "out": [
+                    "27045"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27037",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hummock Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 253,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "The road here is composed of grayish white gravel with bits of red dirt leaking\nout here and there. On either side of the road, rough wooden houses tower above,\ntheir thatched roofs glistening with a hint of gold. A few fruit trees grow in\nfront of some of those houses.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27039"
+                ],
+                "name": "",
+                "out": [
+                    "27039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27037"
+                ],
+                "name": "",
+                "out": [
+                    "27037"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27042"
+                ],
+                "name": "",
+                "out": [
+                    "27042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "30033"
+                ],
+                "name": "",
+                "out": [
+                    "30033"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27038",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hummock Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 253,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "A thick carpet of grass has broken free from its horizontal prison and begun a\ndesperate escape up the slightly sloped walls of the houses here. Gravel has\nbeen kicked up here and there on the road and wooden planks have been placed\nover a deep gash in the centre of the street.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27040"
+                ],
+                "name": "",
+                "out": [
+                    "27040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27038"
+                ],
+                "name": "",
+                "out": [
+                    "27038"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28486"
+                ],
+                "name": "",
+                "out": [
+                    "28486"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28503"
+                ],
+                "name": "",
+                "out": [
+                    "28503"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27039",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hummock Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 253,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "Sludge-like mud has been splashed on some dark grey stones bordering the sides\nof the lane. A trail of low bushes streaks along the centre of the street,\nunscathed by the crushing, grinding wheels that have left indents in the mud.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27041"
+                ],
+                "name": "",
+                "out": [
+                    "27041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27039"
+                ],
+                "name": "",
+                "out": [
+                    "27039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28557"
+                ],
+                "name": "",
+                "out": [
+                    "28557"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28487"
+                ],
+                "name": "",
+                "out": [
+                    "28487"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27040",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hummock Lane",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 253,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Two large trees stand in the centre of the dirt road, their trunks acting as a\ndivide for passersby. The road itself is made up of a red, almost claylike dirt.\nLooking closely there is a statue of a man standing between the two trees. He is\nshort and grey, and seems to be resting on a walking stick.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28637"
+                ],
+                "name": "",
+                "out": [
+                    "28637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27040"
+                ],
+                "name": "",
+                "out": [
+                    "27040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27043"
+                ],
+                "name": "",
+                "out": [
+                    "27043"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27044"
+                ],
+                "name": "",
+                "out": [
+                    "27044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27041",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Oak Hill Road",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 253,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "The houses on this street all have decorative symbols burnt into their wooden\ndoors. Each is done with care, evidently the work of some local artisan. The\ncobblestone street worn smooth, with and the East Road can just be glimpsed\nbetween the buildings to the east.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27046"
+                ],
+                "name": "",
+                "out": [
+                    "27046"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28485"
+                ],
+                "name": "",
+                "out": [
+                    "28485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27038"
+                ],
+                "name": "",
+                "out": [
+                    "27038"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27042",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cobblestone Avenue",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 254,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "The tall oaks that give this street its name line the road on either side. A few\nof these have faint figures carved into the bark, some with a few jagged\ninitials under the figures. The road itself is made from gravel packed with\nearth and mud.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28951"
+                ],
+                "name": "",
+                "out": [
+                    "28951"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28864"
+                ],
+                "name": "",
+                "out": [
+                    "28864"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27041"
+                ],
+                "name": "",
+                "out": [
+                    "27041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27043",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Oak Hill Road",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 254,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "The houses bordering the street seem to be rather low, featuring round doors and\nwindows. The doors are painted bright colours presenting a cosy appearance. Most\nof these houses sport small patches of dirt in front of them, most likely used\nfor gardening.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27041"
+                ],
+                "name": "",
+                "out": [
+                    "27041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28513"
+                ],
+                "name": "",
+                "out": [
+                    "28513"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27044",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Oak Hill Road",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 252,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "This private beauty salon is an establishment that offers a variety of cosmetic\ntreatments and cosmetic services for male or female of small stature such as\ndwarves and hobbits. It is a place of tranquillity where ladies and gents of an\nelitist circle come to get professional hair cuts and styling, manicures and\npedicures, and often cosmetics, makeup and makeovers. Several tools such as\nscissors and combs or the famous heavy-duty toenail pliers are neatly organised\non a table set against a wall with a big mirror. A comfortable hairdressers'\nchair sits in front of the table waiting for its next customer.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27037"
+                ],
+                "name": "",
+                "out": [
+                    "27037"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27045",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Curlybraid's Beauty Salon",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 252,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "Lush flowers and succulents populate this quaint courtyard. Small and cracked\ncobblestones lead in snaking paths throughout the courtyard. Dried grass grows\namong the cobblestones. Hanging vines grow along an arched entrance to the\nsouth. Three stone benches surround an ornate fountain in the centre of the\ncourtyard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27042"
+                ],
+                "name": "",
+                "out": [
+                    "27042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27047"
+                ],
+                "name": "",
+                "out": [
+                    "27047"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27046",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Small Courtyard",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 258,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "A long, varnished bar runs from the northern wall toward the south in this dimly\nlit tavern. Dark, stained wood lines the wall and the floor throughout this\nroom. Four small, round tables sit next to the bar with three stools around\neach. Four stools sit under the long bar. Steel hooped oak barrels are stacked\nbehind the bar with taps installed. There is a stairway going up just behind the\nopening behind the bar. There is an arched entrance to the east leading to the\ngarden courtyard outside.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27046"
+                ],
+                "name": "",
+                "out": [
+                    "27046"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27047",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Taphouse",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 257,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "A comfortable-looking tavern stands at the edge of the park. It has been built\nwith a respect to its surroundings, embracing the peaceful and calm athmosphere\nof the park. Flowers and herbs grow around the tavern while big, old trees\nstretch upwards warding this serene place. A warm light glints from the inn's\nround windows, welcoming everyone to drop by.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27005"
+                ],
+                "name": "",
+                "out": [
+                    "27005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27049"
+                ],
+                "name": "",
+                "out": [
+                    "27049"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27048",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In Front of the Riding Maiden's Inn",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 245,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "This wide, cosy tavern belongs to Temperance and is rumoured to serve the best\nbeer in Bree! The brown- and gold-themed room is covered with broad floor planks\nand filled with oaken tables which come in two heights; customized to fit the\nneeds of the big and little folk of Bree. The far end of the room is dominated\nby a long, smooth bar behind which stands a tall shelf, filled with bottles of\nall sorts and a healthy assortment of pipe weed. A few paintings, a roaring\nfireplace in the corner and the yellow thatched roof above complete the Inn's\ninterior decoration.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27048"
+                ],
+                "name": "",
+                "out": [
+                    "27048"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27049",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Riding Maiden's Inn",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 244,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "The distinctive rough red brick laid into the ground here spearates North Ridge\nAvenue from the old cobblestones of Westhill Way to the south. A few houses,\nalso built from the same red brick, top the mounds of the hills lining the\nstreet.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27010"
+                ],
+                "name": "",
+                "out": [
+                    "27010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27050",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "North Ridge Avenue",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 243,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "The street here is composed of a reddish dirt similar to clay. Wheel tracks are\ncarved into the road by the countless wagons and carts that have crossed this\npath. The road here branches off to the east, west, and south, making this a\nfairly busy intersection.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27054"
+                ],
+                "name": "",
+                "out": [
+                    "27054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27010"
+                ],
+                "name": "",
+                "out": [
+                    "27010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27052"
+                ],
+                "name": "",
+                "out": [
+                    "27052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27051",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 242,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Low wooden fences surround the houses bordering the road. Large trees tower\nabove the fences, curling over the street. The road here is lined with small\npebbles, apparently an attempt by the local residents to improve the look of the\nageing streets.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27051"
+                ],
+                "name": "",
+                "out": [
+                    "27051"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27053"
+                ],
+                "name": "",
+                "out": [
+                    "27053"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27052",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 241,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Here, Bluff Street and Westhill Way come to a crossing. The ground surrounding\ncobblestones streets is mostly dirt, with a few muddy spots. At the centre of\nthe crossroads, a tall, iron, lampost stands like a beacon welcoming all who may\ncome to this convergence.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27058"
+                ],
+                "name": "",
+                "out": [
+                    "27058"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27056"
+                ],
+                "name": "",
+                "out": [
+                    "27056"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27052"
+                ],
+                "name": "",
+                "out": [
+                    "27052"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27053",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Intersection of Bluff Street and Westhill Way",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 240,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "The street narrows here, almost like an alley that has been squeezed between\nhouses. Snaking vines climb up the walls of the houses in their relentless\npursuit of the sun. The walls of the houses, primarily made of stone, have been\ncracked from the tight embrace of the vines.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27051"
+                ],
+                "name": "",
+                "out": [
+                    "27051"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27055"
+                ],
+                "name": "",
+                "out": [
+                    "27055"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27054",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Side Street",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 242,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "The alley comes to an abrupt stop here. Tall houses constructed of mud-like\nbricks surround the street. The road itself used to be cobblestone but has been\nworn down to the point where it is now equal parts mud and pebbles.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27054"
+                ],
+                "name": "",
+                "out": [
+                    "27054"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27055",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of a Small Alley",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 242,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "A low stone wall, crumbling and borken, wraps around some patchy lawns in front\nof the houses here. Covered in dead vines, the houses are built with shoddy laid\nstonework. The sloping roofs above are weather torn and appear to be barely\nholding on.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27053"
+                ],
+                "name": "",
+                "out": [
+                    "27053"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27057"
+                ],
+                "name": "",
+                "out": [
+                    "27057"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27056",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bluff Street",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 240,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "A neat row of grey stones lays along the sides of this pebble strewn road. The\ndisparately sized pebbles are covered in mud and clay. A row of small, thorny,\nbushes lines the street on either side, making it perilous to crowd too closely\nin the road.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "27053"
+                ],
+                "name": "",
+                "out": [
+                    "27053"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27059"
+                ],
+                "name": "",
+                "out": [
+                    "27059"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "27058",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bluff Street",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 240,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "A large crystal chandelier brightly illuminates the main floor of the manor.\nWell furnished with a dark navy blue rug overtop the smooth red oak floor, this\nhome provides sanctuary to fellow high standing compatriots of Robal. Etched\ninto the southern wall are stories of victories and friendships formed in a\nmultitude of languages. Bookshelves line the whole northern walls and are\nsubsequently filled with tomes, scrolls and flasks. Centre of the room stands a\nlarge imperial staircase ascending to the second floor that leads to additional\nbedchambers. At the other end, one can see shrubbery and greenery beginning to\nform and coalesce with red oak almost in a natural way.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27042"
+                ],
+                "name": "",
+                "out": [
+                    "27042"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "28508"
+                ],
+                "name": "",
+                "out": [
+                    "28508"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2051,
+                "in": [
+                    "28509"
+                ],
+                "name": "",
+                "out": [
+                    "28509"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28485",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Elysian Sanctum",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 254,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "Crushed pebbles form a path in the garden leading from the east, then curving to\nthe south where it leads to a small hut. Flowers grow along the path in vibrant\ncolours and various sizes. A few bushes grow on the northern side of the garden,\nbehind a small rock garden. The rocks and stones all glisten with a shiny\nfinish.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28613"
+                ],
+                "name": "",
+                "out": [
+                    "28613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27039"
+                ],
+                "name": "",
+                "out": [
+                    "27039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28614"
+                ],
+                "name": "",
+                "out": [
+                    "28614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28486",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mahadewi's Garden",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 254,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "The high vaulted ceiling here in this room is adorned with a heavy crystal\nchandelier which cast shadows of light upon the dark hardwood furniture. A long\ntable, made of rich mahogany, rests in the middle of the room. Surrounding it\nare a set of matching chairs covered in lush red silk. Maps are strewn about the\ntable. Upon the maps are various models ranging from trolls to dragons. Large\ntapestries hang gallantly from the walls, depicting scenes of battles of long\nago. At the far end of the table, a grand marble throne sits, engraved with the\npast deeds of its owner.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27040"
+                ],
+                "name": "",
+                "out": [
+                    "27040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28615"
+                ],
+                "name": "",
+                "out": [
+                    "28615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28487",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Telolet's War Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 252,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Though nestled within the walls of Bree, this hall shows a distinctly dwarven\narchitecture. Perhaps the owner, who has chosen to live in this city mostly of\nmen, was homesick for the comforts and customs of the dwarves. A large table in\nthe centre of the hall is laden with remains of a great feast. On the walls hang\nrows of trophies taken from over which this home's owner was victorious. There\nare several cots in one corner where the residents and guests may sleep. A\nhumble man stands here, ready to help you with your things.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "26998"
+                ],
+                "name": "",
+                "out": [
+                    "26998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28502",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sonlayr's Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 248,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "Hardly any sunlight can be admitted into this small and dank room. All of the\nwindows on the western side have been draped with heavy curtains, disallowing\nany passer-by from Staddle Street even a glimpse from the interior. The wooden\nwalls have been decorated with numerous paintings of coins, jewellery, weapons\nand artefacts.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27039"
+                ],
+                "name": "",
+                "out": [
+                    "27039"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28503",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cebol's Shelter",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 252,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "This large room acts as a common area and a pathway that leads to additional\nbedchambers. Unlike the foyer, this room is accompanied by a hearthstone in the\nmiddle of the room that is burning providing a bit of warmth and serenity to\nthose that rest here. The polished red oak flooring signifies the delicacy of\nthe architect work to make sure that these halls remain for an eternity. Across\nthe eastern and western walls are commissioned paintings given by Ryalnos of\nadventures from those that live within these walls.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28485"
+                ],
+                "name": "",
+                "out": [
+                    "28485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28508",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Landing",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 255,
+        "y": 110,
+        "z": 0
+    },
+    {
+        "desc": "Torches in silver sconces are fastened in each corner of this chamber made of\nstone. The stones differ in light colours, forming a matching pattern on each\nwall, with a brilliant white mortar between each stone. A bed stands along the\nsouthern wall, with a small table on one side and two shelves fastened to the\nwall on the other for scrolls, books and other trinkets.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28485"
+                ],
+                "name": "",
+                "out": [
+                    "28485"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28509",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mieldor's Sanctuary",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 254,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "This room is filled with a peaceful aura. Bright walls and the white ceiling,\nlike almost everything in this room have been embellished with diamonds. Floor\nis covered with a smooth, sky-blue carpet, dampening the footsteps. On the right\nwall there is a nice window, with a view to a cosy garden filled with flowers.\nThere is a round table with some chairs in the left corner, and close to it a\nbig bed, welcoming to take a nap after hard day.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27044"
+                ],
+                "name": "",
+                "out": [
+                    "27044"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28513",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Gilgamel's Sanctuary",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 251,
+        "y": 105,
+        "z": 0
+    },
+    {
+        "desc": "This great room, built into the bottom of the northern slope of Bree Hill, looks\nvery organised and well decorated. In a corner, there is a great view of a wide\nvariety of weapons and trophies of past battles. On the other side of the room,\nthere is a beautiful fireplace, emitting a nice calm pale glow, as the wood\ninside crackles and burns, soothing the room with warmth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27040"
+                ],
+                "name": "",
+                "out": [
+                    "27040"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28557",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Sapo's Smial",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 255,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "As you enter the hall you notice a dim light reflecting on the huge pillars made\nof mahogany, in between which stand tall burgundy-coloured walls. A majestic\nlush carpet covers the stone cold floor. An illustrious sword-shaped crest of\nEriador adorns the wall across the hall adjacent to the oil painting portraying\nEsmer of Calenardhon, heroic ancestor of Dunlendings. A curved hallway to the\nsouth leads toward the inner bedchamber.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "28559"
+                ],
+                "name": "",
+                "out": [
+                    "28559"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "26998"
+                ],
+                "name": "",
+                "out": [
+                    "26998"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28558",
+        "light": 0,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Grand Hall of Eriador",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 247,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "In the western part of the room a handful of scented, black candles are lit on a\nnightstand. At the centre of the chamber there is a bed suitable for a king,\ncovered by a great cave-bear fur. It looks very soft, inviting for a nap. Across\nthe nightstand is a jewel-encrusted wardrobe holding clothes, armour and other\nnecessities for the lord of the manor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28558"
+                ],
+                "name": "",
+                "out": [
+                    "28558"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28559",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Palatial Bedchamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 247,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Dark coloured carpeting serves the purpose of hiding the numerous stains which\nhave resulted from many a party here in this master chamber. An unmade bed sits\nin the corner, tilted higher on one side than the other. Several small notches\nhave been made into the side of the oaken headboard. A large closet takes up a\nlot of the space on the south side of the room, spilling its contents all over\nthe floor.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28486"
+                ],
+                "name": "",
+                "out": [
+                    "28486"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28613",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Simple Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 255,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "This particular room looks like a study, with a small desk and matching chair\nstanding in one corner, covered with hundreds of pieces of paper with varying\ndegrees of unintelligable scribbles. The faint odour of something burning\nlingers, although no flame or smoke are visible. The frame of a bed stands on\nthe opposite side of the desk, relatively clear of debris, with a small feather\nmattress and blanket.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28486"
+                ],
+                "name": "",
+                "out": [
+                    "28486"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28614",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ashep's Study Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 256,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "The light in this grand room seems to fade in and out as if in response to those\nentering and exiting it. Several large paintings depicting great battles, long\nsince forgotten adorn the walls. To the right there is a fireplace, above which\nhangs an extremely well-crafted painting of Galador the Lord of Dol Amroth\nfighting fearsome beasts. At the very end of the room is a large window. From\nits ledge one can look far out to the horizon and even see part of the Old East\nRoad.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28487"
+                ],
+                "name": "",
+                "out": [
+                    "28487"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28615",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Mantra's Tiny Chamber",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 251,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "A large black stone, jagged and sharp, dominates the centre of the grove. All\naround it, short grass spreads out as if from the stone itself. A faint dirt\npath approaches the stone. The whole area is enclosed by a circle of tall dark\ntrees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28638"
+                ],
+                "name": "",
+                "out": [
+                    "28638"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "27041"
+                ],
+                "name": "",
+                "out": [
+                    "27041"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28640"
+                ],
+                "name": "",
+                "out": [
+                    "28640"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28639"
+                ],
+                "name": "",
+                "out": [
+                    "28639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28637",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Shady Grove",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 0,
+        "x": 253,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "Golden lettering and pictures that sparkle in the light cover the dark walls of\nthis circular council chamber. This must be the working place of someone very\nimportant. Dwarven runes, written in gold, cover most of the stonework in the\nroom. In the centre of the room a majestic, octagonal table is placed, circled\nby mahogany chairs. A particularly large and shining gem is noticed within the\ncentre of the table and was placed into a beautiful stand of gold.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28637"
+                ],
+                "name": "",
+                "out": [
+                    "28637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28638",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Council Chamber of Dwarves",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 253,
+        "y": 103,
+        "z": 0
+    },
+    {
+        "desc": "The floors, ceiling, and walls of this room are made from solid wood. The floor\nis a warm golden-amber colour with a bright sheen from careful oiling. A few\ndifferent types of wood make up the walls, interrupted occasionally by solid oak\nbeams. The ceiling seems to be mainly spruce boards, carefully fit between the\nbeams.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28637"
+                ],
+                "name": "",
+                "out": [
+                    "28637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28639",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Wrong-looking House",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 252,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "The scent in this room suggests that the master of the house likes herbs - yet\nno plants are visible. Instead, only a few small metal bars and gems lie on top\nof a shining anvil which has obviously seen a lot of usage. Other than that the\nhouse is empty.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28637"
+                ],
+                "name": "",
+                "out": [
+                    "28637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28640",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Theilthol's House",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 255,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "An old gravel path worms its way around many well-kept zigzagging rows of\nvegetables. Wooden sign posts are embedded at the beginning of each new row,\nshowing the various names of plants and herbs. At the very end of the enclosing\na patch of grass can be seen with colourful flowers blooming in random patches.\nA clearly visible sign has been placed here stating: Please do not trample the\nflowers.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27005"
+                ],
+                "name": "",
+                "out": [
+                    "27005"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28840"
+                ],
+                "name": "",
+                "out": [
+                    "28840"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28839",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "An Old Garden",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 0,
+        "x": 246,
+        "y": 111,
+        "z": 0
+    },
+    {
+        "desc": "The walls have been strewn with countless maps depicting various scenes from all\naround Arda. All of the furniture is sitting under a layer of random equipment\nonly an adventurer would need. Only the bed remains untouched and ready for a\nweary traveller. A soft wooly carpet has been laid out on the floor, dyed into\nforming a map of Bree and a large X where this address is.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28839"
+                ],
+                "name": "",
+                "out": [
+                    "28839"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28840",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Cluttered House",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 246,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "This is a cosy and friendly-looking dwarven home. The walls are covered with\nartefacts of different origin: Dwarven, Elven and even some items of Orkish\norigin can be found. A low archway, beaming warm light, leads to a bigger room\ndue west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27008"
+                ],
+                "name": "",
+                "out": [
+                    "27008"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28842"
+                ],
+                "name": "",
+                "out": [
+                    "28842"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28841",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 243,
+        "y": 114,
+        "z": 0
+    },
+    {
+        "desc": "This room is quite big compared to the others in this home. Not as richly\ndecorated as the entrance hall, only two notable items are here. A huge\nfireplace giving warmth and light can be seen in the corner. And next to it, a\nbig round table covered with Numenorean carvings. In the southwwest corner are\nsome stairs leading up the bedroom.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28843"
+                ],
+                "name": "",
+                "out": [
+                    "28843"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28844"
+                ],
+                "name": "",
+                "out": [
+                    "28844"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28841"
+                ],
+                "name": "",
+                "out": [
+                    "28841"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28845"
+                ],
+                "name": "",
+                "out": [
+                    "28845"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28842",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Living Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 242,
+        "y": 114,
+        "z": 0
+    },
+    {
+        "desc": "This room is rather large. The walls are upholstered with soft, padded leather\nplates. There are no windows here and several torches have been set on the walls\nto fight the prevailing darkness. Other than that, the room is empty except for\na big weapons rack in the rear of the room.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28842"
+                ],
+                "name": "",
+                "out": [
+                    "28842"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28846"
+                ],
+                "name": "",
+                "out": [
+                    "28846"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28843",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Training Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 242,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "The most prominent thing in the room is a set of large shelves placed high\nagainst the back wall. On the top shelf there appears to be a million different\npots of spices and herbs useful for seasoning a variety of different foods. On\nthe lower shelves there are huge pots and pans, the type that would make any\ncook jealous. Near the window there is a table large enough for two.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28842"
+                ],
+                "name": "",
+                "out": [
+                    "28842"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28844",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Kitchen",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 242,
+        "y": 115,
+        "z": 0
+    },
+    {
+        "desc": "The bedroom is small, fitting a bed, a table and a big bookshelf. The bed is\nneatly done and hasn't been used for some time it seems. A pile of books and\nscrolls is on the table, and a lantern giving some light. On the walls you see\nitems of orcs Chazan has slain over the years: weapons, shields, scalps and a\ncrude orkish horn.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28842"
+                ],
+                "name": "",
+                "out": [
+                    "28842"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28845",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chazan's Sleeping Quarters",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 243,
+        "y": 113,
+        "z": 0
+    },
+    {
+        "desc": "The balcony is decorated with various kinds of flowers. You can see the tree\ntops of Bree's park, leaves shifting and moving in the wind. On the floor of the\nbalcony you notice a soft, fuzzy rug and a rocking chair is set in one corner.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28843"
+                ],
+                "name": "",
+                "out": [
+                    "28843"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28846",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Small Balcony",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 242,
+        "y": 112,
+        "z": 0
+    },
+    {
+        "desc": "Dark-stained wood form the walls of this humble abode, rising up from a solid\nstone base that was painted just as dark as the stained wood above. A silver\ntrim with an axe imprinted in every section was used to help blend the stone\nfoundation and wood better. Fastened onto one of the walls in the centre and\ncrossed are two black-handled axes. The bit on each axe is extremely sharp and\nblack, with it fading and blending to a fine silver all the way to the handle,\nquite the opposite in colour pattern from the typical axe design. In the corner\nstands a small and comfortable bed, with a small bookshelf along the opposite\nwall, decorated with small trinkets, axe heads, and several containers made of\nwood.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27006"
+                ],
+                "name": "",
+                "out": [
+                    "27006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28863",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Aleallyra's Home",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 246,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "This dwelling is spare, with only a few modest furnishing. A wooden bed sits in\none corner, topped by a bare mattress. A small table and chair occupy another\ncorner, providing a place for one person to dine alone. A small window, covered\nin rusty iron bars, looks out into an alley.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27043"
+                ],
+                "name": "",
+                "out": [
+                    "27043"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28864",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plain House",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 254,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Though nestled within the walls of Bree, this hall shows a distinctly dwarven\narchitecture. Perhaps the owner, who has chosen to live in this city mostly of\nmen, was homesick for the comforts and customs of the dwarves. A large table in\nthe centre of the hall is laden with remains of a great feast. On the walls hang\nrows of trophies taken from those over which this home's owner was victorious.\nThere are several cots in one corner where the residents and guests may sleep.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27043"
+                ],
+                "name": "",
+                "out": [
+                    "27043"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28951",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Jelangkung's Hall",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 254,
+        "y": 104,
+        "z": 0
+    },
+    {
+        "desc": "Beams of burnished iron hold up the walls of this small hall. Each beam is\netched with intricate dwarvish runes from the base to the ceiling. The\nfurnishings are sparse, with an iron-post bed just over four feet long filling\none corner, and a lonely wrought-iron chair sitting beside it.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27007"
+                ],
+                "name": "",
+                "out": [
+                    "27007"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28958"
+                ],
+                "name": "",
+                "out": [
+                    "28958"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28957",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Kuldesak's Hall",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 245,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Large pillars of limestone support this hall, each covered in murals showing\ngreat deeds of its resident. The floor is smooth and polished to a shine. A\nlarge skylight sits at the top of the eastern wall, giving a path for the\nmorning sun to gleam down from above.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "28957"
+                ],
+                "name": "",
+                "out": [
+                    "28957"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28958",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Athena's Parthenon",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 246,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "Two rows of blue, upholstered chairs sit in a rough semicircle around a wooden\nstage. Thick, crimson curtains cover the windows, blocking out the light.\nBetween the windows, woven tapestries adorn the walls, each depicting a\ndifferent famous scene from antiquity. To one side of the stage, a small, black\ndoor is set in the northern wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29090"
+                ],
+                "name": "",
+                "out": [
+                    "29090"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27006"
+                ],
+                "name": "",
+                "out": [
+                    "27006"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29089",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Small Theatre",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 248,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "This small bedroom is furnished with dark oak furniture. A large wardrobe takes\nup almost a quarter of the room, filled with a variety of costumes. An oaken bed\nsits in one corner. A wide bookcase sits against the eastern wall. The floor is\ncovered with a woven, multi-coloured rug.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "29089"
+                ],
+                "name": "",
+                "out": [
+                    "29089"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29090",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Furnished Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 248,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "This stone cottage is clearly of dwarf-make with its tall rafters and fine\nhearth. Two windows overlooking the street to the west are separated by a sturdy\noaken door. A few furnishings fill the room, including a bed and table, each is\ncrafted from a similar mix of wood and stone that makes up the cottage itself.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27009"
+                ],
+                "name": "",
+                "out": [
+                    "27009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "29101",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Karanli's Stone Cottage",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 245,
+        "y": 108,
+        "z": 0
+    },
+    {
+        "desc": "Nestled in the Hedgegrow is a sturdy oaken door with Dunnish and Elven symbols.\nThis entrance opens to a large garden with climbing roses covering the stone\nwalls and trees. This open-aired home is a place of mystery with an aura of\nvibrancy and healing.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 2049,
+                "in": [
+                    "30011"
+                ],
+                "name": "",
+                "out": [
+                    "30011"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27037"
+                ],
+                "name": "",
+                "out": [
+                    "27037"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30010",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Ivy-Covered Entrance",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 254,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "This garden serves as both a place for meditation and a living quarters. Special\nwooden frames have been constructed to support the vines covering the high\nwalls. Many yellow and white flowers can be seen within numerous petal-like\nbracts. A small gazebo is nestled along the north wall.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "30010"
+                ],
+                "name": "",
+                "out": [
+                    "30010"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30011",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Open-Aired Garden",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 255,
+        "y": 109,
+        "z": 0
+    },
+    {
+        "desc": "Thick slabs of stone make up the walls of the august chamber. Each thick slab is\ncut to perfection, evidencing the skill of the mason. A few axes, dwarvish in\nmake, hang on the wall. Some curving stone steps lead down from one corner into\nthe chamber below.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27009"
+                ],
+                "name": "",
+                "out": [
+                    "27009"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "30017"
+                ],
+                "name": "",
+                "out": [
+                    "30017"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30016",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stone-wrought Great Room",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 244,
+        "y": 107,
+        "z": 0
+    },
+    {
+        "desc": "This chamber seems to have been carved out from the earth itself, yet it is\nclean and spacious nonetheless. A small table sits against one wall, covered in\npipes and smelling of pipe-weed and coffee. A large four-posted bed sits in the\ncorner atop a stone foundation carved with runes.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "30016"
+                ],
+                "name": "",
+                "out": [
+                    "30016"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30017",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Spacious Bedroom",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 244,
+        "y": 106,
+        "z": 0
+    },
+    {
+        "desc": "This simple but tidy house contains one room and a small sleeping alcove. The\nwalls are made of solid stone painted in white, while the rafters and window\nframes are of dark wood. In the middle of the room stands a huge oaken table,\nand by the western wall there is a tall and broad cupboard. A comfortable-\nlooking chair and a fireplace are located behind the table. A meticulously\ndecorated giant oak has been carved on the fireplace's surface.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "27038"
+                ],
+                "name": "",
+                "out": [
+                    "27038"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "30033",
+        "light": 0,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Tammi's Study",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 2,
+        "sundeath": 2,
+        "x": 252,
+        "y": 108,
+        "z": 0
+    }
+]

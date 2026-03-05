@@ -1,0 +1,7108 @@
+[
+    {
+        "desc": "The river bends again in its course, cutting through the lands within the\nconfines of the limestone ravine. Its route takes its far, to become a tributary\nof the Hoarwell. The Hoarwell in turn merges with the Swanfleet at Tharbad,\nbecoming in turn the river Greyflood which flows to the sea.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                    "3577"
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 129,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                    "3577"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3576"
+                ],
+                "name": "",
+                "out": [
+                    "3576"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3580"
+                ],
+                "name": "route",
+                "out": [
+                    "3580"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3577",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Nen-i-Sul",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 8,
+        "sundeath": 0,
+        "x": 260,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The lines of grasses here suggest that these fields were once used for growing\ncrops but have since been fallow. The boundaries of the crops can still be seen\nin the pattern of the vegetation that has taken over. The relative bounty of the\nland is a result of a slightly elevated land and the presence of a small stream\nwhich winds through the grass. There is no sign of a farm.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3578"
+                ],
+                "name": "",
+                "out": [
+                    "3578"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3580"
+                ],
+                "name": "",
+                "out": [
+                    "3580"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3579",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fallow Fields",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 260,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Grass covers the once orderly lines of fields, suggesting that the area retains\na better than average amount of water than much of the Lone-lands. The lines of\nthe ancient fields are bounded by low hedgerows. A single hedge also marks the\nedge of the drop into the ravine to the west and south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3579"
+                ],
+                "name": "",
+                "out": [
+                    "3579"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3577"
+                ],
+                "name": "route",
+                "out": [
+                    "3577"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3580",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Fallow Fields",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 3,
+        "sundeath": 0,
+        "x": 260,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "From within this tower you can look out from the castle over the lone-lands and\nthe south downs. To the north, you have a good view of the nearby trail which\nwinds just south of the great hedge, which in old times marked the eastern\nborder of the kingdom of Cardolan. Looking out of the east slit you see the\nhedge also, as it cuts its way across the great plains towards the Mitheithel\nriver in south-western Rhudaur. Beyond the hedge, the plains carry on towards\nthe Trollshaws, dotted here and there by small collections of wood and bush.\nLooking south, the grasslands stretch where sheep farmers still try and eke a\nliving on the eastern ridges of the south downs. Finally, to the west lies the\ngreat Old East Road, its southern side lined by great thorny bushes for many\nmiles. The Road passes the foot of mighty Weathertop and crosses the Nen-i-Sul\nriver, making its way towards Bree-land.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3582"
+                ],
+                "name": "",
+                "out": [
+                    "3582"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3581",
+        "light": 1,
+        "loadflags": 32768,
+        "mobflags": 0,
+        "name": "In the Tower",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 261,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "From here you can espy the surroundings to the north - the Lone-lands. You can\nsee the nearby trail which follows the thorny hedge to the north. Crossing this\ntrail is a rough track which heads out through the gates and through the\nhedgewall further north, the bushes being blacked there. You can only head up\nsome steps into the remaining tower, or head back down to the castle yard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3581"
+                ],
+                "name": "",
+                "out": [
+                    "3581"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3583"
+                ],
+                "name": "",
+                "out": [
+                    "3583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3582",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "On the Castle Walls",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 262,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The castle walls loom above from all sides within these grounds, with some\nstairs leading up to the top of the walls. The stairs have many cracks and holes\nin them, some steps missing completely. There is a large stone building over\ntowards the corner of the yard, with some letters etched in the stone above the\ndoorway. Some grass grows in patches all around the yard with mud covering the\nrest of the land. Further south is the entrance to the castle itself.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3584"
+                ],
+                "name": "",
+                "out": [
+                    "3584"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3622"
+                ],
+                "name": "",
+                "out": [
+                    "3622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3629"
+                ],
+                "name": "",
+                "out": [
+                    "3629"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3582"
+                ],
+                "name": "",
+                "out": [
+                    "3582"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3583",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Castle Yard",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 263,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "A large iron gate hangs here halfway open with its long sharp ends pointing\ntowards the ground. The gate creaks loudly and shakes with even the slightest\nbreeze. The slightest vibrations could bring the gate crashing down. There is a\nwooden rail freshly built just outside the gate, a place to tie the horses and\nwalk through the gate. The surface of the walls around the gate has become\ndiscoloured from the rust that pours off the iron bars. A few bars from the gate\nare missing near the bottom from where the rust has eaten all the way through\nthem.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3585"
+                ],
+                "name": "",
+                "out": [
+                    "3585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3583"
+                ],
+                "name": "",
+                "out": [
+                    "3583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3584",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Castle Gate",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 263,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are standing in front of the castle gate where the rusty old portcullis lies\nshattered on the ground in three pieces. The castle wall is full of holes but\nits structure is still pretty stable. Through the gate you can see a dusty\ncastle yard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3590"
+                ],
+                "name": "",
+                "out": [
+                    "3590"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3584"
+                ],
+                "name": "",
+                "out": [
+                    "3584"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3587"
+                ],
+                "name": "",
+                "out": [
+                    "3587"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3586"
+                ],
+                "name": "",
+                "out": [
+                    "3586"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3585",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Before the Castle Gate",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 1,
+        "x": 263,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The plains stretch on endlessly here, grass growing rampant through the untended\nyears. This place deserves to be called the Lone-lands since hardly anybody\nlives in these parts. A castle stands here, although it has seen the best of its\ndays. The walls are broken and impassable.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3588"
+                ],
+                "name": "",
+                "out": [
+                    "3588"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3585"
+                ],
+                "name": "",
+                "out": [
+                    "3585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3586",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 262,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The plains stretch on endlessly here, grass growing rampant through the years.\nIt is no wonder that this place is called the Lone-lands, nary a soul lives\nhere. However, here stands a ruined castle, its walls broken but still\nimpassable to all but the foolhardy. It seems the only building within view.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3591"
+                ],
+                "name": "",
+                "out": [
+                    "3591"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3606"
+                ],
+                "name": "",
+                "out": [
+                    "3606"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3585"
+                ],
+                "name": "",
+                "out": [
+                    "3585"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3587",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 264,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The trail following the southern side of the great wall of thorns is heading\nroughly from south-east to north-west. It looks to be still in use as the\ngrasses are flattened along its length. Maybe merchants use this route or even\nthe famed Rangers of the North, who knows?\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3592"
+                ],
+                "name": "",
+                "out": [
+                    "3592"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3610"
+                ],
+                "name": "",
+                "out": [
+                    "3610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3607"
+                ],
+                "name": "",
+                "out": [
+                    "3607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3587"
+                ],
+                "name": "",
+                "out": [
+                    "3587"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3606",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hedge-Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 265,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "There is no way to cross the barrier of thorns standing to the north, that is\nfor sure. What was once built and maintained by the marshals of Cardolan stands\neven though the realm fell to Angmar and plague. Another remnant is the stony\ntrail that you stand upon as its cuts its way through the grassy terrain. The\nvista to the south-west is of a landscape of grass, dotted here and there by the\nodd bush. Further in that distance, the terrain rises and becomes greener as the\nfertile South Downs start.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3611"
+                ],
+                "name": "",
+                "out": [
+                    "3611"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3606"
+                ],
+                "name": "",
+                "out": [
+                    "3606"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3607",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hedge-Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 266,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Walking around in these rough grounds requires great care not to trip and hurt\noneself. It is tiresome and you long for some smoother ground to walk on. A few\nof the rocks have seemingly been toppled over quite recently, reminding you that\nyou are not the first to visit this place.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3604"
+                ],
+                "name": "",
+                "out": [
+                    "3604"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3609"
+                ],
+                "name": "",
+                "out": [
+                    "3609"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3608",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Rough Grounds",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 267,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The ground here is strewn with bare rocks dotting the white plains. Slightly\nsloping upwards, passage to the west becomes more and more strenuous, as the\ngrounds also get rougher and the rocks larger. To the north the grass grows\ndense and high, and takes on a greyish tone, while it grows more sparse east and\nsouth. A few faint high-pitched shrieks are heard from the sky, and you notice\nthe shadow of a bird of prey hovering over the plains far southeast.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3605"
+                ],
+                "name": "",
+                "out": [
+                    "3605"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3613"
+                ],
+                "name": "",
+                "out": [
+                    "3613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3618"
+                ],
+                "name": "",
+                "out": [
+                    "3618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3608"
+                ],
+                "name": "",
+                "out": [
+                    "3608"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3609",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chalk Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 268,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "The plains you are walking on are unusually quiet. The vegetation is sparse,\nexcept for the dry grass that grows up to your waist. To your west you can see a\nsmall fortress but otherwise the vista is desolate and dull.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3606"
+                ],
+                "name": "",
+                "out": [
+                    "3606"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3611"
+                ],
+                "name": "",
+                "out": [
+                    "3611"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3610",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 265,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Endlessly the great hedge grows through the grasslands, the trail which you are\nupon doggedly shadowing it. The chalky soil in the surrounding prairie produces\nlittle else but hardy grasses. The wind blows across your face and the only real\nbreak from it is sheltering under the thorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3607"
+                ],
+                "name": "",
+                "out": [
+                    "3607"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3612"
+                ],
+                "name": "",
+                "out": [
+                    "3612"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3610"
+                ],
+                "name": "",
+                "out": [
+                    "3610"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3611",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hedge-Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 266,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You seem to be on an old trail from the elder days of Arnor. Rocks and cobbles\nmaintain the track still, but it is hopelessly overgrown as well. However, there\nis still signs that it is used, since the grass have been trodden down.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3614"
+                ],
+                "name": "",
+                "out": [
+                    "3614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3611"
+                ],
+                "name": "",
+                "out": [
+                    "3611"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3612",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hedge-Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 267,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Close to where the southbound hedge on your west side turns east, the ground is\nheavily cracked up by thorns and shallow roots here. The white, hard soil that\ndominate the slightly hilly plains to the east and north of here seems to\nprovide too little nourishment even for the thorns, and they do not grow far in\nthose directions. Grey and brown grass are the only species that care to grow\nthere, and no signs of wildlife are obvious except a lone hawk high up in the\nnortheastern sky.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3609"
+                ],
+                "name": "",
+                "out": [
+                    "3609"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3617"
+                ],
+                "name": "",
+                "out": [
+                    "3617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3613",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains by the Hedge",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 268,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The old trail continues, offering to take the traveller northwest or southeast.\nThe ground is hard and trampled and covered with small pebbles. Judging from the\ntracks and the trampled grass of the edges of the trail it is still very much in\nuse.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3612"
+                ],
+                "name": "",
+                "out": [
+                    "3612"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3615"
+                ],
+                "name": "",
+                "out": [
+                    "3615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3614",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hedge-Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 267,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You stir up some dirt as you move and a small animal scurries away into the\ngrass. Although obviously used, the trail is covered with rocks and branches\nfrom the roadside vegetation stretches over the trail in an attempt to cover it\ncompletely.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3616"
+                ],
+                "name": "",
+                "out": [
+                    "3616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3614"
+                ],
+                "name": "",
+                "out": [
+                    "3614"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3615",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Hedge-Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 268,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The trail ends and begins here. Once it continued south over a bridge, but that\nbridge has been torn down for long. Not much remains of it except a few rotting\nplanks on the bottom of a steep ravine that emerges from the bushes to the east\nand grinds its way southwest to the Nen-i-Sul. Thick and high thorns surround\nyou on the south and east sides, hiding the trail from the morning sun. Only\nsome sparse grey grass cares to live here, trying to fend off the thorns.\nImpromptu paths have been cleared to the north and east, doubtless since the\ncollapse of the bridge.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3617"
+                ],
+                "name": "",
+                "out": [
+                    "3617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3715"
+                ],
+                "name": "",
+                "out": [
+                    "3715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 5,
+                "in": [
+                    "3615"
+                ],
+                "name": "",
+                "out": [
+                    "3615"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3616",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of the Hedge-Trail",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 269,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The thick Great Hedge that once protected the lands of Cardolan grows south of\nhere, while white rolling plains stretch out in all other directions. Nothing\nmuch grows on them except for some short and coarse grey and brown grass, hiding\nin the shallow valleys between the low hills. Small dry brooks have dug their\nways south for ages, and now look like wrinkles in an old man's face. Not much\ncan be seen moving around, as the plains offer little protection for animals.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3618"
+                ],
+                "name": "",
+                "out": [
+                    "3618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3616"
+                ],
+                "name": "",
+                "out": [
+                    "3616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3716"
+                ],
+                "name": "",
+                "out": [
+                    "3716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3613"
+                ],
+                "name": "",
+                "out": [
+                    "3613"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3617",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Plains by the Hedge",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 269,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "The land before you slope slowly away south-westwards, with many small, dry\nsouthbound brooks between tiny rolling hills. The grass is scanty, coarse and\ngrey, growing mostly in patches between large areas of white hard earth. The\nhard earth hurts the feet, but is easy to travel. In all directions these arid\nplains continue, with some higher grass only to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3619"
+                ],
+                "name": "",
+                "out": [
+                    "3619"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3617"
+                ],
+                "name": "",
+                "out": [
+                    "3617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3727"
+                ],
+                "name": "",
+                "out": [
+                    "3727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3609"
+                ],
+                "name": "",
+                "out": [
+                    "3609"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3618",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chalk Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 269,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "An old fountain stands in front of the castle, many dead leaves fester in the\nstill water that is left in the bottom of it. A brick pathway leads around the\nfountain from the gate, all the way up to the large entrance to the keep. Grass\nand weeds grow through the cracks that line this path. Ivy grows throughout the\narea, taking a stranglehold wherever it can.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3583"
+                ],
+                "name": "",
+                "out": [
+                    "3583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20260"
+                ],
+                "name": "",
+                "out": [
+                    "20260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3622",
+        "light": 2,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "The Castle Square",
+        "portable": 1,
+        "rideable": 0,
+        "sector": 2,
+        "sundeath": 1,
+        "x": 263,
+        "y": 83,
+        "z": 0
+    },
+    {
+        "desc": "Large windows line the walls of this corridor, with huge red curtains hanging\nfrom above. The curtains are of dark red colour and extremely thick. A mural\nhangs from the other wall towards the inside of the castle, depicting a battle\nof glory for the castle. The corridor leads onward towards the south, with more\nlarge windows framed in thick wood. Many of them have been broken, glass left\nlying on the ground. Looking out through the broken windows you see an orchard\nin the yard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3624"
+                ],
+                "name": "",
+                "out": [
+                    "3624"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20260"
+                ],
+                "name": "",
+                "out": [
+                    "20260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3623",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 262,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "Along the western side is a large stone arch that leads all the way down the\ncorridor. A frame made out of thick oak stands within the arches. There are a\nfew large hooks in the wall on the other side. A broken handle from a large\ngreat sword hangs from one of those iron hooks, its blade long since broken off.\nThere is a pile of a torn and scorched red cloth lying here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3623"
+                ],
+                "name": "",
+                "out": [
+                    "3623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3633"
+                ],
+                "name": "",
+                "out": [
+                    "3633"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3624",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 262,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "There are a few racks standing here, with some rusty hangers dangling from them.\nThe racks line up in rows all across the room, with a few clothes hanging from\nthem. There are some tattered clothes lying on the ground all torn or burnt.\nSome clothes hang from the racks closest to the door, their cloth newer and\nhandled with more care. A small desk stands beside the door, its legs covered\nwith cobwebs, and a small chair sits behind the desk. The chair itself has no\ncobwebs on it, and there are some tracks in the dust from where the chair has\nbeen moved.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "20260"
+                ],
+                "name": "",
+                "out": [
+                    "20260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3625",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Cloak Room",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 263,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "Some dried blood stains the walls of this hallway. There is a door here, and a\nlarge broken bar lying next to it. There are some tattered clothes with\nblood-stains on them scattered on the floor. The hallway bends southward where\nmore objects lie on the ground undisturbed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3627"
+                ],
+                "name": "",
+                "out": [
+                    "3627"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3630"
+                ],
+                "name": "",
+                "out": [
+                    "3630"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "20260"
+                ],
+                "name": "",
+                "out": [
+                    "20260"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3626",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Hallway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 264,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "There is a small broken door to the south with garbage piled in front of it\nmaking progress impossible in that direction. The walls are stained with blood\nand tattered clothes are scattered around the room. A wooden beam from the\nceiling lies upon the ground, burnt beyond use.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3626"
+                ],
+                "name": "",
+                "out": [
+                    "3626"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "28867"
+                ],
+                "name": "",
+                "out": [
+                    "28867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3627",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of Hallway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 264,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "A large oak table stands in the middle of this room, with many garnished metal\ndinner plates scattered across its top. Remains of candles lie on the table in\npieces while high above hangs a large chandelier with only a few crystal pieces\nmissing from it. Along the walls are pictures of past rulers of the castle,\ntheir faces long lost from the many slashes taken out on the paintings. A large\ndoor stands just towards the south, with two large knights in armour standing\nbefore it. They have been rusted through, and their hands stand poised, yet the\nweapons that they once wielded have been removed from their grasp.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3634"
+                ],
+                "name": "",
+                "out": [
+                    "3634"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "28867"
+                ],
+                "name": "",
+                "out": [
+                    "28867"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3633"
+                ],
+                "name": "",
+                "out": [
+                    "3633"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3628",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Banqueting Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 263,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "It is dark within this old building, the stone ceiling has been kept intact\nthroughout all the neglect in this castle. A few rotten cots lie in the corner\nof the building with rusted spears sitting beside them. An old desk lies broken\non the floor on the other side of the room. A book rests barely on top of the\nslanted desk. There are some words written on top of the dark green book. There\nis also a small hole in the back of the building.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3583"
+                ],
+                "name": "",
+                "out": [
+                    "3583"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3629",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Old Stone Building",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 264,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "This is the top of a small set of stairs that wind downward into the darkness\nbelow, with its walls made of a cold rough stone. There are sconces for torches\nto hang on the wall made out of a brass mould with carved statues on them, but\nno torches remain.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3626"
+                ],
+                "name": "",
+                "out": [
+                    "3626"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3631"
+                ],
+                "name": "",
+                "out": [
+                    "3631"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3630",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Stairs Leading Down",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 265,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "The stairs from above widen out and reveal a large room containing rough tables\nand some instruments of torture. One skeletal body lies on the floor, with many\npieces missing from it. Bite marks line the legs and arms of the former victim\nof this place. A cell, isolated by crude bars, is east of here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3632"
+                ],
+                "name": "",
+                "out": [
+                    "3632"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3630"
+                ],
+                "name": "",
+                "out": [
+                    "3630"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3631",
+        "light": 1,
+        "loadflags": 64,
+        "mobflags": 0,
+        "name": "The Dungeon",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 265,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "This is where the prisoners of the current occupants of the castle are kept. A\nsmall deep hole is over in one of the corners, with an pungent odour drifting up\nfrom it. A small cot lies on one of the walls with little left of it. The\nmattress is torn and scattered about the room. The only way out of this room is\nback west, through the iron bars, which though crude, are sturdy.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3631"
+                ],
+                "name": "",
+                "out": [
+                    "3631"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3632",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Prison Cell",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 266,
+        "y": 85,
+        "z": 0
+    },
+    {
+        "desc": "The corridor comes to an end here, with a large statue of an unknown soldier\nstanding here, pointing his sword towards the east. A large mural hangs behind\nhim depicting some long past battle and great victory. There is a large entrance\nto a darkened room here. There are a few broken and rusted swords lying on the\nground here.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3624"
+                ],
+                "name": "",
+                "out": [
+                    "3624"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3628"
+                ],
+                "name": "",
+                "out": [
+                    "3628"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3633",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of Corridor",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 262,
+        "y": 86,
+        "z": 0
+    },
+    {
+        "desc": "There is a long path leading up to a huge golden coloured throne in this hall.\nThe throne has many wild animals carved on it. The back is carved to look like a\nlarge bear and snakes curl down the sides. Some red curtains hang draping the\nroom slightly on both sides of the throne, with two large statues watching over\nthe throne with their swords in their hands drawn.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3628"
+                ],
+                "name": "",
+                "out": [
+                    "3628"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3672"
+                ],
+                "name": "throne",
+                "out": [
+                    "3672"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3634",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "The Throne-Hall",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 263,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "This cave is hollowed out below the hole above. The trash in this room is piled\nquite high in the bottom, and the acrid smell is very strong. The bedding\nmaterial consists of dried bushes and gnawed bones. The only visible exit is to\nclamber back up through the hole.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3636"
+                ],
+                "name": "",
+                "out": [
+                    "3636"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3635",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Troll-Home",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 265,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "This is a low, wide natural cavern. The walls are quite rough and contain many\ncrevices. The ceiling above contains a hole five feet across, where the process\nof erosion have removed the chalky rock. Someone has made an effort to cover\nthis hole, as a large stone slab has been laid above. A timber post is wedged\ninto the floor and under this slab, perhaps to lever it open? The floor contains\na hole similar to the one above. The tell-tale signs of claw marks on the walls,\nand the strong odour reveal that trolls live here!\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3637"
+                ],
+                "name": "",
+                "out": [
+                    "3637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "15247"
+                ],
+                "name": "",
+                "out": [
+                    "15247"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3635"
+                ],
+                "name": "",
+                "out": [
+                    "3635"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3636",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Great, Dirty Cave",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 266,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "This small tunnel must have been half-forgotten, it is such a tight passage.\nMaybe it was a sewer in the past, the strong odour certainly suggests this. The\nwalls of the tunnel bear stone-cladding, but much of this has fallen into\ndisrepair. Where stone-tiles have fallen into the crawl-space you have even more\ndifficulty manoeuvring. Lets hope you don't have to retreat as you have no room\nto turn back now.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3636"
+                ],
+                "name": "",
+                "out": [
+                    "3636"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3638"
+                ],
+                "name": "",
+                "out": [
+                    "3638"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3637",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Narrow Crawlway",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 266,
+        "y": 95,
+        "z": 0
+    },
+    {
+        "desc": "Here the rocky passage bends sharply. The timber props here are few but the\nrough ceiling looks safe enough. An acrid smell pervades this area and it hangs\nin the windless air. The passage continues south into pitch darkness, or west\nwhen it bends north after a short distance. Another small tunnel can be seen\nheading east. It is very low and small, and you will have to crawl along it to\npass.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3670"
+                ],
+                "name": "",
+                "out": [
+                    "3670"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3637"
+                ],
+                "name": "",
+                "out": [
+                    "3637"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3639"
+                ],
+                "name": "",
+                "out": [
+                    "3639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3638",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bend in the Long Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 265,
+        "y": 95,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel that you are in bends rather sharply here. On first examination there\nseems no reason for this to happen. However, looking at the south way of the\ntunnel you see that part of a volcanic extrusion has been revealed. The ceiling\nhere is lacking any support as the props lie rotting in some water. The only\nchoices are to go east around this rock, or walk north into the dark.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3640"
+                ],
+                "name": "",
+                "out": [
+                    "3640"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3638"
+                ],
+                "name": "",
+                "out": [
+                    "3638"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3639",
+        "light": 1,
+        "loadflags": 8,
+        "mobflags": 0,
+        "name": "Bend in the Long Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 264,
+        "y": 95,
+        "z": 0
+    },
+    {
+        "desc": "The great limestone rift, Orchabal's Fissure, starts and ends here. It course\ntakes it westward, far far beyond ones sight. Though this underground feature\nexists in the middle of what was a land controlled by the Dunedain, only a\nrudimentary amount of building has taken place. The major feature is the roadway\nwhich is cut into the rock, making an underground path along the chasm, a place\nwhich would be too treacherous for normal travel otherwise. If dwarves had lived\nin numbers nearby, generations of dwarves would surely have made a great deal of\nfuss about this place, carving intricate designs into the walls, capping stones\nand creating stable arches through which to travel. Here there is merely a brass\nplaque next to another crack leading south.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3639"
+                ],
+                "name": "",
+                "out": [
+                    "3639"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3641"
+                ],
+                "name": "",
+                "out": [
+                    "3641"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3640",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of Orchabal's Fissure",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 264,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "Judging from the columns which pierce the tunnel, this area once saw quite a lot\nof water flowing down from the rock above. However, at some stage the flow has\nstopped and the stone-structures have dried up, becoming weakened by the lack of\nhumidity. Many of the ruddy-coloured stalactites have come crashing down, while\na part of the wall has fallen away, forcing you to clamber over.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3640"
+                ],
+                "name": "",
+                "out": [
+                    "3640"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3642"
+                ],
+                "name": "",
+                "out": [
+                    "3642"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3641",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Orchabal's Fissure",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 263,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "In either direction, there is no sign of light or life. The years of waters\ntrickling down the limestone have created a colourful spectacle: green and brown\nstains of minerals standing out against the lightly coloured stone. The\ndirection of the fissure is comparatively well behaved in this section, giving\nthe miners of the passage through the fissure little to do besides flattening\nthe floor and removing dangerous overhangs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3641"
+                ],
+                "name": "",
+                "out": [
+                    "3641"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3643"
+                ],
+                "name": "",
+                "out": [
+                    "3643"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3642",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Orchabal's Fissure",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 262,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "The fissure alternately grows and narrows, while the architects of the tunnel\nhave made use of this natural route. At times one side of the trail falls away\nas a path is cut into one side of the great crack. At other times the ceiling\ndrops dramatically making it only high enough for a short man to pass through\nwithout stooping.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3642"
+                ],
+                "name": "",
+                "out": [
+                    "3642"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3644"
+                ],
+                "name": "",
+                "out": [
+                    "3644"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3643",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Orchabal's Fissure",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 261,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "The great underground scar twists in its passage below the surface of the earth.\nExaggerating this, the hewn passage within the fissure crosses from the northern\nside of the fissure to the south by means a slightly arched bridge. This bridge\nlooks rather more unsettling than it really is, its construction having been\nfurther established by the accumulation of minerals which further cement the\nspan. A large stalactite above the bridge narrows to a point some ten feet\nbefore reaching the span. A smaller stalagmite lies on one side of the bridge.\nPerhaps in a thousand years, these two will meet and fuse, providing another\nsupport to the man-made structure.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3645"
+                ],
+                "name": "",
+                "out": [
+                    "3645"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3643"
+                ],
+                "name": "",
+                "out": [
+                    "3643"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3644",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Bridge across the Fissure",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 260,
+        "y": 94,
+        "z": 0
+    },
+    {
+        "desc": "Miles and miles one walks, not seeing any end. Within this great underground\nfissure, a man-made tunnel is roughly hewn. The uneven direction of the\nlimestone crack means that the tunnellers have had to follow its route,\nminimising their own lot. At one point a rather large crack from floor to\nceiling provides an obstacle to cross, a slow rain of drops creating a curtain\nof dripping water. At another point, several giant-sized boulders lie strewn\nacross the floor, blocking much of the fissure and creating a strong breeze.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3644"
+                ],
+                "name": "",
+                "out": [
+                    "3644"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3646"
+                ],
+                "name": "",
+                "out": [
+                    "3646"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3645",
+        "light": 1,
+        "loadflags": 64,
+        "mobflags": 4096,
+        "name": "Orchabal's Fissure",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 260,
+        "y": 93,
+        "z": 0
+    },
+    {
+        "desc": "A kin of the other chamber, this one does not contain any books, but seems to be\nwhere most of the experiments take place. On the shelves sit trinkets as well as\nan assortment of household utensils. A small stove stands beside the eastern\nwall, currently unlit. Beside the stove, coals provide the necessary fuel. A\ndeep recess in the southeast corner of the chamber contains a grating at the\nbottom, providing a means of disposal. Reams of paper line the desk which stands\nin the northeast corner, while the candle on the centre has burnt low. Notably,\nvarious flasks of strange liquids also stand. Beside the desk is a functional\nbed, the sheets turned down and looking rather in need of a wash.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 31,
+                "flags": 3,
+                "in": [
+                    "3665"
+                ],
+                "name": "board",
+                "out": [
+                    "3665"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3515"
+                ],
+                "name": "",
+                "out": [
+                    "3515"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3666",
+        "light": 1,
+        "loadflags": 9,
+        "mobflags": 0,
+        "name": "Back Laboratory",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 260,
+        "y": 87,
+        "z": 0
+    },
+    {
+        "desc": "The tunnel burrows crudely through the chalky rock. Sturdy timbers hold up the\nlow ceiling which is crumbly to the touch. The passageway seems hundreds of\npaces in length though it is difficult to judge when you cannot see both ends\nsimultaneously. The air is very dry and chalk-dust is brought up by your\nfootsteps. No ventilating breeze dispels the cloud, which eventually settles.\nYou have no choice but to travel north towards a bend which is just visible, or\nto head in the opposite direction.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3638"
+                ],
+                "name": "",
+                "out": [
+                    "3638"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3671"
+                ],
+                "name": "",
+                "out": [
+                    "3671"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3670",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Long Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 265,
+        "y": 96,
+        "z": 0
+    },
+    {
+        "desc": "This is the end of the chalk-hewn tunnel, supported by stout wooden props. It\nends abruptly at a dressed stone wall. A torch bracket is fixed to the wall, but\nthe wood it contains is unlit. The tunnel heads north into the darkness.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3670"
+                ],
+                "name": "",
+                "out": [
+                    "3670"
+                ]
+            },
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3672"
+                ],
+                "name": "wall",
+                "out": [
+                    "3672"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3671",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "End of the Long Tunnel",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 265,
+        "y": 97,
+        "z": 0
+    },
+    {
+        "desc": "The walls of this chamber are close together, yet the walls are adorned with\nfine pictures. There is even one full length picture standing there depicting a\nbattle between the forces of Cardolan and a group of Hill-men from the east. The\nonly way out seems to be through a panel above your head.\n",
+        "exits": [
+            {
+                "dflags": 1,
+                "flags": 3,
+                "in": [
+                    "3671"
+                ],
+                "name": "picture",
+                "out": [
+                    "3671"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3634"
+                ],
+                "name": "",
+                "out": [
+                    "3634"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3672",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Secret Chamber",
+        "portable": 1,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 265,
+        "y": 98,
+        "z": 0
+    },
+    {
+        "desc": "Huge thorny bushes tower higher than the tallest man, surround and smother all\nspace not actually filled by their interlaced thorny withes, and tear\nmercilessly at your clothing and flesh. The ground is hard, stony, and covered\nwith thorny debris. A vague soft rustling can be heard now and again, and the\ncharacteristic squeak of rats.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3706"
+                ],
+                "name": "",
+                "out": [
+                    "3706"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3708"
+                ],
+                "name": "",
+                "out": [
+                    "3708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3745"
+                ],
+                "name": "",
+                "out": [
+                    "3745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3722"
+                ],
+                "name": "",
+                "out": [
+                    "3722"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3707",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thorny Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 276,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You push your way into a stand of gigantically tall grey weeds which stand like\nspears, pointing skywards. They rise to heights which dwarf even you and their\nstems grow as thick as your wrist. `These are not ordinary weeds', you think to\nyourself and you even imagine you hear a low humming noise among them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3707"
+                ],
+                "name": "",
+                "out": [
+                    "3707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3709"
+                ],
+                "name": "",
+                "out": [
+                    "3709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25076"
+                ],
+                "name": "",
+                "out": [
+                    "25076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3721"
+                ],
+                "name": "",
+                "out": [
+                    "3721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3708",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "A Tall Stand of Weeds",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 276,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You push your way into a stand of gigantically tall grey weeds which stand like\nspears, pointing skywards. They rise to heights which dwarf even you and their\nstems grow as thick as your wrist. `These are not ordinary weeds', you think to\nyourself and you even imagine you hear a low humming noise among them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3708"
+                ],
+                "name": "",
+                "out": [
+                    "3708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3746"
+                ],
+                "name": "",
+                "out": [
+                    "3746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3710"
+                ],
+                "name": "",
+                "out": [
+                    "3710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3709",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Tall Stand of Weeds",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 276,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "This is flat, dryish land which is covered by brown thorny bushes for miles\naround. Their creepers seem to wave strangely in the flat air and to tear\nmaliciously at you. There is no sign that this land is inhabited by anyone.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3721"
+                ],
+                "name": "",
+                "out": [
+                    "3721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3709"
+                ],
+                "name": "",
+                "out": [
+                    "3709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3711"
+                ],
+                "name": "",
+                "out": [
+                    "3711"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3710",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Lonely Scrubland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 275,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. This\ntrail of barren plains turns northward as a stand of weeds and a line of brush\nblock its path east or west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3720"
+                ],
+                "name": "",
+                "out": [
+                    "3720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3710"
+                ],
+                "name": "",
+                "out": [
+                    "3710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3712"
+                ],
+                "name": "",
+                "out": [
+                    "3712"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3711",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 274,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3719"
+                ],
+                "name": "",
+                "out": [
+                    "3719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3711"
+                ],
+                "name": "",
+                "out": [
+                    "3711"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3713"
+                ],
+                "name": "",
+                "out": [
+                    "3713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3712",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 273,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You wander into a patch of shrubs dominated by dark gnarled trees whos warped\nand twisted branches stretch all around, forming a canopy which blocks out all\nexternal light. As you move, you step on old blackened leaves which crunch\nloudly as you tread upon them and dark crows scatter from their shelter as you\napproach.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3718"
+                ],
+                "name": "",
+                "out": [
+                    "3718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3712"
+                ],
+                "name": "",
+                "out": [
+                    "3712"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3714"
+                ],
+                "name": "",
+                "out": [
+                    "3714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3713",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Dark Clump of Trees",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 272,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You wander into a patch of shrubs dominated by dark gnarled trees whos warped\nand twisted branches stretch all around, forming a canopy which blocks out all\nexternal light. As you move, you step on old blackened leaves which crunch\nloudly as you tread upon them and dark crows scatter from their shelter as you\napproach.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3717"
+                ],
+                "name": "",
+                "out": [
+                    "3717"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3713"
+                ],
+                "name": "",
+                "out": [
+                    "3713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3715"
+                ],
+                "name": "",
+                "out": [
+                    "3715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3714",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 4096,
+        "name": "Dark Clump of Trees",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 271,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The land here slopes gently downward toward the south. It is ill-drained and\nbarely fertile; the vegetation consists of clumps of matted grass and scattered\nstands of thorny trees and vines. There is little sign that this land has ever\nbeen inhabited by man, elf, orc or beast. Occasionally something will squeak in\nthe bushes, or a lonely bird-call will be heard.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3716"
+                ],
+                "name": "",
+                "out": [
+                    "3716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3714"
+                ],
+                "name": "",
+                "out": [
+                    "3714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3616"
+                ],
+                "name": "",
+                "out": [
+                    "3616"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3715",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thorny Scrubland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 270,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "The chalky plains you are standing on continue north and west for several miles.\nThe small patch of red flowers upon a small hill nearby must be close relatives\nto Seregon, the blood flower that grew on Amon Rudh. The hill will look drenched\nin blood in the mornings, shine like a red carpet during mid-day, and glow like\na slow burning fire when the sun sets.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3727"
+                ],
+                "name": "",
+                "out": [
+                    "3727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3715"
+                ],
+                "name": "",
+                "out": [
+                    "3715"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3717"
+                ],
+                "name": "",
+                "out": [
+                    "3717"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3617"
+                ],
+                "name": "",
+                "out": [
+                    "3617"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3716",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chalk Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 270,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3726"
+                ],
+                "name": "",
+                "out": [
+                    "3726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3714"
+                ],
+                "name": "",
+                "out": [
+                    "3714"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3718"
+                ],
+                "name": "",
+                "out": [
+                    "3718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3716"
+                ],
+                "name": "",
+                "out": [
+                    "3716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3717",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Scrubland",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 271,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3725"
+                ],
+                "name": "",
+                "out": [
+                    "3725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3713"
+                ],
+                "name": "",
+                "out": [
+                    "3713"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3719"
+                ],
+                "name": "",
+                "out": [
+                    "3719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3717"
+                ],
+                "name": "",
+                "out": [
+                    "3717"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3718",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 272,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You push your way into a stand of gigantically tall grey weeds which stand like\nspears, pointing skywards. They rise to heights which dwarf even you and their\nstems grow as thick as your wrist. `These are not ordinary weeds', you think to\nyourself and you even imagine you hear a low humming noise among them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3724"
+                ],
+                "name": "",
+                "out": [
+                    "3724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3712"
+                ],
+                "name": "",
+                "out": [
+                    "3712"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3720"
+                ],
+                "name": "",
+                "out": [
+                    "3720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3718"
+                ],
+                "name": "",
+                "out": [
+                    "3718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3719",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Tall Stand of Weeds",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 273,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. Within\nthis large expanse of barren land, the only signs of plant life you see are a\ntall group of weeds growing to the west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3723"
+                ],
+                "name": "",
+                "out": [
+                    "3723"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3711"
+                ],
+                "name": "",
+                "out": [
+                    "3711"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3721"
+                ],
+                "name": "",
+                "out": [
+                    "3721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3719"
+                ],
+                "name": "",
+                "out": [
+                    "3719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3720",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 274,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. Weeds\nsurround you on two sides, and brush on the third as the patch of clear land you\nwere following ends.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3722"
+                ],
+                "name": "",
+                "out": [
+                    "3722"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3710"
+                ],
+                "name": "",
+                "out": [
+                    "3710"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3708"
+                ],
+                "name": "",
+                "out": [
+                    "3708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3720"
+                ],
+                "name": "",
+                "out": [
+                    "3720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3721",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 275,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, throw this sea of thorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3733"
+                ],
+                "name": "",
+                "out": [
+                    "3733"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3721"
+                ],
+                "name": "",
+                "out": [
+                    "3721"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3707"
+                ],
+                "name": "",
+                "out": [
+                    "3707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3723"
+                ],
+                "name": "",
+                "out": [
+                    "3723"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3722",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 275,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. Here,\nthe plains are swallowed up by the brush which assaults it on all sides save\nsouth.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3732"
+                ],
+                "name": "",
+                "out": [
+                    "3732"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3720"
+                ],
+                "name": "",
+                "out": [
+                    "3720"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3722"
+                ],
+                "name": "",
+                "out": [
+                    "3722"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3724"
+                ],
+                "name": "",
+                "out": [
+                    "3724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3723",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 274,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. The thorny creepers seem to move, to wave,\nto catch at you, to strike at you. The vegetation seems not merely difficult -\nbut malevolent.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3731"
+                ],
+                "name": "",
+                "out": [
+                    "3731"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3719"
+                ],
+                "name": "",
+                "out": [
+                    "3719"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3723"
+                ],
+                "name": "",
+                "out": [
+                    "3723"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3725"
+                ],
+                "name": "",
+                "out": [
+                    "3725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3724",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 273,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You push your way into a stand of gigantically tall grey weeds which stand like\nspears, pointing skywards. They rise to heights which dwarf even you and their\nstems grow as thick as your wrist. `These are not ordinary weeds', you think to\nyourself and you even imagine you hear a low humming noise among them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3730"
+                ],
+                "name": "",
+                "out": [
+                    "3730"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3718"
+                ],
+                "name": "",
+                "out": [
+                    "3718"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3724"
+                ],
+                "name": "",
+                "out": [
+                    "3724"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3726"
+                ],
+                "name": "",
+                "out": [
+                    "3726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3725",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Tall Stand of Weeds",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 272,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You push your way into a stand of gigantically tall grey weeds which stand like\nspears, pointing skywards. They rise to heights which dwarf even you and their\nstems grow as thick as your wrist. `These are not ordinary weeds', you think to\nyourself and you even imagine you hear a low humming noise among them.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3729"
+                ],
+                "name": "",
+                "out": [
+                    "3729"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3717"
+                ],
+                "name": "",
+                "out": [
+                    "3717"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3725"
+                ],
+                "name": "",
+                "out": [
+                    "3725"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3727"
+                ],
+                "name": "",
+                "out": [
+                    "3727"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3726",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 4096,
+        "name": "A Tall Stand of Weeds",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 271,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "Sparse brown grass grows here among occasional thorns and some kind of grey\nweedy plants. Further east where there is no more of this white unforgiving\nearth, these grey plants shoot in the sky and grow several yards high. West,\nnorth, and south, white rolling plains stretch out for several miles, until the\nvegetation grows denser and paints a grey-green streak just below the horizon,\noccasionally tainted by the darker brown colour of an east-westbound road\nclimbing some small hills to the northwest.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3728"
+                ],
+                "name": "",
+                "out": [
+                    "3728"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3716"
+                ],
+                "name": "",
+                "out": [
+                    "3716"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3726"
+                ],
+                "name": "",
+                "out": [
+                    "3726"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3618"
+                ],
+                "name": "",
+                "out": [
+                    "3618"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3727",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Chalk Plains",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 270,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns. There are a few muddy pools here in what is apparently a dry creek bed.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3744"
+                ],
+                "name": "",
+                "out": [
+                    "3744"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25076"
+                ],
+                "name": "",
+                "out": [
+                    "25076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3748"
+                ],
+                "name": "",
+                "out": [
+                    "3748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3707"
+                ],
+                "name": "",
+                "out": [
+                    "3707"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3745",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Thorny Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 277,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. You\nfollow the dry plains until they vanish into a grove of shadowy trees and giant\ngrey weeds.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25076"
+                ],
+                "name": "",
+                "out": [
+                    "25076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3747"
+                ],
+                "name": "",
+                "out": [
+                    "3747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3709"
+                ],
+                "name": "",
+                "out": [
+                    "3709"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3746",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 277,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it.\nStanding on a large patch of dried earth, you can see nothing but grey plains\nexcept for a stand of evil-looking trees which jut out to the north.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25077"
+                ],
+                "name": "",
+                "out": [
+                    "25077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3756"
+                ],
+                "name": "",
+                "out": [
+                    "3756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3746"
+                ],
+                "name": "",
+                "out": [
+                    "3746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3747",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 278,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3749"
+                ],
+                "name": "",
+                "out": [
+                    "3749"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25077"
+                ],
+                "name": "",
+                "out": [
+                    "25077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3754"
+                ],
+                "name": "",
+                "out": [
+                    "3754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3745"
+                ],
+                "name": "",
+                "out": [
+                    "3745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3748",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 278,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You find yourself amid a stand of thorny bushes which tear your clothes and skin\nas you try to wade through it. It is at times so thick and dense that you wonder\nwhether you will become stuck in it. But, fortunately, your constant pain pays\noff as your limbs move you, albeit slow and painfully, through this sea of\nthorns. `Where has the road gone?', you ask yourself as you scan the brush for\nany sign of the road, but unless your eyes decieve you, you find no sign of the\nroad. It is as if the Old East Road never was.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3753"
+                ],
+                "name": "",
+                "out": [
+                    "3753"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3755"
+                ],
+                "name": "",
+                "out": [
+                    "3755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3759"
+                ],
+                "name": "",
+                "out": [
+                    "3759"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3748"
+                ],
+                "name": "",
+                "out": [
+                    "3748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3754",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "In the Brush",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 12,
+        "sundeath": 1,
+        "x": 279,
+        "y": 80,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. This\ndried clump of earth is in the middle of a field of shrubs and a dark stand of\ntrees.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3754"
+                ],
+                "name": "",
+                "out": [
+                    "3754"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3756"
+                ],
+                "name": "",
+                "out": [
+                    "3756"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3758"
+                ],
+                "name": "",
+                "out": [
+                    "3758"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25077"
+                ],
+                "name": "",
+                "out": [
+                    "25077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3755",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 279,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You are standing upon one of many plots of dry, broken earth which make up these\nplains. Around you grow evil looking shrubs and weeds that grow taller than\nyou'd think possible. Small shoots of brown grass try to grow within the cracks\nof the dried earth which creaks like old floorboards when you walk on it. These\nflats stretch away to the north and west, bordered to the east by a band of\nshrubs.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3755"
+                ],
+                "name": "",
+                "out": [
+                    "3755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3757"
+                ],
+                "name": "",
+                "out": [
+                    "3757"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3747"
+                ],
+                "name": "",
+                "out": [
+                    "3747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "3756",
+        "light": 2,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Flats",
+        "portable": 1,
+        "rideable": 1,
+        "sector": 3,
+        "sundeath": 1,
+        "x": 279,
+        "y": 82,
+        "z": 0
+    },
+    {
+        "desc": "There are a few tapestries hanging from the walls in this room, their worn\npictures indistinct as they have faded so much. Many more tapestries lie on the\nground below them seeming to act as an entrance mat. Two large suits of armour\nstand near the entrance of a room towards the west, their metal dull and rusted.\nA cloakroom lies to the south, while halls lead off east and west.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3622"
+                ],
+                "name": "",
+                "out": [
+                    "3622"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3625"
+                ],
+                "name": "",
+                "out": [
+                    "3625"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3626"
+                ],
+                "name": "",
+                "out": [
+                    "3626"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3623"
+                ],
+                "name": "",
+                "out": [
+                    "3623"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "20260",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Entrance to the Castle Keep",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 263,
+        "y": 84,
+        "z": 0
+    },
+    {
+        "desc": "You wander into a patch of shrubs dominated by dark gnarled trees whos warped\nand twisted branches stretch all around, forming a canopy which blocks out all\nexternal light. As you move, you step on old blackened leaves which crunch\nloudly as you tread upon them and dark crows scatter from their shelter as you\napproach.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3745"
+                ],
+                "name": "",
+                "out": [
+                    "3745"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3746"
+                ],
+                "name": "",
+                "out": [
+                    "3746"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25077"
+                ],
+                "name": "",
+                "out": [
+                    "25077"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3708"
+                ],
+                "name": "",
+                "out": [
+                    "3708"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25076",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "Dark Clump of Trees",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 277,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "You wander into a patch of shrubs dominated by dark gnarled trees whos warped\nand twisted branches stretch all around, forming a canopy which blocks out all\nexternal light. As you move, you step on old blackened leaves which crunch\nloudly as you tread upon them and dark crows scatter from their shelter as you\napproach.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3748"
+                ],
+                "name": "",
+                "out": [
+                    "3748"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3747"
+                ],
+                "name": "",
+                "out": [
+                    "3747"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3755"
+                ],
+                "name": "",
+                "out": [
+                    "3755"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "25076"
+                ],
+                "name": "",
+                "out": [
+                    "25076"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "25077",
+        "light": 1,
+        "loadflags": 32,
+        "mobflags": 0,
+        "name": "Dark Clump of Trees",
+        "portable": 0,
+        "rideable": 0,
+        "sector": 4,
+        "sundeath": 2,
+        "x": 278,
+        "y": 81,
+        "z": 0
+    },
+    {
+        "desc": "Here is a makeshift kitchen for the preparation and cooking of food. There is a\ncrude oven, wood stacked beside it ready for burning. Several boxes and barrels\nare also here, possibly the loot from some raid on unsuspecting travellers who\nmet their end against the current motley band who now control this fort.\n",
+        "exits": [
+            {
+                "dflags": 0,
+                "flags": 3,
+                "in": [
+                    "3627"
+                ],
+                "name": "",
+                "out": [
+                    "3627"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 1,
+                "in": [
+                    "3628"
+                ],
+                "name": "",
+                "out": [
+                    "3628"
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            },
+            {
+                "dflags": 0,
+                "flags": 0,
+                "in": [
+                ],
+                "name": "",
+                "out": [
+                ]
+            }
+        ],
+        "id": "28867",
+        "light": 1,
+        "loadflags": 0,
+        "mobflags": 0,
+        "name": "The Kitchen and Stores",
+        "portable": 0,
+        "rideable": 2,
+        "sector": 1,
+        "sundeath": 2,
+        "x": 264,
+        "y": 86,
+        "z": 0
+    }
+]
