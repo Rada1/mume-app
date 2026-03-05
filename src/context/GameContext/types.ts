@@ -1,0 +1,233 @@
+import { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, ChangeEvent, FormEvent, MouseEvent } from 'react';
+import {
+    GameStats, PopoverState, Message, MessageType, WeatherType,
+    LightingType, SoundTrigger, TeleportTarget, CustomButton,
+    DrawerLine, DeathStage, Action
+} from '../../types';
+import { useButtons } from '../../hooks/useButtons';
+import { useJoystick } from '../../hooks/useJoystick';
+import { useButtonEditor } from '../../hooks/useButtonEditor';
+import { useViewport } from '../../hooks/useViewport';
+import { useEnvironment } from '../../hooks/useEnvironment';
+import { MapperRef } from '../../components/Mapper/mapperTypes';
+
+export interface GameContextType {
+    // Settings & Mode
+    isNoviceMode: boolean;
+    setIsNoviceMode: (val: boolean) => void;
+    isSoundEnabled: boolean;
+    setIsSoundEnabled: (val: boolean) => void;
+    isMmapperMode: boolean;
+    setIsMmapperMode: (val: boolean) => void;
+    theme: 'light' | 'dark';
+    setTheme: (val: 'light' | 'dark') => void;
+    showControls: boolean | null;
+    setShowControls: (val: boolean | null) => void;
+
+    // Game State
+    status: 'connected' | 'disconnected' | 'connecting';
+    setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
+    target: string | null;
+    setTarget: (val: string | null) => void;
+    stats: GameStats;
+    setStats: Dispatch<SetStateAction<GameStats>>;
+    inCombat: boolean;
+    setInCombat: (val: boolean) => void;
+    lighting: LightingType;
+    setLighting: Dispatch<SetStateAction<LightingType>>;
+    lightningEnabled: boolean;
+    setLightningEnabled: (val: boolean) => void;
+    weather: WeatherType;
+    setWeather: Dispatch<SetStateAction<WeatherType>>;
+    isFoggy: boolean;
+    setIsFoggy: (val: boolean) => void;
+
+    // Character & Room Info
+    characterName: string | null;
+    setCharacterName: (name: string | null) => void;
+    roomPlayers: string[];
+    setRoomPlayers: Dispatch<SetStateAction<string[]>>;
+    roomNpcs: string[];
+    setRoomNpcs: Dispatch<SetStateAction<string[]>>;
+    roomItems: string[];
+    setRoomItems: Dispatch<SetStateAction<string[]>>;
+    currentTerrain: string;
+    setCurrentTerrain: (terrain: string) => void;
+
+    // Shared UI state
+    ui: {
+        drawer: 'none' | 'inventory' | 'character' | 'right';
+        setManagerOpen: boolean;
+        mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: 'main' | 'availableSets';
+    };
+    setUI: Dispatch<SetStateAction<{
+        drawer: 'none' | 'inventory' | 'character' | 'right';
+        setManagerOpen: boolean;
+        mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: 'main' | 'availableSets';
+    }>>;
+
+    popoverState: PopoverState | null;
+    setPopoverState: (val: PopoverState | null) => void;
+    isSettingsOpen: boolean;
+    setIsSettingsOpen: (val: boolean) => void;
+    settingsTab: 'general' | 'sound' | 'actions';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions') => void;
+    accentColor: string;
+    setAccentColor: (val: string) => void;
+    abilities: Record<string, number>;
+    setAbilities: Dispatch<SetStateAction<Record<string, number>>>;
+    actions: Action[];
+    setActions: Dispatch<SetStateAction<Action[]>>;
+    characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
+    setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
+
+    // Additional Game State
+    rumble: boolean;
+    setRumble: (val: boolean) => void;
+    hitFlash: boolean;
+    setHitFlash: (val: boolean) => void;
+    deathStage: DeathStage;
+    setDeathStage: (val: DeathStage) => void;
+
+    mood: string;
+    setMood: (val: string) => void;
+    spellSpeed: string;
+    setSpellSpeed: (val: string) => void;
+    alertness: string;
+    setAlertness: (val: string) => void;
+
+    // Helpers for UI
+    setIsInventoryOpen: (open: boolean) => void;
+    setIsCharacterOpen: (open: boolean) => void;
+    setIsRightDrawerOpen: (open: boolean) => void;
+    setIsMapExpanded: (open: boolean) => void;
+    setIsSetManagerOpen: (open: boolean) => void;
+
+    detectLighting: (symbol: string) => void;
+
+    playerPosition: string;
+    setPlayerPosition: (val: string) => void;
+
+    soundTriggersRef: RefObject<SoundTrigger[]>;
+    isSoundEnabledRef: RefObject<boolean>;
+    actionsRef: RefObject<Action[]>;
+
+    teleportTargets: TeleportTarget[];
+    setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
+
+    // GMCP Handlers (for hooks to subscribe to)
+    onRoomInfo?: (data: any) => void;
+    setOnRoomInfo: (fn: (data: any) => void) => void;
+    onRoomUpdateExits?: (data: any) => void;
+    setOnRoomUpdateExits: (fn: (data: any) => void) => void;
+    onCharVitals?: (data: any) => void;
+    setOnCharVitals: (fn: (data: any) => void) => void;
+    onRoomPlayers?: (data: any) => void;
+    setOnRoomPlayers: (fn: (data: any) => void) => void;
+    onRoomNpcs?: (data: any) => void;
+    setOnRoomNpcs: (fn: (data: any) => void) => void;
+    onRoomItems?: (data: any) => void;
+    setOnRoomItems: (fn: (data: any) => void) => void;
+    onAddPlayer?: (data: any) => void;
+    setOnAddPlayer: (fn: (data: any) => void) => void;
+    onAddNpc?: (data: any) => void;
+    setOnAddNpc: (fn: (data: any) => void) => void;
+    onRemovePlayer?: (data: any) => void;
+    setOnRemovePlayer: (fn: (data: any) => void) => void;
+    onRemoveNpc?: (data: any) => void;
+    setOnRemoveNpc: (fn: (data: any) => void) => void;
+    onOpponentChange?: (name: string | null) => void;
+    setOnOpponentChange: (fn: (name: string | null) => void) => void;
+
+    // Messages
+    messages: Message[];
+    setMessages: Dispatch<SetStateAction<Message[]>>;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string) => void;
+    addSystemMessage: (text: string) => void;
+    isCombatLine: (text: string) => boolean;
+    isCommunicationLine: (text: string) => boolean;
+    processMessageHtml: (html: string, mid?: string) => string;
+
+    // Settings (moved from index.tsx/useSettings)
+    bgImage: string;
+    setBgImage: Dispatch<SetStateAction<string>>;
+    connectionUrl: string;
+    setConnectionUrl: Dispatch<SetStateAction<string>>;
+    loginName: string;
+    setLoginName: Dispatch<SetStateAction<string>>;
+    loginPassword: string;
+    setLoginPassword: Dispatch<SetStateAction<string>>;
+    isLoading: boolean;
+    setIsLoading: Dispatch<SetStateAction<boolean>>;
+    soundTriggers: SoundTrigger[];
+    setSoundTriggers: Dispatch<SetStateAction<SoundTrigger[]>>;
+    newSoundPattern: string;
+    setNewSoundPattern: Dispatch<SetStateAction<string>>;
+    newSoundRegex: boolean;
+    setNewSoundRegex: Dispatch<SetStateAction<boolean>>;
+    handleFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
+    exportSettings: () => any;
+    exportSettingsFile: (buttons: CustomButton[]) => void;
+    importSettings: (e: ChangeEvent<HTMLInputElement>, setIsSettingsOpen: (v: boolean) => void) => void;
+    handleSoundUpload: (e: ChangeEvent<HTMLInputElement>) => void;
+    handleMmapperModeChange: (enabled: boolean) => void;
+
+    focusedIndex: number | null;
+    setFocusedIndex: Dispatch<SetStateAction<number | null>>;
+    getMessageClassStyle: (index: number, total: number) => string;
+    activePrompt: string;
+    setActivePrompt: (prompt: string) => void;
+    input: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    handleSend: (e?: FormEvent) => void;
+    handleInputSwipe: (dir: string) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    handleButtonClick: (button: CustomButton, e: MouseEvent, context?: string) => void;
+    handleLogClick: (e: MouseEvent) => void;
+    handleLogDoubleClick: (e: MouseEvent) => void;
+    mapperRef: RefObject<MapperRef>;
+
+    // Parser State
+    inventoryLines: DrawerLine[];
+    statsLines: DrawerLine[];
+    eqLines: DrawerLine[];
+    setInventoryLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
+
+    captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
+    isDrawerCapture: MutableRefObject<boolean>;
+    isWaitingForStats: MutableRefObject<boolean>;
+    isWaitingForEq: MutableRefObject<boolean>;
+    isWaitingForInv: MutableRefObject<boolean>;
+
+    // Network & Parser Engines (partial types for brevity, or 'any' if complex)
+    telnet: any;
+    parser: any;
+
+    // Sound & Haptics
+    playSound: (buffer: AudioBuffer) => void;
+    triggerHaptic: (ms: number) => void;
+
+    // Low-level callback registration (Internal use)
+    setDetectLighting: (fn: (text: string) => void) => void;
+    setPlaySound: (fn: (buffer: AudioBuffer) => void) => void;
+    setTriggerHaptic: (fn: (ms: number) => void) => void;
+
+    // Major hook systems
+    btn: ReturnType<typeof useButtons>;
+    joystick: ReturnType<typeof useJoystick>;
+    editor: ReturnType<typeof useButtonEditor>;
+    containerRef: RefObject<HTMLDivElement>;
+    viewport: ReturnType<typeof useViewport>;
+    env: ReturnType<typeof useEnvironment>;
+    audioCtxRef: MutableRefObject<AudioContext | null>;
+    setSettings: Record<string, import('../../types').ButtonSetSettings>;
+    setSetSettings: Dispatch<SetStateAction<Record<string, import('../../types').ButtonSetSettings>>>;
+}

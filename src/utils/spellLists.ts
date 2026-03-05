@@ -27,7 +27,7 @@ export const RANGER_SKILLS = [
 ];
 
 export const THIEF_SKILLS = [
-    "Backstab", "Pick", "Hide", "Sneak", "Steal", "Search", "Track", "Climb", "Pickpocket", "Lockpick"
+    "Backstab", "Pick", "Hide", "Sneak", "Steal", "Search", "Track", "Climb", "Pickpocket", "Lockpick", "Missile"
 ];
 
 export const CLASS_MAPPINGS: Record<string, string[]> = {

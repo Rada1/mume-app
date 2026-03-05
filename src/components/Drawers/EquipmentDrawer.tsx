@@ -1,22 +1,54 @@
 import React from 'react';
 
+import { DrawerLine } from '../../types';
+
 interface EquipmentDrawerProps {
     isOpen: boolean;
     onClose: () => void;
-    eqHtml: string;
-    inventoryHtml: string;
-    handleLogClick: (e: React.MouseEvent) => void;
+    eqLines: DrawerLine[];
+    inventoryLines: DrawerLine[];
+    handleButtonClick: (button: any, e: React.MouseEvent, context?: string) => void;
     triggerHaptic: (ms: number) => void;
 }
 
 export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     isOpen,
     onClose,
-    eqHtml,
-    inventoryHtml,
-    handleLogClick,
+    eqLines,
+    inventoryLines,
+    handleButtonClick,
     triggerHaptic
 }) => {
+    const renderLine = (line: DrawerLine) => {
+        if (line.isItem) {
+            return (
+                <div
+                    key={line.id}
+                    className="inline-btn auto-item"
+                    onClick={(e) => {
+                        triggerHaptic(20);
+                        handleButtonClick({ command: line.cmd || '', label: line.html } as any, e, line.context);
+                    }}
+                    style={{
+                        backgroundColor: 'rgba(100, 255, 100, 0.08)',
+                        borderBottom: '1px solid rgba(255,255,255,0.1)',
+                        padding: '8px 12px',
+                        borderRadius: '4px',
+                        marginBottom: '4px',
+                        cursor: 'pointer'
+                    }}
+                    dangerouslySetInnerHTML={{ __html: line.html }}
+                />
+            );
+        }
+        return (
+            <div
+                key={line.id}
+                style={{ padding: '4px 0', opacity: line.isHeader ? 0.7 : 1, whiteSpace: 'pre-wrap' }}
+                dangerouslySetInnerHTML={{ __html: line.html }}
+            />
+        );
+    };
     return (
         <div
             className={`right-drawer ${isOpen ? 'open' : ''}`}
@@ -58,11 +90,15 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                     <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px' }}>EQUIPMENT</div>
-                    <div className="drawer-section-content" onClick={handleLogClick} style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }} dangerouslySetInnerHTML={{ __html: eqHtml }} />
+                    <div className="drawer-section-content" style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }}>
+                        {eqLines.map(renderLine)}
+                    </div>
                 </div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
                     <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px' }}>INVENTORY</div>
-                    <div className="drawer-section-content" onClick={handleLogClick} style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }} dangerouslySetInnerHTML={{ __html: inventoryHtml }} />
+                    <div className="drawer-section-content" style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }}>
+                        {inventoryLines.map(renderLine)}
+                    </div>
                 </div>
             </div>
         </div>

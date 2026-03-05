@@ -1,99 +1,104 @@
-import React, { useRef, useState, useCallback } from 'react';
-import { IAC, SB, SE, WILL, WONT, DO, DONT, TELNET_GMCP, TELNET_TTYPE, TELNET_NAWS, TTYPE_IS, TTYPE_SEND } from '../constants';
-import {
-    MessageType, RoomNode, GameStats, WeatherType, DeathStage,
-    GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo
-} from '../types';
+import { useRef, useCallback, useEffect } from 'react';
+import { IAC, SB, SE, TELNET_GMCP, TELNET_TTYPE, TTYPE_IS, TTYPE_SEND } from '../constants';
+import { MessageType, WeatherType, GameStats, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo } from '../types';
+import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
+import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
 
-interface TelnetHandlers {
-    onRoomInfo: (data: GmcpRoomInfo) => void;
+export interface TelnetHandlers {
+    setStatus: (status: 'connected' | 'disconnected' | 'connecting') => void;
+    setStats: React.Dispatch<React.SetStateAction<GameStats>>;
+    setWeather: React.Dispatch<React.SetStateAction<WeatherType>>;
+    setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
+    setInCombat: (inCombat: boolean) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string) => void;
+    setRumble: (rumble: boolean) => void;
+    setHitFlash: (hitFlash: boolean) => void;
+    setDeathStage: (stage: DeathStage) => void;
+    detectLighting: (light: string) => void;
+    onOpponentChange?: (opponent: string | null) => void;
+    onAddPlayer?: (data: string | GmcpOccupant) => void;
+    onRemovePlayer?: (data: string | GmcpOccupant) => void;
+    onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
+    onRoomInfo?: (data: GmcpRoomInfo) => void;
     onRoomUpdateExits?: (data: Record<string, GmcpExitInfo | false>) => void;
     onCharVitals?: (data: GmcpCharVitals) => void;
     onRoomPlayers?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
     onRoomNpcs?: (data: GmcpRoomPlayers | (string | GmcpOccupant)[]) => void;
-    onAddPlayer?: (data: string | GmcpOccupant) => void;
     onAddNpc?: (data: string | GmcpOccupant) => void;
-    onRemovePlayer?: (data: string | GmcpOccupant) => void;
     onRemoveNpc?: (data: string | GmcpOccupant) => void;
-    onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
-}
-
-interface TelnetOptions {
-    connectionUrl: string;
-    addMessage: (type: MessageType, text: string) => void;
-    setStatus: (status: 'connected' | 'disconnected' | 'connecting') => void;
-    setStats: React.Dispatch<React.SetStateAction<GameStats>>;
-    setWeather: React.Dispatch<React.SetStateAction<WeatherType>>;
-    setIsFoggy: (foggy: boolean) => void;
-    setRumble: (rumble: boolean) => void;
-    setHitFlash: (flash: boolean) => void;
-    setDeathStage: React.Dispatch<React.SetStateAction<DeathStage>>;
-    detectLighting: (line: string) => void;
-    processLine: (line: string) => void;
-    setPrompt: (prompt: string) => void;
-    setInCombat: (inCombat: boolean) => void;
-    onOpponentChange?: (name: string | null) => void;
-    onCharNameChange?: (name: string) => void;
-    onAddPlayer?: (data: string | GmcpOccupant) => void;
-    onRemovePlayer?: (data: string | GmcpOccupant) => void;
-    onRoomItems?: (data: GmcpRoomItems | (string | GmcpOccupant)[]) => void;
+    onCharNameChange?: (name: string | null) => void;
     onPositionChange?: (position: string) => void;
 }
 
-export const useTelnet = (options: TelnetOptions) => {
-    const {
-        connectionUrl,
-        addMessage,
-        setStatus,
-        setStats,
-        setWeather,
-        setIsFoggy,
-        setRumble,
-        setHitFlash,
-        setDeathStage,
-        detectLighting,
-        processLine,
-        setPrompt,
-        setInCombat,
-    } = options;
+export interface TelnetOptions {
+    connectionUrl: string;
+    processLine: (line: string) => void;
+    setPrompt: (prompt: string) => void;
+    onCharNameChange?: (name: string | null) => void;
+    onPositionChange?: (position: string) => void;
+    handlers: TelnetHandlers;
+}
 
+export function useTelnet(options: TelnetOptions) {
+    const { handlers, connectionUrl, processLine, setPrompt } = options;
     const socketRef = useRef<WebSocket | null>(null);
     const bufferRef = useRef<string>("");
-    const gmcpReadyRef = useRef(false);
-    const telnetState = useRef<{
-        state: 'DATA' | 'IAC' | 'NEGOTIATE' | 'SUB' | 'SUB_IAC',
-        negotiationCmd: number,
-        subBuffer: number[]
-    }>({
-        state: 'DATA',
-        negotiationCmd: 0,
-        subBuffer: []
-    });
-    const decoderRef = useRef<TextDecoder>(new TextDecoder());
-    // Persist Char.Vitals state to handle partial updates
-    const charVitalsRef = useRef<{ position?: string, opponent?: string | null }>({});
 
-    const sendBytes = (bytes: number[]) => {
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-            socketRef.current.send(new Uint8Array(bytes));
-        }
-    };
+    // Stability fix: use a ref for handlers to avoid stale closures in GmcpDecoder
+    const handlersRef = useRef(handlers);
+    useEffect(() => {
+        handlersRef.current = handlers;
+    }, [handlers]);
 
-    const sendGMCP = (pkg: string, data: any = null) => {
+    const sendBytes = useCallback((bytes: number[]) => {
+        if (socketRef.current?.readyState === WebSocket.OPEN) socketRef.current.send(new Uint8Array(bytes));
+    }, []);
+
+    const sendGMCP = useCallback((pkg: string, data: any = null) => {
         const json = data ? JSON.stringify(data) : '';
         const payload = pkg + (json ? ' ' + json : '');
-        const encoder = new TextEncoder();
-        const payloadBytes = Array.from(encoder.encode(payload));
+        const payloadBytes = Array.from(new TextEncoder().encode(payload));
         sendBytes([IAC, SB, TELNET_GMCP, ...payloadBytes, IAC, SE]);
-    };
+    }, [sendBytes]);
 
-    const sendNAWS = () => {
-        const w = 120;
-        const h = 40;
-        sendBytes([IAC, SB, TELNET_NAWS, (w >> 8) & 0xFF, w & 0xFF, (h >> 8) & 0xFF, h & 0xFF, IAC, SE]);
-    };
+    const gmcpDecoder = useRef(new GmcpDecoder({
+        setStats: (val) => handlersRef.current.setStats(val),
+        setWeather: (val) => handlersRef.current.setWeather(val),
+        setIsFoggy: (val) => handlersRef.current.setIsFoggy(val),
+        setInCombat: (val) => handlersRef.current.setInCombat(val),
+        detectLighting: (val) => handlersRef.current.detectLighting(val),
+        onOpponentChange: (val) => handlersRef.current.onOpponentChange?.(val),
+        onAddPlayer: (val) => handlersRef.current.onAddPlayer?.(val),
+        onRemovePlayer: (val) => handlersRef.current.onRemovePlayer?.(val),
+        onRoomItems: (val) => handlersRef.current.onRoomItems?.(val),
+        onRoomInfo: (val) => handlersRef.current.onRoomInfo?.(val),
+        onRoomUpdateExits: (val) => handlersRef.current.onRoomUpdateExits?.(val),
+        onCharVitals: (val) => handlersRef.current.onCharVitals?.(val),
+        onRoomPlayers: (val) => handlersRef.current.onRoomPlayers?.(val),
+        onRoomNpcs: (val) => handlersRef.current.onRoomNpcs?.(val),
+        onAddNpc: (val) => handlersRef.current.onAddNpc?.(val),
+        onRemoveNpc: (val) => handlersRef.current.onRemoveNpc?.(val),
+        onCharNameChange: (val) => handlersRef.current.onCharNameChange?.(val),
+        onPositionChange: (val) => handlersRef.current.onPositionChange?.(val)
+    }));
+    const protocolHandler = useRef<ProtocolHandler | null>(null);
 
-    const processTextBuffer = useCallback((text: string) => {
+    const handleSubnegotiation = useCallback((buffer: number[]) => {
+        if (buffer.length === 0) return;
+        const cmd = buffer[0];
+        if (cmd === TELNET_GMCP) {
+            const raw = new TextDecoder().decode(new Uint8Array(buffer.slice(1)));
+            let splitIdx = raw.search(/[\s\{\[]/);
+            const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
+            const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
+            gmcpDecoder.current.decode(pkg, json);
+        } else if (cmd === TELNET_TTYPE && buffer[1] === TTYPE_SEND) {
+            const bytes = [IAC, SB, TELNET_TTYPE, TTYPE_IS, ...Array.from(new TextEncoder().encode("xterm-256color")), IAC, SE];
+            sendBytes(bytes);
+        }
+    }, [sendBytes]);
+
+    const processText = useCallback((text: string) => {
         bufferRef.current += text;
         let newlineIdx;
         while ((newlineIdx = bufferRef.current.indexOf('\n')) !== -1) {
@@ -101,336 +106,49 @@ export const useTelnet = (options: TelnetOptions) => {
             bufferRef.current = bufferRef.current.substring(newlineIdx + 1);
             processLine(line);
         }
-        if (bufferRef.current) {
-            // detectLighting removed - relying on GMCP
+        const prompt = bufferRef.current;
+        setPrompt(prompt);
+        if (prompt && handlers.detectLighting) {
+            handlers.detectLighting(prompt);
         }
-        setPrompt(bufferRef.current);
-    }, [processLine, detectLighting, setPrompt]);
+    }, [processLine, setPrompt, handlers]);
 
-    const handleSubnegotiation = (buffer: number[], handlers: TelnetHandlers) => {
-        if (buffer.length === 0) return;
-        const cmd = buffer[0];
+    useEffect(() => {
+        protocolHandler.current = new ProtocolHandler({
+            sendBytes, sendGMCP, handleSubnegotiation, processText,
+            addMessage: handlers.addMessage
+        });
+    }, [sendBytes, sendGMCP, handleSubnegotiation, processText, handlers.addMessage]);
 
-        if (cmd === TELNET_GMCP) {
-            const raw = new TextDecoder().decode(new Uint8Array(buffer.slice(1)));
-            console.log("[GMCP Raw]", raw);
-            let splitIdx = raw.search(/[\s\{\[]/);
-            const pkg = splitIdx > -1 ? raw.substring(0, splitIdx).trim() : raw;
-            const json = splitIdx > -1 ? raw.substring(splitIdx).trim() : '';
-
-            const pkgLower = pkg.toLowerCase();
-            // Debug only in console, no visible echo
-            if (pkgLower !== 'core.ping') {
-                // console.log(`[GMCP] ${pkg}: ${json.substring(0, 50)}...`); 
-            }
-
-            if (pkgLower === 'char.vitals') {
-                try {
-                    const data = JSON.parse(json) as Record<string, any>;
-                    if (handlers.onCharVitals) handlers.onCharVitals(data as any);
-
-                    setStats((prev: GameStats) => {
-                        const next = { ...prev };
-                        // Case-insensitive lookup for stats
-                        const findKey = (keys: string[]) => {
-                            for (const k of keys) {
-                                const found = Object.keys(data).find(dk => dk.toLowerCase() === k.toLowerCase());
-                                if (found !== undefined && data[found] !== undefined) {
-                                    const val = parseInt(data[found]);
-                                    if (!isNaN(val)) return val;
-                                }
-                            }
-                            return undefined;
-                        };
-
-                        const newHp = findKey(['hp', 'hits', 'health']);
-                        if (newHp !== undefined) next.hp = newHp;
-                        const newMaxHp = findKey(['maxhp', 'maxhits', 'maxhealth']);
-                        if (newMaxHp !== undefined) next.maxHp = newMaxHp;
-
-                        const newMana = findKey(['mana', 'sp', 'spirit']);
-                        if (newMana !== undefined) next.mana = newMana;
-                        const newMaxMana = findKey(['maxmana', 'maxsp', 'maxspirit']);
-                        if (newMaxMana !== undefined) next.maxMana = newMaxMana;
-
-                        const newMove = findKey(['mp', 'mv', 'move', 'moves', 'stamina', 'st']);
-                        if (newMove !== undefined) next.move = newMove;
-                        const newMaxMove = findKey(['maxmp', 'maxmv', 'maxmove', 'maxmoves', 'maxstamina', 'maxst']);
-                        if (newMaxMove !== undefined) next.maxMove = newMaxMove;
-
-                        const newWimpy = findKey(['wimpy']);
-                        if (newWimpy !== undefined) next.wimpy = newWimpy;
-
-                        return next;
-                    });
-
-                    // Partial updates: merge into ref to persist state
-                    if (data.position !== undefined) {
-                        const pos = data.position.toLowerCase();
-                        charVitalsRef.current.position = pos;
-                        if (options.onPositionChange) options.onPositionChange(pos);
-                    }
-                    if (data.opponent !== undefined) {
-                        charVitalsRef.current.opponent = data.opponent;
-                        if (options.onOpponentChange) options.onOpponentChange(data.opponent);
-                    }
-
-                    // Calculate combat from persisted state
-                    const fighting = charVitalsRef.current.position === 'fighting' || (charVitalsRef.current.opponent != null && charVitalsRef.current.opponent !== '');
-                    setInCombat(fighting);
-
-                    // Weather from GMCP (more reliable than text parsing)
-                    if (data.weather !== undefined) {
-                        const w = data.weather;
-                        if (w === '~') setWeather('cloud');
-                        else if (w === "'") setWeather('rain');
-                        else if (w === '"') setWeather('rain');
-                        else if (w === '*') setWeather('heavy-rain');
-                        else if (w === ' ' || w === null) setWeather((prev: WeatherType) => prev === 'cloud' || prev === 'rain' || prev === 'heavy-rain' || prev === 'snow' ? 'none' : prev);
-                    }
-                    // Fog from GMCP: '-' = light fog, '=' = heavy fog
-                    if (data.fog !== undefined) {
-                        setIsFoggy(data.fog === '-' || data.fog === '=');
-                    }
-                    // Lighting from GMCP
-                    if (data.light) {
-                        detectLighting(data.light);
-                    }
-                } catch (e) { }
-            } else if (pkgLower === 'room.info' || pkgLower === 'external.room.info' || pkgLower.endsWith('.room.info')) {
-                try {
-                    const data = JSON.parse(json) as GmcpRoomInfo;
-                    handlers.onRoomInfo(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.updateexits') {
-                try {
-                    const data = JSON.parse(json) as Record<string, GmcpExitInfo | false>;
-                    if (handlers.onRoomUpdateExits) handlers.onRoomUpdateExits(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.players') {
-                try {
-                    const data = JSON.parse(json) as GmcpRoomPlayers | (string | GmcpOccupant)[];
-                    if (handlers.onRoomPlayers) handlers.onRoomPlayers(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
-                try {
-                    const data = JSON.parse(json) as GmcpRoomPlayers | (string | GmcpOccupant)[];
-                    if (handlers.onRoomNpcs) handlers.onRoomNpcs(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.addplayer') {
-                try {
-                    const data = JSON.parse(json) as string | GmcpOccupant;
-                    if (handlers.onAddPlayer) handlers.onAddPlayer(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.addchar' || pkgLower === 'room.chars.add') {
-                try {
-                    const data = JSON.parse(json) as string | GmcpOccupant;
-                    if (handlers.onAddNpc) handlers.onAddNpc(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.removeplayer') {
-                try {
-                    const data = JSON.parse(json) as string | GmcpOccupant;
-                    if (handlers.onRemovePlayer) handlers.onRemovePlayer(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove') {
-                try {
-                    const data = JSON.parse(json) as string | GmcpOccupant;
-                    if (handlers.onRemoveNpc) handlers.onRemoveNpc(data);
-                } catch (e) { }
-            } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set') {
-                try {
-                    const data = JSON.parse(json) as GmcpRoomItems | (string | GmcpOccupant)[];
-                    if (handlers.onRoomItems) handlers.onRoomItems(data);
-                } catch (e) { }
-            }
-            else if (pkgLower === 'char.name') {
-                try {
-                    // MUME sends name as a quoted string, like "Rada"
-                    // But handle potential JSON or complex strings as well
-                    let name = json.trim();
-                    if (name.startsWith('"') && name.endsWith('"')) {
-                        name = name.substring(1, name.length - 1);
-                    } else if (name.startsWith('{')) {
-                        try {
-                            const parsed = JSON.parse(name);
-                            name = parsed.name || parsed.fullname || name;
-                        } catch (e) { }
-                    }
-                    name = name.replace(/\x1b\[[0-9;]*m/g, '').trim();
-                    if (name && options.onCharNameChange) options.onCharNameChange(name);
-                } catch (e) { }
-            }
-        } else if (cmd === TELNET_TTYPE && buffer[1] === TTYPE_SEND) {
-            const encoder = new TextEncoder();
-            const clientName = "xterm-256color";
-            const bytes = [IAC, SB, TELNET_TTYPE, TTYPE_IS, ...Array.from(encoder.encode(clientName)), IAC, SE];
-            sendBytes(bytes);
-        }
-    };
-
-    const handleRawData = (data: Uint8Array, handlers: TelnetHandlers) => {
-        const textBytes: number[] = [];
-        const state = telnetState.current;
-
-        for (let i = 0; i < data.length; i++) {
-            const byte = data[i];
-
-            switch (state.state) {
-                case 'DATA':
-                    if (byte === IAC) {
-                        state.state = 'IAC';
-                    } else {
-                        if (byte !== 13) {
-                            textBytes.push(byte);
-                        }
-                    }
-                    break;
-                case 'IAC':
-                    if (byte === SB) {
-                        state.state = 'SUB';
-                        state.subBuffer = [];
-                    } else if (byte === WILL || byte === WONT || byte === DO || byte === DONT) {
-                        state.state = 'NEGOTIATE';
-                        state.negotiationCmd = byte;
-                    } else if (byte === IAC) {
-                        textBytes.push(255);
-                        state.state = 'DATA';
-                    } else {
-                        state.state = 'DATA';
-                    }
-                    break;
-                case 'NEGOTIATE':
-                    const cmd = state.negotiationCmd;
-                    const option = byte;
-                    if (cmd === DO && option === TELNET_TTYPE) {
-                        sendBytes([IAC, WILL, TELNET_TTYPE]);
-                    } else if (cmd === WILL && option === TELNET_GMCP) {
-                        // Server offers GMCP — we accept
-                        sendBytes([IAC, DO, TELNET_GMCP]);
-                        if (!gmcpReadyRef.current) {
-                            gmcpReadyRef.current = true;
-                            addMessage('system', 'GMCP negotiated (server WILL). Requesting room data...');
-                            sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Room 1", "Room.Info 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1"]);
-                        }
-                    } else if (cmd === DO && option === TELNET_GMCP) {
-                        // Server requests us to enable GMCP — we comply
-                        sendBytes([IAC, WILL, TELNET_GMCP]);
-                        if (!gmcpReadyRef.current) {
-                            gmcpReadyRef.current = true;
-                            addMessage('system', 'GMCP negotiated (server DO). Requesting room data...');
-                            sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Room 1", "Room.Info 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1"]);
-                        }
-                    } else if (cmd === DO && option === TELNET_NAWS) {
-                        sendBytes([IAC, WILL, TELNET_NAWS]);
-                        sendNAWS();
-                    } else if (cmd === WILL) {
-                        sendBytes([IAC, DONT, option]);
-                    } else if (cmd === DO) {
-                        sendBytes([IAC, WONT, option]);
-                    }
-                    state.state = 'DATA';
-                    break;
-                case 'SUB':
-                    if (byte === IAC) {
-                        state.state = 'SUB_IAC';
-                    } else {
-                        state.subBuffer.push(byte);
-                    }
-                    break;
-                case 'SUB_IAC':
-                    if (byte === SE) {
-                        handleSubnegotiation(state.subBuffer, handlers);
-                        state.state = 'DATA';
-                    } else if (byte === IAC) {
-                        state.subBuffer.push(255);
-                        state.state = 'SUB';
-                    } else {
-                        state.subBuffer.push(byte);
-                        state.state = 'SUB';
-                    }
-                    break;
-            }
-        }
-
-        if (textBytes.length > 0) {
-            const decoded = decoderRef.current.decode(new Uint8Array(textBytes), { stream: true });
-            processTextBuffer(decoded);
-        }
-    };
-
-    const connect = (handlers: TelnetHandlers) => {
+    const connect = () => {
         if (socketRef.current) socketRef.current.close();
-
-        // Reset state for a clean reconnection
         bufferRef.current = "";
-        gmcpReadyRef.current = false;
-        telnetState.current = {
-            state: 'DATA',
-            negotiationCmd: 0,
-            subBuffer: []
-        };
-
-
+        protocolHandler.current?.setGmcpReady(false);
         try {
-            setStatus('connecting');
-            addMessage('system', `Connecting to ${connectionUrl}...`);
-
+            handlers.setStatus('connecting');
+            handlers.addMessage('system', `Connecting to ${connectionUrl}...`);
             const ws = new WebSocket(connectionUrl);
             ws.binaryType = "arraybuffer";
-            decoderRef.current = new TextDecoder(); // Reset decoder on new connection
-
             ws.onopen = () => {
-                setStatus('connected');
-                addMessage('system', 'Connected! Waiting for server negotiation...');
-
-                const pingInterval = setInterval(() => {
-                    if (ws.readyState === WebSocket.OPEN) {
-                        sendGMCP('Core.Ping');
-                    }
-                }, 30000);
-                (ws as any)._pingInterval = pingInterval;
+                handlers.setStatus('connected');
+                handlers.addMessage('system', 'Connected! Negotiating...');
+                const interval = setInterval(() => { if (ws.readyState === WebSocket.OPEN) sendGMCP('Core.Ping'); }, 30000);
+                (ws as any)._pingInterval = interval;
             };
-
-            ws.onmessage = (event) => {
-                if (event.data instanceof ArrayBuffer) {
-                    handleRawData(new Uint8Array(event.data), handlers);
-                }
-            };
-
+            ws.onmessage = (event) => { if (event.data instanceof ArrayBuffer) protocolHandler.current?.handleRawData(new Uint8Array(event.data)); };
             ws.onclose = () => {
-                setStatus('disconnected');
-                addMessage('error', 'Connection closed.');
+                handlers.setStatus('disconnected');
+                handlers.addMessage('error', 'Connection closed.');
                 if ((ws as any)._pingInterval) clearInterval((ws as any)._pingInterval);
             };
-
-            ws.onerror = () => {
-                setStatus('disconnected');
-                addMessage('error', 'Connection error. Check settings.');
-            };
-
+            ws.onerror = () => { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Connection error.'); };
             socketRef.current = ws;
-        } catch (e) {
-            addMessage('error', 'Invalid URL configuration.');
-            setStatus('disconnected');
-        }
+        } catch (e) { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Invalid URL.'); }
     };
-
-    const disconnect = () => {
-        if (socketRef.current) socketRef.current.close();
-    };
-
-    const sendCommand = useCallback((cmd: string) => {
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(cmd + '\r\n');
-            socketRef.current.send(data);
-        }
-    }, []);
 
     return {
-        connect,
-        disconnect,
-        sendCommand,
+        connect, disconnect: () => socketRef.current?.close(),
+        sendCommand: (cmd: string) => { if (socketRef.current?.readyState === WebSocket.OPEN) socketRef.current.send(new TextEncoder().encode(cmd + '\r\n')); },
         sendGMCP
     };
-};
+}

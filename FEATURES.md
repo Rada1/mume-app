@@ -15,6 +15,11 @@ The client features a high-performance, hand-drawn aesthetic map system designed
 - **Export/Import**: Save and share your maps via JSON files.
 - **Room Info HUD**: A detailed panel showing room name, terrain, description, zone, and personal notes.
 
+> **Agent Context:** 
+> - **Logic**: `src/components/Mapper.tsx` (Current refactor target)
+> - **Engine**: `src/mapper/renderer.ts`
+> - **Style**: `src/components/Mapper.css`
+
 ## 🌤️ Immersive Environment System
 The client translates game text into visual atmospheric effects.
 - **Dynamic Weather**: Real-time visual effects for Rain, Heavy Rain, Snow, and Clouds.
@@ -22,9 +27,18 @@ The client translates game text into visual atmospheric effects.
 - **Fog Effects**: Overlays a fog layer when thick fog is detected in-game.
 - **Haptic Feedback**: Vibration alerts for mobile devices on combat hits or failed movement (e.g., "Alas, you cannot go that way").
 
+> **Agent Context:** 
+> - **Logic**: `src/hooks/useEnvironment.tsx`
+> - **UI Layer**: `src/components/Layout/AtmosphericLayer.tsx`
+> - **Styling**: `src/styles/environment.css`
+
 ## 🔊 Proactive Sound System
 - **Custom Sound Triggers**: Upload your own audio files and set them to trigger on specific text patterns or Regular Expressions (Regex).
 - **Audio Feedback**: Built-in sound support for various game events to improve situational awareness.
+
+> **Agent Context:** 
+> - **Logic**: `src/hooks/useSoundSystem.ts`, `src/hooks/useAtmosphereAudio.ts`
+> - **Settings**: `src/hooks/useSettings.ts`
 
 ## 🔌 Robust Connection Options
 - **Connection Modes**:
@@ -33,22 +47,40 @@ The client translates game text into visual atmospheric effects.
     - **mMapper Relay**: Connect directly to MUME while relaying data to an external mapper.
 - **WebSocket Support**: Designed to work seamlessly with modern browsers using secure WebSocket (WSS) bridges.
 
+> **Agent Context:** 
+> - **Networking**: `src/hooks/useTelnet.ts`
+> - **Constants**: `src/constants/index.ts`
+
 ## 📱 Mobile-First Optimization
 - **Adaptive Layout**: UI elements shift and resize dynamically for phones and tablets.
 - **Haptic Joystick**: A 4-directional joystick (North, South, East, West) with vibration feedback for tactile movement.
 - **Intelligent Input Bar**: The command bar repositioning logic ensures it remains visible and usable even when the mobile keyboard is open.
 - **Stat Bars**: High-visibility real-time bars for HP, Mana, and Movement.
 
+> **Agent Context:** 
+> - **Joystick**: `src/hooks/useJoystick.ts`, `src/components/Joystick.tsx`
+> - **Viewport**: `src/hooks/useViewport.ts`
+> - **UI Layer**: `src/components/Layout/HUDClustersLayer.tsx`
+
 ## ⌨️ Customizable Control System
 - **Dynamic Button Sets**: Create sets of custom buttons that can be toggled or switched automatically based on game state.
 - **Spatially Triggered Buttons**: "Spat" buttons appear on-screen contextually (e.g., when a specific mob arrives) for quick reaction.
 - **Stat-based Triggers**: Buttons and UI elements can change state based on your character's vitals.
+
+> **Agent Context:** 
+> - **Buttons**: `src/hooks/useButtons.ts`, `src/constants/buttons.ts`
+> - **Spat Logic**: `src/hooks/useSpatButtons.ts`, `src/components/SpatButtons.tsx`
 
 ## 📜 Intelligent Game Log
 - **ANSI Color Support**: Full support for standard and enhanced MUD color codes.
 - **Message Stacking**: Automatically collapses repetitive lines (like "A wolf arrives from the north") into a single entry with a counter (e.g., "Three wolves have arrived from the north") to reduce clutter.
 - **Contextual Filtering**: Distinguishes between combat, communication, and world exploration text for improved readability.
 - **Typewriter Aesthetic**: Optional retro-style text rendering for key UI elements.
+
+> **Agent Context:** 
+> - **Buffer Logic**: `src/hooks/useMessageLog.ts`
+> - **Parsing**: `src/hooks/useGameParser.ts`
+> - **UI Layer**: `src/components/Layout/MainContentLayer.tsx`
 
 ## ⚙️ Settings & Customization
 - **Custom Backgrounds**: Upload your own background image to personalize the client's look.

@@ -1,0 +1,281 @@
+/* Swipe Wheel, Ray and Indicator Styles */
+
+.swipe-ray {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--ray-length, 100px);
+    height: 3px;
+    background: linear-gradient(to right, var(--ray-color, var(--set-accent, var(--accent))) 0%, var(--ray-color, var(--set-accent, var(--accent))) 70%, transparent 100%);
+    transform-origin: left center;
+    transform: translateY(-50%) rotate(var(--ray-angle, 0deg));
+    opacity: var(--ray-opacity, 0);
+    pointer-events: none;
+    z-index: -1;
+    box-shadow: 0 0 15px var(--ray-color, var(--set-accent, var(--accent)));
+    transition: opacity 0.1s ease, transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
+    border-radius: 99px;
+}
+
+.cancel-indicator {
+    position: fixed;
+    width: 65px;
+    height: 65px;
+    background: rgba(220, 38, 38, 0.75);
+    border: 2px solid rgba(255, 150, 150, 0.5);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    /* Always visible when rendered — starts at normal scale, brightens on hover */
+    transform: translate(-50%, -50%) scale(var(--cancel-scale, 1));
+    opacity: var(--cancel-opacity, 0.8);
+    pointer-events: none;
+    z-index: 50010;
+    transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.5);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    left: var(--cancel-x, 50%);
+    top: var(--cancel-y, 50%);
+}
+
+.swipe-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 25;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+.swipe-center.active {
+    background: rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.5);
+    border-color: var(--set-accent, var(--accent));
+    transform: translate(-50%, -50%) scale(1.15);
+    /* Keep centered while growing */
+    box-shadow: 0 0 30px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.5), inset 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.swipe-center-label {
+    font-size: 0.6rem;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    max-width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.swipe-center.active .swipe-center-label {
+    color: #fff;
+    text-shadow: 0 0 10px var(--set-accent, var(--accent));
+}
+
+.swipe-center-hint {
+    font-size: 0.4rem;
+    opacity: 0.5;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.swipe-wheel-container {
+    position: fixed;
+    top: var(--wheel-center-y, 50%);
+    left: var(--wheel-center-x, 50%);
+    width: 230px;
+    height: 230px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 50000;
+    opacity: 1;
+    /* Always 1 when rendered */
+    scale: 1;
+    animation: swipe-wheel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border-radius: 50%;
+    background: radial-gradient(circle at center, rgba(10, 10, 10, 0.55) 0%, rgba(5, 5, 5, 0.7) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(var(--set-accent-rgb, 255, 255, 255), 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
+        0 0 30px 5px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.6),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    /* Overflow hidden removed to allow selected slice to grow outward */
+}
+
+@keyframes swipe-wheel-pop {
+    0% {
+        opacity: 0;
+        scale: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+.swipe-slice {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: center center;
+    border-radius: 50%;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 0;
+    /* Remove padding from container to ensure background reaches center */
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.swipe-slice::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    /* Simplified mask: Hole is now 22% (inside the ~30% center button) */
+    -webkit-mask-image:
+        conic-gradient(from 67.5deg at 50% 50%, #000 45deg, transparent 45deg),
+        radial-gradient(circle at 50% 50%, transparent 22%, #000 23%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+        conic-gradient(from 67.5deg at 50% 50%, #000 45deg, transparent 45deg),
+        radial-gradient(circle at 50% 50%, transparent 22%, #000 23%);
+    mask-composite: intersect;
+    background: transparent;
+    /* Fill applied only by .swipe-slice.active::before */
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: -1;
+}
+
+.swipe-slice.active {
+    z-index: 20;
+    /* Soft glow allowed to bleed across dividers — only the fill is masked as donut */
+    filter: drop-shadow(0 0 15px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.6));
+}
+
+.swipe-slice.active::before {
+    /* Linear gradient ensures the color doesn't fade out as it approaches the center */
+    background: linear-gradient(to left,
+            rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.6) 0%,
+            rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.3) 100%);
+    box-shadow: inset -15px 0 25px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.5);
+}
+
+.slice-separator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    height: 1px;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.15) 100%);
+    transform-origin: left center;
+    transform: rotate(-22.5deg);
+    pointer-events: none;
+}
+
+.swipe-slice-label {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    white-space: nowrap;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    /* Radiate out towards perimeter, starting just outside center button */
+    text-align: left;
+    margin-left: 150px;
+    /* Positions label outside center button */
+    width: 65px;
+    mask-image: linear-gradient(to right, #000 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, #000 70%, transparent 100%);
+}
+
+/* Flip text on left side of wheel for legibility while radiating out */
+.swipe-slice-label.flip {
+    transform: rotate(180deg);
+    text-align: right;
+    mask-image: linear-gradient(to left, #000 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to left, #000 70%, transparent 100%);
+}
+
+.swipe-slice.active .swipe-slice-label {
+    color: #fff;
+    letter-spacing: 3px;
+    scale: 1.1;
+    text-shadow: 0 0 20px var(--set-accent, var(--accent));
+    mask-image: none;
+    -webkit-mask-image: none;
+}
+
+.button-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    pointer-events: none;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+    width: 90%;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.spat-button {
+    position: fixed;
+    z-index: 1000;
+    padding: 8px 16px;
+    background: rgba(10, 10, 15, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--set-accent, var(--accent));
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    pointer-events: auto;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--set-accent, var(--accent));
+    animation:
+        spit-across 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards,
+        spat-finish-shimmer 0.5s ease-out 0.65s 1;
+    user-select: none;
+    left: var(--target-x);
+    top: var(--target-y);
+    transform: var(--target-transform, translate(0, -50%));
+    transition:
+        filter 0.2s,
+        transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28),
+        left 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+        top 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    touch-action: none;
+    overflow: visible !important;
+}

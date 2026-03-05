@@ -46,11 +46,14 @@ export const useJoystick = () => {
             if (isTargetModifierActive) setIsTargetModifierActive(false);
         }
 
-        // Snap visual knob to 4 directions
-        if (Math.abs(dx) > Math.abs(dy)) {
-            dy = 0;
-        } else {
-            dx = 0;
+        // Snap visual knob to 8 directions
+        const angleRad = Math.atan2(dy, dx);
+        const snappedAngle = Math.round(angleRad / (Math.PI / 4)) * (Math.PI / 4);
+
+        // Only snap if we are far enough from center to care about direction
+        if (dist > 10) {
+            dx = Math.cos(snappedAngle) * dist;
+            dy = Math.sin(snappedAngle) * dist;
         }
 
         const maxDist = 50;
@@ -65,16 +68,22 @@ export const useJoystick = () => {
             container.style.setProperty('--joy-dist', `${Math.min(1, dist / maxDist)}`);
         }
 
-        // Update current direction state
+        // Update current direction state (8-way mapping)
         if (dist < 20) {
             setCurrentDir(null);
         } else {
             let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
-            let dir: Direction = 'n';
-            if (angle >= 315 || angle < 45) dir = 'e';
-            else if (angle >= 45 && angle < 135) dir = 's';
-            else if (angle >= 135 && angle < 225) dir = 'w';
-            else dir = 'n';
+
+            let dir: any = null;
+            if (angle >= 337.5 || angle < 22.5) dir = 'e';
+            else if (angle >= 22.5 && angle < 67.5) dir = 'down'; // SE -> down
+            else if (angle >= 67.5 && angle < 112.5) dir = 's';
+            else if (angle >= 112.5 && angle < 157.5) dir = null; // SW -> unmapped
+            else if (angle >= 157.5 && angle < 202.5) dir = 'w';
+            else if (angle >= 202.5 && angle < 247.5) dir = 'up'; // NW -> up
+            else if (angle >= 247.5 && angle < 292.5) dir = 'n';
+            else if (angle >= 292.5 && angle < 337.5) dir = null; // NE -> unmapped
+
             setCurrentDir(dir);
         }
     }, [joystickActive, isTargetModifierActive]);
@@ -95,7 +104,8 @@ export const useJoystick = () => {
         setIsTargetModifierActive(false);
         setCurrentDir(null);
 
-        const dx = e.clientX - joystickStartPos.current.x, dy = e.clientY - joystickStartPos.current.y, dist = Math.sqrt(dx * dx + dy * dy);
+        const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
+        const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
 
         if (joystickKnobRef.current) {
             joystickKnobRef.current.classList.add('resetting');
@@ -123,17 +133,24 @@ export const useJoystick = () => {
                 joystickStartPos.current = null;
                 return true; // Center tap
             } else {
-                let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
-                let dir: Direction = 'n';
-                if (angle >= 315 || angle < 45) dir = 'e';
-                else if (angle >= 45 && angle < 135) dir = 's';
-                else if (angle >= 135 && angle < 225) dir = 'w';
-                else dir = 'n';
+                let angle = Math.atan2(dyOriginal, dxOriginal) * (180 / Math.PI); if (angle < 0) angle += 360;
 
-                executeCommand(dir);
-                triggerHaptic(40);
-                setJoystickGlow(true);
-                setTimeout(() => setJoystickGlow(false), 300);
+                let cmd: string | null = null;
+                if (angle >= 337.5 || angle < 22.5) cmd = 'east';
+                else if (angle >= 22.5 && angle < 67.5) cmd = 'down'; // SE -> down
+                else if (angle >= 67.5 && angle < 112.5) cmd = 'south';
+                else if (angle >= 112.5 && angle < 157.5) cmd = null; // SW -> unmapped
+                else if (angle >= 157.5 && angle < 202.5) cmd = 'west';
+                else if (angle >= 202.5 && angle < 247.5) cmd = 'up'; // NW -> up
+                else if (angle >= 247.5 && angle < 292.5) cmd = 'north';
+                else if (angle >= 292.5 && angle < 337.5) cmd = null; // NE -> unmapped
+
+                if (cmd) {
+                    executeCommand(cmd);
+                    triggerHaptic(40);
+                    setJoystickGlow(true);
+                    setTimeout(() => setJoystickGlow(false), 300);
+                }
             }
         }
 

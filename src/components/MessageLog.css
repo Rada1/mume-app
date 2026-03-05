@@ -1,0 +1,354 @@
+/* Message Log and Input Area Styles */
+
+.message-log-container {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    perspective: 1200px;
+    transform-style: preserve-3d;
+    background: transparent;
+    border-radius: 8px;
+}
+
+.message-log {
+    flex: 1;
+    padding: 20px;
+    display: block;
+    overflow-y: auto;
+    color: var(--text-primary);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
+    padding-bottom: 70px;
+    padding-top: 40px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-faded) transparent;
+    font-size: var(--dynamic-log-size, 16px);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 30px, black 60px);
+    position: relative;
+    user-select: text;
+    cursor: text;
+    min-height: 0;
+    perspective: 1200px;
+    perspective-origin: 0% 0%;
+    transform-style: preserve-3d;
+}
+
+.message-log::-webkit-scrollbar {
+    width: 6px;
+}
+
+.message-log::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.message {
+    line-height: 1.4;
+    max-width: 100%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    padding: 2px 0;
+    will-change: transform, opacity;
+    image-rendering: pixelated;
+    -webkit-font-smoothing: subpixel-antialiased;
+    view-timeline-name: --message-scroll;
+    view-timeline-axis: block;
+    animation: vanish-into-distance linear;
+    animation-timeline: --message-scroll;
+    animation-range: entry 0% exit 100%;
+    transform-origin: left center;
+}
+
+.message.combat-dim {
+    --msg-opacity: 0.22;
+}
+
+.message-log.combat-mode .message:not(.combat-dim) {
+    opacity: 1;
+    filter: saturate(1.1);
+}
+
+.message.user {
+    color: var(--accent);
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 2px;
+}
+
+.message.user::before {
+    content: '> ';
+}
+
+.message.system {
+    color: #3b82f6;
+    font-style: italic;
+    margin: 10px 0;
+}
+
+.message.error {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 5px;
+}
+
+.message.prompt {
+    color: var(--text-dim);
+    font-weight: bold;
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+.message.prompt.msg-latest {
+    color: var(--accent);
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
+    background: rgba(74, 222, 128, 0.05);
+    border-left: 2px solid var(--accent);
+    padding-left: 8px;
+    margin-top: 8px;
+}
+
+.msg-latest {
+    opacity: 1;
+    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
+    transform: scale(1.02) translateZ(0);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.msg-recent {
+    opacity: 0.85;
+    color: #e5e7eb;
+    transform: scale(1) translateZ(-50px);
+    filter: brightness(0.9);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.msg-old {
+    opacity: 0.55;
+    color: var(--text-dim);
+    transform: scale(0.92) translateZ(-150px);
+    filter: brightness(0.7);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.msg-ancient {
+    opacity: 0.3;
+    color: var(--text-faded);
+    transform: scale(0.85) translateZ(-300px);
+    filter: brightness(0.4);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-area {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.35);
+    padding: 12px 18px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 1000;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Terrain Glows - Increased specificity to ensure they work in all modes */
+.input-area[class*="terrain-"] {
+    transition: box-shadow 1s ease, border-color 1s ease;
+}
+
+.input-area.terrain-forest {
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.35) !important;
+    border-color: rgba(34, 197, 94, 0.5) !important;
+}
+
+.input-area.terrain-field,
+.input-area.terrain-plains {
+    box-shadow: 0 0 12px rgba(132, 204, 22, 0.3) !important;
+    border-color: rgba(132, 204, 22, 0.45) !important;
+}
+
+.input-area.terrain-brush {
+    box-shadow: 0 0 12px rgba(161, 98, 7, 0.3) !important;
+    border-color: rgba(161, 98, 7, 0.45) !important;
+}
+
+.input-area.terrain-road {
+    box-shadow: 0 0 12px rgba(212, 201, 166, 0.4) !important;
+    border-color: rgba(212, 201, 166, 0.5) !important;
+}
+
+.input-area.terrain-water,
+.input-area.terrain-river {
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.35) !important;
+    border-color: rgba(59, 130, 246, 0.5) !important;
+}
+
+.input-area.terrain-mountain,
+.input-area.terrain-hills,
+.input-area.terrain-rock {
+    box-shadow: 0 0 12px rgba(220, 220, 220, 0.3) !important;
+    border-color: rgba(220, 220, 220, 0.5) !important;
+}
+
+.input-area.terrain-inside,
+.input-area.terrain-city,
+.input-area.terrain-town {
+    box-shadow: 0 0 12px rgba(160, 110, 60, 0.35) !important;
+    border-color: rgba(160, 110, 60, 0.5) !important;
+}
+
+.input-area.terrain-tunnel,
+.input-area.terrain-cave,
+.input-area.terrain-underground {
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+}
+
+.input-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.cmd-prompt {
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.input-field {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    font-size: 1.1rem;
+    outline: none;
+    padding: 5px 0;
+    user-select: text;
+    transition: font-size 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-field::placeholder {
+    color: var(--text-faded);
+}
+
+/* Inline buttons */
+.inline-btn {
+    position: relative;
+    display: inline;
+    cursor: pointer;
+    border-radius: 3px;
+    animation: inline-btn-shimmer 3s ease-in-out infinite;
+    transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.inline-btn:hover {
+    filter: brightness(1.4);
+    transform: scale(1.04);
+}
+
+.inline-btn:active {
+    filter: brightness(0.85);
+    transform: scale(0.97);
+}
+
+.inline-btn.is-triggered {
+    animation: spat-trigger-glow 0.8s ease-out forwards !important;
+    z-index: 100;
+}
+
+/* Landscape Spicifics */
+.is-landscape .message-log-container {
+    flex: 1 !important;
+    height: 0 !important;
+    min-height: 0;
+    display: flex !important;
+}
+
+.is-landscape .message-log {
+    height: 100% !important;
+    padding: 20px 10px !important;
+}
+
+.is-landscape .input-area {
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: 15px !important;
+    transform: translateX(-50%) !important;
+    width: 50% !important;
+    min-width: 280px !important;
+    padding: 8px 16px !important;
+    border-radius: 12px !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 2000 !important;
+    pointer-events: auto !important;
+}
+
+.is-landscape .cmd-prompt {
+    font-size: 0.9rem;
+}
+
+.is-landscape .input-field {
+    font-size: 0.85rem;
+    padding: 4px 0;
+}
+
+@media (max-width: 600px) {
+    .message-log {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+        padding-bottom: 60px !important;
+    }
+
+    .input-area {
+        left: 6px !important;
+        right: 6px !important;
+        bottom: 6px !important;
+        padding: 8px 12px !important;
+    }
+}
+
+
+
+/* NPC Shimmer */
+.shimmer-text {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    color: #ffffff !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.shimmer-text::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -200%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
+    animation: shimmer-move 1.5s infinite ease-in-out;
+    pointer-events: none;
+}

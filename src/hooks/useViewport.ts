@@ -6,6 +6,7 @@ export function useViewport() {
 
     // Scroll refs
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
     const scrollAnimationRef = useRef<number | null>(null);
     const isAutoScrollingRef = useRef<boolean>(false);
     const isLockedToBottomRef = useRef(true);
@@ -200,6 +201,7 @@ export function useViewport() {
         isLandscape,
         isKeyboardOpen,
         scrollContainerRef,
+        messagesEndRef,
         scrollAnimationRef,
         isAutoScrollingRef,
         isLockedToBottomRef,

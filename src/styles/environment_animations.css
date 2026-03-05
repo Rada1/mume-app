@@ -1,0 +1,160 @@
+/* Environment and Weather Keyframes */
+
+@keyframes fog-drift-new {
+    from {
+        transform: translateX(-5%);
+    }
+
+    to {
+        transform: translateX(5%);
+    }
+}
+
+@keyframes drop-fall {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(115vh);
+    }
+}
+
+@keyframes cloud-pulse {
+    0% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes cloud-drift {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes rolling-shadows {
+    0% {
+        transform: translate(-30%, -30%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(30%, 30%) rotate(10deg);
+    }
+}
+
+@keyframes flicker {
+
+    0%,
+    10%,
+    20%,
+    40%,
+    60%,
+    80%,
+    100% {
+        opacity: 0.9;
+    }
+
+    5%,
+    30%,
+    50%,
+    70%,
+    90% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes rain {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 5px 100vh;
+    }
+}
+
+@keyframes snow-mid {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 500px;
+    }
+}
+
+@keyframes snow-back {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 400px;
+    }
+}
+
+@keyframes snow-front {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 600px;
+    }
+}
+
+@keyframes fog-flow {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 50% 20%;
+    }
+}
+
+@keyframes torch-flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.85;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes dust-drift {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(100px, 100px);
+    }
+}
+
+@keyframes death-flicker {
+
+    0%,
+    100% {
+        opacity: 1;
+        filter: brightness(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        filter: brightness(2);
+    }
+}

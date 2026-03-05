@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { SpatButton } from '../types';
 
 interface SpatButtonsProps {
@@ -136,22 +137,29 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                             el.style.setProperty('--cancel-opacity', '0');
                         }}
                     >
-                        <div className="swipe-wheel-container">
-                            {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => (
-                                <div
-                                    key={d}
-                                    className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
-                                    style={{ transform: `rotate(${i * 45}deg)`, opacity: 0.35 }}
-                                >
-                                    <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
-                                        {d === 'up' ? sb.label : d.toUpperCase()}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
+                        {activeDir && createPortal(
+                            <div className="swipe-wheel-container" style={{ zIndex: 50000 }}>
+                                {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => (
+                                    <div
+                                        key={d}
+                                        className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
+                                        style={{ transform: `rotate(${i * 45}deg)`, opacity: 0.35 }}
+                                    >
+                                        <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
+                                            {d === 'up' ? sb.label : d.toUpperCase()}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>,
+                            document.body
+                        )}
                         <div className="swipe-ray" />
                         <div className="cancel-indicator">Cancel</div>
-                        <div className="button-label">{sb.label}</div>
+                        {sb.icon ? (
+                            <img src={sb.icon} className="button-icon" alt="" />
+                        ) : (
+                            <div className="button-label">{sb.label}</div>
+                        )}
                     </div>
                 );
             })}

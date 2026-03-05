@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, Edit2, Plus, X } from 'lucide-react';
-import { CustomButton } from '../types';
+import { CustomButton, ButtonSetSettings } from '../types';
 
 interface SetManagerModalProps {
     buttons: CustomButton[];
@@ -22,6 +22,8 @@ interface SetManagerModalProps {
     onToggleGrid: (enabled: boolean) => void;
     gridSize: number;
     onGridSizeChange: (size: number) => void;
+    setSettings?: Record<string, ButtonSetSettings>;
+    setSetSettings?: (settings: Record<string, ButtonSetSettings>) => void;
 }
 
 const SetManagerModal: React.FC<SetManagerModalProps> = ({
@@ -43,7 +45,9 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     isGridEnabled,
     onToggleGrid,
     gridSize,
-    onGridSizeChange
+    onGridSizeChange,
+    setSettings = {},
+    setSetSettings
 }) => {
     const [selectedSet, setSelectedSet] = useState(lastSelectedSet || availableSets[0] || 'main');
 
@@ -122,8 +126,8 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                     </div>
                 </div>
 
-                <div className="setting-group">
-                    <label className="setting-label">Select Set</label>
+                <div className="setting-group" style={{ marginBottom: '15px' }}>
+                    <label className="setting-label">Select Set to Edit</label>
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <select
                             className="setting-input"
@@ -161,6 +165,63 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                                 <Trash2 size={18} />
                             </button>
                         )}
+                    </div>
+                </div>
+
+                <div className="setting-group" style={{ marginBottom: '15px' }}>
+                    <label className="setting-label" style={{ fontSize: '0.8rem' }}>Set Theme Color (Highlights, Swipes, Rays)</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <input
+                            type="color"
+                            value={setSettings[selectedSet]?.themeColor || '#4a90e2'}
+                            onChange={e => {
+                                if (setSetSettings) {
+                                    setSetSettings({
+                                        ...setSettings,
+                                        [selectedSet]: {
+                                            ...setSettings[selectedSet],
+                                            themeColor: e.target.value
+                                        }
+                                    });
+                                }
+                            }}
+                            style={{ width: '50px', height: '30px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
+                        />
+                        <input
+                            type="text"
+                            className="setting-input"
+                            value={setSettings[selectedSet]?.themeColor || ''}
+                            placeholder="Current set accent color (Hex)"
+                            onChange={e => {
+                                if (setSetSettings) {
+                                    setSetSettings({
+                                        ...setSettings,
+                                        [selectedSet]: {
+                                            ...setSettings[selectedSet],
+                                            themeColor: e.target.value
+                                        }
+                                    });
+                                }
+                            }}
+                            style={{ flex: 1 }}
+                        />
+                        <button
+                            className="btn-secondary"
+                            style={{ margin: 0, width: 'auto', padding: '0 10px' }}
+                            onClick={() => {
+                                if (setSetSettings) {
+                                    const next = { ...setSettings };
+                                    if (next[selectedSet]) {
+                                        const newSetSettings = { ...next[selectedSet] };
+                                        delete newSetSettings.themeColor;
+                                        next[selectedSet] = newSetSettings;
+                                        setSetSettings(next);
+                                    }
+                                }
+                            }}
+                        >
+                            Reset
+                        </button>
                     </div>
                 </div>
 

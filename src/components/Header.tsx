@@ -1,70 +1,76 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Wifi, WifiOff, Layers, Edit3, Settings, CloudFog, Swords, Crosshair, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft } from 'lucide-react';
+import { Wifi, WifiOff, Layers, Edit3, Settings, CloudFog, Swords, Crosshair, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Gamepad2 } from 'lucide-react';
 import { LightingType, WeatherType } from '../types';
+import { useGame } from '../context/GameContext';
 
 interface HeaderProps {
-    lighting: LightingType;
-    weather: WeatherType;
-    isFoggy: boolean;
-    inCombat: boolean;
-    activeSet: string;
-    isEditMode: boolean;
+    isLandscape?: boolean;
     getLightingIcon: () => React.ReactNode;
     getWeatherIcon: () => React.ReactNode;
-    setIsEditMode: (val: boolean) => void;
-    setIsSettingsOpen: (val: boolean) => void;
-    availableSets: string[];
-    setActiveSet: (val: string) => void;
-    onOpenSetManager: () => void;
-    target?: string | null;
-    onClearTarget?: () => void;
     onResetMap?: () => void;
-    onTeleportClick?: () => void;
-    teleportTargetsCount?: number;
-    isLandscape?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
-    lighting,
-    weather,
-    isFoggy,
-    inCombat,
-    activeSet,
-    isEditMode,
+    isLandscape,
     getLightingIcon,
     getWeatherIcon,
-    setIsEditMode,
-    setIsSettingsOpen,
-    availableSets,
-    setActiveSet,
-    onOpenSetManager,
-    target,
-    onClearTarget,
-    onResetMap,
-    onTeleportClick,
-    teleportTargetsCount,
-    isLandscape
+    onResetMap
 }) => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isSetMenuOpen, setIsSetMenuOpen] = useState(false);
-    const [menuView, setMenuView] = useState<'main' | 'sets'>('main');
+    const {
+        lighting,
+        weather,
+        isFoggy,
+        inCombat,
+        btn,
+        target,
+        setTarget,
+        setIsSettingsOpen,
+        setIsSetManagerOpen,
+        teleportTargets,
+        setPopoverState,
+        showControls,
+        setShowControls,
+        viewport,
+        ui,
+        setUI
+    } = useGame();
+
+    const effectiveShowControls = showControls ?? viewport.isMobile;
+    const { activeSet, isEditMode, setIsEditMode, availableSets, setActiveSet } = btn;
+    const teleportTargetsCount = teleportTargets.length;
+    const onClearTarget = () => setTarget(null);
+    const onOpenSetManager = () => setIsSetManagerOpen(true);
+    const onTeleportClick = () => {
+        setPopoverState({
+            type: 'teleport-manage',
+            setId: 'teleport',
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2
+        });
+    };
+    const [isMenuOpen, setIsMenuOpen] = [ui.isMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isMenuOpen: val })) as any];
+    const [isSetMenuOpen, setIsSetMenuOpen] = [ui.isSetMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isSetMenuOpen: val })) as any];
+    const [menuView, setMenuView] = [ui.menuView, (val: 'main' | 'availableSets') => setUI(prev => ({ ...prev, menuView: val })) as any];
+
     const menuRef = useRef<HTMLDivElement>(null);
     const setMenuRef = useRef<HTMLDivElement>(null);
 
     // Close menus when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            const target = event.target as Node;
+            if (ui.isMenuOpen && menuRef.current && !menuRef.current.contains(target)) {
                 setIsMenuOpen(false);
-                setMenuView('main'); // Reset view on close
+                setMenuView('main');
             }
-            if (setMenuRef.current && !setMenuRef.current.contains(event.target as Node)) {
+            if (ui.isSetMenuOpen && setMenuRef.current && !setMenuRef.current.contains(target)) {
                 setIsSetMenuOpen(false);
             }
         };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+        document.addEventListener('pointerdown', handleClickOutside, { capture: true });
+        return () => document.removeEventListener('pointerdown', handleClickOutside, { capture: true });
+    }, [ui.isMenuOpen, ui.isSetMenuOpen, setIsMenuOpen, setIsSetMenuOpen, setMenuView]);
+
 
     return (
         <header className="header">
@@ -75,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({
             )}
 
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                {!isLandscape && (lighting !== 'none' || weather !== 'none' || isFoggy) && (
+                {(lighting !== 'none' || weather !== 'none' || isFoggy) && (
                     <div
                         className="status-indicator"
                         style={{ color: 'var(--text-primary)', gap: 8 }}
@@ -200,7 +206,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setMenuView('sets');
+                                                    setMenuView('availableSets');
                                                 }}
                                                 style={{ border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}
                                             >
@@ -223,6 +229,18 @@ const Header: React.FC<HeaderProps> = ({
                                         >
                                             <Edit3 size={16} />
                                             <span>{isEditMode ? 'Exit Design Mode' : 'Enter Design Mode'}</span>
+                                        </div>
+
+                                        <div
+                                            className={`dropdown-item ${effectiveShowControls ? 'active' : ''}`}
+                                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setShowControls(!effectiveShowControls);
+                                            }}
+                                        >
+                                            {effectiveShowControls ? <Eye size={16} /> : <EyeOff size={16} />}
+                                            <span>{effectiveShowControls ? 'Hide HUD Controls' : 'Show HUD Controls'}</span>
                                         </div>
 
                                         {isEditMode && (

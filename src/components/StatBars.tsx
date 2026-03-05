@@ -1,26 +1,46 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { GameStats } from '../types';
+import { useGame } from '../context/GameContext';
+import { useAtmosphereAudio } from '../hooks/useAtmosphereAudio';
 
 interface StatBarsProps {
     stats: GameStats;
-    hpRowRef: React.RefObject<HTMLDivElement | null>;
-    manaRowRef: React.RefObject<HTMLDivElement | null>;
-    moveRowRef: React.RefObject<HTMLDivElement | null>;
+    hpRatio: number;
+    manaRatio: number;
+    moveRatio: number;
+    inCombat?: boolean;
     onClick?: () => void;
     orientation?: 'vertical' | 'horizontal';
     onWimpyChange?: (val: number) => void;
     onPointerDown?: (e: React.PointerEvent) => void;
+    isLandscape?: boolean;
 }
 
-const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRowRef, onClick, orientation = 'vertical', onWimpyChange, onPointerDown }) => {
+const StatBars: React.FC<StatBarsProps> = ({
+    stats, hpRatio, manaRatio, moveRatio, inCombat,
+    onClick, orientation = 'vertical', onWimpyChange, onPointerDown, isLandscape
+}) => {
     const isVertical = orientation === 'vertical';
-    const hpRatio = stats.maxHp > 0 ? stats.hp / stats.maxHp : 0;
-    const manaRatio = stats.maxMana > 0 ? stats.mana / stats.maxMana : 0;
-    const moveRatio = stats.maxMove > 0 ? stats.move / stats.maxMove : 0;
 
     const [isDragging, setIsDragging] = useState(false);
     const [dragVal, setDragVal] = useState<number | null>(null);
     const trackRef = useRef<HTMLDivElement>(null);
+    const hpRowRef = useRef<HTMLDivElement>(null);
+    const manaRowRef = useRef<HTMLDivElement>(null);
+    const moveRowRef = useRef<HTMLDivElement>(null);
+
+    const { audioCtxRef, isSoundEnabledRef, triggerHaptic } = useGame();
+
+    useAtmosphereAudio({
+        hpRatio,
+        manaRatio,
+        moveRatio,
+        hpRowRef,
+        manaRowRef,
+        moveRowRef,
+        audioCtxRef,
+        isSoundEnabledRef: { current: isSoundEnabledRef.current } as any // Handle ref vs context
+    });
 
     const maxStatVal = Math.max(stats.maxHp, stats.maxMana, stats.maxMove, 1);
     const barDimBase = isVertical ? 120 : 100; // 120px height or 100% width
@@ -110,10 +130,9 @@ const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRo
                         pointerEvents: 'auto'
                     }}
                 >
-                    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: '4px', pointerEvents: 'none' }}>
+                    <div ref={hpRowRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: '4px', pointerEvents: 'none' }}>
                         <div
-                            ref={hpRowRef}
-                            className="stat-bar-fill"
+                            className={`stat-bar-fill ${inCombat ? 'pulse-combat' : ''}`}
                             style={{
                                 '--fill-ratio': `${hpRatio * 100}%`,
                                 background: 'linear-gradient(to top, #600, #d00)',
@@ -204,9 +223,8 @@ const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRo
                 <div className="stat-bar-track" style={{
                     height: isVertical ? `${(stats.maxMana / maxStatVal) * barDimBase}px` : '12px',
                     width: isVertical ? '24px' : '100%'
-                }}>
+                }} ref={manaRowRef}>
                     <div
-                        ref={manaRowRef}
                         className="stat-bar-fill"
                         style={{
                             '--fill-ratio': `${manaRatio * 100}%`,
@@ -235,9 +253,8 @@ const StatBars: React.FC<StatBarsProps> = ({ stats, hpRowRef, manaRowRef, moveRo
                 <div className="stat-bar-track" style={{
                     height: isVertical ? `${(stats.maxMove / maxStatVal) * barDimBase}px` : '12px',
                     width: isVertical ? '24px' : '100%'
-                }}>
+                }} ref={moveRowRef}>
                     <div
-                        ref={moveRowRef}
                         className="stat-bar-fill"
                         style={{
                             '--fill-ratio': `${moveRatio * 100}%`,

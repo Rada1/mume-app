@@ -1,123 +1,262 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { GameStats, TeleportTarget, PopoverState, CustomButton } from '../types';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from 'react';
+import {
+    PopoverState, CustomButton, TeleportTarget
+} from '../types';
+import { usePersistentState } from '../hooks/usePersistentState';
+import { useMessageLog } from '../hooks/useMessageLog';
+import { useButtons } from '../hooks/useButtons';
+import { useJoystick } from '../hooks/useJoystick';
+import { useButtonEditor } from '../hooks/useButtonEditor';
+import { useViewport } from '../hooks/useViewport';
+import { useEnvironment } from '../hooks/useEnvironment';
+import { useMessageHighlighter } from '../hooks/useMessageHighlighter';
+import { useTelnet } from '../hooks/useTelnet';
+import { useGameParser } from '../hooks/useGameParser';
+import { useCommandController } from '../hooks/useCommandController';
+import { useSettings } from '../hooks/useSettings';
+import { useSoundSystem } from '../hooks/useSoundSystem';
+import { MapperRef } from '../components/Mapper/mapperTypes';
 
-interface GameContextType {
-    // Settings & Mode
-    isNoviceMode: boolean;
-    setIsNoviceMode: (val: boolean) => void;
-    isSoundEnabled: boolean;
-    setIsSoundEnabled: (val: boolean) => void;
-    isMmapperMode: boolean;
-    setIsMmapperMode: (val: boolean) => void;
-    theme: 'light' | 'dark';
-    setTheme: (val: 'light' | 'dark') => void;
-
-    // Game State
-    status: 'connected' | 'disconnected' | 'connecting';
-    setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
-    target: string | null;
-    setTarget: (val: string | null) => void;
-    stats: GameStats;
-    setStats: React.Dispatch<React.SetStateAction<GameStats>>;
-    inCombat: boolean;
-    setInCombat: (val: boolean) => void;
-    lightning: boolean;
-    setLightning: (val: boolean) => void;
-    weather: 'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow';
-    setWeather: React.Dispatch<React.SetStateAction<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>>;
-    isFoggy: boolean;
-    setIsFoggy: (val: boolean) => void;
-
-    // Shared UI state
-    popoverState: PopoverState | null;
-    setPopoverState: (val: PopoverState | null) => void;
-    isSettingsOpen: boolean;
-    setIsSettingsOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound';
-    setSettingsTab: (val: 'general' | 'sound') => void;
-    accentColor: string;
-    setAccentColor: (val: string) => void;
-    abilities: Record<string, number>;
-    setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
-    characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
-    setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
-}
+import { GameContextType } from './GameContext/types';
+import { useGmcpHandlers } from '../hooks/useGmcpHandlers';
+import { useGameProviderState } from './GameContext/state';
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [isNoviceMode, setIsNoviceMode] = useState(() => localStorage.getItem('mud-novice-mode') === 'true');
-    const [isSoundEnabled, setIsSoundEnabled] = useState(() => localStorage.getItem('mud-sound-enabled') === 'true');
-    const [isMmapperMode, setIsMmapperMode] = useState(() => localStorage.getItem('mud-mmapper-mode') === 'true');
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => (localStorage.getItem('mud-theme') as 'light' | 'dark') || 'dark');
-    const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
-    const [target, setTarget] = useState<string | null>(null);
-    const [stats, setStats] = useState<GameStats>({
-        hp: 0, maxHp: 1,
-        mana: 0, maxMana: 1,
-        move: 0, maxMove: 1,
-        wimpy: 0
-    });
-    const [inCombat, setInCombat] = useState(false);
-    const [lightning, setLightning] = useState(false);
-    const [weather, setWeather] = useState<'none' | 'cloud' | 'rain' | 'heavy-rain' | 'snow'>('none');
-    const [isFoggy, setIsFoggy] = useState(false);
+    const s = useGameProviderState();
+
+    // Destructure some commonly used values for brevity in dependencies
+    const {
+        inCombat, inCombatRef, characterName, roomPlayers, roomNpcs,
+        characterName: charName, roomItems, target, status,
+        isNoviceMode, isSoundEnabled, abilities, characterClass,
+        lighting, lightningEnabled, weather, isFoggy, mood, spellSpeed, alertness
+    } = s;
+
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [settingsTab, setSettingsTab] = useState<'general' | 'sound'>('general');
-    const [accentColor, setAccentColor] = useState('#4a90e2'); // Default accent
-    const [abilities, setAbilities] = useState<Record<string, number>>(() => {
-        const saved = localStorage.getItem('mud-abilities');
-        return saved ? JSON.parse(saved) : {};
+    const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions'>('general');
+    const [accentColor, setAccentColor] = usePersistentState('mud-accent-color', '#4a90e2');
+    const [teleportTargets, setTeleportTargets] = usePersistentState<TeleportTarget[]>('mud-teleport-targets', []);
+
+    // GMCP Handlers States
+    const [roomInfoFn, setRoomInfoFn] = useState<(data: any) => void>();
+    const [roomExitsFn, setRoomExitsFn] = useState<(data: any) => void>();
+    const [charVitalsFn, setCharVitalsFn] = useState<(data: any) => void>();
+    const [roomPlayersFn, setRoomPlayersFn] = useState<(data: any) => void>();
+    const [roomNpcsFn, setRoomNpcsFn] = useState<(data: any) => void>();
+    const [roomItemsFn, setRoomItemsFn] = useState<(data: any) => void>();
+    const [addPlayerFn, setAddPlayerFn] = useState<(data: any) => void>();
+    const [addNpcFn, setAddNpcFn] = useState<(data: any) => void>();
+    const [removePlayerFn, setRemovePlayerFn] = useState<(data: any) => void>();
+    const [removeNpcFn, setRemoveNpcFn] = useState<(data: any) => void>();
+    const [opponentChangeFn, setOpponentChangeFn] = useState<(name: string | null) => void>();
+
+    const { messages, setMessages, addMessage, isCombatLine, isCommunicationLine } = useMessageLog(inCombatRef);
+    const addSystemMessage = useCallback((text: string) => addMessage('system', text), [addMessage]);
+
+    const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
+    const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
+    const playSound = useCallback((buffer: AudioBuffer) => playSoundRef.current(buffer), []);
+
+    const triggerHapticRef = useRef<(ms: number) => void>(() => { });
+    const setTriggerHaptic = useCallback((fn: (ms: number) => void) => { triggerHapticRef.current = fn; }, []);
+    const triggerHaptic = useCallback((ms: number) => triggerHapticRef.current(ms), []);
+
+    const containerRef = useRef<HTMLDivElement>(null);
+    const mapperRef = useRef<MapperRef>(null);
+
+    const gmcpHandlers = useGmcpHandlers({
+        mapperRef,
+        setCurrentTerrain: s.setCurrentTerrain,
+        setRoomPlayers: s.setRoomPlayers,
+        setRoomNpcs: s.setRoomNpcs,
+        setRoomItems: s.setRoomItems,
+        characterName,
+        setAbilities: s.setAbilities,
+        addMessage,
+        setCharacterName: s.setCharacterName,
+        setPlayerPosition: s.setPlayerPosition
     });
-    const [characterClass, setCharacterClass] = useState<'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none'>(() => {
-        return (localStorage.getItem('mud-character-class') as any) || 'none';
+
+    const btn = useButtons(abilities, characterClass);
+    const joystick = useJoystick();
+    const editor = useButtonEditor(btn, containerRef);
+    const viewport = useViewport();
+    const env = useEnvironment({
+        lighting,
+        setLighting: s.setLighting,
+        lightningEnabled,
+        setLightningEnabled: s.setLightningEnabled,
+        weather,
+        setWeather: s.setWeather,
+        isFoggy,
+        setIsFoggy: s.setIsFoggy,
+        mood,
+        setMood: s.setMood,
+        spellSpeed,
+        setSpellSpeed: s.setSpellSpeed,
+        alertness,
+        setAlertness: s.setAlertness,
+        setDetectLighting: (fn) => { /* internal use */ }
     });
 
-    useEffect(() => {
-        localStorage.setItem('mud-novice-mode', isNoviceMode.toString());
-    }, [isNoviceMode]);
+    const { audioCtxRef, initAudio } = useSoundSystem();
+    const settings = useSettings({
+        addMessage, audioCtxRef, initAudio,
+        setButtons: btn.setButtons,
+        isNoviceMode, setIsNoviceMode: s.setIsNoviceMode,
+        isSoundEnabled, setIsSoundEnabled: s.setIsSoundEnabled,
+        abilities, setAbilities: s.setAbilities,
+        characterClass, setCharacterClass: s.setCharacterClass,
+        actions: s.actions, setActions: s.setActions,
+        setSettings: btn.setSettings, setSetSettings: btn.setSetSettings
+    });
 
-    useEffect(() => {
-        localStorage.setItem('mud-sound-enabled', isSoundEnabled.toString());
-    }, [isSoundEnabled]);
+    const { processMessageHtml } = useMessageHighlighter(target, btn.buttonsRef, roomPlayers, roomNpcs, characterName, roomItems);
 
-    useEffect(() => {
-        localStorage.setItem('mud-mmapper-mode', isMmapperMode.toString());
-    }, [isMmapperMode]);
+    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+    const [activePrompt, setActivePrompt] = useState("");
+    const [input, setInput] = useState("");
 
-    useEffect(() => {
-        localStorage.setItem('mud-theme', theme);
-    }, [theme]);
+    const getMessageClassStyle = useCallback((index: number, total: number) => {
+        const anchorIndex = focusedIndex !== null ? focusedIndex : total - 1;
+        const distance = anchorIndex - index;
+        if (distance < 10) return 'msg-latest';
+        if (distance < 30) return 'msg-recent';
+        if (distance < 100) return 'msg-old';
+        return 'msg-ancient';
+    }, [focusedIndex]);
+
+    const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Create a ref for executeCommand so the parser can use it before the controller is initialized
+    const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
+
+    const parser = useGameParser({
+        isInventoryOpen: s.ui.drawer === 'inventory',
+        isCharacterOpen: s.ui.drawer === 'character',
+        mapperRef,
+        btn: {
+            buttonsRef: btn.buttonsRef,
+            setButtons: btn.setButtons,
+            buttonTimers: btn.buttonTimers,
+            setActiveSet: btn.setActiveSet,
+        },
+        addMessage, playSound, triggerHaptic,
+        setWeather: s.setWeather,
+        setIsFoggy: s.setIsFoggy,
+        setStats: s.setStats,
+        setAbilities: s.setAbilities,
+        setCharacterClass: s.setCharacterClass,
+        setRumble: s.setRumble,
+        setHitFlash: s.setHitFlash,
+        setDeathStage: s.setDeathStage,
+        setLightningEnabled: s.setLightningEnabled,
+        setPlayerPosition: s.setPlayerPosition,
+        detectLighting: env.detectLighting,
+        setCurrentTerrain: s.setCurrentTerrain,
+        isSoundEnabledRef: settings.isSoundEnabledRef,
+        soundTriggersRef: settings.soundTriggersRef,
+        actionsRef: s.actionsRef,
+        executeCommandRef,
+        setInventoryLines: s.setInventoryLines,
+        setStatsLines: s.setStatsLines,
+        setEqLines: s.setEqLines,
+        captureStage: s.captureStage,
+        isDrawerCapture: s.isDrawerCapture,
+        isWaitingForStats: s.isWaitingForStats,
+        isWaitingForEq: s.isWaitingForEq,
+        isWaitingForInv: s.isWaitingForInv
+    });
+
+    const { processLine } = parser;
+
+    const telnet = useTelnet({
+        connectionUrl: settings.connectionUrl,
+        processLine,
+        setPrompt: setActivePrompt,
+        onCharNameChange: gmcpHandlers.onCharNameChange,
+        onPositionChange: gmcpHandlers.onPositionChange,
+        handlers: {
+            setStatus: s.setStatus, setStats: s.setStats, setWeather: s.setWeather,
+            setIsFoggy: s.setIsFoggy, setInCombat: s.setInCombat,
+            addMessage, setRumble: s.setRumble, setHitFlash: s.setHitFlash,
+            setDeathStage: s.setDeathStage, detectLighting: env.detectLighting,
+            onRoomInfo: (data) => { gmcpHandlers.onRoomInfo(data); roomInfoFn?.(data); },
+            onRoomUpdateExits: (data) => { gmcpHandlers.onRoomUpdateExits(data); roomExitsFn?.(data); },
+            onCharVitals: (data) => { gmcpHandlers.onCharVitals(data); charVitalsFn?.(data); },
+            onRoomPlayers: (data) => { gmcpHandlers.onRoomPlayers(data); roomPlayersFn?.(data); },
+            onRoomNpcs: (data) => { gmcpHandlers.onRoomNpcs(data); roomNpcsFn?.(data); },
+            onRoomItems: (data) => { gmcpHandlers.onRoomItems(data); roomItemsFn?.(data); },
+            onAddPlayer: (data) => { gmcpHandlers.onAddPlayer(data); addPlayerFn?.(data); },
+            onAddNpc: (data) => { gmcpHandlers.onAddNpc(data); addNpcFn?.(data); },
+            onRemovePlayer: (data) => { gmcpHandlers.onRemovePlayer(data); removePlayerFn?.(data); },
+            onRemoveNpc: (data) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
+            onOpponentChange: (name) => { opponentChangeFn?.(name); }
+        }
+    });
 
 
-    useEffect(() => {
-        localStorage.setItem('mud-abilities', JSON.stringify(abilities));
-    }, [abilities]);
+    const controller = useCommandController({
+        telnet, addMessage, initAudio: () => { },
+        navIntervalRef, mapperRef, teleportTargets,
+        setCommandPreview: () => { }, setInput, triggerHaptic, btn, joystick,
+        wasDraggingRef: editor.wasDraggingRef,
+        captureStage: s.captureStage, isDrawerCapture: s.isDrawerCapture,
+        isWaitingForStats: s.isWaitingForStats, isWaitingForEq: s.isWaitingForEq, isWaitingForInv: s.isWaitingForInv,
+        setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines, setEqLines: s.setEqLines,
+        input, isNoviceMode, status, target, setTarget: s.setTarget,
+        popoverState, setPopoverState,
+        setIsInventoryOpen: s.setIsInventoryOpen,
+        setIsCharacterOpen: s.setIsCharacterOpen,
+        setIsRightDrawerOpen: s.setIsRightDrawerOpen,
+        setIsMapExpanded: s.setIsMapExpanded,
+        viewport,
+        ui: s.ui,
+        actions: s.actions,
+        setActions: s.setActions
+    });
 
+    const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick } = controller;
+
+    // Update the ref so the parser components can call it
     useEffect(() => {
-        localStorage.setItem('mud-character-class', characterClass);
-    }, [characterClass]);
+        executeCommandRef.current = executeCommand;
+    }, [executeCommand]);
 
     return (
         <GameContext.Provider value={{
-            isNoviceMode, setIsNoviceMode,
-            isSoundEnabled, setIsSoundEnabled,
-            isMmapperMode, setIsMmapperMode,
-            theme, setTheme,
-            status, setStatus,
-            target, setTarget,
-            stats, setStats,
-            inCombat, setInCombat,
-            lightning, setLightning,
-            weather, setWeather,
-            isFoggy, setIsFoggy,
+            ...s,
             popoverState, setPopoverState,
             isSettingsOpen, setIsSettingsOpen,
             settingsTab, setSettingsTab,
             accentColor, setAccentColor,
-            abilities, setAbilities,
-            characterClass, setCharacterClass
+            showControls: s.showControls, setShowControls: s.setShowControls,
+            teleportTargets, setTeleportTargets,
+            onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
+            onRoomUpdateExits: roomExitsFn, setOnRoomUpdateExits: setRoomExitsFn,
+            onCharVitals: charVitalsFn, setOnCharVitals: setCharVitalsFn,
+            onRoomPlayers: roomPlayersFn, setOnRoomPlayers: setRoomPlayersFn,
+            onRoomNpcs: roomNpcsFn, setOnRoomNpcs: setRoomNpcsFn,
+            onRoomItems: roomItemsFn, setOnRoomItems: setRoomItemsFn,
+            onAddPlayer: addPlayerFn, setOnAddPlayer: setAddPlayerFn,
+            onAddNpc: addNpcFn, setOnAddNpc: setAddNpcFn,
+            onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
+            onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
+            onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
+            messages, setMessages, addMessage, addSystemMessage,
+            isCombatLine, isCommunicationLine,
+            playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
+            btn, joystick, editor, containerRef, viewport, env, processMessageHtml,
+            setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
+            focusedIndex, setFocusedIndex, getMessageClassStyle,
+            activePrompt, setActivePrompt, input, setInput,
+            handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+            mapperRef, ...settings, audioCtxRef,
+            telnet, parser,
+            detectLighting: (sym) => { }, setDetectLighting: (fn) => { }
         }}>
             {children}
         </GameContext.Provider>

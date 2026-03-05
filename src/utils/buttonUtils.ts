@@ -16,19 +16,19 @@ export const getButtonCommand = (
 ) => {
     const dist = Math.sqrt(dx * dx + dy * dy);
     const isSwiped = dist > 15;
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    // Cancellation logic: if we moved significantly out (>20px) and now we are back in (<18px)
-    if (maxDist && maxDist > 20 && dist < 18) {
+    // Cancellation logic: South-East (SE) outside the wheel
+    // ~45 degrees is SE. We look for dist beyond the wheel (>110px)
+    if (dist > 110 && angle > 20 && angle < 70) {
         return null;
     }
 
     let cmd = (isLong && !isSwiped && button.longCommand) ? button.longCommand : button.command;
     let actionType = (isLong && !isSwiped && button.longCommand) ? (button.longActionType || 'command') : (button.actionType || 'command');
-    let angle = 0;
     let dir: SwipeDirection | undefined = undefined;
 
     if (isSwiped && button.swipeCommands) {
-        angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
         // Unified Direction Logic (Geared)
         const directions: SwipeDirection[] = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];

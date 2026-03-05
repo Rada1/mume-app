@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CustomButton, SoundTrigger, SavedSettings } from '../types';
-import { useGame } from '../context/GameContext';
+import { CustomButton, SoundTrigger, SavedSettings, Action, ButtonSetSettings } from '../types';
 import { DEFAULT_BG, DEFAULT_URL } from '../constants';
 import { MessageType } from '../types';
 
@@ -9,10 +8,30 @@ interface UseSettingsDeps {
     audioCtxRef: React.RefObject<AudioContext | null>;
     initAudio: () => void;
     setButtons: (buttons: CustomButton[]) => void;
+
+    // Dependencies previously fetched via useGame()
+    isNoviceMode: boolean;
+    setIsNoviceMode: (val: boolean) => void;
+    isSoundEnabled: boolean;
+    setIsSoundEnabled: (val: boolean) => void;
+    abilities: Record<string, number>;
+    setAbilities: (val: Record<string, number>) => void;
+    characterClass: any;
+    setCharacterClass: (val: any) => void;
+    actions: Action[];
+    setActions: (val: Action[]) => void;
+    setSettings: Record<string, ButtonSetSettings>;
+    setSetSettings: (val: Record<string, ButtonSetSettings>) => void;
 }
 
-export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: UseSettingsDeps) {
-    const { isNoviceMode, setIsNoviceMode, isSoundEnabled, setIsSoundEnabled, abilities, setAbilities, characterClass, setCharacterClass } = useGame();
+export function useSettings(deps: UseSettingsDeps) {
+    const {
+        addMessage, audioCtxRef, initAudio, setButtons,
+        isNoviceMode, setIsNoviceMode, isSoundEnabled, setIsSoundEnabled,
+        abilities, setAbilities, characterClass, setCharacterClass,
+        actions, setActions,
+        setSettings, setSetSettings
+    } = deps;
     const [bgImage, setBgImage] = useState(DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState(DEFAULT_URL);
     const [loginName, setLoginName] = useState('');
@@ -25,6 +44,9 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
     // Keep a ref for isSoundEnabled so processLine can read it synchronously
     const isSoundEnabledRef = useRef(isSoundEnabled);
     useEffect(() => { isSoundEnabledRef.current = isSoundEnabled; }, [isSoundEnabled]);
+
+    const soundTriggersRef = useRef(soundTriggers);
+    useEffect(() => { soundTriggersRef.current = soundTriggers; }, [soundTriggers]);
 
 
     // Sync connectionUrl when mmapper mode changes (called by MudClient which owns isMmapperMode)
@@ -59,8 +81,10 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
             isNoviceMode,
             buttons: [] as any, // filled by caller via onExport
             soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest),
+            actions,
             abilities,
-            characterClass
+            characterClass,
+            setSettings
         };
         // Note: buttons array is injected by the caller — see MudClient.exportSettings wrapper
         return settings;
@@ -72,8 +96,10 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
             isSoundEnabled, isNoviceMode,
             buttons: buttons.map(b => ({ ...b, isVisible: undefined } as any)),
             soundTriggers: soundTriggers.map(({ buffer, ...rest }) => rest),
+            actions,
             abilities,
-            characterClass
+            characterClass,
+            setSettings
         };
         const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -102,6 +128,8 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
                     if (settings.isNoviceMode !== undefined) setIsNoviceMode(settings.isNoviceMode);
                     if (settings.abilities) setAbilities(settings.abilities);
                     if (settings.characterClass) setCharacterClass(settings.characterClass);
+                    if (settings.actions) setActions(settings.actions);
+                    if (settings.setSettings) setSetSettings(settings.setSettings);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -163,6 +191,7 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
         isSoundEnabled, setIsSoundEnabled,
         isSoundEnabledRef,
         soundTriggers, setSoundTriggers,
+        soundTriggersRef,
         newSoundPattern, setNewSoundPattern,
         newSoundRegex, setNewSoundRegex,
         handleFileUpload,
@@ -171,5 +200,6 @@ export function useSettings({ addMessage, audioCtxRef, initAudio, setButtons }: 
         importSettings,
         handleSoundUpload,
         handleMmapperModeChange,
+        setSettings, setSetSettings
     };
 }

@@ -1,36 +1,56 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Sun, Moon, Zap, EyeOff, CloudRain, CloudLightning, Snowflake, CloudFog } from 'lucide-react';
 import { LightingType } from '../types';
-import { useGame } from '../context/GameContext';
 
-export function useEnvironment() {
+interface EnvironmentDeps {
+    lighting: LightingType;
+    setLighting: React.Dispatch<React.SetStateAction<LightingType>>;
+    lightningEnabled: boolean;
+    setLightningEnabled: (val: boolean) => void;
+    weather: any;
+    setWeather: React.Dispatch<React.SetStateAction<any>>;
+    isFoggy: boolean;
+    setIsFoggy: (val: boolean) => void;
+    mood: string;
+    setMood: (val: string) => void;
+    spellSpeed: string;
+    setSpellSpeed: (val: string) => void;
+    alertness: string;
+    setAlertness: (val: string) => void;
+    setDetectLighting: (fn: (symbol: string) => void) => void;
+}
+
+export function useEnvironment(deps: EnvironmentDeps) {
     const {
-        lightning: lightingEnabled, setLightning,
+        lighting, setLighting,
+        lightningEnabled, setLightningEnabled,
         weather, setWeather,
-        isFoggy, setIsFoggy
-    } = useGame();
+        isFoggy, setIsFoggy,
+        mood, setMood,
+        spellSpeed, setSpellSpeed,
+        alertness, setAlertness,
+        setDetectLighting
+    } = deps;
 
-    // The 'lightning' state in GameContext refers to the darkness/light toggle effect (for detection)
-    // Here we map it to LightingType ('artificial' | 'moon' | 'dark' | 'sun' | 'none')
-    const [lighting, setLighting] = useState<LightingType>('none');
-
-    const [mood, setMood] = useState('normal');
-    const [spellSpeed, setSpellSpeed] = useState('normal');
-    const [alertness, setAlertness] = useState('normal');
-
-    const detectLighting = useCallback((symbol: string) => {
-        const s = symbol.trim();
+    const detectLightingImpl = useCallback((symbol: string) => {
+        if (!symbol) return;
+        const s = String(symbol).trim();
         let type: LightingType = 'none';
+
+        // MUME Standard Light Symbols
         if (s.includes('!')) type = 'artificial';
-        else if (s.includes(')')) type = 'moon';
+        else if (s.includes(')') || s.includes('(')) type = 'moon';
         else if (/o/i.test(s)) type = 'dark';
         else if (s.includes('*')) type = 'sun';
-        else if (s === '.') type = 'none';
+        else if (s.includes('[') || s.includes('.')) type = 'none';
 
         setLighting(type);
-        // Sync with the boolean 'lightning' state in context for detection logic elsewhere
-        setLightning(type !== 'dark' && type !== 'none');
-    }, [setLightning]);
+    }, [setLighting]);
+
+    useEffect(() => {
+        // Fix: passing the function directly to correctly set the ref
+        setDetectLighting(detectLightingImpl);
+    }, [detectLightingImpl, setDetectLighting]);
 
     const getLightingIcon = () => {
         switch (lighting) {
@@ -65,7 +85,7 @@ export function useEnvironment() {
         setSpellSpeed,
         alertness,
         setAlertness,
-        detectLighting,
+        detectLighting: detectLightingImpl,
         getLightingIcon,
         getWeatherIcon,
     };

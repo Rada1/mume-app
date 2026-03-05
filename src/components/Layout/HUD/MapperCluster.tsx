@@ -1,0 +1,83 @@
+import React from 'react';
+import { Mapper } from '../../Mapper';
+import { MapperRef } from '../../Mapper/mapperTypes';
+import { CustomButton, GameStats } from '../../../types';
+import StatBars from '../../StatBars';
+import { useGame } from '../../../context/GameContext';
+
+interface MapperClusterProps {
+    uiPositions: any;
+    isEditMode: boolean;
+    handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
+    characterName: string;
+    isMmapperMode: boolean;
+    isMobile: boolean;
+    mapperRef: React.RefObject<any>;
+    stats?: GameStats;
+    inCombat?: boolean;
+    handleWimpyChange?: (val: number) => void;
+    isLandscape?: boolean;
+}
+
+export const MapperCluster: React.FC<MapperClusterProps> = ({
+    uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
+    stats, inCombat, handleWimpyChange, isLandscape
+}) => {
+    const { ui, setUI, triggerHaptic } = useGame();
+    const isExpanded = ui.mapExpanded;
+
+    if (isMobile) {
+        return (
+            <div className={`mobile-bottom-gutter ${isExpanded ? 'map-expanded' : ''}`}>
+                <div className="mobile-controls-row" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '30px' }}>
+                    <div
+                        className="swipe-indicator"
+                        onClick={() => { triggerHaptic(20); setUI(prev => ({ ...prev, mapExpanded: !isExpanded })); }}
+                        style={{ width: '60px', height: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '3px', cursor: 'pointer' }}
+                    />
+                </div>
+
+                <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                    <Mapper
+                        ref={mapperRef}
+                        isDesignMode={isEditMode}
+                        characterName={characterName}
+                        isMmapperMode={isMmapperMode}
+                        isMobile={true}
+                        isExpanded={isExpanded}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    const pos = uiPositions.mapper || {};
+    const style: React.CSSProperties = {
+        position: 'absolute',
+        left: (pos.x !== undefined && pos.x < window.innerWidth - 100) ? pos.x : '50px',
+        top: pos.y ?? (pos.x === undefined ? '150px' : undefined),
+        bottom: (pos.x !== undefined || pos.y !== undefined) ? 'auto' : undefined,
+        right: (pos.x !== undefined && pos.x < window.innerWidth - 100) ? 'auto' : undefined,
+        transform: pos.scale ? `scale(${pos.scale})` : undefined,
+        transformOrigin: 'top left',
+        width: pos.w ? `${pos.w}px` : '320px',
+        height: pos.h ? `${pos.h}px` : '320px',
+        cursor: isEditMode ? 'move' : undefined,
+        border: (isEditMode && pos.isDragging) ? '2px dashed #ffff00' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+        borderRadius: '12px',
+        backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
+        overflow: 'visible',
+        zIndex: 1600,
+    };
+
+    return (
+        <div
+            className="mapper-cluster"
+            style={style}
+            onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'mapper', 'cluster'); }}
+        >
+            <Mapper ref={mapperRef} isDesignMode={isEditMode} characterName={characterName} isMmapperMode={isMmapperMode} isMobile={isMobile} />
+            {isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
+        </div>
+    );
+};

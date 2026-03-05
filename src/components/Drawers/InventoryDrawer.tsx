@@ -1,15 +1,19 @@
 import React from 'react';
 
+import { DrawerLine } from '../../types';
+
 interface InventoryDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     triggerHaptic: (ms: number) => void;
+    inventoryLines: DrawerLine[];
 }
 
 export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     isOpen,
     onClose,
-    triggerHaptic
+    triggerHaptic,
+    inventoryLines
 }) => {
     return (
         <div
@@ -56,11 +60,25 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 style={{ cursor: 'ns-resize', touchAction: 'none', height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
             >
                 <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
-                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Empty Drawer</span>
+                <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory</span>
                 <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
             </div>
-            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: 0.3 }}>
-                <span>Bottom Drawer is currently empty</span>
+            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', padding: '10px' }}>
+                {inventoryLines.length === 0 ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.3 }}>
+                        <span>Inventory is currently empty</span>
+                    </div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        {inventoryLines.map(line => (
+                            <div
+                                key={line.id}
+                                style={{ padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)', fontSize: '0.85rem' }}
+                                dangerouslySetInnerHTML={{ __html: line.html }}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

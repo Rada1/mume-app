@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Trash2, Copy } from 'lucide-react';
 import { CustomButton, ActionType, SwipeDirection } from '../types';
+import { makeBackgroundTransparent } from '../utils/imageUtils';
 
 interface EditButtonModalProps {
     editingButton: CustomButton;
@@ -317,6 +318,17 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                 </div>
                             </div>
                             <div className="setting-group">
+                                <label className="setting-label">Border Color</label>
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <input type="color" className="setting-input" style={{ height: '40px', width: '60px', padding: 0 }} value={editingButton.style.borderColor || '#ffffff'} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, borderColor: e.target.value } })} />
+                                    <input className="setting-input" value={editingButton.style.borderColor || '#ffffff'} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, borderColor: e.target.value } })} />
+                                </div>
+                            </div>
+                            <div className="setting-group">
+                                <label className="setting-label">Border Width (px)</label>
+                                <input type="number" className="setting-input" value={editingButton.style.borderWidth || 1} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, borderWidth: parseInt(e.target.value) || 0 } })} />
+                            </div>
+                            <div className="setting-group">
                                 <label className="setting-label">Shape</label>
                                 <select className="setting-input" value={editingButton.style.shape} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, shape: e.target.value as any } })}>
                                     <option value="rect">Rectangle</option>
@@ -325,10 +337,93 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                 </select>
                             </div>
                             <div className="setting-group">
+                                <label className="setting-label">Button Icon</label>
+                                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                                    <input
+                                        type="text"
+                                        className="setting-input"
+                                        placeholder="Image URL..."
+                                        value={editingButton.icon || ''}
+                                        onChange={e => updateButton(editingButton.id, { icon: e.target.value })}
+                                    />
+                                    {editingButton.icon && (
+                                        <button
+                                            className="btn-secondary"
+                                            style={{ marginTop: 0, width: 'auto', padding: '0 10px' }}
+                                            onClick={() => updateButton(editingButton.id, { icon: undefined })}
+                                        >
+                                            Clear
+                                        </button>
+                                    )}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <label className="btn-secondary" style={{ marginTop: 0, cursor: 'pointer', flex: 1 }}>
+                                        Upload Image
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            style={{ display: 'none' }}
+                                            onChange={e => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    const reader = new FileReader();
+                                                    reader.onload = async (ev) => {
+                                                        const base64 = ev.target?.result as string;
+                                                        // Automatically clean backgrounds for uploaded icons
+                                                        const cleaned = await makeBackgroundTransparent(base64);
+                                                        updateButton(editingButton.id, { icon: cleaned });
+                                                    };
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }}
+                                        />
+                                    </label>
+                                    {editingButton.icon && (
+                                        <div style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            borderRadius: '4px',
+                                            background: '#222',
+                                            border: '1px solid #444',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            overflow: 'hidden'
+                                        }}>
+                                            <img src={editingButton.icon} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                                        </div>
+                                    )}
+                                </div>
+                                <span className="setting-helper">Recommended: Transparent SVG or PNG (square).</span>
+                                {editingButton.icon && (
+                                    <div className="setting-group" style={{ marginTop: '10px' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                            <label className="setting-label">Icon Scale</label>
+                                            <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>{(editingButton.style.iconScale || 1).toFixed(1)}x</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="0.2"
+                                            max="3.0"
+                                            step="0.1"
+                                            value={editingButton.style.iconScale || 1}
+                                            onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, iconScale: parseFloat(e.target.value) } })}
+                                            style={{ width: '100%' }}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="setting-group" style={{ display: 'flex', gap: '20px' }}>
                                 <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                                     <input type="checkbox" checked={editingButton.style.transparent} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, transparent: e.target.checked } })} />
-                                    Transparent Background
+                                    Transparent
                                 </label>
+                                {editingButton.style.shape === 'circle' && (
+                                    <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                        <input type="checkbox" checked={editingButton.style.curvedText} onChange={e => updateButton(editingButton.id, { style: { ...editingButton.style, curvedText: e.target.checked } })} />
+                                        Curved Text
+                                    </label>
+                                )}
                             </div>
                         </>
                     )}
@@ -455,7 +550,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

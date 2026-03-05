@@ -9,6 +9,7 @@ interface DialMenuProps {
     onClose: () => void;
     onExecute: (button: CustomButton, e: PointerEvent) => void;
     triggerHaptic: (ms: number) => void;
+    themeColor?: string;
 }
 
 export const DialMenu: React.FC<DialMenuProps> = ({
@@ -18,52 +19,22 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     buttons,
     onClose,
     onExecute,
-    triggerHaptic
+    triggerHaptic,
+    themeColor
 }) => {
     const menuButtons = useMemo(() => buttons.filter(b => b.setId === setId && b.isVisible), [buttons, setId]);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const activeIndexRef = useRef<number | null>(null);
     const lastHapticIndex = useRef<number | null>(null);
 
-    // Dynamic Layout Calculation
+    // Dynamic Layout Calculation - Always centering now
     const layout = useMemo(() => {
-        const radius = 110;
-        const itemSize = 60; // Approximate size of a dial item
-        const margin = 20;
-        const safeMargin = (itemSize / 2) + margin;
-
-        const winW = window.innerWidth;
-        const winH = window.innerHeight;
-
-        const spaceLeft = initialX;
-        const spaceRight = winW - initialX;
-        const spaceTop = initialY;
-        const spaceBottom = winH - initialY;
-
-        let startAngle = 0;
-        let arcLength = 360;
-
-        // Determine if we need to bunch
-        const isNearLeft = spaceLeft < (radius + safeMargin);
-        const isNearRight = spaceRight < (radius + safeMargin);
-        const isNearTop = spaceTop < (radius + safeMargin);
-        const isNearBottom = spaceBottom < (radius + safeMargin);
-
-        if (isNearLeft || isNearRight || isNearTop || isNearBottom) {
-            // Calculate a "Preferred Direction" towards the center of the screen
-            const dxCenter = (winW / 2) - initialX;
-            const dyCenter = (winH / 2) - initialY;
-            const centerAngle = Math.atan2(dyCenter, dxCenter) * 180 / Math.PI;
-
-            // Bunch them into an arch (180 to 240 degrees depending on count)
-            arcLength = menuButtons.length <= 4 ? 120 : (menuButtons.length <= 6 ? 180 : 240);
-            startAngle = centerAngle - (arcLength / 2);
-        }
+        const radius = 130; // Slightly larger for center display
+        const arcLength = 360;
+        const startAngle = -90; // Start from top
 
         const items = menuButtons.map((_, i) => {
-            const angle = menuButtons.length === 1
-                ? (isNearLeft || isNearRight || isNearTop || isNearBottom ? startAngle + arcLength / 2 : 0)
-                : startAngle + (i * (arcLength / (arcLength === 360 ? menuButtons.length : menuButtons.length - 1)));
+            const angle = startAngle + (i * (arcLength / menuButtons.length));
             const rad = (angle * Math.PI) / 180;
             return {
                 angle: (angle + 360) % 360,
@@ -73,12 +44,11 @@ export const DialMenu: React.FC<DialMenuProps> = ({
         });
 
         return { items, startAngle, arcLength };
-    }, [menuButtons, initialX, initialY]);
+    }, [menuButtons]);
 
     useEffect(() => {
         const handleGlobalMove = (e: PointerEvent) => {
             if (e.cancelable) e.preventDefault();
-            // Allow propagation so the source button can update its ray/preview
             const dx = e.clientX - initialX;
             const dy = e.clientY - initialY;
             const dist = Math.sqrt(dx * dx + dy * dy);
@@ -95,7 +65,6 @@ export const DialMenu: React.FC<DialMenuProps> = ({
             let angle = Math.atan2(dy, dx) * 180 / Math.PI;
             if (angle < 0) angle += 360;
 
-            // Selection logic: Find closest button by angle
             let bestIndex = 0;
             let minDiff = Infinity;
 
@@ -107,15 +76,6 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                     bestIndex = i;
                 }
             });
-
-            // If it's a bunched menu, we might want a "cutoff" angle so they don't select buttons from across the circle
-            if (layout.arcLength < 360 && minDiff > 45) {
-                if (activeIndexRef.current !== null) {
-                    setActiveIndex(null);
-                    activeIndexRef.current = null;
-                }
-                return;
-            }
 
             if (bestIndex !== activeIndexRef.current) {
                 setActiveIndex(bestIndex);
@@ -129,7 +89,6 @@ export const DialMenu: React.FC<DialMenuProps> = ({
 
         const handleGlobalUp = (e: PointerEvent) => {
             if (e.cancelable) e.preventDefault();
-            // Allow propagation so the source button can perform cleanup (clear ray, held status, etc.)
             if (activeIndexRef.current !== null && menuButtons[activeIndexRef.current]) {
                 onExecute(menuButtons[activeIndexRef.current], e);
             }
@@ -151,14 +110,32 @@ export const DialMenu: React.FC<DialMenuProps> = ({
             onPointerDown={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                onClose();
             }}
         >
-            <div className="dial-menu-center" style={{ transform: `translate3d(${initialX}px, ${initialY}px, 0)` }}>
-                <div className="dial-selection-center" style={{ '--accent': activeIndex !== null ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || 'var(--accent)') : 'rgba(255,255,255,0.2)' } as any}>
+            <div className="dial-menu-center" style={{
+                position: 'fixed',
+                top: 'var(--wheel-center-y, 50%)',
+                left: 'var(--wheel-center-x, 50%)',
+                transform: 'translate(-50%, -50%)'
+            } as any}>
+                <div className="dial-selection-center" style={{
+                    '--accent': activeIndex !== null ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))') : 'rgba(255,255,255,0.2)',
+                    width: '120px',
+                    height: '120px',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                } as any}>
                     {activeIndex !== null ? (
                         <div className="dial-center-highlight">
                             <div className="dial-center-icon">
-                                {menuButtons[activeIndex].label.length <= 3 ? menuButtons[activeIndex].label : menuButtons[activeIndex].label.substring(0, 2)}
+                                {menuButtons[activeIndex].icon ? (
+                                    <img src={menuButtons[activeIndex].icon} style={{ maxWidth: '70%', maxHeight: '70%', objectFit: 'contain', transform: `scale(${menuButtons[activeIndex].style.iconScale || 1})` }} alt="" />
+                                ) : (
+                                    menuButtons[activeIndex].label.length <= 3 ? menuButtons[activeIndex].label : menuButtons[activeIndex].label.substring(0, 2)
+                                )}
                             </div>
                             <div className="dial-center-label">{menuButtons[activeIndex].label}</div>
                         </div>
@@ -178,11 +155,15 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                                 className={`dial-item ${activeIndex === i ? 'active' : ''}`}
                                 style={{
                                     transform: `translate(-50%, -50%) translate(${item.x}px, ${item.y}px)`,
-                                    '--accent': button.style.borderColor || button.style.backgroundColor || 'var(--accent)'
+                                    '--accent': button.style.borderColor || button.style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))'
                                 } as any}
                             >
                                 <div className="dial-item-icon">
-                                    {button.label.length <= 3 ? button.label : button.label.substring(0, 2)}
+                                    {button.icon ? (
+                                        <img src={button.icon} style={{ maxWidth: '75%', maxHeight: '75%', objectFit: 'contain', transform: `scale(${button.style.iconScale || 1})` }} alt="" />
+                                    ) : (
+                                        button.label.length <= 3 ? button.label : button.label.substring(0, 2)
+                                    )}
                                 </div>
                                 <div className="dial-item-label">{button.label}</div>
                             </div>

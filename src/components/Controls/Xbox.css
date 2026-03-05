@@ -1,0 +1,81 @@
+/* Xbox Controller UI Styles */
+
+.xbox-cluster {
+    position: relative;
+    width: 170px;
+    height: 170px;
+    pointer-events: auto;
+    touch-action: none;
+}
+
+.xbox-btn {
+    position: absolute;
+    touch-action: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50% !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.05) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.xbox-btn:active,
+.is-swiping.xbox-btn {
+    background: rgba(var(--set-accent-rgb, 255, 255, 255), 0.15) !important;
+    border-color: var(--set-accent, #fff) !important;
+    box-shadow: 0 0 20px var(--set-accent, #fff), inset 0 0 10px rgba(255, 255, 255, 0.2) !important;
+    transform: scale(0.92) !important;
+}
+
+/* Individual positions within the 170x170 cluster - Tight Quarter Arc with Z in the corner */
+.xbox-btn.center {
+    left: 90px;
+    top: 90px;
+    width: 70px;
+    height: 70px;
+    z-index: 100;
+}
+
+.xbox-btn.top {
+    left: 100px;
+    top: 15px;
+}
+
+/* Cleric (North) */
+.xbox-btn.right {
+    left: 60px;
+    top: 35px;
+}
+
+/* Ranger (North-West) */
+.xbox-btn.left {
+    left: 25px;
+    top: 75px;
+}
+
+/* Mage (West-North-West) */
+.xbox-btn.bottom {
+    left: 15px;
+    top: 115px;
+}
+
+/* Thief (West) */
+.xbox-btn.outside {
+    left: -40px;
+    top: 40px;
+    width: 44px;
+    height: 44px;
+}
+
+/* Apply individual theme colors to borders at rest (slightly muted) */
+.xbox-btn {
+    border-color: rgba(var(--btn-theme-rgb, 255, 255, 255), 0.4) !important;
+    box-shadow: 0 0 10px rgba(var(--btn-theme-rgb, 255, 255, 255), 0.1), 0 4px 15px rgba(0, 0, 0, 0.4) !important;
+}

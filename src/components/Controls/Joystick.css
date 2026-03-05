@@ -1,0 +1,188 @@
+/* Joystick and Nav Buttons Styles */
+
+.joystick-cluster {
+    position: absolute;
+    bottom: 50px;
+    right: 30px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    touch-action: none;
+    transform: translateZ(100px);
+}
+
+.cluster-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.nav-buttons-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.joystick-container {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.joystick-base {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    touch-action: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    overflow: hidden;
+}
+
+.joystick-base-highlight {
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: conic-gradient(from calc(var(--joy-angle, 0deg) + 90deg - 25deg),
+            transparent 0deg,
+            var(--accent) 25deg,
+            transparent 50deg);
+    opacity: calc(var(--joy-dist, 0) * 0.9);
+    filter: blur(2px);
+    mix-blend-mode: screen;
+    transition: opacity 0.15s ease;
+    z-index: 1;
+}
+
+.joystick-base::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: rgba(10, 10, 10, 0.4);
+    border-radius: 50%;
+    z-index: 2;
+    pointer-events: none;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.joystick-knob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin-left: -25px;
+    margin-top: -25px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    transform-style: preserve-3d;
+    pointer-events: none;
+    transition: box-shadow 0.2s, transform 0.1s ease-out;
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+}
+
+.joystick-knob.active-glow {
+    box-shadow: 0 0 20px var(--accent), inset 0 0 10px rgba(255, 255, 255, 0.2);
+    border-color: var(--accent);
+}
+
+.joystick-knob.resetting {
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+}
+
+.joystick-knob.target-active {
+    box-shadow: 0 0 30px rgba(250, 204, 21, 1), 0 0 60px rgba(250, 204, 21, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.2);
+    border-color: rgba(250, 204, 21, 1);
+    animation: joystick-target-pulse 1s infinite ease-in-out;
+    background: rgba(250, 204, 21, 0.4) !important;
+}
+
+@keyframes joystick-target-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(250, 204, 21, 0.8), 0 0 40px rgba(250, 204, 21, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.2);
+        border-color: rgba(250, 204, 21, 0.8);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(250, 204, 21, 1), 0 0 80px rgba(250, 204, 21, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.4);
+        border-color: rgba(250, 204, 21, 1);
+    }
+}
+
+.nav-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    z-index: 30;
+}
+
+.nav-btn.glow-active {
+    transform: scale(0.95);
+    background: var(--accent);
+    color: #000;
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent);
+}
+
+/* Hide legacy nav buttons as we now have 8-way joystick */
+.nav-buttons-col {
+    display: none !important;
+}
+
+/* Compass Rose Indicators */
+.joystick-compass {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.9;
+}
+
+.joy-label {
+    fill: rgba(255, 255, 255, 0.45);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-family: inherit;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.joy-label.cardinal {
+    font-size: 13px;
+    fill: rgba(255, 255, 255, 0.55);
+}
+
+.joy-label.vertical {
+    fill: rgba(255, 255, 255, 0.65);
+    font-size: 11px;
+}

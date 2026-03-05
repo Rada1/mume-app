@@ -1,47 +1,34 @@
 import React from 'react';
+import { useGame } from '../../context/GameContext';
+import { DrawerLine } from '../../types';
 import StatBars from '../StatBars';
 
 interface CharacterDrawerProps {
     isOpen: boolean;
     onClose: () => void;
-    statsHtml: string;
-    mood: string;
-    setMood: (mood: string) => void;
-    spellSpeed: string;
-    setSpellSpeed: (speed: string) => void;
-    alertness: string;
-    setAlertness: (alertness: string) => void;
-    playerPosition: string;
-    setPlayerPosition: (pos: string) => void;
+    statsLines: DrawerLine[];
     executeCommand: (cmd: string) => void;
-    triggerHaptic: (ms: number) => void;
-    stats: any;
-    hpRowRef: React.RefObject<HTMLDivElement>;
-    manaRowRef: React.RefObject<HTMLDivElement>;
-    moveRowRef: React.RefObject<HTMLDivElement>;
-    handleWimpyChange: (val: number) => void;
 }
 
 export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     isOpen,
     onClose,
-    statsHtml,
-    mood,
-    setMood,
-    spellSpeed,
-    setSpellSpeed,
-    alertness,
-    setAlertness,
-    playerPosition,
-    setPlayerPosition,
-    executeCommand,
-    triggerHaptic,
-    stats,
-    hpRowRef,
-    manaRowRef,
-    moveRowRef,
-    handleWimpyChange
+    statsLines,
+    executeCommand
 }) => {
+    const {
+        mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
+        playerPosition, setPlayerPosition, stats, setStats, triggerHaptic, inCombat
+    } = useGame();
+
+    const handleWimpyChange = (val: number) => {
+        setStats(prev => ({ ...prev, wimpy: val }));
+        executeCommand(`change wimpy ${val}`);
+    };
+
+    const hpRatio = stats.maxHp > 0 ? stats.hp / stats.maxHp : 0;
+    const manaRatio = stats.maxMana > 0 ? stats.mana / stats.maxMana : 0;
+    const moveRatio = stats.maxMove > 0 ? stats.move / stats.maxMove : 0;
     return (
         <div
             className={`character-drawer ${isOpen ? 'open' : ''}`}
@@ -82,7 +69,21 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 
                 <div className="stat-section" style={{ marginBottom: '25px' }}>
                     <div style={{ fontWeight: 'bold', color: 'var(--accent)', marginBottom: '10px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px' }}>STATUS</div>
-                    <div style={{ whiteSpace: 'pre', overflowX: 'auto', fontSize: '0.85rem', lineHeight: '1.4', background: 'rgba(0,0,0,0.3)', padding: '15px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }} dangerouslySetInnerHTML={{ __html: statsHtml }} />
+                    <div style={{
+                        display: 'flex', flexDirection: 'column', gap: '2px',
+                        fontSize: '0.85rem', lineHeight: '1.4',
+                        background: 'rgba(0,0,0,0.3)', padding: '15px',
+                        borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)',
+                        minHeight: '100px'
+                    }}>
+                        {statsLines.map(line => (
+                            <div
+                                key={line.id}
+                                style={{ whiteSpace: 'pre-wrap' }}
+                                dangerouslySetInnerHTML={{ __html: line.html }}
+                            />
+                        ))}
+                    </div>
                 </div>
 
                 <div className="controls-section" style={{ marginBottom: '25px' }}>
@@ -242,7 +243,15 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                         textAlign: 'left'
                     }}
                 >
-                    <StatBars stats={stats} hpRowRef={hpRowRef} manaRowRef={manaRowRef} moveRowRef={moveRowRef} orientation="horizontal" onWimpyChange={handleWimpyChange} />
+                    <StatBars
+                        stats={stats}
+                        hpRatio={hpRatio}
+                        manaRatio={manaRatio}
+                        moveRatio={moveRatio}
+                        inCombat={inCombat}
+                        orientation="horizontal"
+                        onWimpyChange={handleWimpyChange}
+                    />
                 </button>
             </div>
         </div>

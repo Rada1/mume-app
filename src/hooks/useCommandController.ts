@@ -1,358 +1,77 @@
-import { useCallback } from 'react';
-import { useGame } from '../context/GameContext';
-import { Direction, TeleportTarget, MessageType, CustomButton } from '../types';
-import { extractNoun } from '../utils/gameUtils';
-import { MapperRef } from '../components/Mapper';
+import React, { useCallback } from 'react';
+import { mudParser } from '../services/parser/services/mudParser';
+import { useCommandExecutor } from './useCommandExecutor';
+import { useInteractionHandlers } from './useInteractionHandlers';
 
-interface CommandControllerDeps {
+export interface CommandControllerDeps {
     telnet: { sendCommand: (cmd: string) => void };
-    addMessage: (type: MessageType, text: string) => void;
+    addMessage: (type: any, text: string) => void;
     initAudio: () => void;
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
-    mapperRef: React.RefObject<MapperRef>;
-    teleportTargets: TeleportTarget[];
-
-    // Parser/UI state
+    mapperRef: React.RefObject<any>;
+    teleportTargets: any[];
     isDrawerCapture: React.MutableRefObject<boolean>;
-    captureStage: React.MutableRefObject<string>;
+    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
-    setInventoryHtml: (val: string) => void;
-    setStatsHtml: (val: string) => void;
-    setEqHtml: (val: string) => void;
+    setInventoryLines: (val: any) => void;
+    setStatsLines: (val: any) => void;
+    setEqLines: (val: any) => void;
     setCommandPreview: (val: string | null) => void;
+    input: string;
     setInput: (val: string) => void;
-    setTarget: (val: string | null) => void; // Passed from context but also available here
-
-    // UI controls
-    setIsInventoryOpen: (val: boolean) => void;
-    setIsCharacterOpen: (val: boolean) => void;
-    setIsRightDrawerOpen: (val: boolean) => void;
-    setIsMapExpanded: (val: boolean) => void;
-
-    // Environmental/System
-    isMobile: boolean;
+    isNoviceMode: boolean;
+    status: 'connected' | 'disconnected' | 'connecting';
+    target: string | null;
+    setTarget: (val: string | null) => void;
+    popoverState: any;
+    setPopoverState: (val: any) => void;
+    setIsInventoryOpen: (open: boolean) => void;
+    setIsCharacterOpen: (open: boolean) => void;
+    setIsRightDrawerOpen: (open: boolean) => void;
+    setIsMapExpanded: (open: boolean) => void;
+    viewport: any;
     triggerHaptic: (ms: number) => void;
-    btn: {
-        isEditMode: boolean;
-        buttons: CustomButton[];
-        buttonsRef: React.RefObject<CustomButton[]>;
-        setEditingButtonId: (id: string | null) => void;
-        setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
-        setActiveSet: (setId: string) => void;
-    };
-    joystick: {
-        currentDir: string | null;
-        isTargetModifierActive: boolean;
-        setIsJoystickConsumed: (val: boolean) => void;
-    };
+    btn: any;
+    joystick: any;
     wasDraggingRef: React.RefObject<boolean>;
+    ui: {
+        mapExpanded: boolean;
+        drawer: 'none' | 'inventory' | 'character' | 'right';
+        setManagerOpen: boolean;
+    };
+    actions: import('../types').Action[];
+    setActions: (val: import('../types').Action[] | ((prev: import('../types').Action[]) => import('../types').Action[])) => void;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {
-    const {
-        target,
-        setTarget: contextSetTarget,
-        status,
-        popoverState,
-        setPopoverState
-    } = useGame();
+    const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage } = deps;
 
-    const {
-        telnet, addMessage, initAudio, navIntervalRef, mapperRef, teleportTargets,
-        isDrawerCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        setInventoryHtml, setStatsHtml, setEqHtml, setCommandPreview, setInput,
-        setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen, setIsMapExpanded,
-        isMobile, triggerHaptic, btn, joystick,
-        wasDraggingRef
-    } = deps;
+    const { executeCommand } = useCommandExecutor(deps);
+    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick } = useInteractionHandlers({
+        ...deps, executeCommand, ui: deps.ui
+    });
 
-    // Use context setTarget if available, otherwise fallback to deps
-    const setTarget = contextSetTarget || deps.setTarget;
+    const handleSend = useCallback((e?: React.FormEvent) => {
+        e?.preventDefault();
+        const cmd = input.trim();
+        if (!cmd) return;
+        setInput('');
 
-    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false) => {
-        initAudio();
-
-        // Local Target Setting
-        const setTargetMatch = cmd.match(/^(:|#)?target\s*(\s+|=)\s*(.+)$/i) || cmd.match(/^#target\s+(.+)$/i);
-        if (setTargetMatch) {
-            const rawTarget = setTargetMatch[3] || setTargetMatch[2] || setTargetMatch[1];
-            if (rawTarget) {
-                const nounTarget = extractNoun(rawTarget.trim());
-                setTarget(nounTarget);
-                addMessage('system', `Target set to noun: ${nounTarget}`);
-                return;
-            }
+        if (isNoviceMode) {
+            const result = mudParser.parse(cmd);
+            if (result.finalOutput?.length) result.finalOutput.forEach(c => executeCommand(c));
+            else executeCommand(cmd);
+        } else {
+            executeCommand(cmd);
         }
 
-        // Target substitution
-        let finalCmd = cmd;
-        if (target && /\btarget\b/i.test(cmd)) {
-            finalCmd = cmd.replace(/\btarget\b/gi, target);
+        if (viewport?.scrollToBottom) {
+            viewport.scrollToBottom(true, true);
+            setTimeout(() => viewport.scrollToBottom(true, true), 30);
         }
+    }, [input, executeCommand, viewport, isNoviceMode, setInput]);
 
-        if (!isSystem) { // Silent usually means system-triggered or non-logged
-            if (navIntervalRef.current) {
-                clearInterval(navIntervalRef.current);
-                navIntervalRef.current = null;
-                addMessage('system', 'Navigation stopped.');
-            }
-        }
-
-        const lowerCmd = cmd.toLowerCase().trim();
-
-        // Teleport Spell Interception
-        if (teleportTargets.length > 0) {
-            const teleportMatch = lowerCmd.match(/^(cast\s+['"]?(teleport|portal|scry)['"]?)$/i);
-            if (teleportMatch) {
-                const spell = teleportMatch[1];
-                setPopoverState({
-                    x: window.innerWidth / 2 - 100,
-                    y: window.innerHeight / 2 - 100,
-                    type: 'teleport-select',
-                    setId: 'teleport',
-                    spellCommand: spell
-                });
-                return;
-            }
-        }
-
-        // Teleport Manage/Select Command
-        if (lowerCmd.startsWith('#teleport') || lowerCmd.startsWith('#tp') || lowerCmd.startsWith('#targets')) {
-            if (teleportTargets.length > 0 && !lowerCmd.includes('manage') && !lowerCmd.includes('list')) {
-                setPopoverState({
-                    x: window.innerWidth / 2 - 100,
-                    y: window.innerHeight / 2 - 100,
-                    type: 'teleport-select',
-                    setId: 'teleport',
-                    spellCommand: "cast 'teleport'"
-                });
-            } else {
-                setPopoverState({
-                    x: window.innerWidth / 2 - 150,
-                    y: window.innerHeight / 2 - 150,
-                    type: 'teleport-manage',
-                    setId: 'teleport'
-                });
-            }
-            return;
-        }
-
-        isDrawerCapture.current = fromDrawer;
-
-        if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i' || lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'eq' || lowerCmd === 'equipment') {
-            // isDrawerCapture already set above
-        }
-
-        if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
-            isWaitingForInv.current = true;
-            captureStage.current = 'none';
-            setInventoryHtml('');
-        } else if (lowerCmd === 'stat' || lowerCmd === 'st') {
-            isWaitingForStats.current = true;
-            captureStage.current = 'none';
-            setStatsHtml('');
-        } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
-            isWaitingForEq.current = true;
-            captureStage.current = 'none';
-            setEqHtml('');
-        }
-
-        // Failsafe: Hard-stop any captures
-        if (['inventory', 'inv', 'stat', 'eq', 'equipment'].includes(lowerCmd)) {
-            setTimeout(() => {
-                if (captureStage.current !== 'none') {
-                    captureStage.current = 'none';
-                    isWaitingForStats.current = false;
-                    isWaitingForEq.current = false;
-                    isWaitingForInv.current = false;
-                }
-            }, 1000);
-        }
-
-        if (lowerCmd.includes('stat') && lowerCmd.includes('eq')) {
-            isWaitingForStats.current = true;
-            isWaitingForEq.current = true;
-            captureStage.current = 'none';
-            setStatsHtml('');
-            setEqHtml('');
-        }
-
-        if (lowerCmd === 'closeall') {
-            setIsInventoryOpen(false); setIsCharacterOpen(false); setIsRightDrawerOpen(false);
-        }
-
-        if (!silent) addMessage('user', finalCmd);
-        const moveCmd = finalCmd.toLowerCase().trim();
-        const validMoves: Direction[] = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw', 'u', 'd'];
-        let dir: Direction | null = null;
-        if (validMoves.includes(moveCmd as any)) dir = moveCmd as Direction;
-        else if (moveCmd === 'north') dir = 'n';
-        else if (moveCmd === 'south') dir = 's';
-        else if (moveCmd === 'east') dir = 'e';
-        else if (moveCmd === 'west') dir = 'w';
-        else if (moveCmd === 'up') dir = 'u';
-        else if (moveCmd === 'down') dir = 'd';
-        else if (moveCmd === 'northeast') dir = 'ne';
-        else if (moveCmd === 'northwest') dir = 'nw';
-        else if (moveCmd === 'southeast') dir = 'se';
-        else if (moveCmd === 'southwest') dir = 'sw';
-
-        if (dir && ['n', 's', 'e', 'w', 'u', 'd', 'ne', 'nw', 'se', 'sw'].includes(dir)) {
-            mapperRef.current?.pushPendingMove(dir);
-        }
-
-        if (status === 'connected') {
-            telnet.sendCommand(finalCmd);
-        } else if (!silent) {
-            addMessage('error', 'Not connected.');
-        }
-    }, [
-        status, target, teleportTargets,
-        initAudio, addMessage, setTarget, setPopoverState,
-        telnet, navIntervalRef, mapperRef,
-        isDrawerCapture, captureStage, isWaitingForInv, isWaitingForStats, isWaitingForEq,
-        setInventoryHtml, setStatsHtml, setEqHtml,
-        setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen
-    ]);
-
-    const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string) => {
-        e.stopPropagation();
-        if (btn.isEditMode) {
-            if (wasDraggingRef.current) return;
-            btn.setEditingButtonId(button.id);
-        }
-        else {
-            const targetEl = (e.currentTarget && (e.currentTarget as any).classList) ? (e.currentTarget as HTMLElement) : null;
-            if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'teleport-manage'].includes(button.actionType || '')) {
-                setPopoverState(null);
-            }
-            if (targetEl) {
-                targetEl.classList.remove('btn-glow-active');
-                void targetEl.offsetWidth;
-                targetEl.classList.add('btn-glow-active');
-            }
-            triggerHaptic(15);
-
-            let cmd = button.command;
-            if (context) {
-                // If command contains %n, replace it, otherwise append with space
-                if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, context);
-                else cmd = `${cmd} ${context}`;
-            }
-
-            let finalCmd = cmd;
-            if (joystick.currentDir) {
-                const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
-                const fullDir = dirMap[joystick.currentDir] || joystick.currentDir;
-                finalCmd = `${finalCmd} ${fullDir}`;
-                joystick.setIsJoystickConsumed(true);
-            } else if (joystick.isTargetModifierActive && target) {
-                finalCmd = `${finalCmd} ${target}`;
-                joystick.setIsJoystickConsumed(true);
-            }
-
-            if (button.actionType === 'nav') btn.setActiveSet(button.command);
-            else if (button.actionType === 'assign' || button.actionType === 'menu' || button.actionType === 'select-assign') {
-                const rect = targetEl ? targetEl.getBoundingClientRect() : null;
-                const x = rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2;
-                const y = rect ? rect.top : (e as any).clientY || window.innerHeight / 2;
-
-                const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
-                const modifierStr = joystick.currentDir ? (dirMap[joystick.currentDir] || joystick.currentDir) : (joystick.isTargetModifierActive && target ? target : '');
-
-                setPopoverState({
-                    x,
-                    y,
-                    sourceHeight: rect?.height,
-                    setId: button.command,
-                    context: button.actionType === 'select-assign' ? modifierStr : (context || button.label),
-                    assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
-                    executeAndAssign: button.actionType === 'select-assign',
-                    menuDisplay: button.menuDisplay,
-                    initialPointerX: rect ? (rect.left + rect.width / 2) : (e as any).clientX,
-                    initialPointerY: rect ? (rect.top + rect.height / 2) : (e as any).clientY
-                });
-            } else if (button.actionType === 'teleport-manage') {
-                setPopoverState({
-                    x: window.innerWidth / 2 - 150,
-                    y: window.innerHeight / 2 - 150,
-                    type: 'teleport-manage',
-                    setId: 'teleport'
-                });
-            } else if (button.actionType === 'select-recipient') {
-                const rect = targetEl ? targetEl.getBoundingClientRect() : null;
-                setPopoverState({
-                    x: rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2,
-                    y: rect ? rect.top : (e as any).clientY || window.innerHeight / 2,
-                    sourceHeight: rect?.height,
-                    type: 'give-recipient-select',
-                    setId: button.setId || 'main',
-                    context: finalCmd
-                });
-            } else if (button.actionType === 'preload') {
-                // Preload: put only the button's command into the input, never append context
-                setInput(button.command + ' ');
-                const el = document.querySelector('input');
-                if (el) el.focus();
-            } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
-                setTarget(null);
-                addMessage('system', 'Target cleared.');
-            } else {
-                setCommandPreview(finalCmd);
-                executeCommand(finalCmd, false, false);
-                setTimeout(() => setCommandPreview(null), 150);
-
-                // Auto-refresh drawers if interacting with inventory/equipment buttons
-                if (button.setId === 'inventorylist' || button.setId === 'equipmentlist') {
-                    // Slight delay to allow MUD to process the change
-                    setTimeout(() => {
-                        if (button.setId === 'inventorylist' || button.command.includes('remove')) {
-                            executeCommand('inv', false, true, true, true);
-                        }
-                        if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold') || button.command.includes('wield')) {
-                            executeCommand('eq', false, true, true, true);
-                        }
-                    }, 500);
-                }
-            }
-            if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-            if (button.trigger?.closeKeyboard) {
-                (document.activeElement as HTMLElement)?.blur();
-            }
-        }
-    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview]);
-
-    const handleInputSwipe = useCallback((dir: string) => {
-        if (!isMobile) return;
-        triggerHaptic(20);
-        if (dir === 'up') {
-            setIsMapExpanded(true);
-        } else if (dir === 'down') {
-            // Closing all drawers on swipe down
-            if (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInv.current || setIsInventoryOpen || setIsCharacterOpen || setIsRightDrawerOpen || setIsMapExpanded) {
-                // We use isWaiting* as proxies for "is it open/opening"
-                triggerHaptic(15);
-                setIsInventoryOpen(false);
-                setIsRightDrawerOpen(false);
-                setIsCharacterOpen(false);
-                setIsMapExpanded(false);
-            } else executeCommand('s');
-        } else if (dir === 'right') {
-            // Swipe right (left to right) opens character
-            setStatsHtml('');
-            executeCommand('stat', false, true, true); // silent=false, isSystem=true, isHistorical=true
-            setIsCharacterOpen(true);
-        }
-        else if (dir === 'left') {
-            // Swipe left (right to left) opens inventory/equipment
-            setInventoryHtml(''); setEqHtml('');
-            executeCommand('inventory', false, true, true, true);
-            setTimeout(() => executeCommand('eq', false, true, true, true), 300);
-            setIsRightDrawerOpen(true);
-        }
-    }, [isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsInventoryOpen, setIsCharacterOpen, setIsRightDrawerOpen, executeCommand, setStatsHtml, setInventoryHtml, setEqHtml]);
-
-    return { executeCommand, handleButtonClick, handleInputSwipe };
+    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick };
 }

@@ -1,0 +1,145 @@
+/* Custom Buttons and Design Mode Styles */
+
+.custom-buttons-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 500;
+    pointer-events: none;
+    transform: translateZ(105px);
+    transform-style: preserve-3d;
+}
+
+.custom-btn {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-weight: bold;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    cursor: pointer;
+    pointer-events: auto;
+    user-select: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    touch-action: none;
+    transform-style: preserve-3d;
+}
+
+.custom-btn:active,
+.custom-btn.is-swiping {
+    transform: scale(0.92);
+    background: rgba(var(--set-accent-rgb, 255, 255, 255), 0.15) !important;
+    border-color: var(--set-accent, #fff) !important;
+    box-shadow: 0 0 20px var(--set-accent, #fff), inset 0 0 10px rgba(255, 255, 255, 0.2) !important;
+}
+
+.button-icon {
+    max-width: 75%;
+    max-height: 75%;
+    object-fit: contain;
+    pointer-events: none;
+    filter: saturate(0.6) opacity(0.7);
+    transition: all 0.2s;
+}
+
+.custom-btn:active .button-icon,
+.custom-btn.is-swiping .button-icon {
+    filter: saturate(1.5) drop-shadow(0 0 10px var(--set-accent, #fff));
+    opacity: 1;
+}
+
+.button-label {
+    text-align: center;
+    width: 100%;
+    padding: 0 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Design Mode Elements */
+.resize-handle {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    cursor: se-resize;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    touch-action: none;
+}
+
+.shape-circle .resize-handle {
+    bottom: 15%;
+    right: 15%;
+}
+
+.shape-pill {
+    border-radius: 999px;
+}
+
+.shape-rect {
+    border-radius: 8px;
+}
+
+.shape-circle {
+    border-radius: 50%;
+}
+
+.add-btn-fab {
+    position: absolute;
+    bottom: 240px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--set-accent, var(--accent));
+    color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 50;
+}
+
+.exit-design-mode-fab {
+    position: absolute;
+    bottom: 310px;
+    right: 30px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #3b82f6;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 50;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.exit-design-mode-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
+
+.exit-design-mode-fab:active {
+    transform: scale(0.9);
+}
+
+.edit-mode-active .exit-design-mode-fab {
+    z-index: 205;
+    animation: pulse-blue 2s infinite;
+}

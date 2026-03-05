@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { CustomButton, PopoverState, SwipeDirection } from '../types';
 import { getButtonCommand } from '../utils/buttonUtils';
 
@@ -89,12 +90,29 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 height: useDefaultPositioning ? `${button.style.h}px` : undefined,
                 backgroundColor: button.style.backgroundColor || 'rgba(255,255,255,0.05)',
                 borderColor: button.style.borderColor || 'rgba(255,255,255,0.2)',
+                borderWidth: `${button.style.borderWidth !== undefined ? button.style.borderWidth : 1}px`,
+                borderStyle: 'solid',
+                '--btn-theme-rgb': button.style.borderColor ? (() => {
+                    const hex = button.style.borderColor.replace('#', '');
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
+                    return !isNaN(r) ? `${r}, ${g}, ${b}` : '255, 255, 255';
+                })() : '255, 255, 255',
                 color: button.style.color || '#fff',
                 fontSize: `${button.style.fontSize || 0.8}rem`,
                 borderRadius: `${button.style.borderRadius || 8}px`,
+                '--set-accent': button.style.borderColor || 'var(--accent)',
+                '--set-accent-rgb': button.style.borderColor ? (() => {
+                    const hex = button.style.borderColor.replace('#', '');
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
+                    return !isNaN(r) ? `${r}, ${g}, ${b}` : '255, 255, 255';
+                })() : '255, 255, 255',
                 opacity: (button.isVisible || isEditMode) ? 1 : 0,
                 pointerEvents: (button.isVisible || isEditMode) ? 'auto' : 'none',
-                boxShadow: button.trigger?.enabled && button.isVisible ? `0 0 20px ${getGlowColor()}` : 'none',
+                boxShadow: (button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColor()}` : 'none',
                 zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100))
             } as any}
             onPointerDown={(e) => {
@@ -207,38 +225,39 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 const isLong = (Date.now() - el._startTime) > 500;
                 const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
                 setCommandPreview(preview?.cmd || null);
-                setActiveDir(preview?.dir || null);
+
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                const distToCenter = Math.sqrt(dx * dx + dy * dy);
+                const isSwipedOut = el._maxDist > 25;
+
+                if (preview?.isSwipe) {
+                    setActiveDir(preview.dir || null);
+                    el.style.setProperty('--cancel-opacity', '0');
+                } else if (preview && isSwipedOut && distToCenter < 20) {
+                    setActiveDir('center' as any);
+                    el.style.setProperty('--cancel-opacity', '0');
+                } else if (!preview && distToCenter > 110 && angle > 20 && angle < 70) {
+                    setActiveDir(null);
+                    el.style.setProperty('--cancel-opacity', '1');
+                    el.style.setProperty('--cancel-scale', '1.1');
+                } else {
+                    setActiveDir(null);
+                    el.style.setProperty('--cancel-opacity', '0');
+                    el.style.setProperty('--cancel-scale', '0.5');
+                }
 
                 // Update the Dynamic Compass Ray
-                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
                 const snappedAngle = Math.round(angle / 45) * 45;
-
-                if (dist > 20 && snappedAngle !== el._lastSnappedAngle) {
-                    triggerHaptic(5); // Very light "tick" as it snaps
+                if (distToCenter > 20 && snappedAngle !== el._lastSnappedAngle) {
+                    triggerHaptic(5);
                     el._lastSnappedAngle = snappedAngle;
                 }
 
                 el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
-                el.style.setProperty('--ray-length', `${dist + 50}px`);
-
+                el.style.setProperty('--ray-length', `${distToCenter + 50}px`);
                 const timePassed = Date.now() - el._startTime;
-                const isHeld = timePassed > 150 || dist > 60;
-
-                el.style.setProperty('--ray-opacity', (dist > 20 && isHeld) ? '1' : '0');
-
-                // Cancel Indicator Logic
-                if (el._maxDist > 20 && isHeld) {
-                    el.style.setProperty('--cancel-opacity', '1');
-                    if (dist < 18) {
-                        el.style.setProperty('--cancel-scale', '1.2');
-                        el.style.setProperty('--ray-opacity', isHeld ? '0.3' : '0');
-                    } else {
-                        el.style.setProperty('--cancel-scale', '1');
-                    }
-                } else {
-                    el.style.setProperty('--cancel-opacity', '0');
-                    el.style.setProperty('--cancel-scale', '0.5');
-                }
+                const isHeld = timePassed > 150 || distToCenter > 60;
+                el.style.setProperty('--ray-opacity', (distToCenter > 20 && isHeld && preview) ? '1' : '0');
             }}
             onPointerUp={(e) => {
                 const el = e.currentTarget as any;
@@ -321,25 +340,77 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 }
             }}
         >
-            <div className="swipe-wheel-container">
-                {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
-                    const cmd = button.swipeCommands?.[d as SwipeDirection] || button.longSwipeCommands?.[d as SwipeDirection];
-                    return (
-                        <div
-                            key={d}
-                            className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
-                            style={{ transform: `rotate(${i * 45}deg)`, opacity: cmd ? 1 : 0.35 }}
-                        >
-                            <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
-                                {cmd || d.toUpperCase()}
-                            </span>
+            {activeDir && createPortal(
+                <>
+                    <div className="swipe-wheel-container" style={{
+                        zIndex: 50000,
+                        '--set-accent': button.style.borderColor || 'var(--set-accent, var(--accent))',
+                        '--set-accent-rgb': button.style.borderColor ? (() => {
+                            const hex = button.style.borderColor.replace('#', '');
+                            const r = parseInt(hex.substring(0, 2), 16);
+                            const g = parseInt(hex.substring(2, 4), 16);
+                            const b = parseInt(hex.substring(4, 6), 16);
+                            return !isNaN(r) ? `${r}, ${g}, ${b}` : 'var(--set-accent-rgb, var(--accent-rgb))';
+                        })() : 'var(--set-accent-rgb, var(--accent-rgb))'
+                    } as any}>
+                        {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
+                            const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || '').trim();
+                            const angle = i * 45;
+                            const isActive = activeDir === d;
+                            const shouldFlip = angle > 90 && angle < 270;
+                            return (
+                                <div
+                                    key={d}
+                                    className={`swipe-slice ${isActive ? 'active' : ''}`}
+                                    style={{
+                                        transform: `rotate(${angle}deg)`,
+                                        // Show slice if it has a command OR if it's currently active (highlighted)
+                                        opacity: (cmdVal || isActive) ? 1 : 0,
+                                        pointerEvents: 'auto',
+                                    } as any}
+                                >
+                                    <div className="slice-separator" />
+                                    {cmdVal && (
+                                        <span className={`swipe-slice-label ${shouldFlip ? 'flip' : ''}`}>
+                                            {cmdVal}
+                                        </span>
+                                    )}
+                                </div>
+                            );
+                        })}
+                        <div className={`swipe-center ${(activeDir as any) === 'center' ? 'active' : ''}`}>
+                            <svg className="curved-label-svg" viewBox="0 0 100 100" style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
+                                <path id={`swipe-curve-${button.id}`} d="M 18,50 A 32,32 0 1 1 82,50 A 32,32 0 1 1 18,50" fill="transparent" />
+                                <text style={{ fontSize: '12.5px', fontWeight: '900', fill: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                    <textPath href={`#swipe-curve-${button.id}`} startOffset="25%" textAnchor="middle">
+                                        {button.command || button.label}
+                                    </textPath>
+                                </text>
+                            </svg>
                         </div>
-                    );
-                })}
-            </div>
+                    </div>
+                    <div className="cancel-indicator" style={{
+                        '--cancel-x': `calc(var(--wheel-center-x, 50%) + 130px)`,
+                        '--cancel-y': `calc(var(--wheel-center-y, 50%) + 130px)`
+                    } as any}>Cancel</div>
+                </>,
+                document.body
+            )}
             <div className="swipe-ray" />
-            <div className="cancel-indicator">Cancel</div>
-            <div className="button-label">{button.label}</div>
+            {button.icon ? (
+                <img src={button.icon} className="button-icon" alt="" style={{ transform: `scale(${button.style.iconScale || 1})` }} />
+            ) : (button.style.curvedText && button.style.shape === 'circle') ? (
+                <svg className="curved-label-svg" viewBox="0 0 100 100" style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none' }}>
+                    <path id={`curve-${button.id}`} d="M 18,50 A 32,32 0 1 1 82,50 A 32,32 0 1 1 18,50" fill="transparent" />
+                    <text style={{ fontSize: `${(button.style.fontSize || 1.1) * 14}px`, fontWeight: '900', fill: button.style.color || '#fff', textTransform: 'uppercase', letterSpacing: '2px' }}>
+                        <textPath href={`#curve-${button.id}`} startOffset="25%" textAnchor="middle">
+                            {button.label}
+                        </textPath>
+                    </text>
+                </svg>
+            ) : (
+                <div className="button-label">{button.label}</div>
+            )}
 
             {isEditMode && (
                 <>

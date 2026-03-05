@@ -5,7 +5,7 @@ export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 'se' | 'sw';
-export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in';
+export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
 export type TriggerAction = 'show' | 'switch_set';
 
 export interface Message {
@@ -19,6 +19,16 @@ export interface Message {
     stackCount?: number; // How many copies of this message are stacked
     stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")
     isComm?: boolean; // True if this is a communication message (says, tells, etc.)
+}
+
+export interface DrawerLine {
+    id: string;
+    text: string;
+    html: string;
+    isHeader?: boolean;
+    isItem?: boolean;
+    cmd?: string;
+    context?: string;
 }
 
 export interface GameStats {
@@ -36,12 +46,14 @@ export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign'
 export interface CustomButton {
     id: string;
     label: string;
+    icon?: string;
     command: string; // Used as payload (command or target set ID)
     setId?: string; // The menu set this button belongs to (default 'main')
     actionType?: ActionType; // What the button does
     longActionType?: ActionType;
     swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
     longSwipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
+    longCommand?: string;
     display: 'floating' | 'inline'; // How the button is shown
     style: {
         x: number; // percentage of viewport width
@@ -54,6 +66,9 @@ export interface CustomButton {
         fontSize?: number; // Optional font size in rem
         borderRadius?: number; // Optional border radius in px
         transparent?: boolean; // New transparent flag
+        iconScale?: number; // Optional icon scale
+        borderWidth?: number; // Optional border width
+        curvedText?: boolean; // Optional curved text flag
         shape: 'rect' | 'pill' | 'circle';
 
     };
@@ -70,7 +85,6 @@ export interface CustomButton {
         closeKeyboard?: boolean; // Close keyboard after clicking
     };
     isVisible: boolean; // Runtime state
-    longCommand?: string; // Command sent on long-press
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
     longSwipeCommands?: Partial<Record<SwipeDirection, string>>;
     menuDisplay?: 'list' | 'dial';
@@ -114,12 +128,44 @@ export interface PopoverState {
     spellCommand?: string; // e.g. "cast 'teleport'"
 }
 
+export interface PopoverManagerProps {
+    popoverState: PopoverState | null;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
+    popoverRef: React.RefObject<HTMLDivElement>;
+    buttons: CustomButton[];
+    setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
+    availableSets: string[];
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean) => void;
+    addMessage: (type: MessageType, content: string) => void;
+    setTarget: (target: string | null) => void;
+    teleportTargets: TeleportTarget[];
+    setTeleportTargets: React.Dispatch<React.SetStateAction<TeleportTarget[]>>;
+    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string) => void;
+    triggerHaptic: (ms: number) => void;
+    roomPlayers: string[];
+    setSettings: Record<string, ButtonSetSettings>;
+}
+
+
+export interface Action {
+    id: string;
+    pattern: string;
+    command: string;
+    isRegex: boolean;
+    enabled: boolean;
+}
+
+export interface ButtonSetSettings {
+    themeColor?: string;
+}
+
 export interface SavedSettings {
     version: number;
     connectionUrl: string;
     bgImage: string;
     buttons: CustomButton[];
     soundTriggers: Omit<SoundTrigger, 'buffer'>[];
+    actions?: Action[];
     combatSet?: string;
     defaultSet?: string;
     loginName?: string;
@@ -128,6 +174,7 @@ export interface SavedSettings {
     isNoviceMode?: boolean;
     abilities?: Record<string, number>;
     characterClass?: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
+    setSettings?: Record<string, ButtonSetSettings>;
 }
 
 export interface RoomNode {
@@ -148,6 +195,7 @@ export interface SpatButton {
     id: string;
     btnId: string;
     label: string;
+    icon?: string;
     command: string;
     action: string;
     startX: number;

@@ -66,7 +66,7 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
         );
     }, []);
 
-    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean) => {
+    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string) => {
         if (type === 'prompt') return; // Prompts are handled by activePrompt state, not history
 
         setMessages(prev => {
@@ -160,7 +160,7 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
             }
 
             const msg: Message = {
-                id: Math.random().toString(36).substring(7),
+                id: mid || Math.random().toString(36).substring(7),
                 html,
                 textRaw: text,
                 type,
@@ -177,7 +177,7 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
             }
             return [...nextMessages, msg];
         });
-    }, [isCombatLine, isCommunicationLine, inCombatRef]);
+    }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages]);
 
     return {
         messages,

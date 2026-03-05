@@ -44,8 +44,8 @@ const InputArea: React.FC<InputAreaProps> = ({
             className={`input-area ${terrainClass}`}
             onPointerDown={(e) => {
                 const targetElement = e.target as HTMLElement;
-                // Allow prompt to be clicked normally
-                if (targetElement.classList.contains('cmd-prompt')) return;
+                // Allow prompt and target badge to be clicked normally
+                if (targetElement.classList.contains('cmd-prompt') || targetElement.closest('.target-badge')) return;
 
                 startPos.current = { x: e.clientX, y: e.clientY };
                 isSwiping.current = true;
