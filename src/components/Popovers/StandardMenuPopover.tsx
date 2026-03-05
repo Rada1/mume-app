@@ -55,7 +55,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             className="popover-item"
                             data-menu-item="true"
                             onPointerDown={(e) => e.preventDefault()}
-                            style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: themeColor || 'var(--set-accent, var(--accent))', fontWeight: 'bold' }}
+                            style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: 'var(--accent)', fontWeight: 'bold' }}
                             onClick={() => {
                                 const setName = popoverState.setId;
                                 const dir = popoverState.assignSwipeDir;

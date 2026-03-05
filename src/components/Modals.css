@@ -123,7 +123,7 @@ select.setting-input {
 .popover-menu {
     position: fixed;
     background: rgba(10, 10, 10, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--accent, rgba(255, 255, 255, 0.25));
     border-radius: 12px;
     padding: 12px;
     z-index: 2500;
@@ -162,7 +162,8 @@ select.setting-input {
     transition: background 0.2s;
 }
 
-.popover-item.active-drag {
+.popover-item.active-drag,
+.popover-item:hover {
     background: var(--accent);
     color: #000;
 }

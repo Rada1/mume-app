@@ -73,15 +73,9 @@ const Joystick: React.FC<JoystickProps> = ({
                         <text x="50" y="88" textAnchor="middle" className="joy-label cardinal">S</text>
                         <text x="88" y="54" textAnchor="middle" className="joy-label cardinal">E</text>
                         <text x="12" y="54" textAnchor="middle" className="joy-label cardinal">W</text>
-
-                        {/* Vertical Indicators */}
+                        {/* Vertical Indicators (Arrows only, no text) */}
                         <g className="joy-label vertical" style={{ fontWeight: 900 }}>
-                            {/* NW -> Up */}
-                            <text x="24" y="34" textAnchor="middle">U</text>
                             <path d="M 17,24 L 24,17 L 31,24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
-
-                            {/* SE -> Down */}
-                            <text x="76" y="66" textAnchor="middle">D</text>
                             <path d="M 69,76 L 76,83 L 83,76" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
                         </g>
                     </svg>

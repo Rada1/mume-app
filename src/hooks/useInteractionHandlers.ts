@@ -62,7 +62,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         const targetEl = (e.currentTarget as HTMLElement);
         if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'teleport-manage'].includes(button.actionType || '')) setPopoverState(null);
         if (targetEl?.classList) { targetEl.classList.remove('btn-glow-active'); void targetEl.offsetWidth; targetEl.classList.add('btn-glow-active'); }
-        triggerHaptic(15);
+        triggerHaptic(35);
 
         let cmd = button.command;
         if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`; }

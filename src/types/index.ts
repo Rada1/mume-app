@@ -94,6 +94,7 @@ export interface CustomButton {
         characterClass?: string[]; // Allowed classes
     };
     hideIfUnknown?: boolean;
+    isDimmed?: boolean; // True if button should be visible but heavily transparent
 }
 
 export interface SoundTrigger {

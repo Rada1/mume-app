@@ -56,8 +56,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
 }) => {
     const [activeDir, setActiveDir] = React.useState<SwipeDirection | null>(null);
     const [isCancelling, setIsCancelling] = React.useState(false);
-    // We use some internal state pointers on the element to avoid complex React state for high-frequency events
+    const [wheelPos, setWheelPos] = React.useState({ x: 0, y: 0 });
     const buttonRef = useRef<HTMLDivElement>(null);
+    // We use some internal state pointers on the element to avoid complex React state for high-frequency events
 
     if (button.display === 'inline') return null;
 
@@ -111,8 +112,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     const b = parseInt(hex.substring(4, 6), 16);
                     return !isNaN(r) ? `${r}, ${g}, ${b}` : '255, 255, 255';
                 })() : '255, 255, 255',
-                opacity: (button.isVisible || isEditMode) ? 1 : 0,
-                pointerEvents: (button.isVisible || isEditMode) ? 'auto' : 'none',
+                opacity: (button.isVisible || isEditMode) ? (button.isDimmed ? 0.15 : 1) : 0,
+                pointerEvents: (button.isVisible || isEditMode) ? (button.isDimmed && !isEditMode ? 'none' : 'auto') : 'none',
                 boxShadow: (button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColor()}` : 'none',
                 zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100))
             } as any}
@@ -132,6 +133,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     el._maxDist = 0;
                     el._didFire = false;
                     el._didLong = false;
+                    setWheelPos({ x: e.clientX, y: e.clientY });
                     wasDraggingRef.current = false;
 
                     // Long press for submenu/assignment or auto-repeat
@@ -160,7 +162,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                                 if (firstPreview?.cmd) {
                                     executeCommand(firstPreview.cmd);
                                     if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
-                                    triggerHaptic(50);
+                                    triggerHaptic(40);
                                 }
                                 el._didFire = true;
                                 el._didLong = true;
@@ -237,19 +239,26 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     }
                 }
 
-                const isLong = (Date.now() - el._startTime) > 500;
+                const distToCenter = Math.sqrt(dx * dx + dy * dy);
+                const isLong = (Date.now() - el._startTime) > 500 && distToCenter < 25;
                 const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
                 setCommandPreview(preview?.cmd || null);
 
                 const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                const distToCenter = Math.sqrt(dx * dx + dy * dy);
                 const isSwipedOut = el._maxDist > 25;
-                const isCancelZone = distToCenter > 70 && angle > 0 && angle < 90;
+                // Cancellation logic: Absolute Screen Position
+                // Instead of a relative wedge, we check if the pointer is physically over the 65px "Cancel" bubble
+                // Bubble is at (window.innerWidth/2 + 100), (window.innerHeight/2 + 100)
+                const cancelX = window.innerWidth / 2 + 100;
+                const cancelY = window.innerHeight / 2 + 100;
+                const distToCancelBubble = Math.sqrt(Math.pow(e.clientX - cancelX, 2) + Math.pow(e.clientY - cancelY, 2));
+
+                const isCancelZone = distToCancelBubble < 45; // 45px radius for a 65px visual bubble (forgiving hitbox)
 
                 if (isCancelZone) {
                     setActiveDir(null);
                     el.style.setProperty('--cancel-opacity', '1');
-                    el.style.setProperty('--cancel-scale', '1.15');
+                    el.style.setProperty('--cancel-scale', '1.25');
                     setIsCancelling(true);
                 } else if (preview?.isSwipe) {
                     setActiveDir(preview.dir || null);
@@ -269,7 +278,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 // Update the Dynamic Compass Ray
                 const snappedAngle = Math.round(angle / 45) * 45;
                 if (distToCenter > 20 && snappedAngle !== el._lastSnappedAngle) {
-                    triggerHaptic(5);
+                    triggerHaptic(15);
                     el._lastSnappedAngle = snappedAngle;
                 }
 
@@ -277,7 +286,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 el.style.setProperty('--ray-length', `${distToCenter + 50}px`);
                 const timePassed = Date.now() - el._startTime;
                 const isHeld = timePassed > 150 || distToCenter > 60;
-                el.style.setProperty('--ray-opacity', (distToCenter > 20 && isHeld && preview) ? '1' : '0');
+
+                // Keep ray visible during cancellation and turn it red for warning
+                const shouldShowRay = distToCenter > 20 && isHeld && (preview || isCancelZone);
+                el.style.setProperty('--ray-opacity', shouldShowRay ? '1' : '0');
+                el.style.setProperty('--ray-color', isCancelZone ? '#ef4444' : (button.style.borderColor || 'var(--set-accent, var(--accent))'));
             }}
             onPointerUp={(e) => {
                 const el = e.currentTarget as any;
@@ -285,13 +298,14 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                 const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                const isLong = (Date.now() - el._startTime) > 500;
+                const isOverButton = dist < 25;
+                const isLong = (Date.now() - el._startTime) > 500 && isOverButton;
 
-                // If returned to center, we force a non-swipe, non-long check to trigger primary command
-                const isReturnToCenter = dist < 20 && el._maxDist > 15;
+                // If returned to center, we force a non-swipe check to trigger primary command
+                const isReturnToCenter = isOverButton && el._maxDist > 15;
                 const finalDx = isReturnToCenter ? 0 : dx;
                 const finalDy = isReturnToCenter ? 0 : dy;
-                const finalIsLong = isReturnToCenter ? false : isLong;
+                const finalIsLong = isOverButton ? isLong : false;
 
                 const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, finalIsLong);
 
@@ -315,16 +329,21 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                 if (el._didFire) { el._didFire = false; return; }
 
-                // Final robust check for cancellation to prevent stale state issues
-                const finalAngle = Math.atan2(dy, dx) * 180 / Math.PI;
-                if (finalIsCancelling || (dist > 70 && finalAngle > 0 && finalAngle < 90)) return;
+                // Final check for cancellation (Absolute Screen Hitbox)
+                const cancelX = window.innerWidth / 2 + 100;
+                const cancelY = window.innerHeight / 2 + 100;
+                const distToCancelBubble = Math.sqrt(Math.pow(e.clientX - cancelX, 2) + Math.pow(e.clientY - cancelY, 2));
+
+                if (finalIsCancelling || distToCancelBubble < 45) return;
 
                 if (previewCmd && previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                     // Unified release: Execute whatever direction/command was being previewed
                     if (previewCmd.actionType === 'nav') {
                         setActiveSet(previewCmd.cmd);
+                        triggerHaptic(35);
                     } else if (previewCmd.actionType === 'assign' || previewCmd.actionType === 'menu' || previewCmd.actionType === 'select-assign') {
                         const rect = el.getBoundingClientRect();
+                        triggerHaptic(40);
                         setPopoverState({
                             x: rect.right + 10, y: rect.top, sourceHeight: rect.height, setId: previewCmd.cmd,
                             context: previewCmd.actionType === 'select-assign' ? previewCmd.modifiers : button.label,
@@ -335,12 +354,29 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     } else {
                         executeCommand(previewCmd.cmd, false, false);
                         if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
-                        triggerHaptic(15);
+                        triggerHaptic(35);
                         el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
                     }
                 } else {
                     // No preview (cancelled, static tap, or returned to center)
                     if (el._maxDist < 15 || isReturnToCenter) {
+                        // Fire haptic and glow directly here — handleButtonClick's e.currentTarget may be null
+                        triggerHaptic(35);
+                        el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
+
+                        // Double-tap targeting: two taps within 300ms sets the button's command as target
+                        const now = Date.now();
+                        const lastTap = el._lastTapTime || 0;
+                        el._lastTapTime = now;
+                        if (now - lastTap < 300 && !isReturnToCenter) {
+                            const targetCmd = button.command?.trim();
+                            if (targetCmd && targetCmd !== '__clear_target__') {
+                                executeCommand(`target ${targetCmd}`);
+                                triggerHaptic(60);
+                                return;
+                            }
+                        }
+
                         handleButtonClick(button, e);
                     }
                 }
@@ -375,20 +411,26 @@ export const GameButton: React.FC<GameButtonProps> = ({
             }}
         >
             {(activeDir || isCancelling) && createPortal(
-                <>
-                    <div className="swipe-wheel-container" style={{
-                        zIndex: 50000,
-                        '--set-accent': button.style.borderColor || 'var(--set-accent, var(--accent))',
-                        '--set-accent-rgb': button.style.borderColor ? (() => {
-                            const hex = button.style.borderColor.replace('#', '');
-                            const r = parseInt(hex.substring(0, 2), 16);
-                            const g = parseInt(hex.substring(2, 4), 16);
-                            const b = parseInt(hex.substring(4, 6), 16);
-                            return !isNaN(r) ? `${r}, ${g}, ${b}` : 'var(--set-accent-rgb, var(--accent-rgb))';
-                        })() : 'var(--set-accent-rgb, var(--accent-rgb))'
-                    } as any}>
+                <div style={{
+                    position: 'fixed',
+                    inset: 0,
+                    pointerEvents: 'none',
+                    zIndex: 50000,
+                    '--wheel-center-x': '50%',
+                    '--wheel-center-y': '50%',
+                    '--set-accent': button.style.borderColor || 'var(--set-accent, var(--accent))',
+                    '--set-accent-rgb': button.style.borderColor ? (() => {
+                        const hex = button.style.borderColor.replace('#', '');
+                        const r = parseInt(hex.substring(0, 2), 16);
+                        const g = parseInt(hex.substring(2, 4), 16);
+                        const b = parseInt(hex.substring(4, 6), 16);
+                        return !isNaN(r) ? `${r}, ${g}, ${b}` : 'var(--set-accent-rgb, var(--accent-rgb))';
+                    })() : 'var(--set-accent-rgb, var(--accent-rgb))'
+                } as any}>
+                    <div className="swipe-wheel-container">
                         {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
                             const cmdVal = (button.swipeCommands?.[d as SwipeDirection] || '').trim();
+                            const longCmdVal = (button.longSwipeCommands?.[d as SwipeDirection] || '').trim();
                             const angle = i * 45;
                             const isActive = activeDir === d;
                             const shouldFlip = angle > 90 && angle < 270;
@@ -398,15 +440,15 @@ export const GameButton: React.FC<GameButtonProps> = ({
                                     className={`swipe-slice ${isActive ? 'active' : ''}`}
                                     style={{
                                         transform: `rotate(${angle}deg)`,
-                                        // Show slice if it has a command OR if it's currently active (highlighted)
-                                        opacity: (cmdVal || isActive) ? 1 : 0,
+                                        // Show slice if it has a command (short or long) OR if it's currently active (highlighted)
+                                        opacity: (cmdVal || longCmdVal || isActive) ? 1 : 0,
                                         pointerEvents: 'auto',
                                     } as any}
                                 >
                                     <div className="slice-separator" />
-                                    {cmdVal && (
+                                    {(cmdVal || longCmdVal) && (
                                         <span className={`swipe-slice-label ${shouldFlip ? 'flip' : ''}`}>
-                                            {cmdVal}
+                                            {cmdVal || longCmdVal}
                                         </span>
                                     )}
                                 </div>
@@ -424,10 +466,10 @@ export const GameButton: React.FC<GameButtonProps> = ({
                         </div>
                     </div>
                     <div className="cancel-indicator" style={{
-                        '--cancel-x': `calc(var(--wheel-center-x, 50%) + 130px)`,
-                        '--cancel-y': `calc(var(--wheel-center-y, 50%) + 130px)`
+                        '--cancel-x': `calc(var(--wheel-center-x, 50%) + 100px)`,
+                        '--cancel-y': `calc(var(--wheel-center-y, 50%) + 100px)`
                     } as any}>Cancel</div>
-                </>,
+                </div>,
                 document.body
             )}
             <div className="swipe-ray" />

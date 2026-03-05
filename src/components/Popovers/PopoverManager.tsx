@@ -90,7 +90,13 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }
 
     return (
-        <div className="popover-menu" ref={popoverRef} style={{ position: 'fixed', left: popoverState.x, top: popoverState.y, zIndex: 25000 }}>
+        <div className="popover-menu" ref={popoverRef} style={{
+            position: 'fixed',
+            left: popoverState.x,
+            top: popoverState.y,
+            zIndex: 25000,
+            '--accent': setSettings[popoverState.setId]?.themeColor || 'var(--set-accent, var(--accent))'
+        } as any}>
             {popoverState.type === 'teleport-save' && <TeleportSavePopover popoverState={popoverState} setPopoverState={setPopoverState} setTeleportTargets={setTeleportTargets} addMessage={addMessage} />}
             {popoverState.type === 'teleport-select' && <TeleportSelectPopover popoverState={popoverState} setPopoverState={setPopoverState} teleportTargets={teleportTargets} executeCommand={executeCommand} />}
             {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}

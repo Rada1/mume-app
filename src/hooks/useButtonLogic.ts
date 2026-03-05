@@ -17,19 +17,7 @@ export const useButtonLogic = (
         const filtered = rawButtons.filter(b => {
             if (isEditMode) return true;
 
-            // Class-based visibility for Xbox cluster
-            if (b.setId === 'Xbox' && b.hideIfUnknown) {
-                const buttonToClass: Record<string, string> = {
-                    'xbox-y': 'cleric', 'xbox-x': 'mage', 'xbox-b': 'ranger', 'xbox-a': 'thief', 'xbox-z': 'warrior'
-                };
-                const classKey = buttonToClass[b.id];
-                if (classKey) {
-                    const skills = CLASS_MAPPINGS[classKey] || [];
-                    if (!skills.some(s => (abilities[s.toLowerCase()] || 0) > 0)) return false;
-                }
-            }
-
-            if (b.hideIfUnknown) {
+            if (b.hideIfUnknown && b.setId !== 'Xbox') {
                 const cmdLower = b.command.toLowerCase();
                 const labelLower = b.label.toLowerCase();
                 let name = labelLower;
@@ -65,14 +53,25 @@ export const useButtonLogic = (
 
             return true;
         }).map(b => {
-            // Filter swipes logic
-            if (b.id === 'xbox-b' && (abilities['ride'] || 0) <= 0) {
-                return { ...b, swipeCommands: {} };
+            let modified = { ...b };
+
+            // Class-based dimming for Xbox cluster
+            if (b.setId === 'Xbox' && b.hideIfUnknown && !isEditMode) {
+                const buttonToClass: Record<string, string> = {
+                    'xbox-y': 'ranger', 'xbox-x': 'cleric', 'xbox-b': 'mage', 'xbox-a': 'thief', 'xbox-z': 'warrior'
+                };
+                const classKey = buttonToClass[b.id];
+                if (classKey) {
+                    const skills = CLASS_MAPPINGS[classKey] || [];
+                    if (!skills.some(s => (abilities[s.toLowerCase()] || 0) > 0)) {
+                        modified.isDimmed = true;
+                    }
+                }
             }
-            if (b.id === 'xbox-a' && (abilities['missile'] || 0) <= 0) {
-                return { ...b, swipeCommands: {} };
-            }
-            return b;
+
+            // Swipes are no longer filtered out to prevent UI label confusion.
+            // Dimming handles the unknown state visually.
+            return modified;
         });
 
         // 2. Dynamic generation for Smart Sets

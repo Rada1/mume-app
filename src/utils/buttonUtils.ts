@@ -18,13 +18,9 @@ export const getButtonCommand = (
     const isSwiped = dist > 15;
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    // Cancellation logic: South-East (SE)
-    // Matches the UI indicator positioning (0 to 90 degrees)
-    if (dist > 70 && angle > 0 && angle < 90) {
-        return null; // CANCEL
-    }
+    // Cancellation is now handled via screen-absolute position in GameButton.tsx
 
-    let cmd = (isLong && !isSwiped && button.longCommand) ? button.longCommand : (isSwiped ? '' : button.command);
+    let cmd = (isLong && !isSwiped) ? (button.longCommand || '') : (isSwiped ? '' : button.command);
     let actionType = (isLong && !isSwiped && button.longCommand) ? (button.longActionType || 'command') : (button.actionType || 'command');
     let dir: SwipeDirection | undefined = undefined;
 
