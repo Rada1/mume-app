@@ -118,7 +118,6 @@ const Header: React.FC<HeaderProps> = ({
                             border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)'
                         }}
                         title={target ? "Current Target (Click to clear)" : "No Target Set (Type 'target <name>' or click a char)"}
-                        onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                         onClick={() => target && onClearTarget && onClearTarget()}
                     >
                         <Crosshair size={14} />
@@ -137,7 +136,6 @@ const Header: React.FC<HeaderProps> = ({
                             border: '1px solid var(--border-color)'
                         }}
                         title="Stored Teleport Rooms"
-                        onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                         onClick={() => onTeleportClick && onTeleportClick()}
                     >
                         <Crosshair size={14} style={{ transform: 'rotate(45deg)' }} />
@@ -150,7 +148,6 @@ const Header: React.FC<HeaderProps> = ({
                         <div className="action-menu-wrapper" ref={setMenuRef}>
                             <div
                                 className={`set-switcher ${isSetMenuOpen ? 'active' : ''}`}
-                                onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                 onClick={() => setIsSetMenuOpen(!isSetMenuOpen)}
                             >
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
@@ -168,7 +165,6 @@ const Header: React.FC<HeaderProps> = ({
                                             <div
                                                 key={set}
                                                 className={`dropdown-item ${activeSet === set ? 'active' : ''}`}
-                                                onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                                 onClick={() => {
                                                     setActiveSet(set);
                                                     setIsSetMenuOpen(false);
@@ -188,7 +184,6 @@ const Header: React.FC<HeaderProps> = ({
                     <div className="action-menu-wrapper main-menu-dots" ref={menuRef} style={{ flexShrink: 0 }}>
                         <button
                             className={`menu-toggle-btn ${isMenuOpen ? 'active' : ''}`}
-                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                             title="More Actions"
                         >
@@ -203,7 +198,6 @@ const Header: React.FC<HeaderProps> = ({
                                             <label>Button Set</label>
                                             <div
                                                 className="dropdown-item"
-                                                onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setMenuView('availableSets');
@@ -220,7 +214,6 @@ const Header: React.FC<HeaderProps> = ({
 
                                         <div
                                             className={`dropdown-item ${isEditMode ? 'active' : ''}`}
-                                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setIsEditMode(!isEditMode);
@@ -233,7 +226,6 @@ const Header: React.FC<HeaderProps> = ({
 
                                         <div
                                             className={`dropdown-item ${effectiveShowControls ? 'active' : ''}`}
-                                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setShowControls(!effectiveShowControls);
@@ -247,7 +239,6 @@ const Header: React.FC<HeaderProps> = ({
                                             <>
                                                 <div
                                                     className="dropdown-item"
-                                                    onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         onOpenSetManager();
@@ -259,7 +250,6 @@ const Header: React.FC<HeaderProps> = ({
                                                 </div>
                                                 <div
                                                     className="dropdown-item"
-                                                    onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         if (onResetMap) onResetMap();
@@ -274,7 +264,6 @@ const Header: React.FC<HeaderProps> = ({
 
                                         <div
                                             className="dropdown-item"
-                                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setIsSettingsOpen(true);
@@ -289,7 +278,6 @@ const Header: React.FC<HeaderProps> = ({
                                     <div className="menu-group" style={{ padding: '4px' }}>
                                         <div
                                             className="dropdown-item"
-                                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setMenuView('main');
@@ -305,7 +293,6 @@ const Header: React.FC<HeaderProps> = ({
                                                 <div
                                                     key={set}
                                                     className={`dropdown-item ${activeSet === set ? 'active' : ''}`}
-                                                    onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); }}
                                                     onClick={() => {
                                                         setActiveSet(set);
                                                         setIsMenuOpen(false);
