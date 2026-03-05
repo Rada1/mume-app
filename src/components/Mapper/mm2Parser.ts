@@ -1,9 +1,77 @@
 export const parseMM2 = async (file: File, floorHeight = 5.0): Promise<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>> => {
     return new Promise((resolve, reject) => {
+        const isXML = file.name.toLowerCase().endsWith('.xml');
+
         const reader = new FileReader();
 
         reader.onload = async (e) => {
             try {
+                if (isXML) {
+                    const text = e.target?.result as string;
+                    if (!text) throw new Error("Could not read XML file");
+
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(text, "text/xml");
+
+                    const rooms = xmlDoc.getElementsByTagName("room");
+                    console.log(`[XML Parser] Found ${rooms.length} rooms to parse.`);
+
+                    const roomCoords: Record<string, [number, number, number, number, Record<string, string | number>, string, string]> = {};
+
+                    for (let i = 0; i < rooms.length; i++) {
+                        const room = rooms[i];
+
+                        const idAttr = room.getAttribute("id");
+                        if (!idAttr) continue;
+
+                        const serverIdAttr = room.getAttribute("server_id") || idAttr;
+                        const name = room.getAttribute("name") || "Unknown";
+
+                        let x = 0, y = 0, z = 0;
+                        const coordNode = room.getElementsByTagName("coord")[0];
+                        if (coordNode) {
+                            x = parseInt(coordNode.getAttribute("x") || "0", 10);
+                            y = parseInt(coordNode.getAttribute("y") || "0", 10);
+                            z = parseInt(coordNode.getAttribute("z") || "0", 10);
+                        }
+
+                        // Just map to integer 0 for fallback, or we could parse terrain text.
+                        // Usually terrain string is fine, but the old parser returns a number. We'll return 0 to default to 'Field' or let GMCP override it.
+                        let terrain = 0;
+
+                        const exits: Record<string, string> = {};
+                        const exitNodes = room.getElementsByTagName("exit");
+                        for (let j = 0; j < exitNodes.length; j++) {
+                            const exitNode = exitNodes[j];
+                            const dir = exitNode.getAttribute("dir");
+                            const toNode = exitNode.getElementsByTagName("to")[0];
+                            if (dir && toNode && toNode.textContent) {
+                                // Mume dir map
+                                let d = dir.toLowerCase();
+                                if (d === 'up') d = 'u';
+                                else if (d === 'down') d = 'd';
+                                else d = d.charAt(0);
+                                exits[d] = toNode.textContent.trim();
+                            }
+                        }
+
+                        // Key by internal `idAttr`. Index 6 holds the gmcp `serverIdAttr`
+                        roomCoords[idAttr] = [
+                            x,
+                            -y, // Invert Y for MMapper logic
+                            z * floorHeight,
+                            terrain,
+                            exits,
+                            name,
+                            serverIdAttr
+                        ];
+                    }
+
+                    resolve(roomCoords);
+                    return;
+                }
+
+                // --- BINARY MM2 PARSER ---
                 const arrayBuffer = e.target?.result as ArrayBuffer;
                 if (!arrayBuffer) throw new Error("Could not read file");
 
@@ -17,14 +85,8 @@ export const parseMM2 = async (file: File, floorHeight = 5.0): Promise<Record<st
 
                 console.log(`[MM2 Parser] Version: ${version}`);
 
-                // Check compression
                 let compressedData: Uint8Array;
                 if (version >= 34) {
-                    // qCompress (QByteArray with int32 length prefix)
-                    const baLen = dv.getUint32(8, false);
-                    // The actual QByteArray has uncompressed length as 4 bytes BE, then zlib
-                    // But in our python analysis, offset 12 is directly zlib 0x78 0x9c if baLen == uncompressed length!
-                    // Let's rely on standard DecompressionStream which handles zlib if using 'deflate'
                     compressedData = new Uint8Array(arrayBuffer, 12);
                 } else if (version >= 25) {
                     compressedData = new Uint8Array(arrayBuffer, 8);
@@ -32,8 +94,6 @@ export const parseMM2 = async (file: File, floorHeight = 5.0): Promise<Record<st
                     throw new Error(`Version ${version} not supported (no compression)?`);
                 }
 
-                // Decompress using Web Streams API
-                // 'deflate' in Web Streams API actually means ZLIB (RFC 1950)
                 const ds = new DecompressionStream('deflate');
                 const writer = ds.writable.getWriter();
                 writer.write(compressedData as any);
@@ -52,7 +112,6 @@ export const parseMM2 = async (file: File, floorHeight = 5.0): Promise<Record<st
                     const len = ru32();
                     if (len === 0xFFFFFFFF || len === 0) return '';
                     let str = '';
-                    // UTF-16 BE
                     for (let i = 0; i < len / 2; i++) {
                         str += String.fromCharCode(ru16());
                     }
@@ -61,7 +120,6 @@ export const parseMM2 = async (file: File, floorHeight = 5.0): Promise<Record<st
 
                 const roomCount = ru32();
                 const markCount = ru32();
-                // map position
                 const currX = ri32();
                 const currY = ri32();
                 const currZ = ri32();
@@ -96,7 +154,6 @@ export const parseMM2 = async (file: File, floorHeight = 5.0): Promise<Record<st
                     const DIRS = ['n', 's', 'e', 'w', 'u', 'd', 'out'];
                     const exits: Record<string, string> = {};
 
-                    // Exits
                     for (let e = 0; e < 7; e++) {
                         const exitFlags = version >= 33 ? ru16() : ru8();
                         const doorFlags = version >= 32 ? ru16() : ru8();
@@ -118,28 +175,32 @@ export const parseMM2 = async (file: File, floorHeight = 5.0): Promise<Record<st
                         }
                     }
 
-                    // For GMCP lookup later, we need the internalId as string key
                     const key = String(internalId);
                     roomCoords[key] = [
                         x,
-                        -y, // INVERT Y-AXIS to match MUME
+                        -y,
                         z * floorHeight,
                         terrain,
-                        exits, // Real exits for drawing lines
+                        exits,
                         name,
-                        key // Keep the ID string handy
+                        String(serverId || key)
                     ];
                 }
 
                 resolve(roomCoords);
 
             } catch (err) {
-                console.error("[MM2 Parser] Failed:", err);
+                console.error("[Parser] Failed:", err);
                 reject(err);
             }
         };
 
         reader.onerror = () => reject(new Error("File read error"));
-        reader.readAsArrayBuffer(file);
+
+        if (isXML) {
+            reader.readAsText(file);
+        } else {
+            reader.readAsArrayBuffer(file);
+        }
     });
 };

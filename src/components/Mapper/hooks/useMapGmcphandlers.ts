@@ -81,6 +81,16 @@ export const useMapGmcphandlers = ({
                 const currZ = currentActiveRoom ? (currentActiveRoom.z || 0) : 0;
 
                 for (const [internalId, rData] of Object.entries(preloadedCoordsRef.current)) {
+                    // 1. Direct Server ID Match (if loaded from XML with gmcp vnums)
+                    if (rData[6] && String(rData[6]) !== String(internalId) && String(rData[6]) === String(gmcpId)) {
+                        matchedInternalId = internalId;
+                        ghostData = rData;
+                        minDist = 0; // lock it in
+                        discoverySource = 'EXACT_VNUM';
+                        break;
+                    }
+
+                    // 2. Fallback to Name + Distance Fingerprint (for v36 .mm2 without server_ids)
                     if (rData[5] === gmcpName) { // Index 5 is 'name'
                         const dist = Math.pow(rData[0] - currX, 2) + Math.pow(rData[1] - currY, 2) + Math.pow((rData[2] - currZ) * 5, 2);
                         if (dist < minDist) {
@@ -114,8 +124,8 @@ export const useMapGmcphandlers = ({
             // Case B: Relative Fallback using simple offsets
             const d = DIRS[dirUsed];
             if (d) {
-                predX += (d.dx || 0) * 10;
-                predY += (d.dy || 0) * 10;
+                predX += (d.dx || 0) * 1;
+                predY += (d.dy || 0) * 1;
                 predZ += (d.dz || 0) * 1;
             }
         }
