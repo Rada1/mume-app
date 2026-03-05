@@ -20,8 +20,7 @@ interface SettingsModalProps {
     handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     soundTriggers: SoundTrigger[];
     deleteSound: (id: string) => void;
-    resetButtons: (mode: 'user' | 'core' | 'factory') => void;
-    hasUserDefaults?: boolean;
+    resetButtons: () => void;
     connect: () => void;
     loginName: string;
     setLoginName: (val: string) => void;
@@ -46,7 +45,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     soundTriggers,
     deleteSound,
     resetButtons,
-    hasUserDefaults,
     connect,
     loginName,
     setLoginName,
@@ -170,27 +168,36 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                         </div>
                                     </div>
 
-                                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                                        <div style={{ flex: 1 }}>
-                                            <label className="setting-label">Character Name</label>
-                                            <input
-                                                className="setting-input"
-                                                value={loginName}
-                                                placeholder="Rada"
-                                                onChange={e => setLoginName(e.target.value)}
-                                            />
+                                    <form onSubmit={(e) => { e.preventDefault(); connect(); }}>
+                                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <label htmlFor="character-name" className="setting-label">Character Name</label>
+                                                <input
+                                                    id="character-name"
+                                                    name="username"
+                                                    autoComplete="username"
+                                                    className="setting-input"
+                                                    value={loginName}
+                                                    placeholder="Rada"
+                                                    onChange={e => setLoginName(e.target.value)}
+                                                />
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <label htmlFor="character-password" className="setting-label">Password</label>
+                                                <input
+                                                    id="character-password"
+                                                    type="password"
+                                                    name="password"
+                                                    autoComplete="current-password"
+                                                    className="setting-input"
+                                                    value={loginPassword}
+                                                    placeholder="********"
+                                                    onChange={e => setLoginPassword(e.target.value)}
+                                                />
+                                            </div>
                                         </div>
-                                        <div style={{ flex: 1 }}>
-                                            <label className="setting-label">Password</label>
-                                            <input
-                                                type="password"
-                                                className="setting-input"
-                                                value={loginPassword}
-                                                placeholder="********"
-                                                onChange={e => setLoginPassword(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
+                                        <button type="submit" style={{ display: 'none' }} aria-hidden="true" />
+                                    </form>
 
                                     <div className="setting-group" style={{ marginTop: '10px', marginBottom: 0 }}>
                                         <label className="setting-label">Full URL (Advanced)</label>
@@ -366,16 +373,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                             </label>
                                         </div>
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                            {hasUserDefaults && (
-                                                <button className="btn-secondary" onClick={() => { if (confirm('Reset all buttons to your saved User Defaults?')) resetButtons('user'); }} style={{ width: '100%', borderColor: 'var(--accent)', color: 'var(--accent)' }}>
-                                                    Reset to My Defaults
-                                                </button>
-                                            )}
-                                            <button className="btn-secondary" onClick={() => { if (confirm('Reset to the Core App layout? This uses any broad systemic updates.')) resetButtons('core'); }} style={{ width: '100%', borderColor: '#f59e0b', color: '#f59e0b' }}>
-                                                Reset to Core Defaults
-                                            </button>
-                                            <button className="btn-secondary" onClick={() => { if (confirm('WIPE ALL SAVED DATA and reset to factory settings? This cannot be undone.')) resetButtons('factory'); }} style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444', opacity: 0.6 }}>
-                                                Factory Reset
+                                            <button className="btn-secondary" onClick={() => { if (confirm('WIPE ALL SAVED DATA and reset to the built-in defaults? This cannot be undone.')) resetButtons(); }} style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444' }}>
+                                                Reset to Default
                                             </button>
                                         </div>
                                     </div>

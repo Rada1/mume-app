@@ -18,29 +18,37 @@ export const getButtonCommand = (
     const isSwiped = dist > 15;
     const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    // Cancellation logic: South-East (SE) outside the wheel
-    // ~45 degrees is SE. We look for dist beyond the wheel (>110px)
-    if (dist > 110 && angle > 20 && angle < 70) {
-        return null;
+    // Cancellation logic: South-East (SE)
+    // Matches the UI indicator positioning (0 to 90 degrees)
+    if (dist > 70 && angle > 0 && angle < 90) {
+        return null; // CANCEL
     }
 
-    let cmd = (isLong && !isSwiped && button.longCommand) ? button.longCommand : button.command;
+    let cmd = (isLong && !isSwiped && button.longCommand) ? button.longCommand : (isSwiped ? '' : button.command);
     let actionType = (isLong && !isSwiped && button.longCommand) ? (button.longActionType || 'command') : (button.actionType || 'command');
     let dir: SwipeDirection | undefined = undefined;
 
-    if (isSwiped && button.swipeCommands) {
-
-        // Unified Direction Logic (Geared)
+    if (isSwiped) {
         const directions: SwipeDirection[] = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
         const index = (Math.round(angle / 45) + 8) % 8;
         dir = directions[index];
 
-        if (isLong && button.longSwipeCommands?.[dir]) {
-            cmd = button.longSwipeCommands[dir]!;
-            actionType = button.longSwipeActionTypes?.[dir] || 'command';
-        } else if (button.swipeCommands[dir]) {
-            cmd = button.swipeCommands[dir]!;
-            actionType = button.swipeActionTypes?.[dir] || 'command';
+        const hasBase = !!(button.swipeCommands?.[dir] && button.swipeCommands[dir]!.trim());
+        const hasLong = !!(isLong && button.longSwipeCommands?.[dir] && button.longSwipeCommands[dir]!.trim());
+
+        if (hasBase || hasLong) {
+            if (hasBase) {
+                cmd = button.swipeCommands![dir]!;
+                actionType = button.swipeActionTypes?.[dir] || 'command';
+            }
+            if (hasLong) {
+                cmd = button.longSwipeCommands![dir]!;
+                actionType = button.longSwipeActionTypes?.[dir] || 'command';
+            }
+        } else {
+            // Visual feedback only - no command execution
+            cmd = '';
+            actionType = 'command';
         }
     }
 

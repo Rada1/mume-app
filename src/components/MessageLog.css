@@ -279,7 +279,7 @@
 
 .is-landscape .message-log {
     height: 100% !important;
-    padding: 20px 10px !important;
+    padding: 20px 10px 70px 10px !important;
 }
 
 .is-landscape .input-area {

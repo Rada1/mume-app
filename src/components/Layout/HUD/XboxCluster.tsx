@@ -52,7 +52,7 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
         borderRadius: '50%',
         backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
         boxShadow: (isEditMode && dragState?.id === 'xbox') ? '0 0 30px rgba(255,255,0,0.4)' : undefined,
-        transformOrigin: (isMobile && !isLandscape) ? 'bottom right' : 'center right'
+        transformOrigin: 'bottom right'
     };
 
     if (isDefault) {
@@ -66,7 +66,6 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
         style.bottom = pos.y !== undefined ? 'auto' : (pos.bottom ?? '20px');
         style.transform = `${pos.y !== undefined ? '' : 'translateY(-50%)'} ${pos.scale ? `scale(${pos.scale})` : ''}`;
     }
-    style.transformOrigin = 'bottom right';
 
     return (
         <div
@@ -92,7 +91,7 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
 
             {['xbox-y', 'xbox-b', 'xbox-a', 'xbox-x', 'xbox-z', 'xbox-door'].map(id => {
                 const button = buttons.find(b => b.id === id);
-                if (!button || (!button.isVisible && !isEditMode)) return null;
+                if (!button || (button.isVisible === false && !isEditMode)) return null;
                 const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-b' ? 'right' : id === 'xbox-a' ? 'bottom' : id === 'xbox-x' ? 'left' : id === 'xbox-z' ? 'center' : 'outside';
                 return (
                     <GameButton

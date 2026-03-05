@@ -26,14 +26,8 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "longCommand": "clericspelllist",
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true,
-        "longSwipeActionTypes": {
-            "up": "select-assign", "down": "select-assign", "left": "select-assign", "right": "select-assign",
-            "ne": "select-assign", "nw": "select-assign", "se": "select-assign", "sw": "select-assign"
-        },
-        "longSwipeCommands": {
-            "up": "clericspelllist", "down": "clericspelllist", "left": "clericspelllist", "right": "clericspelllist",
-            "ne": "clericspelllist", "nw": "clericspelllist", "se": "clericspelllist", "sw": "clericspelllist"
-        }
+        "longSwipeActionTypes": { "up": "select-assign", "down": "select-assign" },
+        "longSwipeCommands": { "up": "clericspelllist", "down": "clericspelllist" }
     },
     {
         "id": "xbox-x",
@@ -56,14 +50,8 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "longCommand": "magespelllist",
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true,
-        "longSwipeActionTypes": {
-            "up": "select-assign", "down": "select-assign", "left": "select-assign", "right": "select-assign",
-            "ne": "select-assign", "nw": "select-assign", "se": "select-assign", "sw": "select-assign"
-        },
-        "longSwipeCommands": {
-            "up": "magespelllist", "down": "magespelllist", "left": "magespelllist", "right": "magespelllist",
-            "ne": "magespelllist", "nw": "magespelllist", "se": "magespelllist", "sw": "magespelllist"
-        }
+        "longSwipeActionTypes": { "up": "select-assign", "down": "select-assign" },
+        "longSwipeCommands": { "up": "magespelllist", "down": "magespelllist" }
     },
     {
         "id": "xbox-b",
@@ -95,14 +83,8 @@ export const XBOX_BUTTONS: CustomButton[] = [
         },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true,
-        "longSwipeActionTypes": {
-            "up": "select-assign", "down": "select-assign", "left": "select-assign", "right": "select-assign",
-            "ne": "select-assign", "nw": "select-assign", "se": "select-assign", "sw": "select-assign"
-        },
-        "longSwipeCommands": {
-            "up": "rangerskilllist", "down": "rangerskilllist", "left": "rangerskilllist", "right": "rangerskilllist",
-            "ne": "rangerskilllist", "nw": "rangerskilllist", "se": "rangerskilllist", "sw": "rangerskilllist"
-        }
+        "longSwipeActionTypes": { "up": "select-assign", "down": "select-assign" },
+        "longSwipeCommands": { "up": "rangerskilllist", "down": "rangerskilllist" }
     },
     {
         "id": "xbox-a",
@@ -133,14 +115,8 @@ export const XBOX_BUTTONS: CustomButton[] = [
         },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true,
-        "longSwipeActionTypes": {
-            "up": "select-assign", "down": "select-assign", "left": "select-assign", "right": "select-assign",
-            "ne": "select-assign", "nw": "select-assign", "se": "select-assign", "sw": "select-assign"
-        },
-        "longSwipeCommands": {
-            "up": "thiefskilllist", "down": "thiefskilllist", "left": "thiefskilllist", "right": "thiefskilllist",
-            "ne": "thiefskilllist", "nw": "thiefskilllist", "se": "thiefskilllist", "sw": "thiefskilllist"
-        }
+        "longSwipeActionTypes": { "up": "select-assign", "down": "select-assign" },
+        "longSwipeCommands": { "up": "thiefskilllist", "down": "thiefskilllist" }
     },
     {
         "id": "xbox-z",
@@ -169,14 +145,8 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "isVisible": true,
         "longActionType": "menu",
         "longCommand": "warriorskilllist",
-        "longSwipeActionTypes": {
-            "up": "select-assign", "down": "select-assign", "left": "select-assign", "right": "select-assign",
-            "ne": "select-assign", "nw": "select-assign", "se": "select-assign", "sw": "select-assign"
-        },
-        "longSwipeCommands": {
-            "up": "warriorskilllist", "down": "warriorskilllist", "left": "warriorskilllist", "right": "warriorskilllist",
-            "ne": "warriorskilllist", "nw": "warriorskilllist", "se": "warriorskilllist", "sw": "warriorskilllist"
-        }
+        "longSwipeActionTypes": { "up": "select-assign", "down": "select-assign" },
+        "longSwipeCommands": { "up": "warriorskilllist", "down": "warriorskilllist" }
     },
     {
         "id": "xbox-door",
@@ -196,6 +166,18 @@ export const XBOX_BUTTONS: CustomButton[] = [
             "shape": "circle"
         },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
-        "isVisible": true
+        "isVisible": true,
+        "swipeCommands": {
+            "up": "open exit",
+            "down": "close exit",
+            "right": "lock exit",
+            "left": "lock exit"
+        },
+        "swipeActionTypes": {
+            "up": "command",
+            "down": "command",
+            "right": "command",
+            "left": "command"
+        }
     }
 ];

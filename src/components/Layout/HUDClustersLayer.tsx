@@ -26,7 +26,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     const { stats, inCombat, characterName, isMmapperMode, btn, joystick, mapperRef, target, triggerHaptic, executeCommand, handleButtonClick, setPopoverState, viewport, activePrompt, showControls } = useGame();
     const { isMobile, isLandscape } = viewport;
 
-    const effectiveShowControls = showControls ?? isMobile;
+    const effectiveShowControls = showControls;
     const handleWimpyChange = (val: number) => executeCommand(`wimpy ${val}`);
 
     return (
@@ -50,7 +50,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
             {(effectiveShowControls || btn.isEditMode) && (
                 <>
                     <div className="custom-buttons-layer">
-                        {btn.buttons.filter(b => (b.setId === btn.activeSet && b.setId !== 'Xbox' && b.display !== 'inline') && (btn.isEditMode || b.isVisible)).map(button => (
+                        {btn.buttons.filter(b => (b.setId === btn.activeSet && b.setId !== 'Xbox' && b.display !== 'inline') && (btn.isEditMode || b.isVisible !== false)).map(button => (
                             <GameButton key={button.id} button={button} isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} isSelected={btn.selectedButtonIds.has(button.id)} dragState={btn.dragState} handleDragStart={handleDragStart} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditButton={(b) => { btn.setEditingButtonId(b.id); if (!btn.selectedButtonIds.has(b.id)) btn.setSelectedIds(new Set([b.id])); }} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} setHeldButton={setHeldButton} heldButton={heldButton} joystick={{ isActive: joystick.joystickActive, currentDir: joystick.currentDir, isTargetModifierActive: joystick.isTargetModifierActive, setIsJoystickConsumed: joystick.setIsJoystickConsumed }} target={target} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} />
                         ))}
                     </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CustomButton, SoundTrigger, SavedSettings, Action, ButtonSetSettings } from '../types';
 import { DEFAULT_BG, DEFAULT_URL } from '../constants';
+import { usePersistentState } from './usePersistentState';
 import { MessageType } from '../types';
 
 interface UseSettingsDeps {
@@ -34,8 +35,8 @@ export function useSettings(deps: UseSettingsDeps) {
     } = deps;
     const [bgImage, setBgImage] = useState(DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState(DEFAULT_URL);
-    const [loginName, setLoginName] = useState('');
-    const [loginPassword, setLoginPassword] = useState('');
+    const [loginName, setLoginName] = usePersistentState('mud-login-name', '');
+    const [loginPassword, setLoginPassword] = usePersistentState('mud-login-password', '');
     const [isLoading, setIsLoading] = useState(false);
     const [soundTriggers, setSoundTriggers] = useState<SoundTrigger[]>([]);
     const [newSoundPattern, setNewSoundPattern] = useState('');

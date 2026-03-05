@@ -39,8 +39,8 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
             className="joystick-cluster"
             style={{
                 left: pos.x ?? '20px',
-                bottom: pos.y ?? '20px',
-                top: pos.y !== undefined ? pos.y : 'auto',
+                top: pos.y,
+                bottom: isDefault ? '20px' : (pos.y === undefined ? '20px' : 'auto'),
                 width: '180px',
                 height: '180px',
                 transform: (isDefault) ? (pos.scale ? `scale(${pos.scale})` : '') : `${pos.y !== undefined ? '' : 'translateY(-50%)'} ${pos.scale ? `scale(${pos.scale})` : ''}`,

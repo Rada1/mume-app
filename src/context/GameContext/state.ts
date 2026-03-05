@@ -8,7 +8,12 @@ export const useGameProviderState = () => {
     const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', true);
     const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
     const [theme, setTheme] = usePersistentState<'light' | 'dark'>('mud-theme', 'dark');
-    const [showControls, setShowControls] = usePersistentState<boolean | null>('mud-show-controls', null);
+    const [showControls, setShowControls] = usePersistentState<boolean>('mud-show-controls', (() => {
+        // If there's a stored preference, use it. Otherwise default to true on mobile, false on desktop.
+        const stored = localStorage.getItem('mud-show-controls');
+        if (stored !== null) return JSON.parse(stored) as boolean;
+        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    })());
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');

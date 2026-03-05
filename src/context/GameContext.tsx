@@ -226,6 +226,57 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         executeCommandRef.current = executeCommand;
     }, [executeCommand]);
 
+    // Auto-login session tracking
+    const autoLoginSessionRef = useRef({ nameSent: false, passwordSent: false, lastStatus: '' });
+
+    useEffect(() => {
+        // Reset session tracking when we start a new connection
+        if (status === 'connecting' && autoLoginSessionRef.current.lastStatus !== 'connecting') {
+            autoLoginSessionRef.current = { nameSent: false, passwordSent: false, lastStatus: 'connecting' };
+        }
+        autoLoginSessionRef.current.lastStatus = status;
+
+        if (status !== 'connected' || !activePrompt) return;
+
+        const lower = activePrompt.toLowerCase();
+
+        // Handle Name Prompt
+        if (settings.loginName && !autoLoginSessionRef.current.nameSent) {
+            if (lower.includes("by what name do you wish to be known?") || lower.includes("what is your name?") || lower.includes("character's name")) {
+                autoLoginSessionRef.current.nameSent = true;
+                addSystemMessage(`Auto-login: Sending name: ${settings.loginName}`);
+                executeCommand(settings.loginName, true, true);
+            }
+        }
+
+        // Handle Password Prompt (only if name was sent or we don't have a name/prompt for it)
+        if (settings.loginPassword && !autoLoginSessionRef.current.passwordSent) {
+            if (lower.includes("password:")) {
+                autoLoginSessionRef.current.passwordSent = true;
+                addSystemMessage(`Auto-login: Sending password...`);
+                executeCommand(settings.loginPassword, true, true);
+            }
+        }
+    }, [activePrompt, status, settings.loginName, settings.loginPassword, executeCommand]);
+
+    // Handle keyboard-triggered visibility for buttons
+    useEffect(() => {
+        btn.setButtons(prev => {
+            let changed = false;
+            const next = prev.map(b => {
+                if (b.trigger?.enabled && b.trigger.onKeyboard) {
+                    const shouldBeVisible = viewport.isKeyboardOpen;
+                    if (b.isVisible !== shouldBeVisible) {
+                        changed = true;
+                        return { ...b, isVisible: shouldBeVisible };
+                    }
+                }
+                return b;
+            });
+            return changed ? next : prev;
+        });
+    }, [viewport.isKeyboardOpen, btn.setButtons]);
+
     return (
         <GameContext.Provider value={{
             ...s,

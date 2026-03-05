@@ -24,15 +24,17 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
     const moveRatio = stats.move / (stats.maxMove || 1);
 
     const pos = uiPositions.stats || {};
+    const isDefault = pos.x === undefined && pos.y === undefined;
+
     return (
         <div
             className="stats-cluster"
             style={{
                 position: 'absolute',
                 left: pos.x,
-                top: pos.y ?? (pos.x === undefined ? '80px' : undefined),
-                bottom: (pos.x !== undefined || pos.y !== undefined) ? 'auto' : '10px',
-                right: (pos.x !== undefined || pos.y !== undefined) ? 'auto' : '10px',
+                top: pos.y,
+                bottom: isDefault ? '10px' : (pos.y !== undefined ? 'auto' : undefined),
+                right: isDefault ? '10px' : (pos.x !== undefined ? 'auto' : undefined),
                 transform: pos.scale ? `scale(${pos.scale})` : undefined,
                 transformOrigin: 'top left',
                 cursor: isEditMode ? 'move' : undefined,

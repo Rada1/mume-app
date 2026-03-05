@@ -23,7 +23,7 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
     });
     const [uiPositions, setUiPositions] = useState<any>(() => {
         try {
-            const saved = localStorage.getItem('mud-ui-positions') || localStorage.getItem('mud-ui-positions-core-default');
+            const saved = localStorage.getItem('mud-ui-positions');
             return saved ? JSON.parse(saved) : DEFAULT_UI_POSITIONS;
         } catch { return DEFAULT_UI_POSITIONS; }
     });
@@ -33,16 +33,26 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                const loadedIds = new Set(parsed.map((b: any) => b.id));
-                const missingDefaults = DEFAULT_BUTTONS.filter(b => !loadedIds.has(b.id));
-                return [...parsed, ...missingDefaults];
+                if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+                    const loadedButtons = parsed.map((b: any) => {
+                        const def = DEFAULT_BUTTONS.find(d => d.id === b.id);
+                        return {
+                            ...b,
+                            // If isVisible is missing (stripped for save), restore from default or fallback to true/false based on trigger
+                            isVisible: (b.isVisible !== undefined) ? b.isVisible : (def ? def.isVisible : (b.trigger?.enabled ? false : true))
+                        };
+                    });
+                    const loadedIds = new Set(parsed.map((b: any) => b.id));
+                    const missingDefaults = DEFAULT_BUTTONS.filter(b => !loadedIds.has(b.id));
+                    return [...loadedButtons, ...missingDefaults];
+                }
             } catch (e) { }
         }
         return DEFAULT_BUTTONS;
     });
 
     const buttons = useButtonLogic(rawButtons, activeSet, abilities, characterClass, isEditMode);
-    const { hasUserDefaults, saveAsDefault, saveAsCoreDefault, resetToDefaults } = useButtonPersistence(rawButtons, setRawButtons, uiPositions, setUiPositions);
+    const { resetToDefaults } = useButtonPersistence(rawButtons, setRawButtons, uiPositions, setUiPositions);
 
     const buttonsRef = useRef(buttons);
     useEffect(() => { buttonsRef.current = buttons; }, [buttons]);
@@ -116,7 +126,7 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
     }, [setSettings]);
 
     return useMemo(() => ({
-        buttons, setButtons: setRawButtons, rawButtons, buttonsRef, activeSet, setActiveSet, isEditMode, setIsEditMode, editingButtonId, setEditingButtonId, selectedButtonIds, setSelectedIds, toggleSelection, uiPositions, setUiPositions, dragState, setDragState, availableSets, createButton, deleteButton, deleteSet, saveAsDefault, saveAsCoreDefault, resetToDefaults: (m: any) => resetToDefaults(m, addMessageRef.current || undefined), hasUserDefaults, buttonTimers, combatSet, setCombatSet, defaultSet, setDefaultSet, isGridEnabled, setIsGridEnabled, gridSize, setGridSize, setAddMessage: (fn: any) => { addMessageRef.current = fn; },
+        buttons, setButtons: setRawButtons, rawButtons, buttonsRef, activeSet, setActiveSet, isEditMode, setIsEditMode, editingButtonId, setEditingButtonId, selectedButtonIds, setSelectedIds, toggleSelection, uiPositions, setUiPositions, dragState, setDragState, availableSets, createButton, deleteButton, deleteSet, resetToDefaults: (m?: any) => resetToDefaults(addMessageRef.current || undefined), buttonTimers, combatSet, setCombatSet, defaultSet, setDefaultSet, isGridEnabled, setIsGridEnabled, gridSize, setGridSize, setAddMessage: (fn: any) => { addMessageRef.current = fn; },
         setSettings, setSetSettings
-    }), [buttons, rawButtons, activeSet, isEditMode, editingButtonId, selectedButtonIds, uiPositions, dragState, availableSets, hasUserDefaults, combatSet, defaultSet, isGridEnabled, gridSize, createButton, deleteButton, deleteSet, resetToDefaults, saveAsDefault, setSettings]);
+    }), [buttons, rawButtons, activeSet, isEditMode, editingButtonId, selectedButtonIds, uiPositions, dragState, availableSets, combatSet, defaultSet, isGridEnabled, gridSize, createButton, deleteButton, deleteSet, resetToDefaults, setSettings]);
 };

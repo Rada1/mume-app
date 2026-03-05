@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({
         setUI
     } = useGame();
 
-    const effectiveShowControls = showControls ?? viewport.isMobile;
+    const effectiveShowControls = showControls;
     const { activeSet, isEditMode, setIsEditMode, availableSets, setActiveSet } = btn;
     const teleportTargetsCount = teleportTargets.length;
     const onClearTarget = () => setTarget(null);
@@ -228,7 +228,7 @@ const Header: React.FC<HeaderProps> = ({
                                             className={`dropdown-item ${effectiveShowControls ? 'active' : ''}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                setShowControls(!effectiveShowControls);
+                                                setShowControls(effectiveShowControls ? false : true);
                                             }}
                                         >
                                             {effectiveShowControls ? <Eye size={16} /> : <EyeOff size={16} />}

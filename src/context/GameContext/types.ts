@@ -21,8 +21,8 @@ export interface GameContextType {
     setIsMmapperMode: (val: boolean) => void;
     theme: 'light' | 'dark';
     setTheme: (val: 'light' | 'dark') => void;
-    showControls: boolean | null;
-    setShowControls: (val: boolean | null) => void;
+    showControls: boolean;
+    setShowControls: (val: boolean) => void;
 
     // Game State
     status: 'connected' | 'disconnected' | 'connecting';

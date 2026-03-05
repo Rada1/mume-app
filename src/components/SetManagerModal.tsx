@@ -10,8 +10,6 @@ interface SetManagerModalProps {
     onDeleteButton: (id: string) => void;
     onCreateButton: (defaults?: Partial<CustomButton>) => void;
     onDeleteSet: (setName: string) => void;
-    onSaveAsDefault?: () => void;
-    onSaveAsCoreDefault?: () => void;
     combatSet?: string;
     defaultSet?: string;
     onSetCombatSet?: (set: string) => void;
@@ -34,8 +32,6 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     onDeleteButton,
     onCreateButton,
     onDeleteSet,
-    onSaveAsDefault,
-    onSaveAsCoreDefault,
     combatSet,
     defaultSet,
     onSetCombatSet,
@@ -284,32 +280,6 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                     >
                         <Plus size={18} /> Add Button to "{selectedSet}"
                     </button>
-                    {onSaveAsDefault && (
-                        <button
-                            className="btn-secondary"
-                            style={{ flex: 1, margin: 0, borderColor: 'var(--accent)', color: 'var(--accent)' }}
-                            onClick={() => {
-                                onSaveAsDefault();
-                                alert('Current configuration saved as your user default!');
-                            }}
-                        >
-                            Save as User Default
-                        </button>
-                    )}
-                    {onSaveAsCoreDefault && (
-                        <button
-                            className="btn-secondary"
-                            style={{ flex: 1, margin: 0, borderColor: '#f59e0b', color: '#f59e0b' }}
-                            onClick={() => {
-                                if (confirm('Save this configuration as the Core default for all users? This will be used when resetting to Core defaults.')) {
-                                    onSaveAsCoreDefault();
-                                    alert('Current configuration saved as Core default!');
-                                }
-                            }}
-                        >
-                            Save as Core Default
-                        </button>
-                    )}
                 </div>
             </div>
         </div>

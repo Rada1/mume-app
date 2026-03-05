@@ -13,6 +13,7 @@ export function useViewport() {
 
     // Viewport measurement refs
     const lastViewportHeightRef = useRef<number>(window.innerHeight);
+    const lastWidthRef = useRef<number>(window.innerWidth);
     const baseHeightRef = useRef<number>(window.innerHeight);
 
     useEffect(() => {
@@ -87,6 +88,15 @@ export function useViewport() {
         if (!viewport) return;
 
         const currentHeight = viewport.height;
+        const currentWidth = viewport.width;
+
+        // If the width changed significantly, it's likely an orientation change.
+        // Reset baseHeight so we don't carry over "poisoned" heights from previous orientation.
+        if (Math.abs(currentWidth - lastWidthRef.current) > 2) {
+            baseHeightRef.current = currentHeight;
+            lastWidthRef.current = currentWidth;
+        }
+
         // Keep baseHeight up to date with the largest height seen (keyboard down)
         if (currentHeight > baseHeightRef.current) baseHeightRef.current = currentHeight;
 

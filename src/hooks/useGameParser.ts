@@ -43,6 +43,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         const textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
         const lower = textOnly.toLowerCase();
 
+
         // Weather & Fog Detection
         if (lower.includes("starts to rain") || lower.includes("it is raining")) setWeather(lower.includes("heavily") ? 'heavy-rain' : 'rain');
         if (lower.includes("starts to snow") || lower.includes("it is snowing")) setWeather('snow');
@@ -60,7 +61,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { isWaitingForStats.current = false; captureStage.current = 'stat'; }
         if ((isWaitingForEq.current || captureStage.current !== 'none') && /you are using|you are equipped with/i.test(lower)) { isWaitingForEq.current = false; captureStage.current = 'eq'; }
         if ((isWaitingForInv.current || captureStage.current !== 'none') && /you are carrying|your inventory contains/i.test(lower)) { isWaitingForInv.current = false; captureStage.current = 'inv'; }
-        if (/you have the following|you can practice|practice sessions|skill \/ spell/i.test(lower)) { if (captureStage.current !== 'practice') setAbilities({}); captureStage.current = 'practice'; }
+        if (/you have the following|you can practice|practice sessions|skill \/ spell|skill.*knowledge.*difficulty/i.test(lower)) { if (captureStage.current !== 'practice') setAbilities({}); captureStage.current = 'practice'; }
 
         if (/^[\*\)\!oO\.\[f\<%\~+WU:=O:\(]\s*[>:]\s*$/.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|you are using|carrying/i.test(lower))) {
             captureStage.current = 'none'; isWaitingForStats.current = false; isWaitingForEq.current = false; isWaitingForInv.current = false;

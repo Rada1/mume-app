@@ -55,6 +55,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     useDefaultPositioning = true
 }) => {
     const [activeDir, setActiveDir] = React.useState<SwipeDirection | null>(null);
+    const [isCancelling, setIsCancelling] = React.useState(false);
     // We use some internal state pointers on the element to avoid complex React state for high-frequency events
     const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -137,7 +138,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
                     el._lpt = setTimeout(() => {
                         if (el._maxDist < 15) {
                             const action = button.longActionType || 'menu';
-                            const targetSetId = button.longCommand || button.setId || 'main';
+                            const targetSetId = button.longCommand;
+
+                            if (!targetSetId && action !== 'command') {
+                                return;
+                            }
 
                             if (action === 'command') {
                                 // For 'command' long-press, we start auto-repeat
@@ -206,6 +211,16 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 el._maxDist = Math.max(el._maxDist || 0, dist);
 
+                if (dist > 15 && el._lpt) {
+                    clearTimeout(el._lpt);
+                    el._lpt = null;
+                }
+
+                if (dist > 15 && el._lst) {
+                    clearTimeout(el._lst);
+                    el._lst = null;
+                }
+
                 if (dist > 15 && el._repeatInterval) {
                     clearInterval(el._repeatInterval);
                     el._repeatInterval = null;
@@ -229,21 +244,26 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 const angle = Math.atan2(dy, dx) * 180 / Math.PI;
                 const distToCenter = Math.sqrt(dx * dx + dy * dy);
                 const isSwipedOut = el._maxDist > 25;
+                const isCancelZone = distToCenter > 70 && angle > 0 && angle < 90;
 
-                if (preview?.isSwipe) {
+                if (isCancelZone) {
+                    setActiveDir(null);
+                    el.style.setProperty('--cancel-opacity', '1');
+                    el.style.setProperty('--cancel-scale', '1.15');
+                    setIsCancelling(true);
+                } else if (preview?.isSwipe) {
                     setActiveDir(preview.dir || null);
                     el.style.setProperty('--cancel-opacity', '0');
+                    setIsCancelling(false);
                 } else if (preview && isSwipedOut && distToCenter < 20) {
                     setActiveDir('center' as any);
                     el.style.setProperty('--cancel-opacity', '0');
-                } else if (!preview && distToCenter > 110 && angle > 20 && angle < 70) {
-                    setActiveDir(null);
-                    el.style.setProperty('--cancel-opacity', '1');
-                    el.style.setProperty('--cancel-scale', '1.1');
+                    setIsCancelling(false);
                 } else {
                     setActiveDir(null);
                     el.style.setProperty('--cancel-opacity', '0');
                     el.style.setProperty('--cancel-scale', '0.5');
+                    setIsCancelling(false);
                 }
 
                 // Update the Dynamic Compass Ray
@@ -264,8 +284,16 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 if (isEditMode) return;
 
                 const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
                 const isLong = (Date.now() - el._startTime) > 500;
-                const previewCmd = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
+
+                // If returned to center, we force a non-swipe, non-long check to trigger primary command
+                const isReturnToCenter = dist < 20 && el._maxDist > 15;
+                const finalDx = isReturnToCenter ? 0 : dx;
+                const finalDy = isReturnToCenter ? 0 : dy;
+                const finalIsLong = isReturnToCenter ? false : isLong;
+
+                const previewCmd = getButtonCommand(button, finalDx, finalDy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, finalIsLong);
 
                 clearTimeout(el._lpt); el._lpt = null;
                 clearTimeout(el._lst); el._lst = null;
@@ -273,6 +301,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 setHeldButton(null);
                 setCommandPreview(null);
                 setActiveDir(null);
+                const finalIsCancelling = isCancelling;
+                setIsCancelling(false);
                 el.style.setProperty('--ray-opacity', '0');
                 el.style.setProperty('--cancel-opacity', '0');
                 el.style.setProperty('--cancel-scale', '0');
@@ -285,7 +315,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
                 if (el._didFire) { el._didFire = false; return; }
 
-                if (previewCmd) {
+                // Final robust check for cancellation to prevent stale state issues
+                const finalAngle = Math.atan2(dy, dx) * 180 / Math.PI;
+                if (finalIsCancelling || (dist > 70 && finalAngle > 0 && finalAngle < 90)) return;
+
+                if (previewCmd && previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                     // Unified release: Execute whatever direction/command was being previewed
                     if (previewCmd.actionType === 'nav') {
                         setActiveSet(previewCmd.cmd);
@@ -305,8 +339,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
                         el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
                     }
                 } else {
-                    // No preview (cancelled or static tap)
-                    if (el._maxDist < 15) {
+                    // No preview (cancelled, static tap, or returned to center)
+                    if (el._maxDist < 15 || isReturnToCenter) {
                         handleButtonClick(button, e);
                     }
                 }
@@ -340,7 +374,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 }
             }}
         >
-            {activeDir && createPortal(
+            {(activeDir || isCancelling) && createPortal(
                 <>
                     <div className="swipe-wheel-container" style={{
                         zIndex: 50000,

@@ -119,7 +119,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     soundTriggers={soundTriggers}
                     deleteSound={(id) => setSoundTriggers(prev => prev.filter(s => s.id !== id))}
                     resetButtons={btn.resetToDefaults}
-                    hasUserDefaults={btn.hasUserDefaults}
                     connect={connect}
                     loginName={loginName}
                     setLoginName={setLoginName}
@@ -174,8 +173,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     onDeleteButton={btn.deleteButton}
                     onDeleteSet={btn.deleteSet}
                     onCreateButton={btn.createButton}
-                    onSaveAsDefault={btn.saveAsDefault}
-                    onSaveAsCoreDefault={btn.saveAsCoreDefault}
                     combatSet={btn.combatSet}
                     defaultSet={btn.defaultSet}
                     onSetCombatSet={btn.setCombatSet}
