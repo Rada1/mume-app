@@ -28,8 +28,10 @@ export interface DrawerLine {
     html: string;
     isHeader?: boolean;
     isItem?: boolean;
+    isContainer?: boolean;
     cmd?: string;
     context?: string;
+    depth?: number;
 }
 
 export interface GameStats {

@@ -52,7 +52,8 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
         borderRadius: '50%',
         backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
         boxShadow: (isEditMode && dragState?.id === 'xbox') ? '0 0 30px rgba(255,255,0,0.4)' : undefined,
-        transformOrigin: 'bottom right'
+        transformOrigin: 'bottom right',
+        opacity: (isEditMode && dragState?.id === 'xbox') ? 0.6 : 1
     };
 
     if (isDefault) {

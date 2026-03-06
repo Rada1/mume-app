@@ -72,11 +72,11 @@ export const useGmcpHandlers = ({
             if (typeof p === 'string') {
                 players.push(p);
             } else {
-                const name = p.name || p.keyword || p.short || p.shortdesc;
-                if (name) players.push(name);
+                const names = [p.name, p.keyword, p.short, p.shortdesc].filter(Boolean) as string[];
+                players.push(...names);
             }
         });
-        setRoomPlayers(players);
+        setRoomPlayers(Array.from(new Set(players)));
     }, [setRoomPlayers]);
 
     const onRoomNpcs = useCallback((data: GmcpRoomNpcs) => {
@@ -87,54 +87,47 @@ export const useGmcpHandlers = ({
             if (typeof p === 'string') {
                 npcs.push(p);
             } else {
-                const name = p.name || p.keyword || p.short || p.shortdesc;
-                if (!name) return;
+                const names = [p.name || p.keyword, p.short, p.shortdesc].filter(Boolean) as string[];
+                if (names.length === 0) return;
 
-                // Check if this "char" is actually a player
                 const isPc = p.pc || p.type === 'pc' || p.type === 'player';
                 if (isPc) {
-                    players.push(name);
+                    players.push(...names);
                 } else {
-                    npcs.push(name);
+                    npcs.push(...names);
                 }
             }
         });
 
-        if (npcs.length > 0 || data.length === 0) setRoomNpcs(npcs);
+        setRoomNpcs(Array.from(new Set(npcs)));
         if (players.length > 0) setRoomPlayers(prev => Array.from(new Set([...prev, ...players])));
     }, [setRoomNpcs, setRoomPlayers]);
 
     const onRoomItems = useCallback((data: GmcpRoomItems) => {
-        let items: string[] = [];
-        const parseItem = (i: string | GmcpOccupant): string[] => {
+        const items = data.flatMap(i => {
             if (typeof i === 'string') return [i];
-            const names = [];
-            if (i.name) names.push(i.name);
-            if (i.short) names.push(i.short);
-            if (i.shortdesc) names.push(i.shortdesc);
-            return names;
-        };
-        items = data.flatMap(parseItem).filter(Boolean);
-        setRoomItems(items);
+            return [i.name, i.short, i.shortdesc, i.keyword].filter(Boolean) as string[];
+        });
+        setRoomItems(Array.from(new Set(items)));
     }, [setRoomItems]);
 
     const onAddPlayer = useCallback((data: string | GmcpOccupant) => {
-        const name = typeof data === 'string' ? data : data.name;
-        if (name) setRoomPlayers(prev => prev.includes(name) ? prev : [...prev, name]);
+        const names = typeof data === 'string' ? [data] : [data.name, data.keyword, data.short].filter(Boolean) as string[];
+        if (names.length > 0) setRoomPlayers(prev => Array.from(new Set([...prev, ...names])));
     }, [setRoomPlayers]);
 
     const onAddNpc = useCallback((data: string | GmcpOccupant) => {
         if (typeof data === 'string') {
             setRoomNpcs(prev => prev.includes(data) ? prev : [...prev, data]);
         } else {
-            const name = data.name || data.keyword || data.short || data.shortdesc;
-            if (!name) return;
+            const names = [data.name || data.keyword, data.short, data.shortdesc].filter(Boolean) as string[];
+            if (names.length === 0) return;
 
             const isPc = data.pc || data.type === 'pc' || data.type === 'player';
             if (isPc) {
-                setRoomPlayers(prev => prev.includes(name) ? prev : [...prev, name]);
+                setRoomPlayers(prev => Array.from(new Set([...prev, ...names])));
             } else {
-                setRoomNpcs(prev => prev.includes(name) ? prev : [...prev, name]);
+                setRoomNpcs(prev => Array.from(new Set([...prev, ...names])));
             }
         }
     }, [setRoomNpcs, setRoomPlayers]);

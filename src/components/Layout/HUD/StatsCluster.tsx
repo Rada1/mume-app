@@ -1,23 +1,25 @@
 import React from 'react';
 import VitalsDisplay from '../../VitalsDisplay';
-import { GameStats } from '../../../types';
+import { useVitals, useGame } from '../../../context/GameContext';
 
 interface StatsClusterProps {
     uiPositions: any;
     isEditMode: boolean;
     dragState: any;
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
-    stats: GameStats;
-    inCombat: boolean;
-    handleWimpyChange: (val: number) => void;
     isLandscape: boolean;
     isMobile: boolean;
 }
 
 export const StatsCluster: React.FC<StatsClusterProps> = ({
-    uiPositions, isEditMode, dragState, handleDragStart, stats, inCombat, handleWimpyChange, isLandscape, isMobile
+    uiPositions, isEditMode, dragState, handleDragStart, isLandscape, isMobile
 }) => {
+    const { stats } = useVitals();
+    const { inCombat, executeCommand } = useGame();
+
     if (isMobile) return null;
+
+    const handleWimpyChange = (val: number) => executeCommand(`wimpy ${val}`);
 
     const hpRatio = stats.hp / (stats.maxHp || 1);
     const manaRatio = stats.mana / (stats.maxMana || 1);
@@ -42,6 +44,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
                 padding: isEditMode ? '10px' : undefined,
                 borderRadius: '20px',
                 backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
+                opacity: (isEditMode && dragState?.id === 'stats') ? 0.6 : 1,
                 zIndex: 1600,
                 display: 'flex',
                 pointerEvents: 'auto'

@@ -11,11 +11,13 @@ import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
 interface DrawerManagerProps {
     ui: {
         drawer: 'none' | 'character' | 'items';
+        isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
     };
     setUI: React.Dispatch<React.SetStateAction<{
         drawer: 'none' | 'character' | 'items';
+        isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
     }>>;
@@ -142,6 +144,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             <EquipmentDrawer
                 isOpen={ui.drawer === 'items'}
+                isPeeking={ui.isDrawerPeeking}
                 onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
                 eqLines={eqLines}
                 inventoryLines={inventoryLines}

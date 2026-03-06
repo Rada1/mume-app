@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback, useMemo } from 'react';
 import {
     PopoverState, CustomButton, TeleportTarget
 } from '../types';
@@ -17,22 +17,43 @@ import { useSettings } from '../hooks/useSettings';
 import { useSoundSystem } from '../hooks/useSoundSystem';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
-import { GameContextType } from './GameContext/types';
+import { GameContextType, VitalsContextType } from './GameContext/types';
 import { useGmcpHandlers } from '../hooks/useGmcpHandlers';
 import { useGameProviderState } from './GameContext/state';
 
-const GameContext = createContext<GameContextType | undefined>(undefined);
+export const GameContext = createContext<GameContextType | undefined>(undefined);
+export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
+
+export const useGame = () => {
+    const context = useContext(GameContext);
+    if (!context) throw new Error('useGame must be used within a GameProvider');
+    const vitals = useContext(VitalsContext);
+    if (!vitals) throw new Error('useVitals must be used within a GameProvider');
+    return useMemo(() => ({ ...context, ...vitals }), [context, vitals]);
+};
+
+export const useVitals = () => {
+    const context = useContext(VitalsContext);
+    if (!context) throw new Error('useVitals must be used within a GameProvider');
+    return context;
+};
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const s = useGameProviderState();
+    const { vitals, game } = useGameProviderState();
+    const v = vitals;
+    const s = game;
 
     // Destructure some commonly used values for brevity in dependencies
     const {
-        inCombat, inCombatRef, characterName, roomPlayers, roomNpcs,
-        characterName: charName, roomItems, target, status,
-        isNoviceMode, isSoundEnabled, abilities, characterClass,
-        lighting, lightningEnabled, weather, isFoggy, mood, spellSpeed, alertness
+        roomPlayers, roomNpcs, roomItems,
+        isNoviceMode, isSoundEnabled, characterClass, abilities,
+        lighting, lightningEnabled, weather, isFoggy,
+        actions, actionsRef,
+        inCombat, status, characterName,
+        mood, spellSpeed, alertness, playerPosition
     } = s;
+
+    const { stats, rumble, hitFlash, deathStage, target, activePrompt } = v;
 
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -53,7 +74,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [removeNpcFn, setRemoveNpcFn] = useState<(data: any) => void>();
     const [opponentChangeFn, setOpponentChangeFn] = useState<(name: string | null) => void>();
 
-    const { messages, setMessages, addMessage, isCombatLine, isCommunicationLine } = useMessageLog(inCombatRef);
+    const inCombatHookRef = useRef(false);
+    useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
+    const { messages, setMessages, addMessage, isCombatLine, isCommunicationLine } = useMessageLog(inCombatHookRef);
     const addSystemMessage = useCallback((text: string) => addMessage('system', text), [addMessage]);
 
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
@@ -73,7 +96,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRoomPlayers: s.setRoomPlayers,
         setRoomNpcs: s.setRoomNpcs,
         setRoomItems: s.setRoomItems,
-        characterName,
+        characterName: s.characterName,
         setAbilities: s.setAbilities,
         addMessage,
         setCharacterName: s.setCharacterName,
@@ -94,11 +117,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setWeather: s.setWeather,
         isFoggy,
         setIsFoggy: s.setIsFoggy,
-        mood,
+        mood: s.mood,
         setMood: s.setMood,
-        spellSpeed,
+        spellSpeed: s.spellSpeed,
         setSpellSpeed: s.setSpellSpeed,
-        alertness,
+        alertness: s.alertness,
         setAlertness: s.setAlertness,
         setDetectLighting: (fn) => { /* internal use */ }
     });
@@ -118,9 +141,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         autoConnect: s.autoConnect, setAutoConnect: s.setAutoConnect
     });
 
-    const { processMessageHtml } = useMessageHighlighter(target, btn.buttonsRef, roomPlayers, roomNpcs, characterName, roomItems);
+    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems);
 
-    const [activePrompt, setActivePrompt] = useState("");
     const [input, setInput] = useState("");
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -141,12 +163,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addMessage, playSound, triggerHaptic,
         setWeather: s.setWeather,
         setIsFoggy: s.setIsFoggy,
-        setStats: s.setStats,
+        setStats: v.setStats,
         setAbilities: s.setAbilities,
         setCharacterClass: s.setCharacterClass,
-        setRumble: s.setRumble,
-        setHitFlash: s.setHitFlash,
-        setDeathStage: s.setDeathStage,
+        setRumble: v.setRumble,
+        setHitFlash: v.setHitFlash,
+        setDeathStage: v.setDeathStage,
         setInCombat: s.setInCombat,
         setLightningEnabled: s.setLightningEnabled,
         setPlayerPosition: s.setPlayerPosition,
@@ -173,14 +195,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const telnet = useTelnet({
         connectionUrl: settings.connectionUrl,
         processLine,
-        setPrompt: setActivePrompt,
+        setPrompt: v.setActivePrompt,
         onCharNameChange: gmcpHandlers.onCharNameChange,
         onPositionChange: gmcpHandlers.onPositionChange,
         handlers: {
-            setStatus: s.setStatus, setStats: s.setStats, setWeather: s.setWeather,
+            setStatus: s.setStatus, setStats: v.setStats, setWeather: s.setWeather,
             setIsFoggy: s.setIsFoggy, setInCombat: s.setInCombat,
-            addMessage, setRumble: s.setRumble, setHitFlash: s.setHitFlash,
-            setDeathStage: s.setDeathStage, detectLighting: env.detectLighting,
+            addMessage, setRumble: v.setRumble, setHitFlash: v.setHitFlash,
+            setDeathStage: v.setDeathStage, detectLighting: env.detectLighting,
             onRoomInfo: (data) => { gmcpHandlers.onRoomInfo(data); roomInfoFn?.(data); },
             onRoomUpdateExits: (data) => { gmcpHandlers.onRoomUpdateExits(data); roomExitsFn?.(data); },
             onCharVitals: (data) => { gmcpHandlers.onCharVitals(data); charVitalsFn?.(data); },
@@ -206,7 +228,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         captureStage: s.captureStage, isDrawerCapture: s.isDrawerCapture, isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats, isWaitingForEq: s.isWaitingForEq, isWaitingForInv: s.isWaitingForInv,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines, setEqLines: s.setEqLines,
-        input, isNoviceMode, status, target, setTarget: s.setTarget,
+        input, isNoviceMode, status: s.status, target: v.target, setTarget: v.setTarget,
         popoverState, setPopoverState,
         setIsCharacterOpen: s.setIsCharacterOpen,
         setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
@@ -229,14 +251,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     useEffect(() => {
         // Reset session tracking when we start a new connection
-        if (status === 'connecting' && autoLoginSessionRef.current.lastStatus !== 'connecting') {
+        if (s.status === 'connecting' && autoLoginSessionRef.current.lastStatus !== 'connecting') {
             autoLoginSessionRef.current = { nameSent: false, passwordSent: false, lastStatus: 'connecting' };
         }
-        autoLoginSessionRef.current.lastStatus = status;
+        autoLoginSessionRef.current.lastStatus = s.status;
 
-        if (status !== 'connected' || !activePrompt) return;
+        if (s.status !== 'connected' || !v.activePrompt) return;
 
-        const lower = activePrompt.toLowerCase();
+        const lower = v.activePrompt.toLowerCase();
 
         // Handle Name Prompt
         if (settings.loginName && !autoLoginSessionRef.current.nameSent) {
@@ -255,24 +277,25 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 executeCommand(settings.loginPassword, true, true);
             }
         }
-    }, [activePrompt, status, settings.loginName, settings.loginPassword, executeCommand]);
+    }, [v.activePrompt, s.status, settings.loginName, settings.loginPassword, executeCommand, addSystemMessage]);
 
     // Practice sync on character detection
     const lastSyncedCharRef = useRef<string | null>(null);
     useEffect(() => {
-        if (characterName && characterName !== lastSyncedCharRef.current && status === 'connected') {
-            lastSyncedCharRef.current = characterName;
+        if (s.characterName && s.characterName !== lastSyncedCharRef.current && s.status === 'connected') {
+            lastSyncedCharRef.current = s.characterName;
             // Delay slightly to ensure login sequence is fully finished
             setTimeout(() => {
                 executeCommand('practice', true, true);
             }, 2000);
-        } else if (!characterName) {
+        } else if (!s.characterName) {
             lastSyncedCharRef.current = null;
         }
-    }, [characterName, status, executeCommand, addSystemMessage]);
+    }, [s.characterName, s.status, executeCommand]);
+
     // Auto-connect on mount if enabled
     useEffect(() => {
-        if (s.autoConnect && status === 'disconnected') {
+        if (s.autoConnect && s.status === 'disconnected') {
             telnet.connect();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -296,45 +319,52 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
     }, [viewport.isKeyboardOpen, btn.setButtons]);
 
+    const gameValue = useMemo(() => ({
+        ...s,
+        popoverState, setPopoverState,
+        isSettingsOpen, setIsSettingsOpen,
+        settingsTab, setSettingsTab,
+        accentColor, setAccentColor,
+        teleportTargets, setTeleportTargets,
+        onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
+        onRoomUpdateExits: roomExitsFn, setOnRoomUpdateExits: setRoomExitsFn,
+        onCharVitals: charVitalsFn, setOnCharVitals: setCharVitalsFn,
+        onRoomPlayers: roomPlayersFn, setOnRoomPlayers: setRoomPlayersFn,
+        onRoomNpcs: roomNpcsFn, setOnRoomNpcs: setRoomNpcsFn,
+        onRoomItems: roomItemsFn, setOnRoomItems: setRoomItemsFn,
+        onAddPlayer: addPlayerFn, setOnAddPlayer: setAddPlayerFn,
+        onAddNpc: addNpcFn, setOnAddNpc: setAddNpcFn,
+        onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
+        onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
+        onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
+        messages, setMessages, addMessage, addSystemMessage,
+        isCombatLine, isCommunicationLine,
+        playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
+        btn, joystick, editor, containerRef, viewport, env, processMessageHtml,
+        setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
+        input, setInput,
+        handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+        mapperRef, ...settings, audioCtxRef,
+        telnet, parser,
+        detectLighting: env.detectLighting,
+        setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
+    }), [
+        s, popoverState, isSettingsOpen, settingsTab, accentColor, teleportTargets,
+        roomInfoFn, roomExitsFn, charVitalsFn, roomPlayersFn, roomNpcsFn, roomItemsFn,
+        addPlayerFn, addNpcFn, removePlayerFn, removeNpcFn, opponentChangeFn,
+        messages, setMessages, addMessage, addSystemMessage,
+        isCombatLine, isCommunicationLine, playSound, triggerHaptic,
+        btn, joystick, editor, viewport, env, processMessageHtml,
+        input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+        settings, audioCtxRef, telnet, parser
+    ]);
+
     return (
-        <GameContext.Provider value={{
-            ...s,
-            popoverState, setPopoverState,
-            isSettingsOpen, setIsSettingsOpen,
-            settingsTab, setSettingsTab,
-            accentColor, setAccentColor,
-            showControls: s.showControls, setShowControls: s.setShowControls,
-            teleportTargets, setTeleportTargets,
-            onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
-            onRoomUpdateExits: roomExitsFn, setOnRoomUpdateExits: setRoomExitsFn,
-            onCharVitals: charVitalsFn, setOnCharVitals: setCharVitalsFn,
-            onRoomPlayers: roomPlayersFn, setOnRoomPlayers: setRoomPlayersFn,
-            onRoomNpcs: roomNpcsFn, setOnRoomNpcs: setRoomNpcsFn,
-            onRoomItems: roomItemsFn, setOnRoomItems: setRoomItemsFn,
-            onAddPlayer: addPlayerFn, setOnAddPlayer: setAddPlayerFn,
-            onAddNpc: addNpcFn, setOnAddNpc: setAddNpcFn,
-            onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
-            onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
-            onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
-            messages, setMessages, addMessage, addSystemMessage,
-            isCombatLine, isCommunicationLine,
-            playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
-            btn, joystick, editor, containerRef, viewport, env, processMessageHtml,
-            setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
-            activePrompt, setActivePrompt, input, setInput,
-            handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
-            mapperRef, ...settings, audioCtxRef,
-            telnet, parser,
-            detectLighting: env.detectLighting,
-            setDetectLighting: (fn) => { /* internal use */ }
-        }}>
-            {children}
+        <GameContext.Provider value={gameValue as any}>
+            <VitalsContext.Provider value={v}>
+                {children}
+            </VitalsContext.Provider>
         </GameContext.Provider>
     );
 };
 
-export const useGame = () => {
-    const context = useContext(GameContext);
-    if (!context) throw new Error('useGame must be used within a GameProvider');
-    return context;
-};

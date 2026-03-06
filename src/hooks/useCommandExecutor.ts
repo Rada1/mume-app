@@ -11,7 +11,7 @@ export interface ExecutorDeps {
     mapperRef: React.RefObject<MapperRef>;
     teleportTargets: TeleportTarget[];
     isDrawerCapture: React.MutableRefObject<boolean>;
-    isSilentCapture: React.MutableRefObject<boolean>;
+    isSilentCapture: React.MutableRefObject<number>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
@@ -40,7 +40,17 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         initAudio();
-        isSilentCapture.current = silent && isSystem;
+        if (silent && isSystem) {
+            isSilentCapture.current++;
+            // Safety timeout: if a prompt isn't detected within 3s, assume the command finished
+            // This prevents a "stuck" silent counter from hiding all game text.
+            setTimeout(() => {
+                if (isSilentCapture.current > 0) {
+                    isSilentCapture.current--;
+                    console.log("[Executor] Silent capture safety timeout triggered.");
+                }
+            }, 3000);
+        }
 
         // Target Setting
         const setTargetMatch = cmd.match(/^(:|#)?target\s*(\s+|=)\s*(.+)$/i) || cmd.match(/^#target\s+(.+)$/i);

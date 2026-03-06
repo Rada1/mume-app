@@ -13,15 +13,13 @@ interface MapperClusterProps {
     isMmapperMode: boolean;
     isMobile: boolean;
     mapperRef: React.RefObject<any>;
-    stats?: GameStats;
-    inCombat?: boolean;
-    handleWimpyChange?: (val: number) => void;
+    dragState: any;
     isLandscape?: boolean;
 }
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
-    stats, inCombat, handleWimpyChange, isLandscape
+    dragState, isLandscape
 }) => {
     const { ui, setUI, triggerHaptic } = useGame();
     const isExpanded = ui.mapExpanded;
@@ -60,6 +58,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         borderRadius: '12px',
         backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
         overflow: 'visible',
+        opacity: (isEditMode && dragState?.id === 'mapper') ? 0.6 : 1,
         zIndex: 1600,
     };
 

@@ -52,7 +52,8 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                 backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
                 border: (isEditMode && dragState?.id === 'joystick') ? '2px dashed #ffff00' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
                 borderRadius: '50%',
-                boxShadow: (isEditMode && dragState?.id === 'joystick') ? '0 0 30px rgba(255,255,0,0.4)' : undefined
+                boxShadow: (isEditMode && dragState?.id === 'joystick') ? '0 0 30px rgba(255,255,0,0.4)' : undefined,
+                opacity: (isEditMode && dragState?.id === 'joystick') ? 0.6 : 1
             }}
             onPointerDown={(e) => {
                 if (isEditMode) handleDragStart(e, 'joystick', 'cluster');

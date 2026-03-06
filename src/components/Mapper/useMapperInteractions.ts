@@ -105,13 +105,11 @@ export const useMapperInteractions = ({
                 hasDraggedRef.current = false;
                 contextMenuTriggeredRef.current = false;
 
-                if (mode === 'edit') {
-                    longPressTimerRef.current = setTimeout(() => {
-                        triggerHaptic(40);
-                        contextMenuTriggeredRef.current = true;
-                        setContextMenu({ x: mx, y: my, wx: world.x, wy: world.y, roomId: clickedRoomId });
-                    }, 500);
-                }
+                longPressTimerRef.current = setTimeout(() => {
+                    triggerHaptic(40);
+                    contextMenuTriggeredRef.current = true;
+                    setContextMenu({ x: mx, y: my, wx: world.x, wy: world.y, roomId: clickedRoomId });
+                }, 500);
 
                 if (clickedMarkerId && mode === 'edit') {
                     setSelectedMarkerId(clickedMarkerId); setInfoRoomId(null); setSelectedRoomIds(new Set());

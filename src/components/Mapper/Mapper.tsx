@@ -9,6 +9,7 @@ import { RoomInfoCard } from './RoomInfoCard';
 import { parseMM2 } from './mm2Parser';
 import { useMapperInteractions } from './useMapperInteractions';
 import { PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './mapperUtils';
+import { useSmartWalk } from './hooks/useSmartWalk';
 
 interface MapperProps {
     isMinimized?: boolean;
@@ -48,7 +49,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
 
-    const { addMessage, triggerHaptic } = useGame();
+    const { addMessage, triggerHaptic, executeCommand } = useGame();
     const controller = useMapperController(characterName ?? null, ref);
 
     const {
@@ -58,6 +59,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         currentRoomIdRef, markersRef, preloadedCoordsRef,
         unveilMap, setUnveilMap, handleResetAndSync, handleSyncLocation, handleClearMap
     } = controller;
+
+    const { isWalking, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, controller.preloadedCoordsRef);
 
     const triggerRender = useCallback(() => setRenderVersion(v => v + 1), []);
 
@@ -293,6 +296,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                         setContextMenu(null);
                         triggerRender();
                     }}
+                    onWalkStart={(rid) => {
+                        startWalking(rid);
+                    }}
+                    onWalkEnd={() => {
+                        stopWalking();
+                        setContextMenu(null);
+                    }}
+                    mode={mode}
                 />
             )}
 

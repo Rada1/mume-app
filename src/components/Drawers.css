@@ -83,6 +83,33 @@
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
 }
 
+@keyframes target-pulse {
+    0% {
+        box-shadow: 0 0 10px var(--accent);
+        filter: brightness(1.5);
+    }
+
+    50% {
+        box-shadow: 0 0 25px var(--accent);
+        filter: brightness(2.0);
+    }
+
+    100% {
+        box-shadow: 0 0 10px var(--accent);
+        filter: brightness(1.5);
+    }
+}
+
+.inline-btn.drop-hover-active {
+    filter: brightness(1.8) saturate(1.5) !important;
+    box-shadow: 0 0 15px var(--accent) !important;
+    transform: scale(1.1) !important;
+    outline: 2px solid var(--accent) !important;
+    z-index: 1000 !important;
+    transition: all 0.15s ease !important;
+    animation: target-pulse 1s infinite ease-in-out !important;
+}
+
 .right-drawer {
     position: absolute;
     top: 0;
@@ -115,6 +142,36 @@
     visibility: visible;
     pointer-events: auto;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
+}
+
+.right-drawer.peeking {
+    transform: translateX(85%);
+    /* Show a bit of the edge */
+    visibility: visible;
+    pointer-events: auto;
+    /* allow dropping on the sliver */
+    box-shadow: -5px 0 20px rgba(74, 222, 128, 0.2);
+    border-left: 2px solid var(--accent);
+    cursor: copy;
+}
+
+.right-drawer.peeking:hover {
+    transform: translateX(80%);
+    box-shadow: -10px 0 30px var(--accent);
+}
+
+.peek-indicator {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    color: var(--accent);
+    font-weight: bold;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    opacity: 0.8;
+    pointer-events: none;
 }
 
 .drawer-header {

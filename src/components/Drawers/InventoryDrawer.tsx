@@ -72,31 +72,41 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        {inventoryLines.map(line => (
-                            <div
-                                key={line.id}
-                                className={line.isItem ? "inline-btn auto-item" : ""}
-                                onClick={(e) => {
-                                    if (!line.isItem) return;
-                                    triggerHaptic(20);
-                                    handleButtonClick({
-                                        id: `inv-${line.id}`,
-                                        command: 'inventorylist',
-                                        label: line.context || 'Item',
-                                        actionType: 'menu'
-                                    } as any, e, line.context);
-                                }}
-                                style={{
-                                    padding: '8px',
-                                    background: line.isItem ? 'rgba(100, 255, 100, 0.08)' : 'rgba(0,0,0,0.2)',
-                                    borderRadius: '6px',
-                                    border: '1px solid rgba(255,255,255,0.05)',
-                                    fontSize: '0.85rem',
-                                    cursor: line.isItem ? 'pointer' : 'default'
-                                }}
-                                dangerouslySetInnerHTML={{ __html: line.html }}
-                            />
-                        ))}
+                        {inventoryLines.map(line => {
+                            const depth = line.depth || 0;
+                            return (
+                                <div
+                                    key={line.id}
+                                    className={line.isItem ? "inline-btn auto-item" : ""}
+                                    onClick={(e) => {
+                                        if (!line.isItem) return;
+                                        triggerHaptic(20);
+                                        handleButtonClick({
+                                            id: `inv-${line.id}`,
+                                            command: 'inventorylist',
+                                            label: line.context || 'Item',
+                                            actionType: 'menu'
+                                        } as any, e, line.context);
+                                    }}
+                                    style={{
+                                        padding: '8px 12px',
+                                        background: line.isItem ?
+                                            (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)')
+                                            : 'rgba(0,0,0,0.2)',
+                                        borderRadius: depth > 0 ? '0 6px 6px 0' : '6px',
+                                        border: '1px solid rgba(255,255,255,0.05)',
+                                        borderLeft: depth > 0 ? `${depth * 3}px solid #89b4fa` : '1px solid rgba(255,255,255,0.05)',
+                                        fontSize: depth > 0 ? '0.8rem' : '0.85rem',
+                                        cursor: line.isItem ? 'pointer' : 'default',
+                                        marginLeft: `${depth * 20}px`,
+                                        fontWeight: line.isContainer ? 'bold' : 'normal',
+                                        color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    dangerouslySetInnerHTML={{ __html: line.html }}
+                                />
+                            );
+                        })}
                     </div>
                 )}
             </div>

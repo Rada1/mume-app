@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction } from '../../types';
 
@@ -19,6 +19,7 @@ export const useGameProviderState = () => {
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
     const [target, setTarget] = useState<string | null>(null);
+    const [draggedTarget, setDraggedTarget] = useState<{ name: string; type: string; x: number; y: number } | null>(null);
     const [stats, setStats] = useState<GameStats>({
         hp: 0, maxHp: 1,
         mana: 0, maxMana: 1,
@@ -41,6 +42,7 @@ export const useGameProviderState = () => {
     // UI state
     const [ui, setUI] = useState<{
         drawer: 'none' | 'character' | 'items';
+        isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -48,6 +50,7 @@ export const useGameProviderState = () => {
         menuView: 'main' | 'availableSets';
     }>({
         drawer: 'none',
+        isDrawerPeeking: false,
         setManagerOpen: false,
         mapExpanded: false,
         isMenuOpen: false,
@@ -114,6 +117,7 @@ export const useGameProviderState = () => {
     const [mood, setMood] = useState('normal');
     const [spellSpeed, setSpellSpeed] = useState('normal');
     const [alertness, setAlertness] = useState('normal');
+    const [activePrompt, setActivePrompt] = useState("");
     const [playerPosition, setPlayerPosition] = useState('standing');
 
     // Parser State
@@ -121,23 +125,36 @@ export const useGameProviderState = () => {
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
     const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'none'>('none');
-    const isDrawerCapture = useRef<boolean>(false);
-    const isSilentCapture = useRef<boolean>(false);
+    const isDrawerCapture = useRef<number>(0);
+    const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);
     const isWaitingForInv = useRef<boolean>(false);
 
-    return {
+    const vitals = useMemo(() => ({
+        stats, setStats,
+        target, setTarget,
+        activePrompt, setActivePrompt,
+        rumble, setRumble,
+        hitFlash, setHitFlash,
+        deathStage, setDeathStage,
+    }), [stats, target, activePrompt, rumble, hitFlash, deathStage]);
+
+    const game = useMemo(() => ({
+        inCombat, setInCombat,
+        status, setStatus,
+        characterName, setCharacterName,
+        mood, setMood,
+        spellSpeed, setSpellSpeed,
+        alertness, setAlertness,
+        playerPosition, setPlayerPosition,
         isNoviceMode, setIsNoviceMode,
         isSoundEnabled, setIsSoundEnabled,
         isMmapperMode, setIsMmapperMode,
         theme, setTheme,
-        status, setStatus,
-        target, setTarget,
-        stats, setStats,
-        inCombat, setInCombat, inCombatRef,
+        draggedTarget, setDraggedTarget,
+        inCombatRef,
         showControls, setShowControls,
-        characterName, setCharacterName,
         roomPlayers, setRoomPlayers,
         roomNpcs, setRoomNpcs,
         roomItems, setRoomItems,
@@ -151,18 +168,20 @@ export const useGameProviderState = () => {
         abilities, setAbilities,
         characterClass, setCharacterClass,
         actions, setActions, actionsRef,
-        rumble, setRumble,
-        hitFlash, setHitFlash,
-        deathStage, setDeathStage,
-        mood, setMood,
-        spellSpeed, setSpellSpeed,
-        alertness, setAlertness,
-        playerPosition, setPlayerPosition,
         inventoryLines, setInventoryLines,
         statsLines, setStatsLines,
         eqLines, setEqLines,
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         autoConnect, setAutoConnect,
         roomName, setRoomName, roomNameRef
-    };
+    }), [
+        inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
+        isNoviceMode, isSoundEnabled, isMmapperMode, theme, draggedTarget, showControls,
+        roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
+        setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
+        lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
+        inventoryLines, statsLines, eqLines, autoConnect, roomName
+    ]);
+
+    return { vitals, game };
 };

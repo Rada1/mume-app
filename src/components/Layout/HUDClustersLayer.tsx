@@ -23,11 +23,10 @@ interface HUDClustersLayerProps {
 export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, joystickGlow, setJoystickGlow, btnGlow, setBtnGlow
 }) => {
-    const { stats, inCombat, characterName, isMmapperMode, btn, joystick, mapperRef, target, triggerHaptic, executeCommand, handleButtonClick, setPopoverState, viewport, activePrompt, showControls } = useGame();
+    const { characterName, isMmapperMode, btn, joystick, mapperRef, target, triggerHaptic, executeCommand, handleButtonClick, setPopoverState, viewport, activePrompt, showControls } = useGame();
     const { isMobile, isLandscape, logFontSize, resetLogFontSize } = viewport;
 
     const effectiveShowControls = showControls;
-    const handleWimpyChange = (val: number) => executeCommand(`wimpy ${val}`);
 
     return (
         <>
@@ -51,13 +50,11 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                 isMmapperMode={isMmapperMode}
                 isMobile={isMobile}
                 mapperRef={mapperRef}
-                stats={stats}
-                inCombat={inCombat}
-                handleWimpyChange={handleWimpyChange}
+                dragState={btn.dragState}
                 isLandscape={isLandscape}
             />
 
-            <StatsCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} dragState={btn.dragState} handleDragStart={handleDragStart} stats={stats} inCombat={inCombat} handleWimpyChange={handleWimpyChange} isLandscape={isLandscape} isMobile={isMobile} />
+            <StatsCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} dragState={btn.dragState} handleDragStart={handleDragStart} isLandscape={isLandscape} isMobile={isMobile} />
 
             {(effectiveShowControls || btn.isEditMode) && (
                 <>

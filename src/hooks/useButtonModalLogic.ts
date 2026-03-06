@@ -58,6 +58,9 @@ export const useButtonModalLogic = ({
             const cleaned = await makeBackgroundTransparent(base64);
             updateButton(editingButton.id, { icon: cleaned });
         };
+        reader.onerror = () => {
+            console.error("Failed to read file");
+        };
         reader.readAsDataURL(file);
     }, [editingButton.id, updateButton]);
 

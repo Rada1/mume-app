@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect, forwardRef } from 'react';
+import React, { useRef, useCallback, useEffect, forwardRef } from 'react';
 import { useMapperRenderer } from './useMapperRenderer';
 import { useMapAnimation } from './useMapAnimation';
 
@@ -36,7 +36,7 @@ interface MapCanvasProps {
     viewZ?: number | null;
 }
 
-export const MapCanvas = forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
+export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
     const internalRef = useRef<HTMLCanvasElement>(null);
     const canvasRef = (ref as React.RefObject<HTMLCanvasElement>) || internalRef;
 
@@ -120,6 +120,6 @@ export const MapCanvas = forwardRef<HTMLCanvasElement, MapCanvasProps>((props, r
             onPointerUp={props.onPointerUp}
         />
     );
-});
+}));
 
 MapCanvas.displayName = 'MapCanvas';

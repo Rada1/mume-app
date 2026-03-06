@@ -39,10 +39,9 @@ export function useViewport() {
             scrollAnimationRef.current = null;
         }
 
-        // Only guard against jumping if force is false
         if (!force) {
-            // Tighter threshold on mobile to prevent "magnetic" snaps while scrolling
-            const threshold = isMobile ? 25 : Math.min(100, container.clientHeight * 0.1);
+            // Consistent threshold across the app
+            const threshold = 50;
             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
             if (!isNearBottom) return;
         }
@@ -98,6 +97,7 @@ export function useViewport() {
         if (!isMobile) return;
 
         const handleTouchStart = (e: TouchEvent) => {
+            if ((e.target as HTMLElement).closest('.map-canvas')) return;
             if (e.touches.length === 2) {
                 const dist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -108,6 +108,7 @@ export function useViewport() {
         };
 
         const handleTouchMove = (e: TouchEvent) => {
+            if ((e.target as HTMLElement).closest('.map-canvas')) return;
             if (e.touches.length === 2 && touchDistRef.current !== null) {
                 const distContext = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -194,7 +195,8 @@ export function useViewport() {
             if (isLockedToBottomRef.current) {
                 scrollContainer.scrollTop = scrollContainer.scrollHeight;
             } else {
-                scrollContainer.scrollTop = scrollContainer.scrollHeight - scrollContainer.clientHeight - distFromBottom;
+                // If not locked, try to keep the same distance from bottom to prevent jumping
+                scrollContainer.scrollTop = Math.max(0, scrollContainer.scrollHeight - scrollContainer.clientHeight - distFromBottom);
             }
         }
 

@@ -27,7 +27,7 @@ export interface UseGameParserDeps {
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isDrawerCapture: React.MutableRefObject<boolean>;
-    isSilentCapture: React.MutableRefObject<boolean>;
+    isSilentCapture: React.MutableRefObject<number>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
@@ -40,12 +40,18 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
 
+    const containerStackRef = useRef<{ depth: number, noun: string }[]>([]);
+
     const processLine = useCallback((line: string) => {
         const cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
         const textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
         const lower = textOnly.toLowerCase();
 
+        // Reset stack if we're not in a capture stage or just starting one
+        if (captureStage.current === 'none') {
+            containerStackRef.current = [];
+        }
 
         // Weather & Fog Detection
         if (lower.includes("starts to rain") || lower.includes("it is raining")) setWeather(lower.includes("heavily") ? 'heavy-rain' : 'rain');
@@ -61,49 +67,118 @@ export function useGameParser(deps: UseGameParserDeps) {
             setTimeout(() => setLightningEnabled(false), 450);
         }
 
-        if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { isWaitingForStats.current = false; captureStage.current = 'stat'; }
-        if ((isWaitingForEq.current || captureStage.current !== 'none') && /you are using|you are equipped with/i.test(lower)) { isWaitingForEq.current = false; captureStage.current = 'eq'; }
-        if ((isWaitingForInv.current || captureStage.current !== 'none') && /you are carrying|your inventory contains/i.test(lower)) { isWaitingForInv.current = false; captureStage.current = 'inv'; }
-        if (/you have the following|you can practice|practice sessions|skill \/ spell|skill.*knowledge.*difficulty/i.test(lower)) { if (captureStage.current !== 'practice') setAbilities({}); captureStage.current = 'practice'; }
+        if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = []; }
+        if ((isWaitingForEq.current || captureStage.current !== 'none') && /you are using|you are equipped with/i.test(lower)) {
+            isWaitingForEq.current = false; captureStage.current = 'eq'; containerStackRef.current = [];
+            setEqLines([]); // Clear when starting fresh eq list
+        }
+        if ((isWaitingForInv.current || captureStage.current !== 'none') && /you are carrying|your inventory contains/i.test(lower)) {
+            isWaitingForInv.current = false; captureStage.current = 'inv'; containerStackRef.current = [];
+            setInventoryLines([]); // Clear when starting fresh inv list
+        }
 
-        if (/^[\*\)\!oO\.\[f\<%\~+WU:=O:\(]\s*[>:]\s*$/.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower))) {
-            captureStage.current = 'none'; isSilentCapture.current = false; isWaitingForStats.current = false; isWaitingForEq.current = false; isWaitingForInv.current = false;
+        const purePromptRegex = /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/;
+        const promptWithTextRegex = /^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/;
+
+        const isPurePrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
+        const textPMatch = textOnly.match(promptWithTextRegex);
+
+        if (isPurePrompt || textPMatch) {
+            captureStage.current = 'none';
+            isWaitingForStats.current = false;
+            isWaitingForEq.current = false;
+            isWaitingForInv.current = false;
+            isDrawerCapture.current = false; // Reset drawer capture on prompt
+
+            if (isSilentCapture.current > 0) {
+                isSilentCapture.current--;
+                console.log(`[Parser] Prompt received, silentCount remaining: ${isSilentCapture.current}`);
+            }
+
+            containerStackRef.current = [];
 
             // Extract the prompt for lighting and terrain detection
-            const promptMatch = textOnly.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
-            if (promptMatch) {
-                const symbol = promptMatch[1];
+            const symbolString = isPurePrompt ? textOnly : textPMatch?.[1];
+            const promptSymbolMatch = symbolString?.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
+            if (promptSymbolMatch) {
+                const symbol = promptSymbolMatch[1];
                 if (detectLighting) detectLighting(symbol);
                 if (deps.setCurrentTerrain) deps.setCurrentTerrain(symbol);
             }
-            return;
+
+            // If it's pure prompt with no extra text, swallow it
+            if (isPurePrompt || (textPMatch && !textPMatch[2].trim())) {
+                return;
+            }
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
             const createLine = (l: string, cmd: string): DrawerLine => {
                 const lowerLine = l.toLowerCase();
+                const textOnlyLine = l.replace(/\x1b\[[0-9;]*m/g, '');
+
+                const leadingSpaces = textOnlyLine.match(/^ */)?.[0].length || 0;
+                const depth = Math.floor(leadingSpaces / 3);
+
                 const isHdr = /you are (carrying|using|equipped with)|contains/i.test(lowerLine);
                 const isNothing = /nothing/i.test(lowerLine).valueOf();
+                const isContainer = lowerLine.includes('(containing)') || lowerLine.endsWith(':');
+
+                const noun = extractNoun(l);
+
+                // Track containers to build nested context (e.g. item.bag)
+                while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) {
+                    containerStackRef.current.pop();
+                }
+
+                let context = noun;
+                if (depth > 0 && containerStackRef.current.length > 0) {
+                    context = `${noun}.${containerStackRef.current[containerStackRef.current.length - 1].noun}`;
+                }
+
+                if (isContainer) {
+                    containerStackRef.current.push({ depth, noun });
+                }
+
                 return {
                     id: Math.random().toString(36).substring(7),
-                    text: l.replace(/\x1b\[[0-9;]*m/g, ''),
+                    text: textOnlyLine.trim(),
                     html: ansiConvert.toHtml(l),
                     isItem: !isHdr && !isNothing,
                     isHeader: isHdr,
+                    isContainer,
+                    depth,
                     cmd,
-                    context: extractNoun(l)
+                    context
                 };
             };
-            if (captureStage.current === 'inv') setInventoryLines(p => [...p, createLine(cleanLine, 'inventorylist')]);
-            else if (captureStage.current === 'eq') setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
-            else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
-        } else if (captureStage.current === 'practice') parsePracticeLine(textOnly);
 
-        const scoreMatch = textOnly.match(/(\d+)\/(\d+)\s+hits.*(\d+)\/(\d+)\s+mana.*(\d+)\/(\d+)\s+moves/i);
-        if (scoreMatch) setStats(p => ({ ...p, hp: parseInt(scoreMatch[1]), maxHp: parseInt(scoreMatch[2]), mana: parseInt(scoreMatch[3]), maxMana: parseInt(scoreMatch[4]), move: parseInt(scoreMatch[5]), maxMove: parseInt(scoreMatch[6]) }));
+            if (captureStage.current === 'inv') {
+                setInventoryLines(p => [...p, createLine(cleanLine, 'inventorylist')]);
+            } else if (captureStage.current === 'eq') {
+                setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
+            } else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+        } else {
+            if (captureStage.current === 'practice') parsePracticeLine(textOnly);
+        }
 
-        if (/alas, you cannot go|no exit|is closed|too exhausted|too tired|cannot go there|blocks your/i.test(lower)) { setRumble(true); triggerHaptic(50); setTimeout(() => setRumble(false), 400); mapperRef.current?.handleMoveFailure(); if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail')); }
-        if (/pitch black|too dark|cannot see/i.test(lower)) { mapperRef.current?.handleMoveFailure(); if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail')); addMessage('system', "[Mapper] Darkness detected."); }
+        const scoreMatch = textOnly.match(/(\d+)\/(\d+)\s+hits.*(\d+)\/(\d+)\s+(mana|spirit).*(\d+)\/(\d+)\s+(moves|vitality)/i);
+        if (scoreMatch) setStats(p => ({ ...p, hp: parseInt(scoreMatch[1]), maxHp: parseInt(scoreMatch[2]), mana: parseInt(scoreMatch[3]), maxMana: parseInt(scoreMatch[4]), move: parseInt(scoreMatch[6]), maxMove: parseInt(scoreMatch[7]) }));
+
+        if (/alas, you cannot go|no exit|is closed|too exhausted|too tired|cannot go there|blocks your|too dark to see/i.test(lower)) {
+            setRumble(true);
+            triggerHaptic(50);
+            setTimeout(() => setRumble(false), 400);
+            mapperRef.current?.handleMoveFailure();
+            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail'));
+        }
+
+        if (/pitch black|too dark|cannot see/i.test(lower)) {
+            // In MUME, 'pitch black' usually means you arrived in a dark room.
+            // Only 'too dark to see' (handled above) is a movement failure.
+            addMessage('system', "[Mapper] Room is dark.");
+        }
+
         if (/hits you|crushes you|pierces you/i.test(lower)) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }
         if (/you have been killed|you are dead/i.test(lower)) { setDeathStage('fade_to_black'); setInCombat(false); setTimeout(() => setDeathStage('flash'), 2000); }
         if (/is dead! r.i.p.|receive your share of experience|you flee head over heels|you stop fighting/i.test(lower)) { setInCombat(false); }
@@ -113,14 +188,16 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         // Local Inventory Tracking
         const trackAction = () => {
-            if (isSilentCapture.current || isDrawerCapture.current) return;
+            if (isSilentCapture.current > 0 || isDrawerCapture.current) return;
 
             const sync = () => {
                 // Background sync just in case
                 setTimeout(() => {
                     executeCommandRef.current?.('inv', true, true, true, true);
-                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 300);
-                }, 2000); // 2 seconds should be enough for the command to hit and state the local change
+                    setTimeout(() => {
+                        executeCommandRef.current?.('eq', true, true, true, true);
+                    }, 400);
+                }, 1500);
             };
 
             // 1. Wear / Put On
@@ -213,8 +290,18 @@ export function useGameParser(deps: UseGameParserDeps) {
         const isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
         const pMatch = cleanLine.match(/^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/);
-        const shouldShow = (captureStage.current === 'none' || (!isDrawerCapture.current && !isSilentCapture.current)) || /carrying|using|following|contains|you (wear|remove|put|get|give|take)/i.test(lower);
-        if (shouldShow && !isSilentCapture.current) addMessage('game', pMatch ? pMatch[2] : cleanLine, undefined, undefined, isRoomName);
+        // Safety: Always show if counter is stuck high or if it's clearly a player-relevant line (combat, chat, etc)
+        const isForceVisible = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
+
+        // Final visibility logic:
+        // 1. Never show if it's a drawer-triggered capture (unless forced visible by combat/comms)
+        // 2. Never show if it's a silent capture (ref-based counter)
+        // 3. Always show if forced visible
+        const shouldShow = (!isDrawerCapture.current && isSilentCapture.current === 0) || isForceVisible;
+
+        if (shouldShow) {
+            addMessage('game', pMatch ? pMatch[2] : cleanLine, undefined, undefined, isRoomName);
+        }
     }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);
 
     return { processLine };

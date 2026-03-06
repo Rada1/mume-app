@@ -13,12 +13,20 @@ export const useButtonPersistence = (
 
     // localStorage sync
     useEffect(() => {
-        const toSave = rawButtons.map(b => ({ ...b, isVisible: undefined })); // Don't save transient visibility
-        localStorage.setItem('mud-buttons', JSON.stringify(toSave));
+        try {
+            const toSave = rawButtons.map(b => ({ ...b, isVisible: undefined })); // Don't save transient visibility
+            localStorage.setItem('mud-buttons', JSON.stringify(toSave));
+        } catch (e) {
+            console.error('Failed to save buttons to localStorage:', e);
+        }
     }, [rawButtons]);
 
     useEffect(() => {
-        localStorage.setItem('mud-ui-positions', JSON.stringify(uiPositions));
+        try {
+            localStorage.setItem('mud-ui-positions', JSON.stringify(uiPositions));
+        } catch (e) {
+            console.error('Failed to save UI positions to localStorage:', e);
+        }
     }, [uiPositions]);
 
     const resetToDefaults = useCallback((addMessage?: (t: string, m: string) => void) => {

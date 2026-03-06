@@ -11,7 +11,30 @@ import { useViewport } from '../../hooks/useViewport';
 import { useEnvironment } from '../../hooks/useEnvironment';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 
+export interface VitalsContextType {
+    stats: GameStats;
+    setStats: Dispatch<SetStateAction<GameStats>>;
+    target: string | null;
+    setTarget: (val: string | null) => void;
+    activePrompt: string;
+    setActivePrompt: (prompt: string) => void;
+    rumble: boolean;
+    setRumble: (val: boolean) => void;
+    hitFlash: boolean;
+    setHitFlash: (val: boolean) => void;
+    deathStage: DeathStage;
+    setDeathStage: (val: DeathStage) => void;
+}
+
 export interface GameContextType {
+    // High-frequency but log-related
+    inCombat: boolean;
+    setInCombat: (val: boolean) => void;
+    status: 'connected' | 'disconnected' | 'connecting';
+    setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
+    characterName: string | null;
+    setCharacterName: (name: string | null) => void;
+
     // Settings & Mode
     isNoviceMode: boolean;
     setIsNoviceMode: (val: boolean) => void;
@@ -24,15 +47,16 @@ export interface GameContextType {
     showControls: boolean;
     setShowControls: (val: boolean) => void;
 
-    // Game State
-    status: 'connected' | 'disconnected' | 'connecting';
-    setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
-    target: string | null;
-    setTarget: (val: string | null) => void;
-    stats: GameStats;
-    setStats: Dispatch<SetStateAction<GameStats>>;
-    inCombat: boolean;
-    setInCombat: (val: boolean) => void;
+    mood: string;
+    setMood: (val: string) => void;
+    spellSpeed: string;
+    setSpellSpeed: (val: string) => void;
+    alertness: string;
+    setAlertness: (val: string) => void;
+    playerPosition: string;
+    setPlayerPosition: (val: string) => void;
+
+    // Environmental state
     lighting: LightingType;
     setLighting: Dispatch<SetStateAction<LightingType>>;
     lightningEnabled: boolean;
@@ -42,9 +66,7 @@ export interface GameContextType {
     isFoggy: boolean;
     setIsFoggy: (val: boolean) => void;
 
-    // Character & Room Info
-    characterName: string | null;
-    setCharacterName: (name: string | null) => void;
+    // Room Info
     roomPlayers: string[];
     setRoomPlayers: Dispatch<SetStateAction<string[]>>;
     roomNpcs: string[];
@@ -59,6 +81,7 @@ export interface GameContextType {
     // Shared UI state
     ui: {
         drawer: 'none' | 'character' | 'items';
+        isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -67,6 +90,7 @@ export interface GameContextType {
     };
     setUI: Dispatch<SetStateAction<{
         drawer: 'none' | 'character' | 'items';
+        isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -89,21 +113,6 @@ export interface GameContextType {
     characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
     setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
 
-    // Additional Game State
-    rumble: boolean;
-    setRumble: (val: boolean) => void;
-    hitFlash: boolean;
-    setHitFlash: (val: boolean) => void;
-    deathStage: DeathStage;
-    setDeathStage: (val: DeathStage) => void;
-
-    mood: string;
-    setMood: (val: string) => void;
-    spellSpeed: string;
-    setSpellSpeed: (val: string) => void;
-    alertness: string;
-    setAlertness: (val: string) => void;
-
     // Helpers for UI
     setIsCharacterOpen: (open: boolean) => void;
     setIsItemsDrawerOpen: (open: boolean) => void;
@@ -111,10 +120,6 @@ export interface GameContextType {
     setIsSetManagerOpen: (open: boolean) => void;
 
     detectLighting: (symbol: string) => void;
-
-    playerPosition: string;
-    setPlayerPosition: (val: string) => void;
-
     soundTriggersRef: RefObject<SoundTrigger[]>;
     isSoundEnabledRef: RefObject<boolean>;
     actionsRef: RefObject<GameAction[]>;
@@ -122,7 +127,7 @@ export interface GameContextType {
     teleportTargets: TeleportTarget[];
     setTeleportTargets: (val: TeleportTarget[] | ((prev: TeleportTarget[]) => TeleportTarget[])) => void;
 
-    // GMCP Handlers (for hooks to subscribe to)
+    // GMCP Handlers
     onRoomInfo?: (data: any) => void;
     setOnRoomInfo: (fn: (data: any) => void) => void;
     onRoomUpdateExits?: (data: any) => void;
@@ -155,7 +160,7 @@ export interface GameContextType {
     isCommunicationLine: (text: string) => boolean;
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string;
 
-    // Settings (moved from index.tsx/useSettings)
+    // Settings
     bgImage: string;
     setBgImage: Dispatch<SetStateAction<string>>;
     connectionUrl: string;
@@ -179,8 +184,6 @@ export interface GameContextType {
     handleSoundUpload: (e: ChangeEvent<HTMLInputElement>) => void;
     handleMmapperModeChange: (enabled: boolean) => void;
 
-    activePrompt: string;
-    setActivePrompt: (prompt: string) => void;
     input: string;
     setInput: Dispatch<SetStateAction<string>>;
     handleSend: (e?: FormEvent) => void;
@@ -200,13 +203,13 @@ export interface GameContextType {
     setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
 
     captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
-    isDrawerCapture: MutableRefObject<boolean>;
-    isSilentCapture: MutableRefObject<boolean>;
+    isDrawerCapture: MutableRefObject<number>;
+    isSilentCapture: MutableRefObject<number>;
     isWaitingForStats: MutableRefObject<boolean>;
     isWaitingForEq: MutableRefObject<boolean>;
     isWaitingForInv: MutableRefObject<boolean>;
 
-    // Network & Parser Engines (partial types for brevity, or 'any' if complex)
+    // Network & Parser Engines
     telnet: any;
     parser: any;
 
@@ -214,7 +217,7 @@ export interface GameContextType {
     playSound: (buffer: AudioBuffer) => void;
     triggerHaptic: (ms: number) => void;
 
-    // Low-level callback registration (Internal use)
+    // Low-level callback registration
     setDetectLighting: (fn: (text: string) => void) => void;
     setPlaySound: (fn: (buffer: AudioBuffer) => void) => void;
     setTriggerHaptic: (fn: (ms: number) => void) => void;
@@ -229,4 +232,7 @@ export interface GameContextType {
     audioCtxRef: MutableRefObject<AudioContext | null>;
     setSettings: Record<string, import('../../types').ButtonSetSettings>;
     setSetSettings: Dispatch<SetStateAction<Record<string, import('../../types').ButtonSetSettings>>>;
+
+    draggedTarget: { name: string; type: string; x: number; y: number } | null;
+    setDraggedTarget: Dispatch<SetStateAction<{ name: string; type: string; x: number; y: number } | null>>;
 }

@@ -77,23 +77,42 @@ export const useMapAnimation = ({
         return needsNextFrame;
     }, [drawMap, isDragging, getDPR, marquee, canvasRef, camera, playerPosRef, playerTrailRef, autoCenter, stableRoomIdRef, stableRoomsRef]);
 
+    const lastRenderVersion = useRef(renderVersion);
+
     useEffect(() => {
         let active = true;
+        let isLooping = false;
+
         const loop = () => {
-            if (!active) return;
-            try {
-                tick();
-            } catch (err) {
-                console.error("Map Animation Loop Error! ", err);
+            if (!active) {
+                isLooping = false;
+                return;
             }
-            requestRef.current = requestAnimationFrame(loop);
+
+            const needsNextFrame = tick();
+
+            if (needsNextFrame) {
+                isLooping = true;
+                requestRef.current = requestAnimationFrame(loop);
+            } else {
+                isLooping = false;
+                requestRef.current = null;
+            }
         };
-        requestRef.current = requestAnimationFrame(loop);
+
+        // Start or restart the loop whenever deps change (especially renderVersion)
+        if (!isLooping) {
+            loop();
+        }
+
         return () => {
             active = false;
-            if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            if (requestRef.current) {
+                cancelAnimationFrame(requestRef.current);
+                requestRef.current = null;
+            }
         };
-    }, [tick]);
+    }, [tick, renderVersion, isDragging]);
 
     return { tick };
 };

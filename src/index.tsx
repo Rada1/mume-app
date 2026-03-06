@@ -41,9 +41,14 @@ const MudClient = () => {
         messages,
         popoverState,
         executeCommand,
+        setTarget,
+        addMessage,
         handleLogClick,
         handleLogDoubleClick,
-        env
+        draggedTarget,
+        setDraggedTarget,
+        env,
+        setUI
     } = useGame();
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
@@ -90,7 +95,58 @@ const MudClient = () => {
 
     const handleMouseUp = useCallback(() => { }, []);
     const handleDoubleClick = useCallback(() => { }, []);
-    const handleLogPointerDown = useCallback(() => { }, []);
+    const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        if (!targetEl) return;
+
+        const name = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+        const startX = e.clientX;
+        const startY = e.clientY;
+        let hasStarted = false;
+
+        const onMove = (me: PointerEvent) => {
+            const dx = me.clientX - startX;
+            const dy = me.clientY - startY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (!hasStarted && dist > 15) {
+                hasStarted = true;
+                triggerHaptic(20);
+            }
+
+            if (hasStarted) {
+                setDraggedTarget({ name, type: 'target', x: me.clientX, y: me.clientY });
+
+                // Drawer peeking logic
+                if (me.clientX > window.innerWidth - 100) {
+                    setUI(prev => ({ ...prev, isDrawerPeeking: true }));
+                } else if (me.clientX < window.innerWidth - 150) {
+                    setUI(prev => ({ ...prev, isDrawerPeeking: false }));
+                }
+            }
+        };
+
+        const onUp = (ue: PointerEvent) => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+
+            if (hasStarted) {
+                const dropTarget = document.elementFromPoint(ue.clientX, ue.clientY);
+                if (dropTarget?.closest('.right-drawer') || (viewport.isMobile && ue.clientX > window.innerWidth - 100)) {
+                    triggerHaptic(40);
+                    setTarget(name);
+                    addMessage('system', `Target set to: ${name}`);
+                    // If it was peeking, maybe open it fully or just close? 
+                    // User said "open up slightly indicating you can drop", so dropping should just fulfill the action.
+                }
+                setDraggedTarget(null);
+                setUI(prev => ({ ...prev, isDrawerPeeking: false }));
+            }
+        };
+
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+    }, [triggerHaptic, viewport.isMobile, setDraggedTarget, setUI, setTarget, addMessage]);
 
     const handleSendCallback = useCallback((e?: React.FormEvent) => {
         handleSend(e);
@@ -109,6 +165,29 @@ const MudClient = () => {
                     display: bgImage ? 'block' : 'none'
                 }} />
                 <AtmosphericLayer />
+
+                {draggedTarget && (
+                    <div style={{
+                        position: 'fixed',
+                        left: draggedTarget.x,
+                        top: draggedTarget.y,
+                        pointerEvents: 'none',
+                        zIndex: 99999,
+                        transform: 'translate(-50%, -50%) scale(1.1)',
+                        background: 'rgba(74, 222, 128, 0.7)',
+                        opacity: 0.8,
+                        color: '#000',
+                        padding: '6px 14px',
+                        borderRadius: '20px',
+                        fontWeight: 'bold',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+                        whiteSpace: 'nowrap',
+                        fontSize: '0.9rem',
+                        border: '2px solid #fff'
+                    }}>
+                        {draggedTarget.name}
+                    </div>
+                )}
 
                 <MainContentLayer
                     handleMouseUp={handleMouseUp}

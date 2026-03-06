@@ -3,6 +3,7 @@ import { DrawerLine } from '../../types';
 
 interface EquipmentDrawerProps {
     isOpen: boolean;
+    isPeeking?: boolean;
     onClose: () => void;
     eqLines: DrawerLine[];
     inventoryLines: DrawerLine[];
@@ -14,6 +15,7 @@ interface EquipmentDrawerProps {
 
 export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     isOpen,
+    isPeeking,
     onClose,
     eqLines,
     inventoryLines,
@@ -36,6 +38,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
     const cleanupDrag = () => {
         if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+        document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
         setDraggedItem(null);
         setDragPos(null);
         setPrimedItemId(null);
@@ -58,35 +61,6 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         }
     }, [isOpen]);
 
-    // Handle log target highlighting separately as it's outside the drawer's React tree
-    useEffect(() => {
-        const lastTargetId = (window as any)._lastLogTarget;
-        if (lastTargetId) {
-            document.querySelectorAll(`[data-context="${lastTargetId}"]`).forEach(el => {
-                (el as HTMLElement).classList.remove('drop-target-active');
-                (el as HTMLElement).style.boxShadow = '';
-            });
-        }
-
-        if (activeDropTarget?.type === 'log') {
-            const targetId = activeDropTarget.id;
-            (window as any)._lastLogTarget = targetId;
-            document.querySelectorAll(`[data-context="${targetId}"]`).forEach(el => {
-                (el as HTMLElement).classList.add('drop-target-active');
-                (el as HTMLElement).style.boxShadow = '0 0 10px rgba(255, 255, 100, 0.8)';
-                (el as HTMLElement).style.transition = 'box-shadow 0.2s ease';
-            });
-        }
-
-        return () => {
-            if (activeDropTarget?.type === 'log') {
-                document.querySelectorAll(`[data-context="${activeDropTarget.id}"]`).forEach(el => {
-                    (el as HTMLElement).classList.remove('drop-target-active');
-                    (el as HTMLElement).style.boxShadow = '';
-                });
-            }
-        };
-    }, [activeDropTarget]);
 
     const startActiveDrag = (x: number, y: number) => {
         if (pendingDragRef.current && !isDraggingRef.current) {
@@ -150,9 +124,13 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const target = document.elementFromPoint(e.clientX, e.clientY);
             const currentDragged = draggedRef.current;
 
+            // Cleanup previous highlight
+            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+
             // 1. Log Target
             const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
             if (logRecipient) {
+                logRecipient.classList.add('drop-hover-active');
                 const ctx = logRecipient.getAttribute('data-context');
                 if (ctx) {
                     setActiveDropTarget({ type: 'log', id: ctx });
@@ -162,11 +140,14 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
             // 2. Container Target
             const targetItem = target?.closest('.inline-btn.auto-item');
-            const targetItemName = targetItem?.getAttribute('data-item-name');
-            const isTargetContainer = targetItemName && /sack|satchel|pouch|pack|quiver/i.test(targetItemName);
-            if (isTargetContainer && targetItemName !== (currentDragged?.line.context || currentDragged?.line.id)) {
-                setActiveDropTarget({ type: 'container', id: targetItemName! });
-                return;
+            if (targetItem) {
+                const targetItemName = targetItem?.getAttribute('data-item-name');
+                const isTargetContainer = targetItemName && /sack|satchel|pouch|pack|quiver/i.test(targetItemName);
+                if (isTargetContainer && targetItemName !== (currentDragged?.line.context || currentDragged?.line.id)) {
+                    targetItem.classList.add('drop-hover-active');
+                    setActiveDropTarget({ type: 'container', id: targetItemName! });
+                    return;
+                }
             }
 
             // 3. Section Target
@@ -260,13 +241,14 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         const source = listType === 'inventorylist' ? 'inventory' : 'equipment';
         const isBeingDragged = draggedItem?.line.id === line.id;
         const isTargeted = activeDropTarget?.type === 'container' && activeDropTarget.id === (line.context || line.id);
+        const depth = line.depth || 0;
 
         if (line.isItem) {
             const isPrimed = primedItemId === line.id;
             return (
                 <div
                     key={line.id}
-                    className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''}`}
+                    className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''}`}
                     data-item-name={line.context || line.id}
                     onPointerDown={(e) => handlePointerDown(e, line, source)}
                     onClick={(e) => {
@@ -282,17 +264,23 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     style={{
                         backgroundColor: isBeingDragged ? 'rgba(100, 255, 100, 0.02)' :
                             isTargeted ? 'rgba(255, 255, 100, 0.2)' :
-                                isPrimed ? 'rgba(100, 255, 100, 0.04)' : 'rgba(100, 255, 100, 0.08)',
+                                isPrimed ? 'rgba(100, 255, 100, 0.04)' :
+                                    line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)',
                         borderBottom: '1px solid rgba(255,255,255,0.1)',
+                        borderLeft: depth > 0 ? `${depth * 3}px solid #89b4fa` : 'none',
                         padding: '8px 12px',
-                        borderRadius: '4px',
+                        marginLeft: `${depth * 20}px`,
+                        borderRadius: depth > 0 ? '0 4px 4px 0' : '4px',
                         marginBottom: '4px',
                         cursor: 'grab',
                         opacity: isBeingDragged ? 0.3 : isPrimed ? 0.6 : 1,
                         transform: isTargeted ? 'scale(1.02)' : isPrimed ? 'scale(0.95)' : 'scale(1)',
-                        transition: 'transform 0.1s ease, background-color 0.15s ease',
-                        boxShadow: isTargeted ? '0 0 10px rgba(255, 255, 100, 0.3)' : 'none',
-                        touchAction: 'none'
+                        transition: 'all 0.15s ease',
+                        boxShadow: isTargeted ? '0 0 10px rgba(137, 180, 250, 0.3)' : 'none',
+                        touchAction: 'none',
+                        fontWeight: line.isContainer ? 'bold' : 'normal',
+                        color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
+                        fontSize: depth > 0 ? '0.8rem' : '0.85rem'
                     }}
                     dangerouslySetInnerHTML={{ __html: line.html }}
                 />
@@ -301,7 +289,15 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         return (
             <div
                 key={line.id}
-                style={{ padding: '4px 0', opacity: line.isHeader ? 0.7 : 1, whiteSpace: 'pre-wrap' }}
+                style={{
+                    padding: '4px 0',
+                    opacity: line.isHeader ? 0.7 : 1,
+                    whiteSpace: 'pre-wrap',
+                    marginLeft: `${depth * 20}px`,
+                    fontSize: line.isHeader ? '0.75rem' : '0.85rem',
+                    color: line.isHeader ? 'var(--accent)' : 'inherit',
+                    letterSpacing: line.isHeader ? '1px' : 'normal'
+                }}
                 dangerouslySetInnerHTML={{ __html: line.html }}
             />
         );
@@ -317,12 +313,12 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     pointerEvents: 'none',
                     zIndex: 99999,
                     transform: 'translate(-50%, -50%) scale(1.05)',
-                    background: 'rgba(30, 40, 60, 0.95)',
+                    background: 'rgba(30, 40, 60, 0.7)',
                     padding: '8px 12px',
                     borderRadius: '8px',
                     border: '2px solid var(--accent)',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.8)',
-                    opacity: 1,
+                    boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                    opacity: 0.8,
                     whiteSpace: 'nowrap',
                     fontSize: '0.85rem',
                     color: '#fff',
@@ -332,7 +328,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             )}
             <div
                 ref={drawerRef}
-                className={`right-drawer ${isOpen ? 'open' : ''}`}
+                className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''}`}
                 onPointerDown={(e) => {
                     const target = e.target as HTMLElement;
                     if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
@@ -360,6 +356,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 }}
                 style={{ touchAction: isDraggingRef.current ? 'none' : 'pan-y' }}
             >
+                {isPeeking && <div className="peek-indicator">DROP TO TARGET</div>}
                 <div className="drawer-header">
                     <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>ITEMS</span>
                     <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
