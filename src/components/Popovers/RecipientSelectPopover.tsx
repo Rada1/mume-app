@@ -25,7 +25,6 @@ export const RecipientSelectPopover: React.FC<RecipientSelectProps> = ({
                     onPointerDown={(e) => e.preventDefault()}
                     onClick={() => {
                         executeCommand(`${popoverState.context} ${extractNoun(name)}`);
-                        setTimeout(() => executeCommand('inv', false, false, true), 500);
                         setPopoverState(null);
                     }}
                 >

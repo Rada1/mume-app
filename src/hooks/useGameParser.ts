@@ -202,16 +202,6 @@ export function useGameParser(deps: UseGameParserDeps) {
         const trackAction = () => {
             if (isSilentCapture.current > 0 || isDrawerCapture.current) return;
 
-            const sync = () => {
-                // Background sync just in case
-                setTimeout(() => {
-                    executeCommandRef.current?.('inv', true, true, true, true);
-                    setTimeout(() => {
-                        executeCommandRef.current?.('eq', true, true, true, true);
-                    }, 400);
-                }, 1500);
-            };
-
             // 1. Wear / Put On
             const wearMatch = cleanLine.match(/You (wear|put on) (.*?)\./i);
             if (wearMatch) {
@@ -223,7 +213,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                     setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
                     return prev.filter((_, i) => i !== idx);
                 });
-                sync();
                 return;
             }
 
@@ -238,7 +227,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                     setInventoryLines(inv => [...inv, { ...item, cmd: 'inventorylist' }]);
                     return prev.filter((_, i) => i !== idx);
                 });
-                sync();
                 return;
             }
 
@@ -246,8 +234,11 @@ export function useGameParser(deps: UseGameParserDeps) {
             const putMatch = cleanLine.match(/You put (.*?) in (.*?)\./i);
             if (putMatch) {
                 const itemNoun = extractNoun(putMatch[1]);
-                setInventoryLines(prev => prev.filter(l => !(l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)))));
-                sync();
+                setInventoryLines(prev => {
+                    const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
+                    if (idx === -1) return prev;
+                    return prev.filter((_, i) => i !== idx);
+                });
                 return;
             }
 
@@ -264,7 +255,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                     context: extractNoun(itemText)
                 };
                 setInventoryLines(prev => [...prev, newItem]);
-                sync();
                 return;
             }
 
@@ -281,7 +271,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                     context: extractNoun(itemText)
                 };
                 setInventoryLines(prev => [...prev, newItem]);
-                sync();
                 return;
             }
 
@@ -289,8 +278,42 @@ export function useGameParser(deps: UseGameParserDeps) {
             const giveMatch = cleanLine.match(/You (give|drop|junk) (.*?)\./i);
             if (giveMatch) {
                 const itemNoun = extractNoun(giveMatch[2]);
-                setInventoryLines(prev => prev.filter(l => !(l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)))));
-                sync();
+                setInventoryLines(prev => {
+                    const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
+                    if (idx === -1) return prev;
+                    return prev.filter((_, i) => i !== idx);
+                });
+                return;
+            }
+
+            // 7. Wielding / Holding
+            const wieldMatch = cleanLine.match(/You (wield|hold) (.*?)\./i);
+            if (wieldMatch) {
+                const itemNoun = extractNoun(wieldMatch[2]);
+                setInventoryLines(prev => {
+                    const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
+                    if (idx === -1) return prev;
+                    const item = prev[idx];
+                    setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
+                    return prev.filter((_, i) => i !== idx);
+                });
+                return;
+            }
+
+            // 8. Eating / Quaffing / Drinking
+            const consumeMatch = cleanLine.match(/You (eat|quaff|drink) (.*?)\./i);
+            if (consumeMatch) {
+                // In MUME, drinks from a container might not consume the container,
+                // but quaff/eat usually consumes the item. For simplicity, we just
+                // remove the item from inventory if it's not a container-style drink.
+                const itemNoun = extractNoun(consumeMatch[2]);
+                if (!consumeMatch[0].includes('from')) {
+                    setInventoryLines(prev => {
+                        const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
+                        if (idx === -1) return prev;
+                        return prev.filter((_, i) => i !== idx);
+                    });
+                }
                 return;
             }
         };
