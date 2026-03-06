@@ -28,6 +28,7 @@ export interface TelnetHandlers {
     onRemoveNpc?: (data: string | GmcpOccupant) => void;
     onCharNameChange?: (name: string | null) => void;
     onPositionChange?: (position: string) => void;
+    flushMessages?: () => void;
 }
 
 export interface TelnetOptions {
@@ -108,9 +109,14 @@ export function useTelnet(options: TelnetOptions) {
         }
         const prompt = bufferRef.current;
         setPrompt(prompt);
-        if (prompt && handlers.detectLighting) {
-            const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '');
-            handlers.detectLighting(cleanPrompt);
+        if (prompt) {
+            if (handlers.detectLighting) {
+                const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '');
+                handlers.detectLighting(cleanPrompt);
+            }
+            if (handlers.flushMessages) {
+                handlers.flushMessages();
+            }
         }
     }, [processLine, setPrompt, handlers]);
 

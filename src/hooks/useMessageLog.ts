@@ -24,6 +24,10 @@ export const NPC_LINE_REGEX = /^((?:A|An|The)\s+[\w\s-]+?)\s+(\w+s)\b\s*(.*)$/i;
 export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
     const [messages, setMessages] = useState<Message[]>([]);
 
+    // Performance optimization: batch rapid incoming messages into a single React render
+    const messageBufferRef = useRef<Message[]>([]);
+    const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const isCombatLine = useCallback((text: string): boolean => {
         const t = text.toLowerCase();
         const combatVerbs = [
@@ -66,124 +70,163 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
         );
     }, []);
 
-    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => {
-        if (type === 'prompt') return; // Prompts are handled by activePrompt state, not history
+    const flushMessages = useCallback(() => {
+        if (messageBufferRef.current.length === 0) return;
+
+        // Take a snapshot of the buffer so we don't clear it in an impure state update.
+        const pending = [...messageBufferRef.current];
+        messageBufferRef.current = [];
 
         setMessages(prev => {
-            let nextMessages = [...prev];
+            const nextMessages = [...prev, ...pending];
+            if (nextMessages.length >= 500) {
+                return nextMessages.slice(nextMessages.length - 500);
+            }
+            return nextMessages;
+        });
 
-            const isThisCombat = combatOverride ?? (type === 'game' ? isCombatLine(text) : type === 'user');
-            const isComm = type === 'game' && isCommunicationLine(text);
-            const dimmedInCombat = inCombatRef.current && !isThisCombat;
+        if (flushTimeoutRef.current) {
+            clearTimeout(flushTimeoutRef.current);
+            flushTimeoutRef.current = null;
+        }
+    }, [setMessages]);
 
-            const stripAnsi = (t: string) => t.replace(/\x1b\[[0-9;]*m/g, '');
-            const textOnly = stripAnsi(text).trim();
+    // We must track the absolute last message added (even if it's already in state)
+    // to properly handle stack stacking when the buffer is empty.
+    const lastMessageRef = useRef<Message | null>(null);
 
-            let stackId = '';
-            let subject = '';
-            let actionText = '';
-            let direction = '';
+    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => {
+        if (type === 'prompt') return;
 
-            const arriveMatch = textOnly.match(ARRIVE_REGEX);
-            const leaveMatch = textOnly.match(LEAVE_REGEX);
-            const hereMatch = textOnly.match(HERE_REGEX);
-            const npcMatch = textOnly.match(NPC_LINE_REGEX);
+        const isThisCombat = combatOverride ?? (type === 'game' ? isCombatLine(text) : type === 'user');
+        const isComm = type === 'game' && isCommunicationLine(text);
+        const dimmedInCombat = inCombatRef.current && !isThisCombat;
 
-            if (arriveMatch) {
-                subject = arriveMatch[1];
-                actionText = arriveMatch[2];
-                direction = arriveMatch[4];
-                stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`;
-            } else if (leaveMatch) {
-                subject = leaveMatch[1];
-                actionText = 'leaves';
-                direction = leaveMatch[3];
-                stackId = `leave:${subject.toLowerCase()}:${direction.toLowerCase()}`;
-            } else if (hereMatch) {
-                subject = hereMatch[1];
-                actionText = hereMatch[2];
-                stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`;
-            } else if (npcMatch) {
-                subject = npcMatch[1];
-                actionText = npcMatch[2];
-                direction = npcMatch[3];
-                stackId = `npc:${textOnly.toLowerCase()}`;
+        const stripAnsi = (t: string) => t.replace(/\x1b\[[0-9;]*m/g, '');
+        const textOnly = stripAnsi(text).trim();
+
+        let stackId = '';
+        let subject = '';
+        let actionText = '';
+        let direction = '';
+
+        const arriveMatch = textOnly.match(ARRIVE_REGEX);
+        const leaveMatch = textOnly.match(LEAVE_REGEX);
+        const hereMatch = textOnly.match(HERE_REGEX);
+        const npcMatch = textOnly.match(NPC_LINE_REGEX);
+
+        if (arriveMatch) {
+            subject = arriveMatch[1];
+            actionText = arriveMatch[2];
+            direction = arriveMatch[4];
+            stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`;
+        } else if (leaveMatch) {
+            subject = leaveMatch[1];
+            actionText = 'leaves';
+            direction = leaveMatch[3];
+            stackId = `leave:${subject.toLowerCase()}:${direction.toLowerCase()}`;
+        } else if (hereMatch) {
+            subject = hereMatch[1];
+            actionText = hereMatch[2];
+            stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`;
+        } else if (npcMatch) {
+            subject = npcMatch[1];
+            actionText = npcMatch[2];
+            direction = npcMatch[3];
+            stackId = `npc:${textOnly.toLowerCase()}`;
+        }
+
+        const lastMsg = lastMessageRef.current;
+
+        if (stackId && lastMsg && lastMsg.stackId === stackId && lastMsg.type === type) {
+            const newCount = (lastMsg.stackCount || 1) + 1;
+            const pluralSubject = pluralizeMumeSubject(subject);
+            let verb = '';
+            let rest = direction;
+
+            if (actionText.includes('arrive')) verb = 'have arrived';
+            else if (actionText.includes('leave')) verb = 'leave';
+            else if (actionText.toLowerCase().startsWith('is ')) {
+                if (actionText.toLowerCase().includes('standing')) verb = 'stand ' + actionText.slice(12);
+                else if (actionText.toLowerCase().includes('resting')) verb = 'rest ' + actionText.slice(11);
+                else if (actionText.toLowerCase().includes('sleeping')) verb = 'sleep ' + actionText.slice(12);
+                else if (actionText.toLowerCase().includes('sitting')) verb = 'sit ' + actionText.slice(11);
+                else verb = 'are ' + actionText.slice(3);
+            } else {
+                verb = pluralizeVerb(actionText);
+                rest = pluralizeRest(direction);
             }
 
-            if (stackId && nextMessages.length > 0) {
-                const lastMsg = nextMessages[nextMessages.length - 1];
-                if (lastMsg.stackId === stackId && lastMsg.type === type) {
-                    const newCount = (lastMsg.stackCount || 1) + 1;
-                    const pluralSubject = pluralizeMumeSubject(subject);
-                    let verb = '';
-                    let rest = direction;
+            const newTextRaw = `${numToWord(newCount).charAt(0).toUpperCase() + numToWord(newCount).slice(1)} ${pluralSubject} ${verb}${actionText.includes('arrive') ? ' from ' : ''}${rest}${rest || actionText.includes('is ') ? '' : ' '}.`.replace(/\s+/g, ' ').replace(/\.\./g, '.');
 
-                    if (actionText.includes('arrive')) verb = 'have arrived';
-                    else if (actionText.includes('leave')) verb = 'leave';
-                    else if (actionText.toLowerCase().startsWith('is ')) {
-                        // "is here" -> "are here", "is standing here" -> "stand here"
-                        if (actionText.toLowerCase().includes('standing')) verb = 'stand ' + actionText.slice(12);
-                        else if (actionText.toLowerCase().includes('resting')) verb = 'rest ' + actionText.slice(11);
-                        else if (actionText.toLowerCase().includes('sleeping')) verb = 'sleep ' + actionText.slice(12);
-                        else if (actionText.toLowerCase().includes('sitting')) verb = 'sit ' + actionText.slice(11);
-                        else verb = 'are ' + actionText.slice(3);
-                    } else {
-                        verb = pluralizeVerb(actionText);
-                        rest = pluralizeRest(direction);
-                    }
-
-                    const newTextRaw = `${numToWord(newCount).charAt(0).toUpperCase() + numToWord(newCount).slice(1)} ${pluralSubject} ${verb}${actionText.includes('arrive') ? ' from ' : ''}${rest}${rest || actionText.includes('is ') ? '' : ' '}.`.replace(/\s+/g, ' ').replace(/\.\./g, '.');
-
-                    const updatedMsg: Message = {
-                        ...lastMsg,
-                        textRaw: newTextRaw,
-                        html: ansiConvert.toHtml(`\x1b[1;37m${newTextRaw}\x1b[0m`),
-                        stackCount: newCount,
-                        timestamp: Date.now()
-                    };
-
-                    return [...nextMessages.slice(0, -1), updatedMsg];
-                }
-            }
-
-            let html = ansiConvert.toHtml(text);
-            if (type === 'game' && text.toLowerCase().includes("key: '")) {
-                const keyMatch = textOnly.match(/key:\s*'([^']*)'/i);
-                if (keyMatch) {
-                    const roomId = keyMatch[1];
-                    const escapedKey = roomId.replace(/'/g, '(&apos;|&#39;|\')');
-                    const pattern = new RegExp(`key:\\s*(&apos;|&#39;|')(${escapedKey})(&apos;|&#39;|')`, 'i');
-                    html = html.replace(pattern, (_match, _p1, _p2, _p3) => {
-                        return `<span class="inline-btn teleport-key" data-teleport-id="${roomId}" data-action="save-teleport" style="background-color: rgba(255, 255, 100, 0.2); border-bottom: 1px dashed gold; padding: 0 4px; border-radius: 2px; cursor: pointer; display: inline-block;">key: '${roomId}'</span>`;
-                    });
-                }
-            }
-
-            const msg: Message = {
-                id: mid || Math.random().toString(36).substring(7),
-                html,
-                textRaw: text,
-                type,
-                timestamp: Date.now(),
-                isCombat: isThisCombat,
-                dimmedInCombat,
-                stackId: stackId || undefined,
-                stackCount: 1,
-                isComm,
-                isRoomName
+            const updatedMsg: Message = {
+                ...lastMsg,
+                textRaw: newTextRaw,
+                html: ansiConvert.toHtml(`\x1b[1;37m${newTextRaw}\x1b[0m`),
+                stackCount: newCount,
+                timestamp: Date.now()
             };
 
-            if (nextMessages.length >= 500) {
-                return [...nextMessages.slice(nextMessages.length - 499), msg];
+            lastMessageRef.current = updatedMsg;
+
+            if (messageBufferRef.current.length > 0) {
+                // If it's in the buffer, just update the last item in the buffer
+                messageBufferRef.current[messageBufferRef.current.length - 1] = updatedMsg;
+            } else {
+                // If the buffer is empty, it means the message was already flushed to state.
+                // We must update it directly in state.
+                setMessages(prev => {
+                    const nextMessages = [...prev];
+                    if (nextMessages.length > 0) {
+                        nextMessages[nextMessages.length - 1] = updatedMsg;
+                    }
+                    return nextMessages;
+                });
             }
-            return [...nextMessages, msg];
-        });
-    }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages]);
+            return;
+        }
+
+        let html = ansiConvert.toHtml(text);
+        if (type === 'game' && text.toLowerCase().includes("key: '")) {
+            const keyMatch = textOnly.match(/key:\s*'([^']*)'/i);
+            if (keyMatch) {
+                const roomId = keyMatch[1];
+                const escapedKey = roomId.replace(/'/g, '(&apos;|&#39;|\')');
+                const pattern = new RegExp(`key:\\s*(&apos;|&#39;|')(${escapedKey})(&apos;|&#39;|')`, 'i');
+                html = html.replace(pattern, (_match, _p1, _p2, _p3) => {
+                    return `<span class="inline-btn teleport-key" data-teleport-id="${roomId}" data-action="save-teleport" style="background-color: rgba(255, 255, 100, 0.2); border-bottom: 1px dashed gold; padding: 0 4px; border-radius: 2px; cursor: pointer; display: inline-block;">key: '${roomId}'</span>`;
+                });
+            }
+        }
+
+        const msg: Message = {
+            id: mid || Math.random().toString(36).substring(7),
+            html,
+            textRaw: text,
+            type,
+            timestamp: Date.now(),
+            isCombat: isThisCombat,
+            dimmedInCombat,
+            stackId: stackId || undefined,
+            stackCount: 1,
+            isComm,
+            isRoomName
+        };
+
+        lastMessageRef.current = msg;
+        messageBufferRef.current.push(msg);
+
+        if (!flushTimeoutRef.current) {
+            flushTimeoutRef.current = setTimeout(flushMessages, 16);
+        }
+
+    }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages, flushMessages]);
 
     return {
         messages,
         setMessages,
         addMessage,
+        flushMessages,
         isCombatLine,
         isCommunicationLine,
     };
