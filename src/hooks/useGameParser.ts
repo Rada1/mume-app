@@ -111,15 +111,111 @@ export function useGameParser(deps: UseGameParserDeps) {
         processTriggers(textOnly);
         if (lower.includes("wimpy")) { const m = textOnly.match(/wimpy.*(\d+)/i); if (m) setStats(p => ({ ...p, wimpy: parseInt(m[1]) })); }
 
+        // Local Inventory Tracking
+        const trackAction = () => {
+            if (isSilentCapture.current || isDrawerCapture.current) return;
+
+            const sync = () => {
+                // Background sync just in case
+                setTimeout(() => {
+                    executeCommandRef.current?.('inv', true, true, true, true);
+                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 300);
+                }, 2000); // 2 seconds should be enough for the command to hit and state the local change
+            };
+
+            // 1. Wear / Put On
+            const wearMatch = cleanLine.match(/You (wear|put on) (.*?)\./i);
+            if (wearMatch) {
+                const itemNoun = extractNoun(wearMatch[2]);
+                setInventoryLines(prev => {
+                    const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
+                    if (idx === -1) return prev;
+                    const item = prev[idx];
+                    setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
+                    return prev.filter((_, i) => i !== idx);
+                });
+                sync();
+                return;
+            }
+
+            // 2. Remove / Stop Using
+            const removeMatch = cleanLine.match(/You (remove|stop using) (.*?)\./i);
+            if (removeMatch) {
+                const itemNoun = extractNoun(removeMatch[2]);
+                setEqLines(prev => {
+                    const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
+                    if (idx === -1) return prev;
+                    const item = prev[idx];
+                    setInventoryLines(inv => [...inv, { ...item, cmd: 'inventorylist' }]);
+                    return prev.filter((_, i) => i !== idx);
+                });
+                sync();
+                return;
+            }
+
+            // 3. Put in Container
+            const putMatch = cleanLine.match(/You put (.*?) in (.*?)\./i);
+            if (putMatch) {
+                const itemNoun = extractNoun(putMatch[1]);
+                setInventoryLines(prev => prev.filter(l => !(l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)))));
+                sync();
+                return;
+            }
+
+            // 4. Get from Container / Ground
+            const getMatch = cleanLine.match(/You (get|take) (.*?)\.( from (.*?)\.)?/i);
+            if (getMatch) {
+                const itemText = getMatch[2];
+                const newItem: DrawerLine = {
+                    id: Math.random().toString(36).substring(7),
+                    text: itemText,
+                    html: ansiConvert.toHtml(itemText),
+                    isItem: true,
+                    cmd: 'inventorylist',
+                    context: extractNoun(itemText)
+                };
+                setInventoryLines(prev => [...prev, newItem]);
+                sync();
+                return;
+            }
+
+            // 5. Receiving from someone
+            const receiveMatch = cleanLine.match(/(.*?) gives you (.*?)\./i);
+            if (receiveMatch) {
+                const itemText = receiveMatch[2];
+                const newItem: DrawerLine = {
+                    id: Math.random().toString(36).substring(7),
+                    text: itemText,
+                    html: ansiConvert.toHtml(itemText),
+                    isItem: true,
+                    cmd: 'inventorylist',
+                    context: extractNoun(itemText)
+                };
+                setInventoryLines(prev => [...prev, newItem]);
+                sync();
+                return;
+            }
+
+            // 6. Giving away / Dropping
+            const giveMatch = cleanLine.match(/You (give|drop|junk) (.*?)\./i);
+            if (giveMatch) {
+                const itemNoun = extractNoun(giveMatch[2]);
+                setInventoryLines(prev => prev.filter(l => !(l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)))));
+                sync();
+                return;
+            }
+        };
+
+        trackAction();
 
         const isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
         const isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
-        const isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ')));
+        const isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
         const pMatch = cleanLine.match(/^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/);
-        const shouldShow = (captureStage.current === 'none' || (!isDrawerCapture.current && !isSilentCapture.current)) || /carrying|using|following|contains/i.test(lower);
+        const shouldShow = (captureStage.current === 'none' || (!isDrawerCapture.current && !isSilentCapture.current)) || /carrying|using|following|contains|you (wear|remove|put|get|give|take)/i.test(lower);
         if (shouldShow && !isSilentCapture.current) addMessage('game', pMatch ? pMatch[2] : cleanLine, undefined, undefined, isRoomName);
-    }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef]);
+    }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);
 
     return { processLine };
 }

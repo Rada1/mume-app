@@ -7,13 +7,15 @@ interface InventoryDrawerProps {
     onClose: () => void;
     triggerHaptic: (ms: number) => void;
     inventoryLines: DrawerLine[];
+    handleButtonClick: (button: any, e: React.MouseEvent, context?: string) => void;
 }
 
 export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     isOpen,
     onClose,
     triggerHaptic,
-    inventoryLines
+    inventoryLines,
+    handleButtonClick
 }) => {
     return (
         <div
@@ -73,7 +75,25 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                         {inventoryLines.map(line => (
                             <div
                                 key={line.id}
-                                style={{ padding: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)', fontSize: '0.85rem' }}
+                                className={line.isItem ? "inline-btn auto-item" : ""}
+                                onClick={(e) => {
+                                    if (!line.isItem) return;
+                                    triggerHaptic(20);
+                                    handleButtonClick({
+                                        id: `inv-${line.id}`,
+                                        command: 'inventorylist',
+                                        label: line.context || 'Item',
+                                        actionType: 'menu'
+                                    } as any, e, line.context);
+                                }}
+                                style={{
+                                    padding: '8px',
+                                    background: line.isItem ? 'rgba(100, 255, 100, 0.08)' : 'rgba(0,0,0,0.2)',
+                                    borderRadius: '6px',
+                                    border: '1px solid rgba(255,255,255,0.05)',
+                                    fontSize: '0.85rem',
+                                    cursor: line.isItem ? 'pointer' : 'default'
+                                }}
                                 dangerouslySetInnerHTML={{ __html: line.html }}
                             />
                         ))}

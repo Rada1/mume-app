@@ -85,7 +85,50 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             {button.label}
                         </div>
                     ))}
-                    {buttons.filter(b => b.setId === popoverState.setId).length === 0 && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
+                    {(() => {
+                        const context = (popoverState.context || '').toLowerCase();
+                        const isInventoryOrEq = ['inventorylist', 'equipmentlist'].includes(popoverState.setId);
+                        const isContainer = /sack|satchel|pouch|pack|quiver/i.test(context);
+
+                        if (isInventoryOrEq && isContainer) {
+                            const isQuiver = /quiver/i.test(context);
+                            const containerActions = [
+                                { label: 'Look In', cmd: 'look in %n' },
+                                { label: 'Get Target', cmd: 'get target %n' },
+                                { label: 'Put Target', cmd: 'put target %n' },
+                                { label: 'Get All', cmd: 'get all %n' },
+                                { label: 'Put All', cmd: 'put all %n' },
+                                { label: 'Empty', cmd: 'empty %n' }
+                            ];
+                            if (isQuiver) containerActions.splice(1, 0, { label: 'Get Arrow', cmd: 'get arrow %n' });
+
+                            return (
+                                <>
+                                    <div style={{ padding: '4px 8px', fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: '4px' }}>Container</div>
+                                    {containerActions.map(act => (
+                                        <div
+                                            key={act.label}
+                                            className="popover-item"
+                                            style={{ color: 'var(--accent)' }}
+                                            onPointerDown={(e) => e.preventDefault()}
+                                            onClick={(e) => {
+                                                handleButtonClick({
+                                                    id: `dynamic-${act.label}`,
+                                                    command: act.cmd,
+                                                    label: act.label,
+                                                    actionType: 'command'
+                                                } as any, e, popoverState.context);
+                                            }}
+                                        >
+                                            {act.label}
+                                        </div>
+                                    ))}
+                                </>
+                            );
+                        }
+                        return null;
+                    })()}
+                    {buttons.filter(b => b.setId === popoverState.setId).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
                 </>
             )}
         </>

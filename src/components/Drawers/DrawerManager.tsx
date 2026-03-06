@@ -147,6 +147,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 inventoryLines={inventoryLines}
                 handleButtonClick={handleButtonClick}
                 triggerHaptic={triggerHaptic}
+                isLandscape={viewport.isLandscape}
+                executeCommand={executeCommand}
             />
         </>
     );

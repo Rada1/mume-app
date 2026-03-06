@@ -3,7 +3,10 @@
  * Useful for drawer interactive buttons.
  */
 export const extractNoun = (text: string): string => {
-    let clean = text.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
+    // Strip ANSI escape codes first
+    let clean = text.replace(/\x1b\[[0-9;]*m/g, '');
+    // Remove tags and brackets
+    clean = clean.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
     clean = clean.replace(/[.,:;!]+$/, '');
     const words = clean.split(/[\s,.-]+/).filter(w => w.length > 1 && !/^(a|an|the|of|in|on|at|to|some|several)$/i.test(w));
     return words.length > 0 ? words[words.length - 1].toLowerCase().replace(/[^\w]/g, '') : '';
