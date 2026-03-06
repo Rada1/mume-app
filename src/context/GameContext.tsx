@@ -138,7 +138,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         characterClass, setCharacterClass: s.setCharacterClass,
         actions: s.actions, setActions: s.setActions,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
-        autoConnect: s.autoConnect, setAutoConnect: s.setAutoConnect
+        autoConnect: s.autoConnect, setAutoConnect: s.setAutoConnect,
+        showDebugEchoes: s.showDebugEchoes, setShowDebugEchoes: s.setShowDebugEchoes
     });
 
     const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems);
@@ -187,7 +188,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForStats: s.isWaitingForStats,
         isWaitingForEq: s.isWaitingForEq,
         isWaitingForInv: s.isWaitingForInv,
-        roomNameRef: s.roomNameRef
+        roomNameRef: s.roomNameRef,
+        showDebugEchoes: s.showDebugEchoes
     });
 
     const { processLine } = parser;

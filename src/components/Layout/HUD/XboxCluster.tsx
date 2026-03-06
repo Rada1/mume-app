@@ -43,7 +43,7 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
 
     let style: React.CSSProperties = {
         position: 'absolute',
-        zIndex: 1500,
+        zIndex: 2000,
         width: '170px',
         height: '170px',
         pointerEvents: 'auto',
@@ -57,8 +57,8 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
     };
 
     if (isDefault) {
-        style.right = '20px';
-        style.bottom = '20px';
+        style.right = '10px';
+        style.bottom = '110px';
         style.top = 'auto';
         style.transform = pos.scale ? `scale(${pos.scale})` : '';
     } else {
@@ -92,7 +92,7 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
 
             {['xbox-y', 'xbox-b', 'xbox-a', 'xbox-x', 'xbox-z', 'xbox-door'].map(id => {
                 const button = buttons.find(b => b.id === id);
-                if (!button || (button.isVisible === false && !isEditMode)) return null;
+                if (!button) return null;
                 const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-x' ? 'right' : id === 'xbox-b' ? 'left' : id === 'xbox-a' ? 'bottom' : id === 'xbox-z' ? 'center' : 'outside';
                 return (
                     <GameButton

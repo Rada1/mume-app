@@ -32,10 +32,11 @@ export interface UseGameParserDeps {
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
     roomNameRef: React.RefObject<string | null>;
+    showDebugEchoes?: boolean;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes } = deps;
 
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -185,7 +186,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (/pitch black|too dark|cannot see/i.test(lower)) {
             // In MUME, 'pitch black' usually means you arrived in a dark room.
             // Only 'too dark to see' (handled above) is a movement failure.
-            addMessage('system', "[Mapper] Room is dark.");
+            if (showDebugEchoes) {
+                addMessage('system', "[Mapper] Room is dark.");
+            }
         }
 
         if (/hits you|crushes you|pierces you/i.test(lower)) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }

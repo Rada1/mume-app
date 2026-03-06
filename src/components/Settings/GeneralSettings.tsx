@@ -22,6 +22,8 @@ interface GeneralSettingsProps {
     bgImage: string;
     setBgImage: (val: string) => void;
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    showDebugEchoes: boolean;
+    setShowDebugEchoes: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -44,6 +46,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     bgImage,
     setBgImage,
     handleFileUpload,
+    showDebugEchoes,
+    setShowDebugEchoes,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -298,6 +302,44 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 position: 'absolute',
                                 top: '2px',
                                 left: isNoviceMode ? '22px' : '2px',
+                                transition: 'all 0.3s'
+                            }} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="setting-group" style={{ border: '1px solid rgba(245, 158, 11, 0.3)', background: 'rgba(245, 158, 11, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label className="setting-label" style={{ color: '#fbbf24', fontWeight: 'bold', margin: 0 }}>Debug Messages</label>
+                            <span style={{ fontSize: '0.65rem', background: '#f59e0b', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>DEV</span>
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Show technical client echoes (e.g. Mapper coordinates).</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '0.8rem', color: showDebugEchoes ? '#fbbf24' : '#64748b' }}>{showDebugEchoes ? 'ON' : 'OFF'}</span>
+                        <div
+                            onClick={() => setShowDebugEchoes(!showDebugEchoes)}
+                            style={{
+                                width: '40px',
+                                height: '20px',
+                                background: showDebugEchoes ? '#f59e0b' : '#334155',
+                                borderRadius: '20px',
+                                position: 'relative',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <div style={{
+                                width: '16px',
+                                height: '16px',
+                                background: '#fff',
+                                borderRadius: '50%',
+                                position: 'absolute',
+                                top: '2px',
+                                left: showDebugEchoes ? '22px' : '2px',
                                 transition: 'all 0.3s'
                             }} />
                         </div>

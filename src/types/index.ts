@@ -183,6 +183,8 @@ export interface SettingsModalProps {
     setLoginPassword: (val: string) => void;
     autoConnect: boolean;
     setAutoConnect: (val: boolean) => void;
+    showDebugEchoes: boolean;
+    setShowDebugEchoes: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -206,6 +208,7 @@ export interface SavedSettings {
     characterClass?: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
     setSettings?: Record<string, ButtonSetSettings>;
     autoConnect?: boolean;
+    showDebugEchoes?: boolean;
 }
 
 export interface RoomNode {

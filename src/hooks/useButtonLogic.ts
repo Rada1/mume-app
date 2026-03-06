@@ -17,6 +17,7 @@ export const useButtonLogic = (
         // 1. Static filtering & Modification
         const filtered = rawButtons.filter(b => {
             if (isEditMode) return true;
+            if (b.id.startsWith('xbox-')) return true;
 
             if (isSmartPopulateEnabled && b.hideIfUnknown && b.setId !== 'Xbox') {
                 const cmdLower = b.command.toLowerCase();

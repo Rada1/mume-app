@@ -146,7 +146,24 @@ const InputArea: React.FC<InputAreaProps> = ({
                 {target && (
                     <div
                         className="target-badge"
-                        onPointerDown={(e) => e.preventDefault()}
+                        draggable="true"
+                        onDragStart={(e) => {
+                            const dragData = {
+                                type: 'inline-btn',
+                                cmd: 'target',
+                                context: 'target',
+                                id: 'meta-target'
+                            };
+                            e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+                            e.dataTransfer.effectAllowed = 'move';
+                            (e.currentTarget as HTMLElement).classList.add('dragging');
+                        }}
+                        onDragEnd={(e) => {
+                            (e.currentTarget as HTMLElement).classList.remove('dragging');
+                        }}
+                        onPointerDown={(e) => {
+                            // Don't prevent default here or drag-and-drop won't start
+                        }}
                         onClick={() => {
                             onTargetClick?.();
                             inputRef.current?.focus();
@@ -160,11 +177,11 @@ const InputArea: React.FC<InputAreaProps> = ({
                             color: '#facc15',
                             fontSize: '0.8rem',
                             fontWeight: 'bold',
-                            cursor: 'pointer',
+                            cursor: 'grab',
                             whiteSpace: 'nowrap',
                             pointerEvents: 'auto'
                         }}
-                        title={`Current Target: ${target} (Click to insert into command line)`}
+                        title={`Current Target: ${target} (Click to insert, Drag to drawer to get)`}
                     >
                         @{target}
                     </div>

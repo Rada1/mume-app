@@ -68,6 +68,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setSettings,
         autoConnect,
         setAutoConnect,
+        showDebugEchoes,
+        setShowDebugEchoes,
         hasSeenOnboarding
     } = useGame() as any;
 
@@ -130,6 +132,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setLoginPassword={setLoginPassword}
                     autoConnect={autoConnect}
                     setAutoConnect={setAutoConnect}
+                    showDebugEchoes={showDebugEchoes}
+                    setShowDebugEchoes={setShowDebugEchoes}
                 />
             )}
 

@@ -33,6 +33,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setLoginPassword,
     autoConnect,
     setAutoConnect,
+    showDebugEchoes,
+    setShowDebugEchoes,
 }) => {
     const {
         setIsSettingsOpen, settingsTab, setSettingsTab,
@@ -89,6 +91,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsNoviceMode={setIsNoviceMode}
                                 theme={theme}
                                 setTheme={setTheme}
+                                showDebugEchoes={showDebugEchoes}
+                                setShowDebugEchoes={setShowDebugEchoes}
                                 bgImage={bgImage}
                                 setBgImage={setBgImage}
                                 handleFileUpload={handleFileUpload}

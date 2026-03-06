@@ -48,6 +48,8 @@ export interface GameContextType {
     setShowControls: (val: boolean) => void;
     hasSeenOnboarding: boolean;
     setHasSeenOnboarding: (val: boolean) => void;
+    showDebugEchoes: boolean;
+    setShowDebugEchoes: (val: boolean) => void;
 
     mood: string;
     setMood: (val: string) => void;

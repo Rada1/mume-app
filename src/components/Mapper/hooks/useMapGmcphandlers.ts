@@ -15,6 +15,7 @@ interface UseMapGmcphandlersProps {
     setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     addMessage?: (type: string, msg: string) => void;
+    showDebugEchoes?: boolean;
 }
 
 export const useMapGmcphandlers = ({
@@ -25,7 +26,8 @@ export const useMapGmcphandlers = ({
     discoverySourceRef,
     exploredRef, setExploredVnums,
     lastDetectedTerrainRef,
-    addMessage
+    addMessage,
+    showDebugEchoes
 }: UseMapGmcphandlersProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -133,8 +135,10 @@ export const useMapGmcphandlers = ({
 
         discoverySourceRef.current = discoverySource;
         if (dirUsed || discoverySource) {
-            const debugMsg = `[Mapper] Move: ${dirUsed || 'Snap'} -> Pred: ${predX},${predY},${predZ} | GMCP: ${gmcpId}${discoverySource ? ` (Auto-Snap by ${discoverySource})` : ''} | Target: ${targetId ? 'MATCHED' : 'NEW'}`;
-            addMessage?.('system', debugMsg);
+            if (showDebugEchoes) {
+                const debugMsg = `[Mapper] Move: ${dirUsed || 'Snap'} -> Pred: ${predX},${predY},${predZ} | GMCP: ${gmcpId}${discoverySource ? ` (Auto-Snap by ${discoverySource})` : ''} | Target: ${targetId ? 'MATCHED' : 'NEW'}`;
+                addMessage?.('system', debugMsg);
+            }
         }
 
         const name = data.name || 'Unknown Room';

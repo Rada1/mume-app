@@ -26,6 +26,8 @@ interface UseSettingsDeps {
     setSetSettings: (val: Record<string, ButtonSetSettings>) => void;
     autoConnect: boolean;
     setAutoConnect: (val: boolean) => void;
+    showDebugEchoes: boolean;
+    setShowDebugEchoes: (val: boolean) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -35,7 +37,8 @@ export function useSettings(deps: UseSettingsDeps) {
         abilities, setAbilities, characterClass, setCharacterClass,
         actions, setActions,
         setSettings, setSetSettings,
-        autoConnect, setAutoConnect
+        autoConnect, setAutoConnect,
+        showDebugEchoes, setShowDebugEchoes
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState((MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
@@ -90,7 +93,8 @@ export function useSettings(deps: UseSettingsDeps) {
             abilities,
             characterClass,
             setSettings,
-            autoConnect
+            autoConnect,
+            showDebugEchoes
         };
         // Note: buttons array is injected by the caller — see MudClient.exportSettings wrapper
         return settings;
@@ -106,7 +110,8 @@ export function useSettings(deps: UseSettingsDeps) {
             abilities,
             characterClass,
             setSettings,
-            autoConnect
+            autoConnect,
+            showDebugEchoes
         };
         const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -138,6 +143,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.actions) setActions(settings.actions);
                     if (settings.setSettings) setSetSettings(settings.setSettings);
                     if (settings.autoConnect !== undefined) setAutoConnect(settings.autoConnect);
+                    if (settings.showDebugEchoes !== undefined) setShowDebugEchoes(settings.showDebugEchoes);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -209,6 +215,7 @@ export function useSettings(deps: UseSettingsDeps) {
         handleSoundUpload,
         handleMmapperModeChange,
         setSettings, setSetSettings,
-        autoConnect, setAutoConnect
+        autoConnect, setAutoConnect,
+        showDebugEchoes, setShowDebugEchoes
     };
 }

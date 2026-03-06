@@ -19,13 +19,13 @@
 }
 
 .lighting-state-sun .overlay-layer {
-    background: rgba(0, 0, 0, 0.05);
-    /* Very clear during day */
+    background: rgba(255, 180, 0, 0.16);
+    /* Extra vibrant golden sunlight aura */
 }
 
 .lighting-state-moon .overlay-layer {
-    background: rgba(0, 0, 40, 0.45);
-    /* Bluish night tint */
+    background: rgba(0, 5, 30, 0.16);
+    /* Softened bluish night tint */
 }
 
 .lighting-state-artificial .overlay-layer {
@@ -85,7 +85,10 @@
 
 .lighting-container {
     mix-blend-mode: screen;
-    z-index: 10;
+    z-index: 100;
+    /* Move ABOVE combat grayscale and other atmospheric filters */
+    filter: saturate(2.5) contrast(1.1);
+    /* Force high color saturation */
 }
 
 .lighting-inner {
@@ -94,13 +97,13 @@
 }
 
 .lighting-sun .lighting-inner {
-    background: radial-gradient(circle at 50% 5%, rgba(255, 250, 220, 0.12), transparent 85%),
-        linear-gradient(to bottom, rgba(255, 245, 200, 0.03), transparent);
+    background: radial-gradient(circle at 50% 5%, rgba(255, 200, 0, 0.45), transparent 85%),
+        linear-gradient(to bottom, rgba(255, 230, 0, 0.2), transparent);
 }
 
 .lighting-moon .lighting-inner {
-    background: radial-gradient(circle at 50% 15%, rgba(150, 190, 255, 0.25), transparent 80%),
-        linear-gradient(to bottom, rgba(50, 100, 255, 0.08), transparent);
+    background: radial-gradient(circle at 50% 15%, rgba(140, 180, 255, 0.12), transparent 80%),
+        linear-gradient(to bottom, rgba(50, 100, 255, 0.04), transparent);
 }
 
 .lighting-artificial .lighting-inner {

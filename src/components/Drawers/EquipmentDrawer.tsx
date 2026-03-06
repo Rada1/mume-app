@@ -343,9 +343,10 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         const dataStr = e.dataTransfer.getData('application/json');
                         if (!dataStr) return;
                         const data = JSON.parse(dataStr);
-                        if (data.type === 'inline-btn' && data.context) {
+                        if (data.type === 'inline-btn' && (data.context || data.cmd === 'target')) {
                             triggerHaptic(40);
-                            executeCommand(`get ${data.context}`);
+                            const noun = (data.cmd === 'target') ? 'target' : data.context;
+                            executeCommand(`get ${noun}`);
                             // Flash the inventory section
                             const invSection = drawerRef.current?.querySelector('[data-drawer-section="inventory"]');
                             if (invSection) {

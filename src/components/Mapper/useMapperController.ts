@@ -6,7 +6,7 @@ import { useMapActions } from './hooks/useMapActions';
 import { useMapGmcphandlers } from './hooks/useMapGmcphandlers';
 
 export const useMapperController = (characterName: string | null, ref: React.Ref<any>) => {
-    const { addMessage, executeCommand } = useGame();
+    const { addMessage, executeCommand, showDebugEchoes } = useGame();
 
     // Core state and refs
     const {
@@ -50,7 +50,9 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
                 index[floor][key].push(vnum);
             }
             spatialIndexRef.current = index;
-            addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
+            if (showDebugEchoes) {
+                addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
+            }
         } catch (err) {
             console.warn("[Mapper] Could not load master map data:", err);
             preloadedCoordsRef.current = {};
@@ -75,15 +77,19 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     const handleResetAndSync = useCallback(() => {
         if (window.confirm('Wipe local map data and synchronize with MMapper global coordinates?')) {
             handleClearMap(true);
-            addMessage?.('system', '[Mapper] Map reset. Snapshotting to MMapper global coordinates...');
+            if (showDebugEchoes) {
+                addMessage?.('system', '[Mapper] Map reset. Snapshotting to MMapper global coordinates...');
+            }
             setTimeout(() => { executeCommand?.('look'); }, 100);
         }
     }, [handleClearMap, addMessage, executeCommand]);
 
     // GMCP Handlers
+    // GMCP Handlers
     const { handleRoomInfo, handleUpdateExits, handleTerrain } = useMapGmcphandlers({
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
-        discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage
+        discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
+        showDebugEchoes
     });
 
     useImperativeHandle(ref, () => ({

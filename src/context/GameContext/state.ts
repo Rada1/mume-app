@@ -10,13 +10,14 @@ export const useGameProviderState = () => {
     const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
     const [theme, setTheme] = usePersistentState<'light' | 'dark'>('mud-theme', 'dark');
     const [showControls, setShowControls] = usePersistentState<boolean>('mud-show-controls', (() => {
-        // If there's a stored preference, use it. Otherwise default to true on mobile, false on desktop.
+        // If there's a stored preference, use it. Otherwise default to true.
         const stored = localStorage.getItem('mud-show-controls');
         if (stored !== null) return JSON.parse(stored) as boolean;
-        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        return true;
     })());
     const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', (MASTER_SETTINGS as any).autoConnect ?? true);
     const [hasSeenOnboarding, setHasSeenOnboarding] = usePersistentState('mud-has-seen-onboarding', false);
+    const [showDebugEchoes, setShowDebugEchoes] = usePersistentState('mud-show-debug-echoes', false);
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
@@ -177,6 +178,7 @@ export const useGameProviderState = () => {
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         autoConnect, setAutoConnect,
         hasSeenOnboarding, setHasSeenOnboarding,
+        showDebugEchoes, setShowDebugEchoes,
         roomName, setRoomName, roomNameRef
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
@@ -184,7 +186,7 @@ export const useGameProviderState = () => {
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
-        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, roomName
+        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, roomName
     ]);
 
     return { vitals, game };
