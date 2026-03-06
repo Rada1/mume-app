@@ -82,7 +82,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
-    const { messages, setMessages, addMessage, isCombatLine, isCommunicationLine } = useMessageLog(inCombatHookRef);
+    const { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine } = useMessageLog(inCombatHookRef);
     const addSystemMessage = useCallback((text: string) => addMessage('system', text), [addMessage]);
 
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
@@ -209,7 +209,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         handlers: {
             setStatus: s.setStatus, setStats: v.setStats, setWeather: s.setWeather,
             setIsFoggy: s.setIsFoggy, setInCombat: s.setInCombat,
-            addMessage, setRumble: v.setRumble, setHitFlash: v.setHitFlash,
+            addMessage, flushMessages, setRumble: v.setRumble, setHitFlash: v.setHitFlash,
             setDeathStage: v.setDeathStage, detectLighting: env.detectLighting,
             onRoomInfo: (data) => { gmcpHandlers.onRoomInfo(data); roomInfoFn?.(data); },
             onRoomUpdateExits: (data) => { gmcpHandlers.onRoomUpdateExits(data); roomExitsFn?.(data); },
