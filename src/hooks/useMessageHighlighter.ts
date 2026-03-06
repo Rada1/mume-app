@@ -12,10 +12,11 @@ export function useMessageHighlighter(
 ) {
     const cacheRef = useRef<Map<string, { html: string, deps: string }>>(new Map());
 
+    const depsHash = JSON.stringify([target, roomPlayers, roomNpcs, roomItems, characterName]);
+
     const processMessageHtml = useCallback((html: string, mid?: string, isRoomName?: boolean) => {
         if (!mid) return html;
 
-        const depsHash = JSON.stringify([target, roomPlayers, roomNpcs, roomItems, characterName]);
         const cached = cacheRef.current.get(mid);
         if (cached && cached.deps === depsHash) {
             return cached.html;

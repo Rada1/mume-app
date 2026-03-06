@@ -139,6 +139,14 @@ export function useTelnet(options: TelnetOptions) {
             processText: (...args) => processTextRef.current(...args),
             addMessage: (...args) => addMessageRef.current(...args)
         });
+
+        return () => {
+            if (socketRef.current) {
+                const ws = socketRef.current as any;
+                if (ws._pingInterval) clearInterval(ws._pingInterval);
+                ws.close();
+            }
+        };
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const connect = () => {

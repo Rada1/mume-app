@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Message } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import TypewriterText from './TypewriterText';
 
-import { useGame } from '../context/GameContext';
+import { useBaseGame, useVitals } from '../context/GameContext';
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
@@ -16,16 +16,15 @@ interface MessageLogProps {
 
 const MessageItem = React.memo(({
     msg,
-    index,
-    total,
-    isLatest
+    processMessageHtml,
+    inCombat,
 }: {
     msg: Message,
-    index: number,
-    total: number,
-    isLatest: boolean
+    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string,
+    inCombat: boolean,
 }) => {
-    const { inCombat, processMessageHtml, viewport } = useGame();
+    const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName), [msg.html, msg.id, msg.isRoomName, processMessageHtml]);
+
     return (
         <div
             className={`message ${msg.type}${inCombat && !msg.isCombat ? ' combat-dim' : ''}`}
@@ -34,10 +33,8 @@ const MessageItem = React.memo(({
                 <span>{msg.textRaw}</span>
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
-            ) : (msg.isComm && isLatest) ? (
-                <TypewriterText html={processMessageHtml(msg.html, msg.id, msg.isRoomName)} onUpdate={() => viewport.scrollToBottom(true)} />
             ) : (
-                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html, msg.id, msg.isRoomName) }} />
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
         </div>
     );
@@ -51,20 +48,44 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { messages, activePrompt, inCombat, viewport, processMessageHtml } = useGame();
+    const { messages, inCombat, viewport, processMessageHtml } = useBaseGame();
+    const { activePrompt } = useVitals();
     const { scrollContainerRef, messagesEndRef } = viewport;
 
+    // Virtualization state: start with a healthy range
+    const [visibleRange, setVisibleRange] = useState({ start: 0, end: 100 });
+    
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
-        // DO NOT update the locked state while an auto-scroll is in progress,
-        // otherwise the smooth animation will "unlock" itself as it passes the threshold.
-        if (!container || viewport.isAutoScrollingRef.current) return;
+        if (!container) return;
 
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
-        if (viewport.isLockedToBottomRef.current !== isNearBottom) {
-            viewport.isLockedToBottomRef.current = isNearBottom;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+
+        if (!viewport.isAutoScrollingRef.current) {
+            if (viewport.isLockedToBottomRef.current !== isNearBottom) {
+                viewport.isLockedToBottomRef.current = isNearBottom;
+            }
         }
-    }, [viewport]);
+
+        // Simple virtualization: update visible window based on scroll
+        const scrollTop = container.scrollTop;
+        const containerHeight = container.clientHeight;
+        const estimatedMsgHeight = 25;
+        
+        const start = Math.max(0, Math.floor(scrollTop / estimatedMsgHeight) - 30);
+        // If locked to bottom or near it, ensure we render everything to the end
+        const end = isNearBottom 
+            ? messages.length 
+            : Math.min(messages.length, Math.ceil((scrollTop + containerHeight) / estimatedMsgHeight) + 30);
+        
+        if (Math.abs(start - visibleRange.start) > 10 || (isNearBottom && visibleRange.end !== messages.length) || (!isNearBottom && Math.abs(end - visibleRange.end) > 10)) {
+            setVisibleRange({ start, end });
+        }
+    }, [viewport, messages.length, visibleRange]);
+
+    useEffect(() => {
+        handleScroll();
+    }, [messages.length]);
 
     const lastMessagesRef = React.useRef(messages);
 
@@ -73,7 +94,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const lastMsg = messages[messages.length - 1];
         lastMessagesRef.current = messages;
 
-        // Only force scroll-to-bottom if we were already locked OR if it's a user echo
         if (isNewMessage) {
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
@@ -82,7 +102,24 @@ const MessageLog: React.FC<MessageLogProps> = ({
         } else if (viewport.isLockedToBottomRef.current) {
             viewport.scrollToBottom(true);
         }
-    }, [messages, activePrompt, viewport]);
+    }, [messages, viewport]);
+
+    const renderedMessages = useMemo(() => {
+        return messages.map((msg, i) => {
+            if (i < visibleRange.start || i > visibleRange.end) {
+                // Return a spacer div to maintain scroll position
+                return <div key={msg.id} style={{ height: '25px' }} />;
+            }
+            return (
+                <MessageItem
+                    key={msg.id}
+                    msg={msg}
+                    processMessageHtml={processMessageHtml}
+                    inCombat={inCombat}
+                />
+            );
+        });
+    }, [messages, visibleRange, processMessageHtml, inCombat, viewport]);
 
     return (
         <div
@@ -96,15 +133,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
         >
-            {messages.map((msg, i) => (
-                <MessageItem
-                    key={msg.id}
-                    msg={msg}
-                    index={i}
-                    total={messages.length}
-                    isLatest={i === messages.length - 1}
-                />
-            ))}
+            {renderedMessages}
             {activePrompt && (
                 <div className="message prompt msg-latest" style={{ transition: 'none' }}>
                     <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt), 'prompt', false) }} />

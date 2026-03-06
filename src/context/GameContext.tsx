@@ -24,6 +24,12 @@ import { useGameProviderState } from './GameContext/state';
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
 
+export const useBaseGame = () => {
+    const context = useContext(GameContext);
+    if (!context) throw new Error('useBaseGame must be used within a GameProvider');
+    return context;
+};
+
 export const useGame = () => {
     const context = useContext(GameContext);
     if (!context) throw new Error('useGame must be used within a GameProvider');

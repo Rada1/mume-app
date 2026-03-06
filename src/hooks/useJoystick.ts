@@ -15,7 +15,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
     const joystickKnobRef = useRef<HTMLDivElement>(null);
     const joystickStartPos = useRef<{ x: number, y: number } | null>(null);
     const longPressTimer = useRef<NodeJS.Timeout | null>(null);
-    const lastHapticSectorRef = useRef<number>(-1);
+    const lastHapticDirRef = useRef<Direction | null>(null);
 
     const handleJoystickStart = useCallback((e: React.PointerEvent) => {
         if (e.cancelable) e.preventDefault();
@@ -57,8 +57,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             dy = Math.sin(snappedAngle) * dist;
         }
 
-        const maxDist = 50;
-        const tiltX = -(dy / maxDist) * 25, tiltY = (dx / maxDist) * 25, transX = (dx / maxDist) * 15, transY = (dy / maxDist) * 15;
+        const maxDist = 60;
+        const tiltX = -(dy / maxDist) * 20, tiltY = (dx / maxDist) * 20, transX = (dx / maxDist) * 20, transY = (dy / maxDist) * 20;
         joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${transX}px, ${transY}px, 0)`;
 
         // Update CSS variables for perimeter highlighting
@@ -70,18 +70,14 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         }
 
         // Update current direction state (8-way mapping)
-        if (dist < 20) {
+        if (dist < 30) {
             setCurrentDir(null);
-            lastHapticSectorRef.current = -1;
+            if (lastHapticDirRef.current !== null) {
+                triggerHaptic(2);
+                lastHapticDirRef.current = null;
+            }
         } else {
             let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
-
-            // Trigger haptic "tick" on any 45-degree sector boundary
-            const sectorIndex = Math.floor(((angle + 22.5) % 360) / 45);
-            if (sectorIndex !== lastHapticSectorRef.current) {
-                triggerHaptic(10);
-                lastHapticSectorRef.current = sectorIndex;
-            }
 
             let dir: any = null;
             if (angle >= 337.5 || angle < 22.5) dir = 'e';
@@ -92,6 +88,11 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             else if (angle >= 202.5 && angle < 247.5) dir = 'up'; // NW -> up
             else if (angle >= 247.5 && angle < 292.5) dir = 'n';
             else if (angle >= 292.5 && angle < 337.5) dir = null; // NE -> unmapped
+
+            if (dir !== lastHapticDirRef.current) {
+                if (dir !== null) triggerHaptic(5); // Tick when entering a valid direction
+                lastHapticDirRef.current = dir;
+            }
 
             setCurrentDir(dir);
         }
@@ -112,6 +113,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
         setCurrentDir(null);
+        lastHapticDirRef.current = null;
 
         const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
@@ -135,7 +137,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
                 (document.activeElement as HTMLElement)?.blur();
             }
 
-            if (dist < 20) {
+            if (dist < 30) {
                 if (e.cancelable) e.preventDefault();
                 if (!suppressDefault) executeCommand('look');
                 triggerHaptic(10);
@@ -156,7 +158,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
 
                 if (cmd) {
                     executeCommand(cmd);
-                    triggerHaptic(40);
+                    // triggerHaptic(40); // Removed as per user request
                     setJoystickGlow(true);
                     setTimeout(() => setJoystickGlow(false), 300);
                 }
