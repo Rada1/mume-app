@@ -110,7 +110,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     bgImage={bgImage}
                     setBgImage={setBgImage}
                     handleFileUpload={handleFileUpload}
-                    exportSettings={exportSettings}
+                    exportSettings={() => exportSettingsFile(btn.rawButtons)}
                     importSettings={(e) => importSettings(e, setIsSettingsOpen)}
                     isLoading={isLoading}
                     newSoundPattern={newSoundPattern}

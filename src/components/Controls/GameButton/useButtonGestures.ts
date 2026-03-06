@@ -126,17 +126,24 @@ export const useButtonGestures = ({
         if (isCancelZone) {
             setActiveDir(null);
             el.style.setProperty('--cancel-opacity', '1');
-            el.style.setProperty('--cancel-scale', '1.25');
+            el.style.setProperty('--cancel-scale', '1.35');
+            if (!el._wasInCancelZone) {
+                triggerHaptic(60);
+                el._wasInCancelZone = true;
+            }
             setIsCancelling(true);
         } else if (preview?.isSwipe) {
+            el._wasInCancelZone = false;
             setActiveDir(preview.dir || null);
             el.style.setProperty('--cancel-opacity', '0');
             setIsCancelling(false);
         } else if (preview && isSwipedOut && distToCenter < 20) {
+            el._wasInCancelZone = false;
             setActiveDir('center' as any);
             el.style.setProperty('--cancel-opacity', '0');
             setIsCancelling(false);
         } else {
+            el._wasInCancelZone = false;
             setActiveDir(null);
             el.style.setProperty('--cancel-opacity', '0');
             el.style.setProperty('--cancel-scale', '0.5');
@@ -209,6 +216,7 @@ export const useButtonGestures = ({
         setActiveDir(null);
         const finalIsCancelling = isCancelling;
         setIsCancelling(false);
+        el._wasInCancelZone = false;
         el.style.setProperty('--ray-opacity', '0');
         el.style.setProperty('--cancel-opacity', '0');
         el.style.setProperty('--cancel-scale', '0');
@@ -289,6 +297,7 @@ export const useButtonGestures = ({
         setHeldButton(null);
         setCommandPreview(null);
         setActiveDir(null);
+        el._wasInCancelZone = false;
         el.style.setProperty('--ray-opacity', '0');
         el.style.setProperty('--cancel-opacity', '0');
         el.style.setProperty('--cancel-scale', '0');

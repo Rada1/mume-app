@@ -45,6 +45,16 @@
     top: var(--cancel-y, 50%);
 }
 
+.cancel-indicator.active {
+    background: rgba(239, 68, 68, 0.95);
+    border-color: #ffbaba;
+    box-shadow: 0 0 35px rgba(239, 68, 68, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    transform: translate(-50%, -50%) scale(var(--cancel-scale, 1.35));
+    /* Overrides inline var if needed, but the var itself handles the scale too */
+    z-index: 50020;
+}
+
 .swipe-center {
     position: absolute;
     top: 50%;
