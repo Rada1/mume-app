@@ -352,7 +352,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             if (invSection) {
                                 invSection.classList.add('drop-flash');
                                 setTimeout(() => invSection.classList.remove('drop-flash'), 500);
-                            }
+                                }
                         }
                     } catch (err) {
                         console.error('Failed to parse drop data', err);
