@@ -9,7 +9,7 @@ interface RoomInfoCardProps {
     mode: 'play' | 'edit';
     onClose: () => void;
     cardRef: React.RefObject<HTMLDivElement>;
-    preloadedCoordsRef?: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    preloadedCoordsRef?: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, any>, string, string, string[], string[]]>>;
     setViewZ?: (z: number | null) => void;
 }
 
@@ -29,8 +29,8 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
         const vnum = roomId.substring(2);
         const data = preloadedCoordsRef.current[vnum];
         if (data) {
-            // MMapper format: [x, y, z, terrainVal, exits, name, masterId]
-            const [x, y, z, terrainVal, exitsData, nameVal, masterId] = data;
+            // MMapper format: [x, y, z, terrainVal, exits, name, masterId, mobFlags, loadFlags]
+            const [x, y, z, terrainVal, exitsData, nameVal, masterId, mobFlagsMaster, loadFlagsMaster] = data;
 
             // Map the strange numbers/objects to our internal exit format
             const mappedExits: Record<string, import('./mapperTypes').MapperExit> = {};
@@ -94,6 +94,8 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                 desc: (masterId && masterId !== vnum) ? `Alias of room ${masterId}` : '',
                 zone: resolvedZone,
                 notes: '',
+                mobFlags: mobFlagsMaster || [],
+                loadFlags: loadFlagsMaster || [],
                 createdAt: Date.now()
             };
         }
@@ -177,6 +179,41 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     {room.desc}
                 </div>
             )}
+
+            {(room.mobFlags?.length || room.loadFlags?.length) ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {room.mobFlags?.map(f => {
+                        const isAgg = f.includes('AGGRESSIVE');
+                        const isShop = f.includes('SHOP');
+                        const isGuild = f.includes('GUILD');
+                        let color = '#94e2d5'; // DEFAULT TEAL
+                        let bg = 'rgba(148, 226, 213, 0.1)';
+                        if (isAgg) { color = '#f38ba8'; bg = 'rgba(243, 139, 168, 0.15)'; }
+                        else if (isShop) { color = '#f9e2af'; bg = 'rgba(249, 226, 175, 0.15)'; }
+                        else if (isGuild) { color = '#cba6f7'; bg = 'rgba(203, 166, 247, 0.15)'; }
+
+                        return (
+                            <span key={f} style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>
+                                {f.replace('BIN_MOB_', '')}
+                            </span>
+                        );
+                    })}
+                    {room.loadFlags?.map(f => {
+                        const isHerb = f.includes('HERB');
+                        const isWater = f.includes('WATER');
+                        let color = '#fab387'; // Orange
+                        let bg = 'rgba(250, 179, 135, 0.1)';
+                        if (isHerb) { color = '#a6e3a1'; bg = 'rgba(166, 227, 161, 0.15)'; }
+                        else if (isWater) { color = '#89b4fa'; bg = 'rgba(137, 180, 250, 0.15)'; }
+
+                        return (
+                            <span key={f} style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>
+                                {f.replace('BIN_LOAD_', '')}
+                            </span>
+                        );
+                    })}
+                </div>
+            ) : null}
 
             <div style={{ height: '1px', backgroundColor: '#27272a', margin: '4px 0' }} />
 

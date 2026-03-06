@@ -163,7 +163,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         if (!file) return;
         try {
             addMessage?.('system', '[Mapper] Reading MMapper file...');
-            const data = await parseMM2(file, 5.0);
+            const data = await parseMM2(file, 1.0);
             controller.loadImportedMapData(data);
         } catch (err) {
             console.error(err);

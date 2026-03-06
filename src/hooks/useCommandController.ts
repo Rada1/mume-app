@@ -56,10 +56,9 @@ export function useCommandController(deps: CommandControllerDeps) {
     const handleSend = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();
         const cmd = input.trim();
-        if (!cmd) return;
         setInput('');
 
-        if (isNoviceMode) {
+        if (isNoviceMode && cmd) {
             const result = mudParser.parse(cmd);
             if (result.finalOutput?.length) result.finalOutput.forEach(c => executeCommand(c));
             else executeCommand(cmd);

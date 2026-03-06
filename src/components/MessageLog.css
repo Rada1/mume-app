@@ -73,12 +73,15 @@
 }
 
 .message.combat-dim {
-    --msg-opacity: 0.22;
+    opacity: 0.25 !important;
+    filter: grayscale(0.5) blur(0.2px);
+    transition: opacity 0.8s ease, filter 0.8s ease;
 }
 
 .message-log.combat-mode .message:not(.combat-dim) {
     opacity: 1;
-    filter: saturate(1.1);
+    filter: saturate(1.4) brightness(1.1);
+    transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 .message.user {

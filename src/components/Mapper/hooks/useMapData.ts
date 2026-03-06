@@ -20,7 +20,7 @@ export const useMapData = () => {
     useEffect(() => { exploredRef.current = exploredVnums; }, [exploredVnums]);
 
     const spatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
-    const preloadedCoordsRef = useRef<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>({});
+    const preloadedCoordsRef = useRef<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>({});
 
     return {
         rooms, setRooms, roomsRef,

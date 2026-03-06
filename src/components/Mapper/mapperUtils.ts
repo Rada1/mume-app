@@ -65,3 +65,46 @@ export const FOREST_IMAGES = [
 export const HILL_IMAGES = [
     '/assets/map/hills/hill.png'
 ];
+
+export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): string => {
+    let t = typeof terrain === 'number' ? TERRAIN_MAP[String(terrain)] : terrain;
+    t = normalizeTerrain(t);
+
+    if (isDarkMode) {
+        switch (t) {
+            case 'City': return '#313244';
+            case 'Building': return '#45475a';
+            case 'Forest': return '#1a2e1a';
+            case 'Field':
+            case 'Grasslands': return '#2d3e2d';
+            case 'Hills': return '#3e2d1a';
+            case 'Mountains': return '#1e1e24';
+            case 'Water':
+            case 'Shallows':
+            case 'Rapids': return '#1e243e';
+            case 'Road': return '#1e1e2e';
+            case 'Tunnel':
+            case 'Cavern': return '#000000';
+            case 'Brush': return '#2d352d';
+            default: return '#1e1e2e';
+        }
+    } else {
+        switch (t) {
+            case 'City': return '#e6e9ef';
+            case 'Building': return '#dce0e8';
+            case 'Forest': return '#d4ead4';
+            case 'Field':
+            case 'Grasslands': return '#e9edc9';
+            case 'Hills': return '#faedcd';
+            case 'Mountains': return '#e5e5e5';
+            case 'Water':
+            case 'Shallows':
+            case 'Rapids': return '#d4e6f1';
+            case 'Road': return '#f2f2f2';
+            case 'Tunnel':
+            case 'Cavern': return '#d0d0d0';
+            default: return '#ffffff';
+        }
+    }
+};
+

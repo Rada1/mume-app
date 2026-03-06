@@ -22,7 +22,7 @@ interface MapCanvasProps {
     stableRoomsRef: React.MutableRefObject<Record<string, any>>;
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     exploredVnums: Set<string>;
     onMouseDown?: (e: React.MouseEvent) => void;

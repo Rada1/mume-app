@@ -156,6 +156,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRumble: s.setRumble,
         setHitFlash: s.setHitFlash,
         setDeathStage: s.setDeathStage,
+        setInCombat: s.setInCombat,
         setLightningEnabled: s.setLightningEnabled,
         setPlayerPosition: s.setPlayerPosition,
         detectLighting: env.detectLighting,

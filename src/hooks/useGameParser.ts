@@ -15,6 +15,7 @@ export interface UseGameParserDeps {
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void;
     setCharacterClass: (val: any) => void; setRumble: (val: boolean) => void;
     setHitFlash: (val: boolean) => void; setDeathStage: (val: any) => void;
+    setInCombat: (val: boolean) => void;
     setLightningEnabled: (val: boolean) => void;
     setPlayerPosition: (val: string) => void; detectLighting: (light: string) => void;
     setCurrentTerrain?: (terrain: string) => void;
@@ -33,7 +34,7 @@ export interface UseGameParserDeps {
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv } = deps;
 
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -103,7 +104,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (/alas, you cannot go|no exit|is closed|too exhausted|too tired|cannot go there|blocks your/i.test(lower)) { setRumble(true); triggerHaptic(50); setTimeout(() => setRumble(false), 400); mapperRef.current?.handleMoveFailure(); if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail')); }
         if (/pitch black|too dark|cannot see/i.test(lower)) { mapperRef.current?.handleMoveFailure(); if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail')); addMessage('system', "[Mapper] Darkness detected."); }
         if (/hits you|crushes you|pierces you/i.test(lower)) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }
-        if (/you have been killed|you are dead/i.test(lower)) { setDeathStage('fade_to_black'); setTimeout(() => setDeathStage('flash'), 2000); }
+        if (/you have been killed|you are dead/i.test(lower)) { setDeathStage('fade_to_black'); setInCombat(false); setTimeout(() => setDeathStage('flash'), 2000); }
+        if (/is dead! r.i.p.|receive your share of experience|you flee head over heels|you stop fighting/i.test(lower)) { setInCombat(false); }
 
         processTriggers(textOnly);
         if (lower.includes("wimpy")) { const m = textOnly.match(/wimpy.*(\d+)/i); if (m) setStats(p => ({ ...p, wimpy: parseInt(m[1]) })); }

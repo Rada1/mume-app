@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './mapperUtils';
+import { GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES, getTerrainColor } from './mapperUtils';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -29,7 +29,7 @@ export const useMapperRenderer = ({
     spatialIndexRef, exploredVnums: stateExploredVnums,
     unveilMap, viewZ
 }: RendererProps & {
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>,
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>,
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>,
     exploredVnums?: Set<string>
 }) => {
@@ -99,7 +99,7 @@ export const useMapperRenderer = ({
                     if (!bucket) continue;
 
                     bucket.forEach(vnum => {
-                        const [rx, ry, rz, tSector, ghostExits, rName] = preloaded[vnum];
+                        const [rx, ry, rz, tSector, ghostExits, rName, , mobFlagsGhost, loadFlagsGhost] = preloaded[vnum];
                         const isVisited = explored.has(vnum);
                         const isUnveiled = unveilMap;
 
@@ -116,28 +116,43 @@ export const useMapperRenderer = ({
 
                         ctx.globalAlpha = 1.0;
 
-                        // DRAW EXITS
+                        // DRAW EXITS (Lines between rooms for wide/non-cardinal connections)
                         if (ghostExits) {
                             for (const dir in ghostExits) {
-                                const targetVnum = String(ghostExits[dir]);
+                                const exObj = ghostExits[dir];
+                                if (!exObj) continue;
+                                const targetVnum = String(exObj.target);
                                 const targetData = preloaded[targetVnum];
                                 if (targetData && Math.abs(targetData[2] - currentZ) <= 0.5 && targetVnum > vnum) {
                                     const isTargetVisited = explored.has(targetVnum);
                                     if (isUnveiled || (isVisited && isTargetVisited)) {
                                         const tx = Math.round(targetData[0]);
                                         const ty = Math.round(targetData[1]);
-                                        const lineColor = isDarkMode ? "rgba(137, 180, 250, 0.3)" : "rgba(59, 130, 246, 0.3)";
-                                        drawLine(centerPX, centerPY, tx * GRID_SIZE + GRID_SIZE / 2, ty * GRID_SIZE + GRID_SIZE / 2, lineColor, 1);
+
+                                        const dx = tx - Math.round(rx);
+                                        const dy = ty - Math.round(ry);
+                                        const isAdjacentCardinal = (Math.abs(dx) === 1 && dy === 0) || (Math.abs(dy) === 1 && dx === 0);
+                                        const isCardinalDir = ['n', 's', 'e', 'w'].includes(dir);
+
+                                        if (!(isAdjacentCardinal && isCardinalDir)) {
+                                            const lineColor = isDarkMode ? "rgba(137, 180, 250, 0.3)" : "rgba(59, 130, 246, 0.3)";
+                                            drawLine(centerPX, centerPY, tx * GRID_SIZE + GRID_SIZE / 2, ty * GRID_SIZE + GRID_SIZE / 2, lineColor, 1);
+                                        }
                                     }
                                 }
                             }
                         }
 
                         // DRAW ROOM BODY
-                        if (isVisited) {
+                        if (isVisited || isUnveiled) {
                             const terrain = localRoom ? localRoom.terrain : tSector;
                             const s = GRID_SIZE;
 
+                            // 1. Fill Room Background based on terrain
+                            ctx.fillStyle = getTerrainColor(terrain, isDarkMode);
+                            ctx.fillRect(wx, wy, s, s);
+
+                            // 2. Draw Terrain Features (behind labels/walls)
                             if (isMtn(terrain)) {
                                 const seed = getSeed(Math.round(rx), Math.round(ry));
                                 const img = imagesRef.current[PEAK_IMAGES[Math.floor(seed * PEAK_IMAGES.length)]];
@@ -157,25 +172,142 @@ export const useMapperRenderer = ({
                                 }
                             }
 
-                            ctx.fillStyle = isDarkMode ? '#313244' : '#ffffff';
-                            ctx.strokeStyle = '#89b4fa';
-                            ctx.lineWidth = 1.6 / camera.zoom;
-                            if (activeId === `m_${vnum}`) ctx.strokeStyle = '#f9e2af';
+                            // 3. Draw Tactical Indicators (Shops, Aggressive, Resources)
+                            const activeMobFlags = (localRoom?.mobFlags || mobFlagsGhost || []);
+                            const activeLoadFlags = (localRoom?.loadFlags || loadFlagsGhost || []);
 
-                            const rectS = s * 0.7;
-                            ctx.fillRect(wx + (s - rectS) / 2, wy + (s - rectS) / 2, rectS, rectS);
-                            ctx.strokeRect(wx + (s - rectS) / 2, wy + (s - rectS) / 2, rectS, rectS);
+                            if (activeMobFlags.length > 0 || activeLoadFlags.length > 0) {
+                                ctx.save();
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.font = `bold ${Math.max(10, 14 / camera.zoom)}px "Inter", sans-serif`;
 
+                                let offset = 0;
+                                if (activeMobFlags.some(f => f.includes('AGGRESSIVE'))) {
+                                    ctx.fillStyle = '#f38ba8'; // Red
+                                    ctx.fillText('!', centerPX + offset, centerPY);
+                                    offset += 8 / camera.zoom;
+                                }
+                                if (activeMobFlags.some(f => f.includes('SHOP'))) {
+                                    ctx.fillStyle = '#f9e2af'; // Gold
+                                    ctx.fillText('$', centerPX + offset, centerPY);
+                                    offset += 8 / camera.zoom;
+                                }
+                                if (activeLoadFlags.some(f => f.includes('HERB') || f.includes('WATER'))) {
+                                    ctx.fillStyle = '#a6e3a1'; // Green
+                                    ctx.fillText('*', centerPX + offset, centerPY);
+                                }
+                                ctx.restore();
+                            }
+
+                            // Unified door state helper: check both sides for 'Open' status
+                            const getGateState = (roomA: any, wallExitsA: any, dir: string) => {
+                                const localExA = roomA?.exits?.[dir]; // Real-time data
+                                const wallExA = wallExitsA?.[dir];   // Permanent data
+
+                                if (!localExA && !wallExA) {
+                                    return { hasExit: false };
+                                }
+
+                                const exitA = localExA || wallExA;
+                                if (!exitA) return { hasExit: false };
+
+                                const targetId = exitA.target;
+                                const oppDir = DIRS[dir]?.opp;
+
+                                // Look for the neighbor
+                                const neighborId = String(targetId).startsWith('m_') ? targetId : `m_${targetId}`;
+                                const neighbor = allRooms[neighborId] || allRooms[targetId] || (preloaded[String(targetId)] ? { exits: preloaded[String(targetId)][4] } : null);
+                                const exitB = neighbor?.exits?.[oppDir];
+
+                                // Knowledge of door exists if either side or the map says so
+                                const hasDoor = exitA.hasDoor || (exitA.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
+                                    exitB?.hasDoor || (exitB?.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
+                                    wallExA?.hasDoor;
+
+                                if (!hasDoor) return { hasExit: true, hasDoor: false, isClosed: false };
+
+                                // State Logic:
+                                // If EITHER side says it's OPEN (closed === false), we show it as open.
+                                // Otherwise, if it has a door, it defaults to CLOSED.
+                                let isClosed = hasDoor;
+                                if (localExA && localExA.closed === false) isClosed = false;
+                                else if (exitB && exitB.closed === false) isClosed = false;
+                                else if (wallExA && wallExA.closed === false) isClosed = false; // from map history if any
+
+                                return { hasExit: true, hasDoor, isClosed };
+                            };
+
+                            const drawWallSide = (x1: number, y1: number, x2: number, y2: number, dir: string) => {
+                                const { hasExit, hasDoor, isClosed } = getGateState(localRoom, ghostExits, dir);
+                                const orange = isDarkMode ? "#fab387" : "#e67e22";
+                                const doorGold = "#ffcc00"; // Vibrant gold for closed segment visibility
+
+                                if (!hasExit) {
+                                    // Regular Wall
+                                    ctx.beginPath();
+                                    ctx.strokeStyle = isDarkMode ? "rgba(137, 180, 250, 0.4)" : "#3b82f6";
+                                    ctx.lineWidth = 1.0 / camera.zoom;
+                                    ctx.moveTo(x1, y1);
+                                    ctx.lineTo(x2, y2);
+                                    ctx.stroke();
+                                } else if (hasDoor) {
+                                    const dx = x2 - x1, dy = y2 - y1;
+
+                                    // 1. Draw Orange Posts (Permanent)
+                                    ctx.strokeStyle = orange;
+                                    ctx.lineWidth = 3.5 / camera.zoom;
+
+                                    ctx.beginPath();
+                                    ctx.moveTo(x1, y1);
+                                    ctx.lineTo(x1 + dx * 0.25, y1 + dy * 0.25);
+                                    ctx.stroke();
+
+                                    ctx.beginPath();
+                                    ctx.moveTo(x2, y2);
+                                    ctx.lineTo(x2 - dx * 0.25, y2 - dy * 0.25);
+                                    ctx.stroke();
+
+                                    // 2. Draw Yellow Closure (If Closed)
+                                    if (isClosed) {
+                                        ctx.strokeStyle = doorGold;
+                                        ctx.lineWidth = 4.0 / camera.zoom;
+                                        ctx.beginPath();
+                                        ctx.moveTo(x1 + dx * 0.25, y1 + dy * 0.25);
+                                        ctx.lineTo(x2 - dx * 0.25, y2 - dy * 0.25);
+                                        ctx.stroke();
+                                    }
+                                }
+                            };
+
+                            drawWallSide(wx, wy, wx + s, wy, 'n');
+                            drawWallSide(wx, wy + s, wx + s, wy + s, 's');
+                            drawWallSide(wx + s, wy, wx + s, wy + s, 'e');
+                            drawWallSide(wx, wy, wx, wy + s, 'w');
+
+                            // 4. Special Highlights (Active Room & Selection)
+                            // Current Room Highlight
+                            if (activeId === `m_${vnum}`) {
+                                ctx.strokeStyle = '#f9e2af';
+                                ctx.lineWidth = 3 / camera.zoom;
+                                ctx.strokeRect(wx + 1, wy + 1, s - 2, s - 2);
+                            }
+
+                            // Selection Highlight
+                            if (selectedRoomIds.has(`m_${vnum}`) || selectedRoomIds.has(vnum)) {
+                                ctx.strokeStyle = isDarkMode ? '#89b4fa' : '#3b82f6';
+                                ctx.lineWidth = 2 / camera.zoom;
+                                ctx.setLineDash([4 * invZoom, 2 * invZoom]);
+                                ctx.strokeRect(wx + 3, wy + 3, s - 6, s - 6);
+                                ctx.setLineDash([]);
+                            }
+
+                            // 5. Room Labels
                             if (camera.zoom > 1.8) {
                                 ctx.font = '8px "Aniron"'; ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
                                 ctx.textAlign = 'center';
                                 ctx.fillText(rName.substring(0, 12), centerPX, wy + s * 0.95);
                             }
-                        } else {
-                            // Ghost Dot
-                            const dotS = GRID_SIZE * 0.25;
-                            ctx.fillStyle = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-                            ctx.fillRect(wx + (GRID_SIZE - dotS) / 2, wy + (GRID_SIZE - dotS) / 2, dotS, dotS);
                         }
                     });
                 }
@@ -198,13 +330,98 @@ export const useMapperRenderer = ({
             const rx = room.x * GRID_SIZE, ry = room.y * GRID_SIZE, s = GRID_SIZE, rz = room.z || 0;
             if (Math.abs(rz - currentZ) > 1.5) return;
 
-            ctx.fillStyle = isDarkMode ? '#313244' : '#ffffff';
-            ctx.strokeStyle = '#89b4fa';
-            ctx.lineWidth = 1.6 / camera.zoom;
-            if (activeId === room.id) ctx.strokeStyle = '#f9e2af';
-            const rectS = s * 0.7;
-            ctx.fillRect(rx + (s - rectS) / 2, ry + (s - rectS) / 2, rectS, rectS);
-            ctx.strokeRect(rx + (s - rectS) / 2, ry + (s - rectS) / 2, rectS, rectS);
+            // Fill Room Square
+            ctx.fillStyle = getTerrainColor(room.terrain, isDarkMode);
+            ctx.fillRect(rx, ry, s, s);
+
+            // Draw Walls and Doors using unified gate state
+            const getLocalGateState = (roomA: any, dir: string) => {
+                const exitA = roomA.exits?.[dir];
+                // Check if master map has this exit/door too
+                const roomId = String(roomA.id).startsWith('m_') ? roomA.id.substring(2) : roomA.id;
+                const wallExA = preloaded[roomId]?.[4][dir];
+
+                const effectiveExit = exitA || wallExA;
+                if (!effectiveExit) return { hasExit: false };
+
+                const targetId = effectiveExit.target;
+                const oppDir = DIRS[dir]?.opp;
+                const neighborId = targetId ? (String(targetId).startsWith('m_') ? targetId : `m_${targetId}`) : null;
+                const neighbor = neighborId ? (allRooms[neighborId] || allRooms[targetId] || (preloaded[String(targetId)] ? { exits: preloaded[String(targetId)][4] } : null)) : null;
+                const exitB = neighbor?.exits?.[oppDir];
+
+                const hasDoor = effectiveExit.hasDoor || (effectiveExit.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
+                    exitB?.hasDoor || (exitB?.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
+                    wallExA?.hasDoor;
+
+                if (!hasDoor) return { hasExit: true, hasDoor: false, isClosed: false };
+
+                // State Logic for Local Custom Rooms
+                let isClosed = hasDoor;
+                if (exitA && exitA.closed === false) isClosed = false;
+                else if (exitB && exitB.closed === false) isClosed = false;
+
+                return { hasExit: true, hasDoor, isClosed };
+            };
+
+            const drawLocalWallSide = (x1: number, y1: number, x2: number, y2: number, dir: string) => {
+                const { hasExit, hasDoor, isClosed } = getLocalGateState(room, dir);
+                const orange = isDarkMode ? "#fab387" : "#e67e22";
+                const doorGold = "#ffcc00";
+
+                if (!hasExit) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = isDarkMode ? "rgba(137, 180, 250, 0.4)" : "#3b82f6";
+                    ctx.lineWidth = 1.0 / camera.zoom;
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                } else if (hasDoor) {
+                    const dx = x2 - x1, dy = y2 - y1;
+
+                    ctx.strokeStyle = orange;
+                    ctx.lineWidth = 3.5 / camera.zoom;
+
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x1 + dx * 0.25, y1 + dy * 0.25);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(x2, y2);
+                    ctx.lineTo(x2 - dx * 0.25, y2 - dy * 0.25);
+                    ctx.stroke();
+
+                    if (isClosed) {
+                        ctx.strokeStyle = doorGold;
+                        ctx.lineWidth = 4.0 / camera.zoom;
+                        ctx.beginPath();
+                        ctx.moveTo(x1 + dx * 0.25, y1 + dy * 0.25);
+                        ctx.lineTo(x2 - dx * 0.25, y2 - dy * 0.25);
+                        ctx.stroke();
+                    }
+                }
+            };
+
+            drawLocalWallSide(rx, ry, rx + s, ry, 'n');
+            drawLocalWallSide(rx, ry + s, rx + s, ry + s, 's');
+            drawLocalWallSide(rx + s, ry, rx + s, ry + s, 'e');
+            drawLocalWallSide(rx, ry, rx, ry + s, 'w');
+
+            // Special Highlights
+            if (activeId === room.id) {
+                ctx.strokeStyle = '#f9e2af';
+                ctx.lineWidth = 3 / camera.zoom;
+                ctx.strokeRect(rx + 1, ry + 1, s - 2, s - 2);
+            }
+
+            if (selectedRoomIds.has(room.id)) {
+                ctx.strokeStyle = isDarkMode ? '#89b4fa' : '#3b82f6';
+                ctx.lineWidth = 2 / camera.zoom;
+                ctx.setLineDash([4 * invZoom, 2 * invZoom]);
+                ctx.strokeRect(rx + 3, ry + 3, s - 6, s - 6);
+                ctx.setLineDash([]);
+            }
         });
 
         // --- PLAYER TRAIL ---

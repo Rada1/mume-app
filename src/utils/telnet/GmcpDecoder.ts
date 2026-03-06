@@ -100,11 +100,17 @@ export class GmcpDecoder {
 
         const opp = getField(['opponent', 'opp', 'o']);
         if (opp !== undefined) {
-            this.charVitalsState.opponent = opp;
-            if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(opp);
+            this.charVitalsState.opponent = opp === "" ? null : opp;
+            if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(this.charVitalsState.opponent);
         }
 
-        const fighting = this.charVitalsState.position === 'fighting' || (this.charVitalsState.opponent != null && this.charVitalsState.opponent !== '');
+        const isFighting = this.charVitalsState.position === 'fighting';
+        const hasOpponent = this.charVitalsState.opponent != null && this.charVitalsState.opponent !== '';
+
+        // If we have a position and it's NOT fighting, we are definitely NOT in combat
+        // regardless of what the stale opponent state might say.
+        const fighting = isFighting || (hasOpponent && this.charVitalsState.position !== 'sleeping' && this.charVitalsState.position !== 'sitting' && this.charVitalsState.position !== 'resting');
+
         this.handlers.setInCombat(fighting);
 
         const weatherVal = getField(['weather', 'w']);

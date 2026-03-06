@@ -29,7 +29,7 @@ interface InteractionProps {
     triggerRender: () => void;
     viewZ: number | null;
     setViewZ: React.Dispatch<React.SetStateAction<number | null>>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
 }
 

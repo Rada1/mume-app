@@ -19,7 +19,10 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
 
     // Local UI state
     const [allowPersistence, setAllowPersistence] = useState(() => localStorage.getItem('mume_mapper_persistence') !== 'false');
-    const [unveilMap, setUnveilMap] = useState(() => localStorage.getItem('mume_mapper_unveil') === 'true');
+    const [unveilMap, setUnveilMap] = useState(() => {
+        const saved = localStorage.getItem('mume_mapper_unveil');
+        return saved === null ? true : saved === 'true';
+    });
 
     // Shared refs
     const pendingMovesRef = useRef<{ dir: string, time: number }[]>([]);
@@ -47,7 +50,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
                 index[floor][key].push(vnum);
             }
             spatialIndexRef.current = index;
-            addMessage?.('system', `[Mapper] Master Map Loaded: ${Object.keys(data).length} rooms.`);
+            addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
         } catch (err) {
             console.warn("[Mapper] Could not load master map data:", err);
             preloadedCoordsRef.current = {};

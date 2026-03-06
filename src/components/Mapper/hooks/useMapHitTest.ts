@@ -10,7 +10,7 @@ interface UseMapHitTestProps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
     viewZ: number | null;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
 }
 
 export const useMapHitTest = ({

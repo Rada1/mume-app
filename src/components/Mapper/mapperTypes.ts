@@ -10,12 +10,15 @@ export interface MapperRoom {
     terrain: string;
     exits: Record<string, MapperExit>;
     notes: string;
+    mobFlags?: string[];
+    loadFlags?: string[];
     createdAt: number;
 }
 
 export interface MapperExit {
     target: string;
     closed: boolean;
+    hasDoor?: boolean;
     gmcpDestId?: number;
     name?: string;
     flags?: string[];

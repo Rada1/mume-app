@@ -11,7 +11,7 @@ interface UseMapActionsProps {
     setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     addMessage?: (type: string, msg: string) => void;
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
@@ -102,7 +102,7 @@ export const useMapActions = ({
         addMessage?.('system', `[Mapper] Synced current room location to ghost map.`);
     }, [addMessage, currentRoomIdRef, setRooms, preloadedCoordsRef]);
 
-    const loadImportedMapData = useCallback((data: Record<string, [number, number, number, number, Record<string, string | number>, string, string]>) => {
+    const loadImportedMapData = useCallback((data: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>) => {
         const merged = { ...preloadedCoordsRef.current };
         for (const vnum in data) {
             const newData = data[vnum];
@@ -113,7 +113,9 @@ export const useMapActions = ({
                     newData[3] || oldData[3],
                     (Object.keys(newData[4] || {}).length > 0) ? newData[4] : oldData[4],
                     (newData[5] && !newData[5].startsWith('Room ')) ? newData[5] : oldData[5],
-                    newData[6] || oldData[6]
+                    newData[6] || oldData[6],
+                    newData[7] || oldData[7],
+                    newData[8] || oldData[8]
                 ];
             } else {
                 merged[vnum] = newData;

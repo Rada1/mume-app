@@ -9,7 +9,7 @@ interface UseMapGmcphandlersProps {
     currentRoomIdRef: React.MutableRefObject<string | null>;
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     pendingMovesRef: React.MutableRefObject<{ dir: string; time: number }[]>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, string | number>, string, string]>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     discoverySourceRef: React.MutableRefObject<string | null>;
     exploredRef: React.MutableRefObject<Set<string>>;
     setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -120,6 +120,7 @@ export const useMapGmcphandlers = ({
             predX = ghostData[0];
             predY = ghostData[1];
             predZ = ghostData[2];
+            // Indices 7 and 8 are mobFlags and loadFlags
         } else if (currentActiveRoom && dirUsed) {
             // Case B: Relative Fallback using simple offsets
             const d = DIRS[dirUsed];
@@ -167,7 +168,10 @@ export const useMapGmcphandlers = ({
                     id: targetId!, gmcpId: Number(gmcpId) || 0, name, desc,
                     x: nx, y: ny, z: nz,
                     zone, terrain: freshTerrain || lastDetectedTerrainRef.current || 'Unknown Terrain',
-                    exits: {}, notes: "", createdAt: Date.now()
+                    exits: {}, notes: "",
+                    mobFlags: ghostData ? ghostData[7] : [],
+                    loadFlags: ghostData ? ghostData[8] : [],
+                    createdAt: Date.now()
                 };
                 newRooms[targetId!] = newRoom;
 
@@ -181,7 +185,14 @@ export const useMapGmcphandlers = ({
                 }
             } else {
                 const finalTerrain = (data.terrain || data.environment) ? normalizeTerrain(data.terrain || data.environment) : existingRoom.terrain;
-                newRooms[targetId!] = { ...existingRoom, gmcpId: Number(gmcpId) || 0, name, desc, zone, terrain: finalTerrain };
+                newRooms[targetId!] = {
+                    ...existingRoom,
+                    gmcpId: Number(gmcpId) || 0,
+                    name, desc, zone,
+                    terrain: finalTerrain,
+                    mobFlags: ghostData ? ghostData[7] : existingRoom.mobFlags || [],
+                    loadFlags: ghostData ? ghostData[8] : existingRoom.loadFlags || []
+                };
                 if (ghostData) {
                     const [nx, ny, nz] = ghostData;
                     newRooms[targetId!] = { ...newRooms[targetId!], x: nx, y: ny, z: nz };
@@ -208,7 +219,22 @@ export const useMapGmcphandlers = ({
                         if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
                         else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId)) || undefined;
                     }
-                    updatedExits[dir] = { ...updatedExits[dir], target: internalTarget!, gmcpDestId, name: exName, flags: exFlags, closed: exFlags?.includes('closed') || false };
+                    const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
+                    const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
+                    const isDoor = isClosed ||
+                        exFlagsLow.some(f => f.includes('door') || f.includes('gate') || f.includes('lock')) ||
+                        exName?.toLowerCase().includes('door') ||
+                        exName?.toLowerCase().includes('gate');
+
+                    updatedExits[dir] = {
+                        ...updatedExits[dir],
+                        target: internalTarget!,
+                        gmcpDestId,
+                        name: exName,
+                        flags: exFlags || (updatedExits[dir]?.flags || []),
+                        closed: isClosed,
+                        hasDoor: isDoor || updatedExits[dir]?.hasDoor
+                    };
                 }
                 newRooms[targetId!] = { ...room, exits: updatedExits };
             }
@@ -219,26 +245,77 @@ export const useMapGmcphandlers = ({
         currentRoomIdRef.current = targetId;
     }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage]);
 
-    const handleUpdateExits = useCallback((data: Record<string, GmcpExitInfo | number | false>) => {
+    const handleUpdateExits = useCallback((data: any) => {
         const activeId = currentRoomIdRef.current;
         if (!activeId) return;
+
+        const exitUpdates = data.exits || data;
+
         setRooms(prev => {
-            const room = prev[activeId];
-            if (!room) return prev;
-            const newExits = { ...room.exits };
-            for (const dir in data) {
-                const update = data[dir];
+            const activeRoom = prev[activeId];
+            if (!activeRoom) return prev;
+
+            // Create a fresh copy of the whole rooms collection to avoid mutation bugs
+            const nextRooms = { ...prev };
+            const newExits = { ...activeRoom.exits };
+
+            for (const dir in exitUpdates) {
+                const update = exitUpdates[dir];
                 if (update === false) delete newExits[dir];
                 else {
                     const gmcpDestId = typeof update === 'number' ? update : (update.id || newExits[dir]?.gmcpDestId);
                     let name = typeof update === 'object' ? update.name : undefined;
-                    let flags = typeof update === 'object' ? update.flags : undefined;
-                    newExits[dir] = { ...newExits[dir], name: name || newExits[dir]?.name, flags: flags || (typeof update === 'number' ? undefined : newExits[dir]?.flags), gmcpDestId, closed: flags?.includes('closed') || false };
+                    let flags = typeof update === 'object' ? (update.flags || []) : undefined;
+
+                    const nextFlags = (typeof update === 'object') ? (flags || []) : (newExits[dir]?.flags || []);
+                    const exFlagsLow = nextFlags.map(f => f.toLowerCase());
+                    const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
+                    const isDoor = isClosed ||
+                        exFlagsLow.some(f => f.includes('door') || f.includes('gate') || f.includes('lock')) ||
+                        (name || newExits[dir]?.name)?.toLowerCase().includes('door') ||
+                        (name || newExits[dir]?.name)?.toLowerCase().includes('gate');
+
+                    newExits[dir] = {
+                        ...newExits[dir],
+                        name: name || newExits[dir]?.name,
+                        flags: nextFlags,
+                        gmcpDestId,
+                        closed: isClosed,
+                        hasDoor: isDoor || newExits[dir]?.hasDoor
+                    };
+
+                    // --- SYMMETRIC UPDATE: Update neighbor's counter-exit if we know it ---
+                    const targetId = newExits[dir]?.target;
+                    const neighborId = targetId || (gmcpDestId ? (preloadedCoordsRef.current[String(gmcpDestId)] ? `m_${gmcpDestId}` : Object.keys(nextRooms).find(k => String(nextRooms[k].gmcpId) === String(gmcpDestId))) : null);
+
+                    if (neighborId && nextRooms[neighborId]) {
+                        const neighbor = nextRooms[neighborId];
+                        const oppDir = DIRS[dir]?.opp;
+                        if (oppDir) {
+                            const neighborEx = neighbor.exits[oppDir];
+                            if (neighborEx && (neighborEx.hasDoor || isDoor)) {
+                                nextRooms[neighborId] = {
+                                    ...neighbor,
+                                    exits: {
+                                        ...neighbor.exits,
+                                        [oppDir]: {
+                                            ...neighborEx,
+                                            closed: isClosed,
+                                            hasDoor: true,
+                                            flags: nextFlags
+                                        }
+                                    }
+                                };
+                            }
+                        }
+                    }
                 }
             }
-            return { ...prev, [activeId]: { ...room, exits: newExits } };
+
+            nextRooms[activeId] = { ...activeRoom, exits: newExits };
+            return nextRooms;
         });
-    }, [currentRoomIdRef, setRooms]);
+    }, [currentRoomIdRef, setRooms, preloadedCoordsRef]);
 
     const handleTerrain = useCallback((t: string) => {
         const terrain = normalizeTerrain(t);
