@@ -70,7 +70,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         }
 
         // Update current direction state (8-way mapping)
-        if (dist < 30) {
+        if (dist < 10) {
             setCurrentDir(null);
             if (lastHapticDirRef.current !== null) {
                 triggerHaptic(2);
@@ -137,7 +137,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
                 (document.activeElement as HTMLElement)?.blur();
             }
 
-            if (dist < 30) {
+            if (dist < 10) {
                 if (e.cancelable) e.preventDefault();
                 if (!suppressDefault) executeCommand('look');
                 triggerHaptic(10);
