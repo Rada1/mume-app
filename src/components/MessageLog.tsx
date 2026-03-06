@@ -73,10 +73,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
         if (isNewMessage) {
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
-                viewport.scrollToBottom(true, true);
+                viewport.scrollToBottom(true);
             }
         } else if (viewport.isLockedToBottomRef.current) {
-            viewport.scrollToBottom(true, true);
+            viewport.scrollToBottom(true);
         }
     }, [messages, activePrompt, viewport]);
 
