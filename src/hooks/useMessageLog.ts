@@ -66,7 +66,7 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
         );
     }, []);
 
-    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string) => {
+    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => {
         if (type === 'prompt') return; // Prompts are handled by activePrompt state, not history
 
         setMessages(prev => {
@@ -169,7 +169,8 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
                 dimmedInCombat,
                 stackId: stackId || undefined,
                 stackCount: 1,
-                isComm
+                isComm,
+                isRoomName
             };
 
             if (nextMessages.length >= 500) {

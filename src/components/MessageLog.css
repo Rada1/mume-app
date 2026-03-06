@@ -64,11 +64,9 @@
     will-change: transform, opacity;
     image-rendering: pixelated;
     -webkit-font-smoothing: subpixel-antialiased;
-    view-timeline-name: --message-scroll;
-    view-timeline-axis: block;
-    animation: vanish-into-distance linear;
-    animation-timeline: --message-scroll;
-    animation-range: entry 0% exit 100%;
+    animation: vanish-into-distance linear both;
+    animation-timeline: view();
+    animation-range: entry 10% exit 90%;
     transform-origin: left center;
 }
 
@@ -122,37 +120,6 @@
     border-left: 2px solid var(--accent);
     padding-left: 8px;
     margin-top: 8px;
-}
-
-.msg-latest {
-    opacity: 1;
-    filter: brightness(1.25) drop-shadow(0 0 8px rgba(255, 255, 255, 0.1));
-    transform: scale(1.02) translateZ(0);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.msg-recent {
-    opacity: 0.85;
-    color: #e5e7eb;
-    transform: scale(1) translateZ(-50px);
-    filter: brightness(0.9);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.msg-old {
-    opacity: 0.55;
-    color: var(--text-dim);
-    transform: scale(0.92) translateZ(-150px);
-    filter: brightness(0.7);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.msg-ancient {
-    opacity: 0.3;
-    color: var(--text-faded);
-    transform: scale(0.85) translateZ(-300px);
-    filter: brightness(0.4);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .input-area {

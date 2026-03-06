@@ -8,7 +8,7 @@ import { useTriggerProcessor } from './useTriggerProcessor';
 export interface UseGameParserDeps {
     isItemsOpen: boolean; isCharacterOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string) => void;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => void;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
     setWeather: (val: any) => void; setIsFoggy: (val: boolean) => void;
     setStats: (val: GameStats | ((prev: GameStats) => GameStats)) => void;
@@ -31,10 +31,11 @@ export interface UseGameParserDeps {
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
+    roomNameRef: React.RefObject<string | null>;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef } = deps;
 
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -65,7 +66,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         if ((isWaitingForInv.current || captureStage.current !== 'none') && /you are carrying|your inventory contains/i.test(lower)) { isWaitingForInv.current = false; captureStage.current = 'inv'; }
         if (/you have the following|you can practice|practice sessions|skill \/ spell|skill.*knowledge.*difficulty/i.test(lower)) { if (captureStage.current !== 'practice') setAbilities({}); captureStage.current = 'practice'; }
 
-        if (/^[\*\)\!oO\.\[f\<%\~+WU:=O:\(]\s*[>:]\s*$/.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|you are using|carrying/i.test(lower))) {
+        if (/^[\*\)\!oO\.\[f\<%\~+WU:=O:\(]\s*[>:]\s*$/.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower))) {
             captureStage.current = 'none'; isSilentCapture.current = false; isWaitingForStats.current = false; isWaitingForEq.current = false; isWaitingForInv.current = false;
 
             // Extract the prompt for lighting and terrain detection
@@ -81,7 +82,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
             const createLine = (l: string, cmd: string): DrawerLine => {
                 const lowerLine = l.toLowerCase();
-                const isHdr = /you are (carrying|using|equipped with)/i.test(lowerLine);
+                const isHdr = /you are (carrying|using|equipped with)|contains/i.test(lowerLine);
                 const isNothing = /nothing/i.test(lowerLine).valueOf();
                 return {
                     id: Math.random().toString(36).substring(7),
@@ -111,10 +112,14 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (lower.includes("wimpy")) { const m = textOnly.match(/wimpy.*(\d+)/i); if (m) setStats(p => ({ ...p, wimpy: parseInt(m[1]) })); }
 
 
+        const isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
+        const isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
+        const isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ')));
+
         const pMatch = cleanLine.match(/^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/);
-        const shouldShow = (captureStage.current === 'none' || (!isDrawerCapture.current && !isSilentCapture.current)) || /carrying|using|following/i.test(lower);
-        if (shouldShow && !isSilentCapture.current) addMessage('game', pMatch ? pMatch[2] : cleanLine);
-    }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers]);
+        const shouldShow = (captureStage.current === 'none' || (!isDrawerCapture.current && !isSilentCapture.current)) || /carrying|using|following|contains/i.test(lower);
+        if (shouldShow && !isSilentCapture.current) addMessage('game', pMatch ? pMatch[2] : cleanLine, undefined, undefined, isRoomName);
+    }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef]);
 
     return { processLine };
 }

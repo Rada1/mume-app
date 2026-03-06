@@ -23,19 +23,19 @@ const MessageItem = React.memo(({
     total: number,
     isLatest: boolean
 }) => {
-    const { inCombat, getMessageClassStyle, processMessageHtml, viewport } = useGame();
+    const { inCombat, processMessageHtml, viewport } = useGame();
     return (
         <div
-            className={`message ${msg.type} ${getMessageClassStyle(index, total)}${inCombat && !msg.isCombat ? ' combat-dim' : ''}`}
+            className={`message ${msg.type}${inCombat && !msg.isCombat ? ' combat-dim' : ''}`}
         >
             {msg.type === 'user' ? (
                 <span>{msg.textRaw}</span>
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
             ) : (msg.isComm && isLatest) ? (
-                <TypewriterText html={processMessageHtml(msg.html, msg.id)} onUpdate={() => viewport.scrollToBottom(true)} />
+                <TypewriterText html={processMessageHtml(msg.html, msg.id, msg.isRoomName)} onUpdate={() => viewport.scrollToBottom(true)} />
             ) : (
-                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html, msg.id) }} />
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(msg.html, msg.id, msg.isRoomName) }} />
             )}
         </div>
     );
@@ -101,7 +101,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             ))}
             {activePrompt && (
                 <div className="message prompt msg-latest" style={{ transition: 'none' }}>
-                    <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt), 'prompt') }} />
+                    <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt), 'prompt', false) }} />
                 </div>
             )}
             <div ref={messagesEndRef} />

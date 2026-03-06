@@ -16,8 +16,8 @@ This document provides a high-level overview of the MUME application's architect
 
 ### UI Layout Layers (`src/components/Layout/`)
 - **`AtmosphericLayer.tsx`**: Manages environmental effects (Weather, Lightning, Fog).
-- **`MainContentLayer.tsx`**: Orchestrates the core game log and primary map views.
-- **`HUDClustersLayer.tsx`**: Handles all user-facing controls (Buttons, Joysticks, Input).
+- **`MainContentLayer.tsx`**: Orchestrates the core game log. In landscape, it sits on the right.
+- **`HUDClustersLayer.tsx`**: Handles all user-facing controls. In mobile landscape, the Mapper acts as a left-side drawer (similar to the bottom drawer in portrait).
 - **`ModalsLayer.tsx`**: Manages overlay states (Settings, Button Editors, Managers).
 
 ### Logic Hooks Area (`src/hooks/`)

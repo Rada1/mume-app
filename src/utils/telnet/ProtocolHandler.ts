@@ -4,7 +4,7 @@ export type TelnetState = 'DATA' | 'IAC' | 'NEGOTIATE' | 'SUB' | 'SUB_IAC';
 
 export interface ProtocolOptions {
     sendBytes: (bytes: number[]) => void;
-    addMessage: (type: 'system' | 'error' | 'game', text: string) => void;
+    addMessage: (type: 'system' | 'error' | 'game', text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => void;
     handleSubnegotiation: (buffer: number[]) => void;
     processText: (text: string) => void;
     sendGMCP: (pkg: string, data?: any) => void;

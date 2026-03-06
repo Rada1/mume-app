@@ -53,6 +53,8 @@ export interface GameContextType {
     setRoomItems: Dispatch<SetStateAction<string[]>>;
     currentTerrain: string;
     setCurrentTerrain: (terrain: string) => void;
+    roomName: string | null;
+    roomNameRef: RefObject<string | null>;
 
     // Shared UI state
     ui: {
@@ -147,11 +149,11 @@ export interface GameContextType {
     // Messages
     messages: Message[];
     setMessages: Dispatch<SetStateAction<Message[]>>;
-    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => void;
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
     isCommunicationLine: (text: string) => boolean;
-    processMessageHtml: (html: string, mid?: string) => string;
+    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string;
 
     // Settings (moved from index.tsx/useSettings)
     bgImage: string;
@@ -177,9 +179,6 @@ export interface GameContextType {
     handleSoundUpload: (e: ChangeEvent<HTMLInputElement>) => void;
     handleMmapperModeChange: (enabled: boolean) => void;
 
-    focusedIndex: number | null;
-    setFocusedIndex: Dispatch<SetStateAction<number | null>>;
-    getMessageClassStyle: (index: number, total: number) => string;
     activePrompt: string;
     setActivePrompt: (prompt: string) => void;
     input: string;

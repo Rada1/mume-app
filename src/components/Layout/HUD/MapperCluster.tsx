@@ -29,14 +29,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     if (isMobile) {
         return (
             <div className={`mobile-bottom-gutter ${isExpanded ? 'map-expanded' : ''}`}>
-                <div className="mobile-controls-row" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '30px' }}>
-                    <div
-                        className="swipe-indicator"
-                        onClick={() => { triggerHaptic(20); setUI(prev => ({ ...prev, mapExpanded: !isExpanded })); }}
-                        style={{ width: '60px', height: '6px', background: 'rgba(255,255,255,0.2)', borderRadius: '3px', cursor: 'pointer' }}
-                    />
-                </div>
-
                 <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
                     <Mapper
                         ref={mapperRef}

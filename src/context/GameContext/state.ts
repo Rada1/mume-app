@@ -34,6 +34,9 @@ export const useGameProviderState = () => {
     const [roomNpcs, setRoomNpcs] = useState<string[]>([]);
     const [roomItems, setRoomItems] = useState<string[]>([]);
     const [currentTerrain, setCurrentTerrain] = useState<string>('city');
+    const [roomName, setRoomName] = useState<string | null>(null);
+    const roomNameRef = useRef<string | null>(null);
+    useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
 
     // UI state
     const [ui, setUI] = useState<{
@@ -159,6 +162,7 @@ export const useGameProviderState = () => {
         statsLines, setStatsLines,
         eqLines, setEqLines,
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        autoConnect, setAutoConnect
+        autoConnect, setAutoConnect,
+        roomName, setRoomName, roomNameRef
     };
 };

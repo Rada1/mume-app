@@ -19,6 +19,7 @@ export interface Message {
     stackCount?: number; // How many copies of this message are stacked
     stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")
     isComm?: boolean; // True if this is a communication message (says, tells, etc.)
+    isRoomName?: boolean; // True if this line is a room title/name
 }
 
 export interface DrawerLine {
@@ -284,12 +285,13 @@ export interface GmcpRoomInfo {
 export interface GmcpUpdateExits {
     exits: Record<string, GmcpExitInfo | number | false>;
 }
-
 export interface GmcpOccupant {
     name?: string;
     short?: string;
     shortdesc?: string;
     keyword?: string;
+    type?: string;
+    pc?: boolean | number;
 }
 
 export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> { }

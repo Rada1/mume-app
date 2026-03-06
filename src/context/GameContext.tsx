@@ -77,7 +77,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setAbilities: s.setAbilities,
         addMessage,
         setCharacterName: s.setCharacterName,
-        setPlayerPosition: s.setPlayerPosition
+        setPlayerPosition: s.setPlayerPosition,
+        setRoomName: s.setRoomName
     });
 
     const btn = useButtons(abilities, characterClass);
@@ -119,18 +120,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { processMessageHtml } = useMessageHighlighter(target, btn.buttonsRef, roomPlayers, roomNpcs, characterName, roomItems);
 
-    const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
     const [activePrompt, setActivePrompt] = useState("");
     const [input, setInput] = useState("");
-
-    const getMessageClassStyle = useCallback((index: number, total: number) => {
-        const anchorIndex = focusedIndex !== null ? focusedIndex : total - 1;
-        const distance = anchorIndex - index;
-        if (distance < 10) return 'msg-latest';
-        if (distance < 30) return 'msg-recent';
-        if (distance < 100) return 'msg-old';
-        return 'msg-ancient';
-    }, [focusedIndex]);
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -173,7 +164,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats,
         isWaitingForEq: s.isWaitingForEq,
-        isWaitingForInv: s.isWaitingForInv
+        isWaitingForInv: s.isWaitingForInv,
+        roomNameRef: s.roomNameRef
     });
 
     const { processLine } = parser;
@@ -329,7 +321,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
             btn, joystick, editor, containerRef, viewport, env, processMessageHtml,
             setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
-            focusedIndex, setFocusedIndex, getMessageClassStyle,
             activePrompt, setActivePrompt, input, setInput,
             handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
             mapperRef, ...settings, audioCtxRef,
