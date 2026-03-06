@@ -43,14 +43,58 @@ export function useGameParser(deps: UseGameParserDeps) {
     const containerStackRef = useRef<{ depth: number, noun: string }[]>([]);
 
     const processLine = useCallback((line: string) => {
-        const cleanLine = line.replace(/\r$/, '');
+        let cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
-        const textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
-        const lower = textOnly.toLowerCase();
+        let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
+        let lower = textOnly.toLowerCase();
 
         // Reset stack if we're not in a capture stage or just starting one
         if (captureStage.current === 'none') {
             containerStackRef.current = [];
+        }
+
+        // 1. Initial Prompt Check - handles both pure prompts and prompts with attached text
+        const purePromptRegex = /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/;
+        const promptWithTextRegex = /^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/;
+
+        const isPurePrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
+        const textPMatch = textOnly.match(promptWithTextRegex);
+
+        const originalCleanLine = cleanLine;
+
+        if (isPurePrompt || textPMatch) {
+            if (isPurePrompt || (textPMatch && !textPMatch[2].trim())) {
+                captureStage.current = 'none';
+                isWaitingForStats.current = false;
+                isWaitingForEq.current = false;
+                isWaitingForInv.current = false;
+                isDrawerCapture.current = false;
+
+                if (isSilentCapture.current > 0) {
+                    isSilentCapture.current--;
+                }
+
+                containerStackRef.current = [];
+
+                const symbolString = isPurePrompt ? textOnly : textPMatch?.[1];
+                const promptSymbolMatch = symbolString?.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
+                if (promptSymbolMatch) {
+                    if (detectLighting) detectLighting(promptSymbolMatch[1]);
+                    if (deps.setCurrentTerrain) deps.setCurrentTerrain(promptSymbolMatch[1]);
+                }
+                return; // Nothing else to process
+            } else if (textPMatch) {
+                // Extract prompt symbols
+                const promptSymbolMatch = textPMatch[1].match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
+                if (promptSymbolMatch) {
+                    if (detectLighting) detectLighting(promptSymbolMatch[1]);
+                    if (deps.setCurrentTerrain) deps.setCurrentTerrain(promptSymbolMatch[1]);
+                }
+
+                // Redefine text variables to only contain the attached text
+                textOnly = textPMatch[2];
+                lower = textOnly.toLowerCase();
+            }
         }
 
         // Weather & Fog Detection
@@ -75,41 +119,6 @@ export function useGameParser(deps: UseGameParserDeps) {
         if ((isWaitingForInv.current || captureStage.current !== 'none') && /you are carrying|your inventory contains/i.test(lower)) {
             isWaitingForInv.current = false; captureStage.current = 'inv'; containerStackRef.current = [];
             setInventoryLines([]); // Clear when starting fresh inv list
-        }
-
-        const purePromptRegex = /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/;
-        const promptWithTextRegex = /^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/;
-
-        const isPurePrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
-        const textPMatch = textOnly.match(promptWithTextRegex);
-
-        if (isPurePrompt || textPMatch) {
-            captureStage.current = 'none';
-            isWaitingForStats.current = false;
-            isWaitingForEq.current = false;
-            isWaitingForInv.current = false;
-            isDrawerCapture.current = false; // Reset drawer capture on prompt
-
-            if (isSilentCapture.current > 0) {
-                isSilentCapture.current--;
-                console.log(`[Parser] Prompt received, silentCount remaining: ${isSilentCapture.current}`);
-            }
-
-            containerStackRef.current = [];
-
-            // Extract the prompt for lighting and terrain detection
-            const symbolString = isPurePrompt ? textOnly : textPMatch?.[1];
-            const promptSymbolMatch = symbolString?.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
-            if (promptSymbolMatch) {
-                const symbol = promptSymbolMatch[1];
-                if (detectLighting) detectLighting(symbol);
-                if (deps.setCurrentTerrain) deps.setCurrentTerrain(symbol);
-            }
-
-            // If it's pure prompt with no extra text, swallow it
-            if (isPurePrompt || (textPMatch && !textPMatch[2].trim())) {
-                return;
-            }
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {

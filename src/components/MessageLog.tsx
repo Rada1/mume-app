@@ -64,19 +64,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     const lastMessagesRef = React.useRef(messages);
 
-    React.useEffect(() => {
-        const isNewMessage = messages !== lastMessagesRef.current;
+    React.useLayoutEffect(() => {
+        const isNewMessage = messages.length > lastMessagesRef.current.length;
+        const lastMsg = messages[messages.length - 1];
         lastMessagesRef.current = messages;
 
-        // If a new message arrived (including stacked messages), we snap back to bottom.
+        // Only force scroll-to-bottom if we were already locked OR if it's a user echo
         if (isNewMessage) {
-            viewport.isLockedToBottomRef.current = true;
-        }
-
-        if (viewport.isLockedToBottomRef.current) {
-            // scrollToBottom(true) ensures we scroll even if we're not currently at the 
-            // threshold, but still uses the smooth "premium" animation.
-            viewport.scrollToBottom(true);
+            if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
+                viewport.isLockedToBottomRef.current = true;
+                viewport.scrollToBottom(true, true);
+            }
+        } else if (viewport.isLockedToBottomRef.current) {
+            viewport.scrollToBottom(true, true);
         }
     }, [messages, activePrompt, viewport]);
 
