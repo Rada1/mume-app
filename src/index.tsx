@@ -123,8 +123,20 @@ const MudClient = () => {
             onDragEnd={() => {
                 setUI(prev => ({ ...prev, isDrawerPeeking: false }));
             }}
-            onDrop={() => {
+            onDrop={(e: React.DragEvent) => {
                 setUI(prev => ({ ...prev, isDrawerPeeking: false }));
+                try {
+                    const dataStr = e.dataTransfer.getData('application/json');
+                    if (!dataStr) return;
+                    const data = JSON.parse(dataStr);
+                    // Check if it's an item dropped from a drawer (inventory or eq) into the main view
+                    if (data.type === 'inline-btn' && data.context && (data.cmd === 'inventorylist' || data.cmd === 'equipmentlist' || data.cmd === 'item')) {
+                        triggerHaptic(40);
+                        executeCommand(`drop ${data.context}`);
+                    }
+                } catch (err) {
+                    // Ignore parse errors from other dragged types
+                }
             }}
             onClick={handleBackgroundClick}
         >
