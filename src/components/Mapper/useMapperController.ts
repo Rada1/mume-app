@@ -14,7 +14,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         markers, setMarkers, markersRef,
         exploredVnums, setExploredVnums, exploredRef,
         currentRoomId, setCurrentRoomId, currentRoomIdRef,
-        spatialIndexRef, preloadedCoordsRef
+        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef
     } = useMapData();
 
     // Local UI state
@@ -39,8 +39,16 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             preloadedCoordsRef.current = data;
 
             const index: Record<number, Record<string, string[]>> = {};
+            const nIndex: Record<string, string[]> = {};
+            const sIndex: Record<string, string> = {};
+
             for (const vnum in data) {
-                const [x, y, z] = data[vnum];
+                const rData = data[vnum];
+                const [x, y, z] = rData;
+                const rName = rData[5];
+                const rServerId = rData[6];
+
+                // Coordinate Index
                 const floor = Math.round(z);
                 if (!index[floor]) index[floor] = {};
                 const bucketX = Math.floor(x / 5);
@@ -48,8 +56,22 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
                 const key = `${bucketX},${bucketY}`;
                 if (!index[floor][key]) index[floor][key] = [];
                 index[floor][key].push(vnum);
+
+                // Name Index
+                if (rName) {
+                    if (!nIndex[rName]) nIndex[rName] = [];
+                    nIndex[rName].push(vnum);
+                }
+
+                // Server ID Index
+                if (rServerId) {
+                    sIndex[String(rServerId)] = vnum;
+                }
             }
             spatialIndexRef.current = index;
+            nameIndexRef.current = nIndex;
+            serverIdIndexRef.current = sIndex;
+
             if (showDebugEchoes) {
                 addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
             }
@@ -57,6 +79,8 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             console.warn("[Mapper] Could not load master map data:", err);
             preloadedCoordsRef.current = {};
             spatialIndexRef.current = {};
+            nameIndexRef.current = {};
+            serverIdIndexRef.current = {};
         }
     }, [addMessage]);
 
@@ -85,11 +109,10 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     }, [handleClearMap, addMessage, executeCommand]);
 
     // GMCP Handlers
-    // GMCP Handlers
     const { handleRoomInfo, handleUpdateExits, handleTerrain } = useMapGmcphandlers({
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
-        showDebugEchoes
+        showDebugEchoes, nameIndexRef, serverIdIndexRef
     });
 
     useImperativeHandle(ref, () => ({

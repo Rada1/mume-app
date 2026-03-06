@@ -136,6 +136,12 @@ export class GmcpDecoder {
             console.log('[GMCP] Room.Info parsed:', data);
             if (isGmcpRoomInfo(data)) {
                 if (this.handlers.onRoomInfo) this.handlers.onRoomInfo(data);
+                
+                // Track lighting from room info
+                const light = data.light !== undefined ? data.light : (data.l !== undefined ? data.l : undefined);
+                if (light !== undefined && light !== null) {
+                    this.handlers.detectLighting(String(light));
+                }
             } else {
                 console.warn('[GMCP] Room.Info rejected by validator:', data);
             }

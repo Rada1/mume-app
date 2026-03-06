@@ -19,7 +19,9 @@ export function isGmcpRoomInfo(data: any): data is GmcpRoomInfo {
         'id' in data ||
         'name' in data ||
         'terrain' in data ||
-        'environment' in data
+        'environment' in data ||
+        'light' in data ||
+        'l' in data
     );
 }
 

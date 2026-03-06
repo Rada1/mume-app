@@ -69,10 +69,10 @@
 
 /* Door (Outside utility) */
 .xbox-btn.outside {
-    left: -48px;
-    top: 48px;
-    width: 44px;
-    height: 44px;
+    left: 8px;
+    top: -10px;
+    width: 40px;
+    height: 40px;
 }
 
 /* Apply individual theme colors to borders at rest (slightly muted) */

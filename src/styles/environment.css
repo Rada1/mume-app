@@ -19,8 +19,8 @@
 }
 
 .lighting-state-sun .overlay-layer {
-    background: rgba(255, 180, 0, 0.16);
-    /* Extra vibrant golden sunlight aura */
+    background: rgba(40, 30, 0, 0.1);
+    /* Changed from bright golden to a deeper, more subtle ambient amber to make the shaft pop */
 }
 
 .lighting-state-moon .overlay-layer {
@@ -87,7 +87,7 @@
     mix-blend-mode: screen;
     z-index: 100;
     /* Move ABOVE combat grayscale and other atmospheric filters */
-    filter: saturate(2.5) contrast(1.1);
+    filter: saturate(1.8) contrast(1.05);
     /* Force high color saturation */
 }
 
@@ -97,8 +97,11 @@
 }
 
 .lighting-sun .lighting-inner {
-    background: radial-gradient(circle at 50% 5%, rgba(255, 200, 0, 0.45), transparent 85%),
-        linear-gradient(to bottom, rgba(255, 230, 0, 0.2), transparent);
+    /* Concentrated shaft from top center - slightly strengthened */
+    background: radial-gradient(ellipse 45% 120% at 50% -10%, 
+        rgba(255, 245, 180, 0.65) 0%, 
+        rgba(255, 210, 50, 0.25) 35%, 
+        transparent 85%);
 }
 
 .lighting-moon .lighting-inner {

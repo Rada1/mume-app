@@ -32,17 +32,44 @@ export function useEnvironment(deps: EnvironmentDeps) {
         setDetectLighting
     } = deps;
 
-    const detectLightingImpl = useCallback((symbol: string) => {
-        if (!symbol) return;
+    const detectLightingImpl = useCallback((symbol: string | number) => {
+        if (symbol === undefined || symbol === null) return;
         const s = String(symbol).trim();
         let type: LightingType = 'none';
 
-        // MUME Standard Light Symbols
-        if (s.includes('!')) type = 'artificial';
-        else if (s.includes(')') || s.includes('(')) type = 'moon';
-        else if (/o/i.test(s)) type = 'dark';
-        else if (s.includes('*')) type = 'sun';
-        else if (s.includes('[') || s.includes('.')) type = 'none';
+        // 1. Handle Numeric GMCP Light Values (MUME common: 0=dark, 1=bright)
+        if (/^\d+$/.test(s)) {
+            const val = parseInt(s);
+            if (val <= 0) type = 'dark';
+            else type = 'sun';
+            setLighting(type);
+            return;
+        }
+
+        // 2. Handle Textual GMCP Light Values
+        const lower = s.toLowerCase();
+        if (lower === 'dark' || lower === 'night') { setLighting('dark'); return; }
+        if (lower === 'light' || lower === 'day' || lower === 'bright') { setLighting('sun'); return; }
+
+        // 3. MUME Standard Prompt Symbols
+        // We look for the FIRST character if it's a known symbol
+        const char = s.charAt(0);
+
+        if (char === '!') type = 'artificial';
+        else if (char === ')' || char === '(') type = 'moon';
+        else if (char.toLowerCase() === 'o') type = 'dark';
+        else if (char === '*') type = 'sun';
+        else if (char === '[' || char === '.' || char === '+') type = 'none';
+        else {
+            // Fallback: If no match at start, check for symbol anywhere but avoid descriptive labels
+            // (Only for very short strings or clear symbols)
+            if (s.length < 5) {
+                if (s.includes('!')) type = 'artificial';
+                else if (s.includes('*')) type = 'sun';
+                else if (s.includes(')') || s.includes('(')) type = 'moon';
+                else if (/^o$/i.test(s)) type = 'dark'; // Only if exactly 'o'
+            }
+        }
 
         setLighting(type);
     }, [setLighting]);

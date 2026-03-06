@@ -283,6 +283,8 @@ export interface GmcpRoomInfo {
     zone?: string;
     terrain?: string | null;
     environment?: string | null;
+    light?: string | number | null;
+    l?: string | number | null;
     exits?: Record<string, GmcpExitInfo | number | false>;
     details?: string[];
 }

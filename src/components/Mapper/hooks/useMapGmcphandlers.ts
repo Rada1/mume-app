@@ -10,6 +10,8 @@ interface UseMapGmcphandlersProps {
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     pendingMovesRef: React.MutableRefObject<{ dir: string; time: number }[]>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
+    nameIndexRef: React.MutableRefObject<Record<string, string[]>>;
+    serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
     discoverySourceRef: React.MutableRefObject<string | null>;
     exploredRef: React.MutableRefObject<Set<string>>;
     setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
@@ -23,6 +25,8 @@ export const useMapGmcphandlers = ({
     currentRoomIdRef, setCurrentRoomId,
     pendingMovesRef,
     preloadedCoordsRef,
+    nameIndexRef,
+    serverIdIndexRef,
     discoverySourceRef,
     exploredRef, setExploredVnums,
     lastDetectedTerrainRef,
@@ -59,51 +63,39 @@ export const useMapGmcphandlers = ({
         const isVnumZero = String(gmcpId) === '0' || String(gmcpId) === 'null' || !gmcpId;
         const gmcpName = data.name || 'Unknown Room';
 
-        // Spatial+Name Fingerprinting
-        // .mm2 version 36 does not contain GMCP vnums, only internal IDs.
-        // We match by GMCP Name first, then pick the geographically closest candidate.
         let ghostData: any = null;
         let matchedInternalId: string | null = null;
         let discoverySource: string | null = null;
 
         if (!isVnumZero) {
-            // Check if we ALREADY mapped this GMCP vnum to an internal ID in previous moves
-            const existingRoomKey = Object.keys(roomsRef.current).find(key => String(roomsRef.current[key].gmcpId) === String(gmcpId));
-
-            if (existingRoomKey && existingRoomKey.startsWith('m_')) {
-                // We've been here before
-                matchedInternalId = existingRoomKey.substring(2);
+            const gmcpIdStr = String(gmcpId);
+            // 1. Direct Server ID Match (via Index)
+            const fastServerMatch = serverIdIndexRef.current[gmcpIdStr];
+            if (fastServerMatch) {
+                matchedInternalId = fastServerMatch;
                 ghostData = preloadedCoordsRef.current[matchedInternalId];
-                discoverySource = 'CACHE';
+                discoverySource = 'EXACT_VNUM';
             } else {
-                // We haven't been here. Search the MM2 dictionary by name.
-                let minDist = Infinity;
-                const currX = currentActiveRoom ? currentActiveRoom.x : 0;
-                const currY = currentActiveRoom ? currentActiveRoom.y : 0;
-                const currZ = currentActiveRoom ? (currentActiveRoom.z || 0) : 0;
+                // 2. Fallback to Name + Distance Fingerprint (via Name Index)
+                const candidates = nameIndexRef.current[gmcpName];
+                if (candidates && candidates.length > 0) {
+                    let minDist = Infinity;
+                    const currX = currentActiveRoom ? currentActiveRoom.x : 0;
+                    const currY = currentActiveRoom ? currentActiveRoom.y : 0;
+                    const currZ = currentActiveRoom ? (currentActiveRoom.z || 0) : 0;
 
-                for (const [internalId, rData] of Object.entries(preloadedCoordsRef.current)) {
-                    // 1. Direct Server ID Match (if loaded from XML with gmcp vnums)
-                    if (rData[6] && String(rData[6]) !== String(internalId) && String(rData[6]) === String(gmcpId)) {
-                        matchedInternalId = internalId;
-                        ghostData = rData;
-                        minDist = 0; // lock it in
-                        discoverySource = 'EXACT_VNUM';
-                        break;
-                    }
-
-                    // 2. Fallback to Name + Distance Fingerprint (for v36 .mm2 without server_ids)
-                    if (rData[5] === gmcpName) { // Index 5 is 'name'
-                        const dist = Math.pow(rData[0] - currX, 2) + Math.pow(rData[1] - currY, 2) + Math.pow((rData[2] - currZ) * 5, 2);
-                        if (dist < minDist) {
-                            minDist = dist;
-                            matchedInternalId = internalId;
-                            ghostData = rData;
+                    for (const candidateId of candidates) {
+                        const rData = preloadedCoordsRef.current[candidateId];
+                        if (rData) {
+                            const dist = Math.pow(rData[0] - currX, 2) + Math.pow(rData[1] - currY, 2) + Math.pow((rData[2] - currZ) * 5, 2);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                matchedInternalId = candidateId;
+                                ghostData = rData;
+                            }
                         }
                     }
-                }
-                if (ghostData) {
-                    discoverySource = 'FINGERPRINT';
+                    if (ghostData) discoverySource = 'FINGERPRINT';
                 }
             }
         }

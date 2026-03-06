@@ -24,11 +24,13 @@ export const useMapAnimation = ({
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, stableRoomsRef, stableRoomIdRef
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
+    const tickRef = useRef<() => boolean>();
 
-    const tick = useCallback(() => {
+    // Keep tick logic in a ref so the loop can access the latest version without restarting
+    tickRef.current = () => {
         const cvs = canvasRef.current;
         if (!cvs) return false;
-        const ctx = cvs.getContext('2d');
+        const ctx = cvs.getContext('2d', { alpha: false }); // Optimization
         if (!ctx) return false;
 
         const dpr = getDPR();
@@ -37,6 +39,10 @@ export const useMapAnimation = ({
 
         let needsNextFrame = isDragging;
 
+        // Safety check for camera zoom
+        if (!camera.current.zoom || isNaN(camera.current.zoom)) camera.current.zoom = 1;
+        if (camera.current.zoom < 0.01) camera.current.zoom = 0.01;
+
         // Auto-centering & Player Animation
         const activeRoomId = stableRoomIdRef.current;
         if (playerPosRef.current && activeRoomId && stableRoomsRef.current[activeRoomId]) {
@@ -44,7 +50,8 @@ export const useMapAnimation = ({
             const px = playerPosRef.current.x, py = playerPosRef.current.y;
             const targetX = target.x, targetY = target.y;
 
-            if (Math.hypot(px - targetX, py - targetY) > 0.001) {
+            const dist = Math.hypot(px - targetX, py - targetY);
+            if (dist > 0.001) {
                 playerPosRef.current.x += (targetX - px) * 0.15;
                 playerPosRef.current.y += (targetY - py) * 0.15;
                 needsNextFrame = true;
@@ -64,46 +71,42 @@ export const useMapAnimation = ({
         }
 
         if (playerTrailRef.current.length > 0) {
-            playerTrailRef.current = playerTrailRef.current.filter(t => t.alpha > 0.01);
-            playerTrailRef.current.forEach(t => { t.alpha *= 0.92; });
-            if (playerTrailRef.current.length > 0) needsNextFrame = true;
+            let trailChanged = false;
+            playerTrailRef.current = playerTrailRef.current.filter(t => {
+                if (t.alpha > 0.01) {
+                    t.alpha *= 0.92;
+                    trailChanged = true;
+                    return true;
+                }
+                return false;
+            });
+            if (trailChanged) needsNextFrame = true;
         }
 
         const now = Date.now();
+        // Only check a small subset of rooms for animation if possible, but for now we'll keep it simple
         const isAnyRoomAnimating = Object.values(stableRoomsRef.current).some((r: any) => now - (r.createdAt || 0) < 800);
         if (isAnyRoomAnimating) needsNextFrame = true;
 
         drawMap(ctx, dpr, w, h, marquee);
         return needsNextFrame;
-    }, [drawMap, isDragging, getDPR, marquee, canvasRef, camera, playerPosRef, playerTrailRef, autoCenter, stableRoomIdRef, stableRoomsRef]);
-
-    const lastRenderVersion = useRef(renderVersion);
+    };
 
     useEffect(() => {
         let active = true;
-        let isLooping = false;
 
-        const loop = () => {
-            if (!active) {
-                isLooping = false;
-                return;
-            }
-
-            const needsNextFrame = tick();
-
-            if (needsNextFrame) {
-                isLooping = true;
-                requestRef.current = requestAnimationFrame(loop);
+        const animate = () => {
+            if (!active) return;
+            const needsNextFrame = tickRef.current?.() ?? false;
+            if (needsNextFrame || isDragging) {
+                requestRef.current = requestAnimationFrame(animate);
             } else {
-                isLooping = false;
                 requestRef.current = null;
             }
         };
 
-        // Start or restart the loop whenever deps change (especially renderVersion)
-        if (!isLooping) {
-            loop();
-        }
+        // Always ensure a frame is drawn on manual triggers
+        animate();
 
         return () => {
             active = false;
@@ -112,7 +115,7 @@ export const useMapAnimation = ({
                 requestRef.current = null;
             }
         };
-    }, [tick, renderVersion, isDragging]);
+    }, [renderVersion, isDragging]);
 
-    return { tick };
+    return { tick: tickRef.current };
 };

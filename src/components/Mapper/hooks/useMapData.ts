@@ -20,6 +20,8 @@ export const useMapData = () => {
     useEffect(() => { exploredRef.current = exploredVnums; }, [exploredVnums]);
 
     const spatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
+    const nameIndexRef = useRef<Record<string, string[]>>({});
+    const serverIdIndexRef = useRef<Record<string, string>>({});
     const preloadedCoordsRef = useRef<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>({});
 
     return {
@@ -27,6 +29,6 @@ export const useMapData = () => {
         markers, setMarkers, markersRef,
         exploredVnums, setExploredVnums, exploredRef,
         currentRoomId, setCurrentRoomId, currentRoomIdRef,
-        spatialIndexRef, preloadedCoordsRef
+        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef
     };
 };
