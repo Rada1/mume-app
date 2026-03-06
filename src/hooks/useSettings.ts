@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CustomButton, SoundTrigger, SavedSettings, Action, ButtonSetSettings } from '../types';
+import { CustomButton, SoundTrigger, SavedSettings, GameAction, ButtonSetSettings } from '../types';
 import { DEFAULT_BG, DEFAULT_URL } from '../constants';
+import MASTER_SETTINGS from '../constants/mastersettings.json';
 import { usePersistentState } from './usePersistentState';
 import { MessageType } from '../types';
 
@@ -19,8 +20,8 @@ interface UseSettingsDeps {
     setAbilities: (val: Record<string, number>) => void;
     characterClass: any;
     setCharacterClass: (val: any) => void;
-    actions: Action[];
-    setActions: (val: Action[]) => void;
+    actions: GameAction[];
+    setActions: (val: GameAction[]) => void;
     setSettings: Record<string, ButtonSetSettings>;
     setSetSettings: (val: Record<string, ButtonSetSettings>) => void;
     autoConnect: boolean;
@@ -36,10 +37,10 @@ export function useSettings(deps: UseSettingsDeps) {
         setSettings, setSetSettings,
         autoConnect, setAutoConnect
     } = deps;
-    const [bgImage, setBgImage] = useState(DEFAULT_BG);
-    const [connectionUrl, setConnectionUrl] = useState(DEFAULT_URL);
-    const [loginName, setLoginName] = usePersistentState('mud-login-name', '');
-    const [loginPassword, setLoginPassword] = usePersistentState('mud-login-password', '');
+    const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
+    const [connectionUrl, setConnectionUrl] = useState((MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
+    const [loginName, setLoginName] = usePersistentState('mud-login-name', (MASTER_SETTINGS as any).loginName || '');
+    const [loginPassword, setLoginPassword] = usePersistentState('mud-login-password', (MASTER_SETTINGS as any).loginPassword || '');
     const [isLoading, setIsLoading] = useState(false);
     const [soundTriggers, setSoundTriggers] = useState<SoundTrigger[]>([]);
     const [newSoundPattern, setNewSoundPattern] = useState('');

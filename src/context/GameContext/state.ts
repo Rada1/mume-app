@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction } from '../../types';
+import MASTER_SETTINGS from '../../constants/mastersettings.json';
 
 export const useGameProviderState = () => {
     // Settings & Mode
-    const [isNoviceMode, setIsNoviceMode] = usePersistentState('mud-novice-mode', false);
-    const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', true);
+    const [isNoviceMode, setIsNoviceMode] = usePersistentState('mud-novice-mode', (MASTER_SETTINGS as any).isNoviceMode ?? false);
+    const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', (MASTER_SETTINGS as any).isSoundEnabled ?? true);
     const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
     const [theme, setTheme] = usePersistentState<'light' | 'dark'>('mud-theme', 'dark');
     const [showControls, setShowControls] = usePersistentState<boolean>('mud-show-controls', (() => {
@@ -14,12 +15,12 @@ export const useGameProviderState = () => {
         if (stored !== null) return JSON.parse(stored) as boolean;
         return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     })());
-    const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', true);
+    const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', (MASTER_SETTINGS as any).autoConnect ?? true);
+    const [hasSeenOnboarding, setHasSeenOnboarding] = usePersistentState('mud-has-seen-onboarding', false);
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
     const [target, setTarget] = useState<string | null>(null);
-    const [draggedTarget, setDraggedTarget] = useState<{ name: string; type: string; x: number; y: number } | null>(null);
     const [stats, setStats] = useState<GameStats>({
         hp: 0, maxHp: 1,
         mana: 0, maxMana: 1,
@@ -80,7 +81,10 @@ export const useGameProviderState = () => {
             const savedAbilities = localStorage.getItem('mud-abilities');
             const savedClass = localStorage.getItem('mud-character-class');
             if (savedAbilities) setAbilities(JSON.parse(savedAbilities));
+            else if ((MASTER_SETTINGS as any).abilities) setAbilities((MASTER_SETTINGS as any).abilities);
+
             if (savedClass) setCharacterClass(JSON.parse(savedClass));
+            else if ((MASTER_SETTINGS as any).characterClass) setCharacterClass((MASTER_SETTINGS as any).characterClass);
             return;
         }
 
@@ -91,10 +95,10 @@ export const useGameProviderState = () => {
         const savedClass = localStorage.getItem(charClassKey);
 
         if (savedAbilities) setAbilities(JSON.parse(savedAbilities));
-        else setAbilities({}); // Reset for new character if nothing saved
+        else setAbilities((MASTER_SETTINGS as any).abilities || {}); // Use master if new character
 
         if (savedClass) setCharacterClass(JSON.parse(savedClass) as any);
-        else setCharacterClass('none');
+        else setCharacterClass((MASTER_SETTINGS as any).characterClass || 'none');
     }, [characterName]);
 
     // Save changes to character-specific keys
@@ -108,7 +112,7 @@ export const useGameProviderState = () => {
         localStorage.setItem(key, JSON.stringify(characterClass));
     }, [characterClass, characterName]);
 
-    const [actions, setActions] = useState<GameAction[]>([]);
+    const [actions, setActions] = useState<GameAction[]>((MASTER_SETTINGS as any).actions || []);
     const actionsRef = useRef(actions);
     useEffect(() => { actionsRef.current = actions; }, [actions]);
     const [rumble, setRumble] = useState(false);
@@ -125,7 +129,7 @@ export const useGameProviderState = () => {
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
     const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'none'>('none');
-    const isDrawerCapture = useRef<number>(0);
+    const isDrawerCapture = useRef<boolean>(false);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);
@@ -152,7 +156,6 @@ export const useGameProviderState = () => {
         isSoundEnabled, setIsSoundEnabled,
         isMmapperMode, setIsMmapperMode,
         theme, setTheme,
-        draggedTarget, setDraggedTarget,
         inCombatRef,
         showControls, setShowControls,
         roomPlayers, setRoomPlayers,
@@ -173,14 +176,15 @@ export const useGameProviderState = () => {
         eqLines, setEqLines,
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         autoConnect, setAutoConnect,
+        hasSeenOnboarding, setHasSeenOnboarding,
         roomName, setRoomName, roomNameRef
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
-        isNoviceMode, isSoundEnabled, isMmapperMode, theme, draggedTarget, showControls,
+        isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
-        inventoryLines, statsLines, eqLines, autoConnect, roomName
+        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, roomName
     ]);
 
     return { vitals, game };

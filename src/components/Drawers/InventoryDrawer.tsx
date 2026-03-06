@@ -8,6 +8,7 @@ interface InventoryDrawerProps {
     triggerHaptic: (ms: number) => void;
     inventoryLines: DrawerLine[];
     handleButtonClick: (button: any, e: React.MouseEvent, context?: string) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
 }
 
 export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
@@ -15,11 +16,34 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     onClose,
     triggerHaptic,
     inventoryLines,
-    handleButtonClick
+    handleButtonClick,
+    executeCommand
 }) => {
+    const [isDragOver, setIsDragOver] = React.useState(false);
     return (
         <div
-            className={`inventory-drawer ${isOpen ? 'open' : ''}`}
+            className={`inventory-drawer ${isOpen ? 'open' : ''} ${isDragOver ? 'drag-over' : ''}`}
+            onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                if (!isDragOver) setIsDragOver(true);
+            }}
+            onDragLeave={() => setIsDragOver(false)}
+            onDrop={(e) => {
+                e.preventDefault();
+                setIsDragOver(false);
+                try {
+                    const dataStr = e.dataTransfer.getData('application/json');
+                    if (!dataStr) return;
+                    const data = JSON.parse(dataStr);
+                    if (data.type === 'inline-btn' && data.context) {
+                        triggerHaptic(40);
+                        executeCommand(`get ${data.context}`);
+                    }
+                } catch (err) {
+                    console.error('Failed to parse drop data', err);
+                }
+            }}
             onPointerDown={(e) => {
                 const target = e.target as HTMLElement;
                 if (target.closest('button') || target.closest('a')) return;

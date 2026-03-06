@@ -10,6 +10,8 @@ interface MessageLogProps {
     onMouseUp?: (e: React.MouseEvent) => void;
     onDoubleClick?: (e: React.MouseEvent) => void;
     onPointerDown?: (e: React.PointerEvent) => void;
+    onDragStart?: (e: React.DragEvent) => void;
+    onDragEnd?: (e: React.DragEvent) => void;
 }
 
 const MessageItem = React.memo(({
@@ -45,7 +47,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,
     onMouseUp,
     onDoubleClick,
-    onPointerDown
+    onPointerDown,
+    onDragStart,
+    onDragEnd
 }) => {
     const { messages, activePrompt, inCombat, viewport, processMessageHtml } = useGame();
     const { scrollContainerRef, messagesEndRef } = viewport;
@@ -89,6 +93,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
             onClick={onLogClick}
             onMouseUp={onMouseUp}
             onDoubleClick={onDoubleClick}
+            onDragStart={onDragStart}
+            onDragEnd={onDragEnd}
         >
             {messages.map((msg, i) => (
                 <MessageItem

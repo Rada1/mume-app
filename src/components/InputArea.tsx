@@ -41,7 +41,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 
     return (
         <div
-            className={`input-area ${terrainClass}`}
+            className={`input-area ${terrainClass} input-container`}
             onPointerDown={(e) => {
                 const targetElement = e.target as HTMLElement;
                 // Allow prompt and target badge to be clicked normally

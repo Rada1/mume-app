@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CustomButton } from '../types';
 import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS } from '../constants/buttons';
+import MASTER_SETTINGS from '../constants/mastersettings.json';
 
 export const useButtonPersistence = (
     rawButtons: CustomButton[],
@@ -30,12 +31,15 @@ export const useButtonPersistence = (
     }, [uiPositions]);
 
     const resetToDefaults = useCallback((addMessage?: (t: string, m: string) => void) => {
-        setRawButtons(DEFAULT_BUTTONS);
-        setUiPositions(DEFAULT_UI_POSITIONS);
+        const defaultButtons = (MASTER_SETTINGS as any).buttons || DEFAULT_BUTTONS;
+        const defaultUiPositions = (MASTER_SETTINGS as any).uiPositions || DEFAULT_UI_POSITIONS;
+
+        setRawButtons(defaultButtons);
+        setUiPositions(defaultUiPositions);
 
         // Immediately persist the reset state to prevent restorative effects on refresh
-        localStorage.setItem('mud-buttons', JSON.stringify(DEFAULT_BUTTONS));
-        localStorage.setItem('mud-ui-positions', JSON.stringify(DEFAULT_UI_POSITIONS));
+        localStorage.setItem('mud-buttons', JSON.stringify(defaultButtons));
+        localStorage.setItem('mud-ui-positions', JSON.stringify(defaultUiPositions));
 
         addMessage?.('system', 'Reset to Default setup.');
     }, [setRawButtons, setUiPositions]);

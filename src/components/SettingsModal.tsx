@@ -5,6 +5,8 @@ import GeneralSettings from './Settings/GeneralSettings';
 import DataManagement from './Settings/DataManagement';
 import SoundSettings from './Settings/SoundSettings';
 import ActionSettings from './Settings/ActionSettings';
+import HelpGuides from './Settings/HelpGuides';
+import { HelpCircle } from 'lucide-react';
 import { SettingsModalProps } from '../types';
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -62,9 +64,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div className={`modal-tab ${settingsTab === 'actions' ? 'active' : ''}`} onClick={() => setSettingsTab('actions')}>
                         <Activity size={16} /> <span>Actions</span>
                     </div>
+                    <div className={`modal-tab ${settingsTab === 'help' ? 'active' : ''}`} onClick={() => setSettingsTab('help')}>
+                        <HelpCircle size={16} /> <span>Help & Guides</span>
+                    </div>
                 </div>
 
-                <div className="modal-body">
+                <div className="modal-body" style={{ height: settingsTab === 'help' ? '500px' : 'auto' }}>
                     {settingsTab === 'general' && (
                         <>
                             <GeneralSettings
@@ -116,6 +121,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             actions={actions}
                             setActions={setActions}
                         />
+                    )}
+
+                    {settingsTab === 'help' && (
+                        <HelpGuides />
                     )}
                 </div>
             </div>

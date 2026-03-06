@@ -11,7 +11,7 @@ export interface CommandControllerDeps {
     mapperRef: React.RefObject<any>;
     teleportTargets: any[];
     isDrawerCapture: React.MutableRefObject<boolean>;
-    isSilentCapture: React.MutableRefObject<boolean>;
+    isSilentCapture: React.MutableRefObject<number>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
@@ -30,6 +30,8 @@ export interface CommandControllerDeps {
     setPopoverState: (val: any) => void;
     setIsCharacterOpen: (open: boolean) => void;
     setIsItemsDrawerOpen: (open: boolean) => void;
+    setIsSettingsOpen: (open: boolean) => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
     setIsMapExpanded: (open: boolean) => void;
     viewport: any;
     triggerHaptic: (ms: number) => void;
@@ -49,7 +51,7 @@ export function useCommandController(deps: CommandControllerDeps) {
     const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage } = deps;
 
     const { executeCommand } = useCommandExecutor(deps);
-    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick } = useInteractionHandlers({
+    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart } = useInteractionHandlers({
         ...deps, executeCommand, ui: deps.ui
     });
 
@@ -72,5 +74,5 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
     }, [input, executeCommand, viewport, isNoviceMode, setInput]);
 
-    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick };
+    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleDragStart };
 }

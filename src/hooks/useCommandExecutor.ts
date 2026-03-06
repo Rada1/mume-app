@@ -25,6 +25,8 @@ export interface ExecutorDeps {
     status: 'connected' | 'disconnected' | 'connecting';
     setIsCharacterOpen: (open: boolean) => void;
     setIsItemsDrawerOpen: (open: boolean) => void;
+    setIsSettingsOpen: (open: boolean) => void;
+    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
     actions: GameAction[];
     setActions: (val: GameAction[] | ((prev: GameAction[]) => GameAction[])) => void;
 }
@@ -35,6 +37,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         isDrawerCapture, isSilentCapture, captureStage, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         setInventoryLines, setStatsLines, setEqLines, setTarget, target,
         setPopoverState, status, setIsCharacterOpen, setIsItemsDrawerOpen,
+        setIsSettingsOpen, setSettingsTab,
         actions, setActions
     } = deps;
 
@@ -131,6 +134,16 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                 return;
             } else {
                 addMessage('system', 'Usage: #unaction {pattern}');
+                return;
+            }
+        }
+
+        if (lowerCmd === '/help' || lowerCmd === '/?') {
+            const setSettingsTab = (deps as any).setSettingsTab;
+            const setIsSettingsOpen = (deps as any).setIsSettingsOpen;
+            if (setSettingsTab && setIsSettingsOpen) {
+                setSettingsTab('help');
+                setIsSettingsOpen(true);
                 return;
             }
         }

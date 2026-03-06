@@ -5,6 +5,7 @@ import SetManagerModal from '../SetManagerModal';
 import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame } from '../../context/GameContext';
+import { OnboardingOverlay } from '../OnboardingOverlay';
 
 interface ModalsLayerProps {
     isLoading: boolean;
@@ -66,7 +67,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         addMessage,
         setSettings,
         autoConnect,
-        setAutoConnect
+        setAutoConnect,
+        hasSeenOnboarding
     } = useGame() as any;
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
@@ -234,6 +236,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 handleSoundUpload={handleSoundUpload}
                 setSoundTriggers={setSoundTriggers}
             />
+
+            {!hasSeenOnboarding && status === 'connected' && (
+                <OnboardingOverlay />
+            )}
         </>
     );
 };

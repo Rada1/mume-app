@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { CustomButton, ButtonSetSettings } from '../types';
 import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS, DEFAULT_SET_SETTINGS } from '../constants/buttons';
+import MASTER_SETTINGS from '../constants/mastersettings.json';
 import { useButtonPersistence } from './useButtonPersistence';
 import { useButtonLogic } from './useButtonLogic';
 
@@ -18,9 +19,12 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
     const [setSettings, setSetSettings] = useState<Record<string, ButtonSetSettings>>(() => {
         try {
             const saved = localStorage.getItem('mud-set-settings');
-            const parsed = saved ? JSON.parse(saved) : {};
-            return { ...DEFAULT_SET_SETTINGS, ...parsed };
-        } catch { return DEFAULT_SET_SETTINGS; }
+            const parsed = saved ? JSON.parse(saved) : null;
+            const defaults = (MASTER_SETTINGS as any).setSettings || DEFAULT_SET_SETTINGS;
+            return parsed ? { ...defaults, ...parsed } : defaults;
+        } catch {
+            return (MASTER_SETTINGS as any).setSettings || DEFAULT_SET_SETTINGS;
+        }
     });
     const [uiPositions, setUiPositions] = useState<any>(() => {
         try {
@@ -31,12 +35,14 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
 
     const [rawButtons, setRawButtons] = useState<CustomButton[]>(() => {
         const saved = localStorage.getItem('mud-buttons');
+        const defaultButtons = (MASTER_SETTINGS as any).buttons || DEFAULT_BUTTONS;
+
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
                 if (parsed && Array.isArray(parsed) && parsed.length > 0) {
                     const loadedButtons = parsed.map((b: any) => {
-                        const def = DEFAULT_BUTTONS.find(d => d.id === b.id);
+                        const def = defaultButtons.find((d: any) => d.id === b.id);
                         return {
                             ...b,
                             // If isVisible is missing (stripped for save), restore from default or fallback to true/false based on trigger
@@ -44,12 +50,12 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
                         };
                     });
                     const loadedIds = new Set(parsed.map((b: any) => b.id));
-                    const missingDefaults = DEFAULT_BUTTONS.filter(b => !loadedIds.has(b.id));
+                    const missingDefaults = defaultButtons.filter((b: any) => !loadedIds.has(b.id));
                     return [...loadedButtons, ...missingDefaults];
                 }
             } catch (e) { }
         }
-        return DEFAULT_BUTTONS;
+        return defaultButtons;
     });
 
     const buttons = useButtonLogic(rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled);

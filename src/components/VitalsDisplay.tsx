@@ -94,7 +94,7 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
 
     return (
         <div
-            className={`stats-container ${orientation}`}
+            className={`stats-container ${orientation} vitals-container`}
             onClick={onClick}
             onPointerDown={onPointerDown}
             style={{

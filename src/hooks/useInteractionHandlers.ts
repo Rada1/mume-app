@@ -29,6 +29,8 @@ export interface InteractionDeps {
     setIsMapExpanded: (val: boolean) => void;
     setIsCharacterOpen: (val: boolean) => void;
     setIsItemsDrawerOpen: (val: boolean) => void;
+    setIsSettingsOpen: (val: boolean) => void;
+    setSettingsTab: (val: any) => void;
     setInventoryLines: (val: any) => void;
     setEqLines: (val: any) => void;
     setStatsLines: (val: any) => void;
@@ -239,5 +241,30 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         }
     }, [triggerHaptic, setPopoverState, executeCommand, setTarget, addMessage, handleLogDoubleClick, viewport.isMobile]);
 
-    return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick };
+    const handleDragStart = useCallback((e: React.DragEvent) => {
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        if (!targetEl) return;
+
+        const cmd = targetEl.getAttribute('data-cmd');
+        const context = targetEl.getAttribute('data-context');
+        const id = targetEl.getAttribute('data-id');
+
+        if (context) {
+            const dragData = {
+                type: 'inline-btn',
+                cmd: cmd,
+                context: context,
+                id: id
+            };
+            e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+            e.dataTransfer.effectAllowed = 'move';
+
+            // Highlight that we're dragging
+            targetEl.classList.add('dragging');
+
+            triggerHaptic(10);
+        }
+    }, [triggerHaptic]);
+
+    return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart };
 };

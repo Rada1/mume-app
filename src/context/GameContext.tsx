@@ -57,7 +57,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions'>('general');
+    const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions' | 'help'>('general');
     const [accentColor, setAccentColor] = usePersistentState('mud-accent-color', '#4a90e2');
     const [teleportTargets, setTeleportTargets] = usePersistentState<TeleportTarget[]>('mud-teleport-targets', []);
 
@@ -225,6 +225,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navIntervalRef, mapperRef, teleportTargets,
         setCommandPreview: () => { }, setInput, triggerHaptic, btn, joystick,
         wasDraggingRef: editor.wasDraggingRef,
+        setIsSettingsOpen, setSettingsTab,
         captureStage: s.captureStage, isDrawerCapture: s.isDrawerCapture, isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats, isWaitingForEq: s.isWaitingForEq, isWaitingForInv: s.isWaitingForInv,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines, setEqLines: s.setEqLines,
@@ -239,7 +240,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setActions: s.setActions
     });
 
-    const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick } = controller;
+    const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleDragStart } = controller;
 
     // Update the ref so the parser components can call it
     useEffect(() => {
@@ -293,13 +294,29 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     }, [s.characterName, s.status, executeCommand]);
 
-    // Auto-connect on mount if enabled
+    // Only on mount
     useEffect(() => {
         if (s.autoConnect && s.status === 'disconnected') {
             telnet.connect();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Only on mount
+    }, []);
+
+    // Phase 1: First-Run Onboarding Greeting
+    useEffect(() => {
+        if (s.status === 'connected' && !s.hasSeenOnboarding && s.isNoviceMode) {
+            const greetingMessages = [
+                "Welcome! The map (top-right) tracks your movement automatically.",
+                "Vitals (top-center) show your status. Click a target's name in the log to lock onto them.",
+                "Tactical buttons (bottom-sides) can be swiped for extra actions."
+            ];
+            greetingMessages.forEach((msg, i) => {
+                setTimeout(() => {
+                    addSystemMessage(msg);
+                }, 1000 * (i + 1));
+            });
+        }
+    }, [s.status, s.hasSeenOnboarding, s.isNoviceMode, addSystemMessage]);
 
     // Handle keyboard-triggered visibility for buttons
     useEffect(() => {
@@ -344,6 +361,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
         input, setInput,
         handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+        hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
         mapperRef, ...settings, audioCtxRef,
         telnet, parser,
         detectLighting: env.detectLighting,

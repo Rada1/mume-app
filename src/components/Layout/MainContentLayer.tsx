@@ -36,9 +36,9 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         joystick,
         currentTerrain,
         viewport,
-        handleButtonClick,
         handleLogClick,
-        handleLogDoubleClick
+        handleLogDoubleClick,
+        handleDragStart
     } = useGame();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -116,6 +116,11 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                     onMouseUp={handleMouseUp}
                     onDoubleClick={handleLogDoubleClick}
                     onPointerDown={handleLogPointerDown}
+                    onDragStart={handleDragStart}
+                    onDragEnd={(e) => {
+                        const targetEl = (e.target as HTMLElement).closest('.inline-btn');
+                        if (targetEl) targetEl.classList.remove('dragging');
+                    }}
                 />
             </div>
 

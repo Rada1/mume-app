@@ -294,3 +294,32 @@
         display: flex;
     }
 }
+
+/* Drag & Drop Feedback */
+.inline-btn[draggable="true"]:hover {
+    cursor: grab;
+}
+
+.inline-btn.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+}
+
+.right-drawer.native-drag-over {
+    box-shadow: -15px 0 40px var(--accent);
+    border-left: 2px dashed var(--accent);
+}
+
+.drop-flash {
+    animation: drop-flash-anim 0.5s ease-out;
+}
+
+@keyframes drop-flash-anim {
+    0% {
+        background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}

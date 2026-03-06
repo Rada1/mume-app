@@ -53,7 +53,7 @@ export function useMessageHighlighter(
         if (target) {
             candidates.push({
                 pattern: target,
-                replacer: (m) => `<span class="inline-btn target-highlight" data-id="target-hl" data-mid="${mid}" data-cmd="target" data-context="${m}" data-action="menu">${m}</span>`,
+                replacer: (m) => `<span class="inline-btn target-highlight" draggable="true" data-id="target-hl" data-mid="${mid}" data-cmd="target" data-context="${m}" data-action="menu">${m}</span>`,
                 length: target.length
             });
         }
@@ -63,7 +63,7 @@ export function useMessageHighlighter(
             buttonsRef.current.filter(b => b.display === 'inline' && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
                 candidates.push({
                     pattern: b.trigger!.pattern!,
-                    replacer: (m) => `<span class="inline-btn" data-id="${b.id}" data-mid="${mid}" data-cmd="${b.command}" data-context="${m}" data-icon="${b.icon || ''}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" style="background-color: ${b.style.backgroundColor}">${m}</span>`,
+                    replacer: (m) => `<span class="inline-btn" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${b.command}" data-context="${m}" data-icon="${b.icon || ''}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" style="background-color: ${b.style.backgroundColor}">${m}</span>`,
                     length: b.trigger!.pattern!.length
                 });
             });
@@ -77,7 +77,7 @@ export function useMessageHighlighter(
                 patterns.forEach(p => {
                     candidates.push({
                         pattern: p,
-                        replacer: (m) => `<span class="inline-btn auto-occupant pc-highlighter" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" style="background-color: rgba(100, 100, 255, 0.3); border-bottom: 1px dashed rgba(255,255,255,0.4)">${m}</span>`,
+                        replacer: (m) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" style="background-color: rgba(100, 100, 255, 0.3); border-bottom: 1px dashed rgba(255,255,255,0.4)">${m}</span>`,
                         length: p.length
                     });
                 });
@@ -98,7 +98,7 @@ export function useMessageHighlighter(
                 patterns.forEach(p => {
                     candidates.push({
                         pattern: p,
-                        replacer: (m) => `<span class="inline-btn auto-npc npc-highlighter" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="inlinenpc" data-context="${originalName}" data-action="menu" style="background-color: rgba(255, 100, 100, 0.25); border-bottom: 1px dotted rgba(255,255,255,0.4)">${m}</span>`,
+                        replacer: (m) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="inlinenpc" data-context="${originalName}" data-action="menu" style="background-color: rgba(255, 100, 100, 0.25); border-bottom: 1px dotted rgba(255,255,255,0.4)">${m}</span>`,
                         length: p.length
                     });
                 });
@@ -108,7 +108,7 @@ export function useMessageHighlighter(
             roomItems.forEach(name => {
                 candidates.push({
                     pattern: name,
-                    replacer: (m) => `<span class="inline-btn auto-item" data-id="auto-item-${name}" data-mid="${mid}" data-cmd="selection" data-context="${m}" data-action="menu" style="background-color: rgba(100, 255, 100, 0.15); border-bottom: 1px dotted rgba(255,255,255,0.3)">${m}</span>`,
+                    replacer: (m) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${name}" data-mid="${mid}" data-cmd="selection" data-context="${m}" data-action="menu" style="background-color: rgba(100, 255, 100, 0.15); border-bottom: 1px dotted rgba(255,255,255,0.3)">${m}</span>`,
                     length: name.length
                 });
             });

@@ -46,6 +46,8 @@ export interface GameContextType {
     setTheme: (val: 'light' | 'dark') => void;
     showControls: boolean;
     setShowControls: (val: boolean) => void;
+    hasSeenOnboarding: boolean;
+    setHasSeenOnboarding: (val: boolean) => void;
 
     mood: string;
     setMood: (val: string) => void;
@@ -102,8 +104,8 @@ export interface GameContextType {
     setPopoverState: (val: PopoverState | null) => void;
     isSettingsOpen: boolean;
     setIsSettingsOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions') => void;
+    settingsTab: 'general' | 'sound' | 'actions' | 'help';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'help') => void;
     accentColor: string;
     setAccentColor: (val: string) => void;
     abilities: Record<string, number>;
@@ -192,6 +194,7 @@ export interface GameContextType {
     handleButtonClick: (button: CustomButton, e: MouseEvent, context?: string) => void;
     handleLogClick: (e: MouseEvent) => void;
     handleLogDoubleClick: (e: MouseEvent) => void;
+    handleDragStart: (e: React.DragEvent) => void;
     mapperRef: RefObject<MapperRef>;
 
     // Parser State

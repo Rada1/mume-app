@@ -28,6 +28,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
+    const [isNativeDragOver, setIsNativeDragOver] = useState(false);
 
     const longPressTimerRef = useRef<any>(null);
     const startPosRef = useRef<{ x: number; y: number } | null>(null);
@@ -328,7 +329,34 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             )}
             <div
                 ref={drawerRef}
-                className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''}`}
+                className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isNativeDragOver ? 'native-drag-over' : ''}`}
+                onDragOver={(e) => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    if (!isNativeDragOver) setIsNativeDragOver(true);
+                }}
+                onDragLeave={() => setIsNativeDragOver(false)}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    setIsNativeDragOver(false);
+                    try {
+                        const dataStr = e.dataTransfer.getData('application/json');
+                        if (!dataStr) return;
+                        const data = JSON.parse(dataStr);
+                        if (data.type === 'inline-btn' && data.context) {
+                            triggerHaptic(40);
+                            executeCommand(`get ${data.context}`);
+                            // Flash the inventory section
+                            const invSection = drawerRef.current?.querySelector('[data-drawer-section="inventory"]');
+                            if (invSection) {
+                                invSection.classList.add('drop-flash');
+                                setTimeout(() => invSection.classList.remove('drop-flash'), 500);
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Failed to parse drop data', err);
+                    }
+                }}
                 onPointerDown={(e) => {
                     const target = e.target as HTMLElement;
                     if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
