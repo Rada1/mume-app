@@ -289,7 +289,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         transform: isTargeted ? 'scale(1.02)' : isPrimed ? 'scale(0.95)' : 'scale(1)',
                         transition: 'all 0.15s ease',
                         boxShadow: isTargeted ? '0 0 10px rgba(137, 180, 250, 0.3)' : 'none',
-                        touchAction: 'none',
+                        touchAction: isBeingDragged ? 'none' : 'pan-y',
                         fontWeight: line.isContainer ? 'bold' : 'normal',
                         color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
                         fontSize: depth > 0 ? '0.8rem' : '0.85rem'
