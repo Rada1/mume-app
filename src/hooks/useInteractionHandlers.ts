@@ -90,8 +90,20 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             });
         } else if (button.actionType === 'teleport-manage') {
             setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' });
-        } else if (button.actionType === 'preload') {
-            setInput(button.command + ' '); (document.querySelector('input') as HTMLElement)?.focus();
+        } else if (button.actionType === 'preload' || finalCmd.startsWith('input:')) {
+            const prefill = finalCmd.startsWith('input:') ? finalCmd.slice(6) : (button.command + (button.command.endsWith(' ') ? '' : ' '));
+            setInput(prefill);
+            
+            // Give the state a moment to update setInput, though it's not strictly necessary for focus
+            setTimeout(() => {
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (inputEl) {
+                    inputEl.focus();
+                    // Move cursor to end
+                    const len = inputEl.value.length;
+                    inputEl.setSelectionRange(len, len);
+                }
+            }, 10);
         } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
             setTarget(null); addMessage('system', 'Target cleared.');
         } else {
@@ -231,9 +243,28 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 context: context || undefined
             });
         }
-        else if (action === 'command' && cmd) {
-            const finalCmd = context ? (cmd.includes('%n') ? cmd.replace(/%n/g, context) : cmd) : cmd;
-            executeCommand(finalCmd);
+        else if ((action === 'command' || action === 'preload') && cmd) {
+            let finalCmd = cmd;
+            if (context) {
+                finalCmd = finalCmd.replace(/%n/g, context);
+                // Also handle the $1 style placeholders if they were passed through
+                finalCmd = finalCmd.replace(/\$1/g, context);
+            }
+            
+            if (action === 'preload' || finalCmd.startsWith('input:')) {
+                const prefill = finalCmd.startsWith('input:') ? finalCmd.slice(6) : (finalCmd + (finalCmd.endsWith(' ') ? '' : ' '));
+                setInput(prefill);
+                setTimeout(() => {
+                    const inputEl = document.querySelector('input') as HTMLInputElement;
+                    if (inputEl) {
+                        inputEl.focus();
+                        const len = inputEl.value.length;
+                        inputEl.setSelectionRange(len, len);
+                    }
+                }, 10);
+            } else {
+                executeCommand(finalCmd);
+            }
         }
         else if (cmd === 'target' && context) {
             setTarget(context);

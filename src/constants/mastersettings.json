@@ -58,9 +58,9 @@
             }
         },
         {
-            "id": "trig-reply",
-            "label": "Reply",
-            "command": "input:reply ",
+            "id": "trig-reply-tell",
+            "label": "Tell $1",
+            "command": "input:tell $1 ",
             "setId": "triggers",
             "actionType": "command",
             "display": "floating",
@@ -74,8 +74,83 @@
             },
             "trigger": {
                 "enabled": true,
-                "pattern": "%n tells you",
-                "isRegex": false,
+                "pattern": "(\\w+) tells you",
+                "isRegex": true,
+                "autoHide": true,
+                "duration": 20,
+                "type": "show",
+                "spit": true
+            }
+        },
+        {
+            "id": "trig-reply-say",
+            "label": "Say",
+            "command": "input:say ",
+            "setId": "triggers",
+            "actionType": "command",
+            "display": "floating",
+            "style": {
+                "x": 50,
+                "y": 60,
+                "w": 80,
+                "h": 40,
+                "backgroundColor": "#8b5cf6",
+                "shape": "pill"
+            },
+            "trigger": {
+                "enabled": true,
+                "pattern": "(\\w+) says",
+                "isRegex": true,
+                "autoHide": true,
+                "duration": 20,
+                "type": "show",
+                "spit": true
+            }
+        },
+        {
+            "id": "trig-reply-whisper",
+            "label": "Whisp $1",
+            "command": "input:whisper $1 ",
+            "setId": "triggers",
+            "actionType": "command",
+            "display": "floating",
+            "style": {
+                "x": 50,
+                "y": 60,
+                "w": 80,
+                "h": 40,
+                "backgroundColor": "#8b5cf6",
+                "shape": "pill"
+            },
+            "trigger": {
+                "enabled": true,
+                "pattern": "(\\w+) whispers to you",
+                "isRegex": true,
+                "autoHide": true,
+                "duration": 20,
+                "type": "show",
+                "spit": true
+            }
+        },
+        {
+            "id": "trig-reply-gt",
+            "label": "GT ($1)",
+            "command": "input:gt ",
+            "setId": "triggers",
+            "actionType": "command",
+            "display": "floating",
+            "style": {
+                "x": 50,
+                "y": 60,
+                "w": 80,
+                "h": 40,
+                "backgroundColor": "#8b5cf6",
+                "shape": "pill"
+            },
+            "trigger": {
+                "enabled": true,
+                "pattern": "(\\w+) tells the group",
+                "isRegex": true,
                 "autoHide": true,
                 "duration": 20,
                 "type": "show",

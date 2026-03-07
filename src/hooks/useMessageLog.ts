@@ -65,8 +65,9 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
             t.includes(' tell ') || t.includes(' tells ') || t.includes(' whisper ') ||
             t.includes(' whispers ') || t.includes(' yell ') || t.includes(' yells ') ||
             t.includes(' states ') || t.includes(' state ') ||
-            /^you (tell|say|whisper|yell|narrate|state)\b/i.test(t) ||
-            /^\w+ (says|narrates|tells|whispers|yells|states)\b/i.test(t)
+            t.includes(' gtell ') || t.includes(' group-tell ') || t.includes(' tells the group ') ||
+            /^you (tell|say|whisper|yell|narrate|state|gtell|group-tell)\b/i.test(t) ||
+            /^\w+ (says|narrates|tells|whispers|yells|states|gtells)\b/i.test(t)
         );
     }, []);
 

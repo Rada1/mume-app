@@ -243,4 +243,5 @@ export interface GameContextType {
 
     spatButtons: SpatButton[];
     setSpatButtons: Dispatch<SetStateAction<SpatButton[]>>;
+    triggerSpitManual: (b: CustomButton) => void;
 }

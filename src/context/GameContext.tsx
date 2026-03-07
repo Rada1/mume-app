@@ -111,7 +111,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRoomName: s.setRoomName
     });
 
-    const { spatButtons, setSpatButtons } = useSpatButtons(messages, containerRef, triggerHaptic);
+    const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
 
     const btn = useButtons(abilities, characterClass);
     const joystick = useJoystick(triggerHaptic);
@@ -331,11 +331,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     // Handle keyboard-triggered visibility for buttons
     useEffect(() => {
+        const isKeyboardOpen = viewport.isKeyboardOpen;
+        if (isKeyboardOpen) {
+            btn.rawButtons.forEach(b => {
+                if (b.trigger?.enabled && b.trigger.onKeyboard && b.trigger.spit) {
+                    triggerSpitManual(b);
+                }
+            });
+        }
+
         btn.setButtons(prev => {
             let changed = false;
             const next = prev.map(b => {
-                if (b.trigger?.enabled && b.trigger.onKeyboard) {
-                    const shouldBeVisible = viewport.isKeyboardOpen;
+                if (b.trigger?.enabled && b.trigger.onKeyboard && !b.trigger.spit) {
+                    const shouldBeVisible = isKeyboardOpen;
                     if (b.isVisible !== shouldBeVisible) {
                         changed = true;
                         return { ...b, isVisible: shouldBeVisible };
@@ -345,7 +354,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             });
             return changed ? next : prev;
         });
-    }, [viewport.isKeyboardOpen, btn.setButtons]);
+    }, [viewport.isKeyboardOpen, btn.setButtons, btn.rawButtons, triggerSpitManual]);
 
     const gameValue = useMemo(() => ({
         ...s,

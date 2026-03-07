@@ -66,6 +66,38 @@ export const useSpatButtons = (
         triggerHaptic(10);
     }, [triggerHaptic]);
 
+    const triggerSpitManual = useCallback((b: any) => {
+        // If this button type is already visible on screen/in stack, ignore new trigger
+        if (spatButtonsRef.current.some(sb => sb.btnId === b.id)) return;
+
+        const id = Math.random().toString(36).substring(7);
+
+        // The target is now INSIDE the command bar.
+        // We set these to simple relative indicators (0 for left, 100 for right)
+        const startX = 0; 
+        const targetX = 100; 
+
+        const newSpat: SpatButton = {
+            id,
+            btnId: b.id,
+            label: b.label,
+            icon: b.icon,
+            command: b.command,
+            action: b.actionType || 'command',
+            startX: startX,
+            startY: 0,
+            targetX: targetX,
+            targetY: 0,
+            color: b.style.backgroundColor || 'var(--accent)',
+            timestamp: Date.now(),
+            swipeCommands: b.swipeCommands,
+            swipeActionTypes: b.swipeActionTypes
+        };
+
+        setSpatButtons(prev => [...prev.slice(-9), newSpat]);
+        triggerHaptic(10);
+    }, [triggerHaptic]);
+
     useEffect(() => {
         if (messages.length === 0) {
             firedTriggerOccurrencesRef.current.clear();
@@ -124,6 +156,7 @@ export const useSpatButtons = (
     return {
         spatButtons,
         setSpatButtons,
-        triggerSpit
+        triggerSpit,
+        triggerSpitManual
     };
 };
