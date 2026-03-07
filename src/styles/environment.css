@@ -183,14 +183,14 @@
 .combat-grayscale-filter {
     position: absolute;
     inset: 0;
-    z-index: 9;
+    z-index: 101;
     backdrop-filter: grayscale(0);
     transition: backdrop-filter 0.5s ease;
     pointer-events: none;
 }
 
 .combat-grayscale-filter.active {
-    backdrop-filter: grayscale(0.8) contrast(1.1);
+    backdrop-filter: grayscale(1.0) contrast(1.2) blur(0.3px);
 }
 
 .combat-vignette {
