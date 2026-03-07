@@ -291,11 +291,17 @@ export const useMapperRenderer = ({
 
                                 // Knowledge of door exists if either side or the map says so
                                 const hasDoor = !!(exitA.hasDoor || 
-                                    (exitA.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
-                                    (exitA.name?.toLowerCase().includes('door') || exitA.name?.toLowerCase().includes('gate')) ||
+                                    (exitA.flags?.some((f: any) => {
+                                        const fl = String(f).toLowerCase();
+                                        return fl === 'door' || fl === 'gate' || fl === 'portcullis' || fl === 'secret';
+                                    })) ||
+                                    (exitA.name && /door|gate|portcullis/i.test(exitA.name)) ||
                                     exitB?.hasDoor || 
-                                    (exitB?.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
-                                    (exitB?.name?.toLowerCase().includes('door') || exitB?.name?.toLowerCase().includes('gate')) ||
+                                    (exitB?.flags?.some((f: any) => {
+                                        const fl = String(f).toLowerCase();
+                                        return fl === 'door' || fl === 'gate' || fl === 'portcullis' || fl === 'secret';
+                                    })) ||
+                                    (exitB?.name && /door|gate|portcullis/i.test(exitB.name)) ||
                                     wallExA?.hasDoor);
 
                                 if (!hasDoor) return { hasExit: true, hasDoor: false, isClosed: false };
@@ -308,6 +314,8 @@ export const useMapperRenderer = ({
                                 if (localExA?.closed === false) isClosed = false;
                                 else if (exitB?.closed === false) isClosed = false;
                                 else if (wallExA?.closed === false) isClosed = false;
+                                // Invert if we have explicit 'closed' flag but closed prop is missing
+                                else if (exitA.flags?.some((f: any) => String(f).toLowerCase() === 'closed')) isClosed = true;
 
                                 return { hasExit: true, hasDoor, isClosed };
                             };
@@ -432,11 +440,17 @@ export const useMapperRenderer = ({
                 const exitB = neighbor?.exits?.[oppDir];
 
                 const hasDoor = !!(effectiveExit.hasDoor || 
-                    (effectiveExit.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
-                    (effectiveExit.name?.toLowerCase().includes('door') || effectiveExit.name?.toLowerCase().includes('gate')) ||
+                    (effectiveExit.flags?.some((f: any) => {
+                        const fl = String(f).toLowerCase();
+                        return fl === 'door' || fl === 'gate' || fl === 'portcullis' || fl === 'secret';
+                    })) ||
+                    (effectiveExit.name && /door|gate|portcullis/i.test(effectiveExit.name)) ||
                     exitB?.hasDoor || 
-                    (exitB?.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
-                    (exitB?.name?.toLowerCase().includes('door') || exitB?.name?.toLowerCase().includes('gate')) ||
+                    (exitB?.flags?.some((f: any) => {
+                        const fl = String(f).toLowerCase();
+                        return fl === 'door' || fl === 'gate' || fl === 'portcullis' || fl === 'secret';
+                    })) ||
+                    (exitB?.name && /door|gate|portcullis/i.test(exitB.name)) ||
                     wallExA?.hasDoor);
 
                 if (!hasDoor) return { hasExit: true, hasDoor: false, isClosed: false };
@@ -447,6 +461,7 @@ export const useMapperRenderer = ({
                 let isClosed = true;
                 if (exitA?.closed === false) isClosed = false;
                 else if (exitB?.closed === false) isClosed = false;
+                else if (exitA?.flags?.some((f: any) => String(f).toLowerCase() === 'closed')) isClosed = true;
 
                 return { hasExit: true, hasDoor, isClosed };
             };
