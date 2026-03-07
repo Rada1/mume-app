@@ -36,7 +36,11 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
 
                 ds.elements.forEach((item: any) => {
                     // We only apply the delta via transform to avoid fighting the base CSS right/left/top
-                    item.el.style.transform = `translate(${clusterId === 'xbox' ? -dx : dx}px, ${dy}px) ${ds.initialW !== 1 ? `scale(${ds.initialW})` : ''}`;
+                    // transform is always relative to screen coordinates, so just use dx/dy
+                    // We must also preserve any initial transform like scale or center-alignment
+                    const isXbox = clusterId === 'xbox';
+                    const needsCentering = isXbox && ds.isUsingCenterAlignment;
+                    item.el.style.transform = `${needsCentering ? 'translateY(-50%)' : ''} translate(${dx}px, ${dy}px) ${ds.initialW !== 1 ? `scale(${ds.initialW})` : ''}`;
                 });
 
                 ds.finalX = newX;
@@ -179,6 +183,7 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
             initialH,
             initialPositions,
             initialSizes,
+            isUsingCenterAlignment: (type === 'cluster' || type === 'cluster-resize') && btn.uiPositions[id as any]?.y === undefined,
             elements: []
         };
 

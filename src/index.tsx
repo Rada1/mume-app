@@ -84,8 +84,16 @@ const MudClient = () => {
         }
     }, [telnet]);
 
-    const handleBackgroundClick = () => {
+    const handleBackgroundClick = (e: React.MouseEvent) => {
         if (btn.isEditMode) {
+            const target = e.target as HTMLElement;
+            // Don't clear selection if clicking on a button, its handle, or a cluster
+            if (target.closest('.custom-btn') || 
+                target.closest('.hud-cluster') || 
+                target.closest('.resize-handle') ||
+                target.closest('.modal')) {
+                return;
+            }
             btn.setSelectedIds(new Set());
             btn.setEditingButtonId(null);
         }
