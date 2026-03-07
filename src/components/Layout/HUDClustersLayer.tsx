@@ -24,9 +24,9 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, joystickGlow, setJoystickGlow, btnGlow, setBtnGlow
 }) => {
     const { characterName, isMmapperMode, btn, joystick, mapperRef, target, triggerHaptic, executeCommand, handleButtonClick, setPopoverState, viewport, activePrompt, showControls } = useGame();
-    const { isMobile, isLandscape, logFontSize, resetLogFontSize } = viewport;
+    const { isMobile, isLandscape, logFontSize, resetLogFontSize, isKeyboardOpen } = viewport;
 
-    const effectiveShowControls = showControls;
+    const effectiveShowControls = showControls && (!isMobile || !isKeyboardOpen || btn.isEditMode);
 
     return (
         <>
