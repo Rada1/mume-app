@@ -54,11 +54,11 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         width: pos.w ? `${pos.w}px` : '320px',
         height: pos.h ? `${pos.h}px` : '320px',
         cursor: isEditMode ? 'move' : undefined,
-        border: (isEditMode && pos.isDragging) ? '2px dashed #ffff00' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+        border: isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined,
         borderRadius: '12px',
         backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
         overflow: 'visible',
-        opacity: (isEditMode && dragState?.id === 'mapper') ? 0.6 : 1,
+        opacity: 1,
         zIndex: 1600,
     };
 

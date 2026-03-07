@@ -38,7 +38,10 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         viewport,
         handleLogClick,
         handleLogDoubleClick,
-        handleDragStart
+        handleDragStart,
+        spatButtons,
+        setSpatButtons,
+        executeCommand
     } = useGame();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -134,6 +137,10 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                 target={target}
                 onTargetClick={handleTargetClick}
                 terrain={currentTerrain}
+                spatButtons={spatButtons}
+                setActiveSet={btn.setActiveSet}
+                executeCommand={executeCommand}
+                setSpatButtons={setSpatButtons}
             />
         </div>
     );

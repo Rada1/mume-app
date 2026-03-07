@@ -12,22 +12,44 @@ This document provides a high-level overview of the MUME application's architect
 - **Type Safety**: A "Zero-Any" policy is enforced across the codebase.
 - **Consolidated UI State**: All shared game and UI states are centralized in `GameContext.tsx`.
 
-## Key Components
+## 🎯 Feature Mapping (Where to look first)
 
-### UI Layout Layers (`src/components/Layout/`)
-- **`AtmosphericLayer.tsx`**: Manages environmental effects (Weather, Lightning, Fog).
-- **`MainContentLayer.tsx`**: Orchestrates the core game log. In landscape, it sits on the right.
-- **`HUDClustersLayer.tsx`**: Handles all user-facing controls. In mobile landscape, the Mapper acts as a left-side drawer (similar to the bottom drawer in portrait).
-- **`ModalsLayer.tsx`**: Manages overlay states (Settings, Button Editors, Managers).
+To minimize token usage and skip "whole codebase" searches, use this map:
 
-### Logic Hooks Area (`src/hooks/`)
-- **`useTelnet.ts`**: The low-level networking layer. Handles GMCP and ANSI decoding.
-- **`useCommandController.ts`**: The "Brain" of the app. Translates UI actions into game commands.
-- **`useGameParser.ts`**: Interprets raw MUD output into structured state updates (Inventory, Equipment, Stats).
-- **`useMessageLog.ts`**: Manages the high-frequency message buffer and combat line detection.
+### 🎮 Game State & UI Context
+- **Central State (HP, Mana, Target, Inventory):** `src/context/GameContext.tsx`
+- **User Settings & Persistence:** `src/hooks/useSettings.ts`, `src/hooks/usePersistentState.ts`
+- **Global Types & Interfaces:** `src/types/index.ts`
 
-### Data & Types (`src/types/index.ts`)
-- All shared interfaces are defined here, ensuring strict consistency across the networking and UI layers.
+### 🏗️ UI & Layout
+- **Main App Shell:** `src/index.tsx`
+- **Visual Layers (Weather, HUD, Modals):** `src/components/Layout/`
+- **Input Area & Commands:** `src/components/InputArea.tsx`
+- **Mapper Component:** `src/components/Mapper/` (and `src/mapper/renderer.ts`)
+
+### 🧠 Logic & Networking
+- **Low-level Telnet/GMCP:** `src/hooks/useTelnet.ts`
+- **GMCP Data Handling:** `src/hooks/useGmcpHandlers.ts`
+- **Game Output Parsing (Text):** `src/hooks/useGameParser.ts`
+- **Message Log & Combat:** `src/hooks/useMessageLog.ts`
+- **Command Control (Sending to Game):** `src/hooks/useCommandController.ts`
+- **Buttons & UI Interactions:** `src/hooks/useButtons.ts`, `src/hooks/useInteractionHandlers.ts`
+
+## 🛠️ Common Tasks Cheat Sheet
+
+| Task Type | Files to Open |
+| :--- | :--- |
+| **Add a New Command** | `useCommandController.ts`, `GameContext.tsx` |
+| **Fix a Layout Issue** | `src/components/Layout/`, `src/styles/layout.css` |
+| **Handle a New GMCP Packet** | `useGmcpHandlers.ts`, `GameContext.tsx`, `types/index.ts` |
+| **Change Message Styling** | `useMessageLog.ts`, `useMessageHighlighter.ts`, `MessageLog.css` |
+| **Add a New Modal/Setting** | `ModalsLayer.tsx`, `useSettings.ts`, `SettingsModal.tsx` |
+| **Update Button Logic** | `useButtons.ts`, `useButtonLogic.ts`, `ButtonUtils.ts` |
+
+## 🚫 Avoid Scanning (Use .geminiignore)
+- **Data/Logs:** Do NOT open `.txt`, `.xml`, `.mm2`, or large `.json` files in the root.
+- **Scripts:** Ignore `.py` scripts unless specifically asked to refactor the build process.
+- **Assets:** Never scan `public/assets/`.
 
 ## Command Flow
 1. **User Interaction**: Triggered via `InputArea`, `CustomButton`, or `SwipeGesture`.

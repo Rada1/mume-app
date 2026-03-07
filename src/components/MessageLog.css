@@ -129,10 +129,8 @@
 }
 
 .input-area {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    right: 20px;
+    position: relative;
+    margin: 0 20px 20px 20px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.35);
     padding: 12px 18px;
@@ -141,16 +139,10 @@
     -webkit-backdrop-filter: blur(4px);
     z-index: 1000;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
 
-@media (max-width: 768px) {
-    .input-area {
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        background: rgba(0, 0, 0, 0.85); /* Darker solid background for mobile */
-    }
-}
 
 /* Terrain Glows - Increased specificity to ensure they work in all modes */
 .input-area[class*="terrain-"] {
@@ -290,15 +282,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     z-index: 2000 !important;
     pointer-events: auto !important;
-}
-
-.is-landscape .cmd-prompt {
-    font-size: 0.9rem;
-}
-
-.is-landscape .input-field {
-    font-size: 0.85rem;
-    padding: 4px 0;
+    margin: 0 !important;
 }
 
 @media (max-width: 600px) {
@@ -310,17 +294,8 @@
     }
 
     .input-area {
-        left: 6px !important;
-        right: 6px !important;
-        bottom: 6px !important;
+        margin: 0 6px 6px 6px !important;
         padding: 8px 12px !important;
-    }
-
-    .inline-btn {
-        padding: 4px 2px;
-        margin: -4px -2px;
-        position: relative;
-        z-index: 1;
     }
 }
 
@@ -350,4 +325,71 @@
     background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.8) 50%, transparent 100%);
     animation: shimmer-move 1.5s infinite ease-in-out;
     pointer-events: none;
+}
+
+/* Spat Buttons inside Command Bar */
+.spat-container {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 8px;
+    margin-right: 10px;
+    height: 100%;
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.spat-button {
+    position: relative;
+    width: auto;
+    min-width: 60px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--accent);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 10;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+    animation: spit-to-target 0.8s cubic-bezier(0.2, 0.8, 0.2, 1.1) forwards;
+    transform-origin: center;
+    white-space: nowrap;
+}
+
+@keyframes spit-to-target {
+    0% {
+        transform: translateX(var(--spit-distance)) scale(1.5);
+        opacity: 0;
+        filter: blur(4px);
+    }
+    30% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateX(calc(var(--spit-distance) * 0.5)) scale(1.1);
+    }
+    100% {
+        transform: translateX(0) scale(1);
+    }
+}
+
+.spat-button:active {
+    transform: scale(0.9);
+}
+
+.spat-button .button-icon {
+    height: 20px;
+    width: auto;
+    margin-right: 6px;
+}
+
+.spat-container .swipe-wheel-container {
+    z-index: 50000;
 }

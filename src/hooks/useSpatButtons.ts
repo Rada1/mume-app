@@ -33,10 +33,12 @@ export const useSpatButtons = (
         // Glow the trigger text
         el.classList.add('is-triggered');
 
-        // Use the right edge of the content layer, minus some padding for the button
-        const baseTargetX = contentRect ? (contentRect.right - 140) : (window.innerWidth - 180);
-        // Vertical target: just above the input area
-        const targetY = inputRect ? (inputRect.top - 40) : (window.innerHeight - 100);
+        // The target is now INSIDE the command bar.
+        // The spat-container is row-reverse, landing on the right.
+        // We calculate target coordinates relative to the viewport for the initial fixed animation.
+        const baseTargetX = inputRect ? inputRect.right : window.innerWidth;
+        const targetX = baseTargetX;
+        const targetY = inputRect ? (inputRect.top + inputRect.height / 2) : (window.innerHeight - 30);
 
         const newSpat: SpatButton = {
             id,

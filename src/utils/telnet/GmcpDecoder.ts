@@ -88,7 +88,7 @@ export class GmcpDecoder {
             const maxmana = getField(['maxmana', 'maxsp', 'maxspirit', 'S', 'M']); if (maxmana !== undefined) next.maxMana = Number(maxmana);
             const move = getField(['move', 'mv', 'mp', 'moves', 'stamina', 'st', 'v']); if (move !== undefined) next.move = Number(move);
             const maxmove = getField(['maxmove', 'maxmv', 'maxmp', 'maxmoves', 'maxstamina', 'maxst', 'V']); if (maxmove !== undefined) next.maxMove = Number(maxmove);
-            const wimpy = getField(['wimpy', 'w']); if (wimpy !== undefined) next.wimpy = Number(wimpy);
+            const wimpy = getField(['wimpy', 'W']); if (wimpy !== undefined) next.wimpy = Number(wimpy);
             return next;
         });
 

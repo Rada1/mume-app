@@ -40,11 +40,11 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
                 transform: pos.scale ? `scale(${pos.scale})` : undefined,
                 transformOrigin: 'top left',
                 cursor: isEditMode ? 'move' : undefined,
-                border: (isEditMode && dragState?.id === 'stats') ? '2px dashed #ffff00' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+                border: isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined,
                 padding: isEditMode ? '10px' : undefined,
                 borderRadius: '20px',
                 backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
-                opacity: (isEditMode && dragState?.id === 'stats') ? 0.6 : 1,
+                opacity: 1,
                 zIndex: 1600,
                 display: 'flex',
                 pointerEvents: 'auto'

@@ -130,7 +130,7 @@ export const useGameProviderState = () => {
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
     const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'none'>('none');
-    const isDrawerCapture = useRef<boolean>(false);
+    const isDrawerCapture = useRef<number>(0);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);

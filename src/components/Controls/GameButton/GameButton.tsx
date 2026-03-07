@@ -29,6 +29,7 @@ interface GameButtonProps {
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
     className?: string;
     useDefaultPositioning?: boolean;
+    isMobile?: boolean;
 }
 
 export const GameButton: React.FC<GameButtonProps> = ({
@@ -53,7 +54,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
     setActiveSet,
     setButtons,
     className = '',
-    useDefaultPositioning = true
+    useDefaultPositioning = true,
+    isMobile = false
 }) => {
     const [activeDir, setActiveDir] = React.useState<any>(null);
     const [isCancelling, setIsCancelling] = React.useState(false);
@@ -106,7 +108,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 top: useDefaultPositioning ? `${button.style.y}%` : undefined,
                 width: useDefaultPositioning ? `${button.style.w}px` : undefined,
                 height: useDefaultPositioning ? `${button.style.h}px` : undefined,
-                backgroundColor: button.style.backgroundColor || 'rgba(255,255,255,0.05)',
+                backgroundColor: button.style.transparent ? 'transparent' : (button.style.backgroundColor || 'rgba(255,255,255,0.05)'),
                 borderColor: button.style.borderColor || 'rgba(255,255,255,0.2)',
                 borderWidth: `${button.style.borderWidth !== undefined ? button.style.borderWidth : 1}px`,
                 borderStyle: 'solid',
@@ -116,9 +118,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 borderRadius: `${button.style.borderRadius || 8}px`,
                 '--set-accent': button.style.borderColor || 'var(--accent)',
                 '--set-accent-rgb': getRgb(button.style.borderColor, '255, 255, 255'),
-                opacity: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed ? 0.35 : ((dragState?.id === button.id || (dragState?.initialPositions && dragState.initialPositions[button.id])) ? 0.6 : 1)) : 0,
+                opacity: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed ? 0.35 : 1) : 0,
                 pointerEvents: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed && !isEditMode ? 'none' : 'auto') : 'none',
-                boxShadow: (button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColor()}` : 'none',
+                boxShadow: button.style.transparent ? 'none' : ((button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColor()}` : 'none'),
+                backdropFilter: button.style.transparent ? 'none' : undefined,
+                WebkitBackdropFilter: button.style.transparent ? 'none' : undefined,
                 zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100))
             } as any}
             {...gestures}

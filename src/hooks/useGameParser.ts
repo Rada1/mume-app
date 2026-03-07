@@ -26,7 +26,7 @@ export interface UseGameParserDeps {
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
-    isDrawerCapture: React.MutableRefObject<boolean>;
+    isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
@@ -71,7 +71,9 @@ export function useGameParser(deps: UseGameParserDeps) {
                 isWaitingForStats.current = false;
                 isWaitingForEq.current = false;
                 isWaitingForInv.current = false;
-                isDrawerCapture.current = false;
+                if (isDrawerCapture.current > 0) {
+                    isDrawerCapture.current--;
+                }
 
                 if (isSilentCapture.current > 0) {
                     isSilentCapture.current--;
@@ -198,7 +200,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (/is dead! r.i.p.|receive your share of experience|you flee head over heels|you stop fighting/i.test(lower)) { setInCombat(false); }
 
         processTriggers(textOnly);
-        if (lower.includes("wimpy")) { const m = textOnly.match(/wimpy.*(\d+)/i); if (m) setStats(p => ({ ...p, wimpy: parseInt(m[1]) })); }
+        if (lower.includes("wimpy")) { const m = textOnly.match(/wimpy[^\d]*(\d+)/i); if (m) setStats(p => ({ ...p, wimpy: parseInt(m[1]) })); }
 
         // Local Inventory Tracking
         const trackAction = () => {
@@ -334,7 +336,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         // 1. Never show if it's a drawer-triggered capture (unless forced visible by combat/comms)
         // 2. Never show if it's a silent capture (ref-based counter)
         // 3. Always show if forced visible
-        const shouldShow = (!isDrawerCapture.current && isSilentCapture.current === 0) || isForceVisible;
+        const shouldShow = (isDrawerCapture.current === 0 && isSilentCapture.current === 0) || isForceVisible;
 
         if (shouldShow) {
             const finalRawText = pMatch ? pMatch[2] : cleanLine;

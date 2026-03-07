@@ -1,0 +1,25 @@
+# Dependencies and Build Artifacts
+node_modules/
+dist/
+dev-dist/
+.git/
+
+# Data and Log Files (often very large)
+*.txt
+*.xml
+*.mm2
+*.json
+!package.json
+!tsconfig.json
+!metadata.json
+
+# Utility/Data Processing Scripts
+*.py
+*.cjs
+*.js
+!vite.config.ts
+!mmapper-bridge.js
+
+# Specific Large Directories
+ardawebmap/
+public/assets/map/
