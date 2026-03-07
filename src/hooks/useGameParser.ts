@@ -84,17 +84,23 @@ export function useGameParser(deps: UseGameParserDeps) {
 
                 const symbolString = isPurePrompt ? textOnly : textPMatch?.[1];
                 const promptSymbolMatch = symbolString?.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
-                if (promptSymbolMatch) {
-                    if (detectLighting) detectLighting(promptSymbolMatch[1]);
-                    if (deps.setCurrentTerrain) deps.setCurrentTerrain(promptSymbolMatch[1]);
+                if (promptSymbolMatch && promptSymbolMatch[1]) {
+                    const symbol = promptSymbolMatch[1];
+                    if (detectLighting) detectLighting(symbol);
+                    if (deps.setCurrentTerrain && !['*', '!', ')', 'o', 'O', '?'].includes(symbol)) {
+                        deps.setCurrentTerrain(symbol);
+                    }
                 }
                 return; // Nothing else to process
             } else if (textPMatch) {
                 // Extract prompt symbols
                 const promptSymbolMatch = textPMatch[1].match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
                 if (promptSymbolMatch && promptSymbolMatch[1]) {
-                    if (detectLighting) detectLighting(promptSymbolMatch[1]);
-                    if (deps.setCurrentTerrain) deps.setCurrentTerrain(promptSymbolMatch[1]);
+                    const symbol = promptSymbolMatch[1];
+                    if (detectLighting) detectLighting(symbol);
+                    if (deps.setCurrentTerrain && !['*', '!', ')', 'o', 'O', '?'].includes(symbol)) {
+                        deps.setCurrentTerrain(symbol);
+                    }
                 }
 
                 // Redefine text variables to only contain the attached text

@@ -360,11 +360,18 @@ export const useMapperRenderer = ({
                             drawWallSide(wx, wy, wx, wy + s, 'w');
 
                             // 4. Special Highlights (Active Room & Selection)
-                            // Current Room Highlight
+                            // Current Room Highlight (Circular Glow)
                             if (activeId === `m_${vnum}`) {
-                                ctx.strokeStyle = '#f9e2af';
-                                ctx.lineWidth = 3 / camera.zoom;
-                                ctx.strokeRect(wx + 1, wy + 1, s - 2, s - 2);
+                                ctx.save();
+                                const gradient = ctx.createRadialGradient(centerPX, centerPY, 0, centerPX, centerPY, GRID_SIZE / 2.2);
+                                gradient.addColorStop(0, 'rgba(249, 226, 175, 0.8)');
+                                gradient.addColorStop(0.5, 'rgba(249, 226, 175, 0.3)');
+                                gradient.addColorStop(1, 'rgba(249, 226, 175, 0)');
+                                ctx.fillStyle = gradient;
+                                ctx.beginPath();
+                                ctx.arc(centerPX, centerPY, GRID_SIZE / 2, 0, Math.PI * 2);
+                                ctx.fill();
+                                ctx.restore();
                             }
 
                             // Selection Highlight
@@ -490,9 +497,18 @@ export const useMapperRenderer = ({
 
             // Special Highlights
             if (activeId === room.id) {
-                ctx.strokeStyle = '#f9e2af';
-                ctx.lineWidth = 3 / camera.zoom;
-                ctx.strokeRect(rx + 1, ry + 1, s - 2, s - 2);
+                ctx.save();
+                const centerLX = rx + s / 2;
+                const centerLY = ry + s / 2;
+                const gradient = ctx.createRadialGradient(centerLX, centerLY, 0, centerLX, centerLY, s / 2.2);
+                gradient.addColorStop(0, 'rgba(249, 226, 175, 0.8)');
+                gradient.addColorStop(0.5, 'rgba(249, 226, 175, 0.3)');
+                gradient.addColorStop(1, 'rgba(249, 226, 175, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(centerLX, centerLY, s / 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             }
 
             if (selectedRoomIds.has(room.id)) {
@@ -511,7 +527,7 @@ export const useMapperRenderer = ({
                 const zDist = Math.abs(t.z - currentZ);
                 if (zDist < 1.5) {
                     ctx.globalAlpha = Math.max(0, t.alpha * (1 - zDist));
-                    ctx.fillStyle = '#3b82f6'; ctx.beginPath();
+                    ctx.fillStyle = '#ef4444'; ctx.beginPath();
                     const tx = t.x * GRID_SIZE + GRID_SIZE / 2, ty = t.y * GRID_SIZE + GRID_SIZE / 2;
                     ctx.arc(tx, ty, 1 + (t.alpha * 4), 0, Math.PI * 2); ctx.fill();
                 }
@@ -525,7 +541,7 @@ export const useMapperRenderer = ({
             ctx.save(); ctx.globalAlpha = Math.max(0, 1 - Math.abs(playerPosRef.current.z - currentZ));
             ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
 
-            ctx.fillStyle = '#3b82f6'; ctx.beginPath();
+            ctx.fillStyle = '#ef4444'; ctx.beginPath();
             const pV = 10, pR = 7;
             for (let i = 0; i < pV; i++) {
                 const ang = (i / pV) * Math.PI * 2, jit = (getSeed(i, 999) - 0.5) * 1.5;
@@ -535,8 +551,8 @@ export const useMapperRenderer = ({
 
             if (characterName) {
                 const clean = characterName.replace(/\x1b\[[0-9;]*m/g, '').replace(/^\{FULLNAME:/i, '').replace(/\}$/g, '').split(' ')[0].replace(/[{}"']/g, '').split(':').pop()?.trim() || "";
-                ctx.font = 'bold 13px "Aniron"'; ctx.fillStyle = '#1e40af'; ctx.textAlign = 'center';
-                ctx.shadowBlur = 4; ctx.shadowColor = 'rgba(255,255,255,0.8)';
+                ctx.font = 'bold 13px "Aniron"'; ctx.fillStyle = '#ef4444'; ctx.textAlign = 'center';
+                ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
                 ctx.fillText(clean, px, py - 18);
             }
             ctx.restore();

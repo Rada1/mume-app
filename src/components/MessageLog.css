@@ -30,12 +30,12 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
     touch-action: pan-y;
-    padding-bottom: 70px;
-    padding-top: 40px;
+    padding-bottom: 10px;
+    padding-top: 10px;
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
     font-size: var(--dynamic-log-size, 16px);
-    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 30px, black 60px);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.4) 10px, black 20px);
     position: relative;
     user-select: text;
     -webkit-user-select: text;
@@ -130,7 +130,7 @@
 
 .input-area {
     position: relative;
-    margin: 0 20px 20px 20px;
+    margin: 0 10px 10px 10px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.35);
     padding: 12px 18px;
@@ -277,7 +277,7 @@
 
 .is-landscape .message-log {
     height: 100% !important;
-    padding: 20px 10px 70px 10px !important;
+    padding: 10px 10px 20px 10px !important;
 }
 
 .is-landscape .input-area {
@@ -304,8 +304,8 @@
     .message-log {
         padding-left: 6px !important;
         padding-right: 6px !important;
-        padding-bottom: 60px !important;
-        padding-top: 45px !important;
+        padding-bottom: 10px !important;
+        padding-top: 10px !important;
     }
 
     .input-area {

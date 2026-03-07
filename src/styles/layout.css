@@ -45,8 +45,8 @@
     max-width: 900px;
     margin: 0 auto;
     width: 100%;
-    padding: 20px;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    padding: 10px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     overflow: hidden;
     z-index: 1000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
