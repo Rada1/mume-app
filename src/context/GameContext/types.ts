@@ -29,7 +29,7 @@ export interface VitalsContextType {
 export interface GameContextType {
     // High-frequency but log-related
     inCombat: boolean;
-    setInCombat: (val: boolean) => void;
+    setInCombat: (val: boolean, force?: boolean) => void;
     status: 'connected' | 'disconnected' | 'connecting';
     setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
     characterName: string | null;

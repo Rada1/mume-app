@@ -15,7 +15,7 @@ export interface UseGameParserDeps {
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void;
     setCharacterClass: (val: any) => void; setRumble: (val: boolean) => void;
     setHitFlash: (val: boolean) => void; setDeathStage: (val: any) => void;
-    setInCombat: (val: boolean) => void;
+    setInCombat: (val: boolean, force?: boolean) => void;
     setLightningEnabled: (val: boolean) => void;
     setPlayerPosition: (val: string) => void; detectLighting: (light: string) => void;
     setCurrentTerrain?: (terrain: string) => void;
@@ -176,6 +176,13 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'practice') parsePracticeLine(textOnly);
         }
 
+        // --- Combat Detection ---
+        const isPlayerCombatLine = /(hits|misses|crushes|pierces|pounds|stabs|slashes|smites|shoots|blasts|burns|chokes|strikes|bites|stings|claws|mauls|massacres|eviscerates|devastates|obliterates|mutilates|attacks) you|you (hit|miss|crush|pierce|pound|stab|slash|smite|shoot|blast|burn|choke|strike|bite|sting|claw|maul|massacre|eviscerate|devastate|obliterate|mutilate|attack|dodge|parry|bash|kick|rescue|disarm)|your (bash|kick)|you start fighting|strange incantations/i.test(lower);
+        
+        if (isPlayerCombatLine) {
+            setInCombat(true);
+        }
+
         // 2. Score & Stats Parsing
         const hitsMatch = textOnly.match(/(\d+)\/(\d+)\s+hits/i);
         const manaMatch = textOnly.match(/(\d+)\/(\d+)\s+(mana|spirit)/i);
@@ -220,8 +227,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (/you have been killed|you are dead/i.test(lower)) { setDeathStage('fade_to_black'); setInCombat(false); setTimeout(() => setDeathStage('flash'), 2000); }
         
         // --- Combat End Triggers ---
-        if (/is dead! r.i.p.|receive your share of experience|you flee head over heels|you stop fighting|they are not here|is dead!|is slain|you manage to flee/i.test(lower)) { 
-            setInCombat(false); 
+        if (/receive your share of experience|you flee head over heels|you stop fighting|they are not here|you manage to flee|you are now standing|you are now resting|you are now sitting|you are now sleeping/i.test(lower)) { 
+            setInCombat(false, true); // Force stop latch
         }
 
         processTriggers(textOnly);

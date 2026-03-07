@@ -28,8 +28,29 @@ export const useGameProviderState = () => {
         move: 0, maxMove: 1,
         wimpy: 0
     });
-    const [inCombat, setInCombat] = useState(false);
+    const [inCombat, _setInCombat] = useState(false);
     const inCombatRef = useRef(false);
+    const inCombatLatchRef = useRef<number>(0);
+
+    const setInCombat = useCallback((val: boolean, force: boolean = false) => {
+        if (force) {
+            inCombatLatchRef.current = 0;
+            _setInCombat(val);
+            return;
+        }
+
+        if (val) {
+            // Latch combat mode for 5 seconds when triggered
+            inCombatLatchRef.current = Date.now() + 5000;
+            _setInCombat(true);
+        } else {
+            // Only allow clearing if the latch has expired
+            if (Date.now() > inCombatLatchRef.current) {
+                _setInCombat(false);
+            }
+        }
+    }, []);
+
     useEffect(() => { inCombatRef.current = inCombat; }, [inCombat]);
 
     const [characterName, setCharacterName] = useState<string | null>(null);
