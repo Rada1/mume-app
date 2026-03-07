@@ -218,7 +218,11 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         if (/hits you|crushes you|pierces you/i.test(lower)) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }
         if (/you have been killed|you are dead/i.test(lower)) { setDeathStage('fade_to_black'); setInCombat(false); setTimeout(() => setDeathStage('flash'), 2000); }
-        if (/is dead! r.i.p.|receive your share of experience|you flee head over heels|you stop fighting/i.test(lower)) { setInCombat(false); }
+        
+        // --- Combat End Triggers ---
+        if (/is dead! r.i.p.|receive your share of experience|you flee head over heels|you stop fighting|they are not here|is dead!|is slain|you manage to flee/i.test(lower)) { 
+            setInCombat(false); 
+        }
 
         processTriggers(textOnly);
         if (lower.includes("wimpy")) { const m = textOnly.match(/wimpy[^\d]*(\d+)/i); if (m) setStats(p => ({ ...p, wimpy: parseInt(m[1]) })); }
