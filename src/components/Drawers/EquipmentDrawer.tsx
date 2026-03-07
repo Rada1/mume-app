@@ -37,6 +37,12 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const isDraggingRef = useRef(false);
     const drawerRef = useRef<HTMLDivElement>(null);
 
+    const handleSectionScroll = () => {
+        if (!isDraggingRef.current && (longPressTimerRef.current || pendingDragRef.current || primedItemId)) {
+            cleanupDrag();
+        }
+    };
+
     const cleanupDrag = () => {
         if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
         document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
@@ -92,7 +98,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             if (startPosRef.current) {
                 startActiveDrag(startPosRef.current.x, startPosRef.current.y);
             }
-        }, 350);
+        }, 250);
     };
 
     const handleGlobalPointerMove = (e: PointerEvent) => {
@@ -103,7 +109,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
             if (e.pointerType === 'mouse' && dist > 5) {
                 startActiveDrag(e.clientX, e.clientY);
-            } else if (dist > 15) {
+            } else if (dist > 30) {
                 cleanupDrag();
             }
         }
@@ -289,7 +295,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         transform: isTargeted ? 'scale(1.02)' : isPrimed ? 'scale(0.95)' : 'scale(1)',
                         transition: 'all 0.15s ease',
                         boxShadow: isTargeted ? '0 0 10px rgba(137, 180, 250, 0.3)' : 'none',
-                        touchAction: isBeingDragged ? 'none' : 'pan-y',
+                        touchAction: draggedItem ? 'none' : 'pan-y',
                         fontWeight: line.isContainer ? 'bold' : 'normal',
                         color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
                         fontSize: depth > 0 ? '0.8rem' : '0.85rem'
@@ -394,7 +400,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     (e.currentTarget as any)._startX = null;
                     (e.currentTarget as any)._startY = null;
                 }}
-                style={{ touchAction: isDraggingRef.current ? 'none' : 'pan-y' }}
+                style={{ touchAction: draggedItem ? 'none' : 'pan-y' }}
             >
                 {isPeeking && <div className="peek-indicator">DROP TO TARGET</div>}
                 <div className="drawer-header">
@@ -423,7 +429,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         }}
                     >
                         <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'equipment' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>EQUIPMENT</div>
-                        <div className="drawer-section-content" data-drawer-section="equipment" style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }}>
+                        <div className="drawer-section-content" data-drawer-section="equipment" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
                             {eqLines.map(line => renderLine(line, 'equipmentlist'))}
                         </div>
                     </div>
@@ -444,7 +450,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         }}
                     >
                         <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'inventory' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>INVENTORY</div>
-                        <div className="drawer-section-content" data-drawer-section="inventory" style={{ flex: 1, overflow: 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch' }}>
+                        <div className="drawer-section-content" data-drawer-section="inventory" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
                             {inventoryLines.map(line => renderLine(line, 'inventorylist'))}
                         </div>
                     </div>

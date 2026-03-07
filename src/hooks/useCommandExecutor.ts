@@ -49,8 +49,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             // This prevents a "stuck" silent counter from hiding all game text.
             setTimeout(() => {
                 if (isSilentCapture.current > 0) {
-                    isSilentCapture.current--;
-                    console.log("[Executor] Silent capture safety timeout triggered.");
+                    console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current})`);
+                    isSilentCapture.current = 0;
+                    captureStage.current = 'none';
                 }
             }, 3000);
         }
@@ -153,10 +154,19 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             // Safety timeout
             setTimeout(() => {
                 if (isDrawerCapture.current > 0) {
-                    isDrawerCapture.current--;
+                    console.log(`[Executor] Drawer capture safety reset (Count: ${isDrawerCapture.current})`);
+                    isDrawerCapture.current = 0;
+                    captureStage.current = 'none';
                 }
             }, 3000);
+        } else if (!isSystem) {
+            // CRITICAL: If the user sends a manual command, we MUST ensure they aren't stuck 
+            // in a capture stage from a background drawer task that hung or is taking too long.
+            isDrawerCapture.current = 0;
+            isSilentCapture.current = 0;
+            captureStage.current = 'none';
         }
+
         if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
             isWaitingForInv.current = true; captureStage.current = 'none'; setInventoryLines([]);
         } else if (lowerCmd === 'stat' || lowerCmd === 'st') {

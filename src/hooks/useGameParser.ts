@@ -52,6 +52,20 @@ export function useGameParser(deps: UseGameParserDeps) {
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
 
+        // Safety: if we see a room name, we are definitely NOT in a capture stage anymore
+        let isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
+        let isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
+        let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
+
+        if (isRoomName && captureStage.current === 'none' && !isWaitingForStats.current && !isWaitingForEq.current && !isWaitingForInv.current) {
+            captureStage.current = 'none';
+            isWaitingForStats.current = false;
+            isWaitingForEq.current = false;
+            isWaitingForInv.current = false;
+            isDrawerCapture.current = 0;
+            isSilentCapture.current = 0;
+        }
+
         // Reset stack if we're not in a capture stage or just starting one
         if (captureStage.current === 'none') {
             containerStackRef.current = [];
@@ -59,7 +73,9 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         // 1. Initial Prompt Check - handles both pure prompts and prompts with attached text
         const purePromptRegex = /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/;
-        const promptWithTextRegex = /^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/;
+        // Refined promptWithTextRegex: if it starts with '<', it MUST contain a ':' to be a prompt.
+        // This avoids matching equipment slots like <worn on body>.
+        const promptWithTextRegex = /^((?:[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/;
 
         const isPurePrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
         const textPMatch = textOnly.match(promptWithTextRegex);
@@ -72,13 +88,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 isWaitingForStats.current = false;
                 isWaitingForEq.current = false;
                 isWaitingForInv.current = false;
-                if (isDrawerCapture.current > 0) {
-                    isDrawerCapture.current--;
-                }
-
-                if (isSilentCapture.current > 0) {
-                    isSilentCapture.current--;
-                }
+                isDrawerCapture.current = 0;
+                isSilentCapture.current = 0;
 
                 containerStackRef.current = [];
 
@@ -186,7 +197,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'inv') {
                 setInventoryLines(p => [...p, createLine(cleanLine, 'inventorylist')]);
             } else if (captureStage.current === 'eq') {
-                setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
+                // Ensure the line actually looks like an equipment slot or item
+                if (lower.includes('<') || lower.includes('worn') || lower.includes('heavy') || lower.includes('light') || lower.includes('held')) {
+                    setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
+                }
             } else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
         } else {
             if (captureStage.current === 'practice') parsePracticeLine(textOnly);
@@ -315,19 +329,37 @@ export function useGameParser(deps: UseGameParserDeps) {
         trackAction();
         processTriggers(textOnly);
 
-        const isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
-        const isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
+        isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
+        isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
         
         // A line is a room name if it matches the MUME room color OR matches our GMCP room name
-        const isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
+        isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
-        const pMatch = cleanLine.match(/^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/);
+        const pMatch = cleanLine.match(/^((?:[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/);
         
         // Final visibility logic:
-        // 1. Never show if it's a drawer-triggered capture (unless forced visible by combat/comms)
-        // 2. Never show if it's a silent capture (ref-based counter)
-        // 3. Always show if forced visible
-        const shouldShow = (isDrawerCapture.current === 0 && isSilentCapture.current === 0) || /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
+        // 1. Silent captures (triggered by background system commands) are always hidden.
+        // 2. Drawer captures (triggered by opening a drawer) only hide lines that are actively part of the captured data.
+        // 3. Important messages (combat, communication, etc.) always break through.
+        
+        const isCapturingItem = captureStage.current !== 'none' && (
+            (captureStage.current === 'inv' && /you are carrying|your inventory contains/i.test(lower)) ||
+            (captureStage.current === 'eq' && /you are using|you are equipped with/i.test(lower)) ||
+            (captureStage.current === 'stat' && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) ||
+            // Also hide the items themselves while they are being collected
+            (['inv', 'eq', 'stat'].includes(captureStage.current))
+        );
+
+        const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
+        
+        // Final visibility logic:
+        // - Silent captures (background maintenance) hide everything except important stuff.
+        // - Drawer captures ONLY hide the lines they are explicitly capturing.
+        const shouldShow = (isSilentCapture.current === 0 || isImportantMessage) && (
+            isImportantMessage || 
+            isDrawerCapture.current === 0 || 
+            !isCapturingItem
+        );
 
         if (shouldShow) {
             const finalRawText = pMatch ? pMatch[2] : cleanLine;

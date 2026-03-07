@@ -110,6 +110,10 @@ export function useTelnet(options: TelnetOptions) {
         const prompt = bufferRef.current;
         setPrompt(prompt);
         if (prompt) {
+            // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters
+            // even if the server doesn't send a trailing newline on the prompt.
+            processLine(prompt);
+            
             if (handlers.detectLighting) {
                 const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '');
                 handlers.detectLighting(cleanPrompt);

@@ -30,7 +30,12 @@ interface GameButtonProps {
     className?: string;
     useDefaultPositioning?: boolean;
     isMobile?: boolean;
+    hpRatio?: number;
+    manaRatio?: number;
+    moveRatio?: number;
 }
+
+import { CircularVitals } from './CircularVitals';
 
 export const GameButton: React.FC<GameButtonProps> = ({
     button,
@@ -55,12 +60,21 @@ export const GameButton: React.FC<GameButtonProps> = ({
     setButtons,
     className = '',
     useDefaultPositioning = true,
-    isMobile = false
+    isMobile = false,
+    hpRatio,
+    manaRatio,
+    moveRatio
 }) => {
     const [activeDir, setActiveDir] = React.useState<any>(null);
     const [isCancelling, setIsCancelling] = React.useState(false);
     const [wheelPos, setWheelPos] = React.useState({ x: 0, y: 0 });
     const buttonRef = useRef<HTMLDivElement>(null);
+
+    const [renderParams, setRenderParams] = React.useState({ 
+        w: button.style.w, 
+        h: button.style.h, 
+        radius: button.style.borderRadius || 8 
+    });
 
     const gestures = useButtonGestures({
         button, isEditMode, handleDragStart, wasDraggingRef, triggerHaptic, setHeldButton, heldButton,
@@ -71,12 +85,32 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
     if (button.display === 'inline') return null;
 
-    useEffect(() => {
+    const needsCircularVitals = hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined;
+
+    React.useEffect(() => {
         if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
             const preview = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, target, joystick.isActive);
             setCommandPreview(preview?.cmd || null);
         }
     }, [joystick.isActive, heldButton?.id, button.id, joystick.currentDir, joystick.isTargetModifierActive, target, setCommandPreview]);
+
+    React.useLayoutEffect(() => {
+        if (buttonRef.current && needsCircularVitals) {
+            const el = buttonRef.current;
+            const update = () => {
+                const styles = window.getComputedStyle(el);
+                setRenderParams({
+                    w: el.offsetWidth,
+                    h: el.offsetHeight,
+                    radius: parseFloat(styles.borderRadius) || 0
+                });
+            };
+            update();
+            const observer = new ResizeObserver(update);
+            observer.observe(el);
+            return () => observer.disconnect();
+        }
+    }, [needsCircularVitals, button.isVisible]);
 
     if (!button.isVisible && !isEditMode && button.setId !== 'Xbox') return null;
 
@@ -123,10 +157,22 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 boxShadow: button.style.transparent ? 'none' : ((button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColor()}` : 'none'),
                 backdropFilter: button.style.transparent ? 'none' : undefined,
                 WebkitBackdropFilter: button.style.transparent ? 'none' : undefined,
-                zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100))
+                zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100)),
+                overflow: 'visible'
             } as any}
             {...gestures}
         >
+            {needsCircularVitals && (
+                <CircularVitals 
+                    hpRatio={hpRatio} 
+                    manaRatio={manaRatio} 
+                    moveRatio={moveRatio} 
+                    w={renderParams.w} 
+                    h={renderParams.h}
+                    borderRadius={renderParams.radius}
+                    isOuter={true} 
+                />
+            )}
             <ButtonSwipeOverlay button={button} activeDir={activeDir} isCancelling={isCancelling} />
             <div className="swipe-ray" />
             <ButtonLabel button={button} />

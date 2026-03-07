@@ -27,6 +27,11 @@ interface XboxClusterProps {
     setButtons: (val: any) => void;
     isMobile?: boolean;
     isLandscape?: boolean;
+    stats?: {
+        hp: number; maxHp: number;
+        mana: number; maxMana: number;
+        move: number; maxMove: number;
+    };
 }
 
 export const XboxCluster: React.FC<XboxClusterProps> = ({
@@ -34,7 +39,8 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
     handleButtonClick, wasDraggingRef, triggerHaptic, setPopoverState,
     setEditingButtonId, setSelectedIds, activePrompt, executeCommand,
     setCommandPreview, heldButton, setHeldButton, joystick, target,
-    isGridEnabled, gridSize, setActiveSet, setButtons, isMobile, isLandscape
+    isGridEnabled, gridSize, setActiveSet, setButtons, isMobile, isLandscape,
+    stats
 }) => {
     const pos = uiPositions.xbox || {};
 
@@ -95,6 +101,12 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
                 const button = buttons.find(b => b.id === id);
                 if (!button) return null;
                 const posClass = id === 'xbox-y' ? 'top' : id === 'xbox-x' ? 'right' : id === 'xbox-b' ? 'left' : id === 'xbox-a' ? 'bottom' : id === 'xbox-z' ? 'center' : 'outside';
+
+                // Warrior (z) gets HP, Ranger (y) gets Moves, Mage (b) & Cleric (x) get Mana (per user request)
+                const hpRatio = id === 'xbox-z' ? (stats ? stats.hp / Math.max(1, stats.maxHp) : undefined) : undefined;
+                const moveRatio = id === 'xbox-y' ? (stats ? stats.move / Math.max(1, stats.maxMove) : undefined) : undefined;
+                const manaRatio = (id === 'xbox-b' || id === 'xbox-x') ? (stats ? stats.mana / Math.max(1, stats.maxMana) : undefined) : undefined;
+
                 return (
                     <GameButton
                         key={id}
@@ -122,6 +134,9 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
                         setActiveSet={setActiveSet}
                         setButtons={setButtons}
                         isMobile={isMobile}
+                        hpRatio={hpRatio}
+                        manaRatio={manaRatio}
+                        moveRatio={moveRatio}
                     />
                 );
             })}
