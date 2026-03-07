@@ -184,7 +184,7 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                                 border: '2px solid #fff',
                                 borderRadius: '50%',
                                 zIndex: 21,
-                                transform: 'translate(-50%, 50%)',
+                                transform: isVertical ? 'translate(-50%, 50%)' : 'translate(-50%, 50%)',
                                 pointerEvents: 'none',
                                 boxShadow: '0 0 8px rgba(0,0,0,0.8)'
                             }} />
@@ -192,7 +192,8 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                             <div style={{
                                 position: 'absolute',
                                 left: isVertical ? '44px' : `${wimpyRatio * 100}%`,
-                                bottom: isVertical ? `${wimpyRatio * 100}%` : (isDragging ? '32px' : '26px'),
+                                bottom: isVertical ? `${wimpyRatio * 100}%` : 'auto',
+                                top: isVertical ? 'auto' : (isDragging ? '-32px' : '-26px'),
                                 background: isDragging ? 'var(--accent)' : 'rgba(0,0,0,0.8)',
                                 color: isDragging ? '#000' : '#fff',
                                 padding: '2px 6px',

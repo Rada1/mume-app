@@ -107,6 +107,7 @@ const MudClient = () => {
             style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
+                e.preventDefault();
                 // If dragging an item/target near the right edge, peek the drawer
                 if (e.clientX > window.innerWidth - 80) {
                     setUI(prev => {
@@ -119,12 +120,53 @@ const MudClient = () => {
                         return { ...prev, isDrawerPeeking: false };
                     });
                 }
+
+                // Add visual feedback to log container
+                const target = e.target as HTMLElement;
+                const logContainer = target.closest('.message-log-container');
+                if (logContainer) {
+                    logContainer.classList.add('drop-hover-active');
+                }
             }}
-            onDragEnd={() => {
-                setUI(prev => ({ ...prev, isDrawerPeeking: false }));
+            onDragLeave={(e: React.DragEvent) => {
+                const target = e.target as HTMLElement;
+                const logContainer = target.closest('.message-log-container');
+                if (logContainer) {
+                    logContainer.classList.remove('drop-hover-active');
+                }
             }}
-            onDrop={() => {
+            onDragEnd={(e: React.DragEvent) => {
                 setUI(prev => ({ ...prev, isDrawerPeeking: false }));
+                const target = e.target as HTMLElement;
+                const logContainer = document.querySelector('.message-log-container.drop-hover-active');
+                if (logContainer) {
+                    logContainer.classList.remove('drop-hover-active');
+                }
+            }}
+            onDrop={(e: React.DragEvent) => {
+                e.preventDefault();
+                setUI(prev => ({ ...prev, isDrawerPeeking: false }));
+
+                const logContainer = document.querySelector('.message-log-container.drop-hover-active');
+                if (logContainer) {
+                    logContainer.classList.remove('drop-hover-active');
+                }
+
+                const dataStr = e.dataTransfer.getData('application/json');
+                if (!dataStr) return;
+
+                let data;
+                try {
+                    data = JSON.parse(dataStr);
+                } catch (err) {
+                    return; // Not our JSON payload
+                }
+
+                // Check if it's an item dropped from a drawer (inventory or eq) into the main view
+                if (data && data.type === 'inline-btn' && data.context && (data.cmd === 'inventorylist' || data.cmd === 'equipmentlist' || data.cmd === 'item')) {
+                    triggerHaptic(40);
+                    executeCommand(`drop ${data.context}`);
+                }
             }}
             onClick={handleBackgroundClick}
         >

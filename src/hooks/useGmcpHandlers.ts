@@ -19,7 +19,7 @@ interface GmcpHandlersProps {
     setRoomItems: React.Dispatch<React.SetStateAction<string[]>>;
     characterName: string | null;
     setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
-    addMessage: (type: MessageType, text: string) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => void;
     setCharacterName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setRoomName: (name: string | null) => void;
@@ -153,7 +153,8 @@ export const useGmcpHandlers = ({
     const onCharNameChange = useCallback((name: string | null) => {
         if (characterName && name !== characterName) {
             setAbilities({});
-            addMessage('system', `Character changed to ${name}. Abilities reset.`);
+            const msg = `Character changed to ${name}. Abilities reset.`;
+            addMessage('system', msg, undefined, undefined, undefined, { textOnly: msg, lower: msg.toLowerCase() });
         }
         setCharacterName(name);
     }, [characterName, setAbilities, addMessage, setCharacterName]);

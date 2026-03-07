@@ -64,12 +64,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             setUI(prev => ({ ...prev, drawer: 'none' }));
         } else {
             setUI(prev => ({ ...prev, drawer }));
-            // Refresh data when opening
-            if (drawer === 'character') {
+            // Only fetch if empty to avoid breaking predictive updates
+            if (drawer === 'character' && statsLines.length === 0) {
                 executeCommand('stat', false, true, true);
             } else if (drawer === 'items') {
-                executeCommand('inv', false, true, true, true);
-                setTimeout(() => executeCommand('eq', false, true, true, true), 200);
+                if (inventoryLines.length === 0) executeCommand('inv', false, true, true, true);
+                if (eqLines.length === 0) setTimeout(() => executeCommand('eq', false, true, true, true), 200);
             }
         }
     };

@@ -28,8 +28,8 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const isCombatLine = useCallback((text: string): boolean => {
-        const t = text.toLowerCase();
+    const isCombatLine = useCallback((textLower: string): boolean => {
+        const t = textLower;
         const combatVerbs = [
             'hit', 'miss', 'wound', 'slay', 'kill', 'scratch', 'bruise', 'maul', 'decimate',
             'devastate', 'obliterate', 'massacre', 'mutilate', 'eviscerate', 'pierce',
@@ -58,8 +58,8 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
         );
     }, [inCombatRef]);
 
-    const isCommunicationLine = useCallback((text: string): boolean => {
-        const t = text.toLowerCase();
+    const isCommunicationLine = useCallback((textLower: string): boolean => {
+        const t = textLower;
         return (
             t.includes(' says ') || t.includes(' narrate ') || t.includes(' narrates ') ||
             t.includes(' tell ') || t.includes(' tells ') || t.includes(' whisper ') ||
@@ -95,15 +95,15 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
     // to properly handle stack stacking when the buffer is empty.
     const lastMessageRef = useRef<Message | null>(null);
 
-    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => {
+    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => {
         if (type === 'prompt') return;
 
-        const isThisCombat = combatOverride ?? (type === 'game' ? isCombatLine(text) : type === 'user');
-        const isComm = type === 'game' && isCommunicationLine(text);
-        const dimmedInCombat = inCombatRef.current && !isThisCombat;
+        const textOnly = precalculated ? precalculated.textOnly : text.replace(/\x1b\[[0-9;]*m/g, '').trim();
+        const textLower = precalculated ? precalculated.lower : textOnly.toLowerCase();
 
-        const stripAnsi = (t: string) => t.replace(/\x1b\[[0-9;]*m/g, '');
-        const textOnly = stripAnsi(text).trim();
+        const isThisCombat = combatOverride ?? (type === 'game' ? isCombatLine(textLower) : type === 'user');
+        const isComm = type === 'game' && isCommunicationLine(textLower);
+        const dimmedInCombat = inCombatRef.current && !isThisCombat;
 
         let stackId = '';
         let subject = '';

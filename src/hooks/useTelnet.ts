@@ -10,7 +10,7 @@ export interface TelnetHandlers {
     setWeather: React.Dispatch<React.SetStateAction<WeatherType>>;
     setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
     setInCombat: (inCombat: boolean) => void;
-    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => void;
     setRumble: (rumble: boolean) => void;
     setHitFlash: (hitFlash: boolean) => void;
     setDeathStage: (stage: DeathStage) => void;
@@ -161,24 +161,26 @@ export function useTelnet(options: TelnetOptions) {
         protocolHandler.current?.setGmcpReady(false);
         try {
             handlers.setStatus('connecting');
-            handlers.addMessage('system', `Connecting to ${connectionUrl}...`);
+            const msg1 = `Connecting to ${connectionUrl}...`;
+            handlers.addMessage('system', msg1, undefined, undefined, undefined, { textOnly: msg1, lower: msg1.toLowerCase() });
             const ws = new WebSocket(connectionUrl);
             ws.binaryType = "arraybuffer";
             ws.onopen = () => {
                 handlers.setStatus('connected');
-                handlers.addMessage('system', 'Connected! Negotiating...');
+                const msg2 = 'Connected! Negotiating...';
+                handlers.addMessage('system', msg2, undefined, undefined, undefined, { textOnly: msg2, lower: msg2.toLowerCase() });
                 const interval = setInterval(() => { if (ws.readyState === WebSocket.OPEN) sendGMCP('Core.Ping'); }, 30000);
                 (ws as any)._pingInterval = interval;
             };
             ws.onmessage = (event) => { if (event.data instanceof ArrayBuffer) protocolHandler.current?.handleRawData(new Uint8Array(event.data)); };
             ws.onclose = () => {
                 handlers.setStatus('disconnected');
-                handlers.addMessage('error', 'Connection closed.');
+                handlers.addMessage('error', 'Connection closed.', undefined, undefined, undefined, { textOnly: 'Connection closed.', lower: 'connection closed.' });
                 if ((ws as any)._pingInterval) clearInterval((ws as any)._pingInterval);
             };
-            ws.onerror = () => { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Connection error.'); };
+            ws.onerror = () => { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Connection error.', undefined, undefined, undefined, { textOnly: 'Connection error.', lower: 'connection error.' }); };
             socketRef.current = ws;
-        } catch (e) { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Invalid URL.'); }
+        } catch (e) { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Invalid URL.', undefined, undefined, undefined, { textOnly: 'Invalid URL.', lower: 'invalid url.' }); }
     };
 
     return {
