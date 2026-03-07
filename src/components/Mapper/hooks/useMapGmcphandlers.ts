@@ -36,6 +36,9 @@ export const useMapGmcphandlers = ({
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
         let gmcpId = data.num !== undefined ? data.num : (data.vnum !== undefined ? data.vnum : data.id);
+        const gmcpName = data.name || 'Unknown Room';
+        const gmcpArea = data.area || data.zone || 'Unknown Zone';
+        
         if (gmcpId === undefined || gmcpId === null) return;
 
         const activeRoomId = currentRoomIdRef.current;
@@ -61,8 +64,6 @@ export const useMapGmcphandlers = ({
         }
 
         const isVnumZero = String(gmcpId) === '0' || String(gmcpId) === 'null' || !gmcpId;
-        const gmcpName = data.name || 'Unknown Room';
-
         let ghostData: any = null;
         let matchedInternalId: string | null = null;
         let discoverySource: string | null = null;

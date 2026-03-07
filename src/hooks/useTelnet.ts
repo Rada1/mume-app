@@ -9,7 +9,7 @@ export interface TelnetHandlers {
     setStats: React.Dispatch<React.SetStateAction<GameStats>>;
     setWeather: React.Dispatch<React.SetStateAction<WeatherType>>;
     setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
-    setInCombat: (inCombat: boolean) => void;
+    setInCombat: (inCombat: boolean, force?: boolean) => void;
     addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => void;
     setRumble: (rumble: boolean) => void;
     setHitFlash: (hitFlash: boolean) => void;

@@ -30,25 +30,9 @@ export const useGameProviderState = () => {
     });
     const [inCombat, _setInCombat] = useState(false);
     const inCombatRef = useRef(false);
-    const inCombatLatchRef = useRef<number>(0);
 
     const setInCombat = useCallback((val: boolean, force: boolean = false) => {
-        if (force) {
-            inCombatLatchRef.current = 0;
-            _setInCombat(val);
-            return;
-        }
-
-        if (val) {
-            // Latch combat mode for 5 seconds when triggered
-            inCombatLatchRef.current = Date.now() + 5000;
-            _setInCombat(true);
-        } else {
-            // Only allow clearing if the latch has expired
-            if (Date.now() > inCombatLatchRef.current) {
-                _setInCombat(false);
-            }
-        }
+        _setInCombat(val);
     }, []);
 
     useEffect(() => { inCombatRef.current = inCombat; }, [inCombat]);

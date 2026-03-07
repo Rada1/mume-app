@@ -105,9 +105,13 @@ export class GmcpDecoder {
             if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(this.charVitalsState.opponent);
         }
 
-        const isFighting = this.charVitalsState.position === 'fighting';
+        const isFighting = this.charVitalsState.position?.includes('fighting') || (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
         if (isFighting) {
             this.handlers.setInCombat(true);
+        } else {
+            // If we are explicitly NOT fighting and have NO opponent, we should clear combat immediately.
+            // We use force=true to bypass the 5s latch in state.ts.
+            this.handlers.setInCombat(false, true);
         }
 
         const weatherVal = getField(['weather', 'w']);
@@ -184,12 +188,16 @@ export class GmcpDecoder {
             if (someoneFighting) {
                 this.handlers.setInCombat(true);
             } else {
-                // If NO ONE is fighting in the room, and our own position isn't 'fighting',
-                // we can safely assume combat is over for us.
-                if (this.charVitalsState.position !== 'fighting') {
-                    // Use force=false to respect any active text-based latches if they exist,
-                    // but standard setInCombat(false) logic will handle the latch expiry.
-                    this.handlers.setInCombat(false);
+                // If NO ONE is fighting in the room, and our own position isn't 'fighting'
+                // and we have no opponent, we can safely assume combat is over for us.
+                const weAreFighting = this.charVitalsState.position?.includes('fighting') || (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
+                if (!weAreFighting) {
+                    const isExplicitlyNotFighting = this.charVitalsState.position && !this.charVitalsState.position.includes('fighting');
+                    if (isExplicitlyNotFighting) {
+                        this.handlers.setInCombat(false, true); // Force clear the latch
+                    } else {
+                        this.handlers.setInCombat(false); // Normal clear
+                    }
                 }
             }
         } catch (e) { }
