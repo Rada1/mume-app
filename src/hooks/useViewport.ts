@@ -46,38 +46,17 @@ export function useViewport() {
             if (!isNearBottom) return;
         }
 
-        if (instant) {
-            isAutoScrollingRef.current = true;
+        // Mobile browsers often struggle with custom JS smooth scrolling because it fights
+        // with native momentum scrolling and visual bounds. Native 'smooth' or 'instant' is better.
+        isAutoScrollingRef.current = true;
+
+        if (instant || isMobile) {
             container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
             // Small timeout to reset the flag after the scroll event has likely fired
             setTimeout(() => { isAutoScrollingRef.current = false; }, 50);
         } else {
-            // Slightly slower, "premium" smooth scroll
-            const start = container.scrollTop;
-            const end = container.scrollHeight - container.clientHeight;
-            if (Math.abs(start - end) < 1) return;
-
-            isAutoScrollingRef.current = true;
-            const startTime = performance.now();
-            const duration = 400; // Accelerated slightly for a snappier feel
-
-            const animateScroll = (now: number) => {
-                const elapsed = now - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-
-                // Ease out cubic
-                const ease = 1 - Math.pow(1 - progress, 3);
-
-                container.scrollTop = start + (end - start) * ease;
-
-                if (progress < 1) {
-                    scrollAnimationRef.current = requestAnimationFrame(animateScroll);
-                } else {
-                    scrollAnimationRef.current = null;
-                    isAutoScrollingRef.current = false;
-                }
-            };
-            scrollAnimationRef.current = requestAnimationFrame(animateScroll);
+            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            setTimeout(() => { isAutoScrollingRef.current = false; }, 300);
         }
     }, [isMobile]);
 

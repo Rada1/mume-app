@@ -161,7 +161,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             setIsCharacterOpen(false); setIsItemsDrawerOpen(false);
         }
 
-        if (!silent) addMessage('user', finalCmd);
+        // Only cast to bypass the TypeScript signature limitation of `addMessage` in the deps interface,
+        // which currently only expects 2 arguments in the type definition but takes up to 6 in implementation.
+        if (!silent) (addMessage as any)('user', finalCmd, undefined, undefined, undefined, { textOnly: finalCmd, lower: finalCmd.toLowerCase() });
 
         const moveCmd = finalCmd.toLowerCase().trim();
         const dirMap: Record<string, Direction> = {

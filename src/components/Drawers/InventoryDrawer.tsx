@@ -103,6 +103,25 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                 <div
                                     key={line.id}
                                     className={line.isItem ? "inline-btn auto-item" : ""}
+                                    draggable={line.isItem}
+                                    onDragStart={(e) => {
+                                        if (!line.isItem) return;
+                                        const dragData = {
+                                            type: 'inline-btn',
+                                            cmd: 'inventorylist',
+                                            context: line.context,
+                                            id: `inv-${line.id}`
+                                        };
+                                        e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+                                        e.dataTransfer.effectAllowed = 'move';
+
+                                        // Optional: add a dragging class for visual feedback
+                                        e.currentTarget.classList.add('dragging');
+                                        triggerHaptic(10);
+                                    }}
+                                    onDragEnd={(e) => {
+                                        e.currentTarget.classList.remove('dragging');
+                                    }}
                                     onClick={(e) => {
                                         if (!line.isItem) return;
                                         triggerHaptic(20);

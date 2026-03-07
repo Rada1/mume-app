@@ -93,14 +93,14 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                 newY = Math.round(newY / snapY) * snapY;
             }
 
-            btn.setUiPositions(prev => ({
-                ...prev,
-                [clusterId]: {
-                    ...prev[clusterId],
-                    x: newX,
-                    y: newY
-                }
-            }));
+            // Fast DOM mutation for visual feedback
+            const el = document.getElementById(`cluster-${clusterId}`);
+            if (el) {
+                el.style.transform = `translate(${clusterId === 'xbox' ? -newX : newX}px, ${newY}px)`;
+            }
+            // Store the final computed value without triggering a render
+            (btn.dragState as any).finalX = newX;
+            (btn.dragState as any).finalY = newY;
             return;
         }
 
@@ -120,23 +120,24 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                     newH = Math.round(newH / snapY) * snapY;
                 }
 
-                btn.setUiPositions(prev => ({
-                    ...prev,
-                    [clusterId]: {
-                        ...prev[clusterId],
-                        w: Math.max(200, newW),
-                        h: Math.max(200, newH)
-                    }
-                }));
+                const w = Math.max(200, newW);
+                const h = Math.max(200, newH);
+                const el = document.getElementById(`cluster-mapper`);
+                if (el) {
+                    el.style.width = `${w}px`;
+                    el.style.height = `${h}px`;
+                }
+                (btn.dragState as any).finalW = w;
+                (btn.dragState as any).finalH = h;
             } else {
                 const newScale = Math.max(0.5, Math.min(2.5, btn.dragState.initialW + dx / 200));
-                btn.setUiPositions(prev => ({
-                    ...prev,
-                    [clusterId]: {
-                        ...prev[clusterId],
-                        scale: newScale
-                    }
-                }));
+                const el = document.getElementById(`cluster-${clusterId}`);
+                if (el) {
+                    // Assuming position is also applied via transform in the component,
+                    // we would need to read it. For now, we update scale via CSS variable if possible
+                    el.style.setProperty('--scale', newScale.toString());
+                }
+                (btn.dragState as any).finalScale = newScale;
             }
             return;
         }
@@ -144,25 +145,17 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
         if (btn.dragState) {
             const dx = e.clientX - btn.dragState.startX, dy = e.clientY - btn.dragState.startY;
             if (Math.abs(dx) > 5 || Math.abs(dy) > 5) wasDraggingRef.current = true;
-            btn.setButtons(prev => prev.map(b => {
-                if (btn.dragState?.type === 'resize') {
-                    if (btn.dragState.initialSizes && btn.dragState.initialSizes[b.id]) {
-                        const init = btn.dragState.initialSizes[b.id];
-                        let newW = init.w + dx;
-                        let newH = init.h + dy;
 
-                        if (btn.isGridEnabled) {
-                            const pixSnapX = (btn.gridSize / 100) * containerW;
-                            const pixSnapY = (btn.gridSize / 100) * containerH;
-                            newW = Math.round(newW / pixSnapX) * pixSnapX;
-                            newH = Math.round(newH / pixSnapY) * pixSnapY;
-                        }
+            // Fast DOM mutation for buttons
+            if (btn.dragState.type === 'resize') {
+                const itemsToUpdate = btn.dragState.initialSizes ? Object.keys(btn.dragState.initialSizes) : [btn.dragState.id];
+                itemsToUpdate.forEach(bId => {
+                    const init = (btn.dragState?.initialSizes && btn.dragState.initialSizes[bId])
+                        ? btn.dragState.initialSizes[bId]
+                        : { w: btn.dragState!.initialW, h: btn.dragState!.initialH };
 
-                        return { ...b, style: { ...b.style, w: Math.max(20, newW), h: Math.max(20, newH) } };
-                    }
-                    if (b.id !== btn.dragState?.id) return b;
-                    let newW = btn.dragState.initialW + dx;
-                    let newH = btn.dragState.initialH + dy;
+                    let newW = init.w + dx;
+                    let newH = init.h + dy;
 
                     if (btn.isGridEnabled) {
                         const pixSnapX = (btn.gridSize / 100) * containerW;
@@ -171,11 +164,24 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                         newH = Math.round(newH / pixSnapY) * pixSnapY;
                     }
 
-                    return { ...b, style: { ...b.style, w: Math.max(20, newW), h: Math.max(20, newH) } };
-                }
+                    const w = Math.max(20, newW);
+                    const h = Math.max(20, newH);
 
-                if (btn.dragState?.initialPositions && btn.dragState.initialPositions[b.id]) {
-                    const init = btn.dragState.initialPositions[b.id];
+                    const el = document.querySelector(`[data-id="${bId}"]`) as HTMLElement;
+                    if (el) {
+                        el.style.width = `${w}px`;
+                        el.style.height = `${h}px`;
+                    }
+                    if (!(btn.dragState as any).finalSizes) (btn.dragState as any).finalSizes = {};
+                    (btn.dragState as any).finalSizes[bId] = { w, h };
+                });
+            } else {
+                const itemsToUpdate = btn.dragState.initialPositions ? Object.keys(btn.dragState.initialPositions) : [btn.dragState.id];
+                itemsToUpdate.forEach(bId => {
+                    const init = (btn.dragState?.initialPositions && btn.dragState.initialPositions[bId])
+                        ? btn.dragState.initialPositions[bId]
+                        : { x: btn.dragState!.initialX, y: btn.dragState!.initialY };
+
                     let dXPercent = (dx / containerW) * 100;
                     let dYPercent = (dy / containerH) * 100;
 
@@ -187,26 +193,73 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                         finalY = Math.round(finalY / btn.gridSize) * btn.gridSize;
                     }
 
-                    return { ...b, style: { ...b.style, x: Math.min(100, Math.max(0, finalX)), y: Math.min(100, Math.max(0, finalY)) } };
-                }
+                    const x = Math.min(100, Math.max(0, finalX));
+                    const y = Math.min(100, Math.max(0, finalY));
 
-                if (b.id !== btn.dragState?.id) return b;
-
-                let finalX = btn.dragState.initialX + (dx / containerW) * 100;
-                let finalY = btn.dragState.initialY + (dy / containerH) * 100;
-
-                if (btn.isGridEnabled) {
-                    finalX = Math.round(finalX / btn.gridSize) * btn.gridSize;
-                    finalY = Math.round(finalY / btn.gridSize) * btn.gridSize;
-                }
-
-                return { ...b, style: { ...b.style, x: Math.min(100, Math.max(0, finalX)), y: Math.min(100, Math.max(0, finalY)) } };
-            }));
+                    const el = document.querySelector(`[data-id="${bId}"]`) as HTMLElement;
+                    if (el) {
+                        el.style.left = `${x}%`;
+                        el.style.top = `${y}%`;
+                    }
+                    if (!(btn.dragState as any).finalPositions) (btn.dragState as any).finalPositions = {};
+                    (btn.dragState as any).finalPositions[bId] = { x, y };
+                });
+            }
         }
-    }, [btn, containerRef]);
+    }, [btn.dragState, btn.isGridEnabled, btn.gridSize, containerRef]);
 
     useEffect(() => {
         const handleMouseUp = () => {
+            if (btn.dragState) {
+                // Commit final positions to React State
+                if (btn.dragState.type === 'cluster') {
+                    if ((btn.dragState as any).finalX !== undefined) {
+                        const clusterId = btn.dragState.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
+                        btn.setUiPositions(prev => ({
+                            ...prev,
+                            [clusterId]: {
+                                ...prev[clusterId],
+                                x: (btn.dragState as any).finalX,
+                                y: (btn.dragState as any).finalY
+                            }
+                        }));
+                    }
+                } else if (btn.dragState.type === 'cluster-resize') {
+                    const clusterId = btn.dragState.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
+                    if (clusterId === 'mapper' && (btn.dragState as any).finalW !== undefined) {
+                        btn.setUiPositions(prev => ({
+                            ...prev,
+                            [clusterId]: {
+                                ...prev[clusterId],
+                                w: (btn.dragState as any).finalW,
+                                h: (btn.dragState as any).finalH
+                            }
+                        }));
+                    } else if ((btn.dragState as any).finalScale !== undefined) {
+                        btn.setUiPositions(prev => ({
+                            ...prev,
+                            [clusterId]: {
+                                ...prev[clusterId],
+                                scale: (btn.dragState as any).finalScale
+                            }
+                        }));
+                    }
+                } else {
+                    const finalPos = (btn.dragState as any).finalPositions;
+                    const finalSizes = (btn.dragState as any).finalSizes;
+                    if (finalPos || finalSizes) {
+                        btn.setButtons(prev => prev.map(b => {
+                            if (finalSizes && finalSizes[b.id]) {
+                                return { ...b, style: { ...b.style, w: finalSizes[b.id].w, h: finalSizes[b.id].h } };
+                            }
+                            if (finalPos && finalPos[b.id]) {
+                                return { ...b, style: { ...b.style, x: finalPos[b.id].x, y: finalPos[b.id].y } };
+                            }
+                            return b;
+                        }));
+                    }
+                }
+            }
             btn.setDragState(null);
         };
         if (btn.dragState) {

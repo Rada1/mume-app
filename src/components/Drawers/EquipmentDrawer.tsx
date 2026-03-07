@@ -128,7 +128,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             // Cleanup previous highlight
             document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
 
-            // 1. Log Target
+            // 1. Log Target (Highlighters for giving)
             const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
             if (logRecipient) {
                 logRecipient.classList.add('drop-hover-active');
@@ -137,6 +137,14 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     setActiveDropTarget({ type: 'log', id: ctx });
                     return;
                 }
+            }
+
+            // 1.b. Main Log Target (Dropping item on ground)
+            const mainLog = target?.closest('.message-log-container');
+            if (mainLog && !target?.closest('.right-drawer')) {
+                mainLog.classList.add('drop-hover-active');
+                setActiveDropTarget({ type: 'log', id: 'ground' });
+                return;
             }
 
             // 2. Container Target
@@ -167,12 +175,6 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         }
     };
 
-    const triggerRefresh = () => {
-        // Refresh both inventory and equipment to ensure UI is in sync
-        executeCommand('inv', false, true, true, true);
-        setTimeout(() => executeCommand('eq', false, true, true, true), 200);
-    };
-
     const handleGlobalPointerUp = (e: PointerEvent) => {
         if (isDraggingRef.current && draggedRef.current) {
             const target = document.elementFromPoint(e.clientX, e.clientY);
@@ -190,7 +192,6 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         executeCommand(`remove ${itemNoun}`, false, false);
                     }
                     executeCommand(`give ${itemNoun} ${recipientName}`, false, false);
-                    setTimeout(triggerRefresh, 100);
                     cleanupDrag();
                     return;
                 }
@@ -209,7 +210,19 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     executeCommand(`remove ${itemNoun}`, false, false);
                 }
                 executeCommand(`put ${itemNoun} ${targetItemName}`, false, false);
-                setTimeout(triggerRefresh, 100);
+                cleanupDrag();
+                return;
+            }
+
+            // 2.b. Main Log Target (Drop on ground)
+            const mainLog = target?.closest('.message-log-container');
+            if (mainLog && !target?.closest('.right-drawer')) {
+                triggerHaptic(60);
+                const itemNoun = currentItem.context || currentItem.id;
+                if (currentSource === 'equipment') {
+                    executeCommand(`remove ${itemNoun}`, false, false);
+                }
+                executeCommand(`drop ${itemNoun}`, false, false);
                 cleanupDrag();
                 return;
             }
@@ -226,12 +239,10 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     triggerHaptic(60);
                     const [noun, container] = itemNoun.split('.');
                     executeCommand(`get ${noun} ${container}`, false, false);
-                    setTimeout(triggerRefresh, 100);
                 } else if (section !== currentSource) {
                     triggerHaptic(60);
                     const cmd = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
                     executeCommand(`${cmd} ${itemNoun}`, false, false);
-                    setTimeout(triggerRefresh, 100);
                 }
             }
         }
