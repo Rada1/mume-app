@@ -290,19 +290,24 @@ export const useMapperRenderer = ({
                                 const exitB = neighbor?.exits?.[oppDir];
 
                                 // Knowledge of door exists if either side or the map says so
-                                const hasDoor = exitA.hasDoor || (exitA.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
-                                    exitB?.hasDoor || (exitB?.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
-                                    wallExA?.hasDoor;
+                                const hasDoor = !!(exitA.hasDoor || 
+                                    (exitA.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
+                                    (exitA.name?.toLowerCase().includes('door') || exitA.name?.toLowerCase().includes('gate')) ||
+                                    exitB?.hasDoor || 
+                                    (exitB?.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
+                                    (exitB?.name?.toLowerCase().includes('door') || exitB?.name?.toLowerCase().includes('gate')) ||
+                                    wallExA?.hasDoor);
 
                                 if (!hasDoor) return { hasExit: true, hasDoor: false, isClosed: false };
 
                                 // State Logic:
-                                // If EITHER side says it's OPEN (closed === false), we show it as open.
-                                // Otherwise, if it has a door, it defaults to CLOSED.
-                                let isClosed = hasDoor;
-                                if (localExA && localExA.closed === false) isClosed = false;
-                                else if (exitB && exitB.closed === false) isClosed = false;
-                                else if (wallExA && wallExA.closed === false) isClosed = false; // from map history if any
+                                // A door is CLOSED by default if it exists.
+                                // It only appears OPEN if we have explicit GMCP evidence (closed === false)
+                                // from either side of the door.
+                                let isClosed = true;
+                                if (localExA?.closed === false) isClosed = false;
+                                else if (exitB?.closed === false) isClosed = false;
+                                else if (wallExA?.closed === false) isClosed = false;
 
                                 return { hasExit: true, hasDoor, isClosed };
                             };
@@ -419,16 +424,22 @@ export const useMapperRenderer = ({
                 const neighbor = neighborId ? (allRooms[neighborId] || allRooms[targetId] || (preloaded[String(targetId)] ? { exits: preloaded[String(targetId)][4] } : null)) : null;
                 const exitB = neighbor?.exits?.[oppDir];
 
-                const hasDoor = effectiveExit.hasDoor || (effectiveExit.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
-                    exitB?.hasDoor || (exitB?.flags?.some((f: any) => f.includes('door') || f === 'closed' || f === 'locked')) ||
-                    wallExA?.hasDoor;
+                const hasDoor = !!(effectiveExit.hasDoor || 
+                    (effectiveExit.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
+                    (effectiveExit.name?.toLowerCase().includes('door') || effectiveExit.name?.toLowerCase().includes('gate')) ||
+                    exitB?.hasDoor || 
+                    (exitB?.flags?.some((f: any) => f === 'closed' || f === 'locked' || f === 'door' || f === 'gate' || f === 'portcullis')) ||
+                    (exitB?.name?.toLowerCase().includes('door') || exitB?.name?.toLowerCase().includes('gate')) ||
+                    wallExA?.hasDoor);
 
                 if (!hasDoor) return { hasExit: true, hasDoor: false, isClosed: false };
 
                 // State Logic for Local Custom Rooms
-                let isClosed = hasDoor;
-                if (exitA && exitA.closed === false) isClosed = false;
-                else if (exitB && exitB.closed === false) isClosed = false;
+                // Default to CLOSED if it has a door.
+                // Only show OPEN if explicitly closed === false on either side.
+                let isClosed = true;
+                if (exitA?.closed === false) isClosed = false;
+                else if (exitB?.closed === false) isClosed = false;
 
                 return { hasExit: true, hasDoor, isClosed };
             };

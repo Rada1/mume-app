@@ -24,6 +24,7 @@ const MessageItem = React.memo(({
     inCombat: boolean,
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName), [msg.html, msg.id, msg.isRoomName, processMessageHtml]);
+    const isRecent = Date.now() - msg.timestamp < 2000;
 
     return (
         <div
@@ -33,6 +34,12 @@ const MessageItem = React.memo(({
                 <span>{msg.textRaw}</span>
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
+            ) : msg.isComm ? (
+                isRecent ? (
+                    <TypewriterText html={content} speed={2} />
+                ) : (
+                    <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
+                )
             ) : (
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}

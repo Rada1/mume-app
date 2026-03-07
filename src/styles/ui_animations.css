@@ -218,18 +218,18 @@
 @keyframes spat-trigger-glow {
     0% {
         filter: brightness(1);
-        box-shadow: 0 0 0px var(--accent);
+        text-shadow: 0 0 0px var(--accent);
     }
 
     30% {
         filter: brightness(2.5);
-        box-shadow: 0 0 15px var(--accent);
+        text-shadow: 0 0 15px var(--accent);
         transform: scale(1.1);
     }
 
     100% {
         filter: brightness(1.2);
-        box-shadow: 0 0 4px var(--accent);
+        text-shadow: 0 0 4px var(--accent);
         transform: scale(1);
     }
 }

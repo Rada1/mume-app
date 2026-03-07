@@ -194,7 +194,7 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
                 const escapedKey = roomId.replace(/'/g, '(&apos;|&#39;|\')');
                 const pattern = new RegExp(`key:\\s*(&apos;|&#39;|')(${escapedKey})(&apos;|&#39;|')`, 'i');
                 html = html.replace(pattern, (_match, _p1, _p2, _p3) => {
-                    return `<span class="inline-btn teleport-key" data-teleport-id="${roomId}" data-action="save-teleport" style="background-color: rgba(255, 255, 100, 0.2); border-bottom: 1px dashed gold; padding: 0 4px; border-radius: 2px; cursor: pointer; display: inline-block;">key: '${roomId}'</span>`;
+                    return `<span class="inline-btn teleport-key" data-teleport-id="${roomId}" data-action="save-teleport" style="--glow-color: rgba(255, 255, 100, 0.6); border-bottom: 1px dashed gold; padding: 0 4px; border-radius: 2px; cursor: pointer; display: inline-block;">key: '${roomId}'</span>`;
                 });
             }
         }

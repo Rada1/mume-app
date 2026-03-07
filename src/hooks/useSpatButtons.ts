@@ -56,7 +56,7 @@ export const useSpatButtons = (
             startY: 0,
             targetX: targetX,
             targetY: 0,
-            color: (el as any).style.backgroundColor || 'var(--accent)',
+            color: el.dataset.color || el.style.getPropertyValue('--glow-color') || 'var(--accent)',
             timestamp: Date.now(),
             swipeCommands,
             swipeActionTypes

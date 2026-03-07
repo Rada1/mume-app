@@ -92,7 +92,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             } else if (textPMatch) {
                 // Extract prompt symbols
                 const promptSymbolMatch = textPMatch[1].match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
-                if (promptSymbolMatch) {
+                if (promptSymbolMatch && promptSymbolMatch[1]) {
                     if (detectLighting) detectLighting(promptSymbolMatch[1]);
                     if (deps.setCurrentTerrain) deps.setCurrentTerrain(promptSymbolMatch[1]);
                 }

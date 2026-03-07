@@ -144,7 +144,6 @@
     min-height: 54px;
 }
 
-
 /* Terrain Glows - Increased specificity to ensure they work in all modes */
 .input-area[class*="terrain-"] {
     transition: box-shadow 1s ease, border-color 1s ease;
@@ -199,6 +198,7 @@
     background: rgba(0, 0, 0, 0.6) !important;
 }
 
+
 .input-form {
     display: flex;
     gap: 10px;
@@ -240,13 +240,21 @@
     display: inline;
     cursor: pointer;
     border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 -2px;
+    background-color: transparent !important;
+    border-bottom: 1px dashed var(--glow-color, rgba(255, 255, 255, 0.3));
+    text-shadow: 0 0 8px var(--glow-color, transparent);
     animation: inline-btn-shimmer 3s ease-in-out infinite;
-    transition: filter 0.15s ease, transform 0.1s ease;
+    transition: all 0.2s ease;
 }
 
 .inline-btn:hover {
     filter: brightness(1.4);
     transform: scale(1.04);
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-bottom-style: solid;
+    text-shadow: 0 0 12px var(--glow-color, rgba(255, 255, 255, 0.5));
 }
 
 .inline-btn:active {
@@ -399,4 +407,10 @@
 
 .spat-container .swipe-wheel-container {
     z-index: 50000;
+}
+
+.comm-text {
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    font-weight: 500;
 }

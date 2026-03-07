@@ -219,7 +219,9 @@ export const useMapGmcphandlers = ({
                     const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
                     const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
                     const isDoor = isClosed ||
-                        exFlagsLow.some(f => f.includes('door') || f.includes('gate') || f.includes('lock')) ||
+                        (typeof gmcpExit === 'object' && (gmcpExit as any).door) ||
+                        exFlagsLow.includes('door') ||
+                        exFlagsLow.includes('gate') ||
                         exName?.toLowerCase().includes('door') ||
                         exName?.toLowerCase().includes('gate');
 
@@ -230,7 +232,7 @@ export const useMapGmcphandlers = ({
                         name: exName,
                         flags: exFlags || (updatedExits[dir]?.flags || []),
                         closed: isClosed,
-                        hasDoor: isDoor || updatedExits[dir]?.hasDoor
+                        hasDoor: !!isDoor || !!updatedExits[dir]?.hasDoor
                     };
                 }
                 newRooms[targetId!] = { ...room, exits: updatedExits };
@@ -268,7 +270,9 @@ export const useMapGmcphandlers = ({
                     const exFlagsLow = nextFlags.map(f => f.toLowerCase());
                     const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
                     const isDoor = isClosed ||
-                        exFlagsLow.some(f => f.includes('door') || f.includes('gate') || f.includes('lock')) ||
+                        (typeof update === 'object' && (update as any).door) ||
+                        exFlagsLow.includes('door') ||
+                        exFlagsLow.includes('gate') ||
                         (name || newExits[dir]?.name)?.toLowerCase().includes('door') ||
                         (name || newExits[dir]?.name)?.toLowerCase().includes('gate');
 
@@ -278,7 +282,7 @@ export const useMapGmcphandlers = ({
                         flags: nextFlags,
                         gmcpDestId,
                         closed: isClosed,
-                        hasDoor: isDoor || newExits[dir]?.hasDoor
+                        hasDoor: !!isDoor || !!newExits[dir]?.hasDoor
                     };
 
                     // --- SYMMETRIC UPDATE: Update neighbor's counter-exit if we know it ---
