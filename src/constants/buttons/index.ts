@@ -34,4 +34,5 @@ export const DEFAULT_SET_SETTINGS: Record<string, ButtonSetSettings> = {
     thief: { themeColor: '#94a3b8' },
     thiefskilllist: { themeColor: '#94a3b8' },
     doors: { themeColor: '#78350f' },
+    'social list': { themeColor: '#8b5cf6' },
 };
