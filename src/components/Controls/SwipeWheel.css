@@ -32,9 +32,9 @@
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    /* Always visible when rendered — starts at normal scale, brightens on hover */
+    /* Only visible when --cancel-opacity variable is set by JS */
     transform: translate(-50%, -50%) scale(var(--cancel-scale, 1));
-    opacity: var(--cancel-opacity, 0.8);
+    opacity: var(--cancel-opacity, 0);
     pointer-events: none;
     z-index: 50010;
     transition: opacity 0.15s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -258,35 +258,4 @@
     text-align: center;
     width: 90%;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
-}
-
-.spat-button {
-    position: fixed;
-    z-index: 1000;
-    padding: 8px 16px;
-    background: rgba(10, 10, 15, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--set-accent, var(--accent));
-    color: #fff;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: bold;
-    pointer-events: auto;
-    cursor: pointer;
-    white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px var(--set-accent, var(--accent));
-    animation:
-        spit-across 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards,
-        spat-finish-shimmer 0.5s ease-out 0.65s 1;
-    user-select: none;
-    left: var(--target-x);
-    top: var(--target-y);
-    transform: var(--target-transform, translate(0, -50%));
-    transition:
-        filter 0.2s,
-        transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28),
-        left 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-        top 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-    touch-action: none;
-    overflow: visible !important;
 }

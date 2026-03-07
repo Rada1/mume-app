@@ -27,7 +27,9 @@ export const useTriggerProcessor = (deps: {
             if (!b.trigger?.enabled || !b.trigger.pattern) return;
             const match = b.trigger.isRegex ? new RegExp(b.trigger.pattern).test(textOnly) : textOnly.includes(b.trigger.pattern);
             if (match) {
-                if (b.display === 'floating') {
+                // If it's a floating button and NOT a spit button, show it normally.
+                // Spit buttons are handled by useSpatButtons via the MessageHighlighter's <span> tags.
+                if (b.display === 'floating' && !b.trigger.spit) {
                     setButtons(prev => prev.map(x => x.id === b.id ? { ...x, isVisible: true } : x));
                     if (b.trigger.duration > 0) {
                         if (buttonTimers.current?.[b.id]) clearTimeout(buttonTimers.current[b.id]);

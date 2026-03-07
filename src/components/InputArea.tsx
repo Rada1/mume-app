@@ -150,15 +150,15 @@ const InputArea: React.FC<InputAreaProps> = ({
                         style={{ pointerEvents: 'auto', background: 'transparent', width: '100%', position: 'relative', zIndex: 1 }}
                     />
                 </div>
-                {spatButtons.length > 0 && (
-                    <SpatButtons
-                        spatButtons={spatButtons}
-                        isMobile={!!isMobile}
-                        setActiveSet={setActiveSet}
-                        executeCommand={executeCommand}
-                        setSpatButtons={setSpatButtons}
-                    />
-                )}
+
+                <SpatButtons
+                    spatButtons={spatButtons}
+                    isMobile={!!isMobile}
+                    setActiveSet={setActiveSet}
+                    executeCommand={executeCommand}
+                    setSpatButtons={setSpatButtons}
+                />
+
                 {target && (
                     <div
                         className="target-badge"

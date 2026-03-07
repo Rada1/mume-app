@@ -64,7 +64,16 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                 {(effectiveShowControls || btn.isEditMode) && (
                     <>
                         <div className="custom-buttons-layer">
-                            {btn.buttons.filter(b => (b.setId === btn.activeSet && b.setId !== 'Xbox' && b.display !== 'inline') && (btn.isEditMode || b.isVisible !== false)).map(button => (
+                            {btn.buttons.filter(b => {
+                                const isFromActiveSet = b.setId === btn.activeSet;
+                                const isXbox = b.setId === 'Xbox';
+                                const isInline = b.display === 'inline';
+                                const isTriggered = b.isVisible === true && b.trigger?.enabled;
+                                
+                                if (isXbox || isInline) return false;
+                                if (btn.isEditMode) return isFromActiveSet;
+                                return isFromActiveSet || isTriggered;
+                            }).map(button => (
                                 <GameButton key={button.id} button={button} isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} isSelected={btn.selectedButtonIds.has(button.id)} dragState={btn.dragState} handleDragStart={handleDragStart} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditButton={(b) => { btn.setEditingButtonId(b.id); if (!btn.selectedButtonIds.has(b.id)) btn.setSelectedIds(new Set([b.id])); }} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} setHeldButton={setHeldButton} heldButton={heldButton} joystick={{ isActive: joystick.joystickActive, currentDir: joystick.currentDir, isTargetModifierActive: joystick.isTargetModifierActive, setIsJoystickConsumed: joystick.setIsJoystickConsumed }} target={target} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} />
                             ))}
                         </div>

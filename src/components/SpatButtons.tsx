@@ -12,41 +12,72 @@ interface SpatButtonsProps {
 
 const SpatButtonItem: React.FC<{
     sb: SpatButton;
-    promptLeft: number;
     activeDir: string | null;
     onPointerDown: (e: React.PointerEvent) => void;
     onPointerMove: (e: React.PointerEvent) => void;
     onPointerUp: (e: React.PointerEvent) => void;
     onPointerCancel: (e: React.PointerEvent) => void;
-}> = ({ sb, promptLeft, activeDir, onPointerDown, onPointerMove, onPointerUp, onPointerCancel }) => {
+}> = ({ sb, activeDir, onPointerDown, onPointerMove, onPointerUp, onPointerCancel }) => {
     const elRef = useRef<HTMLDivElement>(null);
     const [spitDistance, setSpitDistance] = useState(0);
+    const [isFlying, setIsFlying] = useState(true);
 
-    // Measure the landing spot relative to the prompt on mount
+    // Measure the landing spot relative to the startX coordinate on mount
     useLayoutEffect(() => {
-        if (elRef.current && promptLeft) {
+        if (elRef.current) {
             const rect = elRef.current.getBoundingClientRect();
-            // The distance to translate FROM to reach the prompt
-            setSpitDistance(promptLeft - rect.left);
+            const inputArea = document.querySelector('.input-area');
+            const inputRect = inputArea?.getBoundingClientRect();
+            if (inputRect) {
+                setSpitDistance(inputRect.left - rect.left);
+            }
+            
+            // Animation is ~800ms
+            const timer = setTimeout(() => setIsFlying(false), 850);
+            return () => clearTimeout(timer);
         }
-    }, [promptLeft]);
+    }, [sb.id]);
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+        if (isFlying) return;
+        e.stopPropagation();
+        onPointerDown(e);
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+        if (isFlying) return;
+        e.stopPropagation();
+        onPointerMove(e);
+    };
+
+    const handlePointerUp = (e: React.PointerEvent) => {
+        if (isFlying) return;
+        e.stopPropagation();
+        onPointerUp(e);
+    };
+
+    const handlePointerCancel = (e: React.PointerEvent) => {
+        if (isFlying) return;
+        e.stopPropagation();
+        onPointerCancel(e);
+    };
 
     return (
         <div
             ref={elRef}
-            className={`spat-button ${activeDir ? 'is-swiping' : ''}`}
+            className={`spat-button ${activeDir ? 'is-swiping' : ''} ${isFlying ? 'is-flying' : ''}`}
             style={{
                 '--spit-distance': `${spitDistance}px`,
                 borderColor: sb.color,
-                boxShadow: `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
+                boxShadow: isFlying ? 'none' : `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
                 '--accent': sb.color
             } as any}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerCancel}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
         >
-            {activeDir && createPortal(
+            {!isFlying && activeDir && createPortal(
                 <div className="swipe-wheel-container" style={{ zIndex: 50000 }}>
                     {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
                         const swipeCmd = sb.swipeCommands?.[d as any];
@@ -104,7 +135,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
 
     return (
         <div className="spat-container" ref={containerRef}>
-            {spatButtons.map((sb) => (
+            {[...spatButtons].reverse().map((sb) => (
                 <SpatButtonItem
                     key={sb.id}
                     sb={sb}

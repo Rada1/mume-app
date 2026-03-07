@@ -196,7 +196,7 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
             }
         } else {
             effectiveSelected.forEach(selId => {
-                const el = document.querySelector(`[data-id="${selId}"]`) as HTMLElement;
+                const el = document.querySelector(`.custom-btn[data-id="${selId}"]`) as HTMLElement;
                 const b = btn.buttons.find(x => x.id === selId);
                 if (el && b) {
                     el.classList.add('dragging');

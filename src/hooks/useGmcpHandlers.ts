@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import {
     GmcpOccupant,
     GmcpCharVitals,
@@ -23,6 +23,7 @@ interface GmcpHandlersProps {
     setCharacterName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setRoomName: (name: string | null) => void;
+    suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
 }
 
 export const useGmcpHandlers = ({

@@ -141,6 +141,7 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+    min-height: 54px;
 }
 
 
@@ -202,12 +203,15 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    height: 100%;
 }
 
 .cmd-prompt {
     color: var(--accent);
     font-weight: bold;
     font-size: 1.2rem;
+    display: flex;
+    align-items: center;
 }
 
 .input-field {
@@ -218,9 +222,12 @@
     font-family: var(--font-main);
     font-size: 1.1rem;
     outline: none;
-    padding: 5px 0;
+    padding: 0;
+    margin: 0;
     user-select: text;
-    transition: font-size 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 .input-field::placeholder {
@@ -332,8 +339,8 @@
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
-    gap: 8px;
-    margin-right: 10px;
+    gap: 6px;
+    margin-right: 4px;
     height: 100%;
     pointer-events: none;
     flex-shrink: 0;
@@ -343,7 +350,7 @@
     position: relative;
     width: auto;
     min-width: 60px;
-    height: 32px;
+    height: 38px;
     padding: 0 12px;
     border-radius: 6px;
     background: rgba(0, 0, 0, 0.6);
@@ -359,24 +366,24 @@
     pointer-events: auto;
     z-index: 10;
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
-    animation: spit-to-target 0.8s cubic-bezier(0.2, 0.8, 0.2, 1.1) forwards;
+    animation: spit-to-target 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     transform-origin: center;
     white-space: nowrap;
+    opacity: 0;
+    will-change: transform, opacity;
 }
 
 @keyframes spit-to-target {
     0% {
-        transform: translateX(var(--spit-distance)) scale(1.5);
+        transform: translate3d(var(--spit-distance), 0, 0) scale(1.2);
         opacity: 0;
-        filter: blur(4px);
     }
-    30% {
+    15% {
         opacity: 1;
-        filter: blur(0);
-        transform: translateX(calc(var(--spit-distance) * 0.5)) scale(1.1);
     }
     100% {
-        transform: translateX(0) scale(1);
+        transform: translate3d(0, 0, 0) scale(1);
+        opacity: 1;
     }
 }
 

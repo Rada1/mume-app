@@ -42,13 +42,14 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
 
     const containerStackRef = useRef<{ depth: number, noun: string }[]>([]);
+    const counterRef = useRef(0);
 
     const processLine = useCallback((line: string) => {
         let cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
 
         // Cache these for performance to avoid re-evaluating in child hooks
-        let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
+        let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
 
         // Reset stack if we're not in a capture stage or just starting one
@@ -97,7 +98,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
 
                 // Redefine text variables to only contain the attached text
-                textOnly = textPMatch[2];
+                textOnly = textPMatch[2].trim();
                 lower = textOnly.toLowerCase();
             }
         }
@@ -129,9 +130,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
             const createLine = (l: string, cmd: string): DrawerLine => {
                 const lowerLine = l.toLowerCase();
-                const textOnlyLine = l.replace(/\x1b\[[0-9;]*m/g, '');
+                const textOnlyLine = l.replace(/\x1b\[[0-9;]*m/g, '').trim();
 
-                const leadingSpaces = textOnlyLine.match(/^ */)?.[0].length || 0;
+                const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
 
                 const isHdr = /you are (carrying|using|equipped with)|contains/i.test(lowerLine);
@@ -156,7 +157,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
                 return {
                     id: Math.random().toString(36).substring(7),
-                    text: textOnlyLine.trim(),
+                    text: textOnlyLine,
                     html: ansiConvert.toHtml(l),
                     isItem: !isHdr && !isNothing,
                     isHeader: isHdr,
@@ -175,64 +176,6 @@ export function useGameParser(deps: UseGameParserDeps) {
         } else {
             if (captureStage.current === 'practice') parsePracticeLine(textOnly);
         }
-
-        // --- Combat Detection ---
-        const isPlayerCombatLine = /(hits|misses|crushes|pierces|pounds|stabs|slashes|smites|shoots|blasts|burns|chokes|strikes|bites|stings|claws|mauls|massacres|eviscerates|devastates|obliterates|mutilates|attacks) you|you (hit|miss|crush|pierce|pound|stab|slash|smite|shoot|blast|burn|choke|strike|bite|sting|claw|maul|massacre|eviscerate|devastate|obliterate|mutilate|attack|dodge|parry|bash|kick|rescue|disarm)|your (bash|kick)|you start fighting|strange incantations/i.test(lower);
-        
-        if (isPlayerCombatLine) {
-            setInCombat(true);
-        }
-
-        // 2. Score & Stats Parsing
-        const hitsMatch = textOnly.match(/(\d+)\/(\d+)\s+hits/i);
-        const manaMatch = textOnly.match(/(\d+)\/(\d+)\s+(mana|spirit)/i);
-        const movesMatch = textOnly.match(/(\d+)\/(\d+)\s+(moves|vitality)/i);
-
-        if (hitsMatch || manaMatch || movesMatch) {
-            setStats(p => {
-                const next = { ...p };
-                if (hitsMatch) {
-                    next.hp = parseInt(hitsMatch[1]);
-                    next.maxHp = parseInt(hitsMatch[2]);
-                }
-                if (manaMatch) {
-                    next.mana = parseInt(manaMatch[1]);
-                    next.maxMana = parseInt(manaMatch[2]);
-                }
-                if (movesMatch) {
-                    next.move = parseInt(movesMatch[1]);
-                    next.maxMove = parseInt(movesMatch[2]);
-                }
-                return next;
-            });
-        }
-
-        if (/alas, you cannot go|no exit|is closed|too exhausted|too tired|cannot go there|blocks your|too dark to see/i.test(lower)) {
-            setRumble(true);
-            triggerHaptic(50);
-            setTimeout(() => setRumble(false), 400);
-            mapperRef.current?.handleMoveFailure();
-            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail'));
-        }
-
-        if (/pitch black|too dark|cannot see/i.test(lower)) {
-            // In MUME, 'pitch black' usually means you arrived in a dark room.
-            // Only 'too dark to see' (handled above) is a movement failure.
-            if (showDebugEchoes) {
-                addMessage('system', "[Mapper] Room is dark.");
-            }
-        }
-
-        if (/hits you|crushes you|pierces you/i.test(lower)) { setHitFlash(true); triggerHaptic(50); setTimeout(() => setHitFlash(false), 150); }
-        if (/you have been killed|you are dead/i.test(lower)) { setDeathStage('fade_to_black'); setInCombat(false); setTimeout(() => setDeathStage('flash'), 2000); }
-        
-        // --- Combat End Triggers ---
-        if (/receive your share of experience|you flee head over heels|you stop fighting|they are not here|you manage to flee|you are now standing|you are now resting|you are now sitting|you are now sleeping/i.test(lower)) { 
-            setInCombat(false, true); // Force stop latch
-        }
-
-        processTriggers(textOnly);
-        if (lower.includes("wimpy")) { const m = textOnly.match(/wimpy[^\d]*(\d+)/i); if (m) setStats(p => ({ ...p, wimpy: parseInt(m[1]) })); }
 
         // Local Inventory Tracking
         const trackAction = () => {
@@ -355,27 +298,34 @@ export function useGameParser(deps: UseGameParserDeps) {
         };
 
         trackAction();
+        processTriggers(textOnly);
 
         const isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
         const isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
+        
+        // A line is a room name if it matches the MUME room color OR matches our GMCP room name
         const isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
         const pMatch = cleanLine.match(/^([\*\)\!oO\.\[f<%\~+WU:=O\#\?\(].*?>\s*)(.*)$/);
-        // Safety: Always show if counter is stuck high or if it's clearly a player-relevant line (combat, chat, etc)
-        const isForceVisible = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
-
+        
         // Final visibility logic:
         // 1. Never show if it's a drawer-triggered capture (unless forced visible by combat/comms)
         // 2. Never show if it's a silent capture (ref-based counter)
         // 3. Always show if forced visible
-        const shouldShow = (isDrawerCapture.current === 0 && isSilentCapture.current === 0) || isForceVisible;
+        const shouldShow = (isDrawerCapture.current === 0 && isSilentCapture.current === 0) || /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
 
         if (shouldShow) {
             const finalRawText = pMatch ? pMatch[2] : cleanLine;
             // Only pass precalculated strings if we didn't slice the prompt off,
             // otherwise the indices/matches would be slightly wrong in useMessageLog.
             const precalculated = !pMatch ? { textOnly, lower } : undefined;
-            addMessage('game', finalRawText, undefined, undefined, isRoomName, precalculated);
+            
+            // Create a semi-stable ID based on content + timestamp to avoid random 'randomness'
+            // while still allowing the same line to re-trigger if sent again later.
+            // We append a counter to ensure uniqueness within the same millisecond batch.
+            const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
+            
+            addMessage('game', finalRawText, undefined, stableId, isRoomName, precalculated);
         }
     }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);
 

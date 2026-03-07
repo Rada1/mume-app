@@ -34,11 +34,10 @@ export const useSpatButtons = (
         el.classList.add('is-triggered');
 
         // The target is now INSIDE the command bar.
-        // The spat-container is row-reverse, landing on the right.
-        // We calculate target coordinates relative to the viewport for the initial fixed animation.
-        const baseTargetX = inputRect ? inputRect.right : window.innerWidth;
-        const targetX = baseTargetX;
-        const targetY = inputRect ? (inputRect.top + inputRect.height / 2) : (window.innerHeight - 30);
+        // We set these to simple relative indicators (0 for left, 100 for right)
+        // as the SpatButtons.tsx component handles the actual pixel measurement.
+        const startX = 0; 
+        const targetX = 100; 
 
         let swipeCommands, swipeActionTypes;
         try {
@@ -53,10 +52,10 @@ export const useSpatButtons = (
             icon: el.dataset.icon || undefined,
             command: el.dataset.cmd || '',
             action: el.dataset.action || 'command',
-            startX: rect.left + rect.width / 2,
-            startY: rect.top + rect.height / 2,
-            targetX: baseTargetX,
-            targetY: targetY,
+            startX: startX,
+            startY: 0,
+            targetX: targetX,
+            targetY: 0,
             color: (el as any).style.backgroundColor || 'var(--accent)',
             timestamp: Date.now(),
             swipeCommands,
@@ -68,47 +67,59 @@ export const useSpatButtons = (
     }, [triggerHaptic]);
 
     useEffect(() => {
-        if (messages.length === 0) return;
-        const timer = setTimeout(() => {
-            if (!scrollContainerRef.current) return;
-            const spits = Array.from(scrollContainerRef.current.querySelectorAll('.inline-btn[data-spit="true"]'));
+        if (messages.length === 0) {
+            firedTriggerOccurrencesRef.current.clear();
+            return;
+        }
 
-            // Filter out any occurrences that have already been fired in this session
-            const validSpits = spits.filter((el: any) => {
+        if (!scrollContainerRef.current) return;
+
+        const observer = new MutationObserver((mutations) => {
+            const addedNodes = mutations.flatMap(m => Array.from(m.addedNodes));
+            
+            const spits: HTMLElement[] = [];
+            addedNodes.forEach(node => {
+                if (!(node instanceof HTMLElement)) return;
+                if (node.classList.contains('inline-btn') && node.dataset.spit === "true") {
+                    spits.push(node);
+                }
+                const nested = node.querySelectorAll('.inline-btn[data-spit="true"]');
+                nested.forEach(n => spits.push(n as HTMLElement));
+            });
+
+            if (spits.length === 0) return;
+
+            spits.forEach((el: any) => {
                 const mid = el.dataset.mid || 'unknown';
                 const bid = el.dataset.id || '';
                 const context = el.dataset.context || '';
                 const occKey = `${mid}:${bid}:${context}`;
-                return !firedTriggerOccurrencesRef.current.has(occKey);
+
+                if (!firedTriggerOccurrencesRef.current.has(occKey)) {
+                    firedTriggerOccurrencesRef.current.add(occKey);
+                    
+                    // Small delay to ensure the browser has finished layout so we can measure rects
+                    requestAnimationFrame(() => {
+                        triggerSpit(el);
+                        el.dataset.spit = "triggered";
+                    });
+                }
             });
 
-            if (validSpits.length === 0) return;
+            // Pruning cache
+            if (firedTriggerOccurrencesRef.current.size > 300) {
+                const entries = Array.from(firedTriggerOccurrencesRef.current);
+                firedTriggerOccurrencesRef.current = new Set(entries.slice(-150));
+            }
+        });
 
-            // Only trigger the MOST RECENT instance of any specific trigger text/id found in this batch
-            const latestPerId: Record<string, HTMLElement> = {};
-            validSpits.forEach((el: any) => {
-                const bId = el.dataset.id || el.innerText;
-                latestPerId[bId] = el;
-                el.dataset.spit = "pending";
-            });
+        observer.observe(scrollContainerRef.current, {
+            childList: true,
+            subtree: true
+        });
 
-            Object.values(latestPerId).forEach((el: any) => {
-                const mid = el.dataset.mid || 'unknown';
-                const bid = el.dataset.id || '';
-                const context = el.dataset.context || '';
-                firedTriggerOccurrencesRef.current.add(`${mid}:${bid}:${context}`);
-
-                triggerSpit(el);
-                el.dataset.spit = "triggered";
-            });
-
-            // Cleanup any that were marked pending but not latest
-            validSpits.forEach((el: any) => {
-                if (el.dataset.spit === "pending") el.dataset.spit = "skipped";
-            });
-        }, 50);
-        return () => clearTimeout(timer);
-    }, [messages, triggerSpit, scrollContainerRef]);
+        return () => observer.disconnect();
+    }, [triggerSpit, scrollContainerRef, messages.length === 0]);
 
     return {
         spatButtons,
