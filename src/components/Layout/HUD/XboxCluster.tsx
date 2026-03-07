@@ -57,8 +57,8 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
     };
 
     if (isDefault) {
-        style.right = '10px';
-        style.bottom = '25px';
+        style.right = '15px';
+        style.bottom = '30px';
         style.top = 'auto';
         style.transform = pos.scale ? `scale(${pos.scale})` : '';
     } else {
