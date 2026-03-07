@@ -24,7 +24,7 @@
   .mobile-bottom-gutter {
     display: flex;
     flex-direction: column;
-    height: 220px;
+    height: 280px;
     background: var(--bg-app);
     border-top: 1px solid var(--border-color);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -49,8 +49,8 @@
 }
 
 .is-landscape .mobile-bottom-gutter {
-  width: 25vw !important;
-  min-width: 180px !important;
+  width: 30vw !important;
+  min-width: 240px !important;
   max-width: none !important;
   height: 100% !important;
   display: flex !important;

@@ -10,6 +10,7 @@ interface JoystickProps {
     onJoystickEnd: (e: React.PointerEvent) => void;
     onNavStart: (dir: 'up' | 'down', e: React.PointerEvent) => void;
     onNavEnd: (dir: 'up' | 'down') => void;
+    onDiagonalTap?: (dir: 'up' | 'down') => void;
     isTargetModifierActive?: boolean;
 }
 
@@ -22,6 +23,7 @@ const Joystick: React.FC<JoystickProps> = ({
     onJoystickEnd,
     onNavStart,
     onNavEnd,
+    onDiagonalTap,
     isTargetModifierActive
 }) => {
     return (
@@ -79,6 +81,22 @@ const Joystick: React.FC<JoystickProps> = ({
                             <path d="M 69,76 L 76,83 L 83,76" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" opacity="0.8" />
                         </g>
                     </svg>
+
+                    {/* Dedicated Diagonal Tap Zones */}
+                    <div
+                        className="joystick-tap-zone nw"
+                        onPointerDown={(e) => {
+                            e.stopPropagation();
+                            onDiagonalTap?.('up');
+                        }}
+                    />
+                    <div
+                        className="joystick-tap-zone se"
+                        onPointerDown={(e) => {
+                            e.stopPropagation();
+                            onDiagonalTap?.('down');
+                        }}
+                    />
 
                     <div
                         ref={joystickKnobRef}

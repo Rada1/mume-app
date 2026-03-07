@@ -44,8 +44,8 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
     let style: React.CSSProperties = {
         position: 'absolute',
         zIndex: 2000,
-        width: '170px',
-        height: '170px',
+        width: '220px',
+        height: '220px',
         pointerEvents: 'auto',
         cursor: isEditMode ? 'move' : undefined,
         border: isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined,

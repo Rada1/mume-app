@@ -40,7 +40,7 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
             style={{
                 left: pos.x ?? '20px',
                 top: pos.y,
-                bottom: isDefault ? '20px' : (pos.y === undefined ? '20px' : 'auto'),
+                bottom: isDefault ? '50px' : (pos.y === undefined ? '50px' : 'auto'),
                 width: '180px',
                 height: '180px',
                 transform: (isDefault) ? (pos.scale ? `scale(${pos.scale})` : '') : `${pos.y !== undefined ? '' : 'translateY(-50%)'} ${pos.scale ? `scale(${pos.scale})` : ''}`,
@@ -105,6 +105,10 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                 }}
                 onNavStart={joystick.handleNavStart}
                 onNavEnd={(dir) => joystick.handleNavEnd(dir, executeCommand, triggerHaptic, setBtnGlow)}
+                onDiagonalTap={(dir) => {
+                    executeCommand(dir);
+                    triggerHaptic(40);
+                }}
                 isTargetModifierActive={joystick.isTargetModifierActive}
             />
         </div>

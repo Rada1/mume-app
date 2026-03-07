@@ -2,8 +2,8 @@
 
 .xbox-cluster {
     position: relative;
-    width: 170px;
-    height: 170px;
+    width: 220px;
+    height: 220px;
     pointer-events: auto;
     touch-action: none;
 }
@@ -11,8 +11,8 @@
 .xbox-btn {
     position: absolute;
     touch-action: none;
-    width: 50px;
-    height: 50px;
+    width: 64px;
+    height: 64px;
     border-radius: 50% !important;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -36,43 +36,43 @@
 
 /* Individual positions within the 170x170 cluster - Perfect Geometric Quarter Arc */
 .xbox-btn.center {
-    left: 100px;
-    top: 100px;
-    width: 70px;
-    height: 70px;
+    left: 132px;
+    top: 132px;
+    width: 82px;
+    height: 82px;
     z-index: 100;
 }
 
 /* Ranger (Top of Arc) */
 .xbox-btn.top {
-    left: 110px;
-    top: 8px;
+    left: 152px;
+    top: 5px;
 }
 
 /* Cleric */
 .xbox-btn.right {
-    left: 59px;
-    top: 22px;
+    left: 80px;
+    top: 25px;
 }
 
 /* Mage */
 .xbox-btn.left {
-    left: 22px;
-    top: 59px;
+    left: 25px;
+    top: 80px;
 }
 
 /* Thief (Bottom of Arc) */
 .xbox-btn.bottom {
-    left: 8px;
-    top: 110px;
+    left: 5px;
+    top: 152px;
 }
 
 /* Door (Outside utility) */
 .xbox-btn.outside {
-    left: 8px;
-    top: -10px;
-    width: 40px;
-    height: 40px;
+    left: 10px;
+    top: -12px;
+    width: 48px;
+    height: 48px;
 }
 
 /* Apply individual theme colors to borders at rest (slightly muted) */

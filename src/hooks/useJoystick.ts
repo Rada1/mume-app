@@ -16,6 +16,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
     const joystickStartPos = useRef<{ x: number, y: number } | null>(null);
     const longPressTimer = useRef<NodeJS.Timeout | null>(null);
     const lastHapticDirRef = useRef<Direction | null>(null);
+    const touchStartPos = useRef<{ x: number, y: number } | null>(null);
 
     const handleJoystickStart = useCallback((e: React.PointerEvent) => {
         if (e.cancelable) e.preventDefault();
@@ -25,6 +26,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         e.currentTarget.setPointerCapture(e.pointerId);
         const rect = e.currentTarget.getBoundingClientRect();
         joystickStartPos.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+        touchStartPos.current = { x: e.clientX, y: e.clientY };
 
         // Start long press timer for target modifier
         if (longPressTimer.current) clearTimeout(longPressTimer.current);
@@ -57,7 +59,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             dy = Math.sin(snappedAngle) * dist;
         }
 
-        const maxDist = 60;
+        const maxDist = 75;
         const tiltX = -(dy / maxDist) * 20, tiltY = (dx / maxDist) * 20, transX = (dx / maxDist) * 20, transY = (dy / maxDist) * 20;
         joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${transX}px, ${transY}px, 0)`;
 
@@ -69,8 +71,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             container.style.setProperty('--joy-dist', `${Math.min(1, dist / maxDist)}`);
         }
 
-        // Update current direction state (8-way mapping)
-        if (dist < 10) {
+        // Update current direction state (Cardinals only on swipe)
+        if (dist < 32) {
             setCurrentDir(null);
             if (lastHapticDirRef.current !== null) {
                 triggerHaptic(2);
@@ -78,19 +80,16 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             }
         } else {
             let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
-
+            
+            // Strictly 4-way Cardinal Zones for visual feedback
             let dir: any = null;
-            if (angle >= 337.5 || angle < 22.5) dir = 'e';
-            else if (angle >= 22.5 && angle < 67.5) dir = 'down'; // SE -> down
-            else if (angle >= 67.5 && angle < 112.5) dir = 's';
-            else if (angle >= 112.5 && angle < 157.5) dir = null; // SW -> unmapped
-            else if (angle >= 157.5 && angle < 202.5) dir = 'w';
-            else if (angle >= 202.5 && angle < 247.5) dir = 'up'; // NW -> up
-            else if (angle >= 247.5 && angle < 292.5) dir = 'n';
-            else if (angle >= 292.5 && angle < 337.5) dir = null; // NE -> unmapped
+            if (angle >= 315 || angle < 45) dir = 'e';
+            else if (angle >= 45 && angle < 135) dir = 's';
+            else if (angle >= 135 && angle < 225) dir = 'w';
+            else if (angle >= 225 && angle < 315) dir = 'n';
 
             if (dir !== lastHapticDirRef.current) {
-                if (dir !== null) triggerHaptic(5); // Tick when entering a valid direction
+                if (dir !== null) triggerHaptic(5);
                 lastHapticDirRef.current = dir;
             }
 
@@ -117,6 +116,11 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
 
         const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
+        
+        // Calculate actual displacement from the touch start point
+        const touchDX = touchStartPos.current ? (e.clientX - touchStartPos.current.x) : 0;
+        const touchDY = touchStartPos.current ? (e.clientY - touchStartPos.current.y) : 0;
+        const displacement = Math.sqrt(touchDX * touchDX + touchDY * touchDY);
 
         if (joystickKnobRef.current) {
             joystickKnobRef.current.classList.add('resetting');
@@ -137,28 +141,33 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
                 (document.activeElement as HTMLElement)?.blur();
             }
 
-            if (dist < 10) {
+            if (displacement < 20) {
+                // This was a tap, not a swipe (little to no movement)
                 if (e.cancelable) e.preventDefault();
-                if (!suppressDefault) executeCommand('look');
-                triggerHaptic(10);
+                
+                // Only dead center (relative to joystick center) triggers 'look'
+                if (dist < 12 && !suppressDefault) {
+                    executeCommand('look');
+                    triggerHaptic(10);
+                }
+                // Taps on the edges of the joystick base now do nothing
+                
                 joystickStartPos.current = null;
-                return true; // Center tap
-            } else {
+                touchStartPos.current = null;
+                return true; 
+            } else if (dist >= 32) {
+                // Full Swipe Mode (Significant movement from start AND far from center)
                 let angle = Math.atan2(dyOriginal, dxOriginal) * (180 / Math.PI); if (angle < 0) angle += 360;
 
                 let cmd: string | null = null;
-                if (angle >= 337.5 || angle < 22.5) cmd = 'east';
-                else if (angle >= 22.5 && angle < 67.5) cmd = 'down'; // SE -> down
-                else if (angle >= 67.5 && angle < 112.5) cmd = 'south';
-                else if (angle >= 112.5 && angle < 157.5) cmd = null; // SW -> unmapped
-                else if (angle >= 157.5 && angle < 202.5) cmd = 'west';
-                else if (angle >= 202.5 && angle < 247.5) cmd = 'up'; // NW -> up
-                else if (angle >= 247.5 && angle < 292.5) cmd = 'north';
-                else if (angle >= 292.5 && angle < 337.5) cmd = null; // NE -> unmapped
+                // Wide Cardinal Zones
+                if (angle >= 315 || angle < 45) cmd = 'east';
+                else if (angle >= 45 && angle < 135) cmd = 'south';
+                else if (angle >= 135 && angle < 225) cmd = 'west';
+                else if (angle >= 225 && angle < 315) cmd = 'north';
 
                 if (cmd) {
                     executeCommand(cmd);
-                    // triggerHaptic(40); // Removed as per user request
                     setJoystickGlow(true);
                     setTimeout(() => setJoystickGlow(false), 300);
                 }

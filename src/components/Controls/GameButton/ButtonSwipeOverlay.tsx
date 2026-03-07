@@ -66,8 +66,8 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                 </div>
             </div>
             <div className={`cancel-indicator ${isCancelling ? 'active' : ''}`} style={{
-                '--cancel-x': `calc(var(--wheel-center-x, 50%) + 100px)`,
-                '--cancel-y': `calc(var(--wheel-center-y, 50%) + 100px)`
+                '--cancel-x': `calc(var(--wheel-center-x, 50%) + 200px)`,
+                '--cancel-y': `var(--wheel-center-y, 50%)`
             } as any}>Cancel</div>
         </div>,
         document.body

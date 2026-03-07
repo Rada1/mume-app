@@ -14,7 +14,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "display": "floating",
         "hideIfUnknown": true,
         "style": {
-            "x": 84, "y": 64, "w": 50, "h": 50,
+            "x": 84, "y": 64, "w": 64, "h": 64,
             "backgroundColor": "rgba(255, 255, 255, 0.05)",
             "borderColor": "#22c55e",
             "borderWidth": 2.5,
@@ -40,7 +40,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "display": "floating",
         "hideIfUnknown": true,
         "style": {
-            "x": 74, "y": 74, "w": 50, "h": 50,
+            "x": 74, "y": 74, "w": 64, "h": 64,
             "backgroundColor": "rgba(255, 255, 255, 0.05)",
             "borderColor": "#fbbf24",
             "borderWidth": 2.5,
@@ -64,7 +64,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "display": "floating",
         "hideIfUnknown": true,
         "style": {
-            "x": 94, "y": 74, "w": 50, "h": 50,
+            "x": 94, "y": 74, "w": 64, "h": 64,
             "backgroundColor": "rgba(255, 255, 255, 0.05)",
             "borderColor": "#3b82f6",
             "borderWidth": 2.5,
@@ -88,7 +88,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "display": "floating",
         "hideIfUnknown": true,
         "style": {
-            "x": 84, "y": 84, "w": 50, "h": 50,
+            "x": 84, "y": 84, "w": 64, "h": 64,
             "backgroundColor": "rgba(255, 255, 255, 0.05)",
             "borderColor": "#94a3b8",
             "borderWidth": 2.5,
@@ -120,7 +120,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "display": "floating",
         "hideIfUnknown": false,
         "style": {
-            "x": 84, "y": 74, "w": 50, "h": 50,
+            "x": 84, "y": 74, "w": 64, "h": 64,
             "backgroundColor": "rgba(255, 255, 255, 0.05)",
             "borderColor": "#ef4444",
             "borderWidth": 2.5,
@@ -150,7 +150,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
         "display": "floating",
         "hideIfUnknown": false,
         "style": {
-            "x": 65, "y": 64, "w": 40, "h": 40,
+            "x": 65, "y": 64, "w": 52, "h": 52,
             "backgroundColor": "rgba(255, 255, 255, 0.05)",
             "borderColor": "#78350f",
             "borderWidth": 2.5,

@@ -23,6 +23,7 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
 
             if (ds.type === 'cluster') {
                 const clusterId = ds.id as string;
+                // Xbox is anchored to right, so a positive dx (mouse right) means less distance from right
                 let newX = clusterId === 'xbox' ? ds.initialX - dx : ds.initialX + dx;
                 let newY = ds.initialY + dy;
 
@@ -34,12 +35,14 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                 }
 
                 ds.elements.forEach((item: any) => {
-                    item.el.style.transform = `translate(${clusterId === 'xbox' ? -newX : newX}px, ${newY}px)`;
+                    // We only apply the delta via transform to avoid fighting the base CSS right/left/top
+                    item.el.style.transform = `translate(${clusterId === 'xbox' ? -dx : dx}px, ${dy}px) ${ds.initialW !== 1 ? `scale(${ds.initialW})` : ''}`;
                 });
 
                 ds.finalX = newX;
                 ds.finalY = newY;
-            } else if (ds.type === 'cluster-resize') {
+            }
+ else if (ds.type === 'cluster-resize') {
                 const clusterId = ds.id as string;
                 if (clusterId === 'mapper') {
                     let newW = ds.initialW + dx;

@@ -118,8 +118,8 @@ export const useButtonGestures = ({
 
         const angle = Math.atan2(dy, dx) * 180 / Math.PI;
         const isSwipedOut = el._maxDist > 25;
-        const cancelX = window.innerWidth / 2 + 100;
-        const cancelY = window.innerHeight / 2 + 100;
+        const cancelX = window.innerWidth / 2 + 200;
+        const cancelY = window.innerHeight / 2;
         const distToCancelBubble = Math.sqrt(Math.pow(e.clientX - cancelX, 2) + Math.pow(e.clientY - cancelY, 2));
         const isCancelZone = distToCancelBubble < 45;
 
@@ -228,8 +228,8 @@ export const useButtonGestures = ({
 
         if (el._didFire) { el._didFire = false; return; }
 
-        const cancelX = window.innerWidth / 2 + 100;
-        const cancelY = window.innerHeight / 2 + 100;
+        const cancelX = window.innerWidth / 2 + 200;
+        const cancelY = window.innerHeight / 2;
         const distToCancelBubble = Math.sqrt(Math.pow(e.clientX - cancelX, 2) + Math.pow(e.clientY - cancelY, 2));
 
         if (finalIsCancelling || distToCancelBubble < 45) return;
@@ -259,7 +259,7 @@ export const useButtonGestures = ({
                     initialPointerX: (isSwipe && isDial) ? initialX : undefined,
                     initialPointerY: (isSwipe && isDial) ? initialY : undefined
                 });
-            } else {
+            } else if (previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                 executeCommand(previewCmd.cmd, false, false);
                 if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
                 triggerHaptic(35);

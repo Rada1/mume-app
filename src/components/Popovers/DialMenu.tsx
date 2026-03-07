@@ -65,22 +65,24 @@ export const DialMenu: React.FC<DialMenuProps> = ({
             let angle = Math.atan2(dy, dx) * 180 / Math.PI;
             if (angle < 0) angle += 360;
 
-            let bestIndex = 0;
+            let bestIndex: number | null = null;
             let minDiff = Infinity;
 
-            layout.items.forEach((item, i) => {
-                let diff = Math.abs(angle - item.angle);
-                if (diff > 180) diff = 360 - diff;
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    bestIndex = i;
-                }
-            });
+            if (layout.items.length > 0) {
+                layout.items.forEach((item, i) => {
+                    let diff = Math.abs(angle - item.angle);
+                    if (diff > 180) diff = 360 - diff;
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        bestIndex = i;
+                    }
+                });
+            }
 
             if (bestIndex !== activeIndexRef.current) {
                 setActiveIndex(bestIndex);
                 activeIndexRef.current = bestIndex;
-                if (lastHapticIndex.current !== bestIndex) {
+                if (bestIndex !== null && lastHapticIndex.current !== bestIndex) {
                     triggerHaptic(10);
                     lastHapticIndex.current = bestIndex;
                 }
@@ -104,6 +106,28 @@ export const DialMenu: React.FC<DialMenuProps> = ({
         };
     }, [initialX, initialY, menuButtons, onClose, onExecute, triggerHaptic, layout]);
 
+    if (!menuButtons || menuButtons.length === 0) {
+        return (
+            <div className="dial-menu-overlay" onPointerUp={onClose} onPointerDown={onClose}>
+                <div className="dial-menu-center" style={{
+                    position: 'fixed',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    background: 'rgba(0,0,0,0.8)',
+                    padding: '20px',
+                    borderRadius: '20px',
+                    color: '#fff',
+                    textAlign: 'center',
+                    pointerEvents: 'none'
+                }}>
+                    <div style={{ opacity: 0.5, marginBottom: '4px' }}>Empty Set</div>
+                    <div style={{ fontSize: '0.8rem' }}>{setId}</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div
             className="dial-menu-overlay"
@@ -120,7 +144,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                 transform: 'translate(-50%, -50%)'
             } as any}>
                 <div className="dial-selection-center" style={{
-                    '--accent': activeIndex !== null ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))') : 'rgba(255,255,255,0.2)',
+                    '--accent': (activeIndex !== null && menuButtons[activeIndex]) ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))') : 'rgba(255,255,255,0.2)',
                     width: '120px',
                     height: '120px',
                     position: 'absolute',
@@ -128,7 +152,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                     left: '50%',
                     transform: 'translate(-50%, -50%)'
                 } as any}>
-                    {activeIndex !== null ? (
+                    {activeIndex !== null && menuButtons[activeIndex] ? (
                         <div className="dial-center-highlight">
                             <div className="dial-center-icon">
                                 {menuButtons[activeIndex].icon ? (
