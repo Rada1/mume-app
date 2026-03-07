@@ -83,7 +83,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
     const { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine } = useMessageLog(inCombatHookRef);
-    const addSystemMessage = useCallback((text: string) => addMessage('system', text), [addMessage]);
+    const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }), [addMessage]);
 
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
     const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);

@@ -4,7 +4,7 @@ export type TelnetState = 'DATA' | 'IAC' | 'NEGOTIATE' | 'SUB' | 'SUB_IAC';
 
 export interface ProtocolOptions {
     sendBytes: (bytes: number[]) => void;
-    addMessage: (type: 'system' | 'error' | 'game', text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => void;
+    addMessage: (type: 'system' | 'error' | 'game', text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => void;
     handleSubnegotiation: (buffer: number[]) => void;
     processText: (text: string) => void;
     sendGMCP: (pkg: string, data?: any) => void;
@@ -88,7 +88,8 @@ export class ProtocolHandler {
             this.options.sendBytes([IAC, (cmd === WILL ? DO : WILL), TELNET_GMCP]);
             if (!this.gmcpReady) {
                 this.gmcpReady = true;
-                this.options.addMessage('system', 'GMCP negotiated. Requesting data...');
+                const sysText = 'GMCP negotiated. Requesting data...';
+                this.options.addMessage('system', sysText, undefined, undefined, undefined, { textOnly: sysText, lower: sysText.toLowerCase() });
                 this.options.sendGMCP('Core.Supports.Set', ["Core 1", "Char 1", "Char.Vitals 1", "Room 1", "Room.Info 1", "Room.UpdateExits 1", "Room.Chars 1", "Room.Items 1", "Char.Items 1", "Comm 1", "External.Room 1"]);
             }
         } else if (cmd === DO && option === TELNET_NAWS) {

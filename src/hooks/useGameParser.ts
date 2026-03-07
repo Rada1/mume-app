@@ -8,7 +8,7 @@ import { useTriggerProcessor } from './useTriggerProcessor';
 export interface UseGameParserDeps {
     isItemsOpen: boolean; isCharacterOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => void;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => void;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
     setWeather: (val: any) => void; setIsFoggy: (val: boolean) => void;
     setStats: (val: GameStats | ((prev: GameStats) => GameStats)) => void;
@@ -46,6 +46,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     const processLine = useCallback((line: string) => {
         let cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
+
+        // Cache these for performance to avoid re-evaluating in child hooks
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '');
         let lower = textOnly.toLowerCase();
 
@@ -335,7 +337,11 @@ export function useGameParser(deps: UseGameParserDeps) {
         const shouldShow = (!isDrawerCapture.current && isSilentCapture.current === 0) || isForceVisible;
 
         if (shouldShow) {
-            addMessage('game', pMatch ? pMatch[2] : cleanLine, undefined, undefined, isRoomName);
+            const finalRawText = pMatch ? pMatch[2] : cleanLine;
+            // Only pass precalculated strings if we didn't slice the prompt off,
+            // otherwise the indices/matches would be slightly wrong in useMessageLog.
+            const precalculated = !pMatch ? { textOnly, lower } : undefined;
+            addMessage('game', finalRawText, undefined, undefined, isRoomName, precalculated);
         }
     }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);
 
