@@ -139,7 +139,9 @@ export const useMapperRenderer = ({
                                         const isCardinalDir = ['n', 's', 'e', 'w'].includes(dir);
 
                                         if (!(isAdjacentCardinal && isCardinalDir)) {
-                                            const lineColor = isDarkMode ? "rgba(137, 180, 250, 0.3)" : "rgba(59, 130, 246, 0.3)";
+                                            const isAdjacent = Math.abs(dx) <= 1.1 && Math.abs(dy) <= 1.1;
+                                            const alpha = isAdjacent ? 0.3 : 0.08;
+                                            const lineColor = isDarkMode ? `rgba(137, 180, 250, ${alpha})` : `rgba(59, 130, 246, ${alpha})`;
                                             drawLine(centerPX, centerPY, tx * GRID_SIZE + GRID_SIZE / 2, ty * GRID_SIZE + GRID_SIZE / 2, lineColor, 1);
                                         }
                                     }
@@ -202,7 +204,7 @@ export const useMapperRenderer = ({
                                     // and it's NOT a road/path that we're about to draw
                                     // and NOT physically adjacent (only show long-distance connections)
                                     if (targetVnum > vnum && !isAnyRoadOrPath && !isPhysicallyAdjacent) {
-                                        const lineColor = isDarkMode ? "rgba(137, 180, 250, 0.7)" : "rgba(37, 99, 235, 0.7)";
+                                        const lineColor = isDarkMode ? "rgba(137, 180, 250, 0.15)" : "rgba(37, 99, 235, 0.15)";
                                         drawLine(centerPX, centerPY, tpx, tpy, lineColor, 2);
                                     }
 
