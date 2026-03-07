@@ -117,6 +117,15 @@ export function useGameParser(deps: UseGameParserDeps) {
             setTimeout(() => setLightningEnabled(false), 450);
         }
 
+        // Wall bump detection (screen jiggle + haptic)
+        if (lower.includes("alas, you cannot go that way") || 
+            lower.includes("there is no exit") || 
+            lower.includes("you bump into")) {
+            setRumble(true);
+            triggerHaptic(40);
+            setTimeout(() => setRumble(false), 300);
+        }
+
         if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = []; }
         if ((isWaitingForEq.current || captureStage.current !== 'none') && /you are using|you are equipped with/i.test(lower)) {
             isWaitingForEq.current = false; captureStage.current = 'eq'; containerStackRef.current = [];

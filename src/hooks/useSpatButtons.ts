@@ -48,7 +48,7 @@ export const useSpatButtons = (
         const newSpat: SpatButton = {
             id,
             btnId,
-            label: el.innerText,
+            label: el.dataset.label || el.innerText,
             icon: el.dataset.icon || undefined,
             command: el.dataset.cmd || '',
             action: el.dataset.action || 'command',

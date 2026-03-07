@@ -66,7 +66,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         if (targetEl?.classList) { targetEl.classList.remove('btn-glow-active'); void targetEl.offsetWidth; targetEl.classList.add('btn-glow-active'); }
 
         let cmd = button.command;
-        if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`; }
+        if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : cmd; }
         let finalCmd = cmd;
         if (joystick.currentDir) {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
@@ -232,7 +232,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             });
         }
         else if (action === 'command' && cmd) {
-            const finalCmd = context ? (cmd.includes('%n') ? cmd.replace(/%n/g, context) : `${cmd} ${context}`) : cmd;
+            const finalCmd = context ? (cmd.includes('%n') ? cmd.replace(/%n/g, context) : cmd) : cmd;
             executeCommand(finalCmd);
         }
         else if (cmd === 'target' && context) {

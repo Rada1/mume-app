@@ -8,6 +8,81 @@
     "isNoviceMode": false,
     "buttons": [
         {
+            "id": "trig-hungry",
+            "label": "Eat",
+            "command": "eat target",
+            "setId": "triggers",
+            "actionType": "command",
+            "display": "floating",
+            "style": {
+                "x": 50,
+                "y": 40,
+                "w": 80,
+                "h": 40,
+                "backgroundColor": "#f97316",
+                "shape": "pill"
+            },
+            "trigger": {
+                "enabled": true,
+                "pattern": "you are hungry",
+                "isRegex": false,
+                "autoHide": true,
+                "duration": 10,
+                "type": "show",
+                "spit": true
+            }
+        },
+        {
+            "id": "trig-thirsty",
+            "label": "Drink",
+            "command": "drink target",
+            "setId": "triggers",
+            "actionType": "command",
+            "display": "floating",
+            "style": {
+                "x": 50,
+                "y": 50,
+                "w": 80,
+                "h": 40,
+                "backgroundColor": "#0ea5e9",
+                "shape": "pill"
+            },
+            "trigger": {
+                "enabled": true,
+                "pattern": "you are thirsty",
+                "isRegex": false,
+                "autoHide": true,
+                "duration": 10,
+                "type": "show",
+                "spit": true
+            }
+        },
+        {
+            "id": "trig-reply",
+            "label": "Reply",
+            "command": "input:reply ",
+            "setId": "triggers",
+            "actionType": "command",
+            "display": "floating",
+            "style": {
+                "x": 50,
+                "y": 60,
+                "w": 80,
+                "h": 40,
+                "backgroundColor": "#8b5cf6",
+                "shape": "pill"
+            },
+            "trigger": {
+                "enabled": true,
+                "pattern": "%n tells you",
+                "isRegex": false,
+                "autoHide": true,
+                "duration": 20,
+                "type": "show",
+                "spit": true
+            }
+        },
+        {
             "id": "btn-who",
             "label": "Who",
             "command": "who",
