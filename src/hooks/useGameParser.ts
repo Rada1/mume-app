@@ -176,8 +176,29 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'practice') parsePracticeLine(textOnly);
         }
 
-        const scoreMatch = textOnly.match(/(\d+)\/(\d+)\s+hits.*(\d+)\/(\d+)\s+(mana|spirit).*(\d+)\/(\d+)\s+(moves|vitality)/i);
-        if (scoreMatch) setStats(p => ({ ...p, hp: parseInt(scoreMatch[1]), maxHp: parseInt(scoreMatch[2]), mana: parseInt(scoreMatch[3]), maxMana: parseInt(scoreMatch[4]), move: parseInt(scoreMatch[6]), maxMove: parseInt(scoreMatch[7]) }));
+        // 2. Score & Stats Parsing
+        const hitsMatch = textOnly.match(/(\d+)\/(\d+)\s+hits/i);
+        const manaMatch = textOnly.match(/(\d+)\/(\d+)\s+(mana|spirit)/i);
+        const movesMatch = textOnly.match(/(\d+)\/(\d+)\s+(moves|vitality)/i);
+
+        if (hitsMatch || manaMatch || movesMatch) {
+            setStats(p => {
+                const next = { ...p };
+                if (hitsMatch) {
+                    next.hp = parseInt(hitsMatch[1]);
+                    next.maxHp = parseInt(hitsMatch[2]);
+                }
+                if (manaMatch) {
+                    next.mana = parseInt(manaMatch[1]);
+                    next.maxMana = parseInt(manaMatch[2]);
+                }
+                if (movesMatch) {
+                    next.move = parseInt(movesMatch[1]);
+                    next.maxMove = parseInt(movesMatch[2]);
+                }
+                return next;
+            });
+        }
 
         if (/alas, you cannot go|no exit|is closed|too exhausted|too tired|cannot go there|blocks your|too dark to see/i.test(lower)) {
             setRumble(true);
