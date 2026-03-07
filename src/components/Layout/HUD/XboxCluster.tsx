@@ -70,6 +70,7 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
 
     return (
         <div
+            id="cluster-xbox"
             className="xbox-cluster"
             style={style}
             onPointerDown={(e) => {

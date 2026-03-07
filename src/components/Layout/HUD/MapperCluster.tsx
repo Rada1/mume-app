@@ -64,6 +64,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     return (
         <div
+            id="cluster-mapper"
             className="mapper-cluster"
             style={style}
             onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'mapper', 'cluster'); }}

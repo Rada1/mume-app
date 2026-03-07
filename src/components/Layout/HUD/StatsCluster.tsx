@@ -30,6 +30,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
 
     return (
         <div
+            id="cluster-stats"
             className="stats-cluster"
             style={{
                 position: 'absolute',

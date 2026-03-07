@@ -140,6 +140,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
                 statsLines={statsLines}
                 executeCommand={executeCommand}
+                isLandscape={viewport.isLandscape}
             />
 
             <EquipmentDrawer

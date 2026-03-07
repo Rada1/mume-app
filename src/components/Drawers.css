@@ -79,10 +79,19 @@
     touch-action: pan-y;
 }
 
+.character-drawer.landscape-mode {
+    width: 85vw;
+    max-width: 800px;
+}
+
 @media (min-width: 1024px) {
     .character-drawer {
         width: 40%;
         max-width: 480px;
+    }
+    .character-drawer.landscape-mode {
+        width: 40%;
+        max-width: 600px;
     }
 }
 

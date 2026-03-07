@@ -8,7 +8,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
     {
         "id": "xbox-y",
         "label": "Ranger",
-        "command": "ride",
+        "command": "bandage",
         "setId": "Xbox",
         "actionType": "command",
         "display": "floating",
@@ -34,7 +34,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
     {
         "id": "xbox-x",
         "label": "Cleric",
-        "command": "commune 'cure light'",
+        "command": "cast 'cure light'",
         "setId": "Xbox",
         "actionType": "command",
         "display": "floating",

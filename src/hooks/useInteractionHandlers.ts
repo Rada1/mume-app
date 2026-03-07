@@ -57,7 +57,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string) => {
         e.stopPropagation();
         if (btn.isEditMode) {
-            if (!wasDraggingRef.current) btn.setEditingButtonId(button.id);
+            if (button.setId !== 'Xbox' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
             return;
         }
 

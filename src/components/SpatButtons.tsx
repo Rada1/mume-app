@@ -48,17 +48,21 @@ const SpatButtonItem: React.FC<{
         >
             {activeDir && createPortal(
                 <div className="swipe-wheel-container" style={{ zIndex: 50000 }}>
-                    {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => (
-                        <div
-                            key={d}
-                            className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
-                            style={{ transform: `rotate(${i * 45}deg)`, opacity: 0.35 }}
-                        >
-                            <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
-                                {d === 'up' ? sb.label : d.toUpperCase()}
-                            </span>
-                        </div>
-                    ))}
+                    {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
+                        const swipeCmd = sb.swipeCommands?.[d as any];
+                        const label = swipeCmd || (d === 'up' ? sb.label : d.toUpperCase());
+                        return (
+                            <div
+                                key={d}
+                                className={`swipe-slice ${activeDir === d ? 'active' : ''}`}
+                                style={{ transform: `rotate(${i * 45}deg)`, opacity: (swipeCmd || activeDir === d) ? 1 : 0.35 }}
+                            >
+                                <span className="swipe-slice-label" style={{ '--self-rotation': `${-i * 45}deg` } as any}>
+                                    {label}
+                                </span>
+                            </div>
+                        );
+                    })}
                 </div>,
                 document.body
             )}
@@ -160,6 +164,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                         const dx = e.clientX - startX, dy = e.clientY - el._startY;
                         const dist = Math.sqrt(dx * dx + dy * dy);
 
+                        const dir = activeDirMap[sb.id];
                         el._startX = null;
                         setActiveDirMap(prev => ({ ...prev, [sb.id]: null }));
                         el.style.setProperty('--ray-opacity', '0');
@@ -170,10 +175,25 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                             return;
                         }
 
-                        if (maxDist < 10 || (activeDirMap[sb.id] && maxDist > 20)) {
+                        if (maxDist < 10 || (dir && maxDist > 20)) {
                             e.stopPropagation();
-                            if (sb.action === 'nav') setActiveSet(sb.command);
-                            else executeCommand(sb.command);
+
+                            let finalCmd = sb.command;
+                            let finalAction = sb.action;
+
+                            if (dir && maxDist > 20) {
+                                const swipeCmd = sb.swipeCommands?.[dir as any];
+                                if (swipeCmd) {
+                                    finalCmd = swipeCmd;
+                                    finalAction = sb.swipeActionTypes?.[dir as any] || 'command';
+                                } else if (dir !== 'up') {
+                                    // If swiped in a direction with no command (and not 'up' which defaults to base), cancel
+                                    return;
+                                }
+                            }
+
+                            if (finalAction === 'nav') setActiveSet(finalCmd);
+                            else executeCommand(finalCmd);
                             setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
                         }
                     }}

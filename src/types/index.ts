@@ -238,6 +238,8 @@ export interface SpatButton {
     targetY: number;
     color: string;
     timestamp: number;
+    swipeCommands?: Partial<Record<SwipeDirection, string>>;
+    swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
 }
 
 // --- GMCP INTERFACES ---

@@ -60,15 +60,13 @@ export function useMessageHighlighter(
         }
 
         // 2. Buttons
-        if (buttonsRef.current) {
             buttonsRef.current.filter(b => b.display === 'inline' && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
                 candidates.push({
                     pattern: b.trigger!.pattern!,
-                    replacer: (m) => `<span class="inline-btn" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${b.command}" data-context="${m}" data-icon="${b.icon || ''}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" style="background-color: ${b.style.backgroundColor}">${m}</span>`,
+                    replacer: (m) => `<span class="inline-btn" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${b.command}" data-context="${m}" data-icon="${b.icon || ''}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" data-swipes='${b.swipeCommands ? JSON.stringify(b.swipeCommands).replace(/'/g, "&apos;") : ""}' data-swipe-actions='${b.swipeActionTypes ? JSON.stringify(b.swipeActionTypes).replace(/'/g, "&apos;") : ""}' style="background-color: ${b.style.backgroundColor}">${m}</span>`,
                     length: b.trigger!.pattern!.length
                 });
             });
-        }
 
         if (!isRoomName) {
             // 3. PCs

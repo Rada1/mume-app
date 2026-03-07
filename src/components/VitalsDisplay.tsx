@@ -103,7 +103,8 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                 alignItems: isVertical ? 'flex-end' : 'stretch',
                 width: isVertical ? 'auto' : '100%',
                 userSelect: 'none',
-                touchAction: 'none'
+                touchAction: 'none',
+                gap: isLandscape ? '4px' : '0'
             }}
         >
             {/* HP */}
@@ -111,12 +112,12 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                 flexDirection: isVertical ? 'column' : 'row',
                 width: isVertical ? 'auto' : '100%',
                 alignItems: isVertical ? 'center' : 'center',
-                gap: '8px',
+                gap: isLandscape ? '4px' : '8px',
                 position: 'relative'
             }}>
-                <div className="stat-label-group" style={{ minWidth: isVertical ? '32px' : '45px' }}>
-                    <span className="stat-name">HP</span>
-                    <span className="stat-val">{stats.hp}</span>
+                <div className="stat-label-group" style={{ minWidth: isVertical ? '32px' : (isLandscape ? '38px' : '45px') }}>
+                    <span className="stat-name" style={{ fontSize: isLandscape ? '0.6rem' : '0.75rem' }}>HP</span>
+                    <span className="stat-val" style={{ fontSize: isLandscape ? '0.7rem' : '0.85rem' }}>{stats.hp}</span>
                 </div>
                 <div
                     ref={trackRef}
@@ -124,7 +125,7 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                     onPointerDown={handlePointerDown}
                     onClick={(e) => e.stopPropagation()}
                     style={{
-                        height: isVertical ? `${(stats.maxHp / maxStatVal) * barDimBase}px` : '24px',
+                        height: isVertical ? `${(stats.maxHp / maxStatVal) * barDimBase}px` : (isLandscape ? '16px' : '24px'),
                         width: isVertical ? '32px' : '100%',
                         position: 'relative',
                         cursor: onWimpyChange ? (isVertical ? 'ns-resize' : 'ew-resize') : 'default',
@@ -178,8 +179,8 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                                 position: 'absolute',
                                 left: isVertical ? '50%' : `${wimpyRatio * 100}%`,
                                 bottom: isVertical ? `${wimpyRatio * 100}%` : '50%',
-                                width: '16px',
-                                height: '16px',
+                                width: isLandscape ? '12px' : '16px',
+                                height: isLandscape ? '12px' : '16px',
                                 background: 'rgba(255,255,255,0.2)',
                                 border: '2px solid #fff',
                                 borderRadius: '50%',
@@ -193,12 +194,12 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                                 position: 'absolute',
                                 left: isVertical ? '44px' : `${wimpyRatio * 100}%`,
                                 bottom: isVertical ? `${wimpyRatio * 100}%` : 'auto',
-                                top: isVertical ? 'auto' : (isDragging ? '-32px' : '-26px'),
+                                top: isVertical ? 'auto' : (isDragging ? '-32px' : (isLandscape ? '-22px' : '-26px')),
                                 background: isDragging ? 'var(--accent)' : 'rgba(0,0,0,0.8)',
                                 color: isDragging ? '#000' : '#fff',
-                                padding: '2px 6px',
+                                padding: '1px 4px',
                                 borderRadius: '4px',
-                                fontSize: '0.75rem',
+                                fontSize: isLandscape ? '0.6rem' : '0.75rem',
                                 fontWeight: 'bold',
                                 transform: isVertical ? 'translateY(50%)' : 'translateX(-50%)',
                                 whiteSpace: 'nowrap',
@@ -220,14 +221,14 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                 flexDirection: isVertical ? 'column' : 'row',
                 width: isVertical ? 'auto' : '100%',
                 alignItems: isVertical ? 'center' : 'center',
-                gap: '8px'
+                gap: isLandscape ? '4px' : '8px'
             }}>
-                <div className="stat-label-group" style={{ minWidth: isVertical ? '32px' : '45px' }}>
-                    <span className="stat-name">MN</span>
-                    <span className="stat-val">{stats.mana}</span>
+                <div className="stat-label-group" style={{ minWidth: isVertical ? '32px' : (isLandscape ? '38px' : '45px') }}>
+                    <span className="stat-name" style={{ fontSize: isLandscape ? '0.6rem' : '0.75rem' }}>MN</span>
+                    <span className="stat-val" style={{ fontSize: isLandscape ? '0.7rem' : '0.85rem' }}>{stats.mana}</span>
                 </div>
                 <div className="stat-bar-track" style={{
-                    height: isVertical ? `${(stats.maxMana / maxStatVal) * barDimBase}px` : '12px',
+                    height: isVertical ? `${(stats.maxMana / maxStatVal) * barDimBase}px` : (isLandscape ? '8px' : '12px'),
                     width: isVertical ? '24px' : '100%'
                 }} ref={manaRowRef}>
                     <div
@@ -250,14 +251,14 @@ const VitalsDisplay: React.FC<VitalsDisplayProps> = ({
                 flexDirection: isVertical ? 'column' : 'row',
                 width: isVertical ? 'auto' : '100%',
                 alignItems: isVertical ? 'center' : 'center',
-                gap: '8px'
+                gap: isLandscape ? '4px' : '8px'
             }}>
-                <div className="stat-label-group" style={{ minWidth: isVertical ? '32px' : '45px' }}>
-                    <span className="stat-name">MV</span>
-                    <span className="stat-val">{stats.move}</span>
+                <div className="stat-label-group" style={{ minWidth: isVertical ? '32px' : (isLandscape ? '38px' : '45px') }}>
+                    <span className="stat-name" style={{ fontSize: isLandscape ? '0.6rem' : '0.75rem' }}>MV</span>
+                    <span className="stat-val" style={{ fontSize: isLandscape ? '0.7rem' : '0.85rem' }}>{stats.move}</span>
                 </div>
                 <div className="stat-bar-track" style={{
-                    height: isVertical ? `${(stats.maxMove / maxStatVal) * barDimBase}px` : '12px',
+                    height: isVertical ? `${(stats.maxMove / maxStatVal) * barDimBase}px` : (isLandscape ? '8px' : '12px'),
                     width: isVertical ? '24px' : '100%'
                 }} ref={moveRowRef}>
                     <div

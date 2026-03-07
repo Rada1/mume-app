@@ -43,7 +43,9 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
                 if (parsed && Array.isArray(parsed) && parsed.length > 0) {
                     const loadedButtons = parsed.map((b: any) => {
                         const def = defaultButtons.find((d: any) => d.id === b.id);
+                        if (!def) return b;
                         return {
+                            ...def,
                             ...b,
                             // If isVisible is missing (stripped for save), restore from default or fallback to true/false based on trigger
                             isVisible: (b.isVisible !== undefined) ? b.isVisible : (def ? def.isVisible : (b.trigger?.enabled ? false : true))

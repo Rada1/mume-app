@@ -36,6 +36,7 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
 
     return (
         <div
+            id="cluster-joystick"
             className="joystick-cluster"
             style={{
                 left: pos.x ?? '20px',

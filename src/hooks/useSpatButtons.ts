@@ -40,6 +40,12 @@ export const useSpatButtons = (
         const targetX = baseTargetX;
         const targetY = inputRect ? (inputRect.top + inputRect.height / 2) : (window.innerHeight - 30);
 
+        let swipeCommands, swipeActionTypes;
+        try {
+            if (el.dataset.swipes) swipeCommands = JSON.parse(el.dataset.swipes);
+            if (el.dataset.swipeActions) swipeActionTypes = JSON.parse(el.dataset.swipeActions);
+        } catch (e) { }
+
         const newSpat: SpatButton = {
             id,
             btnId,
@@ -52,7 +58,9 @@ export const useSpatButtons = (
             targetX: baseTargetX,
             targetY: targetY,
             color: (el as any).style.backgroundColor || 'var(--accent)',
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            swipeCommands,
+            swipeActionTypes
         };
 
         setSpatButtons(prev => [...prev.slice(-9), newSpat]);

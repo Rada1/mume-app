@@ -44,6 +44,7 @@ export class GmcpDecoder {
             this.handleRoomPlayers(json);
         } else if (pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
             this.handleRoomNpcs(json);
+            this.handleRoomCharsCombat(json);
         } else if (pkgLower === 'room.addplayer') {
             this.handleSimpleJson(json, handlers.onAddPlayer);
         } else if (pkgLower === 'room.addchar' || pkgLower === 'room.chars.add') {
@@ -105,13 +106,9 @@ export class GmcpDecoder {
         }
 
         const isFighting = this.charVitalsState.position === 'fighting';
-        const hasOpponent = this.charVitalsState.opponent != null && this.charVitalsState.opponent !== '';
-
-        // If we have a position and it's NOT fighting, we are definitely NOT in combat
-        // regardless of what the stale opponent state might say.
-        const fighting = isFighting || (hasOpponent && this.charVitalsState.position !== 'sleeping' && this.charVitalsState.position !== 'sitting' && this.charVitalsState.position !== 'resting');
-
-        this.handlers.setInCombat(fighting);
+        if (isFighting) {
+            this.handlers.setInCombat(true);
+        }
 
         const weatherVal = getField(['weather', 'w']);
         if (weatherVal !== undefined) {
@@ -170,6 +167,32 @@ export class GmcpDecoder {
             const data = JSON.parse(json);
             if (isGmcpRoomPlayers(data) && this.handlers.onRoomNpcs) this.handlers.onRoomNpcs(data);
         } catch (e) { console.error('[GMCP] Parse error in Room.Chars:', e, json); }
+    }
+
+    private handleRoomCharsCombat(json: string) {
+        try {
+            const data = JSON.parse(json);
+            if (!Array.isArray(data)) return;
+
+            // Check if ANYONE in the room (NPC or Player) is in the "fighting" category
+            const someoneFighting = data.some((char: any) => {
+                if (!char || typeof char !== 'object') return false;
+                // MUME uses 'fighting' category in Room.Chars
+                return char.category === 'fighting' || char.fighting === true || char.status === 'fighting';
+            });
+
+            if (someoneFighting) {
+                this.handlers.setInCombat(true);
+            } else {
+                // If NO ONE is fighting in the room, and our own position isn't 'fighting',
+                // we can safely assume combat is over for us.
+                if (this.charVitalsState.position !== 'fighting') {
+                    // Use force=false to respect any active text-based latches if they exist,
+                    // but standard setInCombat(false) logic will handle the latch expiry.
+                    this.handlers.setInCombat(false);
+                }
+            }
+        } catch (e) { }
     }
 
     private handleRoomItems(json: string) {
