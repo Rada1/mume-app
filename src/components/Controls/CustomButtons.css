@@ -42,7 +42,7 @@
     .custom-btn {
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
-        background: rgba(30, 41, 59, 0.85); /* Solid fallback */
+        background-color: rgba(30, 41, 59, 0.85); /* Solid fallback */
     }
 }
 

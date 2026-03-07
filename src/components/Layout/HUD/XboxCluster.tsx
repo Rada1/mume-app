@@ -120,6 +120,7 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
                         gridSize={gridSize}
                         setActiveSet={setActiveSet}
                         setButtons={setButtons}
+                        isMobile={isMobile}
                     />
                 );
             })}
