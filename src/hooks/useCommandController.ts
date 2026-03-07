@@ -10,7 +10,7 @@ export interface CommandControllerDeps {
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
     mapperRef: React.RefObject<any>;
     teleportTargets: any[];
-    isDrawerCapture: React.MutableRefObject<boolean>;
+    isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;

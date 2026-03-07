@@ -18,39 +18,35 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
     setSpatButtons
 }) => {
     const [activeDirMap, setActiveDirMap] = React.useState<Record<string, string | null>>({});
+    const [containerWidth, setContainerWidth] = React.useState(0);
+    const containerRef = React.useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (containerRef.current) {
+            // Find the parent input-area or form to estimate the spit distance
+            const parent = containerRef.current.closest('.input-area');
+            if (parent) {
+                setContainerWidth(parent.getBoundingClientRect().width);
+            }
+        }
+    }, [spatButtons.length]);
 
     return (
-        <>
+        <div className="spat-container" ref={containerRef}>
             {spatButtons.map((sb, idx) => {
                 const activeDir = activeDirMap[sb.id] || null;
-                const hSlotWidth = 130;
-                const vSlotSpacing = 60; // Better spacing for mobile
 
-                let dynamicTargetX = sb.targetX;
-                let dynamicTargetY = sb.targetY;
-
-                if (isMobile) {
-                    // Stack vertically upward on the right
-                    // idx 0 (oldest) is at the bottom. 
-                    // Set base to 60% height to stay clear of joystick/controls
-                    dynamicTargetY = (window.innerHeight * 0.6) - (idx * vSlotSpacing);
-                    // Land 15px from the right edge.
-                    dynamicTargetX = window.innerWidth - 15;
-                } else {
-                    // Desktop: horizontal stack from right to left
-                    dynamicTargetX = sb.targetX - (idx * hSlotWidth);
-                }
+                // The .spat-container uses row-reverse, so idx 0 (oldest) is on the right.
+                // We animate from the left side of the bar towards the right position.
+                // --spit-distance is roughly the negative of the offset from the left edge.
+                const spitOffset = containerWidth ? -(containerWidth * 0.7) : -300;
 
                 return (
                     <div
                         key={sb.id}
                         className={`spat-button ${activeDir ? 'is-swiping' : ''}`}
                         style={{
-                            '--start-x': `${Math.round(sb.startX)}px`,
-                            '--start-y': `${Math.round(sb.startY)}px`,
-                            '--target-x': `${Math.round(dynamicTargetX)}px`,
-                            '--target-y': `${Math.round(dynamicTargetY)}px`,
-                            '--target-transform': isMobile ? 'translate(-100%, -50%)' : 'translate(0, -50%)',
+                            '--spit-distance': `${spitOffset}px`,
                             borderColor: sb.color,
                             boxShadow: `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
                             '--accent': sb.color
@@ -163,6 +159,6 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                     </div>
                 );
             })}
-        </>
+        </div>
     );
 };

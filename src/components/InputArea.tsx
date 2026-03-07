@@ -1,4 +1,6 @@
 import React, { useRef } from 'react';
+import { SpatButtons } from './SpatButtons';
+import { SpatButton } from '../types';
 
 interface InputAreaProps {
     input: string;
@@ -10,6 +12,10 @@ interface InputAreaProps {
     onSwipe?: (dir: string) => void;
     isMobile?: boolean;
     commandPreview?: string | null;
+    spatButtons: SpatButton[];
+    setActiveSet: (setId: string) => void;
+    executeCommand: (cmd: string) => void;
+    setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
 }
 
 const normalizeTerrain = (t: string): string => {
@@ -31,7 +37,8 @@ const normalizeTerrain = (t: string): string => {
 };
 
 const InputArea: React.FC<InputAreaProps> = ({
-    input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, commandPreview
+    input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, commandPreview,
+    spatButtons, setActiveSet, executeCommand, setSpatButtons
 }) => {
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLInputElement>(null);
@@ -143,6 +150,15 @@ const InputArea: React.FC<InputAreaProps> = ({
                         style={{ pointerEvents: 'auto', background: 'transparent', width: '100%', position: 'relative', zIndex: 1 }}
                     />
                 </div>
+                {spatButtons.length > 0 && (
+                    <SpatButtons
+                        spatButtons={spatButtons}
+                        isMobile={!!isMobile}
+                        setActiveSet={setActiveSet}
+                        executeCommand={executeCommand}
+                        setSpatButtons={setSpatButtons}
+                    />
+                )}
                 {target && (
                     <div
                         className="target-badge"

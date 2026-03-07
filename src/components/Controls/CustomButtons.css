@@ -33,6 +33,11 @@
     will-change: transform;
 }
 
+.custom-btn.dragging {
+    transition: none !important;
+    z-index: 10000 !important;
+}
+
 @media (max-width: 768px) {
     .custom-btn {
         backdrop-filter: none;

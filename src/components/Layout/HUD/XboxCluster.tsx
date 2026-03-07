@@ -48,12 +48,12 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
         height: '170px',
         pointerEvents: 'auto',
         cursor: isEditMode ? 'move' : undefined,
-        border: (isEditMode && dragState?.id === 'xbox') ? '2px dashed #ffff00' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+        border: isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined,
         borderRadius: '50%',
         backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
-        boxShadow: (isEditMode && dragState?.id === 'xbox') ? '0 0 30px rgba(255,255,0,0.4)' : undefined,
+        boxShadow: undefined,
         transformOrigin: 'bottom right',
-        opacity: (isEditMode && dragState?.id === 'xbox') ? 0.6 : 1
+        opacity: 1
     };
 
     if (isDefault) {

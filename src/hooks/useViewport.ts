@@ -23,7 +23,7 @@ export function useViewport() {
     }, []);
 
     const isMobile = useMemo(() => {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || windowWidth <= 1024;
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || windowWidth <= 768;
     }, [windowWidth]);
 
     const isLandscape = useMemo(() => {
@@ -50,7 +50,7 @@ export function useViewport() {
         // with native momentum scrolling and visual bounds. Native 'smooth' or 'instant' is better.
         isAutoScrollingRef.current = true;
 
-        if (instant || isMobile) {
+        if (instant) {
             container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
             // Small timeout to reset the flag after the scroll event has likely fired
             setTimeout(() => { isAutoScrollingRef.current = false; }, 50);

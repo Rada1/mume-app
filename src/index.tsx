@@ -212,14 +212,6 @@ const MudClient = () => {
                 setManagerSelectedSet={setManagerSelectedSet}
                 connect={() => telnet.connect()}
             />
-
-            <SpatButtons
-                spatButtons={spatButtons}
-                isMobile={isMobile}
-                setActiveSet={btn.setActiveSet}
-                executeCommand={executeCommand}
-                setSpatButtons={setSpatButtons}
-            />
         </div>
     );
 };

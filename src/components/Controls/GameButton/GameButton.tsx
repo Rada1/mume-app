@@ -116,7 +116,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 borderRadius: `${button.style.borderRadius || 8}px`,
                 '--set-accent': button.style.borderColor || 'var(--accent)',
                 '--set-accent-rgb': getRgb(button.style.borderColor, '255, 255, 255'),
-                opacity: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed ? 0.35 : ((dragState?.id === button.id || (dragState?.initialPositions && dragState.initialPositions[button.id])) ? 0.6 : 1)) : 0,
+                opacity: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed ? 0.35 : 1) : 0,
                 pointerEvents: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed && !isEditMode ? 'none' : 'auto') : 'none',
                 boxShadow: (button.trigger?.enabled && button.isVisible) ? `0 0 20px ${getGlowColor()}` : 'none',
                 zIndex: activeDir ? 20000 : (isSelected ? 1001 : (isFloating ? 1000 : 100))

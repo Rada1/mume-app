@@ -119,10 +119,10 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 setIsItemsDrawerOpen(false); setIsCharacterOpen(false); setIsMapExpanded(false);
             } else executeCommand('s');
         } else if (dir === 'right') {
-            setStatsLines([]); executeCommand('stat', false, true, true); setIsCharacterOpen(true);
+            executeCommand('stat', true, true, true, true); setIsCharacterOpen(true);
         } else if (dir === 'left') {
-            // The drawer will use its cached data. If the user wants to refresh, they can type 'inv'.
-            // Removed side effects from inside the state updaters.
+            executeCommand('inv', true, true, true, true);
+            setTimeout(() => executeCommand('eq', true, true, true, true), 150);
             setIsItemsDrawerOpen(true);
         }
     }, [viewport.isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsCharacterOpen, setIsItemsDrawerOpen, executeCommand, setStatsLines, setInventoryLines, setEqLines, ui]);

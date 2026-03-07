@@ -2,7 +2,7 @@ import { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, Chang
 import {
     GameStats, PopoverState, Message, MessageType, WeatherType,
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
-    DrawerLine, DeathStage, GameAction
+    DrawerLine, DeathStage, GameAction, SpatButton
 } from '../../types';
 import { useButtons } from '../../hooks/useButtons';
 import { useJoystick } from '../../hooks/useJoystick';
@@ -240,4 +240,7 @@ export interface GameContextType {
 
     draggedTarget: { name: string; type: string; x: number; y: number } | null;
     setDraggedTarget: Dispatch<SetStateAction<{ name: string; type: string; x: number; y: number } | null>>;
+
+    spatButtons: SpatButton[];
+    setSpatButtons: Dispatch<SetStateAction<SpatButton[]>>;
 }

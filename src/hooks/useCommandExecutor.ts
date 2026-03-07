@@ -10,7 +10,7 @@ export interface ExecutorDeps {
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
     mapperRef: React.RefObject<MapperRef>;
     teleportTargets: TeleportTarget[];
-    isDrawerCapture: React.MutableRefObject<boolean>;
+    isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
@@ -148,7 +148,15 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             }
         }
 
-        isDrawerCapture.current = fromDrawer;
+        if (fromDrawer) {
+            isDrawerCapture.current++;
+            // Safety timeout
+            setTimeout(() => {
+                if (isDrawerCapture.current > 0) {
+                    isDrawerCapture.current--;
+                }
+            }, 3000);
+        }
         if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
             isWaitingForInv.current = true; captureStage.current = 'none'; setInventoryLines([]);
         } else if (lowerCmd === 'stat' || lowerCmd === 'st') {

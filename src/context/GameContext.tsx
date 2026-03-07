@@ -15,6 +15,7 @@ import { useGameParser } from '../hooks/useGameParser';
 import { useCommandController } from '../hooks/useCommandController';
 import { useSettings } from '../hooks/useSettings';
 import { useSoundSystem } from '../hooks/useSoundSystem';
+import { useSpatButtons } from '../hooks/useSpatButtons';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
 import { GameContextType, VitalsContextType } from './GameContext/types';
@@ -109,6 +110,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPlayerPosition: s.setPlayerPosition,
         setRoomName: s.setRoomName
     });
+
+    const { spatButtons, setSpatButtons } = useSpatButtons(messages, containerRef, triggerHaptic);
 
     const btn = useButtons(abilities, characterClass);
     const joystick = useJoystick(triggerHaptic);
@@ -372,6 +375,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
         mapperRef, ...settings, audioCtxRef,
         telnet, parser,
+        spatButtons, setSpatButtons,
         detectLighting: env.detectLighting,
         setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
     }), [

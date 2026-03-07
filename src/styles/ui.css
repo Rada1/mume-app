@@ -13,7 +13,7 @@
 
 .mobile-header {
     background: transparent !important;
-    border-bottom: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     position: absolute !important;
     top: 4px;
     left: 4px;
@@ -21,7 +21,7 @@
     z-index: 1001;
     pointer-events: none;
     margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
+    padding-bottom: 6px !important;
 }
 
 .mobile-header>* {
