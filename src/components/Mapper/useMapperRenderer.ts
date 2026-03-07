@@ -1,5 +1,9 @@
 import { useCallback, useRef } from 'react';
-import { GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES, getTerrainColor } from './mapperUtils';
+import { 
+    GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES, 
+    getTerrainColor, normalizeTerrain,
+    ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT 
+} from './mapperUtils';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -29,7 +33,7 @@ export const useMapperRenderer = ({
     spatialIndexRef, exploredVnums: stateExploredVnums,
     unveilMap, viewZ
 }: RendererProps & {
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>,
+    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>>,
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>,
     exploredVnums?: Set<string>
 }) => {
@@ -151,6 +155,69 @@ export const useMapperRenderer = ({
                             // 1. Fill Room Background based on terrain
                             ctx.fillStyle = getTerrainColor(terrain, isDarkMode);
                             ctx.fillRect(wx, wy, s, s);
+
+                            // 1.5 Road/Path Rendering Logic (Inside the room)
+                            if (ghostExits) {
+                                const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
+                                const currentTerrainNormalized = normalizeTerrain(currentRoomObj.terrain);
+                                const isCurrentRoad = currentTerrainNormalized === 'Road';
+
+                                for (const dir in ghostExits) {
+                                    const exObj = ghostExits[dir];
+                                    if (!exObj) continue;
+                                    
+                                    const targetVnum = String(exObj.target);
+                                    const targetData = preloaded[targetVnum];
+                                    if (!targetData) continue;
+
+                                    // Only draw on same floor
+                                    if (Math.abs(targetData[2] - currentZ) > 0.5) continue;
+
+                                    const isTargetVisited = explored.has(targetVnum);
+                                    if (!isUnveiled && !isTargetVisited) continue;
+
+                                    const targetTerrainNormalized = normalizeTerrain(targetData[3] as any);
+                                    const isTargetRoad = targetTerrainNormalized === 'Road';
+                                    
+                                    // Merge preloaded flags with live GMCP flags from localRoom if available
+                                    const combinedFlags = [
+                                        ...(exObj.flags || []),
+                                        ...(currentRoomObj.exits?.[dir]?.flags || [])
+                                    ];
+                                    
+                                    const hasRoadFlag = combinedFlags.some((f: string) => {
+                                        const fl = f.toLowerCase();
+                                        return fl.includes('road') || fl.includes('trail') || fl.includes('path');
+                                    });
+
+                                    const tpx = targetData[0] * GRID_SIZE + GRID_SIZE / 2;
+                                    const tpy = targetData[1] * GRID_SIZE + GRID_SIZE / 2;
+
+                                    const isAnyRoadOrPath = hasRoadFlag;
+                                    const dx = Math.abs(targetData[0] - rx);
+                                    const dy = Math.abs(targetData[1] - ry);
+                                    const isPhysicallyAdjacent = dx <= 1.1 && dy <= 1.1;
+
+                                    // A. Standard Exit Line (Blue Ghost Line) - only if target vnum is higher (draw once)
+                                    // and it's NOT a road/path that we're about to draw
+                                    // and NOT physically adjacent (only show long-distance connections)
+                                    if (targetVnum > vnum && !isAnyRoadOrPath && !isPhysicallyAdjacent) {
+                                        const lineColor = isDarkMode ? "rgba(137, 180, 250, 0.7)" : "rgba(37, 99, 235, 0.7)";
+                                        drawLine(centerPX, centerPY, tpx, tpy, lineColor, 2);
+                                    }
+
+                                    // B. Road/Path Drawing (Thick for roads, thin for trails/paths)
+                                    if (isAnyRoadOrPath) {
+                                        if (isCurrentRoad && isTargetRoad) {
+                                            const roadColor = isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT;
+                                            drawLine(centerPX, centerPY, tpx, tpy, roadColor, 12);
+                                        } else {
+                                            const pathColor = isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT;
+                                            drawLine(centerPX, centerPY, tpx, tpy, pathColor, 4);
+                                        }
+                                    }
+                                }
+                            }
 
                             // 2. Draw Terrain Features (behind labels/walls)
                             if (isMtn(terrain)) {

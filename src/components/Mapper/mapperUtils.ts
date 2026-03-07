@@ -1,4 +1,8 @@
 export const GRID_SIZE = 50;
+export const ROAD_COLOR_DARK = '#45475a'; // Subtle slate for roads in dark mode
+export const ROAD_COLOR_LIGHT = '#ccd0da'; // Gray for roads in light mode
+export const PATH_COLOR_DARK = '#585b70'; // Slightly lighter for paths
+export const PATH_COLOR_LIGHT = '#bcc0cc';
 
 export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string }> = {
     n: { dx: 0, dy: -1, opp: 's' },
@@ -23,9 +27,11 @@ export const TERRAIN_MAP: Record<string, string> = {
 
 export const generateId = () => Math.random().toString(36).substr(2, 9);
 
-export const normalizeTerrain = (t: string | null): string => {
-    if (!t) return 'Field';
-    const low = t.toLowerCase().trim();
+export const normalizeTerrain = (t: string | number | null): string => {
+    if (t === null || t === undefined) return 'Field';
+    const tStr = typeof t === 'number' ? TERRAIN_MAP[String(t)] || String(t) : t;
+    
+    const low = tStr.toLowerCase().trim();
     if (low.includes('city') || low.includes('town')) return 'City';
     if (low.includes('build')) return 'Building';
     if (low.includes('forest') || low.includes('thick')) return 'Forest';
@@ -41,11 +47,16 @@ export const normalizeTerrain = (t: string | null): string => {
     if (low.includes('cavern')) return 'Cavern';
     if (low.includes('underwater')) return 'Underwater';
     if (low.includes('brush') || low.includes('swamp') || low.includes('shrub')) return 'Brush';
+    
     // Match symbols
     for (const [sym, val] of Object.entries(TERRAIN_MAP)) {
-        if (t === sym) return val;
+        if (tStr === sym) return val;
     }
-    return t.charAt(0).toUpperCase() + t.slice(1);
+    return tStr.charAt(0).toUpperCase() + tStr.slice(1);
+};
+
+export const getTerrainName = (terrain: string | number | null): string => {
+    return normalizeTerrain(terrain);
 };
 
 export const DRAG_SENSITIVITY = 0.95;

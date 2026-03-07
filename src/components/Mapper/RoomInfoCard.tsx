@@ -50,13 +50,17 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     else if (dirKey === 'southwest') dirKey = 'sw';
 
                     const dest = (exitsData as any)[d];
-                    const rawDestId = typeof dest === 'number' ? dest : (typeof dest === 'object' ? (dest as any).id : (typeof dest === 'string' ? dest : null));
+                    const rawDestId = typeof dest === 'number' ? dest : (typeof dest === 'object' ? (dest as any).id || (dest as any).target : (typeof dest === 'string' ? dest : null));
                     const destId = rawDestId !== null ? Number(rawDestId) : null;
-                    if (destId !== null && !isNaN(destId)) mappedExits[dirKey] = {
-                        target: `m_${destId}`,
-                        gmcpDestId: destId,
-                        closed: false
-                    };
+                    
+                    if (destId !== null && !isNaN(destId)) {
+                        mappedExits[dirKey] = {
+                            target: `m_${destId}`,
+                            gmcpDestId: destId,
+                            closed: false,
+                            flags: typeof dest === 'object' ? (dest as any).flags : []
+                        };
+                    }
                 }
             }
 
@@ -227,72 +231,83 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                         const exit = room.exits[d];
                         const isActive = !!exit;
                         return (
-                            <button
-                                key={d}
-                                onClick={(e) => {
-                                    if (mode !== 'edit') return;
-                                    setRooms(prev => {
-                                        const r = prev[roomId];
-                                        if (e.shiftKey && r.exits[d]) {
-                                            const targetId = r.exits[d].target;
-                                            const nextRooms = { ...prev };
-                                            const nextExits = { ...r.exits };
-                                            delete nextExits[d];
-                                            nextRooms[roomId] = { ...r, exits: nextExits };
-                                            if (targetId && nextRooms[targetId]) {
-                                                const targetExits = { ...nextRooms[targetId].exits };
-                                                const opp = DIRS[d]?.opp;
-                                                if (opp) delete targetExits[opp];
-                                                nextRooms[targetId] = { ...nextRooms[targetId], exits: targetExits };
-                                            }
-                                            return nextRooms;
-                                        }
-                                        if (!r.exits[d]) {
-                                            const dir = DIRS[d];
-                                            if (!dir) return prev;
-                                            const tx = r.x + dir.dx, ty = r.y + dir.dy, tz = (r.z || 0) + (dir.dz || 0);
-                                            let tId = Object.keys(prev).find(id => Math.round(prev[id].x) === Math.round(tx) && Math.round(prev[id].y) === Math.round(ty) && (prev[id].z || 0) === tz);
-                                            const nextRooms = { ...prev };
-                                            if (!tId) {
-                                                tId = generateId();
-                                                nextRooms[tId] = { id: tId, gmcpId: 0, name: 'New Room', desc: '', x: tx, y: ty, z: tz, terrain: 'Field', exits: {}, zone: r.zone || '', notes: "", createdAt: Date.now() };
-                                            }
-                                            nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { target: tId, closed: false } } };
-                                            if (dir.opp) {
-                                                nextRooms[tId] = { ...nextRooms[tId], exits: { ...nextRooms[tId].exits, [dir.opp]: { target: roomId, closed: false } } };
-                                            }
-                                            return nextRooms;
-                                        } else {
-                                            const targetId = r.exits[d].target;
-                                            const closed = !r.exits[d].closed;
-                                            const nextRooms = { ...prev };
-                                            nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { ...r.exits[d], closed } } };
-                                            if (targetId && nextRooms[targetId]) {
-                                                const opp = DIRS[d]?.opp;
-                                                if (opp) {
-                                                    nextRooms[targetId] = { ...nextRooms[targetId], exits: { ...nextRooms[targetId].exits, [opp]: { ...(nextRooms[targetId].exits[opp] || {}), closed, target: roomId } } };
+                            <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <button
+                                    onClick={(e) => {
+                                        if (mode !== 'edit') return;
+                                        setRooms(prev => {
+                                            const r = prev[roomId];
+                                            if (e.shiftKey && r.exits[d]) {
+                                                const targetId = r.exits[d].target;
+                                                const nextRooms = { ...prev };
+                                                const nextExits = { ...r.exits };
+                                                delete nextExits[d];
+                                                nextRooms[roomId] = { ...r, exits: nextExits };
+                                                if (targetId && nextRooms[targetId]) {
+                                                    const targetExits = { ...nextRooms[targetId].exits };
+                                                    const opp = DIRS[d]?.opp;
+                                                    if (opp) delete targetExits[opp];
+                                                    nextRooms[targetId] = { ...nextRooms[targetId], exits: targetExits };
                                                 }
+                                                return nextRooms;
                                             }
-                                            return nextRooms;
-                                        }
-                                    });
-                                }}
-                                style={{
-                                    backgroundColor: isActive ? (exit?.closed ? '#521313' : '#1e293b') : '#1c1c1f',
-                                    color: isActive ? (exit?.closed ? '#f87171' : '#60a5fa') : '#3f3f46',
-                                    border: '1px solid',
-                                    borderColor: isActive ? (exit?.closed ? '#f87171' : '#3b82f6') : '#313244',
-                                    padding: '8px 4px',
-                                    borderRadius: '6px',
-                                    fontSize: '11px',
-                                    fontWeight: 'bold',
-                                    cursor: 'pointer',
-                                    textTransform: 'uppercase',
-                                    transition: 'all 0.2s'
-                                }}
-                            >
-                                {d}
-                            </button>
+                                            if (!r.exits[d]) {
+                                                const dir = DIRS[d];
+                                                if (!dir) return prev;
+                                                const tx = r.x + dir.dx, ty = r.y + dir.dy, tz = (r.z || 0) + (dir.dz || 0);
+                                                let tId = Object.keys(prev).find(id => Math.round(prev[id].x) === Math.round(tx) && Math.round(prev[id].y) === Math.round(ty) && (prev[id].z || 0) === tz);
+                                                const nextRooms = { ...prev };
+                                                if (!tId) {
+                                                    tId = generateId();
+                                                    nextRooms[tId] = { id: tId, gmcpId: 0, name: 'New Room', desc: '', x: tx, y: ty, z: tz, terrain: 'Field', exits: {}, zone: r.zone || '', notes: "", createdAt: Date.now() };
+                                                }
+                                                nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { target: tId, closed: false } } };
+                                                if (dir.opp) {
+                                                    nextRooms[tId] = { ...nextRooms[tId], exits: { ...nextRooms[tId].exits, [dir.opp]: { target: roomId, closed: false } } };
+                                                }
+                                                return nextRooms;
+                                            } else {
+                                                const targetId = r.exits[d].target;
+                                                const closed = !r.exits[d].closed;
+                                                const nextRooms = { ...prev };
+                                                nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { ...r.exits[d], closed } } };
+                                                if (targetId && nextRooms[targetId]) {
+                                                    const opp = DIRS[d]?.opp;
+                                                    if (opp) {
+                                                        nextRooms[targetId] = { ...nextRooms[targetId], exits: { ...nextRooms[targetId].exits, [opp]: { ...(nextRooms[targetId].exits[opp] || {}), closed, target: roomId } } };
+                                                    }
+                                                }
+                                                return nextRooms;
+                                            }
+                                        });
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        backgroundColor: isActive ? (exit?.closed ? '#521313' : '#1e293b') : '#1c1c1f',
+                                        color: isActive ? (exit?.closed ? '#f87171' : '#60a5fa') : '#3f3f46',
+                                        border: '1px solid',
+                                        borderColor: isActive ? (exit?.closed ? '#f87171' : '#3b82f6') : '#313244',
+                                        padding: '8px 4px',
+                                        borderRadius: '6px',
+                                        fontSize: '11px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        textTransform: 'uppercase',
+                                        transition: 'all 0.2s'
+                                    }}
+                                >
+                                    {d}
+                                </button>
+                                {isActive && exit.flags && exit.flags.length > 0 && (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px', justifyContent: 'center' }}>
+                                        {exit.flags.map(f => (
+                                            <span key={f} style={{ fontSize: '8px', color: '#a1a1aa', backgroundColor: '#27272a', padding: '1px 3px', borderRadius: '4px', textTransform: 'lowercase' }}>
+                                                {f}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         );
                     })}
                 </div>
