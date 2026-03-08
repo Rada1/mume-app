@@ -102,39 +102,33 @@ export function useTelnet(options: TelnetOptions) {
     const processText = useCallback((text: string) => {
         bufferRef.current += text;
 
-        // Optimize: split the string by newline instead of doing substring repeatedly
         const lines = bufferRef.current.split('\n');
-
-        // The last element is the remaining buffer (which might be empty if the string ended with \n)
+        // Keep the potentially incomplete last line in the buffer
         bufferRef.current = lines.pop() || '';
 
+        // Process all COMPLETE lines first
         for (let i = 0; i < lines.length; i++) {
             processLine(lines[i]);
         }
 
-        const prompt = bufferRef.current;
-        // CRITICAL: Always update the prompt state so that any text in the buffer 
-        // (like "By what name...") is visible to the user immediately.
-        setPrompt(prompt);
+        // ONLY after all lines are added to the message log, update the prompt
+        // using what is left in the buffer.
+        const remaining = bufferRef.current;
+        setPrompt(remaining);
 
-        if (prompt) {
-            const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
+        if (remaining) {
+            const cleanPrompt = remaining.replace(/\x1b\[[0-9;]*m/g, '').trim();
+            // Robust check using the same logic as the parser
             const isLikelyPrompt = 
-                /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/.test(cleanPrompt) || 
-                (/[>:]\s*$/.test(cleanPrompt) && cleanPrompt.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(cleanPrompt.toLowerCase())) ||
+                /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*$/.test(cleanPrompt) ||
                 (cleanPrompt.includes('HP:') && cleanPrompt.includes('MA:') && cleanPrompt.includes('>'));
 
             if (isLikelyPrompt) {
-                // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters.
-                // The parser will see it is a prompt and NOT add it to the message history yet.
-                processLine(prompt);
+                // Stabilize captured state
+                processLine(remaining);
                 
-                if (handlers.detectLighting) {
-                    handlers.detectLighting(cleanPrompt);
-                }
-                if (handlers.flushMessages) {
-                    handlers.flushMessages();
-                }
+                if (handlers.detectLighting) handlers.detectLighting(cleanPrompt);
+                if (handlers.flushMessages) handlers.flushMessages();
             }
         }
     }, [processLine, setPrompt, handlers]);

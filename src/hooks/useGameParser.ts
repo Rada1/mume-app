@@ -48,11 +48,50 @@ export function useGameParser(deps: UseGameParserDeps) {
         let cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
 
-        // Cache these for performance to avoid re-evaluating in child hooks
+        // 1. Initial Prompt & Text Separation
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
 
-        // Safety: if we see a room name, we are definitely NOT in a capture stage anymore
+        // Consolidated Regex for all MUME prompt variations (pure or with attached text)
+        // It now handles move prefixes, stat brackets, and leading ANSI codes.
+        const promptRegex = /^((?:(?:\x1b\[[0-9;]*m)*?(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*?)*[>:])\s*/;
+        const textPMatch = textOnly.match(promptRegex);
+
+        if (textPMatch) {
+            const promptPart = textPMatch[1];
+            const attachedText = textOnly.slice(textPMatch[0].length).trim();
+
+            // Extract metadata from prompt (lighting, terrain)
+            const symbolMatch = promptPart.match(/[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]/);
+            if (symbolMatch) {
+                const symbol = symbolMatch[0];
+                if (detectLighting) detectLighting(symbol);
+                if (deps.setCurrentTerrain && !['*', '!', ')', 'o', 'O', '?'].includes(symbol)) {
+                    deps.setCurrentTerrain(symbol);
+                }
+            }
+
+            // If there's no attached text, this is a pure prompt. 
+            // We just update states and return.
+            if (!attachedText) {
+                captureStage.current = 'none';
+                isDrawerCapture.current = 0;
+                isSilentCapture.current = 0;
+                containerStackRef.current = [];
+                return;
+            }
+
+            // If there IS attached text, strip the prompt from the line and continue processing
+            textOnly = attachedText;
+            lower = textOnly.toLowerCase();
+            
+            // For cleanLine (ANSI version), we strip the prompt part. 
+            // We use a robust regex that handles the prompt chars and all leading ANSI.
+            const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*)/;
+            cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
+        }
+
+        // 2. Room Name Detection (Now using cleaned text)
         let isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
         let isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
         let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
@@ -66,51 +105,6 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Reset stack if we're not in a capture stage or just starting one
         if (captureStage.current === 'none') {
             containerStackRef.current = [];
-        }
-
-        // 1. Initial Prompt Check - handles both pure prompts and prompts with attached text
-        const purePromptRegex = /^([\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]|\[.*?\]\s*[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]?\s*[>:])\s*$/;
-        // Refined promptWithTextRegex: handle preceding stats/brackets
-        const promptWithTextRegex = /^((?:(?:\[.*?\]\s*)?[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/;
-
-        const isLikelyPrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
-        const textPMatch = textOnly.match(promptWithTextRegex);
-
-        const originalCleanLine = cleanLine;
-
-        if (isLikelyPrompt || textPMatch) {
-            if (isLikelyPrompt || (textPMatch && !textPMatch[2].trim())) {
-                captureStage.current = 'none';
-                isDrawerCapture.current = 0;
-                isSilentCapture.current = 0;
-
-                containerStackRef.current = [];
-
-                const symbolString = isLikelyPrompt ? textOnly : textPMatch?.[1];
-                const promptSymbolMatch = symbolString?.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
-                if (promptSymbolMatch && promptSymbolMatch[1]) {
-                    const symbol = promptSymbolMatch[1];
-                    if (detectLighting) detectLighting(symbol);
-                    if (deps.setCurrentTerrain && !['*', '!', ')', 'o', 'O', '?'].includes(symbol)) {
-                        deps.setCurrentTerrain(symbol);
-                    }
-                }
-                return; // Pure confirmed prompt: nothing else to process, DON'T add to history
-            } else if (textPMatch) {
-                // Extract prompt symbols
-                const promptSymbolMatch = textPMatch[1].match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
-                if (promptSymbolMatch && promptSymbolMatch[1]) {
-                    const symbol = promptSymbolMatch[1];
-                    if (detectLighting) detectLighting(symbol);
-                    if (deps.setCurrentTerrain && !['*', '!', ')', 'o', 'O', '?'].includes(symbol)) {
-                        deps.setCurrentTerrain(symbol);
-                    }
-                }
-
-                // Redefine text variables to only contain the attached text
-                textOnly = textPMatch[2].trim();
-                lower = textOnly.toLowerCase();
-            }
         }
 
         // Weather & Fog Detection

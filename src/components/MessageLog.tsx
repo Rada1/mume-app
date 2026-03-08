@@ -35,7 +35,11 @@ interface MessageLogProps {
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
             ) : msg.isComm ? (
-                <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
+                isRecent ? (
+                    <TypewriterText html={content} speed={2} />
+                ) : (
+                    <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
+                )
             ) : (
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
@@ -97,11 +101,11 @@ const MessageLog: React.FC<MessageLogProps> = ({
         if (isNewMessage) {
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
-                // Always snap instantly for all messages to keep it fast
-                viewport.scrollToBottom(true, true); 
+                // User commands snap instantly, game text glides smoothly
+                viewport.scrollToBottom(true, lastMsg?.type === 'user'); 
             }
         } else if (viewport.isLockedToBottomRef.current) {
-            viewport.scrollToBottom(true, true);
+            viewport.scrollToBottom(true, false);
         }
     }, [messages, viewport]);
 

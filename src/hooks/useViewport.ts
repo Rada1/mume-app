@@ -40,18 +40,29 @@ export function useViewport() {
         }
 
         if (!force) {
-            const threshold = 10;
+            const threshold = 15;
             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
             if (!isNearBottom) return;
         }
 
         isAutoScrollingRef.current = true;
 
-        // Use instant scroll for everything to eliminate sluggishness
-        container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
-        
-        // Use a tiny timeout to release the lock
-        setTimeout(() => { isAutoScrollingRef.current = false; }, 20);
+        const performScroll = () => {
+            // Use a very high number to ensure we hit the bottom regardless of layout shifts
+            container.scrollTo({ 
+                top: container.scrollHeight + 1000, 
+                behavior: instant ? 'auto' : 'smooth' 
+            });
+        };
+
+        performScroll();
+
+        // Second pass after a short delay to catch typewriter or image layout shifts
+        const timeout = instant ? 40 : 250;
+        setTimeout(() => {
+            if (isLockedToBottomRef.current) performScroll();
+            isAutoScrollingRef.current = false;
+        }, timeout);
     }, []);
 
     const [logFontSize, setLogFontSize] = useState(() => {
