@@ -68,7 +68,7 @@ export const META_BUTTONS: CustomButton[] = [
         "actionType": "menu",
         "display": "floating",
         "style": { "x": 50, "y": 85, "w": 130, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill" },
-        "trigger": { "enabled": true, "pattern": "says,|tells you", "isRegex": true, "autoHide": true, "duration": 10, "type": "show", "spit": true, "onKeyboard": true },
+        "trigger": { "enabled": true, "pattern": "says,|tells you", "isRegex": true, "autoHide": true, "duration": 10, "type": "show", "spit": true, "onKeyboard": true, "offKeyboard": true },
         "isVisible": false
     },
     { "id": "inlp-ex", "label": "Examine", "command": "examine %n", "setId": "inlineplayer", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#2563eb", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
