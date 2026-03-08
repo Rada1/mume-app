@@ -72,10 +72,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         // 1. Initial Prompt Check - handles both pure prompts and prompts with attached text
-        const purePromptRegex = /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/;
-        // Refined promptWithTextRegex: if it starts with '<', it MUST contain a ':' to be a prompt.
-        // This avoids matching equipment slots like <worn on body>.
-        const promptWithTextRegex = /^((?:[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/;
+        const purePromptRegex = /^([\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]|\[.*?\]\s*[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]?\s*[>:])\s*$/;
+        // Refined promptWithTextRegex: handle preceding stats/brackets
+        const promptWithTextRegex = /^((?:(?:\[.*?\]\s*)?[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/;
 
         const isPurePrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
         const textPMatch = textOnly.match(promptWithTextRegex);
@@ -362,14 +361,15 @@ export function useGameParser(deps: UseGameParserDeps) {
         );
 
         if (shouldShow) {
-            const finalRawText = pMatch ? pMatch[2] : cleanLine;
-            // Only pass precalculated strings if we didn't slice the prompt off,
-            // otherwise the indices/matches would be slightly wrong in useMessageLog.
-            const precalculated = !pMatch ? { textOnly, lower } : undefined;
+            // Use textPMatch[2] if it exists (prompt with attached text), otherwise cleanLine
+            const finalRawText = textPMatch ? textPMatch[2] : cleanLine;
+            // Use stripped text only for precalculation as well
+            const precalculated = { 
+                textOnly: textOnly, 
+                lower: lower 
+            };
             
             // Create a semi-stable ID based on content + timestamp to avoid random 'randomness'
-            // while still allowing the same line to re-trigger if sent again later.
-            // We append a counter to ensure uniqueness within the same millisecond batch.
             const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
             
             addMessage('game', finalRawText, undefined, stableId, isRoomName, precalculated);

@@ -19,11 +19,12 @@ export function useMessageHighlighter(
         if (!mid) return html;
 
         const cached = cacheRef.current.get(mid);
-        if (cached && cached.deps === depsHash) {
+        if (cached && cached.deps === depsHash && cached.htmlRaw === html) {
             return cached.html;
         }
 
         let newHtml = html;
+        const originalHtml = html;
 
         // Use a more robust pattern matching strategy that avoids clobbering existing tags
         const safeHighlight = (currentHtml: string, patternStr: string, isRegex: boolean, replacer: (match: string, matchObj: RegExpExecArray | null) => string) => {
@@ -157,7 +158,7 @@ export function useMessageHighlighter(
                 newHtml = safeHighlight(newHtml, c.pattern, !!c.isRegex, c.replacer);
             });
 
-        cacheRef.current.set(mid, { html: newHtml, deps: depsHash });
+        cacheRef.current.set(mid, { html: newHtml, htmlRaw: originalHtml, deps: depsHash });
         if (cacheRef.current.size > 1000) {
             const firstKey = cacheRef.current.keys().next().value;
             if (firstKey !== undefined) cacheRef.current.delete(firstKey);

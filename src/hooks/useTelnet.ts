@@ -107,19 +107,31 @@ export function useTelnet(options: TelnetOptions) {
             bufferRef.current = bufferRef.current.substring(newlineIdx + 1);
             processLine(line);
         }
+
         const prompt = bufferRef.current;
-        setPrompt(prompt);
         if (prompt) {
-            // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters
-            // even if the server doesn't send a trailing newline on the prompt.
-            processLine(prompt);
-            
-            if (handlers.detectLighting) {
-                const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '');
-                handlers.detectLighting(cleanPrompt);
-            }
-            if (handlers.flushMessages) {
-                handlers.flushMessages();
+            // Refined prompt detection:
+            // 1. Common MUME symbols at the end
+            // 2. Ends with > or : and is relatively short
+            // 3. Contains typical prompt characters
+            const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
+            const isLikelyPrompt = 
+                /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/.test(cleanPrompt) || 
+                (/[>:]\s*$/.test(cleanPrompt) && cleanPrompt.length < 60) ||
+                (cleanPrompt.includes('HP:') && cleanPrompt.includes('MA:') && cleanPrompt.includes('>'));
+
+            if (isLikelyPrompt) {
+                setPrompt(prompt);
+                // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters
+                // even if the server doesn't send a trailing newline on the prompt.
+                processLine(prompt);
+                
+                if (handlers.detectLighting) {
+                    handlers.detectLighting(cleanPrompt);
+                }
+                if (handlers.flushMessages) {
+                    handlers.flushMessages();
+                }
             }
         }
     }, [processLine, setPrompt, handlers]);
