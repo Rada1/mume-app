@@ -88,6 +88,7 @@ const SpatButtonItem: React.FC<{
 
 export const SpatButtons: React.FC<SpatButtonsProps> = ({
     spatButtons,
+    isMobile,
     setActiveSet,
     executeCommand,
     setSpatButtons,
@@ -204,7 +205,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
 
             setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
         }
-    }, [activeDirMap, setActiveSet, setPopoverState, executeCommand, setSpatButtons]);
+    }, [activeDirMap, setActiveSet, setPopoverState, executeCommand, setSpatButtons, isMobile]);
 
     const handlePointerCancel = useCallback((e: React.PointerEvent, id: string) => {
         delete interactionState.current[id];

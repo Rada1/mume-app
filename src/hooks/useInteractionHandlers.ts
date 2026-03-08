@@ -105,19 +105,33 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         } else if (button.actionType === 'teleport-manage') {
             setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' });
         } else if (button.actionType === 'preload' || finalCmd.startsWith('input:')) {
-            const prefill = finalCmd.startsWith('input:') ? finalCmd.slice(6) : (button.command + (button.command.endsWith(' ') ? '' : ' '));
+            const isInputPrefix = finalCmd.startsWith('input:');
+            const prefill = isInputPrefix ? finalCmd.slice(6) : (button.command + (button.command.endsWith(' ') ? '' : ' '));
             setInput(prefill);
             
-            // Give the state a moment to update setInput
-            setTimeout(() => {
-                const inputEl = document.querySelector('input') as HTMLInputElement;
-                if (inputEl) {
-                    if (document.activeElement !== inputEl) inputEl.focus();
-                    // Move cursor to end
-                    const len = inputEl.value.length;
-                    inputEl.setSelectionRange(len, len);
-                }
-            }, 10);
+            // Only trigger keyboard on mobile if it's explicitly an 'input:' command
+            const shouldFocus = !viewport.isMobile || isInputPrefix;
+
+            if (shouldFocus) {
+                setTimeout(() => {
+                    const inputEl = document.querySelector('input') as HTMLInputElement;
+                    if (inputEl) {
+                        // On mobile, we need to temporarily disable readOnly to allow focus to trigger keyboard
+                        const wasReadOnly = inputEl.readOnly;
+                        if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
+                        
+                        inputEl.focus();
+                        
+                        // Restore readOnly after a short delay so the keyboard stays up but future taps are protected
+                        if (isInputPrefix && viewport.isMobile) {
+                            setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
+                        }
+
+                        const len = inputEl.value.length;
+                        inputEl.setSelectionRange(len, len);
+                    }
+                }, 10);
+            }
         } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
             setTarget(null); addMessage('system', 'Target cleared.');
         } else {
@@ -265,16 +279,31 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             }
             
             if (action === 'preload' || finalCmd.startsWith('input:')) {
-                const prefill = finalCmd.startsWith('input:') ? finalCmd.slice(6) : (finalCmd + (finalCmd.endsWith(' ') ? '' : ' '));
+                const isInputPrefix = finalCmd.startsWith('input:');
+                const prefill = isInputPrefix ? finalCmd.slice(6) : (finalCmd + (finalCmd.endsWith(' ') ? '' : ' '));
                 setInput(prefill);
-                setTimeout(() => {
-                    const inputEl = document.querySelector('input') as HTMLInputElement;
-                    if (inputEl) {
-                        inputEl.focus();
-                        const len = inputEl.value.length;
-                        inputEl.setSelectionRange(len, len);
-                    }
-                }, 10);
+
+                // Only trigger keyboard on mobile if it's explicitly an 'input:' command
+                const shouldFocus = !viewport.isMobile || isInputPrefix;
+
+                if (shouldFocus) {
+                    setTimeout(() => {
+                        const inputEl = document.querySelector('input') as HTMLInputElement;
+                        if (inputEl) {
+                            const wasReadOnly = inputEl.readOnly;
+                            if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
+                            
+                            inputEl.focus();
+                            
+                            if (isInputPrefix && viewport.isMobile) {
+                                setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
+                            }
+
+                            const len = inputEl.value.length;
+                            inputEl.setSelectionRange(len, len);
+                        }
+                    }, 10);
+                }
             } else {
                 executeCommand(finalCmd);
             }

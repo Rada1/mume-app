@@ -50,7 +50,32 @@ export interface CommandControllerDeps {
 export function useCommandController(deps: CommandControllerDeps) {
     const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage } = deps;
 
-    const { executeCommand } = useCommandExecutor(deps);
+    const executor = useCommandExecutor(deps);
+    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false) => {
+        if (!isSystem && !silent) {
+            const isInputPrefix = cmd.startsWith('input:');
+            const shouldFocus = !viewport.isMobile || isInputPrefix;
+            
+            if (shouldFocus) {
+                setTimeout(() => {
+                    const inputEl = document.querySelector('input') as HTMLInputElement;
+                    if (inputEl) {
+                        const wasReadOnly = inputEl.readOnly;
+                        if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
+                        
+                        if (document.activeElement !== inputEl) inputEl.focus();
+                        
+                        if (isInputPrefix && viewport.isMobile) {
+                            setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
+                        }
+                    }
+                }, 10);
+            }
+        }
+        
+        executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
+    }, [executor, viewport.isMobile]);
+
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart } = useInteractionHandlers({
         ...deps, executeCommand, ui: deps.ui
     });

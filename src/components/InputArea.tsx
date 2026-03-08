@@ -200,7 +200,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                         }}
                         onClick={() => {
                             onTargetClick?.();
-                            inputRef.current?.focus();
+                            if (!isMobile) inputRef.current?.focus();
                         }}
                         style={{
                             marginLeft: '10px',
