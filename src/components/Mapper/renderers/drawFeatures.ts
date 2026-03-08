@@ -10,8 +10,11 @@ export const drawFeatures = (
     const s = GRID_SIZE;
 
     const getGateState = (rA: any, wE: any, d: string) => {
-        // Authoritative data source: trust live exits if they exist, otherwise fallback to ghost exits.
-        const exA = rA?.exits ? rA.exits[d] : wE?.[d];
+        // Authoritative data source: trust live exits if they exist.
+        // If we have live data for the room (rA.exits is defined), and the exit is NOT in live data,
+        // we should NOT trust ghost data for that direction.
+        const liveExits = rA?.exits;
+        const exA = liveExits ? liveExits[d] : wE?.[d];
         
         if (!exA) return { hasExit: false };
         
@@ -20,7 +23,11 @@ export const drawFeatures = (
         const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
         const exB = n?.exits?.[oD], hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
         
-        let hasD = !!(exA.hasDoor || hasDF(exA.flags) || (exB && (exB.hasDoor || hasDF(exB.flags))));
+        // Door logic: check local exit or reliable neighbor exit
+        // We only trust neighbor's door flag if it points back to us.
+        const neighborPointsBack = exB && String(exB.target || exB.gmcpDestId || "").replace(/^m_/, '') === String(rA?.id || "").replace(/^m_/, '');
+        let hasD = !!(exA.hasDoor || hasDF(exA.flags) || (neighborPointsBack && (exB.hasDoor || hasDF(exB.flags))));
+        
         if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
         
         let isC = (exA.closed !== false); 
@@ -113,7 +120,10 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         if (!exA) return { hasExit: false };
         
         const hasDF = (f?: any[]) => f?.some((x: any) => /door|gate|portcullis|secret/i.test(String(x)));
+        // For local logic, we don't necessarily have current neighbor data in the same way, 
+        // but we should at least check local flags.
         const hasD = !!(exA.hasDoor || hasDF(exA.flags));
+        
         if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
         
         return { hasExit: true, hasDoor: hasD, isClosed: exA.closed !== false };

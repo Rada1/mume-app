@@ -17,6 +17,7 @@ export const useMapperPlayerTracking = (
         if (currentRoomId && rooms[currentRoomId]) {
             const r = rooms[currentRoomId];
             if (playerPosRef.current) {
+                // Add old position to trail
                 playerTrailRef.current.push({
                     x: playerPosRef.current.x,
                     y: playerPosRef.current.y,
@@ -24,9 +25,10 @@ export const useMapperPlayerTracking = (
                     alpha: 1.0
                 });
                 if (playerTrailRef.current.length > 15) playerTrailRef.current.shift();
-            } else {
-                playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
             }
+            
+            // Always update current position
+            playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
 
             // Whenever the room changes, enable auto-center so the animation loop
             // in useMapAnimation.ts can glide the camera smoothly to the new target.

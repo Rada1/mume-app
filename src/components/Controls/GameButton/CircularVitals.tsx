@@ -19,8 +19,8 @@ export const CircularVitals: React.FC<CircularVitalsProps> = ({
     borderRadius,
     isOuter = true
 }) => {
-    const strokeWidth = isOuter ? 4 : 3;
-    const gap = isOuter ? 4 : 0;
+    const strokeWidth = isOuter ? 3 : 2;
+    const gap = isOuter ? 2 : 0;
     const margin = strokeWidth / 2 + gap; // Distance from button edge to path center
     const offset = 10; // Extra padding for the SVG container to prevent clipping
     
