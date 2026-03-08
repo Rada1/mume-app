@@ -149,6 +149,20 @@ const InputArea: React.FC<InputAreaProps> = ({
                             // from being detected as a swipe-up.
                             startPos.current = null;
                         }}
+                        onBlur={() => {
+                            // On mobile, reset to readonly to prevent accidental keyboard pops
+                            if (isMobile && inputRef.current) {
+                                inputRef.current.readOnly = true;
+                            }
+                        }}
+                        onClick={() => {
+                            // Explicit click on mobile enables the keyboard
+                            if (isMobile && inputRef.current) {
+                                inputRef.current.readOnly = false;
+                                inputRef.current.focus();
+                            }
+                        }}
+                        readOnly={isMobile}
                         placeholder={commandPreview ? "" : "Enter command..."}
                         style={{ pointerEvents: 'auto', background: 'transparent', width: '100%', position: 'relative', zIndex: 1 }}
                     />
