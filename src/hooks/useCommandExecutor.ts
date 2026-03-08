@@ -198,13 +198,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
         if (status === 'connected') telnet.sendCommand(finalCmd);
         else if (!silent) addMessage('error', 'Not connected.');
-        
-        // Recenter mapper on user-initiated commands
-        if (!isSystem && !silent) {
-            mapperRef.current?.handleCenterOnPlayer();
-        }
-    }, [
-        status, target, teleportTargets, initAudio, addMessage, setTarget, setPopoverState,
+
+        // Re-centering is handled automatically by the mapper's internal animation loop
+        // when autoCenter is active. Explicitly calling handleCenterOnPlayer here
+        // can cause imprecise 'snaps' on mobile that conflict with smooth animations.
+        }, [        status, target, teleportTargets, initAudio, addMessage, setTarget, setPopoverState,
         telnet, navIntervalRef, mapperRef, isDrawerCapture, captureStage, isWaitingForInv,
         isWaitingForStats, isWaitingForEq, setInventoryLines, setStatsLines, setEqLines,
         setIsCharacterOpen, setIsItemsDrawerOpen
