@@ -407,6 +407,34 @@ export const useMapperRenderer = ({
                             ctx.setLineDash([4 * invZoom, 2 * invZoom]); ctx.strokeRect(wx + 3, wy + 3, s - 6, s - 6); ctx.setLineDash([]);
                         }
                         if (camera.zoom > 1.8) { ctx.font = '8px "Aniron"'; ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a'; ctx.textAlign = 'center'; ctx.fillText(rName.substring(0, 12), centerPX, wy + s * 0.95); }
+
+                        // Up/Down Indicators (Preloaded)
+                        if (ghostExits) {
+                            const hasUp = !!ghostExits['u'];
+                            const hasDown = !!ghostExits['d'];
+                            if (hasUp || hasDown) {
+                                ctx.save();
+                                ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
+                                const triSize = 6 / camera.zoom;
+                                const margin = 4 / camera.zoom;
+                                if (hasUp) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(wx + s - margin, wy + margin + triSize); // Bottom left of triangle
+                                    ctx.lineTo(wx + s - margin - triSize, wy + margin + triSize); // Bottom right
+                                    ctx.lineTo(wx + s - margin - (triSize / 2), wy + margin); // Tip
+                                    ctx.fill();
+                                }
+                                if (hasDown) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(wx + s - margin, wy + s - margin - triSize); // Top left of triangle
+                                    ctx.lineTo(wx + s - margin - triSize, wy + s - margin - triSize); // Top right
+                                    ctx.lineTo(wx + s - margin - (triSize / 2), wy + s - margin); // Tip
+                                    ctx.fill();
+                                }
+                                ctx.restore();
+                            }
+                        }
+
                         ctx.restore();
                     });
                 }
@@ -544,6 +572,32 @@ export const useMapperRenderer = ({
                 ctx.strokeStyle = isDarkMode ? '#89b4fa' : '#3b82f6'; ctx.lineWidth = 2 / camera.zoom;
                 ctx.setLineDash([4 * invZoom, 2 * invZoom]); ctx.strokeRect(rx + 3, ry + 3, s - 6, s - 6); ctx.setLineDash([]);
             }
+
+            // Up/Down Indicators (Local)
+            const hasUp = !!room.exits?.['u'];
+            const hasDown = !!room.exits?.['d'];
+            if (hasUp || hasDown) {
+                ctx.save();
+                ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
+                const triSize = 6 / camera.zoom;
+                const margin = 4 / camera.zoom;
+                if (hasUp) {
+                    ctx.beginPath();
+                    ctx.moveTo(rx + s - margin, ry + margin + triSize); // Bottom left of triangle
+                    ctx.lineTo(rx + s - margin - triSize, ry + margin + triSize); // Bottom right
+                    ctx.lineTo(rx + s - margin - (triSize / 2), ry + margin); // Tip
+                    ctx.fill();
+                }
+                if (hasDown) {
+                    ctx.beginPath();
+                    ctx.moveTo(rx + s - margin, ry + s - margin - triSize); // Top left of triangle
+                    ctx.lineTo(rx + s - margin - triSize, ry + s - margin - triSize); // Top right
+                    ctx.lineTo(rx + s - margin - (triSize / 2), ry + s - margin); // Tip
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
             ctx.restore();
         });
 
