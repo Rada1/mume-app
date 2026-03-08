@@ -101,23 +101,32 @@ export const useButtonLogic = (
         });
 
         // 2. Dynamic generation for Smart Sets
-        const isDynamicSet = activeSetLower === 'spellbook' || classNames.includes(activeSetLower);
-        if (isDynamicSet) {
-            const generated: CustomButton[] = [];
-            let baseList: string[] = activeSetLower === 'spellbook' ? [...MAGE_SPELLS, ...CLERIC_SPELLS] : (CLASS_MAPPINGS[activeSetLower] || []);
+        const dynamicSetsToGenerate = ['spellbook', ...classNames, 'rangerskilllist', 'warriorskilllist', 'magespelllist', 'clericspelllist', 'thiefskilllist'];
+        const allGenerated: CustomButton[] = [];
+
+        dynamicSetsToGenerate.forEach(setName => {
+            const setNameLower = setName.toLowerCase();
+            const mapKey = setNameLower.replace('skilllist', '').replace('spelllist', '');
+            let baseList: string[] = setNameLower === 'spellbook' ? [...MAGE_SPELLS, ...CLERIC_SPELLS] : (CLASS_MAPPINGS[mapKey] || []);
+
+            // Avoid duplicates: if a static button with the same command already exists in this set, skip dynamic generation
+            const existingCommands = new Set(filtered.filter(b => b.setId.toLowerCase() === setNameLower).map(b => b.command.toLowerCase()));
 
             baseList.map(name => ({ name, prof: abilities[name.toLowerCase()] || 0 })).forEach(({ name, prof }, idx) => {
                 // If smart populate is on, only show known spells
                 if (isSmartPopulateEnabled && prof <= 0) return;
 
+                const cmd = name.toLowerCase() === 'teleport' ? "cast 'teleport'" : name.toLowerCase();
+                if (existingCommands.has(cmd)) return;
+
                 const cols = 2;
                 const row = Math.floor(idx / cols);
                 const col = idx % cols;
-                generated.push({
-                    id: `dynamic-${activeSetLower}-${name}`,
+                allGenerated.push({
+                    id: `dynamic-${setNameLower}-${name}`,
                     label: name.charAt(0).toUpperCase() + name.slice(1),
                     command: name.toLowerCase() === 'teleport' ? "cast 'teleport'" : name.toLowerCase(),
-                    setId: activeSet,
+                    setId: setName,
                     actionType: 'command',
                     display: 'floating',
                     isVisible: true,
@@ -132,9 +141,8 @@ export const useButtonLogic = (
                     trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0, type: 'show' }
                 });
             });
-            return [...filtered, ...generated];
-        }
+        });
 
-        return filtered;
+        return [...filtered, ...allGenerated];
     }, [rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled]);
 };
