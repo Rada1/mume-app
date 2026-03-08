@@ -19,7 +19,7 @@ const Rain = React.memo(({ heavy }: RainProps) => {
         canvas.width = width;
         canvas.height = height;
 
-        const dropCount = heavy ? 150 : 60;
+        const dropCount = heavy ? 400 : 100;
         const drops: { x: number; y: number; l: number; v: number; o: number }[] = [];
 
         for (let i = 0; i < dropCount; i++) {

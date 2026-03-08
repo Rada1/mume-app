@@ -31,13 +31,17 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
             <div className="lighting-container lighting-dark" style={{ opacity: lighting === 'dark' ? 1 : 0 }}><div className="lighting-inner" /></div>
 
             {/* Weather & Fog */}
-            <div className={`weather-layer weather-cloud`} style={{ opacity: weather === 'cloud' ? 1 : 0 }} />
+            <div 
+                className={`weather-layer weather-cloud ${(weather === 'rain' || weather === 'heavy-rain') ? 'storm-clouds' : ''}`} 
+                style={{ opacity: (weather === 'cloud' || weather === 'rain' || weather === 'heavy-rain') ? 1 : 0 }} 
+            />
             <div className={`fog-layer ${isFoggy ? 'fog-active' : ''}`} style={{ opacity: isFoggy ? 1 : 0 }} />
             {(weather === 'rain' || weather === 'heavy-rain') && <Rain heavy={weather === 'heavy-rain'} />}
 
             {/* --- LAYER 2: MIDDLE (Grounding Overlay) [z-index: 10] --- */}
             <div className="dust-layer" />
             <div className="overlay-layer" />
+            <div className={`storm-overlay-layer ${weather === 'heavy-rain' ? 'active' : ''}`} />
             <div className="screen-vignette" />
 
             {/* --- LAYER 3: TOP (Alerts & Combat) [z-index: 20+] --- */}

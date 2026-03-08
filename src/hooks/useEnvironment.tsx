@@ -92,7 +92,7 @@ export function useEnvironment(deps: EnvironmentDeps) {
     const getWeatherIcon = () => {
         switch (weather) {
             case 'rain': return <CloudRain size={16} className="text-blue-400" />;
-            case 'heavy-rain': return <CloudLightning size={16} className="text-indigo-400" />;
+            case 'heavy-rain': return <CloudRain size={16} className="text-blue-600 drop-shadow-sm" />;
             case 'snow': return <Snowflake size={16} className="text-white" />;
             case 'cloud': return <CloudFog size={16} className="text-gray-400" />;
             default: return null;

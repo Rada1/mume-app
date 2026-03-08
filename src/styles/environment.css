@@ -23,6 +23,22 @@
     /* Changed from bright golden to a deeper, more subtle ambient amber to make the shaft pop */
 }
 
+.storm-overlay-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    background: rgba(0, 5, 20, 0.2);
+    opacity: 0;
+    transition: opacity 3s ease-in-out;
+    backdrop-filter: blur(0px) contrast(1.1);
+}
+
+.storm-overlay-layer.active {
+    opacity: 1;
+    backdrop-filter: blur(0.2px) contrast(1.2);
+}
+
 .lighting-state-moon .overlay-layer {
     background: rgba(0, 5, 30, 0.16);
     /* Softened bluish night tint */
@@ -161,6 +177,20 @@
     animation: cloud-pulse 10s ease-in-out infinite alternate, cloud-drift 80s linear infinite;
     z-index: 2;
     filter: blur(1px) brightness(0.9) grayscale(0.6) contrast(1.6);
+}
+ 
+.weather-cloud.storm-clouds {
+    background: rgba(30, 35, 50, 0.4);
+}
+ 
+.weather-cloud.storm-clouds::before {
+    background: rgba(20, 25, 40, 0.6);
+    mix-blend-mode: multiply;
+}
+ 
+.weather-cloud.storm-clouds::after {
+    filter: blur(2px) brightness(0.4) grayscale(0.9) contrast(2);
+    opacity: 0.9;
 }
 
 .fog-layer {
