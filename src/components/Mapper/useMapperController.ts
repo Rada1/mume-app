@@ -134,7 +134,38 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         const onInfo = (e: any) => handleRoomInfo(e.detail);
         const onExits = (e: any) => handleUpdateExits(e.detail);
         const onTerrain = (e: any) => handleTerrain(e.detail);
-        const onPush = (e: any) => pendingMovesRef.current.push({ dir: e.detail, time: Date.now() });
+        const onPush = (e: any) => {
+            const dir = e.detail;
+            pendingMovesRef.current.push({ dir, time: Date.now() });
+
+            // DEAD RECKONING: Guess player location in the dark
+            const activeId = currentRoomIdRef.current;
+            if (activeId) {
+                const room = roomsRef.current[activeId];
+                if (room && room.exits && room.exits[dir]) {
+                    const target = room.exits[dir].target;
+                    const nextId = target ? (String(target).startsWith('m_') ? target : `m_${target}`) : null;
+                    if (nextId) {
+                        setCurrentRoomId(nextId);
+                        currentRoomIdRef.current = nextId;
+                        if (showDebugEchoes) addMessage?.('system', `[Mapper] Blind Move: ${dir} -> Guessing Room: ${nextId}`);
+                    }
+                } else if (activeId.startsWith('m_')) {
+                    // Check master map for exits even if we haven't 'visited' the room object in state correctly
+                    const mId = activeId.substring(2);
+                    const masterExits = preloadedCoordsRef.current[mId]?.[4];
+                    if (masterExits && masterExits[dir]) {
+                        const target = masterExits[dir].target;
+                        const nextId = target ? `m_${target}` : null;
+                        if (nextId) {
+                            setCurrentRoomId(nextId);
+                            currentRoomIdRef.current = nextId;
+                            if (showDebugEchoes) addMessage?.('system', `[Mapper] Blind Move: ${dir} -> Guessing Room: ${nextId} (from MM2)`);
+                        }
+                    }
+                }
+            }
+        };
         const onFail = () => pendingMovesRef.current.shift();
 
         window.addEventListener('mume-mapper-room-info', onInfo);

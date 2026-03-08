@@ -1,10 +1,9 @@
 import { useCallback, useRef, MutableRefObject } from 'react';
-import { 
-    GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES, 
-    getTerrainColor, normalizeTerrain,
-    ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT 
-} from './mapperUtils';
-import { drawBlobTerrain, BlobNeighbors } from './blobTerrainRenderer';
+import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
+import { RenderContext } from './renderers/rendererUtils';
+import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
+import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
+import { drawGrid, drawEntities, drawMarkers, drawMarquee } from './renderers/drawEntities';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -31,7 +30,7 @@ interface RendererProps {
 }
 
 export const useMapperRenderer = ({
-    rooms: stateRooms, markers: stateMarkers, currentRoomId: stateRoomId, selectedRoomIds, selectedMarkerId,
+    selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef, preloadedCoordsRef,
     spatialIndexRef, exploredVnums: stateExploredVnums,
@@ -39,8 +38,9 @@ export const useMapperRenderer = ({
 }: RendererProps) => {
 
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
-
-    const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
+    const cacheCanvasRef = useRef<HTMLCanvasElement | null>(null);
+    const cacheParamsRef = useRef({ z: -999, cx: 0, cy: 0, cw: 0, ch: 0, zoom: 0, darkMode: false, exploredCount: 0 });
+    const isCacheValidRef = useRef(false);
 
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
         const now = Date.now();
@@ -51,10 +51,6 @@ export const useMapperRenderer = ({
         const invZoom = 1 / camera.zoom;
         const ANIM_DUR = 1500;
         
-        const isMtn = (rVal: any) => rVal === 'Mountains' || rVal === '<';
-        const isFor = (rVal: any) => rVal === 'Forest' || rVal === 'f';
-        const isHill = (rVal: any) => rVal === 'Hills' || rVal === '(';
-
         const allRooms = stableRoomsRef.current;
         const explored = stateExploredVnums || new Set<string>();
 
@@ -65,6 +61,37 @@ export const useMapperRenderer = ({
         ctx.save();
         ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
         ctx.translate(-camera.x, -camera.y);
+
+        const currentExploredCount = explored.size;
+        const cacheParams = cacheParamsRef.current;
+        const zoomChanged = Math.abs(cacheParams.zoom - camera.zoom) > 0.01;
+        const posChanged = Math.abs(cacheParams.cx - camera.x) > 1 || Math.abs(cacheParams.cy - camera.y) > 1;
+        const sizeChanged = cacheParams.cw !== canvasWidth || cacheParams.ch !== canvasHeight;
+        
+        const needsCacheInvalidation = (
+            cacheParams.z !== currentZ || 
+            zoomChanged || 
+            posChanged || 
+            sizeChanged || 
+            cacheParams.darkMode !== isDarkMode || 
+            cacheParams.exploredCount !== currentExploredCount ||
+            !isCacheValidRef.current
+        );
+
+        if (needsCacheInvalidation) {
+            // Update cache params
+            cacheParamsRef.current = {
+                z: currentZ,
+                cx: camera.x,
+                cy: camera.y,
+                cw: canvasWidth,
+                ch: canvasHeight,
+                zoom: camera.zoom,
+                darkMode: isDarkMode,
+                exploredCount: currentExploredCount
+            };
+            isCacheValidRef.current = true;
+        }
 
         // Grid bounds
         const vX1 = camera.x, vY1 = camera.y;
@@ -99,49 +126,22 @@ export const useMapperRenderer = ({
 
         Object.values(allRooms).forEach((room: any) => {
             if (!room.id.startsWith('m_') && Math.abs((room.z || 0) - currentZ) < 0.5) {
+                const s = GRID_SIZE;
+                const rx_p = room.x * s, ry_p = room.y * s;
+                if (rx_p < vX1 - s || rx_p > vX2 + s || ry_p < vY1 - s || ry_p > vY2 + s) return;
                 const irx = Math.round(room.x), iry = Math.round(room.y);
                 roomAtCoord[`${irx},${iry}`] = normalizeTerrain(room.terrain);
                 visitedAtCoord[`${irx},${iry}`] = true;
             }
         });
 
-        // Grid Drawing (Segmental)
-        ctx.beginPath();
-        ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
-        ctx.lineWidth = 1 / camera.zoom;
-        for (let gx = gX1; gx <= gX2; gx++) {
-            for (let gy = gY1; gy <= gY2; gy++) {
-                if (!visitedAtCoord[`${gx},${gy}`]) {
-                    const x = gx * GRID_SIZE, y = gy * GRID_SIZE;
-                    ctx.moveTo(x, y); ctx.lineTo(x + GRID_SIZE, y);
-                    ctx.moveTo(x, y); ctx.lineTo(x, y + GRID_SIZE);
-                    if (!visitedAtCoord[`${gx + 1},${gy}`]) { ctx.moveTo(x + GRID_SIZE, y); ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE); }
-                    if (!visitedAtCoord[`${gx},${gy + 1}`]) { ctx.moveTo(x, y + GRID_SIZE); ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE); }
-                }
-            }
-        }
-        ctx.stroke();
-
-        const drawLine = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2, dashed = false) => {
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = (thickness / dpr) * invZoom;
-            if (dashed) ctx.setLineDash([5 * invZoom, 5 * invZoom]);
-            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
+        const rCtx: RenderContext = {
+            ctx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
+            imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
+            allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId
         };
 
-        const getRoomAnchor = (rx: number, ry: number) => {
-            const sX = getSeed(Math.round(rx), Math.round(ry)), sY = getSeed(Math.round(ry), Math.round(rx));
-            const j = GRID_SIZE * 0.22; // 22% jitter
-            return { x: Math.round(rx) * GRID_SIZE + GRID_SIZE / 2 + (sX - 0.5) * j, y: Math.round(ry) * GRID_SIZE + GRID_SIZE / 2 + (sY - 0.5) * j };
-        };
-
-        const drawCurvedPath = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2) => {
-            const dx = x2 - x1, dy = y2 - y1, dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 1) return;
-            const seed = getSeed(x1 + x2, y1 + y2), bend = dist * (0.1 + seed * 0.15);
-            const cx = (x1 + x2) / 2 + (-dy / dist) * (seed - 0.5) * bend, cy = (y1 + y2) / 2 + (dx / dist) * (seed - 0.5) * bend;
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = (thickness / dpr) * invZoom; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cx, cy, x2, y2); ctx.stroke();
-        };
+        drawGrid(rCtx, gX1, gY1, gX2, gY2);
 
         if (floorIndex) {
             const bX1 = Math.floor(gX1 / 5), bY1 = Math.floor(gY1 / 5);
@@ -228,12 +228,16 @@ export const useMapperRenderer = ({
 
             // Shared Gate State Logic
             const getGateState = (rA: any, wE: any, d: string) => {
-                const lEx = rA?.exits?.[d], wEx = wE?.[d], exA = lEx || wEx; if (!exA) return { hasExit: false };
-                const tV = String(exA.target), oD = DIRS[d]?.opp, nId = tV.startsWith('m_') ? tV : `m_${tV}`;
+                const lEx = rA?.exits?.[d], wEx = wE?.[d], exX = lEx || wEx; if (!exX) return { hasExit: false };
+                const tV = String(exX.target), oD = DIRS[d]?.opp, nId = tV.startsWith('m_') ? tV : `m_${tV}`;
                 const n = allRooms[nId] || allRooms[tV] || (preloaded[String(tV)] ? { exits: preloaded[String(tV)][4] } : null);
-                const exB = n?.exits?.[oD], isD = (n: string) => /\b(door|gate|portcullis|secret)\b/i.test(n), hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
-                const hasD = !!(exA.hasDoor || (exB && exB.hasDoor) || hasDF(exA.flags) || isD(exA.name || '') || (!lEx && wEx?.hasDoor));
+                const exB = n?.exits?.[oD];
+                
+                // Door: Strictly use the exit's hasDoor property
+                const hasD = !!exX.hasDoor;
                 if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
+                
+                // Closed: Default to true for doors, but if ANY source says it's open, mark it open.
                 let isC = true; if (lEx?.closed === false || exB?.closed === false || wEx?.closed === false) isC = false;
                 return { hasExit: true, hasDoor: hasD, isClosed: isC };
             };
@@ -349,6 +353,9 @@ export const useMapperRenderer = ({
                             let off = 0;
                             if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', centerPX + off, centerPY); off += 8 / camera.zoom; }
                             if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', centerPX + off, centerPY); off += 8 / camera.zoom; }
+                            if (activeMobFlags.some((f: string) => f.includes('GUILD'))) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', centerPX + off, centerPY); off += 8 / camera.zoom; }
+                            if (activeMobFlags.some((f: string) => f.includes('PRACTISE'))) { ctx.fillStyle = '#89dceb'; ctx.fillText('P', centerPX + off, centerPY); off += 8 / camera.zoom; }
+                            if (activeMobFlags.some((f: string) => f.includes('RENT'))) { ctx.fillStyle = '#fab387'; ctx.fillText('R', centerPX + off, centerPY); off += 8 / camera.zoom; }
                             if (activeLoadFlags.some((f: string) => f.includes('HERB') || f.includes('WATER'))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', centerPX + off, centerPY); }
                             ctx.restore();
                         }
@@ -363,17 +370,47 @@ export const useMapperRenderer = ({
                             ctx.setLineDash([4 * invZoom, 2 * invZoom]); ctx.strokeRect(wx + 3, wy + 3, s - 6, s - 6); ctx.setLineDash([]);
                         }
                         if (camera.zoom > 1.8) { ctx.font = '8px "Aniron"'; ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a'; ctx.textAlign = 'center'; ctx.fillText(rName.substring(0, 12), centerPX, wy + s * 0.95); }
+
+                        // Up/Down Indicators (Preloaded)
+                        if (ghostExits) {
+                            const hasUp = !!ghostExits['u'];
+                            const hasDown = !!ghostExits['d'];
+                            if (hasUp || hasDown) {
+                                ctx.save();
+                                ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
+                                const triSize = 6 / camera.zoom;
+                                const margin = 4 / camera.zoom;
+                                if (hasUp) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(wx + s - margin, wy + margin + triSize); // Bottom left of triangle
+                                    ctx.lineTo(wx + s - margin - triSize, wy + margin + triSize); // Bottom right
+                                    ctx.lineTo(wx + s - margin - (triSize / 2), wy + margin); // Tip
+                                    ctx.fill();
+                                }
+                                if (hasDown) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(wx + s - margin, wy + s - margin - triSize); // Top left of triangle
+                                    ctx.lineTo(wx + s - margin - triSize, wy + s - margin - triSize); // Top right
+                                    ctx.lineTo(wx + s - margin - (triSize / 2), wy + s - margin); // Tip
+                                    ctx.fill();
+                                }
+                                ctx.restore();
+                            }
+                        }
+
                         ctx.restore();
                     });
                 }
             }
         }
 
-        // Pass 1A (Local): Terrain Backgrounds
+        // Passo 1 (Local): Combined Render Loop
         Object.values(allRooms).forEach((room: any) => {
             if (room.id.startsWith('m_')) return;
             const rx = room.x * GRID_SIZE, ry = room.y * GRID_SIZE, s = GRID_SIZE, rz = room.z || 0;
             if (Math.abs(rz - currentZ) > 1.5) return;
+            if (rx < vX1 - s || rx > vX2 + s || ry < vY1 - s || ry > vY2 + s) return;
+
             const norm = normalizeTerrain(room.terrain);
             const blobTerrains = ['Forest', 'Mountains', 'Hills', 'Brush', 'Field', 'Grasslands', 'Water', 'Shallows', 'Rapids', 'Building', 'City', 'Tunnel', 'Cavern'];
             
@@ -399,13 +436,14 @@ export const useMapperRenderer = ({
             if (room.id.startsWith('m_')) return;
             const rx = room.x * GRID_SIZE, ry = room.y * GRID_SIZE, s = GRID_SIZE, rz = room.z || 0;
             if (Math.abs(rz - currentZ) > 1.5) return;
+            if (rx < vX1 - s || rx > vX2 + s || ry < vY1 - s || ry > vY2 + s) return;
 
             const getLGS = (rA: any, d: string) => {
                 const exA = rA.exits?.[d], rId = String(rA.id).startsWith('m_') ? rA.id.substring(2) : rA.id, wEx = preloaded[rId]?.[4][d], effEx = exA || wEx; if (!effEx) return { hasExit: false };
                 const tId = effEx.target, oD = DIRS[d]?.opp, nId = tId ? (String(tId).startsWith('m_') ? tId : `m_${tId}`) : null;
                 const n = nId ? (allRooms[nId] || allRooms[tId] || (preloaded[String(tId)] ? { exits: preloaded[String(tId)][4] } : null)) : null, exB = n?.exits?.[oD];
-                const isD = (n: string) => /\b(door|gate|portcullis|secret)\b/i.test(n), hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
-                const hasD = !!(effEx.hasDoor || hasDF(effEx.flags) || isD(effEx.name||'') || exB?.hasDoor || hasDF(exB?.flags) || isD(exB?.name||'') || wEx?.hasDoor);
+
+                const hasD = !!effEx.hasDoor;
                 if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
                 let isC = true; if (exA?.closed === false || exB?.closed === false) isC = false; else if (exA?.flags?.some((f: any) => String(f).toLowerCase() === 'closed')) isC = true;
                 return { hasExit: true, hasDoor: hasD, isClosed: isC };
@@ -441,11 +479,37 @@ export const useMapperRenderer = ({
             const mobFG = (pData ? pData[7] : []) || [], loadFG = (pData ? pData[8] : []) || [];
             const activeMobFlags = (room.mobFlags || mobFG), activeLoadFlags = (room.loadFlags || loadFG);
 
+            // DRAW EXTERNAL PATHS for local rooms (must be before Pass 2 content)
+            const centerPX = rx + s / 2, centerPY = ry + s / 2;
+            if (room.exits) {
+                for (const d in room.exits) {
+                    const ex = room.exits[d];
+                    const targetRoom = allRooms[ex.target];
+                    if (targetRoom && Math.abs((targetRoom.z || 0) - currentZ) <= 0.5) {
+                        const tAnchor = getRoomAnchor(targetRoom.x, targetRoom.y);
+                        const exFlags = ex.flags || [];
+                        const isRoad = exFlags.some((f: string) => /road|trail|path/i.test(String(f))) || normalizeTerrain(room.terrain) === 'Road';
+                        if (isRoad) {
+                            if (normalizeTerrain(targetRoom.terrain) === 'Road') drawCurvedPath(centerPX, centerPY, tAnchor.x, tAnchor.y, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, 12);
+                            else drawCurvedPath(centerPX, centerPY, tAnchor.x, tAnchor.y, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, 4);
+                        } else if (ex.target > room.id) { // Only draw once for local IDs
+                            drawLine(centerPX, centerPY, tAnchor.x, tAnchor.y, isDarkMode ? "rgba(137, 180, 250, 0.15)" : "rgba(37, 99, 235, 0.15)", 2);
+                        }
+                    }
+                }
+            }
+
             const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
             ctx.save();
             if (p < 1) {
                 ctx.globalAlpha = p;
                 ctx.translate(rx + s/2, ry + s/2); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-(rx + s/2), -(ry + s/2));
+            }
+
+            // Room Name Label
+            if (camera.zoom > 1.8) { 
+                ctx.font = '8px "Aniron"'; ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a'; ctx.textAlign = 'center'; 
+                ctx.fillText((room.name || 'Unknown').substring(0, 12), centerPX, ry + s * 0.95); 
             }
 
             if (activeMobFlags.length > 0 || activeLoadFlags.length > 0) {
@@ -455,6 +519,9 @@ export const useMapperRenderer = ({
                 let off = 0;
                 if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', cX + off, cY); off += 8 / camera.zoom; }
                 if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', cX + off, cY); off += 8 / camera.zoom; }
+                if (activeMobFlags.some((f: string) => f.includes('GUILD'))) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', cX + off, cY); off += 8 / camera.zoom; }
+                if (activeMobFlags.some((f: string) => f.includes('PRACTISE'))) { ctx.fillStyle = '#89dceb'; ctx.fillText('P', cX + off, cY); off += 8 / camera.zoom; }
+                if (activeMobFlags.some((f: string) => f.includes('RENT'))) { ctx.fillStyle = '#fab387'; ctx.fillText('R', cX + off, cY); off += 8 / camera.zoom; }
                 if (activeLoadFlags.some((f: string) => f.includes('HERB') || f.includes('WATER'))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', cX + off, cY); }
                 ctx.restore();
             }
@@ -468,6 +535,32 @@ export const useMapperRenderer = ({
                 ctx.strokeStyle = isDarkMode ? '#89b4fa' : '#3b82f6'; ctx.lineWidth = 2 / camera.zoom;
                 ctx.setLineDash([4 * invZoom, 2 * invZoom]); ctx.strokeRect(rx + 3, ry + 3, s - 6, s - 6); ctx.setLineDash([]);
             }
+
+            // Up/Down Indicators (Local)
+            const hasUp = !!room.exits?.['u'];
+            const hasDown = !!room.exits?.['d'];
+            if (hasUp || hasDown) {
+                ctx.save();
+                ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
+                const triSize = 6 / camera.zoom;
+                const margin = 4 / camera.zoom;
+                if (hasUp) {
+                    ctx.beginPath();
+                    ctx.moveTo(rx + s - margin, ry + margin + triSize); // Bottom left of triangle
+                    ctx.lineTo(rx + s - margin - triSize, ry + margin + triSize); // Bottom right
+                    ctx.lineTo(rx + s - margin - (triSize / 2), ry + margin); // Tip
+                    ctx.fill();
+                }
+                if (hasDown) {
+                    ctx.beginPath();
+                    ctx.moveTo(rx + s - margin, ry + s - margin - triSize); // Top left of triangle
+                    ctx.lineTo(rx + s - margin - triSize, ry + s - margin - triSize); // Top right
+                    ctx.lineTo(rx + s - margin - (triSize / 2), ry + s - margin); // Tip
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+
             ctx.restore();
         });
 
@@ -512,13 +605,8 @@ export const useMapperRenderer = ({
         });
 
         ctx.restore();
+        drawMarquee(rCtx, marquee);
 
-        // Marquee
-        if (marquee && marquee.start && marquee.end) {
-            const x1 = marquee.start.x / dpr, y1 = marquee.start.y / dpr, x2 = marquee.end.x / dpr, y2 = marquee.end.y / dpr;
-            ctx.save(); ctx.scale(dpr, dpr); ctx.strokeStyle = '#89b4fa'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
-            ctx.strokeRect(x1, y1, x2 - x1, y2 - y1); ctx.fillStyle = 'rgba(137, 180, 250, 0.2)'; ctx.fillRect(x1, y1, x2 - x1, y2 - y1); ctx.restore();
-        }
     }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, stateExploredVnums, firstExploredAtRef]);
 
     return { drawMap };

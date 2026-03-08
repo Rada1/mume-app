@@ -6,10 +6,11 @@ import { MapperToolbar } from './MapperToolbar';
 import { MapperDropdown } from './MapperDropdown';
 import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
-import { parseMM2 } from './mm2Parser';
 import { useMapperInteractions } from './useMapperInteractions';
 import { PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './mapperUtils';
 import { useSmartWalk } from './hooks/useSmartWalk';
+import { useMapperExportImport } from './hooks/useMapperExportImport';
+import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 
 interface MapperProps {
     isMinimized?: boolean;
@@ -51,8 +52,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const lastRoomIdRef = useRef<string | null>(null);
 
     const { addMessage, triggerHaptic, executeCommand } = useGame();
+
+    // Pass a dummy onRecenter first to controller
     const controller = useMapperController(characterName ?? null, ref, { 
-        onRecenter: () => handleCenterOnPlayer() 
+        onRecenter: () => { handleCenterOnPlayer() }
     });
 
     const {
@@ -66,6 +69,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { isWalking, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, controller.preloadedCoordsRef);
 
     const triggerRender = useCallback(() => setRenderVersion(v => v + 1), []);
+
+    const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, controller);
+    const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender);
 
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,
@@ -133,65 +139,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         triggerRender();
     }, [unveilMap, triggerRender]);
 
-    // Cleanup trail over time
-    useEffect(() => {
-        const interval = setInterval(() => {
-            if (playerTrailRef.current.length > 0) {
-                playerTrailRef.current = playerTrailRef.current
-                    .map(t => ({ ...t, alpha: t.alpha - 0.05 }))
-                    .filter(t => t.alpha > 0);
-                triggerRender();
-            }
-        }, 100);
-        return () => clearInterval(interval);
-    }, [triggerRender]);
-
-    const handleExportMap = useCallback(() => {
-        const data = {
-            rooms,
-            markers,
-            characterName,
-            exportedAt: new Date().toISOString()
-        };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `mume_map_${characterName || 'player'}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }, [rooms, markers, characterName]);
-
-    const handleImportMap = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                const data = JSON.parse(event.target?.result as string);
-                if (data.rooms) setRooms(data.rooms);
-                if (data.markers) setMarkers(data.markers);
-                addMessage?.('system', '[Mapper] Map data imported successfully.');
-            } catch (err) {
-                addMessage?.('system', '[Mapper] Error importing map data.');
-            }
-        };
-        reader.readAsText(file);
-    }, [addMessage, setRooms, setMarkers]);
-
-    const handleImportMMapper = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        try {
-            addMessage?.('system', '[Mapper] Reading MMapper file...');
-            const data = await parseMM2(file, 1.0);
-            controller.loadImportedMapData(data);
-        } catch (err) {
-            console.error(err);
-            addMessage?.('system', '[Mapper] Error parsing .mm2 file.');
-        }
-    }, [addMessage, controller]);
-
     const handleAddMarker = useCallback((wx: number, wy: number, z: number) => {
         const id = Math.random().toString(36).substr(2, 9);
         setMarkers(prev => ({
@@ -208,21 +155,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             }
         }));
     }, [setMarkers]);
-
-    const handleCenterOnPlayer = useCallback(() => {
-        if (playerPosRef.current && canvasRef.current) {
-            const cvs = canvasRef.current;
-            const dpr = window.devicePixelRatio || 1;
-            const w = cvs.width / dpr;
-            const h = cvs.height / dpr;
-            const zoom = cameraRef.current.zoom || 1;
-
-            cameraRef.current.x = (playerPosRef.current.x * 50 + 25) - (w / (2 * zoom));
-            cameraRef.current.y = (playerPosRef.current.y * 50 + 25) - (h / (2 * zoom));
-            setAutoCenter(true);
-            triggerRender();
-        }
-    }, [cameraRef, triggerRender]);
 
     return (
         <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: '#11111b' }}>
