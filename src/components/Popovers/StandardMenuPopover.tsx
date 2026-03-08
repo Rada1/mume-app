@@ -42,6 +42,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         key={setName}
                         className="popover-item"
                         data-menu-item="true"
+                        data-is-menu="true"
                         onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
                         onClick={() => setPopoverState({ ...popoverState, setId: setName })}
                     >
@@ -71,6 +72,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             key={button.id}
                             className="popover-item"
                             data-menu-item="true"
+                            data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' ? "true" : "false"}
                             onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
                             onClick={(e) => {
                                 if (popoverState.assignSourceId) {

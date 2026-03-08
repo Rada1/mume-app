@@ -97,8 +97,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         const handlePointerUp = (e: PointerEvent) => {
             const activeItem = document.querySelector('.popover-item[data-menu-item="true"].active-drag') as HTMLElement;
             if (activeItem) {
+                const isMenu = activeItem.getAttribute('data-is-menu') === 'true';
                 activeItem.click();
-                setPopoverState(null);
+                if (!isMenu) setPopoverState(null);
             }
         };
 

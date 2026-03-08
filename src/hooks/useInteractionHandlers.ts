@@ -76,7 +76,21 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             finalCmd = `${finalCmd} ${target}`; joystick.setIsJoystickConsumed(true);
         }
 
-        if (button.actionType === 'nav') btn.setActiveSet(button.command);
+        if (button.actionType === 'nav' || button.actionType === 'menu') {
+            const rect = targetEl?.getBoundingClientRect();
+            setPopoverState({
+                ...popoverState,
+                x: rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2,
+                y: rect ? rect.top : (e as any).clientY || window.innerHeight / 2,
+                setId: button.command,
+                context: context || button.label,
+                assignSourceId: popoverState?.assignSourceId,
+                executeAndAssign: popoverState?.executeAndAssign,
+                menuDisplay: popoverState?.menuDisplay,
+                type: undefined
+            });
+            return;
+        }
         else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(button.actionType || '')) {
             const rect = targetEl?.getBoundingClientRect();
             setPopoverState({
