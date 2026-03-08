@@ -3,8 +3,8 @@ import {
     GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES, 
     getTerrainColor, normalizeTerrain,
     ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT 
-} from './mapperUtils';
-import { drawBlobTerrain, BlobNeighbors } from './blobTerrainRenderer';
+} from '../mapperUtils';
+import { drawBlobTerrain, BlobNeighbors } from '../blobTerrainRenderer';
 
 interface RendererProps {
     rooms: Record<string, any>;

@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useEffect, forwardRef } from 'react';
-import { useMapperRenderer } from './useMapperRenderer';
+import { useMapperRenderer } from './renderer/useMapperRenderer';
 import { useMapAnimation } from './useMapAnimation';
 
 interface MapCanvasProps {

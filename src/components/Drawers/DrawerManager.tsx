@@ -1,7 +1,7 @@
 import React from 'react';
 import { InventoryDrawer } from './InventoryDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
-import { EquipmentDrawer } from './EquipmentDrawer';
+import { EquipmentDrawer } from './EquipmentDrawer/index';
 import { Mapper } from '../Mapper/Mapper';
 import { User, Shield, Package, Map as MapIcon } from 'lucide-react';
 

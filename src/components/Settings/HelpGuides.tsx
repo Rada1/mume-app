@@ -28,7 +28,7 @@ const HelpGuides: React.FC = () => {
             if (line.trim() === '') return <br key={i} />;
 
             // Bold
-            let parts: (string | JSX.Element)[] = [line];
+            let parts: (string | React.JSX.Element)[] = [line];
             const boldRegex = /\*\*(.*?)\*\*/g;
             let match;
             while ((match = boldRegex.exec(line)) !== null) {

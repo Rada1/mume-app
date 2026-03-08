@@ -5,7 +5,7 @@ export interface GmcpHandlers {
     setStats: React.Dispatch<React.SetStateAction<GameStats>>;
     setWeather: React.Dispatch<React.SetStateAction<WeatherType>>;
     setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
-    setInCombat: (inCombat: boolean) => void;
+    setInCombat: (inCombat: boolean, force?: boolean) => void;
     detectLighting: (light: string) => void;
     onOpponentChange?: (opponent: string | null) => void;
     onAddPlayer?: (data: string | GmcpOccupant) => void;
