@@ -137,11 +137,11 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = []; }
-        if ((isWaitingForEq.current || captureStage.current !== 'none') && (/you are using|you are equipped with/i.test(lower) || lower.startsWith('<'))) {
+        if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
             isWaitingForEq.current = false; captureStage.current = 'eq'; containerStackRef.current = [];
             setEqLines([]); // Clear when starting fresh eq list
         }
-        if ((isWaitingForInv.current || captureStage.current !== 'none') && /you are carrying|your inventory contains/i.test(lower)) {
+        if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
             isWaitingForInv.current = false; captureStage.current = 'inv'; containerStackRef.current = [];
             setInventoryLines([]); // Clear when starting fresh inv list
         }

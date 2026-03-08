@@ -35,6 +35,7 @@ interface MapCanvasProps {
     triggerRender?: () => void;
     unveilMap?: boolean;
     viewZ?: number | null;
+    firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -42,14 +43,13 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
     const canvasRef = (ref as React.RefObject<HTMLCanvasElement>) || internalRef;
 
     const getDPR = useCallback(() => Math.min(props.isMobile ? 2.0 : 2.5, window.devicePixelRatio || 1), [props.isMobile]);
-    const firstExploredAtRef = useRef<Record<string, number>>({});
 
     const {
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
         camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
-        unveilMap, viewZ
+        unveilMap, viewZ, firstExploredAtRef
     } = props;
 
     const { drawMap } = useMapperRenderer({

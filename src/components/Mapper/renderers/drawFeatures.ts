@@ -62,7 +62,10 @@ export const drawFeatures = (
                 const norm = normalizeTerrain(terrain);
 
                 const firstExplored = firstExploredAtRef.current[vnum];
-                if (firstExplored === undefined) firstExploredAtRef.current[vnum] = now;
+                if (firstExplored === undefined) {
+                    firstExploredAtRef.current[vnum] = now;
+                    firstExploredAtRef.current['_latest'] = now;
+                }
                 const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
                 ctx.save();
                 if (p < 1) {
@@ -180,6 +183,11 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         const room = localRooms[i]; if (room.id.startsWith('m_')) continue;
         if (Math.abs((room.z || 0) - currentZ) > 1.5) continue;
         const rx = room.x, ry = room.y, wx = rx * s, wy = ry * s, cX = wx + s/2, cY = wy + s/2, norm = normalizeTerrain(room.terrain);
+        const firstExplored = firstExploredAtRef.current[room.id];
+        if (firstExplored === undefined) {
+            firstExploredAtRef.current[room.id] = now;
+            firstExploredAtRef.current['_latest'] = now;
+        }
         const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
         ctx.save();
         if (p < 1) { ctx.globalAlpha = p; ctx.translate(cX, cY); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-cX, -cY); }

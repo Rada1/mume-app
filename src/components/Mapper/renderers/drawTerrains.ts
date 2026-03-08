@@ -31,7 +31,10 @@ export const drawTerrains = (
                 const norm = normalizeTerrain(terrain);
 
                 const firstExplored = firstExploredAtRef.current[vnum];
-                if (firstExplored === undefined) firstExploredAtRef.current[vnum] = now;
+                if (firstExplored === undefined) {
+                    firstExploredAtRef.current[vnum] = now;
+                    firstExploredAtRef.current['_latest'] = now;
+                }
                 const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
 
                 ctx.save();
@@ -88,7 +91,10 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
         const norm = normalizeTerrain(room.terrain);
 
         const firstExplored = firstExploredAtRef.current[room.id];
-        if (firstExplored === undefined) firstExploredAtRef.current[room.id] = now;
+        if (firstExplored === undefined) {
+            firstExploredAtRef.current[room.id] = now;
+            firstExploredAtRef.current['_latest'] = now;
+        }
         const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
 
         ctx.save();

@@ -238,7 +238,7 @@ export const useButtonGestures = ({
             if (previewCmd.actionType === 'nav') {
                 setActiveSet(previewCmd.cmd);
                 triggerHaptic(35);
-            } else if (previewCmd.actionType === 'assign' || previewCmd.actionType === 'menu' || previewCmd.actionType === 'select-assign') {
+            } else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(previewCmd.actionType || '')) {
                 const rect = el.getBoundingClientRect();
                 const isSwipe = el._maxDist > 15;
                 const isDial = button.menuDisplay === 'dial';
@@ -254,11 +254,18 @@ export const useButtonGestures = ({
                     context: previewCmd.actionType === 'select-assign' ? previewCmd.modifiers : button.label,
                     assignSourceId: (previewCmd.actionType === 'assign' || previewCmd.actionType === 'select-assign') ? button.id : undefined,
                     assignSwipeDir: previewCmd.dir,
-                    executeAndAssign: previewCmd.actionType === 'select-assign',
+                    executeAndAssign: previewCmd.actionType === 'select-assign' || previewCmd.actionType === 'assign',
                     menuDisplay: button.menuDisplay,
+                    type: previewCmd.actionType === 'select-recipient' ? 'give-recipient-select' : undefined,
                     initialPointerX: (isSwipe && isDial) ? initialX : undefined,
                     initialPointerY: (isSwipe && isDial) ? initialY : undefined
                 });
+            } else if (previewCmd.actionType === 'preload' || (previewCmd.cmd && previewCmd.cmd.startsWith('input:'))) {
+                const prefill = previewCmd.cmd.startsWith('input:') ? previewCmd.cmd.slice(6) : (previewCmd.cmd + (previewCmd.cmd.endsWith(' ') ? '' : ' '));
+                // We need to use the actual setter passed from parent
+                (handleButtonClick as any)({ ...button, command: prefill, actionType: 'preload' }, e);
+            } else if (previewCmd.cmd === '__clear_target__') {
+                handleButtonClick({ ...button, command: '__clear_target__', actionType: 'command' }, e);
             } else if (previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                 executeCommand(previewCmd.cmd, false, false);
                 if (joystick.currentDir) joystick.setIsJoystickConsumed(true);

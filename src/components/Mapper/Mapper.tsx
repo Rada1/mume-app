@@ -187,6 +187,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 triggerRender={triggerRender}
                 unveilMap={unveilMap}
                 viewZ={viewZ}
+                firstExploredAtRef={controller.firstExploredAtRef}
             />
             <MapperToolbar
                 mode={mode}
