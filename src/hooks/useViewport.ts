@@ -40,27 +40,19 @@ export function useViewport() {
         }
 
         if (!force) {
-            // Consistent threshold across the app - tighten to 5 for precision
-            const threshold = 5;
+            const threshold = 10;
             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
             if (!isNearBottom) return;
         }
 
-        // Mobile browsers often struggle with custom JS smooth scrolling because it fights
-        // with native momentum scrolling and visual bounds. Native 'smooth' or 'instant' is better.
         isAutoScrollingRef.current = true;
 
-        if (instant) {
-            container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
-            setTimeout(() => { isAutoScrollingRef.current = false; }, 40);
-        } else {
-            // Check if we can use a slightly faster smooth scroll via CSS if the browser supports it,
-            // but for now, native smooth is standard.
-            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-            // Reduce timeout slightly for snappier lock release
-            setTimeout(() => { isAutoScrollingRef.current = false; }, 200);
-        }
-    }, [isMobile]);
+        // Use instant scroll for everything to eliminate sluggishness
+        container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
+        
+        // Use a tiny timeout to release the lock
+        setTimeout(() => { isAutoScrollingRef.current = false; }, 20);
+    }, []);
 
     const [logFontSize, setLogFontSize] = useState(() => {
         const saved = localStorage.getItem('mud-log-font-size');
@@ -72,6 +64,7 @@ export function useViewport() {
     }, [logFontSize]);
 
     const touchDistRef = useRef<number | null>(null);
+    const lastUpdateRef = useRef<number>(0);
 
     // Global touch listeners for pinch zoom
     useEffect(() => {
@@ -101,7 +94,6 @@ export function useViewport() {
 
                 setLogFontSize(prev => {
                     const next = prev * ratio;
-                    // Clamp between 0.5 and 2.5
                     return Math.min(2.5, Math.max(0.5, next));
                 });
             }
@@ -122,11 +114,8 @@ export function useViewport() {
         };
     }, [isMobile]);
 
-    const lastUpdateRef = useRef<number>(0);
-
     const updateHeight = useCallback(() => {
         const now = Date.now();
-        // Throttle updates to ~60fps for stability during fast transitions
         if (now - lastUpdateRef.current < 16) return;
         lastUpdateRef.current = now;
 
@@ -148,18 +137,14 @@ export function useViewport() {
         const isCurrentlyOpen = isMobile && isFocusableActive && !isKeyboardDown;
 
         requestAnimationFrame(() => {
-            const vh = currentHeight * 0.01;
-            document.documentElement.style.setProperty('--vh', `${vh}px`);
-            document.documentElement.style.setProperty('--visual-height', `${currentHeight}px`);
-
             const container = document.querySelector('.app-container') as HTMLElement;
             if (container) {
                 if (isCurrentlyOpen) {
+                    // Lock height to visible area but do NOT offset top, 
+                    // allowing native browser glide to handle the transition.
                     container.style.height = `${currentHeight}px`;
-                    container.style.top = `${viewport.offsetTop}px`;
                 } else {
                     container.style.height = '';
-                    container.style.top = '';
                 }
             }
 
@@ -188,21 +173,6 @@ export function useViewport() {
             }
         });
     }, [isMobile, isKeyboardOpen, logFontSize]);
-
-    // Force snap and scroll strictly when keyboard state or mobile status changes
-    useEffect(() => {
-        if (isMobile) {
-            // Force snap on keyboard state changes - this is a "hard" snap
-            if (isLockedToBottomRef.current) {
-                scrollToBottom(true, true);
-            }
-
-            const timer = setTimeout(() => {
-                if (isLockedToBottomRef.current) scrollToBottom(true, true);
-            }, 400);
-            return () => clearTimeout(timer);
-        }
-    }, [isKeyboardOpen, isMobile, scrollToBottom, updateHeight]);
 
     useEffect(() => {
         if (window.visualViewport) {

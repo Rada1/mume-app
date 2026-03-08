@@ -52,6 +52,8 @@ const SpatButtonItem: React.FC<{
             onPointerMove={(e) => { e.stopPropagation(); onPointerMove(e); }}
             onPointerUp={(e) => { e.stopPropagation(); onPointerUp(e); }}
             onPointerCancel={(e) => { e.stopPropagation(); onPointerCancel(e); }}
+            onTouchStart={(e) => { if (e.cancelable) e.preventDefault(); }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
         >
             {activeDir && createPortal(
                 <div className="swipe-wheel-container" style={{ zIndex: 50000 }}>
@@ -96,6 +98,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
 
     const handlePointerDown = useCallback((e: React.PointerEvent, id: string) => {
         if (e.cancelable) e.preventDefault();
+        
         const el = e.currentTarget as HTMLElement;
         el.setPointerCapture(e.pointerId);
         interactionState.current[id] = {
@@ -142,6 +145,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
     }, []);
 
     const handlePointerUp = useCallback((e: React.PointerEvent, sb: SpatButton) => {
+        if (e.cancelable) e.preventDefault();
         const state = interactionState.current[sb.id];
         if (!state) return;
 

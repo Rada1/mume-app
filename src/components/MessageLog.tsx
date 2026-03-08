@@ -35,11 +35,7 @@ interface MessageLogProps {
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
             ) : msg.isComm ? (
-                isRecent ? (
-                    <TypewriterText html={content} speed={2} />
-                ) : (
-                    <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
-                )
+                <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
             ) : (
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
@@ -77,16 +73,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
         // Simple virtualization: update visible window based on scroll
         const scrollTop = container.scrollTop;
         const containerHeight = container.clientHeight;
-        const estimatedMsgHeight = 35; // Better average for MUME (descriptions are common)
+        const estimatedMsgHeight = 30; 
         
-        const start = Math.max(0, Math.floor(scrollTop / estimatedMsgHeight) - 40);
-        // Force the last 50 messages to always be rendered to ensure smooth entry and animation
-        const safeBottomCount = 50;
-        const end = (isNearBottom || messages.length - (scrollTop + containerHeight) / estimatedMsgHeight < safeBottomCount)
-            ? messages.length 
-            : Math.min(messages.length, Math.ceil((scrollTop + containerHeight) / estimatedMsgHeight) + 40);
+        const start = Math.max(0, Math.floor(scrollTop / estimatedMsgHeight) - 20);
+        const end = Math.min(messages.length, Math.ceil((scrollTop + containerHeight) / estimatedMsgHeight) + 20);
         
-        if (Math.abs(start - visibleRange.start) > 20 || (isNearBottom && visibleRange.end !== messages.length) || (!isNearBottom && Math.abs(end - visibleRange.end) > 10)) {
+        if (Math.abs(start - visibleRange.start) > 10 || Math.abs(end - visibleRange.end) > 10) {
             setVisibleRange({ start, end });
         }
     }, [viewport, messages.length, visibleRange]);
@@ -103,28 +95,24 @@ const MessageLog: React.FC<MessageLogProps> = ({
         lastMessagesRef.current = messages;
 
         if (isNewMessage) {
-            // If we are at bottom or near it, we should hard scroll
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
-                // User commands snap instantly, game text glides smoothly
-                viewport.scrollToBottom(true, lastMsg?.type === 'user'); 
+                // Always snap instantly for all messages to keep it fast
+                viewport.scrollToBottom(true, true); 
             }
         } else if (viewport.isLockedToBottomRef.current) {
-            viewport.scrollToBottom(true, false);
+            viewport.scrollToBottom(true, true);
         }
     }, [messages, viewport]);
 
     const renderedMessages = useMemo(() => {
         return messages.map((msg, i) => {
-            const isVeryRecent = messages.length - i <= 10;
-            // Always render the last 'safeBottomCount' messages to prevent popping during smooth scroll
-            const isAtBottom = i >= messages.length - 50;
+            // Always render the last 30 messages to prevent any popping at the bottom
+            const isAtBottom = i >= messages.length - 30;
 
             if (i < visibleRange.start || (i > visibleRange.end && !isAtBottom)) {
-                // Return a spacer div to maintain scroll position
-                // Use a slightly smarter estimate: room names are small, descriptions are large
-                const h = msg.isRoomName ? 20 : (msg.textRaw.length > 100 ? 100 : 35);
-                return <div key={msg.id} style={{ height: `${h}px`, opacity: 0 }} />;
+                const h = msg.isRoomName ? 20 : (msg.textRaw.length > 100 ? 80 : 30);
+                return <div key={msg.id} style={{ height: `${h}px` }} />;
             }
             return (
                 <MessageItem
