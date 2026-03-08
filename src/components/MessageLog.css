@@ -34,7 +34,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
     font-size: var(--dynamic-log-size, 16px);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 20px);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, black 240px);
     position: relative;
     user-select: text;
     -webkit-user-select: text;
@@ -68,7 +68,7 @@
     -webkit-font-smoothing: subpixel-antialiased;
     animation: vanish-into-distance linear both;
     animation-timeline: view();
-    animation-range: exit 0% exit 100%;
+    animation-range: exit -240px exit 100%;
     transform-origin: left center;
 }
 
@@ -79,9 +79,9 @@
         filter: blur(0);
     }
     to {
-        opacity: 0;
-        transform: translateZ(-200px) rotateX(-20deg);
-        filter: blur(4px);
+        opacity: 0.4;
+        transform: translateZ(-200px) rotateX(-15deg);
+        filter: blur(1px);
     }
 }
 

@@ -330,8 +330,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         const shouldShow = (isSilentCapture.current === 0 || isImportantMessage);
 
         if (shouldShow) {
-            // Use textPMatch[2] if it exists (prompt with attached text), otherwise cleanLine
-            const finalRawText = textPMatch ? textPMatch[2] : cleanLine;
+            // Since we already stripped the prompt from cleanLine earlier if it matched,
+            // we just use the final state of cleanLine here.
+            const finalRawText = cleanLine;
             // Use stripped text only for precalculation as well
             const precalculated = { 
                 textOnly: textOnly, 
