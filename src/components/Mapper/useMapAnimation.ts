@@ -17,17 +17,20 @@ interface AnimationProps {
     autoCenter?: boolean;
     stableRoomsRef: React.MutableRefObject<Record<string, any>>;
     stableRoomIdRef: React.MutableRefObject<string | null>;
+    stableMarkersRef: React.MutableRefObject<Record<string, any>>;
+    firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
 }
 
 export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
-    canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, stableRoomsRef, stableRoomIdRef
+    canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, 
+    stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
-    const tickRef = useRef<() => boolean>();
+    const tickRef = useRef<(() => boolean) | null>(null);
 
     // Keep tick logic in a ref so the loop can access the latest version without restarting
-    tickRef.current = () => {
+    (tickRef as any).current = () => {
         const cvs = canvasRef.current;
         if (!cvs) return false;
         const ctx = cvs.getContext('2d', { alpha: false }); // Optimization
@@ -84,9 +87,11 @@ export const useMapAnimation = ({
         }
 
         const now = Date.now();
-        // Only check a small subset of rooms for animation if possible, but for now we'll keep it simple
-        const isAnyRoomAnimating = Object.values(stableRoomsRef.current).some((r: any) => now - (r.createdAt || 0) < 800);
-        if (isAnyRoomAnimating) needsNextFrame = true;
+        const isDiscoveryAnimating = Object.values(firstExploredAtRef.current).some(at => now - at < 1500);
+        const isManualRoomAnimating = Object.values(stableRoomsRef.current).some((r: any) => now - (r.createdAt || 0) < 1500);
+        const isMarkerAnimating = Object.values(stableMarkersRef.current).some((m: any) => now - (m.createdAt || 0) < 1500); // Markers are slower
+        
+        if (isDiscoveryAnimating || isManualRoomAnimating || isMarkerAnimating) needsNextFrame = true;
 
         drawMap(ctx, dpr, w, h, marquee);
         return needsNextFrame;

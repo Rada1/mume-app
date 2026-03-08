@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, MutableRefObject } from 'react';
 import { 
     GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES, 
     getTerrainColor, normalizeTerrain,
@@ -12,19 +12,22 @@ interface RendererProps {
     currentRoomId: string | null;
     selectedRoomIds: Set<string>;
     selectedMarkerId: string | null;
-    cameraRef: React.MutableRefObject<{ x: number, y: number, zoom: number }>;
+    cameraRef: MutableRefObject<{ x: number, y: number, zoom: number }>;
     isDarkMode: boolean;
     isMobile: boolean;
-    imagesRef: React.MutableRefObject<Record<string, HTMLImageElement>>;
+    imagesRef: MutableRefObject<Record<string, HTMLImageElement>>;
     characterName: string | null;
-    playerPosRef: React.MutableRefObject<{ x: number, y: number, z: number } | null>;
-    playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
-    stableRoomsRef: React.MutableRefObject<Record<string, any>>;
-    stableRoomIdRef: React.MutableRefObject<string | null>;
-    stableMarkersRef: React.MutableRefObject<Record<string, any>>;
+    playerPosRef: MutableRefObject<{ x: number, y: number, z: number } | null>;
+    playerTrailRef: MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
+    stableRoomsRef: MutableRefObject<Record<string, any>>;
+    stableRoomIdRef: MutableRefObject<string | null>;
+    stableMarkersRef: MutableRefObject<Record<string, any>>;
     unveilMap?: boolean;
     viewZ?: number | null;
     exploredVnums?: Set<string>;
+    firstExploredAtRef: MutableRefObject<Record<string, number>>;
+    preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>>;
+    spatialIndexRef: MutableRefObject<Record<number, Record<string, string[]>>>;
 }
 
 export const useMapperRenderer = ({
@@ -32,15 +35,10 @@ export const useMapperRenderer = ({
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef, preloadedCoordsRef,
     spatialIndexRef, exploredVnums: stateExploredVnums,
-    unveilMap, viewZ
-}: RendererProps & {
-    preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>>,
-    spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>,
-    exploredVnums?: Set<string>
-}) => {
+    unveilMap, viewZ, firstExploredAtRef
+}: RendererProps) => {
 
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
-    const firstExploredAtRef = useRef<Record<string, number>>({});
 
     const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
 
@@ -51,7 +49,7 @@ export const useMapperRenderer = ({
         const currentZ = viewZ !== null && viewZ !== undefined ? viewZ : baseZ;
         const camera = cameraRef.current;
         const invZoom = 1 / camera.zoom;
-        const ANIM_DUR = 800;
+        const ANIM_DUR = 1500;
         
         const isMtn = (rVal: any) => rVal === 'Mountains' || rVal === '<';
         const isFor = (rVal: any) => rVal === 'Forest' || rVal === 'f';
@@ -165,7 +163,7 @@ export const useMapperRenderer = ({
 
                         const firstExplored = firstExploredAtRef.current[vnum];
                         if (firstExplored === undefined) firstExploredAtRef.current[vnum] = now;
-                        const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / 800);
+                        const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
 
                         ctx.save();
                         if (p < 1) {
@@ -194,7 +192,7 @@ export const useMapperRenderer = ({
                         const blobTerrains = ['Forest', 'Mountains', 'Hills', 'Brush', 'Field', 'Grasslands', 'Water', 'Shallows', 'Rapids', 'Building', 'City', 'Tunnel', 'Cavern'];
 
                         if (blobTerrains.includes(norm)) {
-                            const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / 800);
+                            const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
                             ctx.save();
                             if (p < 1) {
                                 ctx.globalAlpha = p;
@@ -252,7 +250,7 @@ export const useMapperRenderer = ({
                         const terrain = localRoom ? localRoom.terrain : tSector;
                         const norm = normalizeTerrain(terrain);
 
-                        const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / 800);
+                        const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
                         ctx.save();
                         if (p < 1) {
                             ctx.globalAlpha = p;
@@ -375,8 +373,19 @@ export const useMapperRenderer = ({
             if (Math.abs(rz - currentZ) > 1.5) return;
             const norm = normalizeTerrain(room.terrain);
             const blobTerrains = ['Forest', 'Mountains', 'Hills', 'Brush', 'Field', 'Grasslands', 'Water', 'Shallows', 'Rapids', 'Building', 'City', 'Tunnel', 'Cavern'];
+            
+            const firstExplored = firstExploredAtRef.current[room.id];
+            if (firstExplored === undefined) firstExploredAtRef.current[room.id] = now;
+            const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
+
+            ctx.save();
+            if (p < 1) {
+                ctx.globalAlpha = p;
+                ctx.translate(rx + s/2, ry + s/2); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-(rx + s/2), -(ry + s/2));
+            }
             ctx.fillStyle = (blobTerrains.includes(norm)) ? getTerrainColor('Base', isDarkMode) : getTerrainColor(room.terrain, isDarkMode); 
             ctx.fillRect(rx - 0.8, ry - 0.8, s + 1.6, s + 1.6);
+            ctx.restore();
         });
 
         // Pass 1B (Local): Local Features Cleanup
@@ -425,6 +434,14 @@ export const useMapperRenderer = ({
             const pData = preloaded[rId];
             const mobFG = (pData ? pData[7] : []) || [], loadFG = (pData ? pData[8] : []) || [];
             const activeMobFlags = (room.mobFlags || mobFG), activeLoadFlags = (room.loadFlags || loadFG);
+
+            const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
+            ctx.save();
+            if (p < 1) {
+                ctx.globalAlpha = p;
+                ctx.translate(rx + s/2, ry + s/2); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-(rx + s/2), -(ry + s/2));
+            }
+
             if (activeMobFlags.length > 0 || activeLoadFlags.length > 0) {
                 ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
                 const cX = rx + s/2, cY = ry + s/2;
@@ -445,6 +462,7 @@ export const useMapperRenderer = ({
                 ctx.strokeStyle = isDarkMode ? '#89b4fa' : '#3b82f6'; ctx.lineWidth = 2 / camera.zoom;
                 ctx.setLineDash([4 * invZoom, 2 * invZoom]); ctx.strokeRect(rx + 3, ry + 3, s - 6, s - 6); ctx.setLineDash([]);
             }
+            ctx.restore();
         });
 
         // Player Trail
@@ -495,7 +513,7 @@ export const useMapperRenderer = ({
             ctx.save(); ctx.scale(dpr, dpr); ctx.strokeStyle = '#89b4fa'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
             ctx.strokeRect(x1, y1, x2 - x1, y2 - y1); ctx.fillStyle = 'rgba(137, 180, 250, 0.2)'; ctx.fillRect(x1, y1, x2 - x1, y2 - y1); ctx.restore();
         }
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, stateExploredVnums]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, stateExploredVnums, firstExploredAtRef]);
 
     return { drawMap };
 };

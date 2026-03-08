@@ -41,6 +41,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
     const canvasRef = (ref as React.RefObject<HTMLCanvasElement>) || internalRef;
 
     const getDPR = useCallback(() => Math.min(props.isMobile ? 2.0 : 2.5, window.devicePixelRatio || 1), [props.isMobile]);
+    const firstExploredAtRef = useRef<Record<string, number>>({});
 
     const { drawMap } = useMapperRenderer({
         rooms: props.rooms,
@@ -62,7 +63,8 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         spatialIndexRef: props.spatialIndexRef,
         exploredVnums: props.exploredVnums,
         unveilMap: props.unveilMap,
-        viewZ: props.viewZ
+        viewZ: props.viewZ,
+        firstExploredAtRef
     });
 
     useMapAnimation({
@@ -80,7 +82,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         marquee: props.marquee,
         autoCenter: props.autoCenter,
         stableRoomsRef: props.stableRoomsRef,
-        stableRoomIdRef: props.stableRoomIdRef
+        stableRoomIdRef: props.stableRoomIdRef,
+        stableMarkersRef: props.stableMarkersRef,
+        firstExploredAtRef
     });
 
     useEffect(() => {

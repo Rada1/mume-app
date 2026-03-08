@@ -108,7 +108,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 });
                 if (playerTrailRef.current.length > 15) playerTrailRef.current.shift();
             }
-            playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
+            if (!playerPosRef.current) {
+                playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
+            }
 
             // Whenever the room changes, re-center the map to follow the player
             if (currentRoomId !== lastRoomIdRef.current) {
