@@ -51,10 +51,11 @@ export function useCommandController(deps: CommandControllerDeps) {
     const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage } = deps;
 
     const executor = useCommandExecutor(deps);
-    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false) => {
+    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean }) => {
         if (!isSystem && !silent) {
             const isInputPrefix = cmd.startsWith('input:');
-            const shouldFocus = !viewport.isMobile || isInputPrefix;
+            // Allow explicit override, otherwise default to focusing on desktop or for input: commands
+            const shouldFocus = options?.shouldFocus !== undefined ? options.shouldFocus : (!viewport.isMobile || isInputPrefix);
             
             if (shouldFocus) {
                 setTimeout(() => {

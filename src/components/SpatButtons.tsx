@@ -5,8 +5,9 @@ import { SpatButton, PopoverState } from '../types';
 interface SpatButtonsProps {
     spatButtons: SpatButton[];
     isMobile: boolean;
+    isKeyboardOpen?: boolean;
     setActiveSet: (setId: string) => void;
-    executeCommand: (cmd: string) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
     setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
 }
@@ -89,6 +90,7 @@ const SpatButtonItem: React.FC<{
 export const SpatButtons: React.FC<SpatButtonsProps> = ({
     spatButtons,
     isMobile,
+    isKeyboardOpen,
     setActiveSet,
     executeCommand,
     setSpatButtons,
@@ -97,8 +99,17 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
     const [activeDirMap, setActiveDirMap] = useState<Record<string, string | null>>({});
     const interactionState = useRef<Record<string, { startX: number, startY: number, lastX: number, lastY: number, maxDist: number }>>({});
 
+    const prevKeyboardOpen = useRef(isKeyboardOpen);
+    useLayoutEffect(() => {
+        if (prevKeyboardOpen.current && !isKeyboardOpen && isMobile) {
+            setSpatButtons(prev => prev.filter(sb => !sb.offKeyboard));
+        }
+        prevKeyboardOpen.current = isKeyboardOpen;
+    }, [isKeyboardOpen, isMobile, setSpatButtons]);
+
     const handlePointerDown = useCallback((e: React.PointerEvent, id: string) => {
         if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
         
         const el = e.currentTarget as HTMLElement;
         el.setPointerCapture(e.pointerId);
@@ -173,6 +184,10 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
         const isTap = state.maxDist < 40;
 
         if (isTap || (dir && state.maxDist >= 40)) {
+            // Aggressively stop event from reaching any other elements
+            if (e.cancelable) e.preventDefault();
+            e.stopPropagation();
+
             let cmd = sb.command;
             let action = sb.action;
 
@@ -200,10 +215,19 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                     menuDisplay: sb.menuDisplay || 'list'
                 });
             } else {
-                executeCommand(cmd);
+                executeCommand(cmd, false, false, false, false, { shouldFocus: false });
             }
 
-            setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
+            if (sb.closeKeyboard) {
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (inputEl) inputEl.blur();
+            }
+
+            // Small delay to prevent browser 'click-through' onto elements behind 
+            // the button (like the input field) after it's removed.
+            setTimeout(() => {
+                setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
+            }, 50);
         }
     }, [activeDirMap, setActiveSet, setPopoverState, executeCommand, setSpatButtons, isMobile]);
 

@@ -86,6 +86,8 @@ export interface CustomButton {
         type?: TriggerAction;
         targetSet?: string;
         onKeyboard?: boolean; // Show when mobile keyboard opens
+        closeKeyboard?: boolean; // Close keyboard when button is pressed
+        offKeyboard?: boolean; // Hide when mobile keyboard closes
     };
     isVisible: boolean; // Runtime state
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
@@ -139,7 +141,7 @@ export interface PopoverManagerProps {
     buttons: CustomButton[];
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
     availableSets: string[];
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
     addMessage: (type: MessageType, content: string) => void;
     setTarget: (target: string | null) => void;
     teleportTargets: TeleportTarget[];
@@ -241,6 +243,8 @@ export interface SpatButton {
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
     swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
     menuDisplay?: 'list' | 'dial';
+    closeKeyboard?: boolean;
+    offKeyboard?: boolean;
 }
 
 // --- GMCP INTERFACES ---

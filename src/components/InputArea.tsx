@@ -12,10 +12,11 @@ interface InputAreaProps {
     terrain?: string;
     onSwipe?: (dir: string) => void;
     isMobile?: boolean;
+    isKeyboardOpen?: boolean;
     commandPreview?: string | null;
     spatButtons: SpatButton[];
     setActiveSet: (setId: string) => void;
-    executeCommand: (cmd: string) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
     setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
 }
@@ -39,7 +40,7 @@ const normalizeTerrain = (t: string): string => {
 };
 
 const InputArea: React.FC<InputAreaProps> = ({
-    input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, commandPreview,
+    input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState
 }) => {
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
@@ -155,8 +156,10 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 inputRef.current.readOnly = true;
                             }
                         }}
-                        onClick={() => {
+                        onClick={(e) => {
                             // Explicit click on mobile enables the keyboard
+                            // Stop propagation to prevent form-level clicks if any
+                            e.stopPropagation();
                             if (isMobile && inputRef.current) {
                                 inputRef.current.readOnly = false;
                                 inputRef.current.focus();
@@ -167,15 +170,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                         style={{ pointerEvents: 'auto', background: 'transparent', width: '100%', position: 'relative', zIndex: 1 }}
                     />
                 </div>
-
-                <SpatButtons
-                    spatButtons={spatButtons}
-                    isMobile={!!isMobile}
-                    setActiveSet={setActiveSet}
-                    executeCommand={executeCommand}
-                    setSpatButtons={setSpatButtons}
-                    setPopoverState={setPopoverState}
-                />
 
                 {target && (
                     <div
@@ -198,7 +192,9 @@ const InputArea: React.FC<InputAreaProps> = ({
                         onPointerDown={(e) => {
                             // Don't prevent default here or drag-and-drop won't start
                         }}
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
                             onTargetClick?.();
                             if (!isMobile) inputRef.current?.focus();
                         }}
@@ -222,6 +218,16 @@ const InputArea: React.FC<InputAreaProps> = ({
                 )}
                 <button type="submit" style={{ display: 'none' }}>Send</button>
             </form>
+
+            <SpatButtons
+                spatButtons={spatButtons}
+                isMobile={!!isMobile}
+                isKeyboardOpen={isKeyboardOpen}
+                setActiveSet={setActiveSet}
+                executeCommand={executeCommand}
+                setSpatButtons={setSpatButtons}
+                setPopoverState={setPopoverState}
+            />
         </div>
     );
 };

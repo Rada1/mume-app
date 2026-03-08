@@ -343,7 +343,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         btn.setButtons(prev => {
             let changed = false;
             const next = prev.map(b => {
-                if (b.trigger?.enabled && b.trigger.onKeyboard && !b.trigger.spit) {
+                if (b.trigger?.enabled && (b.trigger.onKeyboard || b.trigger.offKeyboard) && !b.trigger.spit) {
                     const shouldBeVisible = isKeyboardOpen;
                     if (b.isVisible !== shouldBeVisible) {
                         changed = true;

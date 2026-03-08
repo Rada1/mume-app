@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 import { CustomButton, MessageType } from '../types';
 
 export interface InteractionDeps {
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
     setInput: (val: string) => void;
     setTarget: (val: string | null) => void;
     addMessage: (type: MessageType, text: string) => void;
@@ -89,6 +89,12 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 menuDisplay: popoverState?.menuDisplay,
                 type: undefined
             });
+
+            // If we are opening a menu, and 'closeKeyboard' is enabled, blur focus
+            if (button.trigger?.closeKeyboard) {
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (inputEl) inputEl.blur();
+            }
             return;
         }
         else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(button.actionType || '')) {
@@ -102,6 +108,11 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 executeAndAssign: button.actionType === 'select-assign', menuDisplay: button.menuDisplay,
                 type: button.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
             });
+
+            if (button.trigger?.closeKeyboard) {
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (inputEl) inputEl.blur();
+            }
         } else if (button.actionType === 'teleport-manage') {
             setPopoverState({ x: window.innerWidth / 2 - 150, y: window.innerHeight / 2 - 150, type: 'teleport-manage', setId: 'teleport' });
         } else if (button.actionType === 'preload' || finalCmd.startsWith('input:')) {
@@ -135,7 +146,15 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
             setTarget(null); addMessage('system', 'Target cleared.');
         } else {
-            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false);
+            // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
+            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
+            
+            // Handle Close Keyboard feature
+            if (button.trigger?.closeKeyboard) {
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (inputEl) inputEl.blur();
+            }
+
             setTimeout(() => setCommandPreview(null), 150);
             if (button.setId === 'inventorylist' || button.setId === 'equipmentlist') {
                 setTimeout(() => {
@@ -305,7 +324,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                     }, 10);
                 }
             } else {
-                executeCommand(finalCmd);
+                executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
             }
         }
         else if (cmd === 'target' && context) {

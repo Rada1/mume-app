@@ -45,7 +45,9 @@ export const useSpatButtons = (
             timestamp: Date.now(),
             swipeCommands,
             swipeActionTypes,
-            menuDisplay: el.dataset.menuDisplay as 'list' | 'dial'
+            menuDisplay: el.dataset.menuDisplay as 'list' | 'dial',
+            closeKeyboard: el.dataset.closeKeyboard === 'true',
+            offKeyboard: el.dataset.offKeyboard === 'true'
         };
 
         setSpatButtons(prev => {
@@ -77,7 +79,9 @@ export const useSpatButtons = (
             timestamp: Date.now(),
             swipeCommands: b.swipeCommands,
             swipeActionTypes: b.swipeActionTypes,
-            menuDisplay: b.menuDisplay
+            menuDisplay: b.menuDisplay,
+            closeKeyboard: b.trigger?.closeKeyboard,
+            offKeyboard: b.trigger?.offKeyboard
         };
 
         setSpatButtons(prev => {

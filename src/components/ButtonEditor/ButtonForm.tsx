@@ -204,6 +204,14 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                         <input type="checkbox" checked={trigger?.onKeyboard} onChange={e => updateButton(editingButton.id, { trigger: { ...trigger!, onKeyboard: e.target.checked } })} />
                         Show on Keyboard (Mobile)
                     </label>
+                    <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={trigger?.closeKeyboard} onChange={e => updateButton(editingButton.id, { trigger: { ...trigger!, closeKeyboard: e.target.checked } })} />
+                        Close Keyboard when Pressed
+                    </label>
+                    <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={trigger?.offKeyboard} onChange={e => updateButton(editingButton.id, { trigger: { ...trigger!, offKeyboard: e.target.checked } })} />
+                        Hide when Keyboard Closes
+                    </label>
                 </div>
                 <div className="setting-group">
                     <label className="setting-label">Auto-Hide Timer (seconds)</label>

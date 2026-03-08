@@ -134,6 +134,7 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                 onSend={handleSend}
                 onSwipe={handleInputSwipe}
                 isMobile={isMobile}
+                isKeyboardOpen={viewport.isKeyboardOpen}
                 commandPreview={commandPreview}
                 target={target}
                 onTargetClick={handleTargetClick}
