@@ -40,6 +40,8 @@ export interface GameContextType {
     setIsNoviceMode: (val: boolean) => void;
     isSoundEnabled: boolean;
     setIsSoundEnabled: (val: boolean) => void;
+    isMapBlobsEnabled: boolean;
+    setIsMapBlobsEnabled: (val: boolean) => void;
     isMmapperMode: boolean;
     setIsMmapperMode: (val: boolean) => void;
     theme: 'light' | 'dark';

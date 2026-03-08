@@ -51,7 +51,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { addMessage, triggerHaptic, executeCommand } = useGame();
+    const { addMessage, triggerHaptic, executeCommand, isMapBlobsEnabled } = useGame();
 
     // Pass a dummy onRecenter first to controller
     const controller = useMapperController(characterName ?? null, ref, { 
@@ -186,6 +186,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 exploredRef={controller.exploredRef}
                 triggerRender={triggerRender}
                 unveilMap={unveilMap}
+                isMapBlobsEnabled={isMapBlobsEnabled}
                 viewZ={viewZ}
                 firstExploredAtRef={controller.firstExploredAtRef}
             />

@@ -34,6 +34,7 @@ interface MapCanvasProps {
     onPointerUp?: (e: React.PointerEvent) => void;
     triggerRender?: () => void;
     unveilMap?: boolean;
+    isMapBlobsEnabled: boolean;
     viewZ?: number | null;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
 }
@@ -49,7 +50,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
-        unveilMap, viewZ, firstExploredAtRef
+        unveilMap, isMapBlobsEnabled, viewZ, firstExploredAtRef
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -57,7 +58,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         cameraRef: camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
-        unveilMap, viewZ, firstExploredAtRef
+        unveilMap, isMapBlobsEnabled, viewZ, firstExploredAtRef
     });
 
     useMapAnimation({

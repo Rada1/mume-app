@@ -22,6 +22,7 @@ interface RendererProps {
     stableRoomIdRef: MutableRefObject<string | null>;
     stableMarkersRef: MutableRefObject<Record<string, any>>;
     unveilMap?: boolean;
+    isMapBlobsEnabled: boolean;
     viewZ?: number | null;
     stateExploredVnums?: Set<string>;
     exploredRef: MutableRefObject<Set<string>>;
@@ -36,7 +37,7 @@ export const useMapperRenderer = ({
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef, preloadedCoordsRef,
     spatialIndexRef, exploredRef, renderVersion,
-    unveilMap, viewZ, firstExploredAtRef
+    unveilMap, isMapBlobsEnabled, viewZ, firstExploredAtRef
 }: RendererProps) => {
 
     const offscreenCacheRef = useRef<{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, lastParams: string } | null>(null);
@@ -108,7 +109,7 @@ export const useMapperRenderer = ({
             cache.lastParams = ""; // Force rebuild
         }
 
-        const cacheParams = `${curZInt}_${camera.zoom}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}`;
+        const cacheParams = `${curZInt}_${camera.zoom}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${isMapBlobsEnabled}_${renderVersion}`;
         const cameraDist = Math.hypot(camera.x - (cache as any).lastCamX, camera.y - (cache as any).lastCamY);
         
         const needsRebuild = cache.lastParams !== cacheParams || cameraDist > (GRID_SIZE * 2.5);
@@ -177,6 +178,7 @@ export const useMapperRenderer = ({
             const rCtx: RenderContext = {
                 ctx: offCtx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
+                isMapBlobsEnabled,
                 allRooms, roomAtCoord: vCache.roomAtCoord, visitedAtCoord: vCache.visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId
             };
 
@@ -213,6 +215,7 @@ export const useMapperRenderer = ({
         const rCtx: RenderContext = {
             ctx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
+            isMapBlobsEnabled,
             allRooms, roomAtCoord: visibleCacheRef.current.roomAtCoord, visitedAtCoord: visibleCacheRef.current.visitedAtCoord, 
             preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId
         };
@@ -223,7 +226,7 @@ export const useMapperRenderer = ({
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, exploredRef, renderVersion, firstExploredAtRef]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, isMapBlobsEnabled, viewZ, spatialIndexRef, preloadedCoordsRef, exploredRef, renderVersion, firstExploredAtRef]);
 
     return { drawMap };
 };

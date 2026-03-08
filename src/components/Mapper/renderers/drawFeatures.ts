@@ -8,7 +8,7 @@ export const drawFeatures = (
     bX1: number, bY1: number, bX2: number, bY2: number,
     floorIndex: Record<string, string[]>
 ) => {
-    const { ctx, dpr, now, ANIM_DUR, isDarkMode, isMobile, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, firstExploredAtRef, imagesRef, processedIconsRef, roomAtCoord, visitedAtCoord, selectedRoomIds, activeId, camera } = rCtx;
+    const { ctx, dpr, now, ANIM_DUR, isDarkMode, isMobile, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, firstExploredAtRef, imagesRef, processedIconsRef, roomAtCoord, visitedAtCoord, selectedRoomIds, activeId, camera, isMapBlobsEnabled } = rCtx;
 
     const drawIcon = (img: HTMLImageElement, dx: number, dy: number, dw: number, dh: number) => {
         if (!img?.complete || img.width <= 0 || img.height <= 0) return;
@@ -61,17 +61,7 @@ export const drawFeatures = (
                 const terrain = localRoom ? localRoom.terrain : tSector;
                 const norm = normalizeTerrain(terrain);
 
-                const firstExplored = firstExploredAtRef.current[vnum];
-                if (firstExplored === undefined) {
-                    firstExploredAtRef.current[vnum] = now;
-                    firstExploredAtRef.current['_latest'] = now;
-                }
-                const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
                 ctx.save();
-                if (p < 1) {
-                    ctx.globalAlpha = p;
-                    ctx.translate(anchorX, anchorY); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-anchorX, -anchorY);
-                }
 
                 if (ghostExits) {
                     const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
@@ -84,8 +74,8 @@ export const drawFeatures = (
                             const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
                             const tpx = targetData[0] * s + s/2, tpy = targetData[1] * s + s/2;
                             if (hasRoadFlag && camera.zoom >= 0.6) {
-                                if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawCurvedPath(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, 12, dpr, invZoom);
-                                else drawCurvedPath(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, 4, dpr, invZoom);
+                                if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, 12, dpr, invZoom);
+                                else drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, 4, dpr, invZoom);
                             } else if (targetVnum > vnum && (Math.abs(targetData[0] - rx) > 1.1 || Math.abs(targetData[1] - ry) > 1.1)) {
                                 drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? "rgba(137, 180, 250, 0.15)" : "rgba(37, 99, 235, 0.15)", 2, dpr, invZoom);
                             }
@@ -104,7 +94,7 @@ export const drawFeatures = (
                     }
                 }
 
-                if (camera.zoom >= 0.8) {
+                if (camera.zoom >= 0.8 && isMapBlobsEnabled) {
                     if (terrain === 'Mountains' || terrain === '<') {
                         const seed = getSeed(Math.round(rx), Math.round(ry)), img = imagesRef.current[PEAK_IMAGES[Math.floor(seed * PEAK_IMAGES.length)]];
                         if (img) { const iw = s * 2.4 * (0.9 + seed * 0.2), ih = img.height * (iw / img.width); drawIcon(img, wx + s/2 - iw/2, wy + s/2 - ih/2, iw, ih); }
@@ -183,14 +173,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         const room = localRooms[i]; if (room.id.startsWith('m_')) continue;
         if (Math.abs((room.z || 0) - currentZ) > 1.5) continue;
         const rx = room.x, ry = room.y, wx = rx * s, wy = ry * s, cX = wx + s/2, cY = wy + s/2, norm = normalizeTerrain(room.terrain);
-        const firstExplored = firstExploredAtRef.current[room.id];
-        if (firstExplored === undefined) {
-            firstExploredAtRef.current[room.id] = now;
-            firstExploredAtRef.current['_latest'] = now;
-        }
-        const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
         ctx.save();
-        if (p < 1) { ctx.globalAlpha = p; ctx.translate(cX, cY); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-cX, -cY); }
 
         for (const d of ['n', 's', 'e', 'w']) {
             const { hasExit, hasDoor, isClosed } = getLGS(room, d);

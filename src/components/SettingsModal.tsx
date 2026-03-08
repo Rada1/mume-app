@@ -41,6 +41,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         isMmapperMode, setIsMmapperMode,
         isSoundEnabled, setIsSoundEnabled,
         isNoviceMode, setIsNoviceMode,
+        isMapBlobsEnabled, setIsMapBlobsEnabled,
         theme, setTheme,
         actions, setActions,
         status
@@ -96,6 +97,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 bgImage={bgImage}
                                 setBgImage={setBgImage}
                                 handleFileUpload={handleFileUpload}
+                                isMapBlobsEnabled={isMapBlobsEnabled}
+                                setIsMapBlobsEnabled={setIsMapBlobsEnabled}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

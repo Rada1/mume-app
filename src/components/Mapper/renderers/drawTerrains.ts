@@ -12,7 +12,7 @@ export const drawTerrains = (
     bX1: number, bY1: number, bX2: number, bY2: number,
     floorIndex: Record<string, string[]>
 ) => {
-    const { ctx, now, ANIM_DUR, isDarkMode, explored, unveilMap, allRooms, preloaded, firstExploredAtRef, roomAtCoord, camera } = rCtx;
+    const { ctx, now, ANIM_DUR, isDarkMode, explored, unveilMap, allRooms, preloaded, firstExploredAtRef, roomAtCoord, camera, isMapBlobsEnabled } = rCtx;
     const wallColor = "#795548"; // Warm Brown
 
     for (let bx = bX1; bx <= bX2; bx++) {
@@ -30,20 +30,9 @@ export const drawTerrains = (
                 const terrain = localRoom ? localRoom.terrain : tSector;
                 const norm = normalizeTerrain(terrain);
 
-                const firstExplored = firstExploredAtRef.current[vnum];
-                if (firstExplored === undefined) {
-                    firstExploredAtRef.current[vnum] = now;
-                    firstExploredAtRef.current['_latest'] = now;
-                }
-                const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
-
                 ctx.save();
-                if (p < 1) {
-                    ctx.globalAlpha = p;
-                    ctx.translate(wx + s/2, wy + s/2); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-(wx + s/2), -(wy + s/2));
-                }
 
-                const isBlob = BLOB_TERRAINS.includes(norm);
+                const isBlob = BLOB_TERRAINS.includes(norm) && isMapBlobsEnabled;
                 ctx.fillStyle = isBlob ? getTerrainColor('Base', isDarkMode) : getTerrainColor(terrain, isDarkMode);
                 // Increased overdraw to 1.5px and floor/ceil to ensure no sub-pixel gaps
                 ctx.fillRect(wx - 1.0, wy - 1.0, s + 2.0, s + 2.0);
@@ -77,33 +66,21 @@ export const drawTerrains = (
         }
     }
 };
-
 export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
-    const { ctx, now, ANIM_DUR, isDarkMode, currentZ, firstExploredAtRef } = rCtx;
+    const { ctx, now, ANIM_DUR, isDarkMode, currentZ, firstExploredAtRef, isMapBlobsEnabled } = rCtx;
 
     for (let i = 0; i < localRooms.length; i++) {
         const room = localRooms[i];
         if (room.id.startsWith('m_')) continue;
         const rz = room.z || 0;
         if (Math.abs(rz - currentZ) > 1.5) continue;
-        
+
         const rx = room.x * GRID_SIZE, ry = room.y * GRID_SIZE, s = GRID_SIZE;
         const norm = normalizeTerrain(room.terrain);
 
-        const firstExplored = firstExploredAtRef.current[room.id];
-        if (firstExplored === undefined) {
-            firstExploredAtRef.current[room.id] = now;
-            firstExploredAtRef.current['_latest'] = now;
-        }
-        const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
-
         ctx.save();
-        if (p < 1) {
-            ctx.globalAlpha = p;
-            ctx.translate(rx + s/2, ry + s/2); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-(rx + s/2), -(ry + s/2));
-        }
-        ctx.fillStyle = BLOB_TERRAINS.includes(norm) ? getTerrainColor('Base', isDarkMode) : getTerrainColor(room.terrain, isDarkMode);
+        ctx.fillStyle = (BLOB_TERRAINS.includes(norm) && isMapBlobsEnabled) ? getTerrainColor('Base', isDarkMode) : getTerrainColor(room.terrain, isDarkMode);
         ctx.fillRect(rx - 1.0, ry - 1.0, s + 2.0, s + 2.0);
         ctx.restore();
     }
-};
+};
