@@ -21,35 +21,42 @@ export const CircularVitals: React.FC<CircularVitalsProps> = ({
 }) => {
     const strokeWidth = isOuter ? 4 : 3;
     const gap = isOuter ? 4 : 0;
-    const offset = 8; // SVG padding
+    const margin = strokeWidth / 2 + gap; // Distance from button edge to path center
+    const offset = 10; // Extra padding for the SVG container to prevent clipping
     
-    // Dimensions of the bar's centerline
-    const bw = w + 2 * gap;
-    const bh = h + 2 * gap;
-    const br = Math.min(bw / 2, bh / 2, borderRadius + gap);
+    // The visual dimensions of the path (centerline to centerline)
+    const pw = w + 2 * margin;
+    const ph = h + 2 * margin;
     
-    // Path starting from top center
-    const bx1 = offset - gap;
-    const by1 = offset - gap;
-    const bx2 = offset + w + gap;
-    const by2 = offset + h + gap;
-    const bmx = offset + w / 2;
+    // The radius for the path corners
+    // We adjust the button's border radius by the same margin
+    const pr = Math.max(0, Math.min(pw / 2, ph / 2, borderRadius + margin));
     
+    // SVG viewbox coordinates for the four corners of the path
+    const x1 = offset - margin;
+    const y1 = offset - margin;
+    const x2 = offset + w + margin;
+    const y2 = offset + h + margin;
+    
+    // Path starting from top-middle
     const pathData = `
-        M ${bmx} ${by1}
-        L ${bx2 - br} ${by1}
-        A ${br} ${br} 0 0 1 ${bx2} ${by1 + br}
-        L ${bx2} ${by2 - br}
-        A ${br} ${br} 0 0 1 ${bx2 - br} ${by2}
-        L ${bx1 + br} ${by2}
-        A ${br} ${br} 0 0 1 ${bx1} ${by2 - br}
-        L ${bx1} ${by1 + br}
-        A ${br} ${br} 0 0 1 ${bx1 + br} ${by1}
+        M ${offset + w / 2} ${y1}
+        L ${x2 - pr} ${y1}
+        A ${pr} ${pr} 0 0 1 ${x2} ${y1 + pr}
+        L ${x2} ${y2 - pr}
+        A ${pr} ${pr} 0 0 1 ${x2 - pr} ${y2}
+        L ${x1 + pr} ${y2}
+        A ${pr} ${pr} 0 0 1 ${x1} ${y2 - pr}
+        L ${x1} ${y1 + pr}
+        A ${pr} ${pr} 0 0 1 ${x1 + pr} ${y1}
         Z
     `;
 
-    // Perimeter calculation
-    const perimeter = 2 * (bw - 2 * br) + 2 * (bh - 2 * br) + 2 * Math.PI * br;
+    // Calculate total length for dasharray/offset
+    // Perimeter of the rounded rectangle = 2*(width-2*r) + 2*(height-2*r) + 2*PI*r
+    const straightW = Math.max(0, pw - 2 * pr);
+    const straightH = Math.max(0, ph - 2 * pr);
+    const perimeter = 2 * straightW + 2 * straightH + 2 * Math.PI * pr;
 
     const renderPath = (ratio: number | undefined, color1: string, color2: string, id: string) => {
         if (ratio === undefined) return null;

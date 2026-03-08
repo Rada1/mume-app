@@ -63,6 +63,8 @@
     pointer-events: none;
     filter: saturate(0.6) opacity(0.7);
     transition: all 0.2s;
+    margin: auto;
+    display: block;
 }
 
 .custom-btn:active .button-icon,
