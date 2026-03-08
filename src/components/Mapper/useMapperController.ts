@@ -5,7 +5,7 @@ import { useMapPersistence } from './hooks/useMapPersistence';
 import { useMapActions } from './hooks/useMapActions';
 import { useMapGmcphandlers } from './hooks/useMapGmcphandlers';
 
-export const useMapperController = (characterName: string | null, ref: React.Ref<any>) => {
+export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void } = {}) => {
     const { addMessage, executeCommand, showDebugEchoes } = useGame();
 
     // Core state and refs
@@ -125,8 +125,9 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         preloadedCoordsRef,
         discoverySourceRef,
         pushPendingMove: (dir: string) => pendingMovesRef.current.push({ dir, time: Date.now() }),
-        handleMoveFailure: () => pendingMovesRef.current.shift()
-    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync]);
+        handleMoveFailure: () => pendingMovesRef.current.shift(),
+        handleCenterOnPlayer: options.onRecenter
+    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync, options.onRecenter]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
