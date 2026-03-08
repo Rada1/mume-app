@@ -24,8 +24,6 @@ interface GeneralSettingsProps {
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
-    isMapBlobsEnabled: boolean;
-    setIsMapBlobsEnabled: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -50,8 +48,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     handleFileUpload,
     showDebugEchoes,
     setShowDebugEchoes,
-    isMapBlobsEnabled,
-    setIsMapBlobsEnabled,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -344,44 +340,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 position: 'absolute',
                                 top: '2px',
                                 left: showDebugEchoes ? '22px' : '2px',
-                                transition: 'all 0.3s'
-                            }} />
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="setting-group" style={{ border: '1px solid rgba(16, 185, 129, 0.3)', background: 'rgba(16, 185, 129, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <label className="setting-label" style={{ color: '#10b981', fontWeight: 'bold', margin: 0 }}>Organic Map</label>
-                            <span style={{ fontSize: '0.65rem', background: '#059669', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>PERF</span>
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Toggle blob terrain and decorative icons (like trees). Disable for better performance.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isMapBlobsEnabled ? '#10b981' : '#64748b' }}>{isMapBlobsEnabled ? 'ON' : 'OFF'}</span>
-                        <div
-                            onClick={() => setIsMapBlobsEnabled(!isMapBlobsEnabled)}
-                            style={{
-                                width: '40px',
-                                height: '20px',
-                                background: isMapBlobsEnabled ? '#10b981' : '#334155',
-                                borderRadius: '20px',
-                                position: 'relative',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <div style={{
-                                width: '16px',
-                                height: '16px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                position: 'absolute',
-                                top: '2px',
-                                left: isMapBlobsEnabled ? '22px' : '2px',
                                 transition: 'all 0.3s'
                             }} />
                         </div>

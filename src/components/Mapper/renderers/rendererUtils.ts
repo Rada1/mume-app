@@ -14,7 +14,6 @@ export interface RenderContext {
     currentZ: number;
     explored: Set<string>;
     unveilMap?: boolean;
-    isMapBlobsEnabled: boolean;
     allRooms: Record<string, any>;
     roomAtCoord: Record<string, any>;
     visitedAtCoord: Record<string, boolean>;

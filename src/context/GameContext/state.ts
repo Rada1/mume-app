@@ -7,7 +7,6 @@ export const useGameProviderState = () => {
     // Settings & Mode
     const [isNoviceMode, setIsNoviceMode] = usePersistentState('mud-novice-mode', (MASTER_SETTINGS as any).isNoviceMode ?? false);
     const [isSoundEnabled, setIsSoundEnabled] = usePersistentState('mud-sound-enabled', (MASTER_SETTINGS as any).isSoundEnabled ?? true);
-    const [isMapBlobsEnabled, setIsMapBlobsEnabled] = usePersistentState('mud-map-blobs-enabled', true);
     const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
     const [theme, setTheme] = usePersistentState<'light' | 'dark'>('mud-theme', 'dark');
     const [showControls, setShowControls] = usePersistentState<boolean>('mud-show-controls', (() => {
@@ -161,7 +160,6 @@ export const useGameProviderState = () => {
         playerPosition, setPlayerPosition,
         isNoviceMode, setIsNoviceMode,
         isSoundEnabled, setIsSoundEnabled,
-        isMapBlobsEnabled, setIsMapBlobsEnabled,
         isMmapperMode, setIsMmapperMode,
         theme, setTheme,
         inCombatRef,

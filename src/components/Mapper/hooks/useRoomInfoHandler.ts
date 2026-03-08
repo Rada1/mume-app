@@ -193,18 +193,21 @@ export const useRoomInfoHandler = ({
 
             if (data.exits) {
                 const room = newRooms[targetId!];
-                const updatedExits = { ...room.exits };
+                // For Room.Info, we replace the exits entirely because the GMCP packet
+                // contains the complete list of visible exits.
+                const updatedExits: Record<string, any> = {};
+                
                 for (const dir in data.exits) {
                     const gmcpExit = data.exits[dir];
-                    if (gmcpExit === false) { delete updatedExits[dir]; continue; }
+                    if (gmcpExit === false) continue;
                     const gmcpDestId = typeof gmcpExit === 'number' ? gmcpExit : gmcpExit.id;
                     let exName = undefined, exFlags = undefined;
                     if (typeof gmcpExit === 'object') { exName = gmcpExit.name; exFlags = gmcpExit.flags; }
 
-                    let internalTarget = updatedExits[dir]?.target;
-                    if (!internalTarget && gmcpDestId) {
+                    let internalTarget = undefined;
+                    if (gmcpDestId) {
                         if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
-                        else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId)) || undefined;
+                        else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId));
                     }
                     const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
                     const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
@@ -214,11 +217,10 @@ export const useRoomInfoHandler = ({
                         exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
 
                     updatedExits[dir] = {
-                        ...updatedExits[dir],
-                        target: internalTarget!,
+                        target: internalTarget || "",
                         gmcpDestId,
                         name: exName,
-                        flags: exFlags || (updatedExits[dir]?.flags || []),
+                        flags: exFlags || [],
                         closed: isClosed,
                         hasDoor: !!isDoor
                     };
