@@ -112,24 +112,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
             }
 
-            // Whenever the room changes, re-center the map to follow the player
+            // Whenever the room changes, ensure auto-center is active so the 
+            // animation loop in useMapAnimation.ts can glide the camera smoothly.
             if (currentRoomId !== lastRoomIdRef.current) {
                 lastRoomIdRef.current = currentRoomId;
-                
-                // We define handleCenterOnPlayer below, but since it's a callback 
-                // and this is an effect, we should move the centering logic or call it here.
-                // Re-centering here ensures "keep in vision" at all times.
-                if (canvasRef.current && playerPosRef.current) {
-                    const cvs = canvasRef.current;
-                    const dpr = window.devicePixelRatio || 1;
-                    const w = cvs.width / dpr;
-                    const h = cvs.height / dpr;
-                    const zoom = cameraRef.current.zoom || 1;
-
-                    cameraRef.current.x = (playerPosRef.current.x * 50 + 25) - (w / (2 * zoom));
-                    cameraRef.current.y = (playerPosRef.current.y * 50 + 25) - (h / (2 * zoom));
-                    setAutoCenter(true);
-                }
+                setAutoCenter(true);
             }
 
             triggerRender();

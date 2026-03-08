@@ -107,19 +107,30 @@ export function useTelnet(options: TelnetOptions) {
             bufferRef.current = bufferRef.current.substring(newlineIdx + 1);
             processLine(line);
         }
+
         const prompt = bufferRef.current;
+        // CRITICAL: Always update the prompt state so that any text in the buffer 
+        // (like "By what name...") is visible to the user immediately.
         setPrompt(prompt);
+
         if (prompt) {
-            // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters
-            // even if the server doesn't send a trailing newline on the prompt.
-            processLine(prompt);
-            
-            if (handlers.detectLighting) {
-                const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '');
-                handlers.detectLighting(cleanPrompt);
-            }
-            if (handlers.flushMessages) {
-                handlers.flushMessages();
+            const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
+            const isLikelyPrompt = 
+                /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/.test(cleanPrompt) || 
+                (/[>:]\s*$/.test(cleanPrompt) && cleanPrompt.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(cleanPrompt.toLowerCase())) ||
+                (cleanPrompt.includes('HP:') && cleanPrompt.includes('MA:') && cleanPrompt.includes('>'));
+
+            if (isLikelyPrompt) {
+                // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters.
+                // The parser will see it is a prompt and NOT add it to the message history yet.
+                processLine(prompt);
+                
+                if (handlers.detectLighting) {
+                    handlers.detectLighting(cleanPrompt);
+                }
+                if (handlers.flushMessages) {
+                    handlers.flushMessages();
+                }
             }
         }
     }, [processLine, setPrompt, handlers]);

@@ -128,6 +128,17 @@ const MessageLog: React.FC<MessageLogProps> = ({
         });
     }, [messages, visibleRange, processMessageHtml, inCombat]);
 
+    const activePromptContent = useMemo(() => {
+        if (!activePrompt) return null;
+        // Use a content-based mid to ensure highlighter cache doesn't return stale data
+        const promptMid = `prompt-${activePrompt.length}-${activePrompt.replace(/\x1b\[[0-9;]*m/g, '').substring(0, 20)}`;
+        return (
+            <div className="message prompt msg-latest" style={{ transition: 'none' }}>
+                <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt), promptMid, false) }} />
+            </div>
+        );
+    }, [activePrompt, processMessageHtml]);
+
     return (
         <div
             className={`message-log${inCombat ? ' combat-mode' : ''}`}
@@ -141,11 +152,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             onDragEnd={onDragEnd}
         >
             {renderedMessages}
-            {activePrompt && (
-                <div className="message prompt msg-latest" style={{ transition: 'none' }}>
-                    <div className="message-content" dangerouslySetInnerHTML={{ __html: processMessageHtml(ansiConvert.toHtml(activePrompt), 'prompt', false) }} />
-                </div>
-            )}
+            {activePromptContent}
             <div ref={messagesEndRef} />
         </div>
     );
