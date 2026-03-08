@@ -1,7 +1,7 @@
-import { useCallback } from 'react';
-import { GmcpRoomInfo, GmcpExitInfo } from '../../../types';
 import { MapperRoom } from '../mapperTypes';
-import { generateId, normalizeTerrain, DIRS } from '../mapperUtils';
+import { useRoomInfoHandler } from './useRoomInfoHandler';
+import { useUpdateExitsHandler } from './useUpdateExitsHandler';
+import { useTerrainHandler } from './useTerrainHandler';
 
 interface UseMapGmcphandlersProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -20,19 +20,7 @@ interface UseMapGmcphandlersProps {
     showDebugEchoes?: boolean;
 }
 
-export const useMapGmcphandlers = ({
-    roomsRef, setRooms,
-    currentRoomIdRef, setCurrentRoomId,
-    pendingMovesRef,
-    preloadedCoordsRef,
-    nameIndexRef,
-    serverIdIndexRef,
-    discoverySourceRef,
-    exploredRef, setExploredVnums,
-    lastDetectedTerrainRef,
-    addMessage,
-    showDebugEchoes
-}: UseMapGmcphandlersProps) => {
+export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
         let gmcpId = data.num !== undefined ? data.num : (data.vnum !== undefined ? data.vnum : data.id);
