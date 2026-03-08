@@ -1,6 +1,6 @@
 import React, { useRef, useMemo } from 'react';
 import { SpatButtons } from './SpatButtons';
-import { SpatButton } from '../types';
+import { SpatButton, PopoverState } from '../types';
 import { useVitals } from '../context/GameContext';
 
 interface InputAreaProps {
@@ -17,6 +17,7 @@ interface InputAreaProps {
     setActiveSet: (setId: string) => void;
     executeCommand: (cmd: string) => void;
     setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
 }
 
 const normalizeTerrain = (t: string): string => {
@@ -39,7 +40,7 @@ const normalizeTerrain = (t: string): string => {
 
 const InputArea: React.FC<InputAreaProps> = ({
     input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, commandPreview,
-    spatButtons, setActiveSet, executeCommand, setSpatButtons
+    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState
 }) => {
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLInputElement>(null);
@@ -159,6 +160,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                     setActiveSet={setActiveSet}
                     executeCommand={executeCommand}
                     setSpatButtons={setSpatButtons}
+                    setPopoverState={setPopoverState}
                 />
 
                 {target && (
@@ -211,4 +213,3 @@ const InputArea: React.FC<InputAreaProps> = ({
 };
 
 export default React.memo(InputArea);
-

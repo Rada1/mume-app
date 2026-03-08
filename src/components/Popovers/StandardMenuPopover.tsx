@@ -23,14 +23,14 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     return (
         <>
             <div className="popover-header"
-                onPointerDown={(e) => e.preventDefault()}
+                onPointerDown={(e) => e.stopPropagation()}
                 style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', marginBottom: '4px', paddingBottom: '4px' }}
                 onClick={() => { if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                 {isSetManager ? 'Select Button Set' : `Actions: ${popoverState.context || popoverState.setId} ▾`}
             </div>
 
             {isTargetable && (
-                <div className="popover-item" onPointerDown={(e) => e.preventDefault()} onClick={() => {
+                <div className="popover-item" onPointerDown={(e) => e.stopPropagation()} onClick={() => {
                     setTarget(popoverState.context || null); setPopoverState(null);
                     addMessage('system', `Target set to: ${popoverState.context}`);
                 }}>Set as Target</div>
@@ -42,7 +42,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         key={setName}
                         className="popover-item"
                         data-menu-item="true"
-                        onPointerDown={(e) => e.preventDefault()}
+                        onPointerDown={(e) => e.stopPropagation()}
                         onClick={() => setPopoverState({ ...popoverState, setId: setName })}
                     >
                         {setName}
@@ -54,7 +54,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         <div
                             className="popover-item"
                             data-menu-item="true"
-                            onPointerDown={(e) => e.preventDefault()}
+                            onPointerDown={(e) => e.stopPropagation()}
                             style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: 'var(--accent)', fontWeight: 'bold' }}
                             onClick={() => {
                                 const setName = popoverState.setId;
@@ -71,7 +71,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             key={button.id}
                             className="popover-item"
                             data-menu-item="true"
-                            onPointerDown={(e) => e.preventDefault()}
+                            onPointerDown={(e) => e.stopPropagation()}
                             onClick={(e) => {
                                 if (popoverState.assignSourceId) {
                                     const isExecute = popoverState.executeAndAssign;
@@ -110,7 +110,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                             key={act.label}
                                             className="popover-item"
                                             style={{ color: 'var(--accent)' }}
-                                            onPointerDown={(e) => e.preventDefault()}
+                                            onPointerDown={(e) => e.stopPropagation()}
                                             onClick={(e) => {
                                                 handleButtonClick({
                                                     id: `dynamic-${act.label}`,

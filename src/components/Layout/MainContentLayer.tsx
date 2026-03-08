@@ -41,7 +41,8 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         handleDragStart,
         spatButtons,
         setSpatButtons,
-        executeCommand
+        executeCommand,
+        setPopoverState
     } = useGame();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -141,6 +142,7 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                 setActiveSet={btn.setActiveSet}
                 executeCommand={executeCommand}
                 setSpatButtons={setSpatButtons}
+                setPopoverState={setPopoverState}
             />
         </div>
     );

@@ -1,6 +1,6 @@
-import React, { useRef, useLayoutEffect, useState } from 'react';
+import React, { useRef, useLayoutEffect, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { SpatButton } from '../types';
+import { SpatButton, PopoverState } from '../types';
 
 interface SpatButtonsProps {
     spatButtons: SpatButton[];
@@ -8,6 +8,7 @@ interface SpatButtonsProps {
     setActiveSet: (setId: string) => void;
     executeCommand: (cmd: string) => void;
     setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
 }
 
 const SpatButtonItem: React.FC<{
@@ -22,7 +23,6 @@ const SpatButtonItem: React.FC<{
     const [spitDistance, setSpitDistance] = useState(0);
     const [isFlying, setIsFlying] = useState(true);
 
-    // Measure the landing spot relative to the startX coordinate on mount
     useLayoutEffect(() => {
         if (elRef.current) {
             const rect = elRef.current.getBoundingClientRect();
@@ -31,36 +31,11 @@ const SpatButtonItem: React.FC<{
             if (inputRect) {
                 setSpitDistance(inputRect.left - rect.left);
             }
-            
-            // Animation is ~800ms
+            // Transition is ~800ms
             const timer = setTimeout(() => setIsFlying(false), 850);
             return () => clearTimeout(timer);
         }
     }, [sb.id]);
-
-    const handlePointerDown = (e: React.PointerEvent) => {
-        if (isFlying) return;
-        e.stopPropagation();
-        onPointerDown(e);
-    };
-
-    const handlePointerMove = (e: React.PointerEvent) => {
-        if (isFlying) return;
-        e.stopPropagation();
-        onPointerMove(e);
-    };
-
-    const handlePointerUp = (e: React.PointerEvent) => {
-        if (isFlying) return;
-        e.stopPropagation();
-        onPointerUp(e);
-    };
-
-    const handlePointerCancel = (e: React.PointerEvent) => {
-        if (isFlying) return;
-        e.stopPropagation();
-        onPointerCancel(e);
-    };
 
     return (
         <div
@@ -70,14 +45,15 @@ const SpatButtonItem: React.FC<{
                 '--spit-distance': `${spitDistance}px`,
                 borderColor: sb.color,
                 boxShadow: isFlying ? 'none' : `0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px ${sb.color}`,
-                '--accent': sb.color
+                '--accent': sb.color,
+                pointerEvents: 'auto'
             } as any}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerCancel}
+            onPointerDown={(e) => { e.stopPropagation(); onPointerDown(e); }}
+            onPointerMove={(e) => { e.stopPropagation(); onPointerMove(e); }}
+            onPointerUp={(e) => { e.stopPropagation(); onPointerUp(e); }}
+            onPointerCancel={(e) => { e.stopPropagation(); onPointerCancel(e); }}
         >
-            {!isFlying && activeDir && createPortal(
+            {activeDir && createPortal(
                 <div className="swipe-wheel-container" style={{ zIndex: 50000 }}>
                     {['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'].map((d, i) => {
                         const swipeCmd = sb.swipeCommands?.[d as any];
@@ -110,131 +86,141 @@ const SpatButtonItem: React.FC<{
 
 export const SpatButtons: React.FC<SpatButtonsProps> = ({
     spatButtons,
-    isMobile,
     setActiveSet,
     executeCommand,
-    setSpatButtons
+    setSpatButtons,
+    setPopoverState
 }) => {
-    const [activeDirMap, setActiveDirMap] = React.useState<Record<string, string | null>>({});
-    const [promptLeft, setPromptLeft] = React.useState(0);
-    const containerRef = React.useRef<HTMLDivElement>(null);
+    const [activeDirMap, setActiveDirMap] = useState<Record<string, string | null>>({});
+    const interactionState = useRef<Record<string, { startX: number, startY: number, lastX: number, lastY: number, maxDist: number }>>({});
 
-    // Keep track of the prompt position within the command bar
-    useLayoutEffect(() => {
-        const updatePromptPos = () => {
-            const prompt = document.querySelector('.cmd-prompt');
-            if (prompt) {
-                setPromptLeft(prompt.getBoundingClientRect().left);
-            }
+    const handlePointerDown = useCallback((e: React.PointerEvent, id: string) => {
+        const el = e.currentTarget as HTMLElement;
+        el.setPointerCapture(e.pointerId);
+        interactionState.current[id] = {
+            startX: e.clientX,
+            startY: e.clientY,
+            lastX: e.clientX,
+            lastY: e.clientY,
+            maxDist: 0
         };
+    }, []);
 
-        updatePromptPos();
-        window.addEventListener('resize', updatePromptPos);
-        return () => window.removeEventListener('resize', updatePromptPos);
+    const handlePointerMove = useCallback((e: React.PointerEvent, id: string) => {
+        const state = interactionState.current[id];
+        if (!state) return;
+
+        const dx = e.clientX - state.startX;
+        const dy = e.clientY - state.startY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        state.lastX = e.clientX;
+        state.lastY = e.clientY;
+        state.maxDist = Math.max(state.maxDist, dist);
+
+        const el = e.currentTarget as HTMLElement;
+
+        if (dist > 20) {
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+            const index = (Math.round(angle / 45) + 8) % 8;
+            const directions = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
+            const dir = directions[index];
+            
+            setActiveDirMap(prev => prev[id] === dir ? prev : { ...prev, [id]: dir });
+            
+            const snappedAngle = Math.round(angle / 45) * 45;
+            el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
+            el.style.setProperty('--ray-length', `${dist + 50}px`);
+            el.style.setProperty('--ray-opacity', dist > 30 ? '1' : '0.3');
+            el.style.setProperty('--cancel-opacity', state.maxDist > 25 ? '1' : '0');
+        } else {
+            setActiveDirMap(prev => prev[id] === null ? prev : { ...prev, [id]: null });
+            el.style.setProperty('--ray-opacity', '0');
+            el.style.setProperty('--cancel-opacity', '0');
+        }
+    }, []);
+
+    const handlePointerUp = useCallback((e: React.PointerEvent, sb: SpatButton) => {
+        const state = interactionState.current[sb.id];
+        if (!state) return;
+
+        const el = e.currentTarget as HTMLElement;
+        const dir = activeDirMap[sb.id];
+        
+        const endX = e.clientX || state.lastX;
+        const endY = e.clientY || state.lastY;
+        const finalDist = Math.sqrt(Math.pow(endX - state.startX, 2) + Math.pow(endY - state.startY, 2));
+
+        delete interactionState.current[sb.id];
+        setActiveDirMap(prev => {
+            const next = { ...prev };
+            delete next[sb.id];
+            return next;
+        });
+        el.releasePointerCapture(e.pointerId);
+        el.style.setProperty('--ray-opacity', '0');
+        el.style.setProperty('--cancel-opacity', '0');
+
+        if (state.maxDist > 25 && finalDist < 20) return;
+
+        // Taps are very small movements.
+        const isTap = state.maxDist < 40;
+
+        if (isTap || (dir && state.maxDist >= 40)) {
+            let cmd = sb.command;
+            let action = sb.action;
+
+            if (!isTap && dir) {
+                const swipeCmd = sb.swipeCommands?.[dir as any];
+                const swipeAction = sb.swipeActionTypes?.[dir as any];
+                if (swipeCmd) {
+                    cmd = swipeCmd;
+                    action = swipeAction || 'command';
+                } else if (dir !== 'up') {
+                    return; 
+                }
+            }
+
+            if (action === 'nav') {
+                setActiveSet(cmd);
+            } else if (action === 'menu') {
+                // IMPORTANT: Use setId: cmd because for menu actions, 
+                // the command is the name of the button set to display.
+                setPopoverState({
+                    setId: cmd,
+                    context: sb.label,
+                    x: endX,
+                    y: endY,
+                    menuDisplay: sb.menuDisplay || 'list'
+                });
+            } else {
+                executeCommand(cmd);
+            }
+
+            setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
+        }
+    }, [activeDirMap, setActiveSet, setPopoverState, executeCommand, setSpatButtons]);
+
+    const handlePointerCancel = useCallback((e: React.PointerEvent, id: string) => {
+        delete interactionState.current[id];
+        setActiveDirMap(prev => {
+            const next = { ...prev };
+            delete next[id];
+            return next;
+        });
     }, []);
 
     return (
-        <div className="spat-container" ref={containerRef}>
+        <div className="spat-container">
             {[...spatButtons].reverse().map((sb) => (
                 <SpatButtonItem
                     key={sb.id}
                     sb={sb}
                     activeDir={activeDirMap[sb.id] || null}
-                    onPointerDown={(e) => {
-                        if (e.cancelable) e.preventDefault();
-                        const el = e.currentTarget as any;
-                        el._startX = e.clientX;
-                        el._startY = e.clientY;
-                        el._maxDist = 0;
-                    }}
-                    onPointerMove={(e) => {
-                        const el = e.currentTarget as any;
-                        if (!el._startX) return;
-                        const dx = e.clientX - el._startX, dy = e.clientY - el._startY;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        el._maxDist = Math.max(el._maxDist || 0, dist);
-
-                        if (dist > 15) {
-                            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                            const index = (Math.round(angle / 45) + 8) % 8;
-                            const directions = ['right', 'se', 'down', 'sw', 'left', 'nw', 'up', 'ne'];
-                            const dir = directions[index];
-                            if (activeDirMap[sb.id] !== dir) {
-                                setActiveDirMap(prev => ({ ...prev, [sb.id]: dir }));
-                            }
-                            const snappedAngle = Math.round(angle / 45) * 45;
-                            el.style.setProperty('--ray-angle', `${snappedAngle}deg`);
-                            el.style.setProperty('--ray-length', `${dist + 50}px`);
-                            el.style.setProperty('--ray-opacity', dist > 25 ? '1' : '0');
-
-                            if (el._maxDist > 20) {
-                                el.style.setProperty('--cancel-opacity', '1');
-                                if (dist < 18) {
-                                    el.style.setProperty('--cancel-scale', '1.2');
-                                    el.style.setProperty('--ray-opacity', '0.3');
-                                } else {
-                                    el.style.setProperty('--cancel-scale', '1');
-                                }
-                            }
-                        } else {
-                            if (activeDirMap[sb.id] !== null) {
-                                setActiveDirMap(prev => ({ ...prev, [sb.id]: null }));
-                            }
-                            el.style.setProperty('--ray-opacity', '0');
-                            el.style.setProperty('--cancel-opacity', '0');
-                            el.style.setProperty('--cancel-scale', '0.5');
-                        }
-                    }}
-                    onPointerUp={(e) => {
-                        if (e.cancelable) e.preventDefault();
-                        const el = e.currentTarget as any;
-                        const maxDist = el._maxDist || 0;
-                        const startX = el._startX;
-
-                        if (startX === null) return;
-                        const dx = e.clientX - startX, dy = e.clientY - el._startY;
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-
-                        const dir = activeDirMap[sb.id];
-                        el._startX = null;
-                        setActiveDirMap(prev => ({ ...prev, [sb.id]: null }));
-                        el.style.setProperty('--ray-opacity', '0');
-                        el.style.setProperty('--cancel-opacity', '0');
-                        el.style.setProperty('--cancel-scale', '0');
-
-                        if (maxDist > 20 && dist < 18) {
-                            return;
-                        }
-
-                        if (maxDist < 10 || (dir && maxDist > 20)) {
-                            e.stopPropagation();
-
-                            let finalCmd = sb.command;
-                            let finalAction = sb.action;
-
-                            if (dir && maxDist > 20) {
-                                const swipeCmd = sb.swipeCommands?.[dir as any];
-                                if (swipeCmd) {
-                                    finalCmd = swipeCmd;
-                                    finalAction = sb.swipeActionTypes?.[dir as any] || 'command';
-                                } else if (dir !== 'up') {
-                                    // If swiped in a direction with no command (and not 'up' which defaults to base), cancel
-                                    return;
-                                }
-                            }
-
-                            if (finalAction === 'nav') setActiveSet(finalCmd);
-                            else executeCommand(finalCmd);
-                            setSpatButtons(prev => prev.filter(x => x.id !== sb.id));
-                        }
-                    }}
-                    onPointerCancel={(e) => {
-                        const el = e.currentTarget as any;
-                        el._startX = null;
-                        setActiveDirMap(prev => ({ ...prev, [sb.id]: null }));
-                        el.style.setProperty('--ray-opacity', '0');
-                        el.style.setProperty('--cancel-opacity', '0');
-                    }}
+                    onPointerDown={(e) => handlePointerDown(e, sb.id)}
+                    onPointerMove={(e) => handlePointerMove(e, sb.id)}
+                    onPointerUp={(e) => handlePointerUp(e, sb)}
+                    onPointerCancel={(e) => handlePointerCancel(e, sb.id)}
                 />
             ))}
         </div>

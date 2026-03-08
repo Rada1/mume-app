@@ -95,7 +95,7 @@ export function useMessageHighlighter(
                                 finalCommand = finalCommand.replace(new RegExp(`\\$${i}`, 'g'), val);
                             }
                         }
-                        return `<span class="inline-btn" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${finalCommand}" data-context="${m}" data-icon="${b.icon || ''}" data-label="${finalLabel}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" data-swipes='${b.swipeCommands ? JSON.stringify(b.swipeCommands).replace(/'/g, "&apos;") : ""}' data-swipe-actions='${b.swipeActionTypes ? JSON.stringify(b.swipeActionTypes).replace(/'/g, "&apos;") : ""}' style="--glow-color: ${b.style.backgroundColor.replace('0.3', '0.6').replace('0.2', '0.5')}">${m}</span>`;
+                        return `<span class="inline-btn" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${finalCommand}" data-context="${m}" data-icon="${b.icon || ''}" data-label="${finalLabel}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" data-swipes='${b.swipeCommands ? JSON.stringify(b.swipeCommands).replace(/'/g, "&apos;") : ""}' data-swipe-actions='${b.swipeActionTypes ? JSON.stringify(b.swipeActionTypes).replace(/'/g, "&apos;") : ""}' style="--glow-color: ${b.style.backgroundColor.replace('0.3', '0.6').replace('0.2', '0.5')}">${m}</span>`;
                     },
                     length: pattern.length
                 });
@@ -109,7 +109,7 @@ export function useMessageHighlighter(
                     candidates.push({
                         pattern: p,
                         priority: 5,
-                        replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" style="--glow-color: rgba(100, 100, 255, 0.6)">${m}</span>`,
+                        replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 100, 255, 0.6)">${m}</span>`,
                         length: p.length
                     });
                 });
@@ -131,7 +131,7 @@ export function useMessageHighlighter(
                     candidates.push({
                         pattern: p,
                         priority: 5,
-                        replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="inlinenpc" data-context="${originalName}" data-action="menu" style="--glow-color: rgba(255, 100, 100, 0.6)">${m}</span>`,
+                        replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="inlinenpc" data-context="${originalName}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(255, 100, 100, 0.6)">${m}</span>`,
                         length: p.length
                     });
                 });
@@ -142,7 +142,7 @@ export function useMessageHighlighter(
                 candidates.push({
                     pattern: name,
                     priority: 5,
-                    replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${name}" data-mid="${mid}" data-cmd="selection" data-context="${m}" data-action="menu" style="--glow-color: rgba(100, 255, 100, 0.5)">${m}</span>`,
+                    replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${name}" data-mid="${mid}" data-cmd="selection" data-context="${m}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 255, 100, 0.5)">${m}</span>`,
                     length: name.length
                 });
             });

@@ -43,35 +43,41 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         if (!popoverState || popoverState.menuDisplay === 'dial') return;
 
         const handlePointerMove = (e: PointerEvent) => {
-            const items = document.querySelectorAll('.popover-item[data-menu-item="true"]');
+            const menuContainer = document.querySelector('.popover-menu') as HTMLElement;
+            if (!menuContainer) return;
+            const items = Array.from(menuContainer.querySelectorAll('.popover-item[data-menu-item="true"]')) as HTMLElement[];
             if (items.length === 0) return;
 
             let targetIndex = -1;
 
-            if (popoverState.initialPointerX !== undefined && popoverState.initialPointerY !== undefined) {
-                // Remote Control Mode: Radial Selection for Lists
-                const dx = e.clientX - popoverState.initialPointerX;
-                const dy = e.clientY - popoverState.initialPointerY;
-                const dist = Math.sqrt(dx * dx + dy * dy);
+            // Coordinate-based index calculation (more robust than elementsFromPoint on mobile)
+            const menuRect = menuContainer.getBoundingClientRect();
+            const relativeY = e.clientY - menuRect.top + menuContainer.scrollTop;
+            
+            // Basic estimation based on item height (~40px)
+            let estimatedIndex = Math.floor(relativeY / 42); 
+            if (estimatedIndex >= 0 && estimatedIndex < items.length) {
+                targetIndex = estimatedIndex;
+            }
 
-                if (dist > 20) {
-                    let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                    if (angle < 0) angle += 360;
+            // Edge cases: if finger is slightly outside horizontally but within vertical bounds
+            if (targetIndex === -1 && e.clientX >= menuRect.left - 50 && e.clientX <= menuRect.right + 50) {
+                if (e.clientY <= menuRect.top + 20) targetIndex = 0;
+                else if (e.clientY >= menuRect.bottom - 20) targetIndex = items.length - 1;
+            }
 
-                    // Map 0-360 to list items. Offset by 90 so 270 (Top) is index 0.
-                    let normalizedAngle = (angle + 90) % 360;
-                    targetIndex = Math.floor((normalizedAngle / 360) * items.length);
-                }
-            } else {
-                // Classic Mode: Direct Hover
-                const elements = document.elementsFromPoint(e.clientX, e.clientY);
-                const menuItem = elements.find(el => (el as HTMLElement).getAttribute('data-menu-item') === 'true') as HTMLElement;
-                if (menuItem) {
-                    targetIndex = Array.from(items).indexOf(menuItem);
+            // Auto-Scrolling logic
+            if (targetIndex !== -1) {
+                const scrollThreshold = 50;
+                const scrollSpeed = 12;
+                if (e.clientY > menuRect.bottom - scrollThreshold) {
+                    menuContainer.scrollTop += scrollSpeed;
+                } else if (e.clientY < menuRect.top + scrollThreshold) {
+                    menuContainer.scrollTop -= scrollSpeed;
                 }
             }
 
-            // Haptic feedback logic
+            // Haptic and highlighting
             if (targetIndex !== -1 && targetIndex !== lastHoveredIndex.current) {
                 triggerHaptic(10);
                 lastHoveredIndex.current = targetIndex;
@@ -79,13 +85,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 lastHoveredIndex.current = null;
             }
 
-            // Apply highlighting
             items.forEach((item, idx) => {
-                if (idx === targetIndex) {
-                    item.classList.add('active-drag');
-                } else {
-                    item.classList.remove('active-drag');
-                }
+                if (idx === targetIndex) item.classList.add('active-drag');
+                else item.classList.remove('active-drag');
             });
         };
 
@@ -93,19 +95,17 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             const activeItem = document.querySelector('.popover-item[data-menu-item="true"].active-drag') as HTMLElement;
             if (activeItem) {
                 activeItem.click();
-                // After executing, close the menu
                 setPopoverState(null);
             }
-            // Do NOT auto-close here — list menus should persist after the gesture ends.
-            // The click-outside handler in ModalsLayer handles dismissal.
         };
 
-        window.addEventListener('pointermove', handlePointerMove, { passive: true });
-        window.addEventListener('pointerup', handlePointerUp, { passive: true });
+        // Use capture phase to ensure we see events even if children try to stop them
+        window.addEventListener('pointermove', handlePointerMove, { capture: true, passive: true });
+        window.addEventListener('pointerup', handlePointerUp, { capture: true, passive: true });
 
         return () => {
-            window.removeEventListener('pointermove', handlePointerMove);
-            window.removeEventListener('pointerup', handlePointerUp);
+            window.removeEventListener('pointermove', handlePointerMove, { capture: true });
+            window.removeEventListener('pointerup', handlePointerUp, { capture: true });
         };
     }, [popoverState, triggerHaptic, setPopoverState]);
 

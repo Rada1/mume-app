@@ -16,26 +16,11 @@ export const useSpatButtons = (
 
     const triggerSpit = useCallback((el: HTMLElement) => {
         const btnId = el.dataset.id || '';
-        // If this button type is already visible on screen/in stack, ignore new trigger
         if (spatButtonsRef.current.some(sb => sb.btnId === btnId)) return;
 
-        const rect = el.getBoundingClientRect();
         const id = Math.random().toString(36).substring(7);
-
-        // Find the text log edge (content-layer right boundary)
-        const contentLayer = document.querySelector('.content-layer');
-        const contentRect = contentLayer?.getBoundingClientRect();
-
-        // Find the command line position
-        const inputArea = document.querySelector('.input-area');
-        const inputRect = inputArea?.getBoundingClientRect();
-
-        // Glow the trigger text
         el.classList.add('is-triggered');
 
-        // The target is now INSIDE the command bar.
-        // We set these to simple relative indicators (0 for left, 100 for right)
-        // as the SpatButtons.tsx component handles the actual pixel measurement.
         const startX = 0; 
         const targetX = 100; 
 
@@ -59,7 +44,8 @@ export const useSpatButtons = (
             color: el.dataset.color || el.style.getPropertyValue('--glow-color') || 'var(--accent)',
             timestamp: Date.now(),
             swipeCommands,
-            swipeActionTypes
+            swipeActionTypes,
+            menuDisplay: el.dataset.menuDisplay as 'list' | 'dial'
         };
 
         setSpatButtons(prev => {
@@ -70,13 +56,9 @@ export const useSpatButtons = (
     }, [triggerHaptic]);
 
     const triggerSpitManual = useCallback((b: any) => {
-        // If this button type is already visible on screen/in stack, ignore new trigger
         if (spatButtonsRef.current.some(sb => sb.btnId === b.id)) return;
 
         const id = Math.random().toString(36).substring(7);
-
-        // The target is now INSIDE the command bar.
-        // We set these to simple relative indicators (0 for left, 100 for right)
         const startX = 0; 
         const targetX = 100; 
 
@@ -94,7 +76,8 @@ export const useSpatButtons = (
             color: b.style.backgroundColor || 'var(--accent)',
             timestamp: Date.now(),
             swipeCommands: b.swipeCommands,
-            swipeActionTypes: b.swipeActionTypes
+            swipeActionTypes: b.swipeActionTypes,
+            menuDisplay: b.menuDisplay
         };
 
         setSpatButtons(prev => {
@@ -114,7 +97,6 @@ export const useSpatButtons = (
 
         const observer = new MutationObserver((mutations) => {
             const addedNodes = mutations.flatMap(m => Array.from(m.addedNodes));
-            
             const spits: HTMLElement[] = [];
             addedNodes.forEach(node => {
                 if (!(node instanceof HTMLElement)) return;
@@ -135,8 +117,6 @@ export const useSpatButtons = (
 
                 if (!firedTriggerOccurrencesRef.current.has(occKey)) {
                     firedTriggerOccurrencesRef.current.add(occKey);
-                    
-                    // Small delay to ensure the browser has finished layout so we can measure rects
                     requestAnimationFrame(() => {
                         triggerSpit(el);
                         el.dataset.spit = "triggered";
@@ -144,7 +124,6 @@ export const useSpatButtons = (
                 }
             });
 
-            // Pruning cache
             if (firedTriggerOccurrencesRef.current.size > 300) {
                 const entries = Array.from(firedTriggerOccurrencesRef.current);
                 firedTriggerOccurrencesRef.current = new Set(entries.slice(-150));

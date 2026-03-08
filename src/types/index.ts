@@ -239,6 +239,7 @@ export interface SpatButton {
     timestamp: number;
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
     swipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
+    menuDisplay?: 'list' | 'dial';
 }
 
 // --- GMCP INTERFACES ---
