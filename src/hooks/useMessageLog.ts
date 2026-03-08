@@ -218,7 +218,7 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
         messageBufferRef.current.push(msg);
 
         if (!flushTimeoutRef.current) {
-            flushTimeoutRef.current = setTimeout(flushMessages, 16);
+            flushTimeoutRef.current = setTimeout(flushMessages, 32);
         }
 
     }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages, flushMessages]);

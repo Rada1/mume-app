@@ -101,11 +101,15 @@ export function useTelnet(options: TelnetOptions) {
 
     const processText = useCallback((text: string) => {
         bufferRef.current += text;
-        let newlineIdx;
-        while ((newlineIdx = bufferRef.current.indexOf('\n')) !== -1) {
-            const line = bufferRef.current.substring(0, newlineIdx);
-            bufferRef.current = bufferRef.current.substring(newlineIdx + 1);
-            processLine(line);
+
+        // Optimize: split the string by newline instead of doing substring repeatedly
+        const lines = bufferRef.current.split('\n');
+
+        // The last element is the remaining buffer (which might be empty if the string ended with \n)
+        bufferRef.current = lines.pop() || '';
+
+        for (let i = 0; i < lines.length; i++) {
+            processLine(lines[i]);
         }
 
         const prompt = bufferRef.current;

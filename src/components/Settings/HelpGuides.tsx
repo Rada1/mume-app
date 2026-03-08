@@ -3,8 +3,11 @@ import { Book, ChevronRight, MessageSquare, Map, MousePointer2 } from 'lucide-re
 import { useGame } from '../../context/GameContext';
 
 // Import markdown files as raw strings (Vite feature)
+// @ts-ignore
 import gettingStarted from '../../constants/docs/getting-started.md?raw';
+// @ts-ignore
 import buttonEditor from '../../constants/docs/button-editor.md?raw';
+// @ts-ignore
 import mapAdvanced from '../../constants/docs/map-advanced.md?raw';
 
 const GUIDES = [
@@ -28,7 +31,7 @@ const HelpGuides: React.FC = () => {
             if (line.trim() === '') return <br key={i} />;
 
             // Bold
-            let parts: (string | JSX.Element)[] = [line];
+            let parts: (string | React.JSX.Element)[] = [line];
             const boldRegex = /\*\*(.*?)\*\*/g;
             let match;
             while ((match = boldRegex.exec(line)) !== null) {

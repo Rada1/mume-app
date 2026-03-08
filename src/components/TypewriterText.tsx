@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface TypewriterTextProps {
     html: string;
@@ -8,14 +8,21 @@ interface TypewriterTextProps {
 }
 
 const TypewriterText: React.FC<TypewriterTextProps> = ({ html, speed = 4, onUpdate, onComplete }) => {
-    const [displayedHtml, setDisplayedHtml] = useState('');
-    const fullHtmlRef = useRef(html);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const animationFrameRef = useRef<number | null>(null);
+
+    // Use refs for callbacks to avoid re-triggering the effect
+    const onUpdateRef = useRef(onUpdate);
+    const onCompleteRef = useRef(onComplete);
 
     useEffect(() => {
-        if (onUpdate) onUpdate();
-    }, [displayedHtml, onUpdate]);
+        onUpdateRef.current = onUpdate;
+        onCompleteRef.current = onComplete;
+    }, [onUpdate, onComplete]);
 
     useEffect(() => {
+        if (!containerRef.current) return;
+
         // Simple HTML parser to separate tags from text
         const parts: { type: 'tag' | 'text', content: string }[] = [];
         let current = '';
@@ -42,37 +49,66 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ html, speed = 4, onUpda
         let currentPartIndex = 0;
         let currentCharIndex = 0;
         let cumulativeHtml = '';
+        let lastTime = performance.now();
 
-        const timer = setInterval(() => {
-            if (currentPartIndex >= parts.length) {
-                clearInterval(timer);
-                if (onComplete) onComplete();
-                return;
-            }
+        const animate = (time: number) => {
+            if (!containerRef.current) return;
 
-            const part = parts[currentPartIndex];
-            if (part.type === 'tag') {
-                cumulativeHtml += part.content;
-                currentPartIndex++;
-                setDisplayedHtml(cumulativeHtml);
-            } else {
-                cumulativeHtml += part.content[currentCharIndex];
-                currentCharIndex++;
-                if (currentCharIndex >= part.content.length) {
-                    currentPartIndex++;
-                    currentCharIndex = 0;
+            const delta = time - lastTime;
+            if (delta >= speed) {
+                // Calculate how many characters we should process this frame based on elapsed time
+                const charsToProcess = Math.floor(delta / speed);
+                lastTime = time - (delta % speed); // Keep the remainder for smooth timing
+
+                let charsProcessed = 0;
+                let htmlChanged = false;
+
+                while (charsProcessed < charsToProcess && currentPartIndex < parts.length) {
+                    const part = parts[currentPartIndex];
+                    if (part.type === 'tag') {
+                        cumulativeHtml += part.content;
+                        currentPartIndex++;
+                        htmlChanged = true;
+                    } else {
+                        cumulativeHtml += part.content[currentCharIndex];
+                        currentCharIndex++;
+                        charsProcessed++;
+                        htmlChanged = true;
+
+                        if (currentCharIndex >= part.content.length) {
+                            currentPartIndex++;
+                            currentCharIndex = 0;
+                        }
+                    }
                 }
-                setDisplayedHtml(cumulativeHtml);
-            }
-        }, speed);
 
-        return () => clearInterval(timer);
-    }, [html, speed, onComplete]);
+                if (htmlChanged) {
+                    containerRef.current.innerHTML = cumulativeHtml;
+                    if (onUpdateRef.current) onUpdateRef.current();
+                }
+
+                if (currentPartIndex >= parts.length) {
+                    if (onCompleteRef.current) onCompleteRef.current();
+                    return; // Animation complete
+                }
+            }
+
+            animationFrameRef.current = requestAnimationFrame(animate);
+        };
+
+        animationFrameRef.current = requestAnimationFrame(animate);
+
+        return () => {
+            if (animationFrameRef.current !== null) {
+                cancelAnimationFrame(animationFrameRef.current);
+            }
+        };
+    }, [html, speed]); // Removed onComplete and onUpdate to prevent animation restart
 
     return (
         <div
+            ref={containerRef}
             className="message-content comm-text"
-            dangerouslySetInnerHTML={{ __html: displayedHtml }}
         />
     );
 };
