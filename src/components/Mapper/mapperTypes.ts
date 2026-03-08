@@ -44,6 +44,7 @@ export interface MapperRef {
     handleDeleteRoom: (id: string) => void;
     pushPendingMove: (dir: string) => void;
     handleMoveFailure: () => void;
+    handleCenterOnPlayer: () => void;
 }
 
 export interface MapperProps {

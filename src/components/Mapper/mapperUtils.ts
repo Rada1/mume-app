@@ -1,8 +1,8 @@
 export const GRID_SIZE = 50;
-export const ROAD_COLOR_DARK = '#45475a'; // Subtle slate for roads in dark mode
-export const ROAD_COLOR_LIGHT = '#ccd0da'; // Gray for roads in light mode
-export const PATH_COLOR_DARK = '#585b70'; // Slightly lighter for paths
-export const PATH_COLOR_LIGHT = '#bcc0cc';
+export const ROAD_COLOR_DARK = '#8b7d6b'; // Warm tan for roads in dark mode
+export const ROAD_COLOR_LIGHT = '#d2b48c'; // Tan for roads in light mode
+export const PATH_COLOR_DARK = '#7c6f64'; // Slightly darker sand/path
+export const PATH_COLOR_LIGHT = '#c2b280'; // Sand color
 
 export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string }> = {
     n: { dx: 0, dy: -1, opp: 's' },
@@ -93,7 +93,7 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
             case 'Water':
             case 'Shallows':
             case 'Rapids': return '#1e243e';
-            case 'Road': return '#1e1e2e';
+            case 'Road': return '#2d241d'; // Using brown base layer color
             case 'Tunnel':
             case 'Cavern': return '#000000';
             case 'Brush': return '#2d352d';
@@ -112,7 +112,7 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
             case 'Water':
             case 'Shallows':
             case 'Rapids': return '#d4e6f1';
-            case 'Road': return '#f2f2f2';
+            case 'Road': return '#e3d5c8'; // Using brown base layer color
             case 'Tunnel':
             case 'Cavern': return '#d0d0d0';
             case 'Base': return '#e3d5c8'; // Light dirt

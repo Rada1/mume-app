@@ -22,6 +22,8 @@ export interface BlobOptions {
     wavy?: boolean; // Whether to weave edges (e.g., for water)
     craggy?: boolean; // Whether to have jagged, uneven edges (e.g., for caverns)
     patchy?: boolean; // Whether to have irregular, "tufted" edges (e.g., for fields)
+    strokeColor?: string; // Optional stroke color for the blob boundary
+    strokeWidth?: number; // Optional stroke width
 }
 
 /**
@@ -60,16 +62,33 @@ export function drawBlobTerrain(
     ctx.save();
     ctx.translate(x, y);
     ctx.scale(scale, scale);
+
+    const strokePath = options.strokeColor ? new Path2D() : null;
+    let strokeActive = false;
+
     ctx.fillStyle = color;
     ctx.beginPath();
 
     let curX = 50, curY = t ? -0.1 : low;
     const drawM = (tx: number, ty: number) => {
         ctx.moveTo(tx, ty);
+        if (strokePath) {
+            strokePath.moveTo(tx, ty);
+            strokeActive = false;
+        }
         curX = tx; curY = ty;
     };
 
     const drawL = (tx: number, ty: number, isBank: boolean = false) => {
+        if (strokePath) {
+            if (isBank) {
+                if (!strokeActive) strokePath.moveTo(curX, curY);
+                strokeActive = true;
+            } else {
+                strokeActive = false;
+            }
+        }
+
         if (isBank && (wavy || craggy || patchy)) {
             const dx = tx - curX;
             const dy = ty - curY;
@@ -79,8 +98,7 @@ export function drawBlobTerrain(
                 const nx = -dy / len;
                 const ny = dx / len;
 
-                // Taper the offset near tile boundaries to ensure perfect alignment with neighbors
-                // This prevents "pitting" gaps at corners where one room has a neighbor and the other doesn't.
+                // Taper the offset near tile boundaries
                 const boundaryTaper = (px: number, py: number) => {
                     const margin = 5;
                     const tx_dist = Math.min(px, 100 - px);
@@ -89,7 +107,6 @@ export function drawBlobTerrain(
                     return Math.min(1, min_dist / margin);
                 };
 
-                // Sync texture phase with absolute grid coordinates to eliminate seams between rooms
                 const globalX = x / scale + curX;
                 const globalY = y / scale + curY;
                 const phase = (globalX + globalY) * 0.15;
@@ -97,50 +114,54 @@ export function drawBlobTerrain(
                 const getOffset = (p: number, t: number) => {
                     const mask = boundaryTaper(p * dx + curX, p * dy + curY);
                     if (craggy) {
-                        const noise = (Math.sin(t * 0.5) * 2 + Math.cos(t * 1.1) * 1.5);
-                        return (4 + noise) * mask;
+                        const noise = (Math.sin(t * 0.5) * 4 + Math.cos(t * 1.5) * 3);
+                        return (6 + noise) * mask;
                     } else if (patchy) {
-                        return (6 + Math.sin(t) * 2) * mask;
+                        return (8 + Math.sin(t * 1.2) * 5) * mask;
                     } else {
-                        return (3.5 + Math.sin(t) * 1.5) * mask;
+                        return (5.0 + Math.sin(t * 0.8) * 3.5) * mask;
                     }
                 };
 
                 if (craggy) {
-                    ctx.lineTo(curX + dx * 0.2 + nx * getOffset(0.2, phase), curY + dy * 0.2 + ny * getOffset(0.2, phase));
-                    ctx.lineTo(curX + dx * 0.5 + nx * getOffset(0.5, phase + 1), curY + dy * 0.5 + ny * getOffset(0.5, phase + 1));
-                    ctx.lineTo(curX + dx * 0.8 + nx * getOffset(0.8, phase + 2), curY + dy * 0.8 + ny * getOffset(0.8, phase + 2));
-                    ctx.lineTo(tx, ty);
+                    const p1x = curX + dx * 0.2 + nx * getOffset(0.2, phase), p1y = curY + dy * 0.2 + ny * getOffset(0.2, phase);
+                    const p2x = curX + dx * 0.5 + nx * getOffset(0.5, phase + 1), p2y = curY + dy * 0.5 + ny * getOffset(0.5, phase + 1);
+                    const p3x = curX + dx * 0.8 + nx * getOffset(0.8, phase + 2), p3y = curY + dy * 0.8 + ny * getOffset(0.8, phase + 2);
+                    
+                    ctx.lineTo(p1x, p1y); ctx.lineTo(p2x, p2y); ctx.lineTo(p3x, p3y); ctx.lineTo(tx, ty);
+                    if (strokeActive && strokePath) { strokePath.lineTo(p1x, p1y); strokePath.lineTo(p2x, p2y); strokePath.lineTo(p3x, p3y); strokePath.lineTo(tx, ty); }
                 } else if (patchy) {
-                    // High-frequency "bristly" look: many sharp, dense tufts
                     const tufts = Math.max(2, Math.floor(len / 2.5));
                     for (let i = 1; i <= tufts; i++) {
-                        const p = i / tufts;
-                        const prevP = (i - 1) / tufts;
-                        const midP = prevP + (0.5 / tufts);
-                        
+                        const p = i / tufts, midP = (i - 0.5) / tufts;
                         const offset = getOffset(midP, phase + i * 4.7);
-                        // Prickly peak
-                        ctx.lineTo(curX + dx * midP + nx * offset, curY + dy * midP + ny * offset);
-                        // Return to base path
-                        ctx.lineTo(curX + dx * p, curY + dy * p);
+                        const mx = curX + dx * midP + nx * offset, my = curY + dy * midP + ny * offset;
+                        const bx = curX + dx * p, by = curY + dy * p;
+                        ctx.lineTo(mx, my); ctx.lineTo(bx, by);
+                        if (strokeActive && strokePath) { strokePath.lineTo(mx, my); strokePath.lineTo(bx, by); }
                     }
-                } else {
-                    const o1 = getOffset(0.33, phase);
-                    const o2 = getOffset(0.67, phase + 1.5);
-                    ctx.bezierCurveTo(
-                        curX + dx * 0.33 + nx * o1, curY + dy * 0.33 + ny * o1,
-                        curX + dx * 0.67 - nx * o2, curY + dy * 0.67 - ny * o2,
-                        tx, ty
-                    );
+                } else { // wavy
+                    const segments = Math.max(3, Math.floor(len / 2)); // Increased segments for higher frequency
+                    for (let i = 1; i <= segments; i++) {
+                        const p = i / segments, midP = (i - 0.5) / segments;
+                        const offset = getOffset(midP, phase + i * 3.2);
+                        const mx = curX + dx * midP + nx * offset, my = curY + dy * midP + ny * offset;
+                        const bx = curX + dx * p, by = curY + dy * p;
+                        ctx.lineTo(mx, my); ctx.lineTo(bx, by);
+                        if (strokeActive && strokePath) { strokePath.lineTo(mx, my); strokePath.lineTo(bx, by); }
+                    }
                 }
+                curX = tx; curY = ty;
             } else {
                 ctx.lineTo(tx, ty);
+                if (strokeActive && strokePath) strokePath.lineTo(tx, ty);
+                curX = tx; curY = ty;
             }
         } else {
             ctx.lineTo(tx, ty);
+            if (strokeActive && strokePath) strokePath.lineTo(tx, ty);
+            curX = tx; curY = ty;
         }
-        curX = tx; curY = ty;
     };
 
     // Smooth curve approximation (8 segments)
@@ -161,82 +182,89 @@ export function drawBlobTerrain(
         }
     };
 
-    // Start at Top-Middle (using a 0.1 bleed for connections to hide hairlines)
-    drawM(50, t ? -0.1 : low);
+    // Start at Top-Middle (using a 1.0 bleed for connections to hide hairlines)
+    drawM(50, t ? -1.0 : low);
 
     // --- Top-Right Quadrant ---
     if (t && r && tr) {
-        drawL(100.1, -0.1, false);
-        drawL(100.1, 50, false);
+        drawL(101.0, -1.0, false);
+        drawL(101.0, 50, false);
     } else if (t && r && !tr) {
-        drawL(high, -0.1, false);
-        drawCorner(100.1, -0.1, 100.1, low, true);
-        drawL(100.1, 50, false);
+        drawL(high, -1.0, false);
+        drawCorner(101.0, -1.0, 101.0, low, true);
+        drawL(101.0, 50, false);
     } else if (t && !r) {
-        drawL(high, -0.1, false);
+        drawL(high, -1.0, false);
         drawL(high, 50, true);
     } else if (!t && r) {
-        drawL(100.1, low, true);
-        drawL(100.1, 50, false);
+        drawL(101.0, low, true);
+        drawL(101.0, 50, false);
     } else {
         drawCorner(high, low, high, 50, true);
     }
 
     // --- Bottom-Right Quadrant ---
     if (b && r && br) {
-        drawL(100.1, 100.1, false);
-        drawL(50, 100.1, false);
+        drawL(101.0, 101.0, false);
+        drawL(50, 101.0, false);
     } else if (b && r && !br) {
-        drawL(100.1, high, false);
-        drawCorner(100.1, 100.1, high, 100.1, true);
-        drawL(50, 100.1, false);
+        drawL(101.0, high, false);
+        drawCorner(101.0, 101.0, high, 101.0, true);
+        drawL(50, 101.0, false);
     } else if (!b && r) {
-        drawL(100.1, high, true);
+        drawL(101.0, high, true);
         drawL(50, high, true);
     } else if (b && !r) {
-        drawL(high, 100.1, true);
-        drawL(50, 100.1, false);
+        drawL(high, 101.0, true);
+        drawL(50, 101.0, false);
     } else {
         drawCorner(high, high, 50, high, true);
     }
 
     // --- Bottom-Left Quadrant ---
     if (b && l && bl) {
-        drawL(-0.1, 100.1, false);
-        drawL(-0.1, 50, false);
+        drawL(-1.0, 101.0, false);
+        drawL(-1.0, 50, false);
     } else if (b && l && !bl) {
-        drawL(low, 100.1, false);
-        drawCorner(-0.1, 100.1, -0.1, high, true);
-        drawL(-0.1, 50, false);
+        drawL(low, 101.0, false);
+        drawCorner(-1.0, 101.0, -1.0, high, true);
+        drawL(-1.0, 50, false);
     } else if (b && !l) {
-        drawL(low, 100.1, true);
+        drawL(low, 101.0, true);
         drawL(low, 50, true);
     } else if (!b && l) {
-        drawL(-0.1, high, true);
-        drawL(-0.1, 50, false);
+        drawL(-1.0, high, true);
+        drawL(-1.0, 50, false);
     } else {
         drawCorner(low, high, low, 50, true);
     }
 
     // --- Top-Left Quadrant ---
     if (t && l && tl) {
-        drawL(-0.1, -0.1, false);
-        drawL(50, -0.1, false);
+        drawL(-1.0, -1.0, false);
+        drawL(50, -1.0, false);
     } else if (t && l && !tl) {
-        drawL(-0.1, low, false);
-        drawCorner(-0.1, -0.1, low, -0.1, true);
-        drawL(50, -0.1, false);
+        drawL(-1.0, low, false);
+        drawCorner(-1.0, -1.0, low, -1.0, true);
+        drawL(50, -1.0, false);
     } else if (!t && l) {
-        drawL(-0.1, low, true);
+        drawL(-1.0, low, true);
         drawL(50, low, true);
     } else if (t && !l) {
-        drawL(low, -0.1, true);
-        drawL(50, -0.1, false);
+        drawL(low, -1.0, true);
+        drawL(50, -1.0, false);
     } else {
         drawCorner(low, low, 50, low, true);
     }
 
     ctx.closePath();
     ctx.fill();
+
+    if (strokePath && options.strokeColor) {
+        ctx.strokeStyle = options.strokeColor;
+        ctx.lineWidth = options.strokeWidth || (2 / scale); // Scale-aware default width
+        ctx.stroke(strokePath);
+    }
+
     ctx.restore();
 }

@@ -73,8 +73,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             setTimeout(() => viewport.scrollToBottom(true, true), 30);
         }
 
-        // Recenter mapper on any command input
-        deps.mapperRef.current?.handleCenterOnPlayer();
+
     }, [input, executeCommand, viewport, isNoviceMode, setInput, deps.mapperRef]);
 
     return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleDragStart };

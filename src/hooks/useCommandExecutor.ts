@@ -198,7 +198,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
         if (status === 'connected') telnet.sendCommand(finalCmd);
         else if (!silent) addMessage('error', 'Not connected.');
-
+        
+        // Recenter mapper on user-initiated commands
+        if (!isSystem && !silent) {
+            mapperRef.current?.handleCenterOnPlayer();
+        }
     }, [
         status, target, teleportTargets, initAudio, addMessage, setTarget, setPopoverState,
         telnet, navIntervalRef, mapperRef, isDrawerCapture, captureStage, isWaitingForInv,
