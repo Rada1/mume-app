@@ -177,7 +177,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
             <div className="swipe-ray" />
             <ButtonLabel button={button} />
 
-            {isEditMode && (
+            {isEditMode && button.setId !== 'Xbox' && (
                 <div
                     className="resize-handle"
                     onPointerDown={(e) => {

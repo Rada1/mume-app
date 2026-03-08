@@ -12,7 +12,7 @@ export const META_BUTTONS: CustomButton[] = [
         "setId": "info",
         "actionType": "command",
         "display": "floating",
-        "style": { "x": 85, "y": 75, "w": 80, "h": 40, "backgroundColor": "#06b6d4", "shape": "pill", "transparent": false },
+        "style": { "x": 85, "y": 75, "w": 80, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill", "transparent": false },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true
     },
@@ -23,7 +23,7 @@ export const META_BUTTONS: CustomButton[] = [
         "setId": "info",
         "actionType": "command",
         "display": "floating",
-        "style": { "x": 75, "y": 75, "w": 80, "h": 40, "backgroundColor": "#06b6d4", "shape": "pill", "transparent": false },
+        "style": { "x": 75, "y": 75, "w": 80, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill", "transparent": false },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true
     },
@@ -68,12 +68,12 @@ export const META_BUTTONS: CustomButton[] = [
         "actionType": "menu",
         "display": "floating",
         "style": { "x": 50, "y": 85, "w": 130, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill" },
-        "trigger": { "enabled": true, "pattern": "says,|tells you", "isRegex": true, "autoHide": true, "duration": 10, "type": "show", "spit": true, "onKeyboard": true, "offKeyboard": true },
+        "trigger": { "enabled": true, "pattern": "says,|tells you", "isRegex": true, "autoHide": true, "duration": 10, "type": "show", "spit": false, "onKeyboard": true, "offKeyboard": true },
         "isVisible": false
     },
     { "id": "inlp-ex", "label": "Examine", "command": "examine %n", "setId": "inlineplayer", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#2563eb", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
     { "id": "inlp-whois", "label": "Whois", "command": "whois %n", "setId": "inlineplayer", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#0ea5e9", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
-    { "id": "inlp-soc", "label": "Social", "command": "social list", "setId": "inlineplayer", "actionType": "menu", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
+    { "id": "inlp-soc", "label": "Social", "command": "social list", "setId": "inlineplayer", "actionType": "menu", "display": "floating", "style": { "x": 0, "y": 0, "w": 90, "h": 40, "backgroundColor": "#06b6d4", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
     { "id": "tgt-examine", "label": "Examine", "command": "examine %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#facc15", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
     { "id": "tgt-get", "label": "Get", "command": "get %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#22c55e", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },
     { "id": "tgt-kill", "label": "Kill", "command": "kill %n", "setId": "target", "actionType": "command", "display": "floating", "style": { "x": 0, "y": 0, "w": 100, "h": 40, "backgroundColor": "#dc2626", "shape": "pill" }, "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0 }, "isVisible": true },

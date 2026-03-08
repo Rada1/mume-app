@@ -39,47 +39,6 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
                 flexDirection: 'column',
                 gap: '2px'
             }}>
-                {roomId && mode === 'play' && (
-                    <button
-                        style={{
-                            padding: '12px 12px',
-                            backgroundColor: '#a6e3a1',
-                            border: 'none',
-                            color: '#11111b',
-                            fontSize: '14px',
-                            fontWeight: 'bold',
-                            textAlign: 'center',
-                            cursor: 'pointer',
-                            borderRadius: '4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            marginBottom: '4px',
-                            boxShadow: '0 4px 10px rgba(166, 227, 161, 0.3)',
-                            userSelect: 'none',
-                            WebkitUserSelect: 'none',
-                            touchAction: 'none'
-                        }}
-                        onPointerDown={(e) => {
-                            e.stopPropagation();
-                            onWalkStart?.(roomId);
-                        }}
-                        onPointerUp={(e) => {
-                            e.stopPropagation();
-                            onWalkEnd?.();
-                        }}
-                        onPointerLeave={(e) => {
-                            e.stopPropagation();
-                            onWalkEnd?.();
-                        }}
-                        onContextMenu={(e) => e.preventDefault()}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M13 4v16"></path><path d="M17 14l-4 4-4-4"></path></svg>
-                        HOLD TO WALK
-                    </button>
-                )}
-
                 {mode === 'edit' && (
                     <button
                         style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#cdd6f4', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}

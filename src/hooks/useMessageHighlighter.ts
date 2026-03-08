@@ -109,7 +109,7 @@ export function useMessageHighlighter(
                     candidates.push({
                         pattern: p,
                         priority: 5,
-                        replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 100, 255, 0.6)">${m}</span>`,
+                        replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 100, 255, 0.9)">${m}</span>`,
                         length: p.length
                     });
                 });
@@ -131,7 +131,7 @@ export function useMessageHighlighter(
                     candidates.push({
                         pattern: p,
                         priority: 5,
-                        replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="inlinenpc" data-context="${originalName}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(255, 100, 100, 0.6)">${m}</span>`,
+                        replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="inlinenpc" data-context="${originalName}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(255, 100, 100, 0.9)">${m}</span>`,
                         length: p.length
                     });
                 });

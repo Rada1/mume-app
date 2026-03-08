@@ -50,14 +50,28 @@ export const drawEntities = (
     // Player
     if (playerPosRef.current && Math.abs(playerPosRef.current.z - currentZ) < 1.5) {
         const px = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2, py = playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2;
-        ctx.save(); ctx.globalAlpha = Math.max(0, 1 - Math.abs(playerPosRef.current.z - currentZ)); ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
+        const alpha = Math.max(0, 1 - Math.abs(playerPosRef.current.z - currentZ));
+        
+        // Pulsing glow
+        const pulse = (Math.sin(rCtx.now / 400) + 1) / 2;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        const glowSize = (12 + pulse * 18) / rCtx.camera.zoom;
+        const gradient = ctx.createRadialGradient(px, py, 0, px, py, glowSize);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(px, py, glowSize, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        ctx.save(); ctx.globalAlpha = alpha; ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
         ctx.fillStyle = '#ef4444'; ctx.beginPath();
-        for (let i = 0; i < 10; i++) { const ang = (i / 10) * Math.PI * 2, jit = (getSeed(i, 999) - 0.5) * 1.5; ctx.lineTo(px + Math.cos(ang) * (7 + jit), py + Math.sin(ang) * (7 + jit)); }
+        // Increased radius from 7 to 10 for a bigger dot
+        for (let i = 0; i < 10; i++) { const ang = (i / 10) * Math.PI * 2, jit = (getSeed(i, 999) - 0.5) * 1.5; ctx.lineTo(px + Math.cos(ang) * (10 + jit), py + Math.sin(ang) * (10 + jit)); }
         ctx.closePath(); ctx.fill();
-        if (characterName) {
-            const clean = characterName.replace(/\x1b\[[0-9;]*m/g, '').replace(/^\{FULLNAME:/i, '').replace(/\}$/g, '').split(' ')[0].replace(/[{}"']/g, '').split(':').pop()?.trim() || "";
-            ctx.font = 'bold 13px "Aniron"'; ctx.fillStyle = '#ef4444'; ctx.textAlign = 'center'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; ctx.fillText(clean, px, py - 18);
-        }
         ctx.restore();
     }
 };

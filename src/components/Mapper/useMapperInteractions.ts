@@ -31,6 +31,8 @@ interface InteractionProps {
     setViewZ: React.Dispatch<React.SetStateAction<number | null>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
+    startWalking: (targetId: string) => void;
+    stopWalking: () => void;
 }
 
 export const useMapperInteractions = ({
@@ -38,7 +40,8 @@ export const useMapperInteractions = ({
     selectedMarkerId, setSelectedMarkerId, cameraRef, mode, currentRoomId,
     isDesignMode, isMinimized, setAutoCenter, setContextMenu, setInfoRoomId,
     triggerHaptic, canvasRef, cardRef, setIsDragging, handleAddRoom, triggerRender,
-    viewZ, setViewZ, preloadedCoordsRef, spatialIndexRef
+    viewZ, setViewZ, preloadedCoordsRef, spatialIndexRef,
+    startWalking, stopWalking
 }: InteractionProps) => {
 
     const isDraggingInternalRef = useRef(false);
@@ -54,6 +57,7 @@ export const useMapperInteractions = ({
 
     const [marqueeStart, setMarqueeStart] = useState<{ x: number, y: number } | null>(null);
     const [marqueeEnd, setMarqueeEnd] = useState<{ x: number, y: number } | null>(null);
+    const [menuPointer, setMenuPointer] = useState<{ x: number, y: number } | null>(null);
 
     const roomsRef = useRef(rooms);
     const markersRef = useRef(markers);
@@ -106,9 +110,20 @@ export const useMapperInteractions = ({
                 contextMenuTriggeredRef.current = false;
 
                 longPressTimerRef.current = setTimeout(() => {
+                    const latestWorld = screenToWorld(lastMouseRef.current.x, lastMouseRef.current.y);
+                    const latestRoomId = getRoomAt(latestWorld.x, latestWorld.y, true);
+
                     triggerHaptic(40);
                     contextMenuTriggeredRef.current = true;
-                    setContextMenu({ x: mx, y: my, wx: world.x, wy: world.y, roomId: clickedRoomId });
+
+                    if (mode === 'play') {
+                        if (latestRoomId) {
+                            setContextMenu({ x: lastMouseRef.current.x, y: lastMouseRef.current.y, wx: latestWorld.x, wy: latestWorld.y, roomId: latestRoomId, isRadial: true });
+                            setMenuPointer({ x: lastMouseRef.current.x, y: lastMouseRef.current.y });
+                        }
+                    } else {
+                        setContextMenu({ x: mx, y: my, wx: latestWorld.x, wy: latestWorld.y, roomId: latestRoomId });
+                    }
                 }, 500);
 
                 if (clickedMarkerId && mode === 'edit') {
@@ -184,6 +199,10 @@ export const useMapperInteractions = ({
                 } else if (dragTypeRef.current === 'marquee' && mode === 'edit') {
                     setMarqueeEnd({ x: mx, y: my });
                 }
+
+                if (contextMenuTriggeredRef.current) {
+                    setMenuPointer({ x: mx, y: my });
+                }
             } else if (pointers.length === 2 && dragTypeRef.current === 'pinch' && lastPointersRef.current.length === 2) {
                 const p1 = pointers[0], p2 = pointers[1], lp1 = lastPointersRef.current[0], lp2 = lastPointersRef.current[1];
                 const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y), lastDist = Math.hypot(lp2.x - lp1.x, lp2.y - lp1.y);
@@ -207,6 +226,29 @@ export const useMapperInteractions = ({
             lastPointersRef.current = remPointers;
 
             if (activePointersRef.current.size === 0) {
+                if (mode === 'play') {
+                    stopWalking();
+                    if (contextMenuTriggeredRef.current && menuPointer) {
+                        const startX = startMouseRef.current.x;
+                        const startY = startMouseRef.current.y;
+                        const dx = menuPointer.x - startX;
+                        const dy = menuPointer.y - startY;
+                        const dist = Math.hypot(dx, dy);
+                        if (dist > 30) {
+                            let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+                            if (angle < 0) angle += 360;
+                            // Top arc (210 to 330) -> Info
+                            if (angle >= 210 && angle <= 330) {
+                                const world = screenToWorld(startX, startY);
+                                const rid = getRoomAt(world.x, world.y, true);
+                                if (rid) setInfoRoomId(rid);
+                            }
+                        }
+                        setContextMenu(null);
+                        setMenuPointer(null);
+                    }
+                }
+
                 if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
                     const w1 = screenToWorld(marqueeStart.x, marqueeStart.y), w2 = screenToWorld(marqueeEnd.x, marqueeEnd.y);
                     const x1 = Math.min(w1.x, w2.x), y1 = Math.min(w1.y, w2.y), x2 = Math.max(w1.x, w2.x), y2 = Math.max(w1.y, w2.y);
@@ -251,10 +293,10 @@ export const useMapperInteractions = ({
             window.removeEventListener('pointercancel', onUp);
             cvs.removeEventListener('wheel', onWheel);
         };
-    }, [mode, isDesignMode, isMinimized, canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel]);
+    }, [mode, isDesignMode, isMinimized, canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel, startWalking, stopWalking, setContextMenu, setInfoRoomId, triggerHaptic, setSelectedMarkerId, setSelectedRoomIds, setIsDragging, setRooms, setMarkers]);
 
     const marqueeStr = `${marqueeStart?.x},${marqueeStart?.y}|${marqueeEnd?.x},${marqueeEnd?.y}`;
-    const outputMarquee = useMemo(() => ({ start: marqueeStart, end: marqueeEnd }), [marqueeStr]);
+    const outputMarquee = useMemo(() => ({ start: marqueeStart, end: marqueeEnd }), [marqueeStart, marqueeEnd]);
 
-    return { marquee: outputMarquee };
+    return { marquee: outputMarquee, menuPointer };
 };

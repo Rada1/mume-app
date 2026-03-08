@@ -56,11 +56,13 @@ const Joystick: React.FC<JoystickProps> = ({
             <div
                 className="joystick-container"
                 onPointerDown={(e) => {
+                    e.stopPropagation();
                     if (e.cancelable) e.preventDefault();
                     onJoystickStart(e);
                 }}
                 onPointerMove={onJoystickMove}
                 onPointerUp={(e) => {
+                    e.stopPropagation();
                     if (e.cancelable) e.preventDefault();
                     onJoystickEnd(e);
                 }}

@@ -224,20 +224,20 @@
     display: inline;
     cursor: pointer;
     border-radius: 3px;
-    padding: 0 2px;
+    padding: 0 4px;
     margin: 0 -2px;
-    background-color: transparent !important;
-    border-bottom: 1px dashed var(--glow-color, rgba(255, 255, 255, 0.3));
-    text-shadow: 0 0 8px var(--glow-color, transparent);
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 2px solid var(--glow-color, rgba(255, 255, 255, 0.3));
+    text-shadow: 0 0 10px var(--glow-color, transparent);
     transition: all 0.2s ease;
 }
 
 .inline-btn:hover {
     filter: brightness(1.4);
     transform: scale(1.04);
-    background-color: rgba(255, 255, 255, 0.05) !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
     border-bottom-style: solid;
-    text-shadow: 0 0 12px var(--glow-color, rgba(255, 255, 255, 0.5));
+    text-shadow: 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.8));
 }
 
 .inline-btn.is-triggered {
