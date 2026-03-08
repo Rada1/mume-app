@@ -100,6 +100,41 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         });
     }, [triggerRender]);
 
+    // Handle Player Position & Trail
+    useEffect(() => {
+        if (currentRoomId && rooms[currentRoomId]) {
+            const r = rooms[currentRoomId];
+            if (playerPosRef.current) {
+                // Add old position to trail
+                playerTrailRef.current.push({
+                    x: playerPosRef.current.x,
+                    y: playerPosRef.current.y,
+                    z: playerPosRef.current.z,
+                    alpha: 1.0
+                });
+                if (playerTrailRef.current.length > 15) playerTrailRef.current.shift();
+            }
+            if (!playerPosRef.current) {
+                playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
+            }
+
+            // Whenever the room changes, ensure auto-center is active so the 
+            // animation loop in useMapAnimation.ts can glide the camera smoothly.
+            if (currentRoomId !== lastRoomIdRef.current) {
+                lastRoomIdRef.current = currentRoomId;
+                setAutoCenter(true);
+            }
+
+            triggerRender();
+        } else if (!currentRoomId) {
+            lastRoomIdRef.current = null;
+            playerPosRef.current = null;
+            playerTrailRef.current = [];
+            triggerRender();
+        }
+    }, [currentRoomId, rooms, autoCenter, cameraRef, triggerRender]);
+
+    // Trigger immediate render when unveilMap toggles
     useEffect(() => {
         triggerRender();
     }, [unveilMap, triggerRender]);

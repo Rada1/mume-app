@@ -10,7 +10,7 @@ export function useMessageHighlighter(
     characterName: string | null,
     roomItems: string[]
 ) {
-    const cacheRef = useRef<Map<string, { html: string, deps: string }>>(new Map());
+    const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
 
     const buttonsHash = JSON.stringify(buttonsRef.current?.map(b => ({ id: b.id, pattern: b.trigger?.pattern, enabled: b.trigger?.enabled })) || []);
     const depsHash = JSON.stringify([target, roomPlayers, roomNpcs, roomItems, characterName, buttonsHash]);

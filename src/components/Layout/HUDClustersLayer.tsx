@@ -1,8 +1,9 @@
 import React from 'react';
 import { GameButton } from '../Controls/GameButton/GameButton';
 import { useGame } from '../../context/GameContext';
-import { Plus, X, RotateCcw } from 'lucide-react';
+import { Plus, X, RotateCcw, Grid } from 'lucide-react';
 import { MapperCluster } from './HUD/MapperCluster';
+import { GridOverlay } from '../Grid/GridOverlay';
 import { StatsCluster } from './HUD/StatsCluster';
 import { JoystickCluster } from './HUD/JoystickCluster';
 import { XboxCluster } from './HUD/XboxCluster';
@@ -42,6 +43,9 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     <RotateCcw size={20} />
                 </div>
             )}
+            
+            <GridOverlay isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} />
+
             <div className="hud-clusters">
                 <MapperCluster
                     uiPositions={btn.uiPositions}
@@ -86,6 +90,9 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
             {btn.isEditMode && (
                 <>
+                    <div className="grid-toggle-fab" onClick={(e) => { e.stopPropagation(); btn.setIsGridEnabled(!btn.isGridEnabled); }} title="Toggle Grid" style={{ zIndex: 2000 }}>
+                        <Grid size={24} color={btn.isGridEnabled ? 'var(--accent)' : '#fff'} />
+                    </div>
                     <div className="add-btn-fab" onClick={(e) => { e.stopPropagation(); btn.createButton(); }} style={{ zIndex: 2000 }}><Plus size={32} /></div>
                     <div className="exit-design-mode-fab" onClick={() => btn.setIsEditMode(false)} title="Exit Design Mode" style={{ zIndex: 2000 }}><X size={32} /></div>
                 </>

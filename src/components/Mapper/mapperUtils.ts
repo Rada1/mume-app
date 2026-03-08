@@ -4,13 +4,17 @@ export const ROAD_COLOR_LIGHT = '#d2b48c'; // Tan for roads in light mode
 export const PATH_COLOR_DARK = '#7c6f64'; // Slightly darker sand/path
 export const PATH_COLOR_LIGHT = '#c2b280'; // Sand color
 
-export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string }> = {
-    n: { dx: 0, dy: -1, opp: 's' },
-    s: { dx: 0, dy: 1, opp: 'n' },
-    e: { dx: 1, dy: 0, opp: 'w' },
-    w: { dx: -1, dy: 0, opp: 'e' },
-    u: { dx: 0, dy: 0, dz: 1, opp: 'd' },
-    d: { dx: 0, dy: 0, dz: -1, opp: 'u' }
+export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string, name: string }> = {
+    n: { dx: 0, dy: -1, opp: 's', name: 'North' },
+    s: { dx: 0, dy: 1, opp: 'n', name: 'South' },
+    e: { dx: 1, dy: 0, opp: 'w', name: 'East' },
+    w: { dx: -1, dy: 0, opp: 'e', name: 'West' },
+    u: { dx: 0, dy: 0, dz: 1, opp: 'd', name: 'Up' },
+    d: { dx: 0, dy: 0, dz: -1, opp: 'u', name: 'Down' },
+    ne: { dx: 1, dy: -1, opp: 'sw', name: 'Northeast' },
+    nw: { dx: -1, dy: -1, opp: 'se', name: 'Northwest' },
+    se: { dx: 1, dy: 1, opp: 'nw', name: 'Southeast' },
+    sw: { dx: -1, dy: 1, opp: 'ne', name: 'Southwest' }
 };
 
 export const TERRAIN_MAP: Record<string, string> = {

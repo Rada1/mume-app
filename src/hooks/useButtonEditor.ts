@@ -13,75 +13,84 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
         if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
         rafRef.current = requestAnimationFrame(() => {
-            const containerRect = containerRef?.current?.getBoundingClientRect();
+            const container = containerRef?.current;
+            const containerRect = container?.getBoundingClientRect();
             const containerW = containerRect ? containerRect.width : window.innerWidth;
             const containerH = containerRect ? containerRect.height : window.innerHeight;
+            
+            // Container scale compensation (if the whole app is scaled via CSS)
+            const containerOffsetW = container?.offsetWidth || containerW;
+            const containerScale = containerRect ? (containerW / containerOffsetW) : 1;
 
-            const dx = e.clientX - ds.startX;
-            const dy = e.clientY - ds.startY;
+            const dx = (e.clientX - ds.startX);
+            const dy = (e.clientY - ds.startY);
             if (Math.abs(dx) > 5 || Math.abs(dy) > 5) wasDraggingRef.current = true;
 
-            if (ds.type === 'cluster') {
+            if (ds.type === 'cluster' || ds.type === 'cluster-resize') {
                 const clusterId = ds.id as string;
-                // Xbox is anchored to right, so a positive dx (mouse right) means less distance from right
-                let newX = clusterId === 'xbox' ? ds.initialX - dx : ds.initialX + dx;
-                let newY = ds.initialY + dy;
+                const scale = ds.initialW || 1;
+                
+                if (ds.type === 'cluster') {
+                    // Update current CSS positions (must divide mouse pixels by container scale to get CSS pixels)
+                    let newX = clusterId === 'xbox' ? ds.initialX - dx / containerScale : ds.initialX + dx / containerScale;
+                    let newY = ds.initialY + dy / containerScale;
 
-                if (btn.isGridEnabled) {
-                    const snapX = (btn.gridSize / 100) * containerW;
-                    const snapY = (btn.gridSize / 100) * containerH;
-                    newX = Math.round(newX / snapX) * snapX;
-                    newY = Math.round(newY / snapY) * snapY;
-                }
-
-                ds.elements.forEach((item: any) => {
-                    // We only apply the delta via transform to avoid fighting the base CSS right/left/top
-                    // transform is always relative to screen coordinates, so just use dx/dy
-                    // We must also preserve any initial transform like scale or center-alignment
-                    const isXbox = clusterId === 'xbox';
-                    const needsCentering = isXbox && ds.isUsingCenterAlignment;
-                    item.el.style.transform = `${needsCentering ? 'translateY(-50%)' : ''} translate(${dx}px, ${dy}px) ${ds.initialW !== 1 ? `scale(${ds.initialW})` : ''}`;
-                });
-
-                ds.finalX = newX;
-                ds.finalY = newY;
-            }
- else if (ds.type === 'cluster-resize') {
-                const clusterId = ds.id as string;
-                if (clusterId === 'mapper') {
-                    let newW = ds.initialW + dx;
-                    let newH = ds.initialH + dy;
                     if (btn.isGridEnabled) {
-                        const snapX = (btn.gridSize / 100) * containerW;
-                        const snapY = (btn.gridSize / 100) * containerH;
-                        newW = Math.round(newW / snapX) * snapX;
-                        newH = Math.round(newH / snapY) * snapY;
+                        const snapX = (btn.gridSize / 100) * containerOffsetW;
+                        const snapY = (btn.gridSize / 100) * (container?.offsetHeight || containerH);
+                        newX = Math.round(newX / snapX) * snapX;
+                        newY = Math.round(newY / snapY) * snapY;
                     }
-                    const w = Math.max(200, newW);
-                    const h = Math.max(200, newH);
+
                     ds.elements.forEach((item: any) => {
-                        item.el.style.width = `${w}px`;
-                        item.el.style.height = `${h}px`;
+                        const needsCentering = ds.isUsingCenterAlignment;
+                        // To follow mouse exactly, we must translate by dx/cumulative_scale
+                        const currentRect = item.el.getBoundingClientRect();
+                        const totalScale = currentRect.width / (item.el.offsetWidth || 1);
+                        const visualDx = dx / totalScale;
+                        const visualDy = dy / totalScale;
+
+                        item.el.style.transform = `${needsCentering ? 'translateY(-50%)' : ''} translate(${visualDx}px, ${visualDy}px) ${scale !== 1 ? `scale(${scale})` : ''}`;
                     });
-                    ds.finalW = w;
-                    ds.finalH = h;
-                } else {
-                    const newScale = Math.max(0.5, Math.min(2.5, ds.initialW + dx / 200));
-                    ds.elements.forEach((item: any) => {
-                        item.el.style.setProperty('--scale', newScale.toString());
-                        item.el.style.transform = `scale(${newScale})`;
-                    });
-                    ds.finalScale = newScale;
+
+                    ds.finalX = newX;
+                    ds.finalY = newY;
+                } else if (ds.type === 'cluster-resize') {
+                    if (clusterId === 'mapper') {
+                        let newW = ds.initialW + dx / containerScale;
+                        let newH = ds.initialH + dy / containerScale;
+                        if (btn.isGridEnabled) {
+                            const snapX = (btn.gridSize / 100) * containerOffsetW;
+                            const snapY = (btn.gridSize / 100) * (container?.offsetHeight || containerH);
+                            newW = Math.round(newW / snapX) * snapX;
+                            newH = Math.round(newH / snapY) * snapY;
+                        }
+                        const w = Math.max(200, newW);
+                        const h = Math.max(200, newH);
+                        ds.elements.forEach((item: any) => {
+                            item.el.style.width = `${w}px`;
+                            item.el.style.height = `${h}px`;
+                        });
+                        ds.finalW = w;
+                        ds.finalH = h;
+                    } else {
+                        const newScale = Math.max(0.5, Math.min(2.5, ds.initialW + dx / (200 * containerScale)));
+                        ds.elements.forEach((item: any) => {
+                            item.el.style.setProperty('--scale', newScale.toString());
+                            item.el.style.transform = `scale(${newScale})`;
+                        });
+                        ds.finalScale = newScale;
+                    }
                 }
             } else if (ds.type === 'resize') {
                 if (!ds.finalSizes) ds.finalSizes = {};
                 ds.elements.forEach((item: any) => {
                     const bId = item.el.getAttribute('data-id');
-                    let newW = item.initW + dx;
-                    let newH = item.initH + dy;
+                    let newW = item.initW + dx / containerScale;
+                    let newH = item.initH + dy / containerScale;
                     if (btn.isGridEnabled) {
-                        const pixSnapX = (btn.gridSize / 100) * containerW;
-                        const pixSnapY = (btn.gridSize / 100) * containerH;
+                        const pixSnapX = (btn.gridSize / 100) * containerOffsetW;
+                        const pixSnapY = (btn.gridSize / 100) * (container?.offsetHeight || containerH);
                         newW = Math.round(newW / pixSnapX) * pixSnapX;
                         newH = Math.round(newH / pixSnapY) * pixSnapY;
                     }
@@ -95,8 +104,8 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                 if (!ds.finalPositions) ds.finalPositions = {};
                 ds.elements.forEach((item: any) => {
                     const bId = item.el.getAttribute('data-id');
-                    const dXPercent = (dx / containerW) * 100;
-                    const dYPercent = (dy / containerH) * 100;
+                    const dXPercent = (dx / (containerW || 1)) * 100;
+                    const dYPercent = (dy / (containerH || 1)) * 100;
                     let finalX = item.initX + dXPercent;
                     let finalY = item.initY + dYPercent;
 
@@ -123,13 +132,37 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
 
         let startX = 0, startY = 0, initialW = 0, initialH = 0;
 
+        const container = containerRef?.current;
+        const containerRect = container?.getBoundingClientRect();
+        const containerScale = containerRect ? (containerRect.width / (container?.offsetWidth || 1)) : 1;
+
         if (type === 'cluster' || type === 'cluster-resize') {
             const clusterId = id as any;
             const el = document.getElementById(`cluster-${clusterId}`);
             const rect = el ? el.getBoundingClientRect() : { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 };
             const pos = btn.uiPositions[clusterId];
-            startX = pos?.x ?? (clusterId === 'xbox' ? (window.innerWidth - rect.right) : rect.left);
-            startY = pos?.y ?? rect.top;
+            
+            // Calculate initial X/Y in CSS pixels (relative to container)
+            if (pos?.x !== undefined) {
+                startX = pos.x;
+            } else {
+                if (clusterId === 'xbox') {
+                    // Start relative from right edge, converted to CSS pixels
+                    const physicalRightOffset = containerRect ? (containerRect.right - rect.right) : (window.innerWidth - rect.right);
+                    startX = physicalRightOffset / containerScale;
+                } else {
+                    const physicalLeftOffset = containerRect ? (rect.left - containerRect.left) : rect.left;
+                    startX = physicalLeftOffset / containerScale;
+                }
+            }
+
+            if (pos?.y !== undefined) {
+                startY = pos.y;
+            } else {
+                const physicalTopOffset = containerRect ? (rect.top - containerRect.top) : rect.top;
+                startY = physicalTopOffset / containerScale;
+            }
+
             initialW = pos?.scale ?? 1;
 
             if (clusterId === 'mapper' && type === 'cluster-resize') {
@@ -192,7 +225,7 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
             const el = document.getElementById(`cluster-${id}`);
             if (el) {
                 el.classList.add('dragging');
-                dragInfo.elements.push({ el, initX: startX, initY: startY, initW: initialW, initH: initialH });
+                dragInfo.elements.push({ el });
             }
         } else {
             effectiveSelected.forEach(selId => {
@@ -220,7 +253,7 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                 if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
                 // Commit final positions to React State
-                if (ds.type === 'cluster') {
+                if (ds.type === 'cluster' && wasDraggingRef.current) {
                     if (ds.finalX !== undefined) {
                         const clusterId = ds.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
                         btn.setUiPositions(prev => ({
@@ -232,7 +265,7 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                             }
                         }));
                     }
-                } else if (ds.type === 'cluster-resize') {
+                } else if (ds.type === 'cluster-resize' && wasDraggingRef.current) {
                     const clusterId = ds.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
                     if (clusterId === 'mapper' && ds.finalW !== undefined) {
                         btn.setUiPositions(prev => ({
@@ -252,7 +285,7 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                             }
                         }));
                     }
-                } else {
+                } else if (wasDraggingRef.current) {
                     const finalPos = ds.finalPositions;
                     const finalSizes = ds.finalSizes;
                     if (finalPos || finalSizes) {

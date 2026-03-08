@@ -52,10 +52,6 @@ export const useButtonGestures = ({
 
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (isEditMode) {
-            if (button.setId === 'Xbox') {
-                setEditButton(button);
-                return; // Let it bubble to XboxCluster so the whole group moves together
-            }
             handleDragStart(e, button.id, 'move');
         } else {
             if (e.cancelable) e.preventDefault();
@@ -315,7 +311,7 @@ export const useButtonGestures = ({
         e.stopPropagation();
         if (isEditMode) {
             if (wasDraggingRef && wasDraggingRef.current) return;
-            if (button.setId !== 'Xbox') setEditButton(button);
+            setEditButton(button);
         }
     }, [isEditMode, wasDraggingRef, setEditButton, button]);
 

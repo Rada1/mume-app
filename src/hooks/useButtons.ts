@@ -138,6 +138,24 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         localStorage.setItem('mud-smart-populate', isSmartPopulateEnabled ? 'true' : 'false');
     }, [isSmartPopulateEnabled]);
 
+    useEffect(() => {
+        localStorage.setItem('mud-grid-enabled', isGridEnabled ? 'true' : 'false');
+    }, [isGridEnabled]);
+
+    useEffect(() => {
+        localStorage.setItem('mud-grid-size', gridSize.toString());
+    }, [gridSize]);
+
+    useEffect(() => {
+        if (combatSet) localStorage.setItem('mud-combat-set', combatSet);
+        else localStorage.removeItem('mud-combat-set');
+    }, [combatSet]);
+
+    useEffect(() => {
+        if (defaultSet) localStorage.setItem('mud-default-set', defaultSet);
+        else localStorage.removeItem('mud-default-set');
+    }, [defaultSet]);
+
     return useMemo(() => ({
         buttons, setButtons: setRawButtons, rawButtons, buttonsRef, activeSet, setActiveSet, isEditMode, setIsEditMode, editingButtonId, setEditingButtonId, selectedButtonIds, setSelectedIds, toggleSelection, uiPositions, setUiPositions, dragState, setDragState, availableSets, createButton, deleteButton, deleteSet, resetToDefaults: (m?: any) => resetToDefaults(addMessageRef.current || undefined), buttonTimers, combatSet, setCombatSet, defaultSet, setDefaultSet, isGridEnabled, setIsGridEnabled, gridSize, setGridSize, setAddMessage: (fn: any) => { addMessageRef.current = fn; },
         setSettings, setSetSettings, isSmartPopulateEnabled, setIsSmartPopulateEnabled
