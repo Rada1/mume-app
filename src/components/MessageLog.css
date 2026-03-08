@@ -29,8 +29,9 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
     touch-action: pan-y;
-    padding-bottom: 10px;
+    padding-bottom: 15px;
     padding-top: 10px;
+    scroll-padding-bottom: 30px;
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
     font-size: var(--dynamic-log-size, 16px);
@@ -279,8 +280,9 @@
     .message-log {
         padding-left: 6px !important;
         padding-right: 6px !important;
-        padding-bottom: 10px !important;
+        padding-bottom: 15px !important;
         padding-top: 10px !important;
+        scroll-padding-bottom: 30px !important;
     }
 
     .input-area {

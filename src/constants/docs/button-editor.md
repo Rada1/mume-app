@@ -3,23 +3,19 @@
 Customize your tactical interface by creating and editing action buttons.
 
 ## 🔧 Accessing the Editor
-- **Long-Press**: Press and hold any existing button.
-- **Design Mode**: Open the Set Manager and toggle "Design Mode" to move buttons freely.
-- **Add New**: Click the `+` button while in Design Mode.
+- **Long-Press**: Press and hold any existing button to open its configuration.
+- **Design Mode**: Use the toolbar to toggle "Design Mode" and move buttons freely.
 
 ## 📝 Configuring Actions
-Each button can have multiple interaction types:
 - **Primary Click**: The main command sent when clicked.
-- **Swipes**: Configure up to 4 swipe directions for additional commands (e.g., Up for 'Sheath', Down for 'Draw').
-- **Long Press**: A secondary command for extended hold.
+- **Swipes**: Configure up to 4 swipe directions for additional commands on the same button.
+- **Auto-Fill**: Toggle "Auto-Submit" off if you want a button to pre-fill the command bar without sending immediately.
 
-## 🔤 Variables
-Use these variables in your commands:
-- `%t` or `target`: Inserts your current target's name.
-- `%n`: Inserts your character's name.
+## ✨ Adaptive Content
+Buttons can be made "Dynamic" by linking them to game events:
+- **Communication Captures**: If a button is set to capture "Tells", it will automatically update its label to the name of the last person who sent you a message. 
+- **Variable Substitution**: Use `%t` for your target, or use capture groups from Regex triggers to dynamically insert names into your commands.
 
-## 🔋 Triggers
-Buttons can respond to game events:
-- **On Combat**: Highlight or show the button only during combat.
-- **On Communication**: Show the button when you receive a message.
-- **Keyboard Hook**: Bind the button to a specific key on your physical keyboard.
+## 🔋 UI States
+- **Visibility**: Set buttons to only appear during specific states (Combat, Hidden, or Communication).
+- **Keyboard Hook**: Bind buttons to physical keys for a traditional desktop experience.

@@ -147,8 +147,10 @@ export const useSmartWalk = (
         if (isWalking && isHoldActiveRef.current && currentRoomId && currentRoomId !== lastRoomIdRef.current) {
             lastRoomIdRef.current = currentRoomId;
 
-            // Check if we reached the goal
-            if (normalizeId(currentRoomId) === normalizeId(targetRoomIdRef.current || '')) {
+            // Check if we reached the goal (using normalized IDs for stability)
+            const normCurrent = normalizeId(currentRoomId);
+            const normTarget = normalizeId(targetRoomIdRef.current);
+            if (normCurrent === normTarget) {
                 stopWalking();
                 return;
             }
@@ -158,7 +160,17 @@ export const useSmartWalk = (
             if (newPath && newPath.length > 0) {
                 executeCommand(newPath[0]);
             } else {
-                stopWalking();
+                // If path is temporarily lost (e.g. room loading lag), wait ONE frame before stopping
+                setTimeout(() => {
+                    if (isHoldActiveRef.current && isWalking) {
+                        const retryPath = findPath(currentRoomId, targetRoomIdRef.current!);
+                        if (retryPath && retryPath.length > 0) {
+                            executeCommand(retryPath[0]);
+                        } else {
+                            stopWalking();
+                        }
+                    }
+                }, 100);
             }
         }
     }, [currentRoomId, isWalking, findPath, executeCommand, stopWalking]);

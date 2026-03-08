@@ -1,25 +1,24 @@
 # Getting Started with MUME
 
-Welcome to the MUME MUD Client! This guide will help you understand the basic mechanics of the interface and how to start your adventure in Middle-earth.
+Welcome to the MUME MUD Client! This guide will help you understand the core features available for both desktop and mobile adventurers.
 
-## 🧭 Movement
-You can move around the world using the cardinal directions (North, South, East, West) and their diagonals. 
-- **Keyboard**: Use the arrow keys or type commands like `n`, `s`, `e`, `w`.
-- **Joysticks**: If enabled, use the on-screen joystick to move.
-- **Auto-Walking**: Click on a room in the map to attempt to walk there automatically.
+## 🧭 Movement & Mapping
+- **Smart Walk**: Long-press a room on the map to automatically travel there. Release your hold at any time to stop.
+- **Joysticks**: On mobile, use the virtual joysticks to navigate or control your camera.
+- **Paths**: The mapper automatically tracks your progress and marks connections, quest locations (?), and vertical exits (▲/▼).
 
-## ⚔️ Combat
-When you encounter an enemy:
-1. **Targeting**: Click on a mob's name in the log to target them, or type `#target name`.
-2. **Attacking**: Use your action buttons to initiate combat. 
-3. **Vitals**: Watch your HP (Red), Mana (Purple), and Moves (Green) bars at the top.
+## 💬 Communication
+- **Adaptive Buttons**: The client features dynamic communication buttons. When you receive a `tell`, `say`, or `whisper`, your communication buttons will automatically update their labels and targets to match the latest speaker.
+- **Quick Reply**: Tap a dynamic button to pre-fill the command bar and focus your keyboard for a fast response.
 
-## 🛠️ Interface
-- **Mapper**: Located at the top-right. Shows your current location and surrounding rooms.
-- **HUD Clusters**: Groups of action buttons. You can customize these in the Button Editor.
-- **Drawers**: Swipe from the left or right to open your Inventory or Character stats.
+## 🎮 Interface & Controls
+- **HUD Clusters**: Action buttons are grouped into logical clusters. This includes specialized support for **Xbox/Game Controller** layouts.
+- **Mobile Gestures**:
+    - **Inventory**: Swipe from the left edge to open your inventory.
+    - **Stats**: Swipe from the right edge for character vitals and equipment.
+    - **History**: Swipe left or right on the command bar to cycle through your sent commands.
 
-## 💡 Pro Tips
-- Use the `/help` command at any time to open these guides.
-- Swipe the command bar left/right to cycle through your history.
-- Long-press a button to open its editor.
+## 🛠️ Customization
+- **Button Editor**: Long-press any button to change its command, label, color, or icon.
+- **Layouts**: Drag HUD clusters to reposition them wherever fits your screen best.
+- **Help**: Use the `/help` command or click the book icon in settings to return to these guides.

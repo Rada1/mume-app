@@ -19,16 +19,17 @@ const Rain = React.memo(({ heavy }: RainProps) => {
         canvas.width = width;
         canvas.height = height;
 
-        const dropCount = heavy ? 100 : 50; // Reduced counts for canvas efficiency
+        const dropCount = heavy ? 150 : 60;
         const drops: { x: number; y: number; l: number; v: number; o: number }[] = [];
 
         for (let i = 0; i < dropCount; i++) {
+            const speedBase = heavy ? 35 : 25;
             drops.push({
                 x: Math.random() * width,
                 y: Math.random() * height,
-                l: 15 + Math.random() * 15,
-                v: 10 + Math.random() * 10,
-                o: 0.1 + Math.random() * 0.3
+                l: (heavy ? 40 : 25) + Math.random() * 20,
+                v: speedBase + Math.random() * 20,
+                o: (heavy ? 0.2 : 0.1) + Math.random() * 0.3
             });
         }
 

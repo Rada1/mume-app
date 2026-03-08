@@ -18,10 +18,12 @@ interface MessageLogProps {
     msg,
     processMessageHtml,
     inCombat,
+    scrollToBottom,
 }: {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string,
     inCombat: boolean,
+    scrollToBottom: (force?: boolean, instant?: boolean) => void;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName), [msg.html, msg.id, msg.isRoomName, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -36,7 +38,11 @@ interface MessageLogProps {
                 <span>{msg.textRaw}</span>
             ) : msg.isComm ? (
                 isRecent ? (
-                    <TypewriterText html={content} speed={2} />
+                    <TypewriterText 
+                        html={content} 
+                        speed={2} 
+                        onUpdate={() => scrollToBottom(false, true)}
+                    />
                 ) : (
                     <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
                 )
@@ -57,7 +63,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
 }) => {
     const { messages, inCombat, viewport, processMessageHtml } = useBaseGame();
     const { activePrompt } = useVitals();
-    const { scrollContainerRef, messagesEndRef } = viewport;
+    const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
     // Virtualization state: start with a healthy range
     const [visibleRange, setVisibleRange] = useState({ start: 0, end: 100 });
@@ -124,6 +130,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                     msg={msg}
                     processMessageHtml={processMessageHtml}
                     inCombat={inCombat}
+                    scrollToBottom={scrollToBottom}
                 />
             );
         });
@@ -154,7 +161,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         >
             {renderedMessages}
             {activePromptContent}
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} style={{ scrollMarginBottom: '100px', height: '1px' }} />
         </div>
     );
 };

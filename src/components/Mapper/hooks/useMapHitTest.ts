@@ -29,7 +29,7 @@ export const useMapHitTest = ({
     const getRoomAt = useCallback((wx: number, wy: number, strictZ = false) => {
         const roomsToSearch = roomsRef.current;
         const currentZ = viewZ !== null ? viewZ : (currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0);
-        const margin = 2;
+        const margin = 10;
         let foundRoom: string | null = null;
         let bestDist = Infinity;
 

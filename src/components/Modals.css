@@ -25,6 +25,11 @@
     max-height: 90vh;
     overflow-y: auto;
     user-select: text;
+    transition: max-width 0.3s ease;
+}
+
+.modal.large {
+    max-width: 800px;
 }
 
 .modal-header {
@@ -437,6 +442,47 @@ select.setting-input {
     padding: 24px;
     overflow-y: auto;
     background: rgba(0, 0, 0, 0.1);
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 600px) {
+    .help-guides-container {
+        flex-direction: column;
+        height: auto;
+        max-height: 60vh;
+    }
+
+    .help-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        flex-direction: row;
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .help-nav-item {
+        padding: 10px 14px;
+        border-left: none !important;
+        border-bottom: 3px solid transparent;
+    }
+
+    .help-nav-item.active {
+        border-bottom: 3px solid #4a90e2;
+    }
+
+    .help-nav-item .chevron {
+        display: none;
+    }
+
+    .help-sidebar-footer {
+        display: none;
+    }
+
+    .help-content {
+        padding: 16px;
+    }
 }
 
 .markdown-body h1 {

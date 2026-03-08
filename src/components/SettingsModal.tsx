@@ -48,7 +48,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
     return (
         <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>
-            <div className="modal" onClick={e => e.stopPropagation()}>
+            <div className={`modal ${settingsTab === 'help' ? 'large' : ''}`} onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="modal-title">Settings</div>
                     <button onClick={() => setIsSettingsOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer' }}>
@@ -71,7 +71,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                 </div>
 
-                <div className="modal-body" style={{ height: settingsTab === 'help' ? '500px' : 'auto' }}>
+                <div className="modal-body" style={{ height: settingsTab === 'help' ? '60vh' : 'auto', minHeight: settingsTab === 'help' ? '400px' : 'auto' }}>
                     {settingsTab === 'general' && (
                         <>
                             <GeneralSettings

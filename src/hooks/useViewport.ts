@@ -48,11 +48,17 @@ export function useViewport() {
         isAutoScrollingRef.current = true;
 
         const performScroll = () => {
-            // Use a very high number to ensure we hit the bottom regardless of layout shifts
-            container.scrollTo({ 
-                top: container.scrollHeight + 1000, 
-                behavior: instant ? 'auto' : 'smooth' 
-            });
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollIntoView({ 
+                    behavior: instant ? 'auto' : 'smooth',
+                    block: 'end'
+                });
+            } else {
+                container.scrollTo({ 
+                    top: container.scrollHeight + 1000, 
+                    behavior: instant ? 'auto' : 'smooth' 
+                });
+            }
         };
 
         performScroll();

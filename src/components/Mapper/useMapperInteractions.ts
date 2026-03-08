@@ -110,7 +110,8 @@ export const useMapperInteractions = ({
 
                 longPressTimerRef.current = setTimeout(() => {
                     const latestWorld = screenToWorld(lastMouseRef.current.x, lastMouseRef.current.y);
-                    const latestRoomId = getRoomAt(latestWorld.x, latestWorld.y, true);
+                    // Use non-strict Z for the initial walk trigger to be more forgiving on mobile
+                    const latestRoomId = getRoomAt(latestWorld.x, latestWorld.y, false);
 
                     triggerHaptic(40);
                     contextMenuTriggeredRef.current = true;
