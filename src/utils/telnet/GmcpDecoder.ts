@@ -111,7 +111,7 @@ export class GmcpDecoder {
         } else {
             // If we are explicitly NOT fighting and have NO opponent, we should clear combat immediately.
             // We use force=true to bypass the 5s latch in state.ts.
-            this.handlers.setInCombat(false, true);
+            (this.handlers as any).setInCombat(false, true);
         }
 
         const weatherVal = getField(['weather', 'w']);
@@ -194,7 +194,7 @@ export class GmcpDecoder {
                 if (!weAreFighting) {
                     const isExplicitlyNotFighting = this.charVitalsState.position && !this.charVitalsState.position.includes('fighting');
                     if (isExplicitlyNotFighting) {
-                        this.handlers.setInCombat(false, true); // Force clear the latch
+                        (this.handlers as any).setInCombat(false, true); // Force clear the latch
                     } else {
                         this.handlers.setInCombat(false); // Normal clear
                     }

@@ -139,7 +139,6 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                 <SpatButtonItem
                     key={sb.id}
                     sb={sb}
-                    promptLeft={promptLeft}
                     activeDir={activeDirMap[sb.id] || null}
                     onPointerDown={(e) => {
                         if (e.cancelable) e.preventDefault();
