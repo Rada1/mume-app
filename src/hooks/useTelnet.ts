@@ -109,21 +109,20 @@ export function useTelnet(options: TelnetOptions) {
         }
 
         const prompt = bufferRef.current;
+        // CRITICAL: Always update the prompt state so that any text in the buffer 
+        // (like "By what name...") is visible to the user immediately.
+        setPrompt(prompt);
+
         if (prompt) {
-            // Refined prompt detection:
-            // 1. Common MUME symbols at the end
-            // 2. Ends with > or : and is relatively short
-            // 3. Contains typical prompt characters
             const cleanPrompt = prompt.replace(/\x1b\[[0-9;]*m/g, '').trim();
             const isLikelyPrompt = 
                 /^[\*\)\!oO\.\[f\<%\~+WU:=O:\(\#\?]\s*[>:]\s*$/.test(cleanPrompt) || 
-                (/[>:]\s*$/.test(cleanPrompt) && cleanPrompt.length < 60) ||
+                (/[>:]\s*$/.test(cleanPrompt) && cleanPrompt.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(cleanPrompt.toLowerCase())) ||
                 (cleanPrompt.includes('HP:') && cleanPrompt.includes('MA:') && cleanPrompt.includes('>'));
 
             if (isLikelyPrompt) {
-                setPrompt(prompt);
-                // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters
-                // even if the server doesn't send a trailing newline on the prompt.
+                // Stability: Pass the prompt to the parser so it can reset silent/drawer capture counters.
+                // The parser will see it is a prompt and NOT add it to the message history yet.
                 processLine(prompt);
                 
                 if (handlers.detectLighting) {

@@ -76,13 +76,13 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Refined promptWithTextRegex: handle preceding stats/brackets
         const promptWithTextRegex = /^((?:(?:\[.*?\]\s*)?[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/;
 
-        const isPurePrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
+        const isLikelyPrompt = purePromptRegex.test(textOnly) || (/[>:]\s*$/.test(textOnly) && textOnly.length < 60 && !/ob:|armor:|str:|exp:|level:|using|carrying|contains|following/i.test(lower));
         const textPMatch = textOnly.match(promptWithTextRegex);
 
         const originalCleanLine = cleanLine;
 
-        if (isPurePrompt || textPMatch) {
-            if (isPurePrompt || (textPMatch && !textPMatch[2].trim())) {
+        if (isLikelyPrompt || textPMatch) {
+            if (isLikelyPrompt || (textPMatch && !textPMatch[2].trim())) {
                 captureStage.current = 'none';
                 isWaitingForStats.current = false;
                 isWaitingForEq.current = false;
@@ -92,7 +92,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
                 containerStackRef.current = [];
 
-                const symbolString = isPurePrompt ? textOnly : textPMatch?.[1];
+                const symbolString = isLikelyPrompt ? textOnly : textPMatch?.[1];
                 const promptSymbolMatch = symbolString?.match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
                 if (promptSymbolMatch && promptSymbolMatch[1]) {
                     const symbol = promptSymbolMatch[1];
@@ -101,7 +101,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                         deps.setCurrentTerrain(symbol);
                     }
                 }
-                return; // Nothing else to process
+                return; // Pure confirmed prompt: nothing else to process, DON'T add to history
             } else if (textPMatch) {
                 // Extract prompt symbols
                 const promptSymbolMatch = textPMatch[1].match(/^([\*\)\!oO\.\[f\<%\~+WU:=O\#\?\(])/);
