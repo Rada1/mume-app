@@ -126,7 +126,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 />
             );
         });
-    }, [messages, visibleRange, processMessageHtml, inCombat, viewport]);
+    }, [messages, visibleRange, processMessageHtml, inCombat]);
 
     return (
         <div

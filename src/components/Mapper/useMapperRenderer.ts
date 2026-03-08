@@ -162,7 +162,10 @@ export const useMapperRenderer = ({
                         const blobTerrains = ['Forest', 'Mountains', 'Hills', 'Brush', 'Field', 'Grasslands', 'Water', 'Shallows', 'Rapids', 'Building', 'City', 'Tunnel', 'Cavern'];
 
                         const firstExplored = firstExploredAtRef.current[vnum];
-                        if (firstExplored === undefined) firstExploredAtRef.current[vnum] = now;
+                        if (firstExplored === undefined) {
+                            firstExploredAtRef.current[vnum] = now;
+                            firstExploredAtRef.current['_latest'] = now;
+                        }
                         const p = Math.min(1, (now - (firstExploredAtRef.current[vnum] || now)) / ANIM_DUR);
 
                         ctx.save();
@@ -375,7 +378,10 @@ export const useMapperRenderer = ({
             const blobTerrains = ['Forest', 'Mountains', 'Hills', 'Brush', 'Field', 'Grasslands', 'Water', 'Shallows', 'Rapids', 'Building', 'City', 'Tunnel', 'Cavern'];
             
             const firstExplored = firstExploredAtRef.current[room.id];
-            if (firstExplored === undefined) firstExploredAtRef.current[room.id] = now;
+            if (firstExplored === undefined) {
+                firstExploredAtRef.current[room.id] = now;
+                firstExploredAtRef.current['_latest'] = now;
+            }
             const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
 
             ctx.save();
