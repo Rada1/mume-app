@@ -62,7 +62,10 @@ export const useSpatButtons = (
             swipeActionTypes
         };
 
-        setSpatButtons(prev => [...prev.slice(-9), newSpat]);
+        setSpatButtons(prev => {
+            if (prev.some(sb => sb.btnId === newSpat.btnId)) return prev;
+            return [...prev, newSpat].slice(-10);
+        });
         triggerHaptic(10);
     }, [triggerHaptic]);
 
@@ -94,7 +97,10 @@ export const useSpatButtons = (
             swipeActionTypes: b.swipeActionTypes
         };
 
-        setSpatButtons(prev => [...prev.slice(-9), newSpat]);
+        setSpatButtons(prev => {
+            if (prev.some(sb => sb.btnId === b.id)) return prev;
+            return [...prev, newSpat].slice(-10);
+        });
         triggerHaptic(10);
     }, [triggerHaptic]);
 

@@ -4,6 +4,7 @@ import {
     getTerrainColor, normalizeTerrain,
     ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT 
 } from './mapperUtils';
+import { drawBlobTerrain, BlobNeighbors } from './blobTerrainRenderer';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -93,15 +94,39 @@ export const useMapperRenderer = ({
         const floorIndex = spatialIndexRef.current[Math.round(currentZ)];
 
         if (floorIndex) {
-            // Only look through buckets overlapping our viewport
-            const bX1 = Math.floor(gX1 / 5), bY1 = Math.floor(gY1 / 5);
-            const bX2 = Math.floor(gX2 / 5), bY2 = Math.floor(gY2 / 5);
+            // Viewport culling bounds in grid coordinates
+            const vX1 = camera.x, vY1 = camera.y;
+            const vX2 = camera.x + (canvasWidth / camera.zoom), vY2 = camera.y + (canvasHeight / camera.zoom);
 
-            for (let bx = bX1; bx <= bX2; bx++) {
-                for (let by = bY1; by <= bY2; by++) {
+            const gX1 = Math.floor(vX1 / GRID_SIZE) - 1;
+            const gY1 = Math.floor(vY1 / GRID_SIZE) - 1;
+            const gX2 = Math.ceil(vX2 / GRID_SIZE) + 1;
+            const gY2 = Math.ceil(vY2 / GRID_SIZE) + 1;
+
+            // --- POPULATE ROOM LOOKUP TABLE FOR NEIGHBOR DETECTION ---
+            // We do a first pass to build a fast coordinate-to-terrain lookup
+            const bX1_all = Math.floor(gX1 / 5), bY1_all = Math.floor(gY1 / 5);
+            const bX2_all = Math.floor(gX2 / 5), bY2_all = Math.floor(gY2 / 5);
+
+            for (let bx = bX1_all; bx <= bX2_all; bx++) {
+                for (let by = bY1_all; by <= bY2_all; by++) {
                     const bucket = floorIndex[`${bx},${by}`];
                     if (!bucket) continue;
+                    bucket.forEach(vnum => {
+                        const [rx, ry, rz, tSector] = preloaded[vnum];
+                        const irx = Math.round(rx), iry = Math.round(ry);
+                        
+                        const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
+                        roomAtCoord[`${irx},${iry}`] = normalizeTerrain(localRoom ? localRoom.terrain : tSector);
+                    });
+                }
+            }
 
+            // --- DRAW MASTER MAP ROOMS ---
+            for (let bx = bX1_all; bx <= bX2_all; bx++) {
+                for (let by = bY1_all; by <= bY2_all; by++) {
+                    const bucket = floorIndex[`${bx},${by}`];
+                    if (!bucket) continue;
                     bucket.forEach(vnum => {
                         const [rx, ry, rz, tSector, ghostExits, rName, , mobFlagsGhost, loadFlagsGhost] = preloaded[vnum];
                         const isVisited = explored.has(vnum);
@@ -116,7 +141,6 @@ export const useMapperRenderer = ({
 
                         // Adoption check: If we have a local room override, skip or merge
                         const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
-                        if (localRoom) roomAtCoord[`${Math.round(rx)},${Math.round(ry)}`] = localRoom;
 
                         ctx.globalAlpha = 1.0;
 
@@ -152,11 +176,78 @@ export const useMapperRenderer = ({
                         // DRAW ROOM BODY
                         if (isVisited || isUnveiled) {
                             const terrain = localRoom ? localRoom.terrain : tSector;
+                            const normalizedTerrain = normalizeTerrain(terrain);
                             const s = GRID_SIZE;
 
-                            // 1. Fill Room Background based on terrain
-                            ctx.fillStyle = getTerrainColor(terrain, isDarkMode);
-                            ctx.fillRect(wx, wy, s, s);
+                            // 1. Fill Base Background (Dirt/None) if it's a blob terrain
+                            const blobTerrains = ['Forest', 'Mountains', 'Hills', 'Brush', 'Field', 'Grasslands', 'Water', 'Shallows', 'Rapids', 'Building', 'City', 'Tunnel', 'Cavern'];
+                            if (blobTerrains.includes(normalizedTerrain)) {
+                                ctx.fillStyle = getTerrainColor('Base', isDarkMode);
+                                ctx.fillRect(wx, wy, s, s);
+                            } else {
+                                ctx.fillStyle = getTerrainColor(terrain, isDarkMode);
+                                ctx.fillRect(wx, wy, s, s);
+                            }
+
+                            // 1.2 Blob Rendering
+                            if (blobTerrains.includes(normalizedTerrain)) {
+                                const getTerrainAt = (dx: number, dy: number): boolean => {
+                                    const nx = Math.round(rx) + dx;
+                                    const ny = Math.round(ry) + dy;
+                                    const terrainAt = roomAtCoord[`${nx},${ny}`];
+                                    if (!terrainAt) return false;
+
+                                    // 1. Exact match
+                                    if (terrainAt === normalizedTerrain) return true;
+                                    
+                                    // 2. Special Case: Underground connection
+                                    if ((normalizedTerrain === 'Tunnel' || normalizedTerrain === 'Cavern') && 
+                                        (terrainAt === 'Tunnel' || terrainAt === 'Cavern')) {
+                                        return true;
+                                    }
+
+                                    // 3. Special Case: Urban connection (Building next to City)
+                                    if ((normalizedTerrain === 'Building' || normalizedTerrain === 'City') && 
+                                        (terrainAt === 'Building' || terrainAt === 'City')) {
+                                        return true;
+                                    }
+
+                                    // 4. Any other transition (Forest next to Field) will now use wavy bank logic
+                                    return false;
+                                };
+
+                                const neighbors: BlobNeighbors = {
+                                    t: getTerrainAt(0, -1),
+                                    b: getTerrainAt(0, 1),
+                                    l: getTerrainAt(-1, 0),
+                                    r: getTerrainAt(1, 0),
+                                    tl: getTerrainAt(-1, -1),
+                                    tr: getTerrainAt(1, -1),
+                                    bl: getTerrainAt(-1, 1),
+                                    br: getTerrainAt(1, 1)
+                                };
+
+                                const isSharp = normalizedTerrain === 'Building' || normalizedTerrain === 'City';
+                                const isNarrow = normalizedTerrain === 'Tunnel' || normalizedTerrain === 'Cavern';
+                                const isWavy = ['Water', 'Shallows', 'Rapids', 'Tunnel'].includes(normalizedTerrain);
+                                const isCraggy = normalizedTerrain === 'Cavern';
+                                const isPatchy = ['Field', 'Grasslands'].includes(normalizedTerrain);
+                                
+                                // Terrain-specific sizing (inset)
+                                let inset = 20;
+                                const isWater = ['Water', 'Shallows', 'Rapids'].includes(normalizedTerrain);
+                                
+                                if (isNarrow || isWater) inset = 35;
+                                else if (isPatchy) inset = 2; 
+
+                                drawBlobTerrain(ctx, wx, wy, s, neighbors, getTerrainColor(terrain, isDarkMode), { 
+                                    sharpCorners: isSharp,
+                                    inset: inset,
+                                    wavy: isWavy,
+                                    craggy: isCraggy,
+                                    patchy: isPatchy
+                                });
+                            }
 
                             // 1.5 Road/Path Rendering Logic (Inside the room)
                             if (ghostExits) {

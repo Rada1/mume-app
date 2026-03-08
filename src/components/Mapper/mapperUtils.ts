@@ -97,6 +97,7 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
             case 'Tunnel':
             case 'Cavern': return '#000000';
             case 'Brush': return '#2d352d';
+            case 'Base': return '#2d241d'; // Dark dirt
             default: return '#1e1e2e';
         }
     } else {
@@ -114,6 +115,7 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
             case 'Road': return '#f2f2f2';
             case 'Tunnel':
             case 'Cavern': return '#d0d0d0';
+            case 'Base': return '#e3d5c8'; // Light dirt
             default: return '#ffffff';
         }
     }
