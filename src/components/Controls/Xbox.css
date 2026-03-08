@@ -24,6 +24,8 @@
     justify-content: center;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
 .xbox-btn:active,

@@ -54,6 +54,8 @@
 
 * {
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
 }
 
 body,
@@ -68,4 +70,14 @@ html {
     color: var(--text-primary);
     user-select: none;
     overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button, 
+input, 
+select, 
+textarea,
+[role="button"] {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
