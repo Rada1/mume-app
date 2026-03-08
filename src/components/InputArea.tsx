@@ -61,6 +61,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 // For input field, we don't capture immediately to allow focus, 
                 // but we still record startPos to detect the bubble-up swipe.
                 if (targetElement.tagName !== 'INPUT') {
+                    if (e.cancelable) e.preventDefault();
                     e.currentTarget.setPointerCapture(e.pointerId);
                 }
             }}

@@ -117,7 +117,6 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             }
         }
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-        if (button.trigger?.closeKeyboard) (document.activeElement as HTMLElement)?.blur();
     }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef]);
 
     const handleInputSwipe = useCallback((dir: string) => {

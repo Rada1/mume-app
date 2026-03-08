@@ -186,6 +186,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                         }
                     }}
                     onPointerUp={(e) => {
+                        if (e.cancelable) e.preventDefault();
                         const el = e.currentTarget as any;
                         const maxDist = el._maxDist || 0;
                         const startX = el._startX;

@@ -85,7 +85,6 @@ export interface CustomButton {
         type?: TriggerAction;
         targetSet?: string;
         onKeyboard?: boolean; // Show when mobile keyboard opens
-        closeKeyboard?: boolean; // Close keyboard after clicking
     };
     isVisible: boolean; // Runtime state
     swipeCommands?: Partial<Record<SwipeDirection, string>>;
