@@ -94,11 +94,11 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             const prefill = finalCmd.startsWith('input:') ? finalCmd.slice(6) : (button.command + (button.command.endsWith(' ') ? '' : ' '));
             setInput(prefill);
             
-            // Give the state a moment to update setInput, though it's not strictly necessary for focus
+            // Give the state a moment to update setInput
             setTimeout(() => {
                 const inputEl = document.querySelector('input') as HTMLInputElement;
                 if (inputEl) {
-                    inputEl.focus();
+                    if (document.activeElement !== inputEl) inputEl.focus();
                     // Move cursor to end
                     const len = inputEl.value.length;
                     inputEl.setSelectionRange(len, len);

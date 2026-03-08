@@ -48,28 +48,31 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             const items = Array.from(menuContainer.querySelectorAll('.popover-item[data-menu-item="true"]')) as HTMLElement[];
             if (items.length === 0) return;
 
+            const menuRect = menuContainer.getBoundingClientRect();
             let targetIndex = -1;
 
-            // Coordinate-based index calculation (more robust than elementsFromPoint on mobile)
-            const menuRect = menuContainer.getBoundingClientRect();
-            const relativeY = e.clientY - menuRect.top + menuContainer.scrollTop;
-            
-            // Basic estimation based on item height (~40px)
-            let estimatedIndex = Math.floor(relativeY / 42); 
-            if (estimatedIndex >= 0 && estimatedIndex < items.length) {
-                targetIndex = estimatedIndex;
+            // Precision bounding box check for every item
+            for (let i = 0; i < items.length; i++) {
+                const rect = items[i].getBoundingClientRect();
+                // Check if pointer is within the vertical bounds of this item
+                // We allow a bit of horizontal "slop" so you don't lose highlight if you slide slightly left/right
+                if (e.clientY >= rect.top && e.clientY <= rect.bottom && 
+                    e.clientX >= rect.left - 40 && e.clientX <= rect.right + 40) {
+                    targetIndex = i;
+                    break;
+                }
             }
 
-            // Edge cases: if finger is slightly outside horizontally but within vertical bounds
-            if (targetIndex === -1 && e.clientX >= menuRect.left - 50 && e.clientX <= menuRect.right + 50) {
-                if (e.clientY <= menuRect.top + 20) targetIndex = 0;
-                else if (e.clientY >= menuRect.bottom - 20) targetIndex = items.length - 1;
+            // Edge cases: if finger is totally outside but we want to stick to top/bottom for scrolling
+            if (targetIndex === -1 && e.clientX >= menuRect.left - 60 && e.clientX <= menuRect.right + 60) {
+                if (e.clientY <= menuRect.top + 10) targetIndex = 0;
+                else if (e.clientY >= menuRect.bottom - 10) targetIndex = items.length - 1;
             }
 
             // Auto-Scrolling logic
             if (targetIndex !== -1) {
-                const scrollThreshold = 50;
-                const scrollSpeed = 12;
+                const scrollThreshold = 60;
+                const scrollSpeed = 14;
                 if (e.clientY > menuRect.bottom - scrollThreshold) {
                     menuContainer.scrollTop += scrollSpeed;
                 } else if (e.clientY < menuRect.top + scrollThreshold) {

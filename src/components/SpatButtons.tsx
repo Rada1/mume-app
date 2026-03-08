@@ -95,6 +95,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
     const interactionState = useRef<Record<string, { startX: number, startY: number, lastX: number, lastY: number, maxDist: number }>>({});
 
     const handlePointerDown = useCallback((e: React.PointerEvent, id: string) => {
+        if (e.cancelable) e.preventDefault();
         const el = e.currentTarget as HTMLElement;
         el.setPointerCapture(e.pointerId);
         interactionState.current[id] = {
