@@ -22,7 +22,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     triggerHaptic,
     themeColor
 }) => {
-    const menuButtons = useMemo(() => buttons.filter(b => b.setId === setId && b.isVisible), [buttons, setId]);
+    const menuButtons = useMemo(() => buttons.filter(b => b.setId === setId && b.isVisible !== false), [buttons, setId]);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const activeIndexRef = useRef<number | null>(null);
     const lastHapticIndex = useRef<number | null>(null);

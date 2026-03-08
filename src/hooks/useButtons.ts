@@ -47,7 +47,7 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
                             ...(def || {}),
                             ...b,
                             // If isVisible is missing (stripped for save), restore from default or fallback to true/false based on trigger
-                            isVisible: (b.isVisible !== undefined) ? b.isVisible : (def ? def.isVisible : (b.trigger?.enabled ? false : true))
+                            isVisible: (b.isVisible !== undefined) ? b.isVisible : (def?.isVisible ?? (b.trigger?.enabled ? false : true))
                         };
                     });
                     const loadedIds = new Set(parsed.map((b: any) => b.id));
