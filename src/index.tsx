@@ -90,6 +90,8 @@ const MudClient = () => {
             // Don't clear selection if clicking on a button, its handle, or a cluster
             if (target.closest('.custom-btn') || 
                 target.closest('.hud-cluster') || 
+                target.closest('.xbox-cluster') ||
+                target.closest('.joystick-cluster') ||
                 target.closest('.resize-handle') ||
                 target.closest('.modal')) {
                 return;
