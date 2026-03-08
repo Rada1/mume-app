@@ -18,7 +18,7 @@ export function useViewport() {
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
-        window.addEventListener('resize', handleResize);
+        window.addEventListener('resize', handleResize, { passive: true });
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
@@ -122,94 +122,72 @@ export function useViewport() {
         };
     }, [isMobile]);
 
-    // Dynamic viewport height for mobile browsers
+    const lastUpdateRef = useRef<number>(0);
+
     const updateHeight = useCallback(() => {
+        const now = Date.now();
+        // Throttle updates to ~60fps for stability during fast transitions
+        if (now - lastUpdateRef.current < 16) return;
+        lastUpdateRef.current = now;
+
         const viewport = window.visualViewport;
         if (!viewport) return;
 
         const currentHeight = viewport.height;
         const currentWidth = viewport.width;
 
-        // If the width changed significantly, it's likely an orientation change.
-        // Reset baseHeight so we don't carry over "poisoned" heights from previous orientation.
         if (Math.abs(currentWidth - lastWidthRef.current) > 2) {
             baseHeightRef.current = currentHeight;
             lastWidthRef.current = currentWidth;
         }
 
-        // Keep baseHeight up to date with the largest height seen (keyboard down)
         if (currentHeight > baseHeightRef.current) baseHeightRef.current = currentHeight;
 
-        const vh = currentHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-        document.documentElement.style.setProperty('--visual-height', `${currentHeight}px`);
-
-        // Force height on container for faster layout
-        const container = document.querySelector('.app-container') as HTMLElement;
-
-        // Use more robust detection: is the current viewport significantly smaller than the base height?
         const isFocusableActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
         const isKeyboardDown = currentHeight > (baseHeightRef.current * 0.85);
         const isCurrentlyOpen = isMobile && isFocusableActive && !isKeyboardDown;
 
-        const scrollContainer = scrollContainerRef.current;
-        let distFromBottom = 0;
-        if (scrollContainer) {
-            distFromBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight;
-        }
+        requestAnimationFrame(() => {
+            const vh = currentHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            document.documentElement.style.setProperty('--visual-height', `${currentHeight}px`);
 
-        if (container) {
-            if (isCurrentlyOpen) {
-                container.style.height = `${currentHeight}px`;
-                container.style.top = `${viewport.offsetTop}px`;
+            const container = document.querySelector('.app-container') as HTMLElement;
+            if (container) {
+                if (isCurrentlyOpen) {
+                    container.style.height = `${currentHeight}px`;
+                    container.style.top = `${viewport.offsetTop}px`;
+                } else {
+                    container.style.height = '';
+                    container.style.top = '';
+                }
+            }
+
+            const scrollContainer = scrollContainerRef.current;
+            if (scrollContainer && Math.abs(currentHeight - lastViewportHeightRef.current) > 2) {
+                if (isLockedToBottomRef.current) {
+                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
+                }
+            }
+
+            if (isMobile) {
+                const logContainer = document.querySelector('.message-log-container');
+                if (logContainer) {
+                    const width = logContainer.clientWidth;
+                    const fontSize = (width / 48.5) * logFontSize;
+                    document.documentElement.style.setProperty('--dynamic-log-size', `${Math.max(6, fontSize)}px`);
+                }
             } else {
-                // Return to normal layout when keyboard is closed
-                container.style.height = '';
-                container.style.top = '';
+                document.documentElement.style.setProperty('--dynamic-log-size', `${16 * logFontSize}px`);
             }
-        }
 
-        if (scrollContainer && Math.abs(currentHeight - lastViewportHeightRef.current) > 2) {
-            // Force synchronous layout recalculation so scroll height updates instantly
-            void scrollContainer.clientHeight;
-
-            if (isLockedToBottomRef.current) {
-                scrollContainer.scrollTop = scrollContainer.scrollHeight;
-            } else {
-                // If not locked, try to keep the same distance from bottom to prevent jumping
-                scrollContainer.scrollTop = Math.max(0, scrollContainer.scrollHeight - scrollContainer.clientHeight - distFromBottom);
+            lastViewportHeightRef.current = currentHeight;
+            
+            if (isCurrentlyOpen !== isKeyboardOpen) {
+                setIsKeyboardOpen(isCurrentlyOpen);
             }
-        }
-
-        // Keyboard transitions usually involve > 150px height change on mobile
-        // (variables retained for potential future use; no-op currently)
-        // const isKeyboardOpening = isMobile && currentHeight < lastViewportHeightRef.current - 150 && isFocusableActive;
-        // const isKeyboardClosing = isMobile && currentHeight > lastViewportHeightRef.current + 150;
-
-        if (isCurrentlyOpen !== isKeyboardOpen) {
-            setIsKeyboardOpen(isCurrentlyOpen);
-        }
-
-        // Dynamic log font size to precisely fit 80 characters without wrapping
-        if (isMobile) {
-            const logContainer = document.querySelector('.message-log-container');
-            if (logContainer) {
-                const width = logContainer.clientWidth;
-                // Ratio for Space Mono is approx 0.6.
-                // To fit 80 chars: 80 * fontSize * 0.6 = width
-                // fontSize = width / 48
-                // We use 48.5 for a tighter fit while still allowing tiny padding
-                const fontSize = (width / 48.5) * logFontSize;
-                document.documentElement.style.setProperty('--dynamic-log-size', `${Math.max(6, fontSize)}px`);
-            }
-        } else {
-            document.documentElement.style.setProperty('--dynamic-log-size', `${16 * logFontSize}px`);
-        }
-
-        lastViewportHeightRef.current = currentHeight;
-
-        // Synchronous distance-from-bottom restoration handles keyboard transitions now.
-    }, [scrollToBottom, isMobile, isKeyboardOpen, logFontSize]);
+        });
+    }, [isMobile, isKeyboardOpen, logFontSize]);
 
     // Force snap and scroll strictly when keyboard state or mobile status changes
     useEffect(() => {
@@ -221,7 +199,6 @@ export function useViewport() {
 
             const timer = setTimeout(() => {
                 if (isLockedToBottomRef.current) scrollToBottom(true, true);
-                updateHeight();
             }, 400);
             return () => clearTimeout(timer);
         }
@@ -247,7 +224,7 @@ export function useViewport() {
         };
     }, [updateHeight]);
 
-    return {
+    return useMemo(() => ({
         isMobile,
         isLandscape,
         isKeyboardOpen,
@@ -260,5 +237,5 @@ export function useViewport() {
         updateHeight,
         logFontSize,
         resetLogFontSize: () => setLogFontSize(1.0)
-    };
+    }), [isMobile, isLandscape, isKeyboardOpen, scrollToBottom, updateHeight, logFontSize]);
 }

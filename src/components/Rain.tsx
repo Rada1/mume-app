@@ -58,18 +58,26 @@ const Rain = React.memo(({ heavy }: RainProps) => {
         };
 
         const handleResize = () => {
-            width = canvas.clientWidth;
-            height = canvas.clientHeight;
-            canvas.width = width;
-            canvas.height = height;
+            const w = canvas.clientWidth;
+            const h = canvas.clientHeight;
+            if (w === 0 || h === 0) return;
+            
+            if (canvas.width !== w || canvas.height !== h) {
+                width = w;
+                height = h;
+                canvas.width = w;
+                canvas.height = h;
+            }
         };
 
-        window.addEventListener('resize', handleResize);
+        const ro = new ResizeObserver(() => requestAnimationFrame(handleResize));
+        ro.observe(canvas);
+        handleResize();
         animate();
 
         return () => {
             cancelAnimationFrame(animationFrameId);
-            window.removeEventListener('resize', handleResize);
+            ro.disconnect();
         };
     }, [heavy]);
 

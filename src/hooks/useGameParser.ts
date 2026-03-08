@@ -59,9 +59,6 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         if (isRoomName && captureStage.current === 'none' && !isWaitingForStats.current && !isWaitingForEq.current && !isWaitingForInv.current) {
             captureStage.current = 'none';
-            isWaitingForStats.current = false;
-            isWaitingForEq.current = false;
-            isWaitingForInv.current = false;
             isDrawerCapture.current = 0;
             isSilentCapture.current = 0;
         }
@@ -84,9 +81,6 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (isLikelyPrompt || textPMatch) {
             if (isLikelyPrompt || (textPMatch && !textPMatch[2].trim())) {
                 captureStage.current = 'none';
-                isWaitingForStats.current = false;
-                isWaitingForEq.current = false;
-                isWaitingForInv.current = false;
                 isDrawerCapture.current = 0;
                 isSilentCapture.current = 0;
 
@@ -143,7 +137,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = []; }
-        if ((isWaitingForEq.current || captureStage.current !== 'none') && /you are using|you are equipped with/i.test(lower)) {
+        if ((isWaitingForEq.current || captureStage.current !== 'none') && (/you are using|you are equipped with/i.test(lower) || lower.startsWith('<'))) {
             isWaitingForEq.current = false; captureStage.current = 'eq'; containerStackRef.current = [];
             setEqLines([]); // Clear when starting fresh eq list
         }
@@ -196,8 +190,8 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'inv') {
                 setInventoryLines(p => [...p, createLine(cleanLine, 'inventorylist')]);
             } else if (captureStage.current === 'eq') {
-                // Ensure the line actually looks like an equipment slot or item
-                if (lower.includes('<') || lower.includes('worn') || lower.includes('heavy') || lower.includes('light') || lower.includes('held')) {
+                // Ensure the line has content and isn't just whitespace
+                if (textOnly.length > 0) {
                     setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
                 }
             } else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
@@ -337,28 +331,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         const pMatch = cleanLine.match(/^((?:[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/);
         
         // Final visibility logic:
-        // 1. Silent captures (triggered by background system commands) are always hidden.
-        // 2. Drawer captures (triggered by opening a drawer) only hide lines that are actively part of the captured data.
-        // 3. Important messages (combat, communication, etc.) always break through.
-        
-        const isCapturingItem = captureStage.current !== 'none' && (
-            (captureStage.current === 'inv' && /you are carrying|your inventory contains/i.test(lower)) ||
-            (captureStage.current === 'eq' && /you are using|you are equipped with/i.test(lower)) ||
-            (captureStage.current === 'stat' && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) ||
-            // Also hide the items themselves while they are being collected
-            (['inv', 'eq', 'stat'].includes(captureStage.current))
-        );
-
+        // We simplified this: only hide lines during explicit silent background captures.
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
-        
-        // Final visibility logic:
-        // - Silent captures (background maintenance) hide everything except important stuff.
-        // - Drawer captures ONLY hide the lines they are explicitly capturing.
-        const shouldShow = (isSilentCapture.current === 0 || isImportantMessage) && (
-            isImportantMessage || 
-            isDrawerCapture.current === 0 || 
-            !isCapturingItem
-        );
+        const shouldShow = (isSilentCapture.current === 0 || isImportantMessage);
 
         if (shouldShow) {
             // Use textPMatch[2] if it exists (prompt with attached text), otherwise cleanLine

@@ -85,18 +85,37 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         const parent = cvs?.parentElement;
         if (!cvs || !parent) return;
 
+        let animationFrameId: number | null = null;
+
         const handleResize = () => {
+            const width = parent.clientWidth;
+            const height = parent.clientHeight;
+            if (width === 0 || height === 0) return;
+            
             const dpr = getDPR();
-            cvs.width = parent.clientWidth * dpr;
-            cvs.height = parent.clientHeight * dpr;
+            if (cvs.width === width * dpr && cvs.height === height * dpr) return;
+
+            cvs.width = width * dpr;
+            cvs.height = height * dpr;
             props.triggerRender?.();
         };
 
-        const ro = new ResizeObserver(handleResize);
+        const ro = new ResizeObserver(() => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            animationFrameId = requestAnimationFrame(handleResize);
+        });
         ro.observe(parent);
-        handleResize();
-        return () => ro.disconnect();
-    }, [getDPR, canvasRef]);
+        handleResize(); // Initial call
+
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            ro.disconnect();
+        };
+    }, [getDPR, canvasRef, props.triggerRender]);
 
     return (
         <canvas
