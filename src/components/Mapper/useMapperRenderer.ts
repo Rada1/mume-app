@@ -1,10 +1,9 @@
 import { useCallback, useRef, MutableRefObject } from 'react';
-import { 
-    GRID_SIZE, DIRS, PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES, 
-    getTerrainColor, normalizeTerrain,
-    ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT 
-} from './mapperUtils';
-import { drawBlobTerrain, BlobNeighbors } from './blobTerrainRenderer';
+import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
+import { RenderContext } from './renderers/rendererUtils';
+import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
+import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
+import { drawGrid, drawEntities, drawMarkers, drawMarquee } from './renderers/drawEntities';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -31,7 +30,7 @@ interface RendererProps {
 }
 
 export const useMapperRenderer = ({
-    rooms: stateRooms, markers: stateMarkers, currentRoomId: stateRoomId, selectedRoomIds, selectedMarkerId,
+    selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef, preloadedCoordsRef,
     spatialIndexRef, exploredVnums: stateExploredVnums,
@@ -43,8 +42,6 @@ export const useMapperRenderer = ({
     const cacheParamsRef = useRef({ z: -999, cx: 0, cy: 0, cw: 0, ch: 0, zoom: 0, darkMode: false, exploredCount: 0 });
     const isCacheValidRef = useRef(false);
 
-    const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
-
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
         const now = Date.now();
         const activeId = stableRoomIdRef.current;
@@ -54,10 +51,6 @@ export const useMapperRenderer = ({
         const invZoom = 1 / camera.zoom;
         const ANIM_DUR = 1500;
         
-        const isMtn = (rVal: any) => rVal === 'Mountains' || rVal === '<';
-        const isFor = (rVal: any) => rVal === 'Forest' || rVal === 'f';
-        const isHill = (rVal: any) => rVal === 'Hills' || rVal === '(';
-
         const allRooms = stableRoomsRef.current;
         const explored = stateExploredVnums || new Set<string>();
 
@@ -142,43 +135,13 @@ export const useMapperRenderer = ({
             }
         });
 
-        // Grid Drawing (Segmental)
-        ctx.beginPath();
-        ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
-        ctx.lineWidth = 1 / camera.zoom;
-        for (let gx = gX1; gx <= gX2; gx++) {
-            for (let gy = gY1; gy <= gY2; gy++) {
-                if (!visitedAtCoord[`${gx},${gy}`]) {
-                    const x = gx * GRID_SIZE, y = gy * GRID_SIZE;
-                    ctx.moveTo(x, y); ctx.lineTo(x + GRID_SIZE, y);
-                    ctx.moveTo(x, y); ctx.lineTo(x, y + GRID_SIZE);
-                    if (!visitedAtCoord[`${gx + 1},${gy}`]) { ctx.moveTo(x + GRID_SIZE, y); ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE); }
-                    if (!visitedAtCoord[`${gx},${gy + 1}`]) { ctx.moveTo(x, y + GRID_SIZE); ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE); }
-                }
-            }
-        }
-        ctx.stroke();
-
-        const drawLine = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2, dashed = false) => {
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = (thickness / dpr) * invZoom;
-            if (dashed) ctx.setLineDash([5 * invZoom, 5 * invZoom]);
-            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
+        const rCtx: RenderContext = {
+            ctx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
+            imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
+            allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId
         };
 
-        const getRoomAnchor = (rx: number, ry: number) => {
-            const sX = getSeed(Math.round(rx), Math.round(ry)), sY = getSeed(Math.round(ry), Math.round(rx));
-            const j = GRID_SIZE * 0.22; // 22% jitter
-            return { x: Math.round(rx) * GRID_SIZE + GRID_SIZE / 2 + (sX - 0.5) * j, y: Math.round(ry) * GRID_SIZE + GRID_SIZE / 2 + (sY - 0.5) * j };
-        };
-
-        const drawCurvedPath = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2) => {
-            const dx = x2 - x1, dy = y2 - y1, dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 1) return;
-            const seed = getSeed(x1 + x2, y1 + y2), bend = dist * (0.1 + seed * 0.15);
-            const cx = (x1 + x2) / 2 + (-dy / dist) * (seed - 0.5) * bend, cy = (y1 + y2) / 2 + (dx / dist) * (seed - 0.5) * bend;
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = (thickness / dpr) * invZoom; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cx, cy, x2, y2); ctx.stroke();
-        };
+        drawGrid(rCtx, gX1, gY1, gX2, gY2);
 
         if (floorIndex) {
             const bX1 = Math.floor(gX1 / 5), bY1 = Math.floor(gY1 / 5);
@@ -588,13 +551,8 @@ export const useMapperRenderer = ({
         });
 
         ctx.restore();
+        drawMarquee(rCtx, marquee);
 
-        // Marquee
-        if (marquee && marquee.start && marquee.end) {
-            const x1 = marquee.start.x / dpr, y1 = marquee.start.y / dpr, x2 = marquee.end.x / dpr, y2 = marquee.end.y / dpr;
-            ctx.save(); ctx.scale(dpr, dpr); ctx.strokeStyle = '#89b4fa'; ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
-            ctx.strokeRect(x1, y1, x2 - x1, y2 - y1); ctx.fillStyle = 'rgba(137, 180, 250, 0.2)'; ctx.fillRect(x1, y1, x2 - x1, y2 - y1); ctx.restore();
-        }
     }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, stateExploredVnums, firstExploredAtRef]);
 
     return { drawMap };
