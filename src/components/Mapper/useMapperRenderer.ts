@@ -39,6 +39,9 @@ export const useMapperRenderer = ({
 }: RendererProps) => {
 
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
+    const cacheCanvasRef = useRef<HTMLCanvasElement | null>(null);
+    const cacheParamsRef = useRef({ z: -999, cx: 0, cy: 0, cw: 0, ch: 0, zoom: 0, darkMode: false, exploredCount: 0 });
+    const isCacheValidRef = useRef(false);
 
     const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
 
@@ -65,6 +68,37 @@ export const useMapperRenderer = ({
         ctx.save();
         ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
         ctx.translate(-camera.x, -camera.y);
+
+        const currentExploredCount = explored.size;
+        const cacheParams = cacheParamsRef.current;
+        const zoomChanged = Math.abs(cacheParams.zoom - camera.zoom) > 0.01;
+        const posChanged = Math.abs(cacheParams.cx - camera.x) > 1 || Math.abs(cacheParams.cy - camera.y) > 1;
+        const sizeChanged = cacheParams.cw !== canvasWidth || cacheParams.ch !== canvasHeight;
+        
+        const needsCacheInvalidation = (
+            cacheParams.z !== currentZ || 
+            zoomChanged || 
+            posChanged || 
+            sizeChanged || 
+            cacheParams.darkMode !== isDarkMode || 
+            cacheParams.exploredCount !== currentExploredCount ||
+            !isCacheValidRef.current
+        );
+
+        if (needsCacheInvalidation) {
+            // Update cache params
+            cacheParamsRef.current = {
+                z: currentZ,
+                cx: camera.x,
+                cy: camera.y,
+                cw: canvasWidth,
+                ch: canvasHeight,
+                zoom: camera.zoom,
+                darkMode: isDarkMode,
+                exploredCount: currentExploredCount
+            };
+            isCacheValidRef.current = true;
+        }
 
         // Grid bounds
         const vX1 = camera.x, vY1 = camera.y;
@@ -99,6 +133,9 @@ export const useMapperRenderer = ({
 
         Object.values(allRooms).forEach((room: any) => {
             if (!room.id.startsWith('m_') && Math.abs((room.z || 0) - currentZ) < 0.5) {
+                const s = GRID_SIZE;
+                const rx_p = room.x * s, ry_p = room.y * s;
+                if (rx_p < vX1 - s || rx_p > vX2 + s || ry_p < vY1 - s || ry_p > vY2 + s) return;
                 const irx = Math.round(room.x), iry = Math.round(room.y);
                 roomAtCoord[`${irx},${iry}`] = normalizeTerrain(room.terrain);
                 visitedAtCoord[`${irx},${iry}`] = true;
@@ -228,12 +265,16 @@ export const useMapperRenderer = ({
 
             // Shared Gate State Logic
             const getGateState = (rA: any, wE: any, d: string) => {
-                const lEx = rA?.exits?.[d], wEx = wE?.[d], exA = lEx || wEx; if (!exA) return { hasExit: false };
-                const tV = String(exA.target), oD = DIRS[d]?.opp, nId = tV.startsWith('m_') ? tV : `m_${tV}`;
+                const lEx = rA?.exits?.[d], wEx = wE?.[d], exX = lEx || wEx; if (!exX) return { hasExit: false };
+                const tV = String(exX.target), oD = DIRS[d]?.opp, nId = tV.startsWith('m_') ? tV : `m_${tV}`;
                 const n = allRooms[nId] || allRooms[tV] || (preloaded[String(tV)] ? { exits: preloaded[String(tV)][4] } : null);
-                const exB = n?.exits?.[oD], isD = (n: string) => /\b(door|gate|portcullis|secret)\b/i.test(n), hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
-                const hasD = !!(exA.hasDoor || (exB && exB.hasDoor) || hasDF(exA.flags) || isD(exA.name || '') || (!lEx && wEx?.hasDoor));
+                const exB = n?.exits?.[oD];
+                
+                // Door: Strictly use the exit's hasDoor property
+                const hasD = !!exX.hasDoor;
                 if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
+                
+                // Closed: Default to true for doors, but if ANY source says it's open, mark it open.
                 let isC = true; if (lEx?.closed === false || exB?.closed === false || wEx?.closed === false) isC = false;
                 return { hasExit: true, hasDoor: hasD, isClosed: isC };
             };
@@ -349,6 +390,9 @@ export const useMapperRenderer = ({
                             let off = 0;
                             if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', centerPX + off, centerPY); off += 8 / camera.zoom; }
                             if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', centerPX + off, centerPY); off += 8 / camera.zoom; }
+                            if (activeMobFlags.some((f: string) => f.includes('GUILD'))) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', centerPX + off, centerPY); off += 8 / camera.zoom; }
+                            if (activeMobFlags.some((f: string) => f.includes('PRACTISE'))) { ctx.fillStyle = '#89dceb'; ctx.fillText('P', centerPX + off, centerPY); off += 8 / camera.zoom; }
+                            if (activeMobFlags.some((f: string) => f.includes('RENT'))) { ctx.fillStyle = '#fab387'; ctx.fillText('R', centerPX + off, centerPY); off += 8 / camera.zoom; }
                             if (activeLoadFlags.some((f: string) => f.includes('HERB') || f.includes('WATER'))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', centerPX + off, centerPY); }
                             ctx.restore();
                         }
@@ -369,11 +413,13 @@ export const useMapperRenderer = ({
             }
         }
 
-        // Pass 1A (Local): Terrain Backgrounds
+        // Passo 1 (Local): Combined Render Loop
         Object.values(allRooms).forEach((room: any) => {
             if (room.id.startsWith('m_')) return;
             const rx = room.x * GRID_SIZE, ry = room.y * GRID_SIZE, s = GRID_SIZE, rz = room.z || 0;
             if (Math.abs(rz - currentZ) > 1.5) return;
+            if (rx < vX1 - s || rx > vX2 + s || ry < vY1 - s || ry > vY2 + s) return;
+
             const norm = normalizeTerrain(room.terrain);
             const blobTerrains = ['Forest', 'Mountains', 'Hills', 'Brush', 'Field', 'Grasslands', 'Water', 'Shallows', 'Rapids', 'Building', 'City', 'Tunnel', 'Cavern'];
             
@@ -399,13 +445,14 @@ export const useMapperRenderer = ({
             if (room.id.startsWith('m_')) return;
             const rx = room.x * GRID_SIZE, ry = room.y * GRID_SIZE, s = GRID_SIZE, rz = room.z || 0;
             if (Math.abs(rz - currentZ) > 1.5) return;
+            if (rx < vX1 - s || rx > vX2 + s || ry < vY1 - s || ry > vY2 + s) return;
 
             const getLGS = (rA: any, d: string) => {
                 const exA = rA.exits?.[d], rId = String(rA.id).startsWith('m_') ? rA.id.substring(2) : rA.id, wEx = preloaded[rId]?.[4][d], effEx = exA || wEx; if (!effEx) return { hasExit: false };
                 const tId = effEx.target, oD = DIRS[d]?.opp, nId = tId ? (String(tId).startsWith('m_') ? tId : `m_${tId}`) : null;
                 const n = nId ? (allRooms[nId] || allRooms[tId] || (preloaded[String(tId)] ? { exits: preloaded[String(tId)][4] } : null)) : null, exB = n?.exits?.[oD];
-                const isD = (n: string) => /\b(door|gate|portcullis|secret)\b/i.test(n), hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
-                const hasD = !!(effEx.hasDoor || hasDF(effEx.flags) || isD(effEx.name||'') || exB?.hasDoor || hasDF(exB?.flags) || isD(exB?.name||'') || wEx?.hasDoor);
+
+                const hasD = !!effEx.hasDoor;
                 if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
                 let isC = true; if (exA?.closed === false || exB?.closed === false) isC = false; else if (exA?.flags?.some((f: any) => String(f).toLowerCase() === 'closed')) isC = true;
                 return { hasExit: true, hasDoor: hasD, isClosed: isC };
@@ -441,11 +488,37 @@ export const useMapperRenderer = ({
             const mobFG = (pData ? pData[7] : []) || [], loadFG = (pData ? pData[8] : []) || [];
             const activeMobFlags = (room.mobFlags || mobFG), activeLoadFlags = (room.loadFlags || loadFG);
 
+            // DRAW EXTERNAL PATHS for local rooms (must be before Pass 2 content)
+            const centerPX = rx + s / 2, centerPY = ry + s / 2;
+            if (room.exits) {
+                for (const d in room.exits) {
+                    const ex = room.exits[d];
+                    const targetRoom = allRooms[ex.target];
+                    if (targetRoom && Math.abs((targetRoom.z || 0) - currentZ) <= 0.5) {
+                        const tAnchor = getRoomAnchor(targetRoom.x, targetRoom.y);
+                        const exFlags = ex.flags || [];
+                        const isRoad = exFlags.some((f: string) => /road|trail|path/i.test(String(f))) || normalizeTerrain(room.terrain) === 'Road';
+                        if (isRoad) {
+                            if (normalizeTerrain(targetRoom.terrain) === 'Road') drawCurvedPath(centerPX, centerPY, tAnchor.x, tAnchor.y, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, 12);
+                            else drawCurvedPath(centerPX, centerPY, tAnchor.x, tAnchor.y, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, 4);
+                        } else if (ex.target > room.id) { // Only draw once for local IDs
+                            drawLine(centerPX, centerPY, tAnchor.x, tAnchor.y, isDarkMode ? "rgba(137, 180, 250, 0.15)" : "rgba(37, 99, 235, 0.15)", 2);
+                        }
+                    }
+                }
+            }
+
             const p = Math.min(1, (now - (firstExploredAtRef.current[room.id] || now)) / ANIM_DUR);
             ctx.save();
             if (p < 1) {
                 ctx.globalAlpha = p;
                 ctx.translate(rx + s/2, ry + s/2); ctx.scale(0.8 + 0.2 * p, 0.8 + 0.2 * p); ctx.translate(-(rx + s/2), -(ry + s/2));
+            }
+
+            // Room Name Label
+            if (camera.zoom > 1.8) { 
+                ctx.font = '8px "Aniron"'; ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a'; ctx.textAlign = 'center'; 
+                ctx.fillText((room.name || 'Unknown').substring(0, 12), centerPX, ry + s * 0.95); 
             }
 
             if (activeMobFlags.length > 0 || activeLoadFlags.length > 0) {
@@ -455,6 +528,9 @@ export const useMapperRenderer = ({
                 let off = 0;
                 if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', cX + off, cY); off += 8 / camera.zoom; }
                 if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', cX + off, cY); off += 8 / camera.zoom; }
+                if (activeMobFlags.some((f: string) => f.includes('GUILD'))) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', cX + off, cY); off += 8 / camera.zoom; }
+                if (activeMobFlags.some((f: string) => f.includes('PRACTISE'))) { ctx.fillStyle = '#89dceb'; ctx.fillText('P', cX + off, cY); off += 8 / camera.zoom; }
+                if (activeMobFlags.some((f: string) => f.includes('RENT'))) { ctx.fillStyle = '#fab387'; ctx.fillText('R', cX + off, cY); off += 8 / camera.zoom; }
                 if (activeLoadFlags.some((f: string) => f.includes('HERB') || f.includes('WATER'))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', cX + off, cY); }
                 ctx.restore();
             }

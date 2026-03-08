@@ -95,7 +95,7 @@ export const useMapAnimation = ({
 
         // Optimize discovery animation checks by just checking the _latest timestamp
         const latestExplored = firstExploredAtRef.current['_latest'] || 0;
-        if (now - latestExplored < 1500) hasActiveAnim = true;
+        if (now - latestExplored < 800) hasActiveAnim = true;
 
         // Check markers/rooms. Since we don't have a _latest for them currently,
         // we'll rely on renderVersion to detect when items have been recently added.
@@ -103,7 +103,7 @@ export const useMapAnimation = ({
         const tracker = (tickRef as any)._animTracker;
         if ((tickRef as any)._lastRenderVersion !== renderVersion) {
             (tickRef as any)._lastRenderVersion = renderVersion;
-            tracker.endTimes.push(now + 1500);
+            tracker.endTimes.push(now + 800);
         }
 
         tracker.endTimes = tracker.endTimes.filter((time: number) => time > now);

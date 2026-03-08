@@ -126,10 +126,33 @@ export const useMapGmcphandlers = ({
             }
         }
 
+        // 4. Ultimate Inference: Use the new room's exits to find the path back to the old room
+        if (!dirUsed && !discoverySource && currentActiveRoom) {
+            if (data.exits) {
+                for (const d in data.exits) {
+                    const ex = (data.exits as any)[d];
+                    const exObj = typeof ex === 'object' ? ex : null;
+                    const destId = exObj ? (exObj as any).id : (typeof ex === 'number' ? ex : null);
+                    if (destId && String(destId) === String(currentActiveRoom.gmcpId)) {
+                        const oppDir = Object.keys(DIRS).find(key => DIRS[key].opp === d);
+                        if (oppDir) {
+                            dirUsed = oppDir;
+                            discoverySource = 'EXIT_INFERENCE';
+                            predX = currentActiveRoom.x + (DIRS[oppDir].dx || 0);
+                            predY = currentActiveRoom.y + (DIRS[oppDir].dy || 0);
+                            predZ = (currentActiveRoom.z || 0) + (DIRS[oppDir].dz || 0);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         discoverySourceRef.current = discoverySource;
         if (dirUsed || discoverySource) {
             if (showDebugEchoes) {
-                const debugMsg = `[Mapper] Move: ${dirUsed || 'Snap'} -> Pred: ${predX},${predY},${predZ} | GMCP: ${gmcpId}${discoverySource ? ` (Auto-Snap by ${discoverySource})` : ''} | Target: ${targetId ? 'MATCHED' : 'NEW'}`;
+                const debugStr = discoverySource === 'EXIT_INFERENCE' ? `Inferred ${dirUsed} from back-link` : (discoverySource || 'Move tracked');
+                const debugMsg = `[Mapper] ${debugStr} -> Pred: ${predX.toFixed(1)},${predY.toFixed(1)},${predZ} | GMCP: ${gmcpId} | Target: ${targetId ? 'MATCHED' : 'NEW'}`;
                 addMessage?.('system', debugMsg);
             }
         }
@@ -201,42 +224,70 @@ export const useMapGmcphandlers = ({
                 }
             }
 
+            // 1. Foundation: Start with exits from the preloaded Master Map (Ardagmcp)
+            const updatedExits: Record<string, any> = {};
+            if (ghostData && ghostData[4]) {
+                const masterExits = ghostData[4];
+                for (const d in (masterExits as any)) {
+                    let dirKey = d.toLowerCase();
+                    if (dirKey === 'north') dirKey = 'n'; else if (dirKey === 'south') dirKey = 's';
+                    else if (dirKey === 'east') dirKey = 'e'; else if (dirKey === 'west') dirKey = 'w';
+                    else if (dirKey === 'up') dirKey = 'u'; else if (dirKey === 'down') dirKey = 'd';
+                    else if (dirKey === 'northeast') dirKey = 'ne'; else if (dirKey === 'northwest') dirKey = 'nw';
+                    else if (dirKey === 'southeast') dirKey = 'se'; else if (dirKey === 'southwest') dirKey = 'sw';
+
+                    const mEx = (masterExits as any)[d];
+                    const mDestId = typeof mEx === 'number' ? mEx : (mEx.id || mEx.target);
+                    if (mDestId) {
+                        updatedExits[dirKey] = {
+                            target: `m_${mDestId}`,
+                            gmcpDestId: Number(mDestId),
+                            hasDoor: !!mEx.hasDoor,
+                            flags: mEx.flags || [],
+                            closed: false
+                        };
+                    }
+                }
+            } else if (existingRoom) {
+                // Fallback to existing exits if no master data
+                Object.assign(updatedExits, existingRoom.exits);
+            }
+
+            // 2. Overlay: Apply GMCP Room.Info exits if present
             if (data.exits) {
-                const room = newRooms[targetId!];
-                const updatedExits = { ...room.exits };
                 for (const dir in data.exits) {
                     const gmcpExit = data.exits[dir];
                     if (gmcpExit === false) { delete updatedExits[dir]; continue; }
+                    
                     const gmcpDestId = typeof gmcpExit === 'number' ? gmcpExit : gmcpExit.id;
                     let exName = undefined, exFlags = undefined;
                     if (typeof gmcpExit === 'object') { exName = gmcpExit.name; exFlags = gmcpExit.flags; }
 
-                    let internalTarget = updatedExits[dir]?.target;
-                    if (!internalTarget && gmcpDestId) {
-                        if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
-                        else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId)) || undefined;
-                    }
-                    const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
+                    const exFlagsLow = (exFlags || []).map((f: any) => String(f).toLowerCase());
                     const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                    const isDoor = isClosed ||
-                        (typeof gmcpExit === 'object' && (gmcpExit as any).door) ||
-                        exFlagsLow.includes('door') ||
-                        exFlagsLow.includes('gate') ||
-                        exName?.toLowerCase().includes('door') ||
-                        exName?.toLowerCase().includes('gate');
+                    const hasName = !!exName && exName.trim().length > 0;
+                    const isDoorLive = (typeof gmcpExit === 'object' && ((gmcpExit as any).door || hasName)) || isClosed;
+
+                    // Ultimate Source of Truth: Ardagmcp / master map door status
+                    const wasDoorMaster = !!updatedExits[dir]?.hasDoor;
 
                     updatedExits[dir] = {
                         ...updatedExits[dir],
-                        target: internalTarget!,
-                        gmcpDestId,
-                        name: exName,
+                        gmcpDestId: gmcpDestId || updatedExits[dir]?.gmcpDestId,
+                        name: exName || updatedExits[dir]?.name,
                         flags: exFlags || (updatedExits[dir]?.flags || []),
                         closed: isClosed,
-                        hasDoor: !!isDoor || !!updatedExits[dir]?.hasDoor
+                        hasDoor: wasDoorMaster || isDoorLive
                     };
+
+                    if (!updatedExits[dir].target && gmcpDestId) {
+                        if (preloadedCoordsRef.current[String(gmcpDestId)]) updatedExits[dir].target = `m_${gmcpDestId}`;
+                        else updatedExits[dir].target = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId))!;
+                    }
                 }
-                newRooms[targetId!] = { ...room, exits: updatedExits };
             }
+            newRooms[targetId!] = { ...(newRooms[targetId!] || existingRoom), exits: updatedExits };
+
             return newRooms;
         });
 
@@ -269,12 +320,23 @@ export const useMapGmcphandlers = ({
                     const nextFlags = (typeof update === 'object') ? (flags || []) : (newExits[dir]?.flags || []);
                     const exFlagsLow = nextFlags.map(f => f.toLowerCase());
                     const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                    const isDoor = isClosed ||
-                        (typeof update === 'object' && (update as any).door) ||
-                        exFlagsLow.includes('door') ||
-                        exFlagsLow.includes('gate') ||
-                        (name || newExits[dir]?.name)?.toLowerCase().includes('door') ||
-                        (name || newExits[dir]?.name)?.toLowerCase().includes('gate');
+                    
+                    // Respect Ardagmcp source of truth for "hasDoor"
+                    let hasDoor = !!newExits[dir]?.hasDoor;
+                    if (!hasDoor) {
+                        // Check master map if not already known
+                        const rId = activeRoom.gmcpId || activeId;
+                        const rIdStr = String(rId);
+                        const vId = rIdStr.startsWith('m_') ? rIdStr.substring(2) : rIdStr;
+                        const mData = preloadedCoordsRef.current[vId];
+                        const mEx = mData?.[4]?.[dir];
+                        if (mEx?.hasDoor) hasDoor = true;
+                    }
+                    // Also respect if live update says it's a door or closed
+                    const nameVal = name || newExits[dir]?.name;
+                    const hasName = !!nameVal && String(nameVal).trim().length > 0;
+                                     
+                    if (isClosed || (typeof update === 'object' && (update.door || hasName))) hasDoor = true;
 
                     newExits[dir] = {
                         ...newExits[dir],
@@ -282,7 +344,7 @@ export const useMapGmcphandlers = ({
                         flags: nextFlags,
                         gmcpDestId,
                         closed: isClosed,
-                        hasDoor: !!isDoor || !!newExits[dir]?.hasDoor
+                        hasDoor: hasDoor
                     };
 
                     // --- SYMMETRIC UPDATE: Update neighbor's counter-exit if we know it ---
@@ -294,7 +356,7 @@ export const useMapGmcphandlers = ({
                         const oppDir = DIRS[dir]?.opp;
                         if (oppDir) {
                             const neighborEx = neighbor.exits[oppDir];
-                            if (neighborEx && (neighborEx.hasDoor || isDoor)) {
+                            if (neighborEx && (neighborEx.hasDoor || hasDoor)) {
                                 nextRooms[neighborId] = {
                                     ...neighbor,
                                     exits: {

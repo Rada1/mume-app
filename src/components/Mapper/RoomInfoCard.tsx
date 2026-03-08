@@ -58,6 +58,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                             target: `m_${destId}`,
                             gmcpDestId: destId,
                             closed: false,
+                            hasDoor: typeof dest === 'object' ? !!(dest as any).hasDoor : false,
                             flags: typeof dest === 'object' ? (dest as any).flags : []
                         };
                     }
@@ -221,17 +222,27 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
 
             <div style={{ height: '1px', backgroundColor: '#27272a', margin: '4px 0' }} />
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '4px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '11px', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Exits</span>
+                    <span style={{ fontSize: '11px', color: '#71717a', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: '800' }}>Exits & Diagnostics</span>
                     {mode === 'edit' && <span style={{ fontSize: '9px', color: '#52525b' }}>Shift+Click to delete</span>}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                     {['n', 'u', 's', 'w', 'd', 'e'].map(d => {
                         const exit = room.exits[d];
                         const isActive = !!exit;
+                        if (!isActive && mode !== 'edit') return null;
+
                         return (
-                            <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: '#1c1c1f', padding: '8px', borderRadius: '8px', border: '1px solid #27272a' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: isActive ? '#60a5fa' : '#3f3f46' }}>{d.toUpperCase()}</span>
+                                    {isActive && (
+                                        <span style={{ fontSize: '9px', fontWeight: 'bold', color: exit.hasDoor ? '#fab387' : '#52525b' }}>
+                                            DOOR: {exit.hasDoor ? 'YES' : 'NO'}
+                                        </span>
+                                    )}
+                                </div>
                                 <button
                                     onClick={(e) => {
                                         if (mode !== 'edit') return;
@@ -261,9 +272,9 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                                                     tId = generateId();
                                                     nextRooms[tId] = { id: tId, gmcpId: 0, name: 'New Room', desc: '', x: tx, y: ty, z: tz, terrain: 'Field', exits: {}, zone: r.zone || '', notes: "", createdAt: Date.now() };
                                                 }
-                                                nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { target: tId, closed: false } } };
+                                                nextRooms[roomId] = { ...r, exits: { ...r.exits, [d]: { target: tId, closed: false, hasDoor: false } } };
                                                 if (dir.opp) {
-                                                    nextRooms[tId] = { ...nextRooms[tId], exits: { ...nextRooms[tId].exits, [dir.opp]: { target: roomId, closed: false } } };
+                                                    nextRooms[tId] = { ...nextRooms[tId], exits: { ...nextRooms[tId].exits, [dir.opp]: { target: roomId, closed: false, hasDoor: false } } };
                                                 }
                                                 return nextRooms;
                                             } else {
@@ -283,28 +294,32 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                                     }}
                                     style={{
                                         width: '100%',
-                                        backgroundColor: isActive ? (exit?.closed ? '#521313' : '#1e293b') : '#1c1c1f',
-                                        color: isActive ? (exit?.closed ? '#f87171' : '#60a5fa') : '#3f3f46',
+                                        backgroundColor: isActive ? (exit?.closed ? '#521313' : '#27272a') : 'transparent',
+                                        color: isActive ? (exit?.closed ? '#f87171' : '#e4e4e7') : '#3f3f46',
                                         border: '1px solid',
-                                        borderColor: isActive ? (exit?.closed ? '#f87171' : '#3b82f6') : '#313244',
-                                        padding: '8px 4px',
+                                        borderColor: isActive ? (exit?.closed ? '#f87171' : '#3f3f46') : '#313244',
+                                        padding: '6px 4px',
                                         borderRadius: '6px',
-                                        fontSize: '11px',
-                                        fontWeight: 'bold',
-                                        cursor: 'pointer',
-                                        textTransform: 'uppercase',
-                                        transition: 'all 0.2s'
+                                        fontSize: '10px',
+                                        fontWeight: '500',
+                                        cursor: mode === 'edit' ? 'pointer' : 'default',
+                                        transition: 'all 0.2s',
+                                        opacity: isActive ? 1 : 0.4
                                     }}
                                 >
-                                    {d}
+                                    {isActive ? (exit.target.startsWith('m_') ? `#${exit.target.substring(2)}` : 'Local') : 'NO EXIT'}
                                 </button>
-                                {isActive && exit.flags && exit.flags.length > 0 && (
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px', justifyContent: 'center' }}>
-                                        {exit.flags.map(f => (
-                                            <span key={f} style={{ fontSize: '8px', color: '#a1a1aa', backgroundColor: '#27272a', padding: '1px 3px', borderRadius: '4px', textTransform: 'lowercase' }}>
-                                                {f}
-                                            </span>
-                                        ))}
+                                {isActive && (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '4px' }}>
+                                        {exit.flags && exit.flags.length > 0 ? (
+                                            exit.flags.map(f => (
+                                                <span key={f} style={{ fontSize: '8px', color: '#a6e3a1', backgroundColor: 'rgba(166, 227, 161, 0.1)', padding: '2px 4px', borderRadius: '4px', border: '1px solid rgba(166, 227, 161, 0.2)' }}>
+                                                    {f}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span style={{ fontSize: '8px', color: '#52525b', fontStyle: 'italic' }}>no flags</span>
+                                        )}
                                     </div>
                                 )}
                             </div>
