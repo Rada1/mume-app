@@ -8,7 +8,10 @@ export const ButtonLabel: React.FC<{ button: CustomButton }> = ({ button }) => {
                 src={button.icon}
                 className="button-icon"
                 alt=""
-                style={{ transform: `scale(${button.style.iconScale || 1})` }}
+                style={{ 
+                    transform: `scale(${button.style.iconScale || 1})`,
+                    opacity: button.style.iconOpacity !== undefined ? button.style.iconOpacity : 0.8
+                }}
             />
         );
     }

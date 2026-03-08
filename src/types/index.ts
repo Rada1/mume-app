@@ -70,6 +70,7 @@ export interface CustomButton {
         borderRadius?: number; // Optional border radius in px
         transparent?: boolean; // New transparent flag
         iconScale?: number; // Optional icon scale
+        iconOpacity?: number; // Optional icon opacity
         borderWidth?: number; // Optional border width
         curvedText?: boolean; // Optional curved text flag
         shape: 'rect' | 'pill' | 'circle';

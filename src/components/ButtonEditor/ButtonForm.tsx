@@ -138,12 +138,22 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                         )}
                     </div>
                     {editingButton.icon && (
-                        <div className="setting-group" style={{ marginTop: '10px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                                <label className="setting-label">Icon Scale</label>
-                                <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>{(style.iconScale || 1).toFixed(1)}x</span>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px', background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '8px', border: '1px solid #333' }}>
+                            <div className="setting-group" style={{ margin: 0 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                    <label className="setting-label">Icon Scale</label>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>{(style.iconScale || 1).toFixed(1)}x</span>
+                                </div>
+                                <input type="range" min="0.2" max="3.0" step="0.1" value={style.iconScale || 1} onChange={e => updateButton(editingButton.id, { style: { ...style, iconScale: parseFloat(e.target.value) } })} style={{ width: '100%' }} />
                             </div>
-                            <input type="range" min="0.2" max="3.0" step="0.1" value={style.iconScale || 1} onChange={e => updateButton(editingButton.id, { style: { ...style, iconScale: parseFloat(e.target.value) } })} style={{ width: '100%' }} />
+                            
+                            <div className="setting-group" style={{ margin: 0 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                                    <label className="setting-label">Icon Opacity</label>
+                                    <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>{Math.round((style.iconOpacity !== undefined ? style.iconOpacity : 0.8) * 100)}%</span>
+                                </div>
+                                <input type="range" min="0.1" max="1.0" step="0.05" value={style.iconOpacity !== undefined ? style.iconOpacity : 0.8} onChange={e => updateButton(editingButton.id, { style: { ...style, iconOpacity: parseFloat(e.target.value) } })} style={{ width: '100%' }} />
+                            </div>
                         </div>
                     )}
                 </div>
