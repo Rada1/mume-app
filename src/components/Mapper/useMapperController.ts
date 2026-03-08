@@ -5,10 +5,10 @@ import { useMapPersistence } from './hooks/useMapPersistence';
 import { useMapActions } from './hooks/useMapActions';
 import { useMapGmcphandlers } from './hooks/useMapGmcphandlers';
 
-export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void } = {}) => {
+export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void, triggerRender?: () => void } = {}) => {
     const { addMessage, executeCommand, showDebugEchoes } = useGame();
 
-    // Core state and refs
+    // Core state and refs from useMapData
     const {
         rooms, setRooms, roomsRef,
         markers, setMarkers, markersRef,
@@ -29,6 +29,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
     const discoverySourceRef = useRef<string | null>(null);
+    const firstExploredAtRef = useRef<Record<string, number>>({});
 
     // Initial Loading
     const loadMasterMap = useCallback(async () => {
@@ -48,7 +49,6 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
                 const rName = rData[5];
                 const rServerId = rData[6];
 
-                // Coordinate Index
                 const floor = Math.round(z);
                 if (!index[floor]) index[floor] = {};
                 const bucketX = Math.floor(x / 5);
@@ -57,13 +57,10 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
                 if (!index[floor][key]) index[floor][key] = [];
                 index[floor][key].push(vnum);
 
-                // Name Index
                 if (rName) {
                     if (!nIndex[rName]) nIndex[rName] = [];
                     nIndex[rName].push(vnum);
                 }
-
-                // Server ID Index
                 if (rServerId) {
                     sIndex[String(rServerId)] = vnum;
                 }
@@ -82,7 +79,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             nameIndexRef.current = {};
             serverIdIndexRef.current = {};
         }
-    }, [addMessage]);
+    }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 
@@ -106,13 +103,13 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             }
             setTimeout(() => { executeCommand?.('look'); }, 100);
         }
-    }, [handleClearMap, addMessage, executeCommand]);
+    }, [handleClearMap, addMessage, executeCommand, showDebugEchoes]);
 
     // GMCP Handlers
     const { handleRoomInfo, handleUpdateExits, handleTerrain } = useMapGmcphandlers({
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
-        showDebugEchoes, nameIndexRef, serverIdIndexRef
+        showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender: options.triggerRender
     });
 
     useImperativeHandle(ref, () => ({
@@ -124,6 +121,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         handleResetAndSync,
         preloadedCoordsRef,
         discoverySourceRef,
+        firstExploredAtRef,
         pushPendingMove: (dir: string) => pendingMovesRef.current.push({ dir, time: Date.now() }),
         handleMoveFailure: () => pendingMovesRef.current.shift(),
         handleCenterOnPlayer: options.onRecenter
@@ -134,38 +132,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         const onInfo = (e: any) => handleRoomInfo(e.detail);
         const onExits = (e: any) => handleUpdateExits(e.detail);
         const onTerrain = (e: any) => handleTerrain(e.detail);
-        const onPush = (e: any) => {
-            const dir = e.detail;
-            pendingMovesRef.current.push({ dir, time: Date.now() });
-
-            // DEAD RECKONING: Guess player location in the dark
-            const activeId = currentRoomIdRef.current;
-            if (activeId) {
-                const room = roomsRef.current[activeId];
-                if (room && room.exits && room.exits[dir]) {
-                    const target = room.exits[dir].target;
-                    const nextId = target ? (String(target).startsWith('m_') ? target : `m_${target}`) : null;
-                    if (nextId) {
-                        setCurrentRoomId(nextId);
-                        currentRoomIdRef.current = nextId;
-                        if (showDebugEchoes) addMessage?.('system', `[Mapper] Blind Move: ${dir} -> Guessing Room: ${nextId}`);
-                    }
-                } else if (activeId.startsWith('m_')) {
-                    // Check master map for exits even if we haven't 'visited' the room object in state correctly
-                    const mId = activeId.substring(2);
-                    const masterExits = preloadedCoordsRef.current[mId]?.[4];
-                    if (masterExits && masterExits[dir]) {
-                        const target = masterExits[dir].target;
-                        const nextId = target ? `m_${target}` : null;
-                        if (nextId) {
-                            setCurrentRoomId(nextId);
-                            currentRoomIdRef.current = nextId;
-                            if (showDebugEchoes) addMessage?.('system', `[Mapper] Blind Move: ${dir} -> Guessing Room: ${nextId} (from MM2)`);
-                        }
-                    }
-                }
-            }
-        };
+        const onPush = (e: any) => pendingMovesRef.current.push({ dir: e.detail, time: Date.now() });
         const onFail = () => pendingMovesRef.current.shift();
 
         window.addEventListener('mume-mapper-room-info', onInfo);
@@ -184,10 +151,10 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     }, [handleRoomInfo, handleUpdateExits, handleTerrain]);
 
     return {
-        rooms, setRooms, markers, setMarkers, exploredVnums, setExploredVnums,
+        rooms, setRooms, markers, setMarkers, exploredVnums, setExploredVnums, exploredRef,
         currentRoomId, setCurrentRoomId, allowPersistence, setAllowPersistence,
         cameraRef, handleAddRoom, handleDeleteRoom, roomsRef, currentRoomIdRef, markersRef,
-        preloadedCoordsRef, spatialIndexRef, discoverySourceRef, unveilMap, setUnveilMap,
+        preloadedCoordsRef, spatialIndexRef, discoverySourceRef, firstExploredAtRef, unveilMap, setUnveilMap,
         handleResetAndSync, handleSyncLocation, handleClearMap, loadImportedMapData
     };
 };

@@ -14,7 +14,7 @@ interface MessageLogProps {
     onDragEnd?: (e: React.DragEvent) => void;
 }
 
-const MessageItem = React.memo(({
+    const MessageItem = React.memo(({
     msg,
     processMessageHtml,
     inCombat,
@@ -28,7 +28,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${inCombat && !msg.isCombat ? ' combat-dim' : ''}`}
+            className={`message ${msg.type}${inCombat && !msg.isCombat ? ' combat-dim' : ''}${isRecent && (msg.timestamp > Date.now() - 300) ? ' recent-entry' : ''}`}
         >
             {msg.type === 'user' ? (
                 <span>{msg.textRaw}</span>
@@ -77,15 +77,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
         // Simple virtualization: update visible window based on scroll
         const scrollTop = container.scrollTop;
         const containerHeight = container.clientHeight;
-        const estimatedMsgHeight = 25;
+        const estimatedMsgHeight = 35; // Better average for MUME (descriptions are common)
         
-        const start = Math.max(0, Math.floor(scrollTop / estimatedMsgHeight) - 30);
-        // If locked to bottom or near it, ensure we render everything to the end
-        const end = isNearBottom 
+        const start = Math.max(0, Math.floor(scrollTop / estimatedMsgHeight) - 40);
+        // Force the last 50 messages to always be rendered to ensure smooth entry and animation
+        const safeBottomCount = 50;
+        const end = (isNearBottom || messages.length - (scrollTop + containerHeight) / estimatedMsgHeight < safeBottomCount)
             ? messages.length 
-            : Math.min(messages.length, Math.ceil((scrollTop + containerHeight) / estimatedMsgHeight) + 30);
+            : Math.min(messages.length, Math.ceil((scrollTop + containerHeight) / estimatedMsgHeight) + 40);
         
-        if (Math.abs(start - visibleRange.start) > 10 || (isNearBottom && visibleRange.end !== messages.length) || (!isNearBottom && Math.abs(end - visibleRange.end) > 10)) {
+        if (Math.abs(start - visibleRange.start) > 20 || (isNearBottom && visibleRange.end !== messages.length) || (!isNearBottom && Math.abs(end - visibleRange.end) > 10)) {
             setVisibleRange({ start, end });
         }
     }, [viewport, messages.length, visibleRange]);
@@ -102,20 +103,28 @@ const MessageLog: React.FC<MessageLogProps> = ({
         lastMessagesRef.current = messages;
 
         if (isNewMessage) {
+            // If we are at bottom or near it, we should hard scroll
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
-                viewport.scrollToBottom(true);
+                // User commands snap instantly, game text glides smoothly
+                viewport.scrollToBottom(true, lastMsg?.type === 'user'); 
             }
         } else if (viewport.isLockedToBottomRef.current) {
-            viewport.scrollToBottom(true);
+            viewport.scrollToBottom(true, false);
         }
     }, [messages, viewport]);
 
     const renderedMessages = useMemo(() => {
         return messages.map((msg, i) => {
-            if (i < visibleRange.start || i > visibleRange.end) {
+            const isVeryRecent = messages.length - i <= 10;
+            // Always render the last 'safeBottomCount' messages to prevent popping during smooth scroll
+            const isAtBottom = i >= messages.length - 50;
+
+            if (i < visibleRange.start || (i > visibleRange.end && !isAtBottom)) {
                 // Return a spacer div to maintain scroll position
-                return <div key={msg.id} style={{ height: '25px' }} />;
+                // Use a slightly smarter estimate: room names are small, descriptions are large
+                const h = msg.isRoomName ? 20 : (msg.textRaw.length > 100 ? 100 : 35);
+                return <div key={msg.id} style={{ height: `${h}px`, opacity: 0 }} />;
             }
             return (
                 <MessageItem

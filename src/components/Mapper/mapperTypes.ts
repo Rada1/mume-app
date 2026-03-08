@@ -56,3 +56,15 @@ export interface MapperProps {
 }
 
 
+export interface GmcpRoomInfo {
+    num?: number;
+    vnum?: number;
+    id?: number;
+    name: string;
+    desc?: string;
+    area?: string;
+    zone?: string;
+    terrain?: string;
+    environment?: string;
+    exits: Record<string, any>;
+}

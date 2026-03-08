@@ -200,72 +200,72 @@ export function drawBlobTerrain(
 
         // --- Top-Right Quadrant ---
         if (t && r && tr) {
-            drawL(101.0, -1.0, false);
-            drawL(101.0, 50, false);
+            drawL(105.0, -5.0, false);
+            drawL(105.0, 50, false);
         } else if (t && r && !tr) {
-            drawL(high, -1.0, false);
-            drawCorner(101.0, -1.0, 101.0, low, true);
-            drawL(101.0, 50, false);
+            drawL(high, -5.0, false);
+            drawCorner(105.0, -5.0, 105.0, low, true);
+            drawL(105.0, 50, false);
         } else if (t && !r) {
-            drawL(high, -1.0, false);
+            drawL(high, -5.0, false);
             drawL(high, 50, true);
         } else if (!t && r) {
-            drawL(101.0, low, true);
-            drawL(101.0, 50, false);
+            drawL(105.0, low, true);
+            drawL(105.0, 50, false);
         } else {
             drawCorner(high, low, high, 50, true);
         }
 
         // --- Bottom-Right Quadrant ---
         if (b && r && br) {
-            drawL(101.0, 101.0, false);
-            drawL(50, 101.0, false);
+            drawL(105.0, 105.0, false);
+            drawL(50, 105.0, false);
         } else if (b && r && !br) {
-            drawL(101.0, high, false);
-            drawCorner(101.0, 101.0, high, 101.0, true);
-            drawL(50, 101.0, false);
+            drawL(105.0, high, false);
+            drawCorner(105.0, 105.0, high, 105.0, true);
+            drawL(50, 105.0, false);
         } else if (!b && r) {
-            drawL(101.0, high, true);
+            drawL(105.0, high, true);
             drawL(50, high, true);
         } else if (b && !r) {
-            drawL(high, 101.0, true);
-            drawL(50, 101.0, false);
+            drawL(high, 105.0, true);
+            drawL(50, 105.0, false);
         } else {
             drawCorner(high, high, 50, high, true);
         }
 
         // --- Bottom-Left Quadrant ---
         if (b && l && bl) {
-            drawL(-1.0, 101.0, false);
-            drawL(-1.0, 50, false);
+            drawL(-5.0, 105.0, false);
+            drawL(-5.0, 50, false);
         } else if (b && l && !bl) {
-            drawL(low, 101.0, false);
-            drawCorner(-1.0, 101.0, -1.0, high, true);
-            drawL(-1.0, 50, false);
+            drawL(low, 105.0, false);
+            drawCorner(-5.0, 105.0, -5.0, high, true);
+            drawL(-5.0, 50, false);
         } else if (b && !l) {
-            drawL(low, 101.0, true);
+            drawL(low, 105.0, true);
             drawL(low, 50, true);
         } else if (!b && l) {
-            drawL(-1.0, high, true);
-            drawL(-1.0, 50, false);
+            drawL(-5.0, high, true);
+            drawL(-5.0, 50, false);
         } else {
             drawCorner(low, high, low, 50, true);
         }
 
         // --- Top-Left Quadrant ---
         if (t && l && tl) {
-            drawL(-1.0, -1.0, false);
-            drawL(50, -1.0, false);
+            drawL(-5.0, -5.0, false);
+            drawL(50, -5.0, false);
         } else if (t && l && !tl) {
-            drawL(-1.0, low, false);
-            drawCorner(-1.0, -1.0, low, -1.0, true);
-            drawL(50, -1.0, false);
+            drawL(-5.0, low, false);
+            drawCorner(-5.0, -5.0, low, -5.0, true);
+            drawL(50, -5.0, false);
         } else if (!t && l) {
-            drawL(-1.0, low, true);
+            drawL(-5.0, low, true);
             drawL(50, low, true);
         } else if (t && !l) {
-            drawL(low, -1.0, true);
-            drawL(50, -1.0, false);
+            drawL(low, -5.0, true);
+            drawL(50, -5.0, false);
         } else {
             drawCorner(low, low, 50, low, true);
         }

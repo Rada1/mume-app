@@ -25,6 +25,7 @@ interface MapCanvasProps {
     preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     exploredVnums: Set<string>;
+    exploredRef: React.MutableRefObject<Set<string>>;
     onMouseDown?: (e: React.MouseEvent) => void;
     onMouseMove?: (e: React.MouseEvent) => void;
     onMouseUp?: (e: React.MouseEvent) => void;
@@ -43,28 +44,20 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
     const getDPR = useCallback(() => Math.min(props.isMobile ? 2.0 : 2.5, window.devicePixelRatio || 1), [props.isMobile]);
     const firstExploredAtRef = useRef<Record<string, number>>({});
 
+    const {
+        rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
+        camera, isDarkMode, isMobile, imagesRef, characterName,
+        playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
+        preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
+        unveilMap, viewZ
+    } = props;
+
     const { drawMap } = useMapperRenderer({
-        rooms: props.rooms,
-        markers: props.markers,
-        currentRoomId: props.currentRoomId,
-        selectedRoomIds: props.selectedRoomIds,
-        selectedMarkerId: props.selectedMarkerId,
-        cameraRef: props.camera,
-        isDarkMode: props.isDarkMode,
-        isMobile: props.isMobile,
-        imagesRef: props.imagesRef,
-        characterName: props.characterName,
-        playerPosRef: props.playerPosRef,
-        playerTrailRef: props.playerTrailRef,
-        stableRoomsRef: props.stableRoomsRef,
-        stableRoomIdRef: props.stableRoomIdRef,
-        stableMarkersRef: props.stableMarkersRef,
-        preloadedCoordsRef: props.preloadedCoordsRef,
-        spatialIndexRef: props.spatialIndexRef,
-        exploredVnums: props.exploredVnums,
-        unveilMap: props.unveilMap,
-        viewZ: props.viewZ,
-        firstExploredAtRef
+        rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
+        cameraRef: camera, isDarkMode, isMobile, imagesRef, characterName,
+        playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
+        preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
+        unveilMap, viewZ, firstExploredAtRef
     });
 
     useMapAnimation({

@@ -55,7 +55,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     // Pass a dummy onRecenter first to controller
     const controller = useMapperController(characterName ?? null, ref, { 
-        onRecenter: () => { handleCenterOnPlayer() }
+        onRecenter: () => { handleCenterOnPlayer() },
+        triggerRender: () => { setRenderVersion(v => v + 1); }
     });
 
     const {
@@ -182,6 +183,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 preloadedCoordsRef={preloadedCoordsRef}
                 spatialIndexRef={controller.spatialIndexRef}
                 exploredVnums={controller.exploredVnums}
+                exploredRef={controller.exploredRef}
                 triggerRender={triggerRender}
                 unveilMap={unveilMap}
                 viewZ={viewZ}

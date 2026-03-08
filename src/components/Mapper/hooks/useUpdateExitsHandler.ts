@@ -33,12 +33,10 @@ export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoo
                     const nextFlags = (typeof update === 'object') ? (flags || []) : (newExits[dir]?.flags || []);
                     const exFlagsLow = nextFlags.map(f => f.toLowerCase());
                     const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                    const isDoor = isClosed ||
+                    const isDoor = isClosed || 
                         (typeof update === 'object' && (update as any).door) ||
-                        exFlagsLow.includes('door') ||
-                        exFlagsLow.includes('gate') ||
-                        (name || newExits[dir]?.name)?.toLowerCase().includes('door') ||
-                        (name || newExits[dir]?.name)?.toLowerCase().includes('gate');
+                        !!name || // In MUME GMCP, if a name is provided, it's a door/vines/etc.
+                        exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
 
                     newExits[dir] = {
                         ...newExits[dir],
@@ -46,7 +44,7 @@ export const useUpdateExitsHandler = ({ setRooms, currentRoomIdRef, preloadedCoo
                         flags: nextFlags,
                         gmcpDestId,
                         closed: isClosed,
-                        hasDoor: !!isDoor || !!newExits[dir]?.hasDoor
+                        hasDoor: !!isDoor
                     };
 
                     const targetId = newExits[dir]?.target;

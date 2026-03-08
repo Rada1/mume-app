@@ -16,6 +16,8 @@ interface RoomInfoProps {
     exploredRef: React.MutableRefObject<Set<string>>;
     setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
+    firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
+    triggerRender?: () => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
 }
@@ -23,7 +25,7 @@ interface RoomInfoProps {
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
-    addMessage, showDebugEchoes
+    firstExploredAtRef, triggerRender, addMessage, showDebugEchoes
 }: RoomInfoProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -123,11 +125,18 @@ export const useRoomInfoHandler = ({
         if (ghostData && matchedInternalId) {
             targetId = `m_${matchedInternalId}`;
             if (!exploredRef.current.has(matchedInternalId)) {
+                // Set immediate discovery time to trigger animation immediately
+                if (firstExploredAtRef.current[matchedInternalId] === undefined) {
+                    firstExploredAtRef.current[matchedInternalId] = now;
+                    firstExploredAtRef.current['_latest'] = now;
+                }
                 setExploredVnums(prev => {
                     const next = new Set(prev);
                     next.add(matchedInternalId!);
+                    exploredRef.current = next; // Sync update to ref for immediate animation feedback
                     return next;
                 });
+                triggerRender?.();
             }
         }
 
@@ -199,12 +208,10 @@ export const useRoomInfoHandler = ({
                     }
                     const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
                     const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                    const isDoor = isClosed ||
+                    const isDoor = isClosed || 
                         (typeof gmcpExit === 'object' && (gmcpExit as any).door) ||
-                        exFlagsLow.includes('door') ||
-                        exFlagsLow.includes('gate') ||
-                        exName?.toLowerCase().includes('door') ||
-                        exName?.toLowerCase().includes('gate');
+                        !!exName || // In MUME GMCP, if a name is provided, it's a door/vines/etc.
+                        exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
 
                     updatedExits[dir] = {
                         ...updatedExits[dir],
@@ -213,17 +220,21 @@ export const useRoomInfoHandler = ({
                         name: exName,
                         flags: exFlags || (updatedExits[dir]?.flags || []),
                         closed: isClosed,
-                        hasDoor: !!isDoor || !!updatedExits[dir]?.hasDoor
+                        hasDoor: !!isDoor
                     };
                 }
                 newRooms[targetId!] = { ...room, exits: updatedExits };
             }
+            
+            roomsRef.current = newRooms; // Sync update to ref for immediate animation feedback
             return newRooms;
         });
 
         setCurrentRoomId(targetId);
         currentRoomIdRef.current = targetId;
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage]);
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, 
+        nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, 
+        lastDetectedTerrainRef, firstExploredAtRef, triggerRender, addMessage, showDebugEchoes]);
 
     return { handleRoomInfo };
 };

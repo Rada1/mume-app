@@ -76,6 +76,22 @@
     transform-origin: left center;
 }
 
+.message.recent-entry {
+    animation: smooth-enter 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: opacity, transform;
+}
+
+@keyframes smooth-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 .message.combat-dim {
     opacity: 0.25 !important;
     filter: grayscale(0.5) blur(0.2px);

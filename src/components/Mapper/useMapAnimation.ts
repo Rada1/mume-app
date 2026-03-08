@@ -29,11 +29,27 @@ export const useMapAnimation = ({
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
 
+    const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
+    const trackerRef = useRef<{ endTimes: number[] }>({ endTimes: [] });
+
+    const lastFrameTimeRef = useRef<number>(0);
+
     // Keep tick logic in a ref so the loop can access the latest version without restarting
     (tickRef as any).current = () => {
         const cvs = canvasRef.current;
         if (!cvs) return false;
-        const ctx = cvs.getContext('2d', { alpha: false }); // Optimization
+        
+        const now = performance.now();
+        // Render Burst Protection: Don't render more than once per ~8ms (120fps cap) 
+        // even if rAF gives us more frames, unless we're in a high refresh rate mode.
+        // Actually, rAF is usually enough, but let's avoid redundant work if called manually.
+        if (now - lastFrameTimeRef.current < 4) return true; 
+        lastFrameTimeRef.current = now;
+
+        if (!ctxRef.current) {
+            ctxRef.current = cvs.getContext('2d', { alpha: false, desynchronized: true });
+        }
+        const ctx = ctxRef.current;
         if (!ctx) return false;
 
         const dpr = getDPR();
@@ -42,10 +58,6 @@ export const useMapAnimation = ({
 
         let needsNextFrame = isDragging;
 
-        // Safety check for camera zoom
-        if (!camera.current.zoom || isNaN(camera.current.zoom)) camera.current.zoom = 1;
-        if (camera.current.zoom < 0.01) camera.current.zoom = 0.01;
-
         // Auto-centering & Player Animation
         const activeRoomId = stableRoomIdRef.current;
         if (playerPosRef.current && activeRoomId && stableRoomsRef.current[activeRoomId]) {
@@ -53,11 +65,20 @@ export const useMapAnimation = ({
             const px = playerPosRef.current.x, py = playerPosRef.current.y;
             const targetX = target.x, targetY = target.y;
 
-            const dist = Math.hypot(px - targetX, py - targetY);
-            if (dist > 0.001) {
-                playerPosRef.current.x += (targetX - px) * 0.15;
-                playerPosRef.current.y += (targetY - py) * 0.15;
-                needsNextFrame = true;
+            const dx = targetX - px, dy = targetY - py;
+            const distSq = dx * dx + dy * dy;
+            if (distSq > 0.0000001) {
+                const lerpFactor = 0.22;
+                playerPosRef.current.x += dx * lerpFactor;
+                playerPosRef.current.y += dy * lerpFactor;
+                
+                // Snap if very close to prevent micro-frames
+                if (distSq < 0.00001) {
+                   playerPosRef.current.x = targetX;
+                   playerPosRef.current.y = targetY;
+                } else {
+                   needsNextFrame = true;
+                }
             }
 
             if (autoCenter && !isDragging) {
@@ -65,10 +86,16 @@ export const useMapAnimation = ({
                 const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
                 const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
 
-                if (Math.abs(camera.current.x - targetCamX) > 0.1 || Math.abs(camera.current.y - targetCamY) > 0.1) {
-                    camera.current.x += (targetCamX - camera.current.x) * 0.1;
-                    camera.current.y += (targetCamY - camera.current.y) * 0.1;
+                const cdx = targetCamX - camera.current.x;
+                const cdy = targetCamY - camera.current.y;
+                if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
+                    const camLerp = 0.18;
+                    camera.current.x += cdx * camLerp;
+                    camera.current.y += cdy * camLerp;
                     needsNextFrame = true;
+                } else {
+                    camera.current.x = targetCamX;
+                    camera.current.y = targetCamY;
                 }
             }
         }
@@ -77,7 +104,7 @@ export const useMapAnimation = ({
             let trailChanged = false;
             playerTrailRef.current = playerTrailRef.current.filter(t => {
                 if (t.alpha > 0.01) {
-                    t.alpha *= 0.92;
+                    t.alpha *= 0.88; // Faster trail decay for performance
                     trailChanged = true;
                     return true;
                 }
@@ -86,36 +113,25 @@ export const useMapAnimation = ({
             if (trailChanged) needsNextFrame = true;
         }
 
-        const now = Date.now();
-        // Optimization: Don't scan 50,000 rooms every frame!
-        // We only scan if we suspect there MIGHT be an active animation.
-        // Even better, keep a tracked array of active timestamps and clean them up.
-        
-        let hasActiveAnim = false;
-
-        // Optimize discovery animation checks by just checking the _latest timestamp
+        const wallTime = Date.now();
         const latestExplored = firstExploredAtRef.current['_latest'] || 0;
-        if (now - latestExplored < 800) hasActiveAnim = true;
+        if (wallTime - latestExplored < 500) needsNextFrame = true;
 
-        // Check markers/rooms. Since we don't have a _latest for them currently,
-        // we'll rely on renderVersion to detect when items have been recently added.
-        if (!(tickRef as any)._animTracker) (tickRef as any)._animTracker = { endTimes: [] };
-        const tracker = (tickRef as any)._animTracker;
         if ((tickRef as any)._lastRenderVersion !== renderVersion) {
             (tickRef as any)._lastRenderVersion = renderVersion;
-            tracker.endTimes.push(now + 800);
+            trackerRef.current.endTimes.push(wallTime + 1500);
         }
 
-        tracker.endTimes = tracker.endTimes.filter((time: number) => time > now);
-        if (tracker.endTimes.length > 0) hasActiveAnim = true;
-
-        if (hasActiveAnim) needsNextFrame = true;
+        trackerRef.current.endTimes = trackerRef.current.endTimes.filter((time: number) => time > wallTime);
+        if (trackerRef.current.endTimes.length > 0) needsNextFrame = true;
 
         drawMap(ctx, dpr, w, h, marquee);
         return needsNextFrame;
     };
 
     useEffect(() => {
+        // Reset context if canvas dimensions or properties change (triggering useEffect)
+        ctxRef.current = null;
         let active = true;
 
         const animate = () => {
@@ -128,7 +144,6 @@ export const useMapAnimation = ({
             }
         };
 
-        // Always ensure a frame is drawn on manual triggers
         animate();
 
         return () => {
@@ -138,7 +153,7 @@ export const useMapAnimation = ({
                 requestRef.current = null;
             }
         };
-    }, [renderVersion, isDragging]);
+    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms]);
 
     return { tick: tickRef.current };
 };

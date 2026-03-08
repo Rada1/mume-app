@@ -3,17 +3,20 @@ import { GRID_SIZE } from '../mapperUtils';
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
     const { ctx, isDarkMode, camera, visitedAtCoord } = rCtx;
+    const s = GRID_SIZE;
     ctx.beginPath();
     ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
     ctx.lineWidth = 1 / camera.zoom;
+    
     for (let gx = gX1; gx <= gX2; gx++) {
         for (let gy = gY1; gy <= gY2; gy++) {
+            // Speed up: seulement dessiner la grille si la cellule n'est PAS visitée (fog of war)
             if (!visitedAtCoord[`${gx},${gy}`]) {
-                const x = gx * GRID_SIZE, y = gy * GRID_SIZE;
-                ctx.moveTo(x, y); ctx.lineTo(x + GRID_SIZE, y);
-                ctx.moveTo(x, y); ctx.lineTo(x, y + GRID_SIZE);
-                if (!visitedAtCoord[`${gx + 1},${gy}`]) { ctx.moveTo(x + GRID_SIZE, y); ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE); }
-                if (!visitedAtCoord[`${gx},${gy + 1}`]) { ctx.moveTo(x, y + GRID_SIZE); ctx.lineTo(x + GRID_SIZE, y + GRID_SIZE); }
+                const x = gx * s, y = gy * s;
+                ctx.moveTo(x, y); ctx.lineTo(x + s, y);
+                ctx.moveTo(x, y); ctx.lineTo(x, y + s);
+                if (!visitedAtCoord[`${gx + 1},${gy}`]) { ctx.moveTo(x + s, y); ctx.lineTo(x + s, y + s); }
+                if (!visitedAtCoord[`${gx},${gy + 1}`]) { ctx.moveTo(x, y + s); ctx.lineTo(x + s, y + s); }
             }
         }
     }
@@ -29,15 +32,18 @@ export const drawEntities = (
     const { ctx, currentZ } = rCtx;
 
     // Player Trail
-    if (playerTrailRef.current.length > 0) {
+    const trail = playerTrailRef.current;
+    if (trail.length > 0) {
         ctx.save(); ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
-        playerTrailRef.current.forEach(t => {
+        const trailLen = trail.length;
+        for (let i = 0; i < trailLen; i++) {
+            const t = trail[i];
             const zDist = Math.abs(t.z - currentZ);
             if (zDist < 1.5) {
                 ctx.globalAlpha = Math.max(0, t.alpha * (1 - zDist)); ctx.fillStyle = '#ef4444'; ctx.beginPath();
                 ctx.arc(t.x * GRID_SIZE + GRID_SIZE / 2, t.y * GRID_SIZE + GRID_SIZE / 2, 1 + (t.alpha * 4), 0, Math.PI * 2); ctx.fill();
             }
-        });
+        }
         ctx.restore();
     }
 

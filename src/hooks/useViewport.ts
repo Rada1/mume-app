@@ -40,8 +40,8 @@ export function useViewport() {
         }
 
         if (!force) {
-            // Consistent threshold across the app
-            const threshold = 50;
+            // Consistent threshold across the app - tighten to 5 for precision
+            const threshold = 5;
             const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
             if (!isNearBottom) return;
         }
@@ -52,11 +52,13 @@ export function useViewport() {
 
         if (instant) {
             container.scrollTo({ top: container.scrollHeight, behavior: 'auto' });
-            // Small timeout to reset the flag after the scroll event has likely fired
-            setTimeout(() => { isAutoScrollingRef.current = false; }, 50);
+            setTimeout(() => { isAutoScrollingRef.current = false; }, 40);
         } else {
+            // Check if we can use a slightly faster smooth scroll via CSS if the browser supports it,
+            // but for now, native smooth is standard.
             container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-            setTimeout(() => { isAutoScrollingRef.current = false; }, 300);
+            // Reduce timeout slightly for snappier lock release
+            setTimeout(() => { isAutoScrollingRef.current = false; }, 200);
         }
     }, [isMobile]);
 
