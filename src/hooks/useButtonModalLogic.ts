@@ -43,7 +43,13 @@ export const useButtonModalLogic = ({
                 // Deep merge style if present
                 if (updates.style) merged.style = { ...b.style, ...updates.style };
                 // Deep merge trigger if present
-                if (updates.trigger) merged.trigger = { ...b.trigger, ...updates.trigger };
+                if (updates.trigger) {
+                    merged.trigger = { ...b.trigger, ...updates.trigger };
+                    // If we just enabled a trigger, hide it by default so it can be "fired"
+                    if (updates.trigger.enabled === true) merged.isVisible = false;
+                    // If we just disabled a trigger, show it by default so it's always visible
+                    else if (updates.trigger.enabled === false) merged.isVisible = true;
+                }
                 return merged;
             }
             return b;
