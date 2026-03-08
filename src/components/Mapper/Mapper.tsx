@@ -5,7 +5,6 @@ import { MapCanvas } from './MapCanvas';
 import { MapperToolbar } from './MapperToolbar';
 import { MapperDropdown } from './MapperDropdown';
 import { MapperContextMenu } from './MapperContextMenu';
-import { MapperRadialMenu } from './MapperRadialMenu';
 import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
 import { PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './mapperUtils';
@@ -38,7 +37,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const [isDragging, setIsDragging] = useState(false);
     const [selectedRoomIds, setSelectedRoomIds] = useState<Set<string>>(new Set());
     const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
-    const [contextMenu, setContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null, isRadial?: boolean } | null>(null);
+    const [contextMenu, setContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
     const [infoRoomId, setInfoRoomId] = useState<string | null>(null);
     const [renderVersion, setRenderVersion] = useState(0);
     const [autoCenter, setAutoCenter] = useState(true);
@@ -68,14 +67,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         unveilMap, setUnveilMap, handleResetAndSync, handleSyncLocation, handleClearMap
     } = controller;
 
-    const { isWalking, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, controller.preloadedCoordsRef);
+    const { isWalking, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
 
     const triggerRender = useCallback(() => setRenderVersion(v => v + 1), []);
 
     const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, controller);
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender);
 
-    const { marquee, menuPointer } = useMapperInteractions({
+    const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,
         selectedRoomIds, setSelectedRoomIds,
         selectedMarkerId, setSelectedMarkerId,
@@ -222,61 +221,44 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             />
 
             {contextMenu && (
-                contextMenu.isRadial ? (
-                    <MapperRadialMenu
-                        x={contextMenu.x}
-                        y={contextMenu.y}
-                        roomId={contextMenu.roomId}
-                        currentPointer={menuPointer}
-                        onAction={(action, state) => {
-                            if (action === 'walk') {
-                                if (state === 'start' && contextMenu.roomId) startWalking(contextMenu.roomId);
-                                else if (state === 'end') stopWalking();
-                            } else if (action === 'info' && state === 'trigger') {
-                                // Handled in useMapperInteractions on pointerUp
-                            }
-                        }}
-                    />
-                ) : (
-                    <MapperContextMenu
-                        x={contextMenu.x}
-                        y={contextMenu.y}
-                        roomId={contextMenu.roomId}
-                        onClose={() => setContextMenu(null)}
-                        onDelete={() => {
-                            if (contextMenu.roomId) handleDeleteRoom(contextMenu.roomId);
-                            setContextMenu(null);
-                            triggerRender();
-                        }}
-                        onInfo={() => {
-                            setInfoRoomId(contextMenu.roomId);
-                            setContextMenu(null);
-                        }}
-                        onAddMarker={() => {
-                            handleAddMarker(contextMenu.wx, contextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0));
-                            setContextMenu(null);
-                            triggerRender();
-                        }}
-                        onAddRoom={() => {
-                            handleAddRoom(contextMenu.wx, contextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0));
-                            setContextMenu(null);
-                            triggerRender();
-                        }}
-                        onSyncLocation={() => {
-                            handleSyncLocation(contextMenu.wx, contextMenu.wy);
-                            setContextMenu(null);
-                            triggerRender();
-                        }}
-                        onWalkStart={(rid) => {
-                            startWalking(rid);
-                        }}
-                        onWalkEnd={() => {
-                            stopWalking();
-                            setContextMenu(null);
-                        }}
-                        mode={mode}
-                    />
-                )
+                <MapperContextMenu
+                    x={contextMenu.x}
+                    y={contextMenu.y}
+                    roomId={contextMenu.roomId}
+                    onClose={() => setContextMenu(null)}
+                    onDelete={() => {
+                        if (contextMenu.roomId) handleDeleteRoom(contextMenu.roomId);
+                        setContextMenu(null);
+                        triggerRender();
+                    }}
+                    onInfo={() => {
+                        setInfoRoomId(contextMenu.roomId);
+                        setContextMenu(null);
+                    }}
+                    onAddMarker={() => {
+                        handleAddMarker(contextMenu.wx, contextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0));
+                        setContextMenu(null);
+                        triggerRender();
+                    }}
+                    onAddRoom={() => {
+                        handleAddRoom(contextMenu.wx, contextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0));
+                        setContextMenu(null);
+                        triggerRender();
+                    }}
+                    onSyncLocation={() => {
+                        handleSyncLocation(contextMenu.wx, contextMenu.wy);
+                        setContextMenu(null);
+                        triggerRender();
+                    }}
+                    onWalkStart={(rid) => {
+                        startWalking(rid);
+                    }}
+                    onWalkEnd={() => {
+                        stopWalking();
+                        setContextMenu(null);
+                    }}
+                    mode={mode}
+                />
             )}
 
             {infoRoomId && (

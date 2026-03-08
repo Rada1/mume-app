@@ -12,7 +12,16 @@ export interface MapperRoom {
     notes: string;
     mobFlags?: string[];
     loadFlags?: string[];
+    roomQuestFlags?: string[];
     createdAt: number;
+}
+
+export interface GmcpExitInfo {
+    name: string;
+    flags?: string[];
+    id?: number;
+    door?: number;
+    to_vnum?: number;
 }
 
 export interface MapperExit {
@@ -64,7 +73,11 @@ export interface GmcpRoomInfo {
     desc?: string;
     area?: string;
     zone?: string;
-    terrain?: string;
-    environment?: string;
-    exits: Record<string, any>;
+    terrain?: string | null;
+    environment?: string | null;
+    light?: string | number | null;
+    l?: string | number | null;
+    exits?: Record<string, GmcpExitInfo | number | false>;
+    details?: string[];
+    room_quest_flags?: string[];
 }

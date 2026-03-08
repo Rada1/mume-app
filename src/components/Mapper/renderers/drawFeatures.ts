@@ -94,15 +94,19 @@ export const drawFeatures = (
                     }
                 }
 
-                // Mob/Load Flags
-                const mobF = localRoom?.mobFlags || rData[7] || [], loadF = localRoom?.loadFlags || rData[8] || [];
-                if (mobF.length > 0 || loadF.length > 0) {
+                // Mob/Load/Quest Flags
+                const mobF = localRoom?.mobFlags || rData[7] || [], loadF = localRoom?.loadFlags || rData[8] || [], questF = localRoom?.roomQuestFlags || [];
+                if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
                     ctx.save(); ctx.font = featureFont; let off = 0;
                     for (const f of mobF) {
                         if (f.includes('AGGRESSIVE')) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', anchorX + off, anchorY); off += 10 / camera.zoom; }
                         else if (f.includes('SHOP')) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', anchorX + off, anchorY); off += 10 / camera.zoom; }
                         else if (f.includes('GUILD')) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', anchorX + off, anchorY); off += 10 / camera.zoom; }
                         else if (f.includes('RENT')) { ctx.fillStyle = '#89b4fa'; ctx.fillText('R', anchorX + off, anchorY); off += 10 / camera.zoom; }
+                    }
+                    for (const f of questF) {
+                        ctx.fillStyle = '#fab387'; // Quest orange/peach
+                        ctx.fillText('?', anchorX + off, anchorY); off += 10 / camera.zoom;
                     }
                     if (loadF.some((f: any) => /HERB|WATER/i.test(String(f)))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', anchorX + off, anchorY); }
                     ctx.restore();
@@ -208,14 +212,18 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             }
         }
         
-        const mobF = room.mobFlags || [], loadF = room.loadFlags || [];
-        if (mobF.length > 0 || loadF.length > 0) {
+        const mobF = room.mobFlags || [], loadF = room.loadFlags || [], questF = room.roomQuestFlags || [];
+        if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
             ctx.save(); ctx.font = localFeatureFont; let off = 0;
             for (const f of mobF) {
                 if (f.includes('AGGRESSIVE')) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', cX + off, cY); off += 10 / camera.zoom; }
                 else if (f.includes('SHOP')) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', cX + off, cY); off += 10 / camera.zoom; }
                 else if (f.includes('GUILD')) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', cX + off, cY); off += 10 / camera.zoom; }
                 else if (f.includes('RENT')) { ctx.fillStyle = '#89b4fa'; ctx.fillText('R', cX + off, cY); off += 10 / camera.zoom; }
+            }
+            for (const f of questF) {
+                ctx.fillStyle = '#fab387'; 
+                ctx.fillText('?', cX + off, cY); off += 10 / camera.zoom;
             }
             if (loadF.some((f: any) => String(f).includes('HERB'))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', cX + off, cY); }
             ctx.restore();
