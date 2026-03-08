@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
 import { generateId, GRID_SIZE, DIRS } from '../mapperUtils';
 

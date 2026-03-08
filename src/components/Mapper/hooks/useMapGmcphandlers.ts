@@ -1,4 +1,6 @@
-import { MapperRoom } from '../mapperTypes';
+import { useCallback } from 'react';
+import { MapperRoom, GmcpRoomInfo } from '../mapperTypes';
+import { GRID_SIZE, DIRS, normalizeTerrain, generateId } from '../mapperUtils';
 import { useRoomInfoHandler } from './useRoomInfoHandler';
 import { useUpdateExitsHandler } from './useUpdateExitsHandler';
 import { useTerrainHandler } from './useTerrainHandler';
@@ -23,6 +25,8 @@ interface UseMapGmcphandlersProps {
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
+        const { roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage, showDebugEchoes } = props;
+
         let gmcpId = data.num !== undefined ? data.num : (data.vnum !== undefined ? data.vnum : data.id);
         const gmcpName = data.name || 'Unknown Room';
         const gmcpArea = data.area || data.zone || 'Unknown Zone';
@@ -281,9 +285,10 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
 
         setCurrentRoomId(targetId);
         currentRoomIdRef.current = targetId;
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage]);
+    }, [props]);
 
     const handleUpdateExits = useCallback((data: any) => {
+        const { currentRoomIdRef, setRooms, preloadedCoordsRef } = props;
         const activeId = currentRoomIdRef.current;
         if (!activeId) return;
 
@@ -323,7 +328,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
                     // Also respect if live update says it's a door or closed
                     const nameVal = name || newExits[dir]?.name;
                     const hasName = !!nameVal && String(nameVal).trim().length > 0;
-                                     
+                                      
                     if (isClosed || (typeof update === 'object' && (update.door || hasName))) hasDoor = true;
 
                     newExits[dir] = {
@@ -366,16 +371,17 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
             nextRooms[activeId] = { ...activeRoom, exits: newExits };
             return nextRooms;
         });
-    }, [currentRoomIdRef, setRooms, preloadedCoordsRef]);
+    }, [props]);
 
     const handleTerrain = useCallback((t: string) => {
+        const { currentRoomIdRef, setRooms, lastDetectedTerrainRef } = props;
         const terrain = normalizeTerrain(t);
         lastDetectedTerrainRef.current = terrain;
         if (currentRoomIdRef.current) {
             const activeId = currentRoomIdRef.current;
             setRooms(prev => (prev[activeId] && prev[activeId].terrain !== terrain) ? { ...prev, [activeId]: { ...prev[activeId], terrain } } : prev);
         }
-    }, [currentRoomIdRef, setRooms, lastDetectedTerrainRef]);
+    }, [props]);
 
     return { handleRoomInfo, handleUpdateExits, handleTerrain };
-};
+};

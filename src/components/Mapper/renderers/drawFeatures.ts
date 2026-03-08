@@ -131,8 +131,10 @@ export const drawFeatures = (
                 if (activeMobFlags.length > 0 || activeLoadFlags.length > 0) {
                     ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `bold ${Math.max(10, 14 / camera.zoom)}px "Inter", sans-serif`;
                     let off = 0;
-                    if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', centerPX + off, centerPY); off += 8 / camera.zoom; }
-                    if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', centerPX + off, centerPY); off += 8 / camera.zoom; }
+                    if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', centerPX + off, centerPY); off += 10 / camera.zoom; }
+                    if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', centerPX + off, centerPY); off += 10 / camera.zoom; }
+                    if (activeMobFlags.some((f: string) => f.includes('GUILD'))) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', centerPX + off, centerPY); off += 10 / camera.zoom; }
+                    if (activeMobFlags.some((f: string) => f.includes('RENT'))) { ctx.fillStyle = '#89b4fa'; ctx.fillText('R', centerPX + off, centerPY); off += 10 / camera.zoom; }
                     if (activeLoadFlags.some((f: string) => f.includes('HERB') || f.includes('WATER'))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', centerPX + off, centerPY); }
                     ctx.restore();
                 }
@@ -147,6 +149,34 @@ export const drawFeatures = (
                     ctx.setLineDash([4 * invZoom, 2 * invZoom]); ctx.strokeRect(wx + 3, wy + 3, s - 6, s - 6); ctx.setLineDash([]);
                 }
                 if (camera.zoom > 1.8) { ctx.font = '8px "Aniron"'; ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a'; ctx.textAlign = 'center'; ctx.fillText(rName.substring(0, 12), centerPX, wy + s * 0.95); }
+
+                // Up/Down Indicators (Preloaded)
+                if (ghostExits) {
+                    const hasUp = !!ghostExits['u'];
+                    const hasDown = !!ghostExits['d'];
+                    if (hasUp || hasDown) {
+                        ctx.save();
+                        ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
+                        const triSize = 6 / camera.zoom;
+                        const margin = 4 / camera.zoom;
+                        if (hasUp) {
+                            ctx.beginPath();
+                            ctx.moveTo(wx + s - margin, wy + margin + triSize);
+                            ctx.lineTo(wx + s - margin - triSize, wy + margin + triSize);
+                            ctx.lineTo(wx + s - margin - (triSize / 2), wy + margin);
+                            ctx.fill();
+                        }
+                        if (hasDown) {
+                            ctx.beginPath();
+                            ctx.moveTo(wx + s - margin, wy + s - margin - triSize);
+                            ctx.lineTo(wx + s - margin - triSize, wy + s - margin - triSize);
+                            ctx.lineTo(wx + s - margin - (triSize / 2), wy + s - margin);
+                            ctx.fill();
+                        }
+                        ctx.restore();
+                    }
+                }
+
                 ctx.restore();
             });
         }
@@ -214,8 +244,10 @@ export const drawLocalFeatures = (rCtx: RenderContext) => {
             const cX = rx + s/2, cY = ry + s/2;
             ctx.font = `bold ${Math.max(10, 14 / camera.zoom)}px "Inter", sans-serif`;
             let off = 0;
-            if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', cX + off, cY); off += 8 / camera.zoom; }
-            if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', cX + off, cY); off += 8 / camera.zoom; }
+            if (activeMobFlags.some((f: string) => f.includes('AGGRESSIVE'))) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', cX + off, cY); off += 10 / camera.zoom; }
+            if (activeMobFlags.some((f: string) => f.includes('SHOP'))) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', cX + off, cY); off += 10 / camera.zoom; }
+            if (activeMobFlags.some((f: string) => f.includes('GUILD'))) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', cX + off, cY); off += 10 / camera.zoom; }
+            if (activeMobFlags.some((f: string) => f.includes('RENT'))) { ctx.fillStyle = '#89b4fa'; ctx.fillText('R', cX + off, cY); off += 10 / camera.zoom; }
             if (activeLoadFlags.some((f: string) => f.includes('HERB') || f.includes('WATER'))) { ctx.fillStyle = '#a6e3a1'; ctx.fillText('*', cX + off, cY); }
             ctx.restore();
         }
@@ -229,6 +261,32 @@ export const drawLocalFeatures = (rCtx: RenderContext) => {
             ctx.strokeStyle = isDarkMode ? '#89b4fa' : '#3b82f6'; ctx.lineWidth = 2 / camera.zoom;
             ctx.setLineDash([4 * invZoom, 2 * invZoom]); ctx.strokeRect(rx + 3, ry + 3, s - 6, s - 6); ctx.setLineDash([]);
         }
+
+        // Up/Down Indicators (Local)
+        const hasUp = !!room.exits?.['u'];
+        const hasDown = !!room.exits?.['d'];
+        if (hasUp || hasDown) {
+            ctx.save();
+            ctx.fillStyle = isDarkMode ? '#cdd6f4' : '#45475a';
+            const triSize = 6 / camera.zoom;
+            const margin = 4 / camera.zoom;
+            if (hasUp) {
+                ctx.beginPath();
+                ctx.moveTo(rx + s - margin, ry + margin + triSize);
+                ctx.lineTo(rx + s - margin - triSize, ry + margin + triSize);
+                ctx.lineTo(rx + s - margin - (triSize / 2), ry + margin);
+                ctx.fill();
+            }
+            if (hasDown) {
+                ctx.beginPath();
+                ctx.moveTo(rx + s - margin, ry + s - margin - triSize);
+                ctx.lineTo(rx + s - margin - triSize, ry + s - margin - triSize);
+                ctx.lineTo(rx + s - margin - (triSize / 2), ry + s - margin);
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
         ctx.restore();
     });
 };
