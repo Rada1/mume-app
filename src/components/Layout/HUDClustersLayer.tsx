@@ -68,9 +68,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     isMobile={isMobile}
                 />
 
-                {(effectiveShowControls || btn.isEditMode) && (
-                    <XboxCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} handleDragStart={handleDragStart} buttons={btn.buttons} selectedButtonIds={btn.selectedButtonIds} dragState={btn.dragState} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditingButtonId={btn.setEditingButtonId} setSelectedIds={btn.setSelectedIds} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} heldButton={heldButton} setHeldButton={setHeldButton} joystick={joystick} target={target} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} isLandscape={isLandscape} stats={stats} />
-                )}
+                <XboxCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} handleDragStart={handleDragStart} buttons={btn.buttons} selectedButtonIds={btn.selectedButtonIds} dragState={btn.dragState} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditingButtonId={btn.setEditingButtonId} setSelectedIds={btn.setSelectedIds} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} heldButton={heldButton} setHeldButton={setHeldButton} joystick={joystick} target={target} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} isLandscape={isLandscape} stats={stats} />
 
                 {(effectiveShowControls || btn.isEditMode) && (
                     <>

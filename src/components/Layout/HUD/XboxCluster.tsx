@@ -61,16 +61,27 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
         left: 'auto',
         opacity: 1
     };
-
+    
     if (isDefault) {
-        style.right = isLandscape ? '40px' : '15px';
-        style.bottom = isLandscape ? '20px' : '30px';
-        style.top = 'auto';
-        style.transform = pos.scale ? `scale(${pos.scale})` : '';
+
+        if (isMobile && !isLandscape) {
+            // Portrait Mobile: Position solidly within the lower map area
+            style.right = '15px';
+            style.bottom = '20px'; // Shifted down from 50px to stay clear of input bar
+            style.top = 'auto';
+            style.transform = pos.scale ? `scale(${pos.scale})` : '';
+            style.transformOrigin = 'bottom right';
+        } else {
+            // Landscape or Desktop Default
+            style.right = isLandscape ? '40px' : '15px';
+            style.bottom = isLandscape ? '20px' : '30px';
+            style.top = 'auto';
+            style.transform = pos.scale ? `scale(${pos.scale})` : '';
+        }
     } else {
         style.right = pos.x ?? '0';
         style.top = pos.y ?? 'auto';
-        style.bottom = pos.y !== undefined ? 'auto' : (pos.bottom ?? '20px');
+        style.bottom = pos.y !== undefined ? 'auto' : (pos.bottom ?? (isMobile && !isLandscape ? '50px' : '20px'));
         style.transform = `${pos.y !== undefined ? '' : 'translateY(-50%)'} ${pos.scale ? `scale(${pos.scale})` : ''}`;
     }
 
