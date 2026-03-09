@@ -35,6 +35,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setAutoConnect,
     showDebugEchoes,
     setShowDebugEchoes,
+    uiMode,
+    setUiMode,
+    disable3dScroll,
+    setDisable3dScroll,
+    disableSmoothScroll,
+    setDisableSmoothScroll,
+    isImmersionMode,
+    setIsImmersionMode,
 }) => {
     const {
         setIsSettingsOpen, settingsTab, setSettingsTab,
@@ -71,7 +79,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                 </div>
 
-                <div className="modal-body" style={{ height: settingsTab === 'help' ? '60vh' : 'auto', minHeight: settingsTab === 'help' ? '400px' : 'auto' }}>
+                <div className={`modal-body settings-modal`}>
                     {settingsTab === 'general' && (
                         <>
                             <GeneralSettings
@@ -96,6 +104,14 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 bgImage={bgImage}
                                 setBgImage={setBgImage}
                                 handleFileUpload={handleFileUpload}
+                                uiMode={uiMode}
+                                setUiMode={setUiMode}
+                                disable3dScroll={disable3dScroll}
+                                setDisable3dScroll={setDisable3dScroll}
+                                disableSmoothScroll={disableSmoothScroll}
+                                setDisableSmoothScroll={setDisableSmoothScroll}
+                                isImmersionMode={isImmersionMode}
+                                setIsImmersionMode={setIsImmersionMode}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

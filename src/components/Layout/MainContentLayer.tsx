@@ -42,7 +42,8 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         spatButtons,
         setSpatButtons,
         executeCommand,
-        setPopoverState
+        setPopoverState,
+        isImmersionMode
     } = useGame();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -107,12 +108,14 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
 
     return (
         <div className="content-layer">
-            <Header
-                isLandscape={isLandscape}
-                getLightingIcon={getLightingIcon}
-                getWeatherIcon={getWeatherIcon}
-                onResetMap={onResetMap}
-            />
+            {true && (
+                <Header
+                    isLandscape={isLandscape}
+                    getLightingIcon={getLightingIcon}
+                    getWeatherIcon={getWeatherIcon}
+                    onResetMap={onResetMap}
+                />
+            )}
 
             <div className="message-log-container" ref={logContainerRef}>
                 <MessageLog

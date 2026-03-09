@@ -53,7 +53,8 @@ export const useButtonGestures = ({
     const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         if (isEditMode) {
             if (button.setId === 'Xbox') {
-                handleDragStart(e, 'xbox', 'cluster');
+                // Xbox buttons are locked and cannot be moved
+                return;
             } else {
                 handleDragStart(e, button.id, 'move');
             }

@@ -61,6 +61,24 @@
     }
 }
 
+/* Force Desktop Overrides */
+.force-desktop .content-layer {
+    max-width: 900px !important;
+    padding: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.force-desktop .is-mobile {
+    display: none !important; /* Hide mobile-only elements if any */
+}
+
+/* Force Mobile/Portrait Overrides */
+.force-portrait .content-layer,
+.force-landscape .content-layer {
+    padding: 0 !important;
+    max-width: none !important;
+}
+
 .is-landscape .app-content-shaker {
     display: flex !important;
     flex-direction: row-reverse !important;

@@ -1,5 +1,4 @@
 # GEMINI MUD Client: Architectural Overview
-# GEMINI MUD Client: Architectural Overview
 
 This document provides a high-level overview of the MUME application's architecture to aid AI-driven development and refactoring.
 

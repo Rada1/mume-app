@@ -116,7 +116,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const btn = useButtons(abilities, characterClass);
     const joystick = useJoystick(triggerHaptic);
     const editor = useButtonEditor(btn, containerRef);
-    const viewport = useViewport();
+    const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
     const env = useEnvironment({
         lighting,
         setLighting: s.setLighting,
@@ -148,7 +148,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         actions: s.actions, setActions: s.setActions,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
         autoConnect: s.autoConnect, setAutoConnect: s.setAutoConnect,
-        showDebugEchoes: s.showDebugEchoes, setShowDebugEchoes: s.setShowDebugEchoes
+        showDebugEchoes: s.showDebugEchoes, setShowDebugEchoes: s.setShowDebugEchoes,
+        uiMode: s.uiMode, setUiMode: s.setUiMode,
+        disable3dScroll: s.disable3dScroll, setDisable3dScroll: s.setDisable3dScroll,
+        disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
+        isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode
     });
 
     const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems);

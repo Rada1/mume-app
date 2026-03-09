@@ -52,13 +52,22 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const executor = useCommandExecutor(deps);
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean }) => {
+        if (viewport.isMobile && !isSystem && !silent) {
+            console.log(`[Controller] Executing: "${cmd}"`, {
+                shouldFocusOption: options?.shouldFocus,
+                isInputPrefix: cmd.startsWith('input:'),
+                viewportIsMobile: viewport.isMobile,
+                activeElement: document.activeElement?.tagName
+            });
+        }
+
         if (!isSystem && !silent) {
             // Defensive focus: only focus elements if explicitly requested or on desktop.
             // On mobile, never auto-focus unless it's a specific 'input:' command AND we want that behavior.
             const isInputPrefix = cmd.startsWith('input:');
             const shouldFocus = options?.shouldFocus !== undefined 
                 ? options.shouldFocus 
-                : (!viewport.isMobile && isInputPrefix);
+                : (!viewport.isMobile || isInputPrefix);
             
             if (shouldFocus) {
                 setTimeout(() => {
@@ -74,6 +83,13 @@ export function useCommandController(deps: CommandControllerDeps) {
                         }
                     }
                 }, 10);
+            } else if (viewport.isMobile) {
+                // FORCE BLUR on mobile if focus wasn't requested.
+                // This breaks the "stuck focus" that causes the OS to re-open the keyboard.
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (inputEl && document.activeElement === inputEl) {
+                    inputEl.blur();
+                }
             }
         }
         

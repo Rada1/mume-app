@@ -10,7 +10,8 @@ export const AtmosphericLayer: React.FC = () => {
         inCombat,
         hitFlash,
         lightningEnabled,
-        deathStage
+        deathStage,
+        isImmersionMode
     } = useGame();
 
     return (
@@ -22,6 +23,7 @@ export const AtmosphericLayer: React.FC = () => {
             hitFlash={hitFlash}
             lightning={lightningEnabled}
             deathStage={deathStage}
+            isImmersionMode={isImmersionMode}
         />
     );
 };

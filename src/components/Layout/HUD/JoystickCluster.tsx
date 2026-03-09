@@ -49,16 +49,15 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                 zIndex: 1500,
                 position: 'absolute',
                 pointerEvents: 'auto',
-                cursor: isEditMode ? 'move' : undefined,
-                backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
-                border: (isEditMode && dragState?.id === 'joystick') ? '2px dashed #ffff00' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined),
+                cursor: isEditMode ? 'default' : undefined,
+                backgroundColor: isEditMode ? 'rgba(255,255,0,0.05)' : undefined,
+                border: isEditMode ? '1px dashed rgba(255,255,0,0.15)' : undefined,
                 borderRadius: '50%',
-                boxShadow: (isEditMode && dragState?.id === 'joystick') ? '0 0 30px rgba(255,255,0,0.4)' : undefined,
-                opacity: (isEditMode && dragState?.id === 'joystick') ? 0.6 : 1
+                boxShadow: undefined,
+                opacity: 1
             }}
             onPointerDown={(e) => {
-                if (isEditMode) handleDragStart(e, 'joystick', 'cluster');
-                else if (e.cancelable) e.preventDefault();
+                if (!isEditMode && e.cancelable) e.preventDefault();
             }}
         >
 

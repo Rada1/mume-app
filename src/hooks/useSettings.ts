@@ -28,6 +28,14 @@ interface UseSettingsDeps {
     setAutoConnect: (val: boolean) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
+    uiMode: import('../types').UiMode;
+    setUiMode: (val: import('../types').UiMode) => void;
+    disable3dScroll: boolean;
+    setDisable3dScroll: (val: boolean) => void;
+    disableSmoothScroll: boolean;
+    setDisableSmoothScroll: (val: boolean) => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -38,7 +46,11 @@ export function useSettings(deps: UseSettingsDeps) {
         actions, setActions,
         setSettings, setSetSettings,
         autoConnect, setAutoConnect,
-        showDebugEchoes, setShowDebugEchoes
+        showDebugEchoes, setShowDebugEchoes,
+        uiMode, setUiMode,
+        disable3dScroll, setDisable3dScroll,
+        disableSmoothScroll, setDisableSmoothScroll,
+        isImmersionMode, setIsImmersionMode
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState((MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
@@ -94,7 +106,11 @@ export function useSettings(deps: UseSettingsDeps) {
             characterClass,
             setSettings,
             autoConnect,
-            showDebugEchoes
+            showDebugEchoes,
+            uiMode,
+            disable3dScroll,
+            disableSmoothScroll,
+            isImmersionMode
         };
         // Note: buttons array is injected by the caller — see MudClient.exportSettings wrapper
         return settings;
@@ -111,7 +127,11 @@ export function useSettings(deps: UseSettingsDeps) {
             characterClass,
             setSettings,
             autoConnect,
-            showDebugEchoes
+            showDebugEchoes,
+            uiMode,
+            disable3dScroll,
+            disableSmoothScroll,
+            isImmersionMode
         };
         const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -144,6 +164,10 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.setSettings) setSetSettings(settings.setSettings);
                     if (settings.autoConnect !== undefined) setAutoConnect(settings.autoConnect);
                     if (settings.showDebugEchoes !== undefined) setShowDebugEchoes(settings.showDebugEchoes);
+                    if (settings.uiMode !== undefined) setUiMode(settings.uiMode);
+                    if (settings.disable3dScroll !== undefined) setDisable3dScroll(settings.disable3dScroll);
+                    if (settings.disableSmoothScroll !== undefined) setDisableSmoothScroll(settings.disableSmoothScroll);
+                    if (settings.isImmersionMode !== undefined) setIsImmersionMode(settings.isImmersionMode);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -216,6 +240,10 @@ export function useSettings(deps: UseSettingsDeps) {
         handleMmapperModeChange,
         setSettings, setSetSettings,
         autoConnect, setAutoConnect,
-        showDebugEchoes, setShowDebugEchoes
+        showDebugEchoes, setShowDebugEchoes,
+        uiMode, setUiMode,
+        disable3dScroll, setDisable3dScroll,
+        disableSmoothScroll, setDisableSmoothScroll,
+        isImmersionMode, setIsImmersionMode
     };
 }

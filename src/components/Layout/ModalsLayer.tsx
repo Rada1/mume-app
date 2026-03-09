@@ -70,7 +70,15 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setAutoConnect,
         showDebugEchoes,
         setShowDebugEchoes,
-        hasSeenOnboarding
+        hasSeenOnboarding,
+        uiMode,
+        setUiMode,
+        disable3dScroll,
+        setDisable3dScroll,
+        disableSmoothScroll,
+        setDisableSmoothScroll,
+        isImmersionMode,
+        setIsImmersionMode
     } = useGame() as any;
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
@@ -134,6 +142,14 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setAutoConnect={setAutoConnect}
                     showDebugEchoes={showDebugEchoes}
                     setShowDebugEchoes={setShowDebugEchoes}
+                    uiMode={uiMode}
+                    setUiMode={setUiMode}
+                    disable3dScroll={disable3dScroll}
+                    setDisable3dScroll={setDisable3dScroll}
+                    disableSmoothScroll={disableSmoothScroll}
+                    setDisableSmoothScroll={setDisableSmoothScroll}
+                    isImmersionMode={isImmersionMode}
+                    setIsImmersionMode={setIsImmersionMode}
                 />
             )}
 

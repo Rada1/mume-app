@@ -19,6 +19,7 @@ import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
 import { GameProvider, useGame } from './context/GameContext';
 import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
+import { DebugConsole } from './components/DebugConsole';
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 
@@ -57,10 +58,41 @@ const MudClient = () => {
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [managerSelectedSet, setManagerSelectedSet] = useState<string | null>(null);
     const [returnToManager, setReturnToManager] = useState(false);
+    const [isDebugOpen, setIsDebugOpen] = useState(false);
 
     const { handleDragStart, wasDraggingRef } = editor;
 
     const { spatButtons, setSpatButtons } = useSpatButtons(messages, scrollContainerRef, triggerHaptic);
+
+    // --- Global Mobile Focus Fix ---
+    // This is the most aggressive way to prevent the "stuck focus" keyboard pop-up bug.
+    // We listen for any touchstart on the entire document. If the touch is NOT on the input field,
+    // we immediately blur the input field. This happens BEFORE the click/pointer events fire,
+    // preventing the OS from thinking the user is interacting with a focused input.
+    useEffect(() => {
+        if (!isMobile) return;
+
+        const handleGlobalTouch = (e: TouchEvent) => {
+            const target = e.target as HTMLElement;
+            // Don't blur if the user is actually trying to type or click the prompt
+            if (target.tagName === 'INPUT' || target.classList.contains('cmd-prompt') || target.closest('.input-form')) {
+                return;
+            }
+
+            const inputEl = document.querySelector('.input-field') as HTMLInputElement;
+            if (inputEl && document.activeElement === inputEl) {
+                // We use requestAnimationFrame to ensure the blur happens 
+                // at the very start of the interaction cycle.
+                requestAnimationFrame(() => {
+                    inputEl.blur();
+                    console.log('[Global] Force blurred input to prevent keyboard pop');
+                });
+            }
+        };
+
+        document.addEventListener('touchstart', handleGlobalTouch, { passive: true, capture: true });
+        return () => document.removeEventListener('touchstart', handleGlobalTouch, { capture: true });
+    }, [isMobile]);
 
     useEffect(() => {
         document.documentElement.style.setProperty('--accent', accentColor);
@@ -113,7 +145,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${useGame().ui.mapExpanded ? 'is-map-expanded' : ''}`}
             style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
@@ -222,6 +254,26 @@ const MudClient = () => {
                 setManagerSelectedSet={setManagerSelectedSet}
                 connect={() => telnet.connect()}
             />
+
+            <DebugConsole isOpen={isDebugOpen} onClose={() => setIsDebugOpen(false)} />
+            <button 
+                onClick={(e) => { e.stopPropagation(); setIsDebugOpen(true); }}
+                style={{
+                    position: 'fixed',
+                    top: '10px',
+                    left: '10px',
+                    zIndex: 9999,
+                    background: 'rgba(0,0,0,0.5)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    color: '#fff',
+                    borderRadius: '4px',
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    pointerEvents: 'auto'
+                }}
+            >
+                🐛 Logs
+            </button>
         </div>
     );
 };

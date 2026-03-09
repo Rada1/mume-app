@@ -7,6 +7,7 @@ export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' 
 export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 'se' | 'sw';
 export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
 export type TriggerAction = 'show' | 'switch_set';
+export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 
 export interface Message {
     id: string;
@@ -187,6 +188,14 @@ export interface SettingsModalProps {
     setAutoConnect: (val: boolean) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
+    uiMode: UiMode;
+    setUiMode: (val: UiMode) => void;
+    disable3dScroll: boolean;
+    setDisable3dScroll: (val: boolean) => void;
+    disableSmoothScroll: boolean;
+    setDisableSmoothScroll: (val: boolean) => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -211,6 +220,10 @@ export interface SavedSettings {
     setSettings?: Record<string, ButtonSetSettings>;
     autoConnect?: boolean;
     showDebugEchoes?: boolean;
+    uiMode?: UiMode;
+    disable3dScroll?: boolean;
+    disableSmoothScroll?: boolean;
+    isImmersionMode?: boolean;
 }
 
 export interface RoomNode {

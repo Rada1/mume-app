@@ -18,6 +18,10 @@ export const useGameProviderState = () => {
     const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', (MASTER_SETTINGS as any).autoConnect ?? true);
     const [hasSeenOnboarding, setHasSeenOnboarding] = usePersistentState('mud-has-seen-onboarding', false);
     const [showDebugEchoes, setShowDebugEchoes] = usePersistentState('mud-show-debug-echoes', false);
+    const [uiMode, setUiMode] = usePersistentState<any>('mud-ui-mode', (MASTER_SETTINGS as any).uiMode ?? 'auto');
+    const [disable3dScroll, setDisable3dScroll] = usePersistentState('mud-disable-3d-scroll', (MASTER_SETTINGS as any).disable3dScroll ?? false);
+    const [disableSmoothScroll, setDisableSmoothScroll] = usePersistentState('mud-disable-smooth-scroll', (MASTER_SETTINGS as any).disableSmoothScroll ?? false);
+    const [isImmersionMode, setIsImmersionMode] = usePersistentState('mud-immersion-mode', (MASTER_SETTINGS as any).isImmersionMode ?? false);
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
@@ -184,6 +188,10 @@ export const useGameProviderState = () => {
         autoConnect, setAutoConnect,
         hasSeenOnboarding, setHasSeenOnboarding,
         showDebugEchoes, setShowDebugEchoes,
+        uiMode, setUiMode,
+        disable3dScroll, setDisable3dScroll,
+        disableSmoothScroll, setDisableSmoothScroll,
+        isImmersionMode, setIsImmersionMode,
         roomName, setRoomName, roomNameRef
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
@@ -191,7 +199,8 @@ export const useGameProviderState = () => {
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
-        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, roomName
+        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode, 
+        disable3dScroll, disableSmoothScroll, isImmersionMode, roomName
     ]);
 
     return { vitals, game };

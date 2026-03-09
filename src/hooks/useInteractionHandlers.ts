@@ -56,6 +56,17 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
 
     const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string) => {
         e.stopPropagation();
+
+        if (viewport.isMobile) {
+            const inputEl = document.querySelector('.input-field') as HTMLInputElement;
+            console.log(`[Interaction] Button click: "${button.label}"`, {
+                activeElement: document.activeElement?.tagName,
+                isKeyboardOpen: viewport.isKeyboardOpen,
+                inputReadOnly: inputEl?.readOnly,
+                inputHasFocus: document.activeElement === inputEl
+            });
+        }
+
         if (btn.isEditMode) {
             if (button.setId !== 'Xbox' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
             return;
@@ -64,6 +75,17 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         const targetEl = (e.currentTarget as HTMLElement);
         if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'teleport-manage'].includes(button.actionType || '')) setPopoverState(null);
         if (targetEl?.classList) { targetEl.classList.remove('btn-glow-active'); void targetEl.offsetWidth; targetEl.classList.add('btn-glow-active'); }
+
+        // --- Keyboard Focus Fix (Mobile) ---
+        // If we are on mobile, and the keyboard is NOT currently open (according to viewport tracker),
+        // we explicitly blur the input to ensure focus isn't "stuck" there. 
+        // A stuck focus causes the OS to re-trigger the keyboard on the next pointer interaction.
+        if (viewport.isMobile && !viewport.isKeyboardOpen) {
+            const inputEl = document.querySelector('.input-field') as HTMLInputElement;
+            if (inputEl && document.activeElement === inputEl) {
+                inputEl.blur();
+            }
+        }
 
         let cmd = button.command;
         if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : cmd; }
@@ -167,7 +189,6 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef]);
 
     const handleInputSwipe = useCallback((dir: string) => {
-        if (!viewport.isMobile) return;
         triggerHaptic(20);
         if (dir === 'up') setIsMapExpanded(true);
         else if (dir === 'down') {

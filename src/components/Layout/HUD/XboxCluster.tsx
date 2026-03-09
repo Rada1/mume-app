@@ -53,10 +53,10 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
         width: '220px',
         height: '220px',
         pointerEvents: 'auto',
-        cursor: isEditMode ? 'move' : undefined,
-        border: isEditMode ? '1px dashed rgba(255,255,0,0.3)' : undefined,
+        cursor: isEditMode ? 'default' : undefined,
+        border: isEditMode ? '1px dashed rgba(255,255,0,0.15)' : undefined,
         borderRadius: '50%',
-        backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
+        backgroundColor: isEditMode ? 'rgba(255,255,0,0.05)' : undefined,
         boxShadow: undefined,
         transformOrigin: 'bottom right',
         opacity: 1
@@ -80,23 +80,9 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
             className="xbox-cluster"
             style={style}
             onPointerDown={(e) => {
-                if (isEditMode) {
-                    handleDragStart(e, 'xbox', 'cluster');
-                }
-                else if (e.cancelable) e.preventDefault();
+                if (!isEditMode && e.cancelable) e.preventDefault();
             }}
         >
-            {isEditMode && (
-                <div
-                    className="resize-handle"
-                    style={{ top: '-10px', right: '-10px', zIndex: 1600 }}
-                    onPointerDown={(e) => {
-                        e.stopPropagation();
-                        handleDragStart(e, 'xbox', 'cluster-resize');
-                    }}
-                />
-            )}
-
             {['xbox-y', 'xbox-b', 'xbox-a', 'xbox-x', 'xbox-z', 'xbox-door'].map(id => {
                 const button = buttons.find(b => b.id === id);
                 if (!button) return null;

@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
-export function useViewport() {
+export function useViewport(
+    uiMode: import('../types').UiMode = 'auto', 
+    disableSmoothScroll: boolean = false, 
+    disable3dScroll: boolean = false,
+    isImmersionMode: boolean = false
+) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
@@ -23,12 +28,16 @@ export function useViewport() {
     }, []);
 
     const isMobile = useMemo(() => {
+        if (uiMode === 'desktop') return false;
+        if (uiMode === 'portrait' || uiMode === 'landscape') return true;
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || windowWidth <= 768;
-    }, [windowWidth]);
+    }, [windowWidth, uiMode]);
 
     const isLandscape = useMemo(() => {
+        if (uiMode === 'landscape') return true;
+        if (uiMode === 'portrait' || uiMode === 'desktop') return false;
         return isMobile && windowWidth > window.innerHeight;
-    }, [isMobile, windowWidth]);
+    }, [isMobile, windowWidth, uiMode]);
 
     const scrollToBottom = useCallback((force = false, instant = false) => {
         if (!scrollContainerRef.current) return;
@@ -47,16 +56,18 @@ export function useViewport() {
 
         isAutoScrollingRef.current = true;
 
+        const isSmoothEnabled = !instant && !disableSmoothScroll && isImmersionMode;
+
         const performScroll = () => {
             if (messagesEndRef.current) {
                 messagesEndRef.current.scrollIntoView({ 
-                    behavior: instant ? 'auto' : 'smooth',
+                    behavior: isSmoothEnabled ? 'smooth' : 'auto',
                     block: 'end'
                 });
             } else {
                 container.scrollTo({ 
                     top: container.scrollHeight + 1000, 
-                    behavior: instant ? 'auto' : 'smooth' 
+                    behavior: isSmoothEnabled ? 'smooth' : 'auto'
                 });
             }
         };
@@ -64,7 +75,7 @@ export function useViewport() {
         performScroll();
 
         // Second pass after a short delay to catch typewriter or image layout shifts
-        const timeout = instant ? 40 : 250;
+        const timeout = isSmoothEnabled ? 250 : 40;
         setTimeout(() => {
             if (isLockedToBottomRef.current) performScroll();
             isAutoScrollingRef.current = false;
@@ -176,8 +187,15 @@ export function useViewport() {
                 const logContainer = document.querySelector('.message-log-container');
                 if (logContainer) {
                     const width = logContainer.clientWidth;
-                    const fontSize = (width / 48.5) * logFontSize;
-                    document.documentElement.style.setProperty('--dynamic-log-size', `${Math.max(6, fontSize)}px`);
+                    // Account for 20px padding on each side of .message-log (40px total)
+                    const usableWidth = Math.max(0, width - 40);
+                    // Space Mono width is approx 0.6 of height. 
+                    // To fit 80 chars: 80 * 0.6 * fontSize = usableWidth
+                    // fontSize = usableWidth / 48
+                    const fontSize = (usableWidth / 48) * logFontSize;
+                    // Cap at a reasonable max (40px) to prevent massive text issues
+                    const safeSize = Math.min(40, Math.max(6, fontSize));
+                    document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
                 }
             } else {
                 document.documentElement.style.setProperty('--dynamic-log-size', `${16 * logFontSize}px`);
@@ -210,6 +228,23 @@ export function useViewport() {
             window.removeEventListener('orientationchange', updateHeight);
         };
     }, [updateHeight]);
+
+    useEffect(() => {
+        const root = document.documentElement;
+        root.classList.remove('force-desktop', 'force-portrait', 'force-landscape');
+        if (uiMode === 'desktop') root.classList.add('force-desktop');
+        else if (uiMode === 'portrait') root.classList.add('force-portrait');
+        else if (uiMode === 'landscape') root.classList.add('force-landscape');
+    }, [uiMode]);
+    
+    useEffect(() => {
+        const root = document.documentElement;
+        if (disable3dScroll || !isImmersionMode) root.classList.add('no-3d-scroll');
+        else root.classList.remove('no-3d-scroll');
+        
+        if (isImmersionMode) root.classList.add('immersion-mode');
+        else root.classList.remove('immersion-mode');
+    }, [disable3dScroll, isImmersionMode]);
 
     return useMemo(() => ({
         isMobile,

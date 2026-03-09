@@ -24,6 +24,14 @@ interface GeneralSettingsProps {
     handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
     showDebugEchoes: boolean;
     setShowDebugEchoes: (val: boolean) => void;
+    uiMode: import('../../types').UiMode;
+    setUiMode: (val: import('../../types').UiMode) => void;
+    disable3dScroll: boolean;
+    setDisable3dScroll: (val: boolean) => void;
+    disableSmoothScroll: boolean;
+    setDisableSmoothScroll: (val: boolean) => void;
+    isImmersionMode: boolean;
+    setIsImmersionMode: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -48,6 +56,14 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     handleFileUpload,
     showDebugEchoes,
     setShowDebugEchoes,
+    uiMode,
+    setUiMode,
+    disable3dScroll,
+    setDisable3dScroll,
+    disableSmoothScroll,
+    setDisableSmoothScroll,
+    isImmersionMode,
+    setIsImmersionMode,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -95,8 +111,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </button>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                    <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: '1 1 120px' }}>
                         <label className="setting-label">Protocol</label>
                         <select
                             className="setting-input"
@@ -107,7 +123,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             <option value="wss:">wss://</option>
                         </select>
                     </div>
-                    <div style={{ flex: 3 }}>
+                    <div style={{ flex: '3 1 200px' }}>
                         <label className="setting-label">Host / Domain</label>
                         <input
                             className="setting-input"
@@ -118,8 +134,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                    <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: '1 1 100px' }}>
                         <label className="setting-label">Port</label>
                         <input
                             className="setting-input"
@@ -128,7 +144,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             onChange={e => updateUrl({ port: e.target.value })}
                         />
                     </div>
-                    <div style={{ flex: 3 }}>
+                    <div style={{ flex: '3 1 200px' }}>
                         <label className="setting-label">Path</label>
                         <input
                             className="setting-input"
@@ -175,8 +191,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
 
                 <form onSubmit={(e) => { e.preventDefault(); connect(); }}>
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                        <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 180px' }}>
                             <label htmlFor="character-name" className="setting-label">Character Name</label>
                             <input
                                 id="character-name"
@@ -188,7 +204,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 onChange={e => setLoginName(e.target.value)}
                             />
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: '1 1 180px' }}>
                             <label htmlFor="character-password" className="setting-label">Password</label>
                             <input
                                 id="character-password"
@@ -376,6 +392,62 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
+            <div className="setting-group" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Interface Mode</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Force Desktop or Mobile orientation.</div>
+                    </div>
+                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-color)', overflow: 'hidden', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        {(['auto', 'desktop', 'portrait', 'landscape'] as const).map((m) => (
+                            <button
+                                key={m}
+                                onClick={() => setUiMode(m)}
+                                style={{
+                                    padding: '4px 10px', borderRadius: '18px', border: 'none', cursor: 'pointer',
+                                    backgroundColor: uiMode === m ? 'var(--accent)' : 'transparent',
+                                    color: uiMode === m ? '#000' : 'var(--text-primary)',
+                                    fontSize: '0.7rem', fontWeight: 'bold',
+                                    textTransform: 'capitalize',
+                                    margin: '2px'
+                                }}
+                            >{m}</button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <div className="setting-group" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Immersion Mode</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+                            Enables atmospheric weather, dynamic lighting, 3D scrolling effects, and smooth animations.
+                        </div>
+                    </div>
+                    <button
+                        className={`setting-toggle ${isImmersionMode ? 'active' : ''}`}
+                        onClick={() => setIsImmersionMode(!isImmersionMode)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isImmersionMode ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: isImmersionMode ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </button>
+                </div>
+                {!isImmersionMode && (
+                    <div style={{ marginTop: '10px', fontSize: '0.7rem', color: 'var(--text-dim)', fontStyle: 'italic', opacity: 0.8 }}>
+                        Note: Disabling immersion mode improves performance and provides a flatter, faster interface.
+                    </div>
+                )}
+            </div>
             <div className="setting-group">
                 <label className="setting-label">Background Image</label>
                 <div style={{ display: 'flex', gap: '10px' }}>

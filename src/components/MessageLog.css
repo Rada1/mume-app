@@ -13,6 +13,11 @@
     border-radius: 8px;
 }
 
+.no-3d-scroll .message-log-container {
+    perspective: none !important;
+    transform-style: flat !important;
+}
+
 .message-log-container.drop-hover-active {
     box-shadow: inset 0 0 50px rgba(100, 255, 100, 0.2) !important;
     background-color: rgba(100, 255, 100, 0.05) !important;
@@ -44,9 +49,13 @@
     touch-action: manipulation;
     cursor: text;
     min-height: 0;
-    perspective: 1200px;
-    perspective-origin: 0% 0%;
     transform-style: preserve-3d;
+}
+
+.no-3d-scroll .message-log {
+    perspective: none !important;
+    transform-style: flat !important;
+    mask-image: none !important;
 }
 
 .message-log::-webkit-scrollbar {
@@ -71,6 +80,11 @@
     animation-timeline: view();
     animation-range: exit -240px exit 100%;
     transform-origin: left center;
+}
+
+.no-3d-scroll .message {
+    animation: none !important;
+    transform: none !important;
 }
 
 @keyframes vanish-into-distance {

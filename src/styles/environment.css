@@ -120,14 +120,47 @@
         transparent 85%);
 }
 
+.is-mobile .lighting-sun .lighting-inner {
+    /* Spans horizontally across the log, but shorter reach vertically */
+    background: radial-gradient(ellipse 100% 70% at 50% -10%, 
+        rgba(255, 245, 180, 0.65) 0%, 
+        rgba(255, 210, 50, 0.25) 30%, 
+        transparent 75%);
+}
+
 .lighting-moon .lighting-inner {
     background: radial-gradient(circle at 50% 15%, rgba(140, 180, 255, 0.12), transparent 80%),
         linear-gradient(to bottom, rgba(50, 100, 255, 0.04), transparent);
 }
 
 .lighting-artificial .lighting-inner {
-    background: radial-gradient(circle at 50% 50%, rgba(255, 110, 20, 0.3), transparent 66%);
-    animation: torch-flicker 2.4s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    /* Positioned at the bottom center to glow from behind the input bar - softened */
+    background: radial-gradient(circle at 50% 92%, rgba(255, 110, 20, 0.22), transparent 70%);
+    animation: torch-flicker 3.2s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.is-mobile .lighting-artificial .lighting-inner {
+    /* Positioned at the bottom center in portrait - offset by gutter when keyboard is down */
+    --torch-y: 100%;
+    /* Softened red hue for mobile */
+    background: radial-gradient(ellipse 140% 60% at 50% var(--torch-y), rgba(255, 60, 10, 0.28) 0%, transparent 75%);
+}
+
+.is-mobile:not(.is-landscape):not(.kb-open) .lighting-artificial .lighting-inner {
+    /* When keyboard is down, the input bar sits above the 280px mapper gutter */
+    --torch-y: calc(100% - 280px);
+}
+
+.is-mobile:not(.is-landscape):not(.kb-open).is-map-expanded .lighting-artificial .lighting-inner {
+    /* When map is expanded, the gutter is 65vh */
+    --torch-y: calc(100% - 65vh);
+}
+
+.is-mobile.is-landscape .lighting-artificial .lighting-inner {
+    /* Shifted horizontally to align with the main content column in landscape (offset by 30vw mapper) */
+    --torch-y: 100%;
+    /* Matching the softened red mobile hue */
+    background: radial-gradient(ellipse 100% 60% at 65% var(--torch-y), rgba(255, 60, 10, 0.28) 0%, transparent 75%);
 }
 
 .lighting-dark .lighting-inner {

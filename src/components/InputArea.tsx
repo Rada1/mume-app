@@ -149,11 +149,13 @@ const InputArea: React.FC<InputAreaProps> = ({
                             // Clear startPos on focus to prevent the 'keyboard pop-up' 
                             // from being detected as a swipe-up.
                             startPos.current = null;
+                            if (isMobile) console.log('[InputArea] Focus detected (keyboard opening)');
                         }}
                         onBlur={() => {
                             // On mobile, reset to readonly to prevent accidental keyboard pops
                             if (isMobile && inputRef.current) {
                                 inputRef.current.readOnly = true;
+                                console.log('[InputArea] Blur detected (keyboard closing)');
                             }
                         }}
                         onClick={(e) => {
