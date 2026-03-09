@@ -17,7 +17,8 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
     const { stats } = useVitals();
     const { inCombat, executeCommand } = useGame();
 
-    if (isMobile) return null;
+    // Always return null to hide regular stat bars, as requested.
+    return null;
 
     const handleWimpyChange = (val: number) => executeCommand(`wimpy ${val}`);
 

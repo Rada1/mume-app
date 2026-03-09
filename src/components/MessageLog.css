@@ -197,13 +197,61 @@
     gap: 8px;
 }
 
-/* Terrain Glows */
+/* Terrain Glows with Rich Aesthetics */
+.input-area.terrain-forest {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.25), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(34, 197, 94, 0.4) !important;
+    background: linear-gradient(135deg, rgba(20, 40, 20, 0.6), rgba(0, 0, 0, 0.5)) !important;
+}
+
+.input-area.terrain-field {
+    box-shadow: 0 0 20px rgba(163, 230, 53, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(163, 230, 53, 0.35) !important;
+    background: linear-gradient(135deg, rgba(40, 45, 20, 0.5), rgba(0, 0, 0, 0.5)) !important;
+}
+
+.input-area.terrain-brush {
+    box-shadow: 0 0 20px rgba(120, 113, 108, 0.25), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(120, 113, 108, 0.4) !important;
+    background: linear-gradient(135deg, rgba(35, 30, 25, 0.6), rgba(0, 0, 0, 0.5)) !important;
+}
+
+.input-area.terrain-water {
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(56, 189, 248, 0.45) !important;
+    background: linear-gradient(135deg, rgba(20, 35, 60, 0.6), rgba(0, 0, 0, 0.5)) !important;
+}
+
+.input-area.terrain-road {
+    box-shadow: 0 0 20px rgba(148, 163, 184, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(148, 163, 184, 0.3) !important;
+    background: linear-gradient(135deg, rgba(30, 30, 35, 0.6), rgba(0, 0, 0, 0.5)) !important;
+}
+
+.input-area.terrain-mountain {
+    box-shadow: 0 0 20px rgba(248, 250, 252, 0.1), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(248, 250, 252, 0.25) !important;
+    background: linear-gradient(135deg, rgba(40, 40, 45, 0.7), rgba(0, 0, 0, 0.6)) !important;
+}
+
+.input-area.terrain-hills {
+    box-shadow: 0 0 20px rgba(180, 83, 9, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(180, 83, 9, 0.35) !important;
+    background: linear-gradient(135deg, rgba(45, 35, 20, 0.6), rgba(0, 0, 0, 0.5)) !important;
+}
+
 .input-area.terrain-tunnel,
 .input-area.terrain-cave,
 .input-area.terrain-underground {
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.05) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    background: rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 1), 0 0 15px rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.input-area.terrain-city {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(251, 191, 36, 0.3) !important;
+    background: linear-gradient(135deg, rgba(45, 40, 20, 0.5), rgba(0, 0, 0, 0.5)) !important;
 }
 
 .input-form {

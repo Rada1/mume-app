@@ -10,6 +10,7 @@ This document provides a high-level overview of the MUME application's architect
 - **Layered UI**: The main entry point (`src/index.tsx`) is a thin orchestrator that delegates to semantic layers in `src/components/Layout/`.
 - **Type Safety**: A "Zero-Any" policy is enforced across the codebase.
 - **Consolidated UI State**: All shared game and UI states are centralized in `GameContext.tsx`.
+- **Immersion Mode**: A master toggle (enabled by default) that synchronizes weather, lighting, 3D scroll effects, and smooth animations. Managed via `isImmersionMode` in `GameContext.tsx`.
 
 ## 🎯 Feature Mapping (Where to look first)
 

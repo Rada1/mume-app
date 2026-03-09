@@ -4,7 +4,7 @@ export function useViewport(
     uiMode: import('../types').UiMode = 'auto', 
     disableSmoothScroll: boolean = false, 
     disable3dScroll: boolean = false,
-    isImmersionMode: boolean = false
+    isImmersionMode: boolean = true
 ) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);

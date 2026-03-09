@@ -210,7 +210,7 @@ const MudClient = () => {
             }}
             onClick={handleBackgroundClick}
         >
-            <DiagnosticOverlay />
+            {/* <DiagnosticOverlay /> */}
             <div className={`app-content-shaker ${rumble ? 'rumble-active' : ''}`} style={{ flex: 1, position: 'relative' }}>
                 <div className="background-layer" style={{
                     backgroundImage: bgImage ? `url(${bgImage})` : 'none',
