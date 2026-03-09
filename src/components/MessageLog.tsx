@@ -41,7 +41,6 @@ interface MessageLogProps {
                     <TypewriterText 
                         html={content} 
                         speed={2} 
-                        onUpdate={() => scrollToBottom(false, true, 'Typewriter')}
                     />
                 ) : (
                     <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
@@ -65,14 +64,13 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { activePrompt } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
-    // Virtualization state: start with a healthy range
-    const [visibleRange, setVisibleRange] = useState({ start: 0, end: 100 });
+    // Removed virtualization to ensure bit-perfect scroll height accuracy
     
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
 
-        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 40;
 
         if (!viewport.isAutoScrollingRef.current) {
             if (viewport.isLockedToBottomRef.current !== isNearBottom) {
@@ -80,22 +78,12 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
         }
 
-        // Simple virtualization: update visible window based on scroll
-        const scrollTop = container.scrollTop;
-        const containerHeight = container.clientHeight;
-        const estimatedMsgHeight = 30; 
-        
-        const start = Math.max(0, Math.floor(scrollTop / estimatedMsgHeight) - 20);
-        const end = Math.min(messages.length, Math.ceil((scrollTop + containerHeight) / estimatedMsgHeight) + 20);
-        
-        if (Math.abs(start - visibleRange.start) > 10 || Math.abs(end - visibleRange.end) > 10) {
-            setVisibleRange({ start, end });
-        }
-    }, [viewport, messages.length, visibleRange]);
+        // Virtualization removed to fix scroll height drift (Diff > 200px)
+    }, [viewport, messages.length]);
 
     useEffect(() => {
         handleScroll();
-    }, [messages.length]);
+    }, [messages.length, activePrompt, handleScroll]);
 
     const lastMessagesRef = React.useRef(messages);
 
@@ -113,28 +101,19 @@ const MessageLog: React.FC<MessageLogProps> = ({
         } else if (viewport.isLockedToBottomRef.current) {
             viewport.scrollToBottom(true, false, 'LayoutEffect');
         }
-    }, [messages, viewport]);
+    }, [messages, activePrompt, viewport]);
 
     const renderedMessages = useMemo(() => {
-        return messages.map((msg, i) => {
-            // Always render the last 30 messages to prevent any popping at the bottom
-            const isAtBottom = i >= messages.length - 30;
-
-            if (i < visibleRange.start || (i > visibleRange.end && !isAtBottom)) {
-                const h = msg.isRoomName ? 20 : (msg.textRaw.length > 100 ? 80 : 30);
-                return <div key={msg.id} style={{ height: `${h}px` }} />;
-            }
-            return (
-                <MessageItem
-                    key={msg.id}
-                    msg={msg}
-                    processMessageHtml={processMessageHtml}
-                    inCombat={inCombat}
-                    scrollToBottom={scrollToBottom}
-                />
-            );
-        });
-    }, [messages, visibleRange, processMessageHtml, inCombat]);
+        return messages.map((msg) => (
+            <MessageItem
+                key={msg.id}
+                msg={msg}
+                processMessageHtml={processMessageHtml}
+                inCombat={inCombat}
+                scrollToBottom={scrollToBottom}
+            />
+        ));
+    }, [messages, processMessageHtml, inCombat]);
 
     const activePromptContent = useMemo(() => {
         if (!activePrompt) return null;
@@ -161,7 +140,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
         >
             {renderedMessages}
             {activePromptContent}
-            <div ref={messagesEndRef} style={{ scrollMarginBottom: '100px', height: '1px' }} />
+            {/* 12px "Visual Safe Zone" clears the input bar shadow and 3D perspective distortion */}
+            <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '12px', flexShrink: 0 }} />
         </div>
     );
 };

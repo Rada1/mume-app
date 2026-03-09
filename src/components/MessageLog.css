@@ -34,13 +34,13 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
     touch-action: pan-y;
-    padding-bottom: 15px;
+    padding-bottom: 0px; /* Flush with bottom, spacer handles the tiny gap */
     padding-top: 10px;
-    scroll-padding-bottom: 30px;
+    /* scroll-padding-bottom: 20px; - Removed to fix manual scroll math conflicts */
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
     font-size: var(--dynamic-log-size, 16px);
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, black 240px);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, black 150px);
     position: relative;
     user-select: text;
     -webkit-user-select: text;
@@ -50,6 +50,11 @@
     cursor: text;
     min-height: 0;
     transform-style: preserve-3d;
+}
+
+.immersion-mode .message-log {
+    padding-bottom: 5px !important; /* Tightest safe margin for 3D tilt */
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, black 120px) !important;
 }
 
 .no-3d-scroll .message-log {
@@ -346,21 +351,6 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
     z-index: 3100 !important;
     pointer-events: auto !important;
-}
-
-@media (max-width: 600px) {
-    .message-log {
-        padding-left: 6px !important;
-        padding-right: 6px !important;
-        padding-bottom: 15px !important;
-        padding-top: 10px !important;
-        scroll-padding-bottom: 30px !important;
-    }
-
-    .input-area {
-        margin: 0 6px 2px 6px !important;
-        padding: 8px 12px !important;
-    }
 }
 
 /* Spat Buttons inside Command Bar */

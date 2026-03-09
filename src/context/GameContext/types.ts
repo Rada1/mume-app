@@ -252,4 +252,7 @@ export interface GameContextType {
     spatButtons: SpatButton[];
     setSpatButtons: Dispatch<SetStateAction<SpatButton[]>>;
     triggerSpitManual: (b: CustomButton) => void;
+
+    diagnosticLogs: string[];
+    addDiagnosticLog: (msg: string) => void;
 }

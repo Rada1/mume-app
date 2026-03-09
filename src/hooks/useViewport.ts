@@ -50,23 +50,34 @@ export function useViewport(
         }
 
         const currentScroll = container.scrollTop;
-        const targetScroll = container.scrollHeight - container.clientHeight;
+        const targetScroll = Math.max(0, container.scrollHeight - container.clientHeight);
 
         if (!force) {
-            const threshold = 15;
+            const threshold = 15; 
             const isNearBottom = targetScroll - currentScroll < threshold;
             if (!isNearBottom) return;
         }
 
-        isAutoScrollingRef.current = true;
-        const isSmoothEnabled = !instant && !disableSmoothScroll && isImmersionMode;
+        // Seamless Continuity: If already gliding and the target hasn't moved much (sub-pixel), let it be.
+        // If it moved significantly (>0.5px), restart or extend the glide.
+        if (isAutoScrollingRef.current && !instant && Math.abs(targetScroll - ((container as any).lastTarget || 0)) < 0.5) {
+            return;
+        }
+        (container as any).lastTarget = targetScroll;
 
-        if (isSmoothEnabled && Math.abs(targetScroll - currentScroll) > 1) {
+        const isSmoothEnabled = !instant && !disableSmoothScroll && isImmersionMode;
+        if (isSmoothEnabled && Math.abs(targetScroll - currentScroll) > 0.5) {
+            isAutoScrollingRef.current = true;
             const startTime = performance.now();
-            const duration = 600; 
-            const startScroll = currentScroll;
+            const duration = 250; 
+            const startScroll = container.scrollTop;
 
             const animate = (currentTime: number) => {
+                if (!isAutoScrollingRef.current) {
+                    scrollAnimationRef.current = null;
+                    return;
+                }
+
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
                 const easeOut = 1 - Math.pow(2, -10 * progress);
@@ -74,9 +85,13 @@ export function useViewport(
                 const dynamicTarget = container.scrollHeight - container.clientHeight;
                 const currentDistance = dynamicTarget - startScroll;
                 
-                container.scrollTop = startScroll + (currentDistance * easeOut);
+                // Sub-pixel accurate glide path
+                const newScroll = startScroll + (currentDistance * easeOut);
+                
+                // Snap earlier (98%) to dynamicTarget to prevent rounding "jump" at the very end
+                container.scrollTop = progress > 0.98 ? dynamicTarget : newScroll;
 
-                if (progress < 1 && isAutoScrollingRef.current) {
+                if (progress < 1) {
                     scrollAnimationRef.current = requestAnimationFrame(animate);
                 } else {
                     container.scrollTop = container.scrollHeight - container.clientHeight;
@@ -93,8 +108,11 @@ export function useViewport(
 
         if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
         autoScrollTimeoutRef.current = setTimeout(() => {
-            isAutoScrollingRef.current = false;
-        }, 800);
+            // Only clear if not actually animating anymore
+            if (!scrollAnimationRef.current) {
+                isAutoScrollingRef.current = false;
+            }
+        }, 1000);
     }, [disableSmoothScroll, isImmersionMode]);
 
     useEffect(() => {
@@ -107,6 +125,8 @@ export function useViewport(
             const newHeight = container.scrollHeight;
             if (newHeight === lastHeight) return;
             
+            // If already animating, the animation loop itself will track the height.
+            // But for simple snaps or stillness, let's follow the growth.
             if (isAutoScrollingRef.current) {
                 lastHeight = newHeight;
                 return;
@@ -115,9 +135,10 @@ export function useViewport(
             lastHeight = newHeight;
 
             if (isLockedToBottomRef.current) {
+                // Remove the delay, use RAF for sub-pixel accuracy
                 requestAnimationFrame(() => {
                     if (isLockedToBottomRef.current && !isAutoScrollingRef.current) {
-                        scrollToBottom(true, true, 'ResizeObserver');
+                        scrollToBottom(true, true, 'ResizeObserver_Growth');
                     }
                 });
             }
