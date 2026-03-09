@@ -104,12 +104,6 @@ export function useCommandController(deps: CommandControllerDeps) {
             executeCommand(cmd);
         }
 
-        if (viewport?.scrollToBottom) {
-            viewport.scrollToBottom(true, true);
-            setTimeout(() => viewport.scrollToBottom(true, true), 30);
-        }
-
-
     }, [input, executeCommand, viewport, isNoviceMode, setInput, deps.mapperRef]);
 
     return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleDragStart };

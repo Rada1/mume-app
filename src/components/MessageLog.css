@@ -76,15 +76,25 @@
     will-change: transform, opacity;
     image-rendering: pixelated;
     -webkit-font-smoothing: subpixel-antialiased;
-    animation: vanish-into-distance linear both;
-    animation-timeline: view();
-    animation-range: exit -240px exit 100%;
-    transform-origin: left center;
+    
+    /* Fallback for browsers without animation-timeline */
+    transform-origin: 50% 0%;
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Modern Scroll-Driven 3D Effects */
+@supports (animation-timeline: view()) {
+    .message {
+        animation: vanish-into-distance linear both;
+        animation-timeline: view();
+        animation-range: exit -150px exit 100%;
+    }
 }
 
 .no-3d-scroll .message {
     animation: none !important;
     transform: none !important;
+    transition: none !important;
 }
 
 @keyframes vanish-into-distance {
@@ -94,9 +104,9 @@
         filter: blur(0);
     }
     to {
-        opacity: 0.4;
-        transform: translateZ(-200px) rotateX(-15deg);
-        filter: blur(1px);
+        opacity: 0.3;
+        transform: translateZ(-300px) rotateX(-25deg);
+        filter: blur(1.5px);
     }
 }
 

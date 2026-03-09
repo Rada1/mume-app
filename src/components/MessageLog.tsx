@@ -23,7 +23,7 @@ interface MessageLogProps {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string,
     inCombat: boolean,
-    scrollToBottom: (force?: boolean, instant?: boolean) => void;
+    scrollToBottom: (force?: boolean, instant?: boolean, source?: string) => void;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName), [msg.html, msg.id, msg.isRoomName, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -41,7 +41,7 @@ interface MessageLogProps {
                     <TypewriterText 
                         html={content} 
                         speed={2} 
-                        onUpdate={() => scrollToBottom(false, true)}
+                        onUpdate={() => scrollToBottom(false, true, 'Typewriter')}
                     />
                 ) : (
                     <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
@@ -108,10 +108,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
                 // User commands snap instantly, game text glides smoothly
-                viewport.scrollToBottom(true, lastMsg?.type === 'user'); 
+                viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage'); 
             }
         } else if (viewport.isLockedToBottomRef.current) {
-            viewport.scrollToBottom(true, false);
+            viewport.scrollToBottom(true, false, 'LayoutEffect');
         }
     }, [messages, viewport]);
 

@@ -13,6 +13,7 @@ export function useViewport(
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const scrollAnimationRef = useRef<number | null>(null);
+    const autoScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const isAutoScrollingRef = useRef<boolean>(false);
     const isLockedToBottomRef = useRef(true);
 
@@ -39,7 +40,7 @@ export function useViewport(
         return isMobile && windowWidth > window.innerHeight;
     }, [isMobile, windowWidth, uiMode]);
 
-    const scrollToBottom = useCallback((force = false, instant = false) => {
+    const scrollToBottom = useCallback((force = false, instant = false, source = 'unknown') => {
         if (!scrollContainerRef.current) return;
         const container = scrollContainerRef.current;
 
@@ -48,39 +49,92 @@ export function useViewport(
             scrollAnimationRef.current = null;
         }
 
+        const currentScroll = container.scrollTop;
+        const targetScroll = container.scrollHeight - container.clientHeight;
+
         if (!force) {
             const threshold = 15;
-            const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+            const isNearBottom = targetScroll - currentScroll < threshold;
             if (!isNearBottom) return;
         }
 
         isAutoScrollingRef.current = true;
-
         const isSmoothEnabled = !instant && !disableSmoothScroll && isImmersionMode;
 
-        const performScroll = () => {
-            if (messagesEndRef.current) {
-                messagesEndRef.current.scrollIntoView({ 
-                    behavior: isSmoothEnabled ? 'smooth' : 'auto',
-                    block: 'end'
-                });
-            } else {
-                container.scrollTo({ 
-                    top: container.scrollHeight + 1000, 
-                    behavior: isSmoothEnabled ? 'smooth' : 'auto'
+        if (isSmoothEnabled && Math.abs(targetScroll - currentScroll) > 1) {
+            const startTime = performance.now();
+            const duration = 600; // Smoother, longer glide
+            const startScroll = currentScroll;
+            const distance = targetScroll - startScroll;
+
+            const animate = (currentTime: number) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+
+                // Exponential ease-out for a "premium" gliding feel
+                const easeOut = 1 - Math.pow(2, -10 * progress);
+                
+                // Recalculate target every frame in case height changes (typewriter, images, etc.)
+                const dynamicTarget = container.scrollHeight - container.clientHeight;
+                const currentDistance = dynamicTarget - startScroll;
+                
+                container.scrollTop = startScroll + (currentDistance * easeOut);
+
+                if (progress < 1 && isAutoScrollingRef.current) {
+                    scrollAnimationRef.current = requestAnimationFrame(animate);
+                } else {
+                    // Final snap to guarantee perfect bottom alignment
+                    container.scrollTop = container.scrollHeight - container.clientHeight;
+                    isAutoScrollingRef.current = false;
+                    scrollAnimationRef.current = null;
+                }
+            };
+
+            scrollAnimationRef.current = requestAnimationFrame(animate);
+        } else {
+            container.scrollTop = targetScroll;
+            isAutoScrollingRef.current = false;
+        }
+
+        if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
+        autoScrollTimeoutRef.current = setTimeout(() => {
+            isAutoScrollingRef.current = false;
+        }, 800);
+    }, [disableSmoothScroll, isImmersionMode]);
+
+    // --- Intelligent Resize-Based Scrolling ---
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        let lastHeight = container.scrollHeight;
+
+        const resizeObserver = new ResizeObserver(() => {
+            const newHeight = container.scrollHeight;
+            if (newHeight === lastHeight) return;
+            
+            // If we are already auto-scrolling (gliding), don't interrupt it with a snap
+            if (isAutoScrollingRef.current) {
+                lastHeight = newHeight;
+                return;
+            }
+
+            lastHeight = newHeight;
+
+            if (isLockedToBottomRef.current) {
+                requestAnimationFrame(() => {
+                    // Re-check lock and auto-scroll state before executing
+                    if (isLockedToBottomRef.current && !isAutoScrollingRef.current) {
+                        // For height changes (like typewriter), use microsnaps (instant)
+                        scrollToBottom(true, true, 'ResizeObserver');
+                    }
                 });
             }
-        };
+        });
 
-        performScroll();
-
-        // Second pass after a short delay to catch typewriter or image layout shifts
-        const timeout = isSmoothEnabled ? 250 : 40;
-        setTimeout(() => {
-            if (isLockedToBottomRef.current) performScroll();
-            isAutoScrollingRef.current = false;
-        }, timeout);
-    }, []);
+        resizeObserver.observe(container);
+        return () => resizeObserver.disconnect();
+    }, [scrollToBottom]);
 
     const [logFontSize, setLogFontSize] = useState(() => {
         const saved = localStorage.getItem('mud-log-font-size');

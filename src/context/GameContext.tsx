@@ -57,7 +57,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         lighting, lightningEnabled, weather, isFoggy,
         actions, actionsRef,
         inCombat, status, characterName,
-        mood, spellSpeed, alertness, playerPosition
+        mood, spellSpeed, alertness, playerPosition,
+        isImmersionMode
     } = s;
 
     const { stats, rumble, hitFlash, deathStage, target, activePrompt } = v;
