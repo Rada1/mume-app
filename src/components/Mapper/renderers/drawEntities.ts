@@ -4,6 +4,10 @@ import { GRID_SIZE } from '../mapperUtils';
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
     const { ctx, isDarkMode, camera, visitedAtCoord } = rCtx;
     const s = GRID_SIZE;
+
+    // Skip drawing grid if too zoomed out
+    if (camera.zoom < 0.1) return;
+
     ctx.beginPath();
     // Darker grid for grey background in light mode
     ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.12)';

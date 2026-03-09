@@ -109,9 +109,14 @@ export const useMapperRenderer = ({
         }
 
         const cacheParams = `${curZInt}_${camera.zoom}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}`;
+        
+        // Cache rebuild threshold should scale with zoom.
+        // At high zoom, we want tight bounds (GRID_SIZE * 2.5).
+        // At low zoom, we can tolerate much more movement before rebuilding the expensive background.
+        const movementThreshold = Math.max(GRID_SIZE * 2.5, (GRID_SIZE * 5) / Math.max(0.01, camera.zoom));
         const cameraDist = Math.hypot(camera.x - (cache as any).lastCamX, camera.y - (cache as any).lastCamY);
         
-        const needsRebuild = cache.lastParams !== cacheParams || cameraDist > (GRID_SIZE * 2.5);
+        const needsRebuild = cache.lastParams !== cacheParams || cameraDist > movementThreshold;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
@@ -132,8 +137,12 @@ export const useMapperRenderer = ({
             const localVisible: any[] = [];
             const preloaded = preloadedCoordsRef.current;
             const floorIndex = spatialIndexRef.current[curZInt];
-            const bX1 = Math.floor(gX1 / 5), bY1 = Math.floor(gY1 / 5);
-            const bX2 = Math.floor(gX2 / 5), bY2 = Math.floor(gY2 / 5);
+            
+            // Adjust bucket size based on zoom for spatial lookups
+            // When zoomed out, we look up a much larger area
+            const lookSpan = camera.zoom < 0.1 ? 20 : (camera.zoom < 0.2 ? 10 : 5);
+            const bX1 = Math.floor(gX1 / 5) - lookSpan, bY1 = Math.floor(gY1 / 5) - lookSpan;
+            const bX2 = Math.floor(gX2 / 5) + lookSpan, bY2 = Math.floor(gY2 / 5) + lookSpan;
 
             if (floorIndex) {
                 for (let bx = bX1; bx <= bX2; bx++) {
@@ -184,10 +193,15 @@ export const useMapperRenderer = ({
             drawGrid(rCtx, gX1, gY1, gX2, gY2);
             if (floorIndex) {
                 drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-                drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+                // LOD: Only draw features if zoomed in enough
+                if (camera.zoom > 0.05) {
+                    drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+                }
             }
             drawLocalTerrains(rCtx, vCache.localRooms);
-            drawLocalFeatures(rCtx, vCache.localRooms);
+            if (camera.zoom > 0.05) {
+                drawLocalFeatures(rCtx, vCache.localRooms);
+            }
             offCtx.restore();
 
             cache.lastParams = cacheParams;

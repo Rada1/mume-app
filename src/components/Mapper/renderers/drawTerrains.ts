@@ -9,23 +9,35 @@ export const drawTerrains = (
     const { ctx, isDarkMode, explored, unveilMap, allRooms, preloaded } = rCtx;
     const s = GRID_SIZE;
 
+    // Batch by color to minimize fillStyle changes and draw calls
+    const colorBatches: Record<string, { x: number, y: number }[]> = {};
+
     for (let bx = bX1; bx <= bX2; bx++) {
         for (let by = bY1; by <= bY2; by++) {
             const bucket = floorIndex[`${bx},${by}`];
             if (!bucket) continue;
             for (let i = 0; i < bucket.length; i++) {
                 const vnum = bucket[i];
-                const rData = preloaded[vnum];
                 if (!explored.has(vnum) && !unveilMap) continue;
                 
+                const rData = preloaded[vnum];
                 const rx = rData[0], ry = rData[1], tSector = rData[3];
-                const wx = Math.round(rx) * s, wy = Math.round(ry) * s;
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
                 const terrain = localRoom ? localRoom.terrain : tSector;
+                const color = getTerrainColor(terrain, isDarkMode);
 
-                ctx.fillStyle = getTerrainColor(terrain, isDarkMode);
-                ctx.fillRect(wx - 1.0, wy - 1.0, s + 2.0, s + 2.0);
+                if (!colorBatches[color]) colorBatches[color] = [];
+                colorBatches[color].push({ x: Math.round(rx) * s, y: Math.round(ry) * s });
             }
+        }
+    }
+
+    for (const color in colorBatches) {
+        ctx.fillStyle = color;
+        const rooms = colorBatches[color];
+        for (let i = 0; i < rooms.length; i++) {
+            const r = rooms[i];
+            ctx.fillRect(r.x - 1.0, r.y - 1.0, s + 2.0, s + 2.0);
         }
     }
 };
