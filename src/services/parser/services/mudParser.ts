@@ -4,7 +4,7 @@ const STOP_WORDS = new Set([
   'the', 'a', 'an', 'some', 'at', 'to', 'please', 'with', 'from', 'on',
   'ugly', 'fat', 'big', 'small', 'large', 'mean', 'angry', 'old', 'young',
   'tall', 'short', 'red', 'blue', 'green', 'black', 'white', 'long', 'short',
-  'heavy', 'light', 'dark', 'bright', 'dirty', 'clean', 'strong', 'weak',
+  'light', 'dark', 'bright', 'dirty', 'clean', 'strong', 'weak',
   'what', 'am', 'i', 'me', 'my', 'is', 'are', 'do', 'does', 'can', 'could', 'would', 'should',
   'how', 'many', 'much'
 ]);
@@ -29,7 +29,7 @@ const MUME_COMMANDS = new Set([
   'leave', 'rest', 'steal', 'wield', 'call', 'escape', 'levels', 'read', 'suggest', 'write',
   'camp', 'exits', 'list', 'reborn', 'swim', 'yell', 'catchup', 'examine', 'light', 'recite',
   'tell', 'change', 'flee', 'link', 'recover', 'taste', 'charge', 'fill', 'listen', 'remove',
-  'tail', 'chop', 'flush', 'load', 'take', 'close'
+  'tail', 'chop', 'flush', 'load', 'take', 'close', 'commune'
 ]);
 
 const INTENT_MAP: Record<string, string> = {
@@ -169,22 +169,31 @@ export class SemanticMUDParser {
       return { output: input, confidence: 1.0 };
     }
 
-    // 2. Noise Filter
-    const words = current.split(/\s+/);
-    const filteredWords = words.filter(w => !STOP_WORDS.has(w));
-    current = filteredWords.join(' ');
-    this.addStep('Noise Filter', input, current);
+    // 2. Tokenization with Quote Preservation
+    // Match words and quoted strings as single units
+    const tokens: string[] = [];
+    const tokenRegex = /'[^']*'|"[^"]*"|\S+/g;
+    let m;
+    while ((m = tokenRegex.exec(current)) !== null) {
+      tokens.push(m[0]);
+    }
 
-    // 3. Intent Mapping & Target Extraction
-    const cmdWords = current.split(/\s+/).filter(w => w.length > 0);
-    if (cmdWords.length === 0) return { output: input, confidence: 0.1 };
+    if (tokens.length === 0) return { output: input, confidence: 0.1 };
 
-    // Special case: if "equipment" or "inventory" is anywhere in the filtered words
-    if (cmdWords.includes('equipment')) return { output: 'equipment', confidence: 0.95 };
-    if (cmdWords.includes('inventory')) return { output: 'inventory', confidence: 0.95 };
+    // 3. Noise Filter (skipping quoted strings)
+    const filteredTokens = tokens.filter(t => {
+      // Don't filter out quoted strings even if they contain stop words
+      if (t.startsWith("'") || t.startsWith('"')) return true;
+      return !STOP_WORDS.has(t);
+    });
 
-    let verb = cmdWords[0];
-    let remaining = cmdWords.slice(1);
+    // 4. Intent Mapping & Target Extraction
+    // Special case: if "equipment" or "inventory" is anywhere in the filtered tokens
+    if (filteredTokens.includes('equipment')) return { output: 'equipment', confidence: 0.95 };
+    if (filteredTokens.includes('inventory')) return { output: 'inventory', confidence: 0.95 };
+
+    let verb = filteredTokens[0];
+    let remaining = filteredTokens.slice(1);
 
     // Handle "pick up" -> "get"
     if (verb === 'pick' && remaining[0] === 'up') {
@@ -193,9 +202,8 @@ export class SemanticMUDParser {
     }
 
     const mappedVerb = INTENT_MAP[verb] || verb;
-    
     let finalCmd = '';
-    
+
     // Handle Movement
     if (mappedVerb === 'move' || DIRECTION_MAP[verb]) {
       const dir = remaining[0] || verb;
@@ -207,7 +215,14 @@ export class SemanticMUDParser {
         finalCmd = mappedVerb + (remaining.length > 0 ? ' ' + remaining.join(' ') : '');
       }
     } 
-    // Handle Combat/Interaction
+    // Handle Commands with potential multiple arguments (like cast/commune/pray)
+    else if (mappedVerb === 'cast' || mappedVerb === 'commune' || mappedVerb === 'pray') {
+      // For spell-like commands, we want to keep everything. 
+      // Usually it's: cast 'spell name' [target]
+      finalCmd = `${mappedVerb} ${remaining.join(' ')}`.trim();
+      confidence = 0.95;
+    }
+    // Handle Other Commands (Combat/Interaction)
     else {
       // Target Extraction
       let target = '';
@@ -235,8 +250,6 @@ export class SemanticMUDParser {
           const container = processPart(afterIn);
 
           if (object) {
-            // MUME: "get sword in bag" -> "get sword bag"
-            // But "look in bag" is special and requires the "in" keyword
             if (mappedVerb === 'look') {
               target = `in ${container}`;
             } else {
@@ -247,16 +260,23 @@ export class SemanticMUDParser {
           }
         } else {
           // Standard target extraction (no "in")
-          const firstArg = remaining[0];
-          const ordinalMatch = firstArg.match(/^(\d+)(st|nd|rd|th)$/i);
-          if (ordinalMatch) {
-            const num = ordinalMatch[1];
-            const nounParts = remaining.slice(1);
-            const noun = nounParts.length > 0 ? nounParts[nounParts.length - 1] : '';
-            target = noun ? `${num}.${noun}` : firstArg;
+          // If we have multiple words and it's not a known verb, 
+          // we might be too aggressive. For now, let's keep all remaining 
+          // if it's a known MUME command but not in INTENT_MAP.
+          if (MUME_COMMANDS.has(mappedVerb) && remaining.length > 1) {
+             target = remaining.join(' ');
           } else {
-            // No ordinal, take the last word as the primary noun
-            target = remaining[remaining.length - 1];
+            const firstArg = remaining[0];
+            const ordinalMatch = firstArg.match(/^(\d+)(st|nd|rd|th)$/i);
+            if (ordinalMatch) {
+              const num = ordinalMatch[1];
+              const nounParts = remaining.slice(1);
+              const noun = nounParts.length > 0 ? nounParts[nounParts.length - 1] : '';
+              target = noun ? `${num}.${noun}` : firstArg;
+            } else {
+              // Take the last word as the primary noun (classic MUD style)
+              target = remaining[remaining.length - 1];
+            }
           }
         }
       }
@@ -270,9 +290,8 @@ export class SemanticMUDParser {
       }
     }
 
-    // 4. Validation & Fallback
+    // 5. Validation & Fallback
     const isValid = this.validate(finalCmd);
-    const verbInMume = MUME_COMMANDS.has(finalCmd.split(' ')[0]);
     
     if (!isValid || finalCmd.trim() === '' || (INTENT_MAP[verb] && remaining.length === 0 && !DIRECTION_MAP[verb] && !MUME_COMMANDS.has(mappedVerb))) {
       this.addStep('Validation', finalCmd, `FAILED - Falling back to: ${input}`);

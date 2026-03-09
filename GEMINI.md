@@ -31,6 +31,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Low-level Telnet/GMCP:** `src/hooks/useTelnet.ts`
 - **GMCP Data Handling:** `src/hooks/useGmcpHandlers.ts`
 - **Game Output Parsing (Text):** `src/hooks/useGameParser.ts`
+- **Command Parsing (User Input):** `src/services/parser/services/mudParser.ts`
 - **Message Log & Combat:** `src/hooks/useMessageLog.ts`
 - **Command Control (Sending to Game):** `src/hooks/useCommandController.ts`
 - **Buttons & UI Interactions:** `src/hooks/useButtons.ts`, `src/hooks/useInteractionHandlers.ts`
