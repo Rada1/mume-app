@@ -18,9 +18,9 @@ export function useViewport(
     const isLockedToBottomRef = useRef(true);
 
     // Viewport measurement refs
-    const lastViewportHeightRef = useRef<number>(window.innerHeight);
-    const lastWidthRef = useRef<number>(window.innerWidth);
-    const baseHeightRef = useRef<number>(window.innerHeight);
+    const lastViewportHeightRef = useRef<number>(0);
+    const lastWidthRef = useRef<number>(0);
+    const baseHeightRef = useRef<number>(0);
 
     useEffect(() => {
         const handleResize = () => setWindowWidth(window.innerWidth);
@@ -63,18 +63,14 @@ export function useViewport(
 
         if (isSmoothEnabled && Math.abs(targetScroll - currentScroll) > 1) {
             const startTime = performance.now();
-            const duration = 600; // Smoother, longer glide
+            const duration = 600; 
             const startScroll = currentScroll;
-            const distance = targetScroll - startScroll;
 
             const animate = (currentTime: number) => {
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-
-                // Exponential ease-out for a "premium" gliding feel
                 const easeOut = 1 - Math.pow(2, -10 * progress);
                 
-                // Recalculate target every frame in case height changes (typewriter, images, etc.)
                 const dynamicTarget = container.scrollHeight - container.clientHeight;
                 const currentDistance = dynamicTarget - startScroll;
                 
@@ -83,7 +79,6 @@ export function useViewport(
                 if (progress < 1 && isAutoScrollingRef.current) {
                     scrollAnimationRef.current = requestAnimationFrame(animate);
                 } else {
-                    // Final snap to guarantee perfect bottom alignment
                     container.scrollTop = container.scrollHeight - container.clientHeight;
                     isAutoScrollingRef.current = false;
                     scrollAnimationRef.current = null;
@@ -102,7 +97,6 @@ export function useViewport(
         }, 800);
     }, [disableSmoothScroll, isImmersionMode]);
 
-    // --- Intelligent Resize-Based Scrolling ---
     useEffect(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
@@ -113,7 +107,6 @@ export function useViewport(
             const newHeight = container.scrollHeight;
             if (newHeight === lastHeight) return;
             
-            // If we are already auto-scrolling (gliding), don't interrupt it with a snap
             if (isAutoScrollingRef.current) {
                 lastHeight = newHeight;
                 return;
@@ -123,9 +116,7 @@ export function useViewport(
 
             if (isLockedToBottomRef.current) {
                 requestAnimationFrame(() => {
-                    // Re-check lock and auto-scroll state before executing
                     if (isLockedToBottomRef.current && !isAutoScrollingRef.current) {
-                        // For height changes (like typewriter), use microsnaps (instant)
                         scrollToBottom(true, true, 'ResizeObserver');
                     }
                 });
@@ -148,7 +139,6 @@ export function useViewport(
     const touchDistRef = useRef<number | null>(null);
     const lastUpdateRef = useRef<number>(0);
 
-    // Global touch listeners for pinch zoom
     useEffect(() => {
         if (!isMobile) return;
 
@@ -197,57 +187,83 @@ export function useViewport(
     }, [isMobile]);
 
     const updateHeight = useCallback(() => {
-        const now = Date.now();
-        if (now - lastUpdateRef.current < 16) return;
-        lastUpdateRef.current = now;
-
         const viewport = window.visualViewport;
         if (!viewport) return;
 
         const currentHeight = viewport.height;
         const currentWidth = viewport.width;
+        const offsetTop = viewport.offsetTop;
 
-        if (Math.abs(currentWidth - lastWidthRef.current) > 2) {
-            baseHeightRef.current = currentHeight;
-            lastWidthRef.current = currentWidth;
+        // --- Robust Base Height Detection ---
+        if ((offsetTop === 0 && currentHeight > 500) || baseHeightRef.current === 0) {
+            if (currentHeight > baseHeightRef.current || Math.abs(currentWidth - lastWidthRef.current) > 2) {
+                baseHeightRef.current = currentHeight;
+                lastWidthRef.current = currentWidth;
+            }
         }
 
-        if (currentHeight > baseHeightRef.current) baseHeightRef.current = currentHeight;
-
         const isFocusableActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
-        const isKeyboardDown = currentHeight > (baseHeightRef.current * 0.85);
-        const isCurrentlyOpen = isMobile && isFocusableActive && !isKeyboardDown;
+        const heightDrop = baseHeightRef.current - currentHeight;
+        const isKeyboardPhysicallyPresent = heightDrop > 60 || (baseHeightRef.current > 0 && currentHeight < baseHeightRef.current * 0.85);
+        
+        // Target state: Stay locked as long as the keyboard is taking up space.
+        // We only transition back to false once the physical height is restored.
+        const targetState = isKeyboardPhysicallyPresent;
 
-        requestAnimationFrame(() => {
+        const applyLock = (h: number, off: number, isLocked: boolean) => {
             const container = document.querySelector('.app-container') as HTMLElement;
-            if (container) {
-                if (isCurrentlyOpen) {
-                    // Lock height to visible area but do NOT offset top, 
-                    // allowing native browser glide to handle the transition.
-                    container.style.height = `${currentHeight}px`;
-                } else {
+            if (!container) return;
+
+            if (isLocked) {
+                container.classList.add('kb-open');
+                container.style.position = 'fixed';
+                container.style.top = '0';
+                container.style.left = '0';
+                container.style.width = '100vw';
+                container.style.height = `${h}px`;
+                container.style.transform = `translate3d(0, ${off}px, 0)`;
+                container.style.overflow = 'hidden';
+                
+                if (Math.abs(window.scrollY) > 1) window.scrollTo(0, 0);
+                if (isFocusableActive) {
+                    const input = document.activeElement as HTMLElement;
+                    input.scrollIntoView({ block: 'center', behavior: 'instant' as any });
+                }
+            } else {
+                if (container.classList.contains('kb-open')) {
+                    container.classList.remove('kb-open');
+                    container.style.position = '';
+                    container.style.top = '';
+                    container.style.left = '';
+                    container.style.width = '';
                     container.style.height = '';
+                    container.style.transform = '';
+                    container.style.overflow = '';
                 }
             }
+        };
 
-            const scrollContainer = scrollContainerRef.current;
-            if (scrollContainer && Math.abs(currentHeight - lastViewportHeightRef.current) > 2) {
-                if (isLockedToBottomRef.current) {
-                    scrollContainer.scrollTop = scrollContainer.scrollHeight;
-                }
+        requestAnimationFrame(() => {
+            applyLock(currentHeight, offsetTop, targetState);
+            
+            // Re-verify the lock, but ONLY if we still believe it should be locked.
+            // This prevents the 'phantom lock' when closing.
+            if (targetState) {
+                setTimeout(() => {
+                    const v = window.visualViewport;
+                    const hDrop = baseHeightRef.current - (v?.height || 0);
+                    if (v && (hDrop > 60 || v.height < baseHeightRef.current * 0.85)) {
+                        applyLock(v.height, v.offsetTop, true);
+                    }
+                }, 150);
             }
 
             if (isMobile) {
                 const logContainer = document.querySelector('.message-log-container');
                 if (logContainer) {
                     const width = logContainer.clientWidth;
-                    // Account for 20px padding on each side of .message-log (40px total)
                     const usableWidth = Math.max(0, width - 40);
-                    // Space Mono width is approx 0.6 of height. 
-                    // To fit 80 chars: 80 * 0.6 * fontSize = usableWidth
-                    // fontSize = usableWidth / 48
                     const fontSize = (usableWidth / 48) * logFontSize;
-                    // Cap at a reasonable max (40px) to prevent massive text issues
                     const safeSize = Math.min(40, Math.max(6, fontSize));
                     document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
                 }
@@ -257,8 +273,8 @@ export function useViewport(
 
             lastViewportHeightRef.current = currentHeight;
             
-            if (isCurrentlyOpen !== isKeyboardOpen) {
-                setIsKeyboardOpen(isCurrentlyOpen);
+            if (targetState !== isKeyboardOpen) {
+                setIsKeyboardOpen(targetState);
             }
         });
     }, [isMobile, isKeyboardOpen, logFontSize]);

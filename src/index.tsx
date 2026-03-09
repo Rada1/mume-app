@@ -19,6 +19,7 @@ import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
 import { GameProvider, useGame } from './context/GameContext';
 import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
+import { DiagnosticOverlay } from './components/DiagnosticOverlay';
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 
@@ -144,7 +145,6 @@ const MudClient = () => {
     return (
         <div
             className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${useGame().ui.mapExpanded ? 'is-map-expanded' : ''}`}
-            style={{ height: 'calc(var(--vh, 1vh) * 100)' }}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

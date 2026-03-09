@@ -8,12 +8,12 @@
 @import './styles/layout.css';
 @import './styles/ui.css';
 
-/* Mobile Gutter and Controls logic (Keep here for high-level orchestration or move if preferred) */
+/* Mobile Gutter and Controls logic */
 .mobile-bottom-gutter {
-  display: none;
+  display: flex;
   width: 100%;
-  height: 200px;
-  background: var(--header-bg);
+  height: 280px;
+  background: var(--bg-app);
   border-top: 1px solid var(--border-color);
   position: relative;
   flex-shrink: 0;
@@ -22,29 +22,29 @@
 
 @media (max-width: 600px) {
   .mobile-bottom-gutter {
-    display: flex;
     flex-direction: column;
-    height: 280px;
-    background: var(--bg-app);
-    border-top: 1px solid var(--border-color);
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     overflow: visible;
     touch-action: none;
   }
 
   .kb-open .mobile-bottom-gutter {
-    height: 0;
-    opacity: 0;
-    border-top: none;
-    padding: 0;
-    transform: translateY(100%);
-    pointer-events: none;
+    display: none !important;
+  }
+
+  .kb-open .hud-clusters,
+  .kb-open .custom-buttons-layer,
+  .kb-open .joystick-cluster,
+  .kb-open .xbox-cluster,
+  .kb-open .reset-zoom-fab {
+    display: none !important;
   }
 
   .mobile-bottom-gutter.map-expanded {
     height: 65vh;
+    /* Re-enable height transition only for map expansion */
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
 

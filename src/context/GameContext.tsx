@@ -400,7 +400,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isCombatLine, isCommunicationLine, playSound, triggerHaptic,
         btn, joystick, editor, viewport, env, processMessageHtml,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
-        settings, audioCtxRef, telnet, parser
+        settings, audioCtxRef, telnet, parser, spatButtons
     ]);
 
     return (
@@ -411,4 +411,3 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         </GameContext.Provider>
     );
 };
-
