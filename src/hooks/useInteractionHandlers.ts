@@ -57,16 +57,6 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string) => {
         e.stopPropagation();
 
-        if (viewport.isMobile) {
-            const inputEl = document.querySelector('.input-field') as HTMLInputElement;
-            console.log(`[Interaction] Button click: "${button.label}"`, {
-                activeElement: document.activeElement?.tagName,
-                isKeyboardOpen: viewport.isKeyboardOpen,
-                inputReadOnly: inputEl?.readOnly,
-                inputHasFocus: document.activeElement === inputEl
-            });
-        }
-
         if (btn.isEditMode) {
             if (button.setId !== 'Xbox' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
             return;

@@ -52,15 +52,6 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const executor = useCommandExecutor(deps);
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean }) => {
-        if (viewport.isMobile && !isSystem && !silent) {
-            console.log(`[Controller] Executing: "${cmd}"`, {
-                shouldFocusOption: options?.shouldFocus,
-                isInputPrefix: cmd.startsWith('input:'),
-                viewportIsMobile: viewport.isMobile,
-                activeElement: document.activeElement?.tagName
-            });
-        }
-
         if (!isSystem && !silent) {
             // Defensive focus: only focus elements if explicitly requested or on desktop.
             // On mobile, never auto-focus unless it's a specific 'input:' command AND we want that behavior.
