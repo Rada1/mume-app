@@ -63,7 +63,7 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                 <ActionConfig label="Short Press Action" field="command" typeField="actionType" editingButton={editingButton} availableSets={availableSets} updateButton={updateButton} />
                 <ActionConfig label="Long Press Action" field="longCommand" typeField="longActionType" editingButton={editingButton} availableSets={availableSets} updateButton={updateButton} />
 
-                <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
+                <div style={{ borderTop: '1px solid var(--border-color, #333)', paddingTop: '15px', marginTop: '15px' }}>
                     <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Short Swipe Gestures</label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                         {directions.map(d => (
@@ -75,7 +75,7 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                     </div>
                 </div>
 
-                <div style={{ borderTop: '1px solid #333', paddingTop: '15px', marginTop: '15px' }}>
+                <div style={{ borderTop: '1px solid var(--border-color, #333)', paddingTop: '15px', marginTop: '15px' }}>
                     <label className="setting-label" style={{ marginBottom: '10px', display: 'block', color: 'var(--accent)' }}>Long Swipe Gestures</label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                         {directions.map(d => (
@@ -104,8 +104,8 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                 <div className="setting-group">
                     <label className="setting-label">Border Color</label>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <input type="color" className="setting-input" style={{ height: '40px', width: '60px', padding: 0 }} value={style.borderColor || '#ffffff'} onChange={e => updateButton(editingButton.id, { style: { ...style, borderColor: e.target.value } })} />
-                        <input className="setting-input" value={style.borderColor || '#ffffff'} onChange={e => updateButton(editingButton.id, { style: { ...style, borderColor: e.target.value } })} />
+                        <input type="color" className="setting-input" style={{ height: '40px', width: '60px', padding: 0 }} value={style.borderColor || 'var(--text-primary, #ffffff)'} onChange={e => updateButton(editingButton.id, { style: { ...style, borderColor: e.target.value } })} />
+                        <input className="setting-input" value={style.borderColor || 'var(--text-primary, #ffffff)'} onChange={e => updateButton(editingButton.id, { style: { ...style, borderColor: e.target.value } })} />
                     </div>
                 </div>
                 <div className="setting-group">
@@ -132,13 +132,13 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                             <input type="file" accept="image/*" style={{ display: 'none' }} onChange={e => { const file = e.target.files?.[0]; if (file) handleImageUpload(file); }} />
                         </label>
                         {editingButton.icon && (
-                            <div style={{ width: '40px', height: '40px', borderRadius: '4px', background: '#222', border: '1px solid #444', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '4px', background: 'var(--input-bg, #222)', border: '1px solid var(--border-color, #444)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                                 <img src={editingButton.icon} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
                             </div>
                         )}
                     </div>
                     {editingButton.icon && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px', background: 'rgba(0,0,0,0.2)', padding: '12px', borderRadius: '8px', border: '1px solid #333' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px', background: 'var(--bg-overlay, rgba(0,0,0,0.2))', padding: '12px', borderRadius: '8px', border: '1px solid var(--border-color, #333)' }}>
                             <div className="setting-group" style={{ margin: 0 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
                                     <label className="setting-label">Icon Scale</label>
@@ -233,14 +233,14 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                     <label className="setting-label">Minimum Proficiency (%)</label>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <input type="range" min="0" max="100" step="5" className="setting-input" style={{ flex: 1 }} value={req?.minProficiency || 0} onChange={e => updateButton(editingButton.id, { requirement: { ...(req || {}), minProficiency: parseInt(e.target.value) } })} />
-                        <span style={{ width: '40px', textAlign: 'right', color: '#fff' }}>{req?.minProficiency || 0}%</span>
+                        <span style={{ width: '40px', textAlign: 'right', color: 'var(--text-primary, #fff)' }}>{req?.minProficiency || 0}%</span>
                     </div>
                 </div>
                 <div className="setting-group">
                     <label className="setting-label">Allowed Character Classes</label>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                         {['ranger', 'warrior', 'mage', 'cleric', 'thief'].map(cls => (
-                            <label key={cls} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: '#fff' }}>
+                            <label key={cls} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text-primary, #fff)' }}>
                                 <input type="checkbox" checked={req?.characterClass?.includes(cls as any) || false} onChange={e => {
                                     const next = e.target.checked ? [...(req?.characterClass || []), cls] : (req?.characterClass || []).filter(c => c !== cls);
                                     updateButton(editingButton.id, { requirement: { ...(req || {}), characterClass: next as any } });
@@ -250,7 +250,7 @@ const ButtonForm: React.FC<ButtonFormProps> = ({
                         ))}
                     </div>
                 </div>
-                <div className="setting-group" style={{ borderTop: '1px solid #333', paddingTop: '15px' }}>
+                <div className="setting-group" style={{ borderTop: '1px solid var(--border-color, #333)', paddingTop: '15px' }}>
                     <label className="setting-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: 'var(--accent)' }}>
                         <input type="checkbox" checked={editingButton.hideIfUnknown !== false} onChange={e => updateButton(editingButton.id, { hideIfUnknown: e.target.checked })} />
                         Hide if Unknown

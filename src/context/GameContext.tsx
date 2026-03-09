@@ -68,6 +68,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions' | 'help'>('general');
     const [accentColor, setAccentColor] = usePersistentState('mud-accent-color', '#4a90e2');
     const [teleportTargets, setTeleportTargets] = usePersistentState<TeleportTarget[]>('mud-teleport-targets', []);
+    const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
+
+    const addDiagnosticLog = useCallback((msg: string) => {
+        setDiagnosticLogs(prev => [msg, ...prev].slice(0, 50));
+    }, []);
 
     // GMCP Handlers States
     const [roomInfoFn, setRoomInfoFn] = useState<(data: any) => void>();
@@ -114,7 +119,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
 
-    const btn = useButtons(abilities, characterClass);
+    const btn = useButtons(abilities, characterClass, addDiagnosticLog);
     const joystick = useJoystick(triggerHaptic);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
@@ -203,7 +208,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForEq: s.isWaitingForEq,
         isWaitingForInv: s.isWaitingForInv,
         roomNameRef: s.roomNameRef,
-        showDebugEchoes: s.showDebugEchoes
+        showDebugEchoes: s.showDebugEchoes,
+        addDiagnosticLog
     });
 
     const { processLine } = parser;
@@ -390,6 +396,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         mapperRef, ...settings, audioCtxRef,
         telnet, parser,
         spatButtons, setSpatButtons,
+        diagnosticLogs, addDiagnosticLog,
         detectLighting: env.detectLighting,
         setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
     }), [
@@ -400,7 +407,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isCombatLine, isCommunicationLine, playSound, triggerHaptic,
         btn, joystick, editor, viewport, env, processMessageHtml,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
-        settings, audioCtxRef, telnet, parser, spatButtons
+        settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog
     ]);
 
     return (

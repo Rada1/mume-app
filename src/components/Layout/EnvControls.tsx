@@ -44,7 +44,7 @@ export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWe
             {inCombat && (
                 <div
                     className="status-indicator"
-                    style={{ color: '#ef4444', gap: 4, padding: '4px 6px', animation: 'combat-pulse 1s ease-in-out infinite' }}
+                    style={{ color: 'var(--ansi-red, #ef4444)', gap: 4, padding: '4px 6px', animation: 'combat-pulse 1s ease-in-out infinite' }}
                     title="In Combat"
                 >
                     <Swords size={12} />

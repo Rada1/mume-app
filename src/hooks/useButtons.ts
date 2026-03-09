@@ -46,7 +46,6 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
                         return {
                             ...(def || {}),
                             ...b,
-                            // If isVisible is missing (stripped for save), restore from default or fallback to true/false based on trigger
                             isVisible: (b.isVisible !== undefined) ? b.isVisible : (def?.isVisible ?? (b.trigger?.enabled ? false : true))
                         };
                     });
@@ -112,8 +111,6 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         const themeColor = setSettings[activeSet]?.themeColor;
         if (themeColor) {
             document.documentElement.style.setProperty('--set-accent', themeColor);
-
-            // Handle RGB conversion for rgba() usage
             if (themeColor.startsWith('#')) {
                 const hex = themeColor.slice(1);
                 const r = parseInt(hex.substring(0, 2), 16);

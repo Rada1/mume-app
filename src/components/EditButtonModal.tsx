@@ -46,7 +46,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                         <button onClick={handleDuplicate} title="Duplicate Button" style={{ background: 'none', border: 'none', color: 'var(--text-primary, #fff)', cursor: 'pointer' }}>
                             <Copy size={20} />
                         </button>
-                        <button onClick={() => deleteButton(editingButton.id)} title="Delete Button" style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
+                        <button onClick={() => deleteButton(editingButton.id)} title="Delete Button" style={{ background: 'none', border: 'none', color: 'var(--ansi-red, #ef4444)', cursor: 'pointer' }}>
                             <Trash2 size={20} />
                         </button>
                     </div>

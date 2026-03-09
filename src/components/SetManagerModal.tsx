@@ -164,7 +164,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                         {selectedSet !== 'main' && (
                             <button
                                 className="btn-secondary"
-                                style={{ width: 'auto', padding: '0 15px', borderColor: '#ef4444', color: '#ef4444', margin: 0 }}
+                                style={{ width: 'auto', padding: '0 15px', borderColor: 'var(--ansi-red, #ef4444)', color: 'var(--ansi-red, #ef4444)', margin: 0 }}
                                 onClick={() => {
                                     if (confirm(`Are you SURE you want to delete the "${selectedSet}" set and ALL its buttons?`)) {
                                         onDeleteSet(selectedSet);
@@ -238,7 +238,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
 
                 <div className="buttons-list" style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid var(--border-color, #333)', borderRadius: '8px', padding: '10px' }}>
                     {filteredButtons.length === 0 ? (
-                        <div style={{ padding: '20px', textAlign: 'center', color: '#666', fontStyle: 'italic' }}>
+                        <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-dim, #666)', fontStyle: 'italic' }}>
                             No buttons in this set.
                         </div>
                     ) : (
@@ -259,7 +259,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                                         height: '12px',
                                         borderRadius: '50%',
                                         backgroundColor: button.style.backgroundColor,
-                                        border: '1px solid #555'
+                                        border: '1px solid var(--border-color, #555)'
                                     }} />
                                     <div>
                                         <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{button.label}</div>
@@ -276,7 +276,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                                     </button>
                                     <button
                                         onClick={() => onDeleteButton(button.id)}
-                                        style={{ background: 'rgba(239, 68, 68, 0.2)', border: 'none', color: '#ef4444', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
+                                        style={{ background: 'var(--ansi-red-faded, rgba(239, 68, 68, 0.2))', border: 'none', color: 'var(--ansi-red, #ef4444)', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
                                         title="Delete Button"
                                     >
                                         <Trash2 size={16} />

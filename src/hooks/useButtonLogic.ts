@@ -65,7 +65,9 @@ export const useButtonLogic = (
                 const classKey = buttonToClass[b.id];
                 if (classKey) {
                     const skills = CLASS_MAPPINGS[classKey] || [];
-                    if (!skills.some(s => (abilities[s.toLowerCase()] || 0) > 0)) {
+                    const knownCount = skills.filter(s => (abilities[s.toLowerCase()] || 0) > 0).length;
+                    
+                    if (knownCount === 0) {
                         modified.isDimmed = true;
                     }
                 }
@@ -109,11 +111,9 @@ export const useButtonLogic = (
             const mapKey = setNameLower.replace('skilllist', '').replace('spelllist', '');
             let baseList: string[] = setNameLower === 'spellbook' ? [...MAGE_SPELLS, ...CLERIC_SPELLS] : (CLASS_MAPPINGS[mapKey] || []);
 
-            // Avoid duplicates: if a static button with the same command already exists in this set, skip dynamic generation
             const existingCommands = new Set(filtered.filter(b => b.setId.toLowerCase() === setNameLower).map(b => b.command.toLowerCase()));
 
             baseList.map(name => ({ name, prof: abilities[name.toLowerCase()] || 0 })).forEach(({ name, prof }, idx) => {
-                // If smart populate is on, only show known spells
                 if (isSmartPopulateEnabled && prof <= 0) return;
 
                 const cmd = name.toLowerCase() === 'teleport' ? "cast 'teleport'" : name.toLowerCase();

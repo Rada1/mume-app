@@ -32,6 +32,6 @@ export const RecipientSelectPopover: React.FC<RecipientSelectProps> = ({
                 </div>
             ))}
         </div>
-        <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', color: '#ff5555', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
+        <div className="popover-item" style={{ borderTop: '1px solid var(--border-color, rgba(255,255,255,0.1))', color: 'var(--ansi-red, #ff5555)', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
     </>
 );

@@ -48,12 +48,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         let cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
 
-        // 1. Initial Prompt & Text Separation
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
 
-        // Consolidated Regex for all MUME prompt variations (pure or with attached text)
-        // It now handles move prefixes, stat brackets, and leading ANSI codes.
         const promptRegex = /^((?:(?:\x1b\[[0-9;]*m)*?(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*?)*[>:])\s*/;
         const textPMatch = textOnly.match(promptRegex);
 
@@ -61,7 +58,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             const promptPart = textPMatch[1];
             const attachedText = textOnly.slice(textPMatch[0].length).trim();
 
-            // Extract metadata from prompt (lighting, terrain)
             const symbolMatch = promptPart.match(/[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]/);
             if (symbolMatch) {
                 const symbol = symbolMatch[0];
@@ -71,8 +67,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
             }
 
-            // If there's no attached text, this is a pure prompt. 
-            // We just update states and return.
             if (!attachedText) {
                 captureStage.current = 'none';
                 isDrawerCapture.current = 0;
@@ -81,17 +75,13 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // If there IS attached text, strip the prompt from the line and continue processing
             textOnly = attachedText;
             lower = textOnly.toLowerCase();
             
-            // For cleanLine (ANSI version), we strip the prompt part. 
-            // We use a robust regex that handles the prompt chars and all leading ANSI.
             const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*)/;
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
         }
 
-        // 2. Room Name Detection (Now using cleaned text)
         let isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
         let isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
         let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
@@ -102,12 +92,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             isSilentCapture.current = 0;
         }
 
-        // Reset stack if we're not in a capture stage or just starting one
         if (captureStage.current === 'none') {
             containerStackRef.current = [];
         }
 
-        // Weather & Fog Detection
         if (lower.includes("starts to rain") || lower.includes("it is raining")) setWeather(lower.includes("heavily") ? 'heavy-rain' : 'rain');
         if (lower.includes("starts to snow") || lower.includes("it is snowing")) setWeather('snow');
         if (lower.includes("rain stops") || lower.includes("snow stops") || lower.includes("clouds disappear")) setWeather('none');
@@ -121,7 +109,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             setTimeout(() => setLightningEnabled(false), 450);
         }
 
-        // Wall bump detection (screen jiggle + haptic)
         if (lower.includes("alas, you cannot go that way") || 
             lower.includes("there is no exit") || 
             lower.includes("you bump into")) {
@@ -130,14 +117,19 @@ export function useGameParser(deps: UseGameParserDeps) {
             setTimeout(() => setRumble(false), 300);
         }
 
-        if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = []; }
+        if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { 
+            isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = []; 
+        }
         if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
             isWaitingForEq.current = false; captureStage.current = 'eq'; containerStackRef.current = [];
-            setEqLines([]); // Clear when starting fresh eq list
+            setEqLines([]); 
         }
         if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
             isWaitingForInv.current = false; captureStage.current = 'inv'; containerStackRef.current = [];
-            setInventoryLines([]); // Clear when starting fresh inv list
+            setInventoryLines([]);
+        }
+        if (lower.includes('skill / spell') || lower.includes('knowledge') || (lower.includes('sessions') && lower.includes('practice'))) {
+            captureStage.current = 'practice';
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
@@ -154,7 +146,6 @@ export function useGameParser(deps: UseGameParserDeps) {
 
                 const noun = extractNoun(l);
 
-                // Track containers to build nested context (e.g. item.bag)
                 while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) {
                     containerStackRef.current.pop();
                 }
@@ -184,7 +175,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'inv') {
                 setInventoryLines(p => [...p, createLine(cleanLine, 'inventorylist')]);
             } else if (captureStage.current === 'eq') {
-                // Ensure the line has content and isn't just whitespace
                 if (textOnly.length > 0) {
                     setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
                 }
@@ -193,11 +183,9 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'practice') parsePracticeLine(textOnly);
         }
 
-        // Local Inventory Tracking
         const trackAction = () => {
             if (isSilentCapture.current > 0 || isDrawerCapture.current) return;
 
-            // 1. Wear / Put On
             const wearMatch = cleanLine.match(/You (wear|put on) (.*?)\./i);
             if (wearMatch) {
                 const itemNoun = extractNoun(wearMatch[2]);
@@ -211,7 +199,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // 2. Remove / Stop Using
             const removeMatch = cleanLine.match(/You (remove|stop using) (.*?)\./i);
             if (removeMatch) {
                 const itemNoun = extractNoun(removeMatch[2]);
@@ -225,7 +212,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // 3. Put in Container
             const putMatch = cleanLine.match(/You put (.*?) in (.*?)\./i);
             if (putMatch) {
                 const itemNoun = extractNoun(putMatch[1]);
@@ -237,7 +223,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // 4. Get from Container / Ground
             const getMatch = cleanLine.match(/You (get|take) (.*?)\.( from (.*?)\.)?/i);
             if (getMatch) {
                 const itemText = getMatch[2];
@@ -253,7 +238,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // 5. Receiving from someone
             const receiveMatch = cleanLine.match(/(.*?) gives you (.*?)\./i);
             if (receiveMatch) {
                 const itemText = receiveMatch[2];
@@ -269,7 +253,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // 6. Giving away / Dropping
             const giveMatch = cleanLine.match(/You (give|drop|junk) (.*?)\./i);
             if (giveMatch) {
                 const itemNoun = extractNoun(giveMatch[2]);
@@ -281,7 +264,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // 7. Wielding / Holding
             const wieldMatch = cleanLine.match(/You (wield|hold) (.*?)\./i);
             if (wieldMatch) {
                 const itemNoun = extractNoun(wieldMatch[2]);
@@ -295,12 +277,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            // 8. Eating / Quaffing / Drinking
             const consumeMatch = cleanLine.match(/You (eat|quaff|drink) (.*?)\./i);
             if (consumeMatch) {
-                // In MUME, drinks from a container might not consume the container,
-                // but quaff/eat usually consumes the item. For simplicity, we just
-                // remove the item from inventory if it's not a container-style drink.
                 const itemNoun = extractNoun(consumeMatch[2]);
                 if (!consumeMatch[0].includes('from')) {
                     setInventoryLines(prev => {
@@ -318,30 +296,15 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
         isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
-        
-        // A line is a room name if it matches the MUME room color OR matches our GMCP room name
         isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
-        const pMatch = cleanLine.match(/^((?:[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]\s*?>|<.*?:.*?>)\s*)(.*)$/);
-        
-        // Final visibility logic:
-        // We simplified this: only hide lines during explicit silent background captures.
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
         const shouldShow = (isSilentCapture.current === 0 || isImportantMessage);
 
         if (shouldShow) {
-            // Since we already stripped the prompt from cleanLine earlier if it matched,
-            // we just use the final state of cleanLine here.
             const finalRawText = cleanLine;
-            // Use stripped text only for precalculation as well
-            const precalculated = { 
-                textOnly: textOnly, 
-                lower: lower 
-            };
-            
-            // Create a semi-stable ID based on content + timestamp to avoid random 'randomness'
+            const precalculated = { textOnly: textOnly, lower: lower };
             const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
-            
             addMessage('game', finalRawText, undefined, stableId, isRoomName, precalculated);
         }
     }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);

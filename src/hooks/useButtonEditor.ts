@@ -186,7 +186,7 @@ export const useButtonEditor = (
                 if (dsType === 'cluster' && finalX !== undefined) {
                     btn.setUiPositions((prev: any) => ({
                         ...prev,
-                        [dsId]: { ...prev[clusterId], x: finalX, y: finalY }
+                        [dsId]: { ...prev[dsId], x: finalX, y: finalY }
                     }));
                 } else if (dsType === 'move' || dsType === 'resize') {
                     if (finalPos || finalSizes) {

@@ -21,10 +21,10 @@ export const TeleportSavePopover: React.FC<TeleportSaveProps> = ({ popoverState,
     return (
         <div style={{ padding: '12px', minWidth: '200px' }}>
             <div style={{ fontSize: '0.8rem', color: 'var(--accent)', marginBottom: '10px', fontWeight: 'bold' }}>📍 STORE ROOM</div>
-            <input type="text" placeholder="Label" autoFocus ref={inputRef} onKeyDown={(e) => { if (e.key === 'Enter') doSave(); else if (e.key === 'Escape') setPopoverState(null); }} style={{ width: '100%', background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '8px', borderRadius: '6px', marginBottom: '10px' }} />
+            <input type="text" placeholder="Label" autoFocus ref={inputRef} onKeyDown={(e) => { if (e.key === 'Enter') doSave(); else if (e.key === 'Escape') setPopoverState(null); }} style={{ width: '100%', background: 'var(--input-bg, rgba(255,255,255,0.1))', border: '1px solid var(--border-color, rgba(255,255,255,0.2))', color: 'var(--text-primary, #fff)', padding: '8px', borderRadius: '6px', marginBottom: '10px' }} />
             <div style={{ display: 'flex', gap: '8px' }}>
-                <button onClick={doSave} style={{ flex: 1, background: 'var(--accent)', border: 'none', padding: '8px', borderRadius: '6px', fontWeight: 'bold' }}>Save</button>
-                <button onClick={() => setPopoverState(null)} style={{ flex: 1, background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', padding: '8px', borderRadius: '6px' }}>Cancel</button>
+                <button onClick={doSave} style={{ flex: 1, background: 'var(--accent)', border: 'none', color: 'var(--ansi-black, #000)', padding: '8px', borderRadius: '6px', fontWeight: 'bold' }}>Save</button>
+                <button onClick={() => setPopoverState(null)} style={{ flex: 1, background: 'var(--input-bg, rgba(255,255,255,0.1))', border: 'none', color: 'var(--text-primary, #fff)', padding: '8px', borderRadius: '6px' }}>Cancel</button>
             </div>
         </div>
     );
@@ -45,9 +45,9 @@ export const TeleportSelectPopover: React.FC<{ popoverState: PopoverState, setPo
                 </div>
             ))}
         </div>
-        <div style={{ display: 'flex', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ display: 'flex', borderTop: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
             <div className="popover-item" style={{ flex: 1, textAlign: 'center', opacity: 0.6 }} onClick={() => setPopoverState({ ...popoverState, type: 'teleport-manage' })}>Manage</div>
-            <div className="popover-item" style={{ flex: 1, color: '#ff5555', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
+            <div className="popover-item" style={{ flex: 1, color: 'var(--ansi-red, #ff5555)', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Cancel</div>
         </div>
     </>
 );
@@ -59,11 +59,11 @@ export const TeleportManagePopover: React.FC<{ teleportTargets: TeleportTarget[]
             {teleportTargets.map(t => (
                 <div key={t.label} className="popover-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div><div>{t.label}</div><div style={{ fontSize: '0.6rem', opacity: 0.4 }}>{t.id}</div></div>
-                    <button onClick={() => setTeleportTargets(prev => prev.filter(x => x.label !== t.label))} style={{ background: 'rgba(255,0,0,0.1)', border: 'none', color: '#ff5555', width: '24px', height: '24px', borderRadius: '12px' }}>✕</button>
+                    <button onClick={() => setTeleportTargets(prev => prev.filter(x => x.label !== t.label))} style={{ background: 'var(--ansi-red, rgba(255,0,0,0.1))', opacity: 0.2, border: 'none', color: 'var(--text-primary, #fff)', width: '24px', height: '24px', borderRadius: '12px' }}>✕</button>
                 </div>
             ))}
         </div>
-        <div className="popover-item" style={{ borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Close</div>
+        <div className="popover-item" style={{ borderTop: '1px solid var(--border-color, rgba(255,255,255,0.1))', textAlign: 'center' }} onClick={() => setPopoverState(null)}>Close</div>
     </>
 );
 
