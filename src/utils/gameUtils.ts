@@ -12,6 +12,60 @@ export const extractNoun = (text: string): string => {
     return words.length > 0 ? words[words.length - 1].toLowerCase().replace(/[^\w]/g, '') : '';
 };
 
+/**
+ * Simplifies a long description into a core noun phrase.
+ * Example: "A huge and awesome dealer in black leather" -> "A dealer"
+ */
+export const simplifyDescription = (text: string): string => {
+    // Strip ANSI
+    let clean = text.replace(/\x1b\[[0-9;]*m/g, '').trim();
+    // Strip parentheticals like (glowing) or (invisible)
+    clean = clean.replace(/\s*\([^)]*\)\s*/g, ' ').trim();
+    clean = clean.replace(/[.,:;!]+$/, '');
+
+    const lower = clean.toLowerCase();
+    
+    // Find articles
+    const articleMatch = clean.match(/^(A|An|The|Some)\b/i);
+    const article = articleMatch ? articleMatch[0] : '';
+    
+    // Remove article for processing
+    let rest = article ? clean.slice(article.length).trim() : clean;
+
+    // Common descriptive prefixes to strip
+    const adjs = ["huge", "awesome", "ugly", "strong", "pack", "tall", "short", "large", "small", "tiny", "fierce", "old", "young", "mean", "scary", "dirty", "clean", "bright", "dark", "heavy", "light", "metallic", "runic", "steel", "iron", "wooden", "leather", "black", "white", "red", "green", "blue", "yellow", "gray", "grey", "golden", "silver"];
+    
+    // Split into words, but look for the "core"
+    // Usually, the first non-adjective or the thing before "in", "of", "with"
+    const words = rest.split(/\s+/);
+    let coreNoun = "";
+    
+    for (let i = 0; i < words.length; i++) {
+        const word = words[i].toLowerCase();
+        // If we hit a preposition or descriptive Clause, stop
+        if (["in", "of", "with", "from", "at", "for", "on", "wearing", "carrying", "holding", "offering"].includes(word)) {
+            break;
+        }
+        // If it's not a common adjective, maybe it's the noun?
+        if (!adjs.includes(word) && !["and", "&"].includes(word)) {
+            coreNoun = words[i];
+            break;
+        }
+    }
+
+    // Fallback: if we didn't find a core noun, use the last word before any preposition
+    if (!coreNoun) {
+        coreNoun = words[0];
+    }
+
+    if (article) {
+        // Ensure "A dealer" vs "An orc"
+        const result = `${article} ${coreNoun}`.trim();
+        return result.charAt(0).toUpperCase() + result.slice(1);
+    }
+    return coreNoun.charAt(0).toUpperCase() + coreNoun.slice(1);
+};
+
 export const numToWord = (n: number) => {
     const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
         "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty"];

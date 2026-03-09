@@ -33,6 +33,7 @@ export interface UseGameParserDeps {
     isWaitingForInv: React.MutableRefObject<boolean>;
     roomNameRef: React.RefObject<string | null>;
     showDebugEchoes?: boolean;
+    addDiagnosticLog?: (msg: string) => void;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {

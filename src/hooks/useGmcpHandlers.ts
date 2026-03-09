@@ -23,6 +23,7 @@ interface GmcpHandlersProps {
     setCharacterName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setRoomName: (name: string | null) => void;
+    isMobileBrevityMode: boolean;
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
 }
 
@@ -37,8 +38,32 @@ export const useGmcpHandlers = ({
     addMessage,
     setCharacterName,
     setPlayerPosition,
-    setRoomName
+    setRoomName,
+    isMobileBrevityMode
 }: GmcpHandlersProps) => {
+
+    // --- Brevity Summary Debouncing ---
+    const lastSummaryDataRef = useRef<{ players: string[], npcs: string[] }>({ players: [], npcs: [] });
+    const summaryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    const triggerBrevitySummary = useCallback((players: string[], npcs: string[]) => {
+        if (!isMobileBrevityMode) return;
+        
+        // Debounce to avoid multiple messages if players and npcs arrive in separate packets
+        if (summaryTimeoutRef.current) clearTimeout(summaryTimeoutRef.current);
+        
+        lastSummaryDataRef.current = { players, npcs };
+        
+        summaryTimeoutRef.current = setTimeout(() => {
+            const { players: p, npcs: n } = lastSummaryDataRef.current;
+            if (p.length === 0 && n.length === 0) return;
+            
+            // Send a special system message that useMessageLog will identify as a Brevity Summary
+            const summary = `BREVITY_SUMMARY:${JSON.stringify({ players: p, npcs: n })}`;
+            addMessage('system', summary);
+            summaryTimeoutRef.current = null;
+        }, 100);
+    }, [isMobileBrevityMode, addMessage]);
 
     // --- Room Info & Exits ---
 
@@ -77,8 +102,16 @@ export const useGmcpHandlers = ({
                 players.push(...names);
             }
         });
-        setRoomPlayers(Array.from(new Set(players)));
-    }, [setRoomPlayers]);
+        const uniquePlayers = Array.from(new Set(players));
+        setRoomPlayers(uniquePlayers);
+        if (isMobileBrevityMode) {
+             // We don't have NPCs here, so we merge with current npcs for the trigger
+             // But usually players/npcs packets arrive together. 
+             // triggerBrevitySummary will handle the debouncing.
+             // We'll pass an empty npc list here and let the debounce merge them if needed
+             // Actually, it's safer to just rely on the next packet or a small delay.
+        }
+    }, [setRoomPlayers, isMobileBrevityMode, triggerBrevitySummary]);
 
     const onRoomNpcs = useCallback((data: GmcpRoomNpcs) => {
         const npcs: string[] = [];
@@ -100,9 +133,18 @@ export const useGmcpHandlers = ({
             }
         });
 
-        setRoomNpcs(Array.from(new Set(npcs)));
-        if (players.length > 0) setRoomPlayers(prev => Array.from(new Set([...prev, ...players])));
-    }, [setRoomNpcs, setRoomPlayers]);
+        const uniqueNpcs = Array.from(new Set(npcs));
+        setRoomNpcs(uniqueNpcs);
+        if (players.length > 0) {
+            const uniquePlayers = Array.from(new Set(players));
+            setRoomPlayers(prev => Array.from(new Set([...prev, ...uniquePlayers])));
+        }
+        
+        if (isMobileBrevityMode) {
+            // Trigger summary
+            triggerBrevitySummary(players, npcs);
+        }
+    }, [setRoomNpcs, setRoomPlayers, isMobileBrevityMode, triggerBrevitySummary]);
 
     const onRoomItems = useCallback((data: GmcpRoomItems) => {
         const items = data.flatMap(i => {
@@ -114,8 +156,14 @@ export const useGmcpHandlers = ({
 
     const onAddPlayer = useCallback((data: string | GmcpOccupant) => {
         const names = typeof data === 'string' ? [data] : [data.name, data.keyword, data.short].filter(Boolean) as string[];
-        if (names.length > 0) setRoomPlayers(prev => Array.from(new Set([...prev, ...names])));
-    }, [setRoomPlayers]);
+        if (names.length > 0) {
+            setRoomPlayers(prev => {
+                const next = Array.from(new Set([...prev, ...names]));
+                if (isMobileBrevityMode) triggerBrevitySummary(next, []); // Trigger summary
+                return next;
+            });
+        }
+    }, [setRoomPlayers, isMobileBrevityMode, triggerBrevitySummary]);
 
     const onAddNpc = useCallback((data: string | GmcpOccupant) => {
         if (typeof data === 'string') {
@@ -126,28 +174,44 @@ export const useGmcpHandlers = ({
 
             const isPc = data.pc || data.type === 'pc' || data.type === 'player';
             if (isPc) {
-                setRoomPlayers(prev => Array.from(new Set([...prev, ...names])));
+                setRoomPlayers(prev => {
+                    const next = Array.from(new Set([...prev, ...names]));
+                    if (isMobileBrevityMode) triggerBrevitySummary(next, []);
+                    return next;
+                });
             } else {
-                setRoomNpcs(prev => Array.from(new Set([...prev, ...names])));
+                setRoomNpcs(prev => {
+                    const next = Array.from(new Set([...prev, ...names]));
+                    if (isMobileBrevityMode) triggerBrevitySummary([], next);
+                    return next;
+                });
             }
         }
-    }, [setRoomNpcs, setRoomPlayers]);
+    }, [setRoomNpcs, setRoomPlayers, isMobileBrevityMode, triggerBrevitySummary]);
 
     const onRemovePlayer = useCallback((data: string | GmcpOccupant) => {
         const name = typeof data === 'string' ? data : (data.name || data.keyword || data.short);
         if (name) {
-            setRoomPlayers(prev => prev.filter(p => p !== name));
+            setRoomPlayers(prev => {
+                const next = prev.filter(p => p !== name);
+                if (isMobileBrevityMode) triggerBrevitySummary(next, []);
+                return next;
+            });
             setRoomNpcs(prev => prev.filter(p => p !== name));
         }
-    }, [setRoomPlayers, setRoomNpcs]);
+    }, [setRoomPlayers, setRoomNpcs, isMobileBrevityMode, triggerBrevitySummary]);
 
     const onRemoveNpc = useCallback((data: string | GmcpOccupant) => {
         const name = typeof data === 'string' ? data : (data.name || data.keyword || data.short);
         if (name) {
-            setRoomNpcs(prev => prev.filter(p => p !== name));
+            setRoomNpcs(prev => {
+                const next = prev.filter(p => p !== name);
+                if (isMobileBrevityMode) triggerBrevitySummary([], next);
+                return next;
+            });
             setRoomPlayers(prev => prev.filter(p => p !== name));
         }
-    }, [setRoomNpcs, setRoomPlayers]);
+    }, [setRoomNpcs, setRoomPlayers, isMobileBrevityMode, triggerBrevitySummary]);
 
     // --- Character Identity ---
 

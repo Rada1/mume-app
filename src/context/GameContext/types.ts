@@ -58,6 +58,8 @@ export interface GameContextType {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
+    isMobileBrevityMode: boolean;
+    setIsMobileBrevityMode: (val: boolean) => void;
 
     mood: string;
     setMood: (val: string) => void;

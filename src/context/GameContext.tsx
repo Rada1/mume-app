@@ -89,7 +89,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
-    const { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine } = useMessageLog(inCombatHookRef);
+    const { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine } = useMessageLog(
+        inCombatHookRef, 
+        s.isMobileBrevityMode,
+        { players: s.roomPlayers, npcs: s.roomNpcs, items: s.roomItems }
+    );
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }), [addMessage]);
 
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
@@ -114,12 +118,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addMessage,
         setCharacterName: s.setCharacterName,
         setPlayerPosition: s.setPlayerPosition,
-        setRoomName: s.setRoomName
+        setRoomName: s.setRoomName,
+        isMobileBrevityMode: s.isMobileBrevityMode
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
 
-    const btn = useButtons(abilities, characterClass, addDiagnosticLog);
+    const btn = useButtons(abilities, characterClass);
     const joystick = useJoystick(triggerHaptic);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
@@ -158,7 +163,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         uiMode: s.uiMode, setUiMode: s.setUiMode,
         disable3dScroll: s.disable3dScroll, setDisable3dScroll: s.setDisable3dScroll,
         disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
-        isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode
+        isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
+        isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode
     });
 
     const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems);

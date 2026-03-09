@@ -43,6 +43,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setDisableSmoothScroll,
     isImmersionMode,
     setIsImmersionMode,
+    isMobileBrevityMode,
+    setIsMobileBrevityMode,
 }) => {
     const {
         setIsSettingsOpen, settingsTab, setSettingsTab,
@@ -112,6 +114,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setDisableSmoothScroll={setDisableSmoothScroll}
                                 isImmersionMode={isImmersionMode}
                                 setIsImmersionMode={setIsImmersionMode}
+                                isMobileBrevityMode={isMobileBrevityMode}
+                                setIsMobileBrevityMode={setIsMobileBrevityMode}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

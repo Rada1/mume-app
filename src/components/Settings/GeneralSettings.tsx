@@ -32,6 +32,8 @@ interface GeneralSettingsProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
+    isMobileBrevityMode: boolean;
+    setIsMobileBrevityMode: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -64,6 +66,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setDisableSmoothScroll,
     isImmersionMode,
     setIsImmersionMode,
+    isMobileBrevityMode,
+    setIsMobileBrevityMode,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -448,6 +452,40 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 )}
             </div>
+
+            <div className="setting-group" style={{ border: '1px solid rgba(236, 72, 153, 0.3)', background: 'rgba(236, 72, 153, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <label className="setting-label" style={{ color: '#f472b6', fontWeight: 'bold', margin: 0 }}>Experiments</label>
+                            <span style={{ fontSize: '0.65rem', background: '#ec4899', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>LAB</span>
+                        </div>
+                        <div style={{ marginTop: '10px' }}>
+                            <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Mobile Brevity Mode</label>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+                                Simplifies and condenses game text. Highly recommended for small screens.
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        className={`setting-toggle ${isMobileBrevityMode ? 'active' : ''}`}
+                        onClick={() => setIsMobileBrevityMode(!isMobileBrevityMode)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isMobileBrevityMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: isMobileBrevityMode ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </button>
+                </div>
+            </div>
+
             <div className="setting-group">
                 <label className="setting-label">Background Image</label>
                 <div style={{ display: 'flex', gap: '10px' }}>

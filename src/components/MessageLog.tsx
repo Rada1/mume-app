@@ -85,6 +85,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         handleScroll();
     }, [messages.length, activePrompt, handleScroll]);
 
+    const lastScrollCallRef = React.useRef(0);
     const lastMessagesRef = React.useRef(messages);
 
     React.useLayoutEffect(() => {
@@ -92,13 +93,21 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const lastMsg = messages[messages.length - 1];
         lastMessagesRef.current = messages;
 
+        // Rate limiting: Don't hammer scrollToBottom during massive log bursts
+        // 16ms = ~60fps target. If we just flushed 50 lines, we only need one scroll.
+        const now = Date.now();
+        const isThrottled = now - lastScrollCallRef.current < 16;
+
         if (isNewMessage) {
             if (viewport.isLockedToBottomRef.current || lastMsg?.type === 'user') {
                 viewport.isLockedToBottomRef.current = true;
-                // User commands snap instantly, game text glides smoothly
-                viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage'); 
+                if (!isThrottled || lastMsg?.type === 'user') {
+                    lastScrollCallRef.current = now;
+                    viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage'); 
+                }
             }
-        } else if (viewport.isLockedToBottomRef.current) {
+        } else if (viewport.isLockedToBottomRef.current && !isThrottled) {
+            lastScrollCallRef.current = now;
             viewport.scrollToBottom(true, false, 'LayoutEffect');
         }
     }, [messages, activePrompt, viewport]);

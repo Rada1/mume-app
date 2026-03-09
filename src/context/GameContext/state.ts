@@ -22,6 +22,7 @@ export const useGameProviderState = () => {
     const [disable3dScroll, setDisable3dScroll] = usePersistentState('mud-disable-3d-scroll', (MASTER_SETTINGS as any).disable3dScroll ?? false);
     const [disableSmoothScroll, setDisableSmoothScroll] = usePersistentState('mud-disable-smooth-scroll', (MASTER_SETTINGS as any).disableSmoothScroll ?? false);
     const [isImmersionMode, setIsImmersionMode] = usePersistentState('mud-immersion-mode', (MASTER_SETTINGS as any).isImmersionMode ?? true);
+    const [isMobileBrevityMode, setIsMobileBrevityMode] = usePersistentState('mud-mobile-brevity', false);
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
@@ -192,6 +193,7 @@ export const useGameProviderState = () => {
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
+        isMobileBrevityMode, setIsMobileBrevityMode,
         roomName, setRoomName, roomNameRef
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
@@ -200,7 +202,7 @@ export const useGameProviderState = () => {
         setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode, 
-        disable3dScroll, disableSmoothScroll, isImmersionMode, roomName
+        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName
     ]);
 
     return { vitals, game };

@@ -44,11 +44,6 @@ export function useViewport(
         if (!scrollContainerRef.current) return;
         const container = scrollContainerRef.current;
 
-        if (scrollAnimationRef.current) {
-            cancelAnimationFrame(scrollAnimationRef.current);
-            scrollAnimationRef.current = null;
-        }
-
         const currentScroll = container.scrollTop;
         const targetScroll = Math.max(0, container.scrollHeight - container.clientHeight);
 
@@ -58,15 +53,22 @@ export function useViewport(
             if (!isNearBottom) return;
         }
 
-        // Seamless Continuity: If already gliding and the target hasn't moved much (sub-pixel), let it be.
-        // If it moved significantly (>0.5px), restart or extend the glide.
-        if (isAutoScrollingRef.current && !instant && Math.abs(targetScroll - ((container as any).lastTarget || 0)) < 0.5) {
-            return;
-        }
-        (container as any).lastTarget = targetScroll;
-
+        // --- Continuous Glide Logic ---
+        // If already animating and the target has moved, we don't want to cancel and restart (laggy).
+        // Instead, we let the existing loop know about the new target distance.
         const isSmoothEnabled = !instant && !disableSmoothScroll && isImmersionMode;
+        
         if (isSmoothEnabled && Math.abs(targetScroll - currentScroll) > 0.5) {
+            // Store the target for the animation loop to consume
+            (container as any).lastTargetScroll = targetScroll;
+
+            if (isAutoScrollingRef.current && scrollAnimationRef.current) {
+                // If already gliding, just update the start position and time to "re-center" the ease
+                // but keep it smooth. We don't want to reset startTime entirely as that causes 0-velocity jumps.
+                // Instead, we just let the animation continue; it naturally pulls towards dynamicTarget.
+                return;
+            }
+
             isAutoScrollingRef.current = true;
             const startTime = performance.now();
             const duration = 250; 
@@ -80,39 +82,42 @@ export function useViewport(
 
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
+                
+                // Exponential ease-out for that "premium" feel
                 const easeOut = 1 - Math.pow(2, -10 * progress);
                 
                 const dynamicTarget = container.scrollHeight - container.clientHeight;
                 const currentDistance = dynamicTarget - startScroll;
                 
-                // Sub-pixel accurate glide path
-                const newScroll = startScroll + (currentDistance * easeOut);
-                
-                // Snap earlier (98%) to dynamicTarget to prevent rounding "jump" at the very end
-                container.scrollTop = progress > 0.98 ? dynamicTarget : newScroll;
-
-                if (progress < 1) {
+                // Velocity-aware smoothing: if the gap is tiny, just snap
+                if (progress < 1 && Math.abs(dynamicTarget - container.scrollTop) > 0.5) {
+                    const newScroll = startScroll + (currentDistance * easeOut);
+                    container.scrollTop = newScroll;
                     scrollAnimationRef.current = requestAnimationFrame(animate);
                 } else {
-                    container.scrollTop = container.scrollHeight - container.clientHeight;
+                    container.scrollTop = dynamicTarget;
                     isAutoScrollingRef.current = false;
                     scrollAnimationRef.current = null;
                 }
             };
 
+            if (scrollAnimationRef.current) cancelAnimationFrame(scrollAnimationRef.current);
             scrollAnimationRef.current = requestAnimationFrame(animate);
         } else {
+            if (scrollAnimationRef.current) {
+                cancelAnimationFrame(scrollAnimationRef.current);
+                scrollAnimationRef.current = null;
+            }
             container.scrollTop = targetScroll;
             isAutoScrollingRef.current = false;
         }
 
         if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
         autoScrollTimeoutRef.current = setTimeout(() => {
-            // Only clear if not actually animating anymore
             if (!scrollAnimationRef.current) {
                 isAutoScrollingRef.current = false;
             }
-        }, 1000);
+        }, 500);
     }, [disableSmoothScroll, isImmersionMode]);
 
     useEffect(() => {
@@ -164,7 +169,7 @@ export function useViewport(
         if (!isMobile) return;
 
         const handleTouchStart = (e: TouchEvent) => {
-            if ((e.target as HTMLElement).closest('.map-canvas')) return;
+            if ((e.target as HTMLElement).closest('.map-canvas, .joystick-cluster, .xbox-cluster, .joystick-container, .game-button, .custom-button')) return;
             if (e.touches.length === 2) {
                 const dist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -175,7 +180,7 @@ export function useViewport(
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            if ((e.target as HTMLElement).closest('.map-canvas')) return;
+            if ((e.target as HTMLElement).closest('.map-canvas, .joystick-cluster, .xbox-cluster, .joystick-container, .game-button, .custom-button')) return;
             if (e.touches.length === 2 && touchDistRef.current !== null) {
                 const distContext = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,

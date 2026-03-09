@@ -78,7 +78,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         disableSmoothScroll,
         setDisableSmoothScroll,
         isImmersionMode,
-        setIsImmersionMode
+        setIsImmersionMode,
+        isMobileBrevityMode,
+        setIsMobileBrevityMode
     } = useGame() as any;
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
@@ -150,6 +152,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setDisableSmoothScroll={setDisableSmoothScroll}
                     isImmersionMode={isImmersionMode}
                     setIsImmersionMode={setIsImmersionMode}
+                    isMobileBrevityMode={isMobileBrevityMode}
+                    setIsMobileBrevityMode={setIsMobileBrevityMode}
                 />
             )}
 

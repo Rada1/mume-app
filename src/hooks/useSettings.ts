@@ -36,6 +36,8 @@ interface UseSettingsDeps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
+    isMobileBrevityMode: boolean;
+    setIsMobileBrevityMode: (val: boolean) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -50,7 +52,8 @@ export function useSettings(deps: UseSettingsDeps) {
         uiMode, setUiMode,
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
-        isImmersionMode, setIsImmersionMode
+        isImmersionMode, setIsImmersionMode,
+        isMobileBrevityMode, setIsMobileBrevityMode
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState((MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
@@ -168,6 +171,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.disable3dScroll !== undefined) setDisable3dScroll(settings.disable3dScroll);
                     if (settings.disableSmoothScroll !== undefined) setDisableSmoothScroll(settings.disableSmoothScroll);
                     if (settings.isImmersionMode !== undefined) setIsImmersionMode(settings.isImmersionMode);
+                    if (settings.isMobileBrevityMode !== undefined) setIsMobileBrevityMode(settings.isMobileBrevityMode);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -244,6 +248,7 @@ export function useSettings(deps: UseSettingsDeps) {
         uiMode, setUiMode,
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
-        isImmersionMode, setIsImmersionMode
+        isImmersionMode, setIsImmersionMode,
+        isMobileBrevityMode, setIsMobileBrevityMode
     };
 }

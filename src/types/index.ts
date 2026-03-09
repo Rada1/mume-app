@@ -196,6 +196,8 @@ export interface SettingsModalProps {
     setDisableSmoothScroll: (val: boolean) => void;
     isImmersionMode: boolean;
     setIsImmersionMode: (val: boolean) => void;
+    isMobileBrevityMode: boolean;
+    setIsMobileBrevityMode: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -224,6 +226,7 @@ export interface SavedSettings {
     disable3dScroll?: boolean;
     disableSmoothScroll?: boolean;
     isImmersionMode?: boolean;
+    isMobileBrevityMode?: boolean;
 }
 
 export interface RoomNode {
