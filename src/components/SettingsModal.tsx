@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Music, Cog, Activity } from 'lucide-react';
 import { useGame } from '../context/GameContext';
-import GeneralSettings from './Settings/GeneralSettings';
+import GeneralSettings from './Settings/GeneralSettings/index';
 import DataManagement from './Settings/DataManagement';
 import SoundSettings from './Settings/SoundSettings';
 import ActionSettings from './Settings/ActionSettings';

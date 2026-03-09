@@ -5,6 +5,7 @@ import {
     ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT 
 } from '../mapperUtils';
 import { drawBlobTerrain, BlobNeighbors } from '../blobTerrainRenderer';
+import { drawLine, getRoomAnchor, drawCurvedPath, getSeed } from './mapDrawingHelpers';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -39,8 +40,6 @@ export const useMapperRenderer = ({
 }: RendererProps) => {
 
     const processedIconsRef = useRef<Record<string, HTMLCanvasElement>>({});
-
-    const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);
 
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
         const now = Date.now();
@@ -121,27 +120,6 @@ export const useMapperRenderer = ({
             }
         }
         ctx.stroke();
-
-        const drawLine = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2, dashed = false) => {
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = (thickness / dpr) * invZoom;
-            if (dashed) ctx.setLineDash([5 * invZoom, 5 * invZoom]);
-            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]);
-        };
-
-        const getRoomAnchor = (rx: number, ry: number) => {
-            const sX = getSeed(Math.round(rx), Math.round(ry)), sY = getSeed(Math.round(ry), Math.round(rx));
-            const j = GRID_SIZE * 0.22; // 22% jitter
-            return { x: Math.round(rx) * GRID_SIZE + GRID_SIZE / 2 + (sX - 0.5) * j, y: Math.round(ry) * GRID_SIZE + GRID_SIZE / 2 + (sY - 0.5) * j };
-        };
-
-        const drawCurvedPath = (x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 2) => {
-            const dx = x2 - x1, dy = y2 - y1, dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 1) return;
-            const seed = getSeed(x1 + x2, y1 + y2), bend = dist * (0.1 + seed * 0.15);
-            const cx = (x1 + x2) / 2 + (-dy / dist) * (seed - 0.5) * bend, cy = (y1 + y2) / 2 + (dx / dist) * (seed - 0.5) * bend;
-            ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = (thickness / dpr) * invZoom; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-            ctx.moveTo(x1, y1); ctx.quadraticCurveTo(cx, cy, x2, y2); ctx.stroke();
-        };
 
         if (floorIndex) {
             const bX1 = Math.floor(gX1 / 5), bY1 = Math.floor(gY1 / 5);
@@ -273,10 +251,10 @@ export const useMapperRenderer = ({
                                     const tAnchor = getRoomAnchor(targetData[0], targetData[1]);
                                     const tpx = tAnchor.x, tpy = tAnchor.y;
                                     if (hasRoadFlag) {
-                                        if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawCurvedPath(centerPX, centerPY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, 12);
-                                        else drawCurvedPath(centerPX, centerPY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, 4);
+                                        if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawCurvedPath(ctx, centerPX, centerPY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, 12, dpr, invZoom);
+                                        else drawCurvedPath(ctx, centerPX, centerPY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, 4, dpr, invZoom);
                                     } else if (targetVnum > vnum && (Math.abs(targetData[0] - rx) > 1.1 || Math.abs(targetData[1] - ry) > 1.1)) {
-                                        drawLine(centerPX, centerPY, tpx, tpy, isDarkMode ? "rgba(137, 180, 250, 0.15)" : "rgba(37, 99, 235, 0.15)", 2);
+                                        drawLine(ctx, centerPX, centerPY, tpx, tpy, isDarkMode ? "rgba(137, 180, 250, 0.15)" : "rgba(37, 99, 235, 0.15)", 2, false, dpr, invZoom);
                                     }
                                 }
                             }
