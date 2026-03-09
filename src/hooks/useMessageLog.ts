@@ -41,11 +41,11 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
 
         return (
             hasCombatVerb ||
-            ((t.includes('cast a spell') || t.includes('casts a spell') || t.includes('strange incantations')) && inCombatRef.current) ||
+            ((t.includes('dodge') || t.includes('parry') || t.includes('flee')) && inCombatRef.current) ||
             t.includes('you dodge') || t.includes('you parry') ||
             t.includes('you flee') || t.includes('you rescue') ||
             t.includes('you disarm') || t.includes('you bash') ||
-            t.includes('you kick') || t.includes('you bite') ||
+            t.includes('you bite') ||
             t.includes('your arm') || t.includes('your head') ||
             t.includes('your leg') || t.includes('your body') ||
             t.includes('your chest') || t.includes('your neck') ||
@@ -53,6 +53,10 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
             t.includes('you have been killed') || t.includes('you are dead') ||
             t.includes('you feel less protected') ||
             t.includes('your opponent') || t.includes('your foe') ||
+            // Spellcasting is always combat-relevant
+            t.includes('strange incantations') ||
+            t.includes('utters the words') ||
+            t.includes('cast a spell') || t.includes('casts a spell') ||
             /^\s*(k|kill|f|flee|b|bash|c|cast|u|use|rescue|disarm|kick|bite)\b/i.test(t) ||
             /^\w+ (dodges|parries|flees|rescues|disarms|bashes|kicks|bites|hits|stabs|cleaves|slashes|pounds|crushes|smites|shoots)/.test(t)
         );
@@ -188,6 +192,11 @@ export function useMessageLog(inCombatRef: React.RefObject<boolean>) {
         }
 
         let html = ansiConvert.toHtml(text);
+        
+        // Wrap spellcasting incantations to ensure they appear "bright"
+        if (textLower.includes('strange incantations') || textLower.includes('utters the words')) {
+            html = `<span class="spell-incant">${html}</span>`;
+        }
         if (type === 'game' && text.toLowerCase().includes("key: '")) {
             const keyMatch = textOnly.match(/key:\s*'([^']*)'/i);
             if (keyMatch) {

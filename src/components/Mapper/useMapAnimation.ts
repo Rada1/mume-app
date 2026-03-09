@@ -68,10 +68,21 @@ export const useMapAnimation = ({
             const dx = targetX - px, dy = targetY - py;
             const distSq = dx * dx + dy * dy;
             if (distSq > 0.0000001) {
-                const lerpFactor = 0.22;
+                const lerpFactor = 0.12; // Smoother player glide
                 playerPosRef.current.x += dx * lerpFactor;
                 playerPosRef.current.y += dy * lerpFactor;
                 
+                // Push trail dots during glide for smoothness
+                if (distSq > 0.001) {
+                    playerTrailRef.current.push({
+                        x: playerPosRef.current.x,
+                        y: playerPosRef.current.y,
+                        z: playerPosRef.current.z,
+                        alpha: 0.8
+                    });
+                    if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
+                }
+
                 // Snap if very close to prevent micro-frames
                 if (distSq < 0.00001) {
                    playerPosRef.current.x = targetX;
@@ -89,7 +100,7 @@ export const useMapAnimation = ({
                 const cdx = targetCamX - camera.current.x;
                 const cdy = targetCamY - camera.current.y;
                 if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
-                    const camLerp = 0.18;
+                    const camLerp = 0.1; // Smoother camera glide
                     camera.current.x += cdx * camLerp;
                     camera.current.y += cdy * camLerp;
                     needsNextFrame = true;
@@ -104,7 +115,7 @@ export const useMapAnimation = ({
             let trailChanged = false;
             playerTrailRef.current = playerTrailRef.current.filter(t => {
                 if (t.alpha > 0.01) {
-                    t.alpha *= 0.88; // Faster trail decay for performance
+                    t.alpha *= 0.93; // Slower trail decay for better persistence
                     trailChanged = true;
                     return true;
                 }

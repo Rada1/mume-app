@@ -160,6 +160,12 @@
     margin: 10px 0;
 }
 
+.spell-incant {
+    color: var(--ansi-bright-cyan);
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+}
+
 .message.error {
     color: #ef4444;
     background: rgba(239, 68, 68, 0.1);

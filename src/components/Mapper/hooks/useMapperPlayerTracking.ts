@@ -10,7 +10,8 @@ export const useMapperPlayerTracking = (
     playerPosRef: MutableRefObject<{ x: number, y: number, z: number } | null>,
     playerTrailRef: MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>,
     lastRoomIdRef: MutableRefObject<string | null>,
-    triggerRender: () => void
+    triggerRender: () => void,
+    setViewZ: (z: number | null) => void
 ) => {
     // Handle Player Position & Trail
     useEffect(() => {
@@ -24,17 +25,23 @@ export const useMapperPlayerTracking = (
                     z: playerPosRef.current.z,
                     alpha: 1.0
                 });
-                if (playerTrailRef.current.length > 15) playerTrailRef.current.shift();
+                if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
             }
             
-            // Always update current position
-            playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
+            // Initialize if null, otherwise let useMapAnimation glide X/Y
+            if (!playerPosRef.current) {
+                playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
+            } else {
+                // Update Z immediately (for clipping logic) but preserve X/Y for gliding
+                playerPosRef.current.z = r.z || 0;
+            }
 
             // Whenever the room changes, enable auto-center so the animation loop
             // in useMapAnimation.ts can glide the camera smoothly to the new target.
             if (currentRoomId !== lastRoomIdRef.current) {
                 lastRoomIdRef.current = currentRoomId;
                 setAutoCenter(true);
+                setViewZ(null);
             }
 
             triggerRender();
@@ -48,8 +55,9 @@ export const useMapperPlayerTracking = (
 
     const handleCenterOnPlayer = useCallback(() => {
         setAutoCenter(true);
+        setViewZ(null);
         triggerRender();
-    }, [triggerRender]);
+    }, [triggerRender, setViewZ, setAutoCenter]);
 
     return { handleCenterOnPlayer };
 };

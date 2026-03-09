@@ -1,5 +1,28 @@
 import { RenderContext, getSeed } from './rendererUtils';
-import { GRID_SIZE } from '../mapperUtils';
+import { GRID_SIZE, DIRS } from '../mapperUtils';
+
+// Pre-render glow for optimization
+let glowCanvas: HTMLCanvasElement | null = null;
+const getGlowCanvas = () => {
+    if (glowCanvas) return glowCanvas;
+    const canvas = document.createElement('canvas');
+    const size = Math.round(GRID_SIZE * 2.2);
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d')!;
+    const center = size / 2;
+    const glowRadius = GRID_SIZE * 1.1;
+    const gradient = ctx.createRadialGradient(center, center, 0, center, center, glowRadius);
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+    gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(center, center, glowRadius, 0, Math.PI * 2);
+    ctx.fill();
+    glowCanvas = canvas;
+    return canvas;
+};
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
     const { ctx, isDarkMode, camera, visitedAtCoord } = rCtx;
@@ -39,14 +62,20 @@ export const drawEntities = (
     // Player Trail
     const trail = playerTrailRef.current;
     if (trail.length > 0) {
-        ctx.save(); ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(59, 130, 246, 0.8)';
+        ctx.save(); 
+        ctx.shadowBlur = 10; 
+        ctx.shadowColor = 'rgba(239, 68, 68, 0.6)'; // Red glow for the trail
         const trailLen = trail.length;
         for (let i = 0; i < trailLen; i++) {
             const t = trail[i];
             const zDist = Math.abs(t.z - currentZ);
             if (zDist < 1.5) {
-                ctx.globalAlpha = Math.max(0, t.alpha * (1 - zDist)); ctx.fillStyle = '#ef4444'; ctx.beginPath();
-                ctx.arc(t.x * GRID_SIZE + GRID_SIZE / 2, t.y * GRID_SIZE + GRID_SIZE / 2, 1 + (t.alpha * 4), 0, Math.PI * 2); ctx.fill();
+                ctx.globalAlpha = Math.max(0, t.alpha * (1 - zDist)); 
+                ctx.fillStyle = '#ef4444'; 
+                ctx.beginPath();
+                // Increased trail dot size
+                ctx.arc(t.x * GRID_SIZE + GRID_SIZE / 2, t.y * GRID_SIZE + GRID_SIZE / 2, 2.5 + (t.alpha * 4), 0, Math.PI * 2); 
+                ctx.fill();
             }
         }
         ctx.restore();
@@ -57,26 +86,67 @@ export const drawEntities = (
         const px = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2, py = playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2;
         const alpha = Math.max(0, 1 - Math.abs(playerPosRef.current.z - currentZ));
         
-        // Pulsing glow
-        const pulse = (Math.sin(rCtx.now / 400) + 1) / 2;
+        // Player glow (static, no pulse)
+        // Wall-aware clipping: restrict light to current room and adjacent rooms with exits
+        const activeId = rCtx.activeId;
+        const allRooms = rCtx.allRooms;
+        const preloaded = rCtx.preloaded;
+        
         ctx.save();
         ctx.globalAlpha = alpha;
-        const glowSize = (12 + pulse * 18) / rCtx.camera.zoom;
-        const gradient = ctx.createRadialGradient(px, py, 0, px, py, glowSize);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-        gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)');
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(px, py, glowSize, 0, Math.PI * 2);
-        ctx.fill();
+        
+        // Find best source of exits for the current room
+        const room = activeId ? allRooms[activeId] : null;
+        let exits = room?.exits;
+        
+        // Fallback: If no exits in local room, try preloaded data (strip 'm_' prefix if needed)
+        if (!exits && activeId) {
+            const rawId = activeId.startsWith('m_') ? activeId.substring(2) : activeId;
+            if (preloaded[rawId]) {
+                exits = preloaded[rawId][4];
+            }
+        }
+
+        if (room || exits) {
+            ctx.beginPath();
+            // Current room (slightly larger to ensure no gaps)
+            ctx.rect(px - GRID_SIZE / 2 - 2, py - GRID_SIZE / 2 - 2, GRID_SIZE + 4, GRID_SIZE + 4);
+            
+            // Neighbor rooms reachable via exits
+            if (exits) {
+                for (const dir in exits) {
+                    const d = DIRS[dir];
+                    // Skip 'u' (up) and 'd' (down) as they don't have x/y displacement
+                    if (d && (d.dx !== 0 || d.dy !== 0)) {
+                        const halfG = GRID_SIZE / 2;
+                        if (d.dx !== 0 && d.dy !== 0) {
+                            // Diagonal: Add a small connecting square
+                            ctx.rect(px + d.dx * halfG - halfG/2 - 1, py + d.dy * halfG - halfG/2 - 1, halfG + 2, halfG + 2);
+                        } else {
+                            // Cardinal: Extend halfway into next room
+                            ctx.rect(px + d.dx * halfG - halfG - 1, py + d.dy * halfG - halfG - 1, GRID_SIZE + 2, GRID_SIZE + 2);
+                        }
+                    }
+                }
+            }
+            ctx.clip();
+        }
+
+        const gCanvas = getGlowCanvas();
+        ctx.drawImage(gCanvas, px - gCanvas.width/2, py - gCanvas.height/2);
         ctx.restore();
 
-        ctx.save(); ctx.globalAlpha = alpha; ctx.shadowBlur = 8; ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowOffsetX = 2; ctx.shadowOffsetY = 2;
-        ctx.fillStyle = '#ef4444'; ctx.beginPath();
-        // Increased radius from 7 to 10 for a bigger dot
-        for (let i = 0; i < 10; i++) { const ang = (i / 10) * Math.PI * 2, jit = (getSeed(i, 999) - 0.5) * 1.5; ctx.lineTo(px + Math.cos(ang) * (10 + jit), py + Math.sin(ang) * (10 + jit)); }
-        ctx.closePath(); ctx.fill();
+        // Static, semi-transparent player dot
+        const dotSize = 10;
+        
+        ctx.save(); 
+        ctx.globalAlpha = alpha * 0.8; 
+        ctx.shadowBlur = 12; 
+        ctx.shadowColor = 'rgba(239, 68, 68, 0.8)'; 
+        ctx.fillStyle = '#ef4444'; 
+        ctx.beginPath();
+        ctx.arc(px, py, dotSize, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
     }
 };
