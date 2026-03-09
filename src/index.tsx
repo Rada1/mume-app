@@ -19,7 +19,6 @@ import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
 import { GameProvider, useGame } from './context/GameContext';
 import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
-import { DiagnosticOverlay } from './components/DiagnosticOverlay';
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 

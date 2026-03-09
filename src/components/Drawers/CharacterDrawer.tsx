@@ -95,8 +95,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             <div style={{
                                 display: 'flex', flexDirection: 'column', gap: '2px',
                                 fontSize: isLandscape ? '0.7rem' : '0.85rem', lineHeight: '1.3',
-                                background: 'rgba(0,0,0,0.3)', padding: isLandscape ? '8px 10px' : '15px',
-                                borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)',
+                                background: 'transparent', padding: isLandscape ? '8px 10px' : '15px',
+                                borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)',
                                 minHeight: isLandscape ? '80px' : '100px',
                                 maxHeight: isLandscape ? '150px' : 'none',
                                 overflowY: 'auto'
@@ -119,10 +119,10 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             }}
                             style={{
                                 width: '100%',
-                                background: 'rgba(0,0,0,0.2)',
+                                background: 'rgba(255, 255, 255, 0.03)',
                                 padding: isLandscape ? '10px' : '15px',
                                 borderRadius: '12px',
-                                border: '1px solid rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255, 255, 255, 0.05)',
                                 cursor: 'pointer',
                                 textAlign: 'left',
                                 marginTop: isLandscape ? '0' : 'auto'

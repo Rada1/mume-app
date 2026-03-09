@@ -63,16 +63,16 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
             <div className="modal" style={{ maxWidth: '600px', width: '95%' }} onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
                     <div className="modal-title">Set Manager</div>
-                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer' }}>
+                    <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-dim)', cursor: 'pointer' }}>
                         <X size={20} />
                     </button>
                 </div>
 
                 <div className="setting-group" style={{
                     padding: '12px',
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'var(--border-color, rgba(255, 255, 255, 0.03))',
                     borderRadius: '8px',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
                     marginBottom: '15px'
                 }}>
                     <div className="modal-title" style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>LAYOUT & DISPLAY SETTINGS</div>
@@ -236,7 +236,7 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                     </div>
                 </div>
 
-                <div className="buttons-list" style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #333', borderRadius: '8px', padding: '10px' }}>
+                <div className="buttons-list" style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid var(--border-color, #333)', borderRadius: '8px', padding: '10px' }}>
                     {filteredButtons.length === 0 ? (
                         <div style={{ padding: '20px', textAlign: 'center', color: '#666', fontStyle: 'italic' }}>
                             No buttons in this set.
@@ -248,8 +248,8 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
                                 padding: '10px',
-                                borderBottom: '1px solid #222',
-                                background: 'rgba(255,255,255,0.02)',
+                                borderBottom: '1px solid var(--border-color, #222)',
+                                background: 'var(--border-color, rgba(255,255,255,0.02))',
                                 marginBottom: '5px',
                                 borderRadius: '4px'
                             }}>
@@ -262,14 +262,14 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                                         border: '1px solid #555'
                                     }} />
                                     <div>
-                                        <div style={{ fontWeight: 'bold' }}>{button.label}</div>
-                                        <div style={{ fontSize: '0.75rem', color: '#888' }}>{button.command}</div>
+                                        <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{button.label}</div>
+                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{button.command}</div>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                     <button
                                         onClick={() => onEditButton(button.id, selectedSet)}
-                                        style={{ background: '#333', border: 'none', color: '#fff', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
+                                        style={{ background: 'var(--border-color, #333)', border: 'none', color: 'var(--text-primary, #fff)', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
                                         title="Edit Layout/Details"
                                     >
                                         <Edit2 size={16} />

@@ -186,6 +186,38 @@ export function useViewport(
         };
     }, [isMobile]);
 
+    // --- Dedicated Font Recalibration ---
+    useEffect(() => {
+        if (!isMobile) {
+            document.documentElement.style.setProperty('--dynamic-log-size', `${16 * logFontSize}px`);
+            return;
+        }
+
+        const updateFont = () => {
+            const logContainer = document.querySelector('.message-log-container');
+            if (logContainer) {
+                const width = logContainer.clientWidth;
+                if (width === 0) return; // Not yet rendered
+
+                // Standardized 80-character Space Mono math
+                const usableWidth = Math.max(0, width - 40);
+                const fontSize = (usableWidth / 48) * logFontSize;
+                const safeSize = Math.min(40, Math.max(6, fontSize));
+                document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
+            }
+        };
+
+        // Update immediately and also after a short delay to catch browser reflow
+        updateFont();
+        const timer = setTimeout(updateFont, 100);
+        const timer2 = setTimeout(updateFont, 300);
+
+        return () => {
+            clearTimeout(timer);
+            clearTimeout(timer2);
+        };
+    }, [isMobile, isLandscape, logFontSize, windowWidth, isKeyboardOpen]);
+
     const updateHeight = useCallback(() => {
         const viewport = window.visualViewport;
         if (!viewport) return;
@@ -195,19 +227,22 @@ export function useViewport(
         const offsetTop = viewport.offsetTop;
 
         // --- Robust Base Height Detection ---
-        if ((offsetTop === 0 && currentHeight > 500) || baseHeightRef.current === 0) {
-            if (currentHeight > baseHeightRef.current || Math.abs(currentWidth - lastWidthRef.current) > 2) {
-                baseHeightRef.current = currentHeight;
-                lastWidthRef.current = currentWidth;
+        const widthChanged = Math.abs(currentWidth - lastWidthRef.current) > 50;
+        
+        if (offsetTop === 0 || baseHeightRef.current === 0 || widthChanged) {
+            if (currentHeight > 500 || widthChanged || baseHeightRef.current === 0) {
+                if (widthChanged || currentHeight > baseHeightRef.current) {
+                    baseHeightRef.current = currentHeight;
+                    lastWidthRef.current = currentWidth;
+                }
             }
         }
 
         const isFocusableActive = document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA';
         const heightDrop = baseHeightRef.current - currentHeight;
-        const isKeyboardPhysicallyPresent = heightDrop > 60 || (baseHeightRef.current > 0 && currentHeight < baseHeightRef.current * 0.85);
+        const threshold = isLandscape ? 40 : 60;
+        const isKeyboardPhysicallyPresent = heightDrop > threshold || (baseHeightRef.current > 0 && currentHeight < baseHeightRef.current * 0.8);
         
-        // Target state: Stay locked as long as the keyboard is taking up space.
-        // We only transition back to false once the physical height is restored.
         const targetState = isKeyboardPhysicallyPresent;
 
         const applyLock = (h: number, off: number, isLocked: boolean) => {
@@ -246,8 +281,6 @@ export function useViewport(
         requestAnimationFrame(() => {
             applyLock(currentHeight, offsetTop, targetState);
             
-            // Re-verify the lock, but ONLY if we still believe it should be locked.
-            // This prevents the 'phantom lock' when closing.
             if (targetState) {
                 setTimeout(() => {
                     const v = window.visualViewport;
@@ -258,26 +291,13 @@ export function useViewport(
                 }, 150);
             }
 
-            if (isMobile) {
-                const logContainer = document.querySelector('.message-log-container');
-                if (logContainer) {
-                    const width = logContainer.clientWidth;
-                    const usableWidth = Math.max(0, width - 40);
-                    const fontSize = (usableWidth / 48) * logFontSize;
-                    const safeSize = Math.min(40, Math.max(6, fontSize));
-                    document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
-                }
-            } else {
-                document.documentElement.style.setProperty('--dynamic-log-size', `${16 * logFontSize}px`);
-            }
-
             lastViewportHeightRef.current = currentHeight;
             
             if (targetState !== isKeyboardOpen) {
                 setIsKeyboardOpen(targetState);
             }
         });
-    }, [isMobile, isKeyboardOpen, logFontSize]);
+    }, [isMobile, isLandscape, isKeyboardOpen, logFontSize]);
 
     useEffect(() => {
         if (window.visualViewport) {

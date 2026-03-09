@@ -34,7 +34,7 @@ const DataManagement: React.FC<DataManagementProps> = ({
                     </label>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <button className="btn-secondary" onClick={() => { if (confirm('WIPE ALL SAVED DATA and reset to the built-in defaults? This cannot be undone.')) resetButtons(); }} style={{ width: '100%', borderColor: '#ef4444', color: '#ef4444' }}>
+                    <button className="btn-secondary" onClick={() => { if (confirm('WIPE ALL SAVED DATA and reset to the built-in defaults? This cannot be undone.')) resetButtons(); }} style={{ width: '100%', borderColor: 'var(--ansi-red, #ef4444)', color: 'var(--ansi-red, #ef4444)' }}>
                         Reset to Default
                     </button>
                 </div>

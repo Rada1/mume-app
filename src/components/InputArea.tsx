@@ -117,7 +117,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 transform: 'translateX(-50%)',
                 width: '40px',
                 height: '4px',
-                background: 'rgba(255, 255, 255, 0.2)',
+                background: 'var(--text-faded, rgba(255, 255, 255, 0.2))',
                 borderRadius: '2px',
                 pointerEvents: 'none'
             }} />
@@ -201,10 +201,10 @@ const InputArea: React.FC<InputAreaProps> = ({
                         style={{
                             marginLeft: '10px',
                             padding: '2px 8px',
-                            background: 'rgba(var(--accent-rgb), 0.1)',
+                            background: 'var(--input-bg, rgba(var(--accent-rgb), 0.1))',
                             border: '1px solid var(--border-color)',
                             borderRadius: '4px',
-                            color: '#facc15',
+                            color: 'var(--ansi-yellow, #facc15)',
                             fontSize: '0.8rem',
                             fontWeight: 'bold',
                             cursor: 'grab',

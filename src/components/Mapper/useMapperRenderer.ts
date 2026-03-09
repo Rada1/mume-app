@@ -116,7 +116,8 @@ export const useMapperRenderer = ({
         if (needsRebuild) {
             const offCtx = cache.ctx;
             offCtx.setTransform(1, 0, 0, 1, 0, 0);
-            offCtx.fillStyle = isDarkMode ? '#11111b' : '#f2f2f2';
+            // Darker grey for light mode background
+            offCtx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
             offCtx.fillRect(0, 0, w, h);
             
             offCtx.save();
@@ -196,7 +197,7 @@ export const useMapperRenderer = ({
         // 4. Main Rendering Pass
         // Wipe main canvas before drawing
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.fillStyle = isDarkMode ? '#11111b' : '#f2f2f2';
+        ctx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         // Draw the static cache with offset correction

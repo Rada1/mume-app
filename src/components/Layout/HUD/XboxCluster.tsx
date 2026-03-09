@@ -57,14 +57,14 @@ export const XboxCluster: React.FC<XboxClusterProps> = ({
         border: isEditMode ? '1px dashed rgba(255,255,0,0.15)' : undefined,
         borderRadius: '50%',
         backgroundColor: isEditMode ? 'rgba(255,255,0,0.05)' : undefined,
-        boxShadow: undefined,
         transformOrigin: 'bottom right',
+        left: 'auto',
         opacity: 1
     };
 
     if (isDefault) {
-        style.right = '15px';
-        style.bottom = '30px';
+        style.right = isLandscape ? '40px' : '15px';
+        style.bottom = isLandscape ? '20px' : '30px';
         style.top = 'auto';
         style.transform = pos.scale ? `scale(${pos.scale})` : '';
     } else {

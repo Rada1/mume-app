@@ -109,7 +109,7 @@ const Header: React.FC<HeaderProps> = ({
                         {isSetMenuOpen && (
                             <div className="header-dropdown-menu" style={{ minWidth: '180px', maxHeight: '350px', overflowY: 'auto', right: 0 }}>
                                 <div className="menu-group" style={{ padding: '4px' }}>
-                                    <label style={{ margin: '8px 0 10px 8px' }}>Button Set</label>
+                                    <label style={{ margin: '8px 0 10px 8px', color: 'var(--text-dim, #94a3b8)' }}>Button Set</label>
                                     {availableSets.map(set => (
                                         <div
                                             key={set}
@@ -153,7 +153,7 @@ const Header: React.FC<HeaderProps> = ({
                                                 e.stopPropagation();
                                                 setMenuView('availableSets');
                                             }}
-                                            style={{ border: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.02)' }}
+                                            style={{ border: '1px solid var(--border-color, rgba(255,255,255,0.05))', background: 'var(--bg-panel, rgba(255,255,255,0.02))' }}
                                         >
                                             <Layers size={14} />
                                             <span style={{ flex: 1 }}>{activeSet}</span>
@@ -238,7 +238,7 @@ const Header: React.FC<HeaderProps> = ({
                                         <ChevronLeft size={16} />
                                         <span style={{ fontWeight: 'bold' }}>Back to Menu</span>
                                     </div>
-                                    <label style={{ margin: '4px 0 8px 10px' }}>SELECT SET</label>
+                                    <label style={{ margin: '4px 0 8px 10px', color: 'var(--text-dim, #94a3b8)' }}>SELECT SET</label>
                                     <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                                         {availableSets.map(set => (
                                             <div

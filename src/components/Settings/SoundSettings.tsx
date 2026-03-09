@@ -31,7 +31,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <label className="setting-label" style={{ color: '#c4b5fd', fontWeight: 'bold', margin: 0 }}>Enable Sound</label>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Play audio triggers when patterns match.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Play audio triggers when patterns match.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '0.8rem', color: isSoundEnabled ? '#c4b5fd' : '#64748b' }}>{isSoundEnabled ? 'ON' : 'OFF'}</span>
@@ -40,7 +40,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: isSoundEnabled ? '#8b5cf6' : '#334155',
+                                background: isSoundEnabled ? '#8b5cf6' : 'var(--input-bg, #334155)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -90,20 +90,20 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                         checked={newSoundRegex}
                         onChange={(e) => setNewSoundRegex(e.target.checked)}
                     />
-                    <label htmlFor="new-sound-regex" style={{ color: '#aaa', fontSize: '0.9rem', cursor: 'pointer' }}>Regex?</label>
+                    <label htmlFor="new-sound-regex" style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.9rem', cursor: 'pointer' }}>Regex?</label>
                 </div>
 
                 <div className="trigger-list" style={{ marginTop: '20px' }}>
                     <label className="setting-label">Configured Triggers</label>
-                    {!soundTriggers.length && <div style={{ color: '#64748b', fontStyle: 'italic', padding: '10px' }}>No triggers defined yet.</div>}
+                    {!soundTriggers.length && <div style={{ color: 'var(--text-dim, #64748b)', fontStyle: 'italic', padding: '10px' }}>No triggers defined yet.</div>}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {soundTriggers.map((t) => (
-                            <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.05)', padding: '10px 15px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div key={t.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.05))', padding: '10px 15px', borderRadius: '6px', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <Volume2 size={16} color="var(--accent)" />
                                     <div style={{ overflow: 'hidden' }}>
-                                        <div style={{ color: '#fff', fontWeight: '500', fontSize: '0.9rem' }}>{t.pattern} {t.isRegex ? <span style={{ fontSize: '0.7rem', color: '#10b981', marginLeft: '4px' }}>[Regex]</span> : ''}</div>
-                                        <div style={{ color: '#aaa', fontSize: '0.75rem' }}>{t.fileName}</div>
+                                        <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.9rem' }}>{t.pattern} {t.isRegex ? <span style={{ fontSize: '0.7rem', color: '#10b981', marginLeft: '4px' }}>[Regex]</span> : ''}</div>
+                                        <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.75rem' }}>{t.fileName}</div>
                                     </div>
                                 </div>
                                 <button

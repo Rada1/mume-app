@@ -13,10 +13,11 @@ interface MapperContextMenuProps {
     onWalkStart?: (roomId: string) => void;
     onWalkEnd?: () => void;
     mode?: 'edit' | 'play';
+    isDarkMode: boolean;
 }
 
 export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
-    x, y, roomId, onClose, onDelete, onInfo, onAddMarker, onAddRoom, onSyncLocation, onWalkStart, onWalkEnd, mode = 'edit'
+    x, y, roomId, onClose, onDelete, onInfo, onAddMarker, onAddRoom, onSyncLocation, onWalkStart, onWalkEnd, mode = 'edit', isDarkMode
 }) => {
     return (
         <>
@@ -29,19 +30,19 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
                 top: y,
                 left: x,
                 zIndex: 1001,
-                backgroundColor: '#1e1e2e',
-                border: '1px solid #313244',
+                backgroundColor: isDarkMode ? '#1e1e2e' : '#ffffff',
+                border: isDarkMode ? '1px solid #313244' : '1px solid #ddd',
                 borderRadius: '8px',
                 padding: '4px',
                 minWidth: '150px',
-                boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
+                boxShadow: isDarkMode ? '0 10px 25px rgba(0,0,0,0.5)' : '0 10px 25px rgba(0,0,0,0.1)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '2px'
             }}>
                 {mode === 'edit' && (
                     <button
-                        style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: '#cdd6f4', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        style={{ padding: '8px 12px', backgroundColor: 'transparent', border: 'none', color: isDarkMode ? '#cdd6f4' : '#333', fontSize: '13px', textAlign: 'left', cursor: 'pointer', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}
                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         onClick={(e) => { e.stopPropagation(); onSyncLocation(); }}

@@ -39,9 +39,10 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
             id="cluster-joystick"
             className="joystick-cluster"
             style={{
-                left: pos.x ?? '20px',
+                left: pos.x ?? (isLandscape ? '40px' : '20px'),
+                right: 'auto',
                 top: pos.y,
-                bottom: isDefault ? '50px' : (pos.y === undefined ? '50px' : 'auto'),
+                bottom: isDefault ? (isLandscape ? '20px' : '50px') : (pos.y === undefined ? '50px' : 'auto'),
                 width: '180px',
                 height: '180px',
                 transform: (isDefault) ? (pos.scale ? `scale(${pos.scale})` : '') : `${pos.y !== undefined ? '' : 'translateY(-50%)'} ${pos.scale ? `scale(${pos.scale})` : ''}`,
@@ -53,7 +54,6 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                 backgroundColor: isEditMode ? 'rgba(255,255,0,0.05)' : undefined,
                 border: isEditMode ? '1px dashed rgba(255,255,0,0.15)' : undefined,
                 borderRadius: '50%',
-                boxShadow: undefined,
                 opacity: 1
             }}
             onPointerDown={(e) => {

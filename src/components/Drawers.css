@@ -14,9 +14,9 @@
 
 @media (max-width: 768px) {
     .drawer-backdrop {
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        background: rgba(0, 0, 0, 0.05);
     }
 }
 
@@ -39,15 +39,17 @@
     left: 0;
     right: 0;
     height: 60vh;
-    background: rgba(15, 23, 42, 0.95);
-    border-top: 2px solid var(--accent);
+    background: var(--bg-panel, rgba(15, 23, 42, 0.15));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     border-radius: 20px 20px 0 0;
     z-index: 3001;
     transform: translateY(101%);
     visibility: hidden;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
     display: flex;
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
     pointer-events: none;
     touch-action: none;
 }
@@ -66,15 +68,17 @@
     left: 0;
     width: 95vw;
     max-width: 650px;
-    background: rgba(15, 23, 42, 0.95);
-    border-right: 2px solid var(--accent);
+    background: var(--bg-panel, rgba(15, 23, 42, 0.15));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     z-index: 3001;
     transform: translateX(-101%);
     visibility: hidden;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
     display: flex;
     flex-direction: column;
-    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.3);
     pointer-events: none;
     touch-action: pan-y;
 }
@@ -136,8 +140,10 @@
     right: 0;
     width: 95vw;
     max-width: 650px;
-    background: rgba(15, 23, 42, 0.95);
-    border-left: 2px solid var(--accent);
+    background: var(--bg-panel, rgba(15, 23, 42, 0.15));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-left: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     z-index: 3001;
     transform: translateX(101%);
     visibility: hidden;
@@ -195,7 +201,7 @@
 
 .drawer-header {
     padding: 15px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -214,6 +220,7 @@
     line-height: 1.5;
     white-space: normal;
     overflow-x: hidden;
+    color: var(--text-primary);
 }
 
 .drawer-content pre {
@@ -240,10 +247,10 @@
     transform: translateY(-50%);
     width: 28px;
     height: 140px;
-    background: rgba(0, 0, 0, 0.45);
+    background: var(--bg-panel, rgba(0, 0, 0, 0.45));
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
     z-index: 2000;
     cursor: pointer;
     flex-direction: column;

@@ -11,10 +11,11 @@ interface RoomInfoCardProps {
     cardRef: React.RefObject<HTMLDivElement>;
     preloadedCoordsRef?: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, any>, string, string, string[], string[]]>>;
     setViewZ?: (z: number | null) => void;
+    isDarkMode: boolean;
 }
 
 export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
-    roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, setViewZ
+    roomId, rooms, setRooms, mode, onClose, cardRef, preloadedCoordsRef, setViewZ, isDarkMode
 }) => {
     let room = rooms[roomId];
 
@@ -120,10 +121,10 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             ref={cardRef}
             style={{
                 position: 'absolute', top: '48px', bottom: '16px', left: '8px', right: '16px',
-                zIndex: 100, backgroundColor: '#18181b', padding: '16px', borderRadius: '12px',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.8)', border: '1px solid #27272a',
+                zIndex: 100, backgroundColor: isDarkMode ? '#18181b' : '#f5f5f7', padding: '16px', borderRadius: '12px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.8)', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6',
                 display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px',
-                overflowY: 'auto', pointerEvents: 'auto', color: '#e4e4e7', touchAction: 'pan-y'
+                overflowY: 'auto', pointerEvents: 'auto', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', touchAction: 'pan-y'
             }}
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -143,15 +144,15 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     type="text"
                     value={room.name || ''}
                     onChange={(e) => updateRoom({ name: e.target.value })}
-                    style={{ backgroundColor: '#1c1c1f', border: '1px solid #3f3f46', padding: '10px 14px', borderRadius: '8px', color: 'white', fontWeight: 'bold', fontSize: '15px' }}
+                    style={{ backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', border: isDarkMode ? '1px solid #3f3f46' : '1px solid #d1d1d6', padding: '10px 14px', borderRadius: '8px', color: isDarkMode ? 'white' : '#1d1d1f', fontWeight: 'bold', fontSize: '15px' }}
                     readOnly={mode !== 'edit'}
                     placeholder="Room Name"
                 />
             </div>
 
             <div style={{ display: 'flex', gap: '10px' }}>
-                <div style={{ backgroundColor: '#1c1c1f', border: '1px solid #27272a', padding: '8px 12px', borderRadius: '8px', flex: 1, fontSize: '12px', display: 'flex', alignItems: 'center' }}>
-                    <span style={{ color: '#71717a', marginRight: '4px' }}>Zone: </span>
+                <div style={{ backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', padding: '8px 12px', borderRadius: '8px', flex: 1, fontSize: '12px', display: 'flex', alignItems: 'center' }}>
+                    <span style={{ color: isDarkMode ? '#71717a' : '#8e8e93', marginRight: '4px' }}>Zone: </span>
                     <input
                         type="text"
                         value={room.zone || ''}
@@ -180,7 +181,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             </div>
 
             {room.desc && (
-                <div style={{ fontSize: '13px', color: '#d1d5db', backgroundColor: '#141417', padding: '14px', borderRadius: '8px', border: '1px solid #27272a', lineHeight: '1.6' }}>
+                <div style={{ fontSize: '13px', color: isDarkMode ? '#d1d5db' : '#3a3a3c', backgroundColor: isDarkMode ? '#141417' : '#ffffff', padding: '14px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6', lineHeight: '1.6' }}>
                     {room.desc}
                 </div>
             )}
@@ -234,9 +235,9 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                         if (!isActive && mode !== 'edit') return null;
 
                         return (
-                            <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: '#1c1c1f', padding: '8px', borderRadius: '8px', border: '1px solid #27272a' }}>
+                            <div key={d} style={{ display: 'flex', flexDirection: 'column', gap: '4px', backgroundColor: isDarkMode ? '#1c1c1f' : '#ffffff', padding: '8px', borderRadius: '8px', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: isActive ? '#60a5fa' : '#3f3f46' }}>{d.toUpperCase()}</span>
+                                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: isActive ? '#60a5fa' : (isDarkMode ? '#3f3f46' : '#8e8e93') }}>{d.toUpperCase()}</span>
                                     {isActive && (
                                         <span style={{ fontSize: '9px', fontWeight: 'bold', color: exit.hasDoor ? '#fab387' : '#52525b' }}>
                                             DOOR: {exit.hasDoor ? 'YES' : 'NO'}
@@ -294,10 +295,10 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                                     }}
                                     style={{
                                         width: '100%',
-                                        backgroundColor: isActive ? (exit?.closed ? '#521313' : '#27272a') : 'transparent',
-                                        color: isActive ? (exit?.closed ? '#f87171' : '#e4e4e7') : '#3f3f46',
+                                        backgroundColor: isActive ? (exit?.closed ? (isDarkMode ? '#521313' : '#fee2e2') : (isDarkMode ? '#27272a' : '#f2f2f7')) : 'transparent',
+                                        color: isActive ? (exit?.closed ? (isDarkMode ? '#f87171' : '#ef4444') : (isDarkMode ? '#e4e4e7' : '#1d1d1f')) : (isDarkMode ? '#3f3f46' : '#8e8e93'),
                                         border: '1px solid',
-                                        borderColor: isActive ? (exit?.closed ? '#f87171' : '#3f3f46') : '#313244',
+                                        borderColor: isActive ? (exit?.closed ? (isDarkMode ? '#f87171' : '#ef4444') : (isDarkMode ? '#3f3f46' : '#d1d1d6')) : (isDarkMode ? '#313244' : '#e5e5ea'),
                                         padding: '6px 4px',
                                         borderRadius: '6px',
                                         fontSize: '10px',
@@ -313,7 +314,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '4px' }}>
                                         {exit.flags && exit.flags.length > 0 ? (
                                             exit.flags.map(f => (
-                                                <span key={f} style={{ fontSize: '8px', color: '#a6e3a1', backgroundColor: 'rgba(166, 227, 161, 0.1)', padding: '2px 4px', borderRadius: '4px', border: '1px solid rgba(166, 227, 161, 0.2)' }}>
+                                                <span key={f} style={{ fontSize: '8px', color: '#a6e3a1', backgroundColor: isDarkMode ? 'rgba(166, 227, 161, 0.1)' : 'rgba(52, 199, 89, 0.1)', padding: '2px 4px', borderRadius: '4px', border: '1px solid rgba(166, 227, 161, 0.2)' }}>
                                                     {f}
                                                 </span>
                                             ))

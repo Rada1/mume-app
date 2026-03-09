@@ -14,11 +14,12 @@ interface MapperToolbarProps {
     unveilMap?: boolean;
     setUnveilMap?: (unveil: boolean) => void;
     onResetSync?: () => void;
+    isDarkMode: boolean;
 }
 
 export const MapperToolbar: React.FC<MapperToolbarProps> = ({
     mode, setMode, autoCenter, setAutoCenter, setIsMinimized, isMobile, isExpanded, onCenterClick, onAddRoom, setIsDropdownOpen,
-    unveilMap, setUnveilMap, onResetSync
+    unveilMap, setUnveilMap, onResetSync, isDarkMode
 }) => {
     if (isMobile && !isExpanded) return null;
 
@@ -28,10 +29,10 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
             top: '8px',
             left: '8px',
             zIndex: 10,
-            backgroundColor: 'rgba(30, 30, 46, 0.9)',
+            backgroundColor: isDarkMode ? 'rgba(30, 30, 46, 0.9)' : 'rgba(255, 255, 255, 0.9)',
             padding: '4px',
             borderRadius: '6px',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
             display: 'flex',
             gap: '4px',
             alignItems: 'center',

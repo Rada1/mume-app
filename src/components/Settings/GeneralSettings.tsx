@@ -89,7 +89,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
     return (
         <>
-            <div className="setting-group" style={{ border: '1px solid #333', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="setting-group" style={{ border: '1px solid var(--border-color, #333)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                     <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Connection Details</label>
                     <button
@@ -160,7 +160,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Auto-Connect</label>
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Automatically connect on page load or refresh.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Automatically connect on page load or refresh.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '0.8rem', color: autoConnect ? 'var(--accent)' : '#64748b' }}>{autoConnect ? 'ON' : 'OFF'}</span>
@@ -169,7 +169,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: autoConnect ? 'var(--accent)' : '#334155',
+                                background: autoConnect ? 'var(--accent)' : 'var(--input-bg, #334155)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -237,7 +237,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                         <label className="setting-label" style={{ color: '#60a5fa', fontWeight: 'bold', margin: 0 }}>mMapper Integration</label>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Use the external mMapper application.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Use the external mMapper application.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '0.8rem', color: isMmapperMode ? '#60a5fa' : '#64748b' }}>{isMmapperMode ? 'ACTIVE' : 'OFF'}</span>
@@ -246,7 +246,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: isMmapperMode ? '#3b82f6' : '#334155',
+                                background: isMmapperMode ? '#3b82f6' : 'var(--input-bg, #334155)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -267,8 +267,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 </div>
                 {isMmapperMode && (
-                    <div style={{ marginTop: '12px', padding: '12px', background: 'rgba(0,0,0,0.4)', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <div style={{ color: '#fff', marginBottom: '10px', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid #333', paddingBottom: '5px' }}>Setup Instructions:</div>
+                    <div style={{ marginTop: '12px', padding: '12px', background: 'var(--input-bg, rgba(0,0,0,0.4))', borderRadius: '6px', fontSize: '0.8rem', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
+                        <div style={{ color: 'var(--text-primary, #fff)', marginBottom: '10px', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid var(--border-color, #333)', paddingBottom: '5px' }}>Setup Instructions:</div>
 
                         <div style={{ marginBottom: '12px' }}>
                             <div style={{ color: 'var(--accent)', fontWeight: 'bold' }}>1. Start the Bridge</div>
@@ -278,10 +278,10 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
                         <div style={{ marginBottom: '0' }}>
                             <div style={{ color: 'var(--accent)', fontWeight: 'bold' }}>2. Connect App</div>
-                            <div style={{ color: '#94a3b8' }}>Ensure mMapper is running, then click "Connect" at the top.</div>
+                            <div style={{ color: 'var(--text-dim, #94a3b8)' }}>Ensure mMapper is running, then click "Connect" at the top.</div>
                         </div>
 
-                        <div style={{ marginTop: '12px', fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', borderTop: '1px solid #333', paddingTop: '8px' }}>
+                        <div style={{ marginTop: '12px', fontSize: '0.7rem', color: 'var(--text-dim, #64748b)', fontStyle: 'italic', borderTop: '1px solid var(--border-color, #333)', paddingTop: '8px' }}>
                             Note: The bridge will auto-detect mMapper on Port 900 or 4242.
                         </div>
                     </div>
@@ -294,7 +294,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             <label className="setting-label" style={{ color: '#c4b5fd', fontWeight: 'bold', margin: 0 }}>Novice Mode</label>
                             <span style={{ fontSize: '0.65rem', background: '#8b5cf6', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>NEW</span>
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Smart command parsing for easier inputs.</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Smart command parsing for easier inputs.</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '0.8rem', color: isNoviceMode ? '#c4b5fd' : '#64748b' }}>{isNoviceMode ? 'ACTIVE' : 'OFF'}</span>
@@ -303,7 +303,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: isNoviceMode ? '#8b5cf6' : '#334155',
+                                background: isNoviceMode ? '#8b5cf6' : 'var(--input-bg, #334155)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',
@@ -332,7 +332,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             <label className="setting-label" style={{ color: '#fbbf24', fontWeight: 'bold', margin: 0 }}>Debug Messages</label>
                             <span style={{ fontSize: '0.65rem', background: '#f59e0b', color: '#000', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>DEV</span>
                         </div>
-                        <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>Show technical client echoes (e.g. Mapper coordinates).</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Show technical client echoes (e.g. Mapper coordinates).</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '0.8rem', color: showDebugEchoes ? '#fbbf24' : '#64748b' }}>{showDebugEchoes ? 'ON' : 'OFF'}</span>
@@ -341,7 +341,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             style={{
                                 width: '40px',
                                 height: '20px',
-                                background: showDebugEchoes ? '#f59e0b' : '#334155',
+                                background: showDebugEchoes ? '#f59e0b' : 'var(--input-bg, #334155)',
                                 borderRadius: '20px',
                                 position: 'relative',
                                 cursor: 'pointer',

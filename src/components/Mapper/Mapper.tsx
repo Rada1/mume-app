@@ -51,7 +51,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { addMessage, triggerHaptic, executeCommand } = useGame();
+    const { addMessage, triggerHaptic, executeCommand, theme } = useGame();
+    const isDarkMode = theme === 'dark';
 
     // Pass a dummy onRecenter first to controller
     const controller = useMapperController(characterName ?? null, ref, { 
@@ -159,7 +160,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [setMarkers]);
 
     return (
-        <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: '#11111b' }}>
+        <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: isDarkMode ? '#11111b' : '#bababa' }}>
             <MapCanvas
                 ref={canvasRef}
                 rooms={rooms}
@@ -168,7 +169,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 selectedRoomIds={selectedRoomIds}
                 selectedMarkerId={selectedMarkerId}
                 camera={cameraRef}
-                isDarkMode={true}
+                isDarkMode={isDarkMode}
                 isMobile={isMobile}
                 imagesRef={imagesRef}
                 characterName={characterName ?? null}
@@ -203,13 +204,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 unveilMap={unveilMap}
                 setUnveilMap={setUnveilMap}
                 onResetSync={handleResetAndSync}
+                isDarkMode={isDarkMode}
             />
             <MapperDropdown
                 isOpen={isDropdownOpen}
                 setIsOpen={setIsDropdownOpen}
                 allowPersistence={allowPersistence}
                 setAllowPersistence={setAllowPersistence}
-                isDarkMode={true}
+                isDarkMode={isDarkMode}
                 setIsDarkMode={() => { }}
                 exportMap={handleExportMap}
                 importMap={handleImportMap}
@@ -258,6 +260,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                         setContextMenu(null);
                     }}
                     mode={mode}
+                    isDarkMode={isDarkMode}
                 />
             )}
 
@@ -271,6 +274,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     cardRef={cardRef}
                     preloadedCoordsRef={preloadedCoordsRef}
                     setViewZ={setViewZ}
+                    isDarkMode={isDarkMode}
                 />
             )}
 

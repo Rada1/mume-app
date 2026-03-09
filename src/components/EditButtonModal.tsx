@@ -43,7 +43,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                 <div className="modal-header">
                     <div className="modal-title">Edit Button</div>
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button onClick={handleDuplicate} title="Duplicate Button" style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}>
+                        <button onClick={handleDuplicate} title="Duplicate Button" style={{ background: 'none', border: 'none', color: 'var(--text-primary, #fff)', cursor: 'pointer' }}>
                             <Copy size={20} />
                         </button>
                         <button onClick={() => deleteButton(editingButton.id)} title="Delete Button" style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
@@ -52,7 +52,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                     </div>
                 </div>
 
-                <div className="modal-tabs" style={{ display: 'flex', gap: '5px', borderBottom: '1px solid #444', marginBottom: '15px' }}>
+                <div className="modal-tabs" style={{ display: 'flex', gap: '5px', borderBottom: '1px solid var(--border-color, #444)', marginBottom: '15px' }}>
                     {tabs.map(tab => (
                         <div
                             key={tab}
@@ -61,7 +61,7 @@ const EditButtonModal: React.FC<EditButtonModalProps> = ({
                                 padding: '8px 12px',
                                 cursor: 'pointer',
                                 borderBottom: activeTab === tab ? '2px solid var(--accent)' : '2px solid transparent',
-                                color: activeTab === tab ? '#fff' : '#aaa',
+                                color: activeTab === tab ? 'var(--text-primary, #fff)' : 'var(--text-dim, #aaa)',
                                 textTransform: 'capitalize',
                                 fontWeight: activeTab === tab ? 'bold' : 'normal',
                                 fontSize: '0.9rem'

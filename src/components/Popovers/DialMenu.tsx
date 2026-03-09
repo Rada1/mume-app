@@ -114,10 +114,10 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
-                    background: 'rgba(0,0,0,0.8)',
+                    background: 'var(--bg-panel, rgba(0,0,0,0.8))',
                     padding: '20px',
                     borderRadius: '20px',
-                    color: '#fff',
+                    color: 'var(--text-primary, #fff)',
                     textAlign: 'center',
                     pointerEvents: 'none'
                 }}>
@@ -144,7 +144,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                 transform: 'translate(-50%, -50%)'
             } as any}>
                 <div className="dial-selection-center" style={{
-                    '--accent': (activeIndex !== null && menuButtons[activeIndex]) ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))') : 'rgba(255,255,255,0.2)',
+                    '--accent': (activeIndex !== null && menuButtons[activeIndex]) ? (menuButtons[activeIndex].style.borderColor || menuButtons[activeIndex].style.backgroundColor || themeColor || 'var(--set-accent, var(--accent))') : 'var(--border-color, rgba(255,255,255,0.2))',
                     width: '120px',
                     height: '120px',
                     position: 'absolute',
@@ -165,7 +165,7 @@ export const DialMenu: React.FC<DialMenuProps> = ({
                         </div>
                     ) : (
                         <div className="dial-center-placeholder">
-                            <div className="dial-center-icon" style={{ opacity: 0.3, background: 'rgba(255,255,255,0.1)', color: '#fff', boxShadow: 'none' }}>...</div>
+                            <div className="dial-center-icon" style={{ opacity: 0.3, background: 'var(--input-bg, rgba(255,255,255,0.1))', color: 'var(--text-primary, #fff)', boxShadow: 'none' }}>...</div>
                             <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', fontWeight: 800 }}>Select</div>
                         </div>
                     )}

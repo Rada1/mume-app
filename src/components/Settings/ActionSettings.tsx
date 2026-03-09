@@ -32,7 +32,7 @@ const ActionSettings: React.FC<ActionSettingsProps> = ({
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <input type="checkbox" id="new-action-regex" />
-                        <label htmlFor="new-action-regex" style={{ color: '#aaa', fontSize: '0.9rem', cursor: 'pointer' }}>Regex?</label>
+                        <label htmlFor="new-action-regex" style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.9rem', cursor: 'pointer' }}>Regex?</label>
                     </div>
                     <button
                         className="btn-primary"
@@ -62,7 +62,7 @@ const ActionSettings: React.FC<ActionSettingsProps> = ({
 
             <div style={{ marginTop: '20px' }}>
                 <label className="setting-label">Active Actions</label>
-                {!actions?.length && <div style={{ color: '#64748b', fontStyle: 'italic', padding: '10px' }}>No actions defined yet.</div>}
+                {!actions?.length && <div style={{ color: 'var(--text-dim, #64748b)', fontStyle: 'italic', padding: '10px' }}>No actions defined yet.</div>}
                 {actions?.map(a => (
                     <div key={a.id} className="sound-item" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <input
@@ -71,8 +71,8 @@ const ActionSettings: React.FC<ActionSettingsProps> = ({
                             onChange={(e) => setActions(prev => prev.map(pa => pa.id === a.id ? { ...pa, enabled: e.target.checked } : pa))}
                         />
                         <div style={{ overflow: 'hidden', flex: 1 }}>
-                            <div style={{ color: a.enabled ? 'white' : '#666', fontWeight: 'bold' }}>{a.pattern} {a.isRegex ? <span style={{ fontSize: '0.7rem', color: '#10b981', marginLeft: '4px' }}>[Regex]</span> : ''}</div>
-                            <div style={{ color: a.enabled ? '#aaa' : '#444', fontSize: '0.8rem', fontFamily: 'monospace' }}>→ {a.command}</div>
+                            <div style={{ color: a.enabled ? 'var(--text-primary, white)' : 'var(--text-dim, #666)', fontWeight: 'bold' }}>{a.pattern} {a.isRegex ? <span style={{ fontSize: '0.7rem', color: '#10b981', marginLeft: '4px' }}>[Regex]</span> : ''}</div>
+                            <div style={{ color: a.enabled ? 'var(--text-dim, #aaa)' : 'var(--border-color, #444)', fontSize: '0.8rem', fontFamily: 'monospace' }}>→ {a.command}</div>
                         </div>
                         <button onClick={() => setActions(prev => prev.filter(pa => pa.id !== a.id))} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer' }}>
                             <Trash2 size={16} />

@@ -5,7 +5,8 @@ export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: num
     const { ctx, isDarkMode, camera, visitedAtCoord } = rCtx;
     const s = GRID_SIZE;
     ctx.beginPath();
-    ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)';
+    // Darker grid for grey background in light mode
+    ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.12)';
     ctx.lineWidth = 1 / camera.zoom;
     
     for (let gx = gX1; gx <= gX2; gx++) {

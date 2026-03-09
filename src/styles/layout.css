@@ -105,4 +105,16 @@
     cursor: move !important;
     user-select: none !important;
 }
+
+.hud-clusters-absolute-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1500;
+    overflow: hidden;
+}
+
+.hud-clusters-absolute-layer > * {
+    pointer-events: auto;
+}
 

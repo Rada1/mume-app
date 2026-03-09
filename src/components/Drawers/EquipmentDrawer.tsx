@@ -429,7 +429,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         }}
                     >
                         <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'equipment' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>EQUIPMENT</div>
-                        <div className="drawer-section-content" data-drawer-section="equipment" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
+                        <div className="drawer-section-content" data-drawer-section="equipment" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'transparent', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
                             {eqLines.map(line => renderLine(line, 'equipmentlist'))}
                         </div>
                     </div>
@@ -450,7 +450,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         }}
                     >
                         <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'inventory' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>INVENTORY</div>
-                        <div className="drawer-section-content" data-drawer-section="inventory" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
+                        <div className="drawer-section-content" data-drawer-section="inventory" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'transparent', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
                             {inventoryLines.map(line => renderLine(line, 'inventorylist'))}
                         </div>
                     </div>

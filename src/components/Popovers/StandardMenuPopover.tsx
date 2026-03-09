@@ -24,7 +24,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         <>
             <div className="popover-header"
                 onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
-                style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', marginBottom: '4px', paddingBottom: '4px' }}
+                style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '4px', paddingBottom: '4px' }}
                 onClick={() => { if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                 {isSetManager ? 'Select Button Set' : `Actions: ${popoverState.context || popoverState.setId} ▾`}
             </div>
@@ -56,7 +56,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             className="popover-item"
                             data-menu-item="true"
                             onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
-                            style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: 'var(--accent)', fontWeight: 'bold' }}
+                            style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }}
                             onClick={() => {
                                 const setName = popoverState.setId;
                                 const dir = popoverState.assignSwipeDir;
@@ -106,7 +106,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
 
                             return (
                                 <>
-                                    <div style={{ padding: '4px 8px', fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: '4px' }}>Container</div>
+                                    <div style={{ padding: '4px 8px', fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderTop: '1px solid var(--border-color, rgba(255,255,255,0.05))', marginTop: '4px' }}>Container</div>
                                     {containerActions.map(act => (
                                         <div
                                             key={act.label}

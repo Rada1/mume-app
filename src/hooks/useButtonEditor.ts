@@ -1,7 +1,10 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useButtons } from './useButtons';
 
-export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef?: React.RefObject<HTMLDivElement>) => {
+export const useButtonEditor = (
+    btn: ReturnType<typeof useButtons>, 
+    containerRef?: React.RefObject<HTMLDivElement>
+) => {
     const wasDraggingRef = useRef(false);
     const dragStateRef = useRef<any>(null);
     const rafRef = useRef<number | null>(null);
@@ -13,283 +16,181 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
         if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
         rafRef.current = requestAnimationFrame(() => {
-            const container = containerRef?.current;
-            const containerRect = container?.getBoundingClientRect();
-            const containerW = containerRect ? containerRect.width : window.innerWidth;
-            const containerH = containerRect ? containerRect.height : window.innerHeight;
-            
-            // Container scale compensation (if the whole app is scaled via CSS)
-            const containerOffsetW = container?.offsetWidth || containerW;
-            const containerScale = containerRect ? (containerW / containerOffsetW) : 1;
+            const dx = e.clientX - ds.startX;
+            const dy = e.clientY - ds.startY;
+            const timeElapsed = Date.now() - ds.startTime;
 
-            const dx = (e.clientX - ds.startX);
-            const dy = (e.clientY - ds.startY);
-            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) wasDraggingRef.current = true;
-
-            if (ds.type === 'cluster' || ds.type === 'cluster-resize') {
-                const clusterId = ds.id as string;
-                const scale = ds.initialW || 1;
-                
-                if (ds.type === 'cluster') {
-                    // Update current CSS positions (must divide mouse pixels by container scale to get CSS pixels)
-                    let newX = clusterId === 'xbox' ? ds.initialX - dx / containerScale : ds.initialX + dx / containerScale;
-                    let newY = ds.initialY + dy / containerScale;
-
-                    if (btn.isGridEnabled) {
-                        const snapX = (btn.gridSize / 100) * containerOffsetW;
-                        const snapY = (btn.gridSize / 100) * (container?.offsetHeight || containerH);
-                        newX = Math.round(newX / snapX) * snapX;
-                        newY = Math.round(newY / snapY) * snapY;
-                    }
-
-                    ds.elements.forEach((item: any) => {
-                        const needsCentering = ds.isUsingCenterAlignment;
-                        // To follow mouse exactly, we must translate by dx/cumulative_scale
-                        const currentRect = item.el.getBoundingClientRect();
-                        const totalScale = currentRect.width / (item.el.offsetWidth || 1);
-                        const visualDx = dx / totalScale;
-                        const visualDy = dy / totalScale;
-
-                        item.el.style.transform = `${needsCentering ? 'translateY(-50%)' : ''} translate(${visualDx}px, ${visualDy}px) ${scale !== 1 ? `scale(${scale})` : ''}`;
-                    });
-
-                    ds.finalX = newX;
-                    ds.finalY = newY;
-                } else if (ds.type === 'cluster-resize') {
-                    if (clusterId === 'mapper') {
-                        let newW = ds.initialW + dx / containerScale;
-                        let newH = ds.initialH + dy / containerScale;
-                        if (btn.isGridEnabled) {
-                            const snapX = (btn.gridSize / 100) * containerOffsetW;
-                            const snapY = (btn.gridSize / 100) * (container?.offsetHeight || containerH);
-                            newW = Math.round(newW / snapX) * snapX;
-                            newH = Math.round(newH / snapY) * snapY;
-                        }
-                        const w = Math.max(200, newW);
-                        const h = Math.max(200, newH);
-                        ds.elements.forEach((item: any) => {
-                            item.el.style.width = `${w}px`;
-                            item.el.style.height = `${h}px`;
-                        });
-                        ds.finalW = w;
-                        ds.finalH = h;
-                    } else {
-                        const newScale = Math.max(0.5, Math.min(2.5, ds.initialW + dx / (200 * containerScale)));
-                        ds.elements.forEach((item: any) => {
-                            item.el.style.setProperty('--scale', newScale.toString());
-                            item.el.style.transform = `scale(${newScale})`;
-                        });
-                        ds.finalScale = newScale;
-                    }
+            if (!wasDraggingRef.current) {
+                if (Math.abs(dx) > 15 || Math.abs(dy) > 15 || timeElapsed > 150) {
+                    wasDraggingRef.current = true;
                 }
-            } else if (ds.type === 'resize') {
-                if (!ds.finalSizes) ds.finalSizes = {};
+            }
+
+            if (!wasDraggingRef.current) return;
+
+            if (ds.type === 'cluster') {
+                const newX = ds.initialX + dx;
+                const newY = ds.initialY + dy;
                 ds.elements.forEach((item: any) => {
-                    const bId = item.el.getAttribute('data-id');
-                    let newW = item.initW + dx / containerScale;
-                    let newH = item.initH + dy / containerScale;
-                    if (btn.isGridEnabled) {
-                        const pixSnapX = (btn.gridSize / 100) * containerOffsetW;
-                        const pixSnapY = (btn.gridSize / 100) * (container?.offsetHeight || containerH);
-                        newW = Math.round(newW / pixSnapX) * pixSnapX;
-                        newH = Math.round(newH / pixSnapY) * pixSnapY;
-                    }
-                    const w = Math.max(20, newW);
-                    const h = Math.max(20, newH);
-                    item.el.style.width = `${w}px`;
-                    item.el.style.height = `${h}px`;
-                    if (bId) ds.finalSizes[bId] = { w, h };
+                    item.el.style.transform = `translate3d(${dx}px, ${dy}px, 0) ${ds.initialScale !== 1 ? `scale(${ds.initialScale})` : ''}`;
                 });
+                ds.finalX = newX;
+                ds.finalY = newY;
+
             } else if (ds.type === 'move') {
                 if (!ds.finalPositions) ds.finalPositions = {};
+                const parentW = ds.parentRect.width;
+                const parentH = ds.parentRect.height;
+                if (parentW <= 0 || parentH <= 0) return;
+
                 ds.elements.forEach((item: any) => {
-                    const bId = item.el.getAttribute('data-id');
-                    const dXPercent = (dx / (containerW || 1)) * 100;
-                    const dYPercent = (dy / (containerH || 1)) * 100;
-                    let finalX = item.initX + dXPercent;
-                    let finalY = item.initY + dYPercent;
+                    const targetPixelX = e.clientX - item.pointerOffsetX - ds.parentRect.left;
+                    const targetPixelY = e.clientY - item.pointerOffsetY - ds.parentRect.top;
+
+                    let xPercent = (targetPixelX / parentW) * 100;
+                    let yPercent = (targetPixelY / parentH) * 100;
 
                     if (btn.isGridEnabled) {
-                        finalX = Math.round(finalX / btn.gridSize) * btn.gridSize;
-                        finalY = Math.round(finalY / btn.gridSize) * btn.gridSize;
+                        xPercent = Math.round(xPercent / btn.gridSize) * btn.gridSize;
+                        yPercent = Math.round(yPercent / btn.gridSize) * btn.gridSize;
                     }
 
-                    const x = Math.min(100, Math.max(0, finalX));
-                    const y = Math.min(100, Math.max(0, finalY));
+                    const x = Math.min(100, Math.max(0, xPercent));
+                    const y = Math.min(100, Math.max(0, yPercent));
 
                     item.el.style.left = `${x}%`;
                     item.el.style.top = `${y}%`;
 
-                    if (bId) ds.finalPositions[bId] = { x, y };
+                    ds.finalPositions[item.id] = { x, y };
+                });
+            } else if (ds.type === 'resize') {
+                if (!ds.finalSizes) ds.finalSizes = {};
+                ds.elements.forEach((item: any) => {
+                    const newW = Math.max(20, item.initW + dx);
+                    const newH = Math.max(20, item.initH + dy);
+                    item.el.style.width = `${newW}px`;
+                    item.el.style.height = `${newH}px`;
+                    ds.finalSizes[item.id] = { w: newW, h: newH };
                 });
             }
         });
-    }, [btn.isGridEnabled, btn.gridSize, containerRef]);
+    }, [btn.isGridEnabled, btn.gridSize]);
 
     const handleDragStart = (e: React.PointerEvent, id: string, type: 'move' | 'resize' | 'cluster' | 'cluster-resize') => {
-        if (!btn.isEditMode) return;
-        e.stopPropagation(); e.preventDefault();
-
-        let startX = 0, startY = 0, initialW = 0, initialH = 0;
-
+        if (!btn.isEditMode || btn.editingButtonId) return;
+        
         const container = containerRef?.current;
-        const containerRect = container?.getBoundingClientRect();
-        const containerScale = containerRect ? (containerRect.width / (container?.offsetWidth || 1)) : 1;
+        if (!container) return;
 
-        if (type === 'cluster' || type === 'cluster-resize') {
-            const clusterId = id as any;
-            const el = document.getElementById(`cluster-${clusterId}`);
-            const rect = el ? el.getBoundingClientRect() : { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 };
-            const pos = btn.uiPositions[clusterId];
-            
-            // Calculate initial X/Y in CSS pixels (relative to container)
-            if (pos?.x !== undefined) {
-                startX = pos.x;
-            } else {
-                if (clusterId === 'xbox') {
-                    // Start relative from right edge, converted to CSS pixels
-                    const physicalRightOffset = containerRect ? (containerRect.right - rect.right) : (window.innerWidth - rect.right);
-                    startX = physicalRightOffset / containerScale;
-                } else {
-                    const physicalLeftOffset = containerRect ? (rect.left - containerRect.left) : rect.left;
-                    startX = physicalLeftOffset / containerScale;
-                }
-            }
+        dragStateRef.current = null;
 
-            if (pos?.y !== undefined) {
-                startY = pos.y;
-            } else {
-                const physicalTopOffset = containerRect ? (rect.top - containerRect.top) : rect.top;
-                startY = physicalTopOffset / containerScale;
-            }
+        e.stopPropagation();
+        const targetEl = e.currentTarget as HTMLElement;
+        
+        try {
+            targetEl.setPointerCapture(e.pointerId);
+        } catch (err) { /* ignore */ }
 
-            initialW = pos?.scale ?? 1;
-
-            if (clusterId === 'mapper' && type === 'cluster-resize') {
-                const mapperPos = pos as any;
-                initialW = mapperPos?.w ?? 320;
-                initialH = mapperPos?.h ?? 320;
-            }
-        } else {
-            const button = btn.buttons.find(b => b.id === id);
-            if (!button || button.display === 'inline') return;
-            startX = button.style.x;
-            startY = button.style.y;
-            initialW = button.style.w;
-            initialH = button.style.h;
-        }
-
+        const containerRect = container.getBoundingClientRect();
         wasDraggingRef.current = false;
-        document.body.classList.add('global-dragging');
+        
+        const elements: any[] = [];
+        let parentRect = containerRect;
 
-        // Selection logic for buttons
-        let effectiveSelected = new Set(btn.selectedButtonIds);
-        if (type === 'move' || type === 'resize') {
-            if (!effectiveSelected.has(id)) {
-                if (!e.ctrlKey && !e.metaKey) effectiveSelected = new Set([id]);
-                else effectiveSelected.add(id);
-                btn.setSelectedIds(effectiveSelected);
-            }
-        }
-
-        const initialPositions: Record<string, { x: number, y: number }> = {};
-        const initialSizes: Record<string, { w: number, h: number }> = {};
-
-        if (type === 'move' || type === 'resize') {
-            effectiveSelected.forEach(selId => {
-                const b = btn.buttons.find(x => x.id === selId);
-                if (b) {
-                    initialPositions[selId] = { x: b.style.x, y: b.style.y };
-                    initialSizes[selId] = { w: b.style.w, h: b.style.h };
-                }
-            });
-        }
-
-        const dragInfo: any = {
-            id,
-            startX: e.clientX,
-            startY: e.clientY,
-            initialX: startX,
-            initialY: startY,
-            type,
-            initialW,
-            initialH,
-            initialPositions,
-            initialSizes,
-            isUsingCenterAlignment: (type === 'cluster' || type === 'cluster-resize') && btn.uiPositions[id as any]?.y === undefined,
-            elements: []
-        };
-
-        // Cache elements and add dragging class
         if (type === 'cluster' || type === 'cluster-resize') {
             const el = document.getElementById(`cluster-${id}`);
-            if (el) {
-                el.classList.add('dragging');
-                dragInfo.elements.push({ el });
-            }
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            const pos = btn.uiPositions[id] || {};
+            const initialX = pos.x !== undefined ? pos.x : (rect.left - containerRect.left);
+            const initialY = pos.y !== undefined ? pos.y : (rect.top - containerRect.top);
+            
+            el.classList.add('dragging');
+            elements.push({ el });
+            
+            dragStateRef.current = {
+                id, type, startX: e.clientX, startY: e.clientY, startTime: Date.now(),
+                initialX, initialY, initialScale: pos.scale ?? 1,
+                initialW: pos.w ?? rect.width, initialH: pos.h ?? rect.height,
+                elements, parentRect: containerRect,
+                pointerId: e.pointerId,
+                targetEl
+            };
         } else {
+            let effectiveSelected = new Set(btn.selectedButtonIds);
+            if (!effectiveSelected.has(id)) {
+                effectiveSelected = (e.ctrlKey || e.metaKey) ? new Set([...Array.from(effectiveSelected), id]) : new Set([id]);
+                btn.setSelectedIds(effectiveSelected);
+            }
+
             effectiveSelected.forEach(selId => {
                 const el = document.querySelector(`.custom-btn[data-id="${selId}"]`) as HTMLElement;
                 const b = btn.buttons.find(x => x.id === selId);
                 if (el && b) {
+                    const rect = el.getBoundingClientRect();
+                    if (!elements.length) parentRect = el.parentElement?.getBoundingClientRect() || containerRect;
+                    
                     el.classList.add('dragging');
-                    dragInfo.elements.push({ el, initX: b.style.x, initY: b.style.y, initW: b.style.w, initH: b.style.h });
+                    elements.push({
+                        el, id: selId,
+                        pointerOffsetX: e.clientX - rect.left,
+                        pointerOffsetY: e.clientY - rect.top,
+                        initW: rect.width,
+                        initH: rect.height
+                    });
                 }
             });
+
+            dragStateRef.current = {
+                id, type, startX: e.clientX, startY: e.clientY, startTime: Date.now(),
+                elements, parentRect, finalPositions: null, finalSizes: null,
+                pointerId: e.pointerId,
+                targetEl
+            };
         }
 
-        dragStateRef.current = dragInfo;
-        btn.setDragState(dragInfo);
+        btn.setDragState(dragStateRef.current);
+        document.body.classList.add('global-dragging');
     };
 
     useEffect(() => {
-        const handleMouseUp = () => {
+        const handleMouseUp = (e: PointerEvent) => {
             const ds = dragStateRef.current;
-            if (ds) {
-                document.body.classList.remove('global-dragging');
-                ds.elements.forEach((item: any) => {
-                    item.el.classList.remove('dragging');
-                });
-                if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            if (!ds) return;
 
-                // Commit final positions to React State
-                if (ds.type === 'cluster' && wasDraggingRef.current) {
-                    if (ds.finalX !== undefined) {
-                        const clusterId = ds.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
-                        btn.setUiPositions(prev => ({
-                            ...prev,
-                            [clusterId]: {
-                                ...prev[clusterId],
-                                x: ds.finalX,
-                                y: ds.finalY
-                            }
-                        }));
-                    }
-                } else if (ds.type === 'cluster-resize' && wasDraggingRef.current) {
-                    const clusterId = ds.id as 'joystick' | 'xbox' | 'stats' | 'mapper';
-                    if (clusterId === 'mapper' && ds.finalW !== undefined) {
-                        btn.setUiPositions(prev => ({
-                            ...prev,
-                            [clusterId]: {
-                                ...prev[clusterId],
-                                w: ds.finalW,
-                                h: ds.finalH
-                            }
-                        }));
-                    } else if (ds.finalScale !== undefined) {
-                        btn.setUiPositions(prev => ({
-                            ...prev,
-                            [clusterId]: {
-                                ...prev[clusterId],
-                                scale: ds.finalScale
-                            }
-                        }));
-                    }
-                } else if (wasDraggingRef.current) {
-                    const finalPos = ds.finalPositions;
-                    const finalSizes = ds.finalSizes;
+            if (ds.targetEl && ds.pointerId !== undefined) {
+                try {
+                    ds.targetEl.releasePointerCapture(ds.pointerId);
+                } catch (err) { /* ignore */ }
+            }
+
+            document.body.classList.remove('global-dragging');
+            
+            ds.elements.forEach((item: any) => {
+                item.el.classList.remove('dragging');
+                item.el.style.transform = ''; 
+            });
+
+            const isIntentional = wasDraggingRef.current;
+            const finalPos = ds.finalPositions;
+            const finalSizes = ds.finalSizes;
+            const finalX = ds.finalX;
+            const finalY = ds.finalY;
+            const dsId = ds.id;
+            const dsType = ds.type;
+
+            dragStateRef.current = null;
+            btn.setDragState(null);
+
+            if (isIntentional) {
+                if (dsType === 'cluster' && finalX !== undefined) {
+                    btn.setUiPositions((prev: any) => ({
+                        ...prev,
+                        [dsId]: { ...prev[clusterId], x: finalX, y: finalY }
+                    }));
+                } else if (dsType === 'move' || dsType === 'resize') {
                     if (finalPos || finalSizes) {
-                        btn.setButtons(prev => prev.map(b => {
+                        btn.setButtons((prev: any[]) => prev.map(b => {
                             if (finalSizes && finalSizes[b.id]) {
                                 return { ...b, style: { ...b.style, w: finalSizes[b.id].w, h: finalSizes[b.id].h } };
                             }
@@ -301,19 +202,19 @@ export const useButtonEditor = (btn: ReturnType<typeof useButtons>, containerRef
                     }
                 }
             }
-            dragStateRef.current = null;
-            btn.setDragState(null);
         };
 
         if (btn.dragState) {
-            window.addEventListener('pointermove', handleMouseMove);
-            window.addEventListener('pointerup', handleMouseUp);
+            window.addEventListener('pointermove', handleMouseMove, { passive: true });
+            window.addEventListener('pointerup', handleMouseUp, { capture: true });
+            window.addEventListener('pointercancel', handleMouseUp, { capture: true });
         }
         return () => {
             window.removeEventListener('pointermove', handleMouseMove);
-            window.removeEventListener('pointerup', handleMouseUp);
+            window.removeEventListener('pointerup', handleMouseUp, { capture: true });
+            window.removeEventListener('pointercancel', handleMouseUp, { capture: true });
         };
-    }, [btn.dragState, handleMouseMove]);
+    }, [btn.dragState, btn.editingButtonId, handleMouseMove, btn.setButtons, btn.setUiPositions]);
 
     return {
         handleDragStart,

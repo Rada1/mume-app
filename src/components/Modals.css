@@ -7,7 +7,7 @@
     width: 100%;
     height: 100%;
     height: 100dvh;
-    background: rgba(0, 0, 0, 0.8);
+    background: var(--bg-overlay, rgba(0, 0, 0, 0.8));
     z-index: 40000;
     display: flex;
     justify-content: center;
@@ -15,8 +15,8 @@
 }
 
 .modal {
-    background: #111;
-    border: 1px solid #333;
+    background: var(--bg-app, #111);
+    border: 1px solid var(--border-color, #333);
     padding: 20px;
     width: 95%;
     max-width: 500px;
@@ -61,7 +61,7 @@
 .modal-tabs {
     display: flex;
     margin-bottom: 20px;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid var(--border-color, #333);
 }
 
 .modal-body {
@@ -76,7 +76,7 @@
 }
 
 .modal-body::-webkit-scrollbar-thumb {
-    background: #333;
+    background: var(--border-color, #333);
     border-radius: 3px;
 }
 
@@ -106,9 +106,9 @@
 
 .setting-input {
     width: 100%;
-    background: #222;
-    border: 1px solid #444;
-    color: white;
+    background: var(--input-bg, #222);
+    border: 1px solid var(--border-color, #444);
+    color: var(--text-primary, white);
     padding: 10px;
     border-radius: 4px;
     font-family: var(--font-main);
@@ -139,8 +139,8 @@ select.setting-input {
 }
 
 .btn-secondary {
-    background: #333;
-    color: #fff;
+    background: var(--border-color, #333);
+    color: var(--text-primary, #fff);
     border: none;
     padding: 10px 20px;
     border-radius: 4px;
@@ -156,13 +156,14 @@ select.setting-input {
 
 .popover-menu {
     position: fixed;
-    background: rgba(10, 10, 10, 0.9);
+    background: var(--bg-panel, rgba(10, 10, 10, 0.9));
     border: 1px solid var(--accent, rgba(255, 255, 255, 0.25));
     border-radius: 12px;
     padding: 12px;
     z-index: 35000;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -177,7 +178,7 @@ select.setting-input {
 .popover-header {
     padding-bottom: 5px;
     margin-bottom: 5px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     font-size: 0.75rem;
     color: var(--text-dim);
     text-align: center;
@@ -187,10 +188,10 @@ select.setting-input {
 
 .popover-item {
     padding: 8px 12px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--border-color, rgba(255, 255, 255, 0.1));
     border-radius: 4px;
     cursor: pointer;
-    color: #fff;
+    color: var(--text-primary, #fff);
     font-size: 0.9rem;
     text-align: center;
     transition: background 0.2s;
@@ -233,7 +234,7 @@ select.setting-input {
     transform: translate(-50%, -50%);
     width: 110px;
     height: 110px;
-    background: rgba(10, 10, 10, 0.85);
+    background: var(--bg-panel, rgba(10, 10, 10, 0.85));
     border: 2px solid var(--accent, rgba(255, 255, 255, 0.2));
     border-radius: 50%;
     display: flex;
@@ -269,7 +270,7 @@ select.setting-input {
 .dial-center-label {
     font-size: 0.75rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-primary, #fff);
     text-transform: uppercase;
     letter-spacing: 1px;
     max-width: 90px;
@@ -283,8 +284,8 @@ select.setting-input {
     position: absolute;
     width: 70px;
     height: 70px;
-    background: rgba(40, 40, 40, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--bg-panel, rgba(40, 40, 40, 0.8));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));
     border-radius: 50%;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     display: flex;
@@ -307,8 +308,8 @@ select.setting-input {
 .dial-item-icon {
     width: 32px;
     height: 32px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--border-color, rgba(255, 255, 255, 0.05));
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -363,9 +364,10 @@ select.setting-input {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    background: rgba(15, 15, 15, 0.95);
+    background: var(--bg-panel, rgba(15, 15, 15, 0.95));
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
     border-radius: 12px;
     min-width: 220px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
@@ -396,7 +398,7 @@ select.setting-input {
 
 .dropdown-item.active {
     color: var(--accent);
-    background: rgba(74, 222, 128, 0.1);
+    background: var(--border-color, rgba(74, 222, 128, 0.1));
 }
 
 .menu-divider {
@@ -419,16 +421,16 @@ select.setting-input {
     display: flex;
     height: 100%;
     min-height: 400px;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--bg-app, rgba(0, 0, 0, 0.2));
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
 }
 
 .help-sidebar {
     width: 180px;
-    background: rgba(255, 255, 255, 0.03);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--bg-panel, rgba(255, 255, 255, 0.03));
+    border-right: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
     display: flex;
     flex-direction: column;
 }
@@ -440,19 +442,19 @@ select.setting-input {
     padding: 12px 16px;
     cursor: pointer;
     transition: all 0.2s;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-dim, rgba(255, 255, 255, 0.6));
     font-size: 0.9rem;
 }
 
 .help-nav-item:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: white;
+    background: var(--bg-panel, rgba(255, 255, 255, 0.05));
+    color: var(--text-primary, white);
 }
 
 .help-nav-item.active {
-    background: rgba(74, 144, 226, 0.1);
-    color: #4a90e2 !important;
-    border-left: 3px solid #4a90e2;
+    background: var(--bg-panel, rgba(74, 144, 226, 0.1));
+    color: var(--accent, #4a90e2) !important;
+    border-left: 3px solid var(--accent, #4a90e2);
 }
 
 .help-nav-item .chevron {
@@ -463,14 +465,14 @@ select.setting-input {
 .help-sidebar-footer {
     margin-top: auto;
     padding: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
 }
 
 .help-content {
     flex: 1;
     padding: 24px;
     overflow-y: auto;
-    background: rgba(0, 0, 0, 0.1);
+    background: var(--bg-app, rgba(0, 0, 0, 0.1));
     -webkit-overflow-scrolling: touch;
 }
 
@@ -484,7 +486,7 @@ select.setting-input {
     .help-sidebar {
         width: 100%;
         border-right: none;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.05));
         flex-direction: row;
         overflow-x: auto;
         white-space: nowrap;
@@ -517,7 +519,7 @@ select.setting-input {
 .markdown-body h1 {
     font-size: 1.4rem;
     margin-bottom: 16px;
-    color: white;
+    color: var(--text-primary, white);
     margin-top: 0;
 }
 
@@ -533,28 +535,28 @@ select.setting-input {
 .markdown-body p {
     font-size: 0.9rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-primary, rgba(255, 255, 255, 0.8));
     margin-bottom: 12px;
 }
 
 .markdown-body li {
     font-size: 0.9rem;
     line-height: 1.6;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-primary, rgba(255, 255, 255, 0.8));
     margin-bottom: 8px;
     margin-left: 20px;
 }
 
 .markdown-body code {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--input-bg, rgba(255, 255, 255, 0.1));
     padding: 2px 4px;
     border-radius: 4px;
     font-family: monospace;
-    color: #f39c12;
+    color: var(--ansi-yellow, #f39c12);
 }
 
 .markdown-body strong {
-    color: white;
+    color: var(--text-primary, white);
 }
 
 .has-popover .popover-menu,

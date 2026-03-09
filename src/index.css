@@ -33,12 +33,21 @@
     display: none !important;
   }
 
-  .kb-open .hud-clusters,
+  .kb-open .hud-clusters-absolute-layer,
   .kb-open .custom-buttons-layer,
   .kb-open .joystick-cluster,
   .kb-open .xbox-cluster,
   .kb-open .reset-zoom-fab {
     display: none !important;
+  }
+
+  .hud-clusters-absolute-layer {
+    display: block;
+    pointer-events: none;
+  }
+
+  .hud-clusters-absolute-layer > * {
+    pointer-events: auto;
   }
 
   .mobile-bottom-gutter.map-expanded {
