@@ -225,8 +225,8 @@ export function useViewport(
                 const width = logContainer.clientWidth;
                 if (width === 0) return; // Not yet rendered
 
-                // Standardized 80-character Space Mono math
-                const usableWidth = Math.max(0, width - 40);
+                // Strict 80-character Space Mono math (Ratio: ~0.6ch per unit width = 48 divisor)
+                const usableWidth = Math.max(0, width - 16);
                 const fontSize = (usableWidth / 48) * logFontSize;
                 const safeSize = Math.min(40, Math.max(6, fontSize));
                 document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);

@@ -25,7 +25,7 @@
 
 .message-log {
     flex: 1;
-    padding: 20px;
+    padding: 10px 8px 0 8px;
     display: block;
     overflow-y: auto;
     color: var(--text-primary);
@@ -34,8 +34,6 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
     touch-action: pan-y;
-    padding-bottom: 0px; /* Flush with bottom, spacer handles the tiny gap */
-    padding-top: 10px;
     /* scroll-padding-bottom: 20px; - Removed to fix manual scroll math conflicts */
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
@@ -191,7 +189,7 @@
 
 .input-area {
     position: relative;
-    margin: 0 10px 10px 10px;
+    margin: 0 8px 10px 8px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.35);
     padding: 0 18px;
@@ -339,7 +337,7 @@
 
 .is-landscape .message-log {
     height: 100% !important;
-    padding: 10px 10px 20px 10px !important;
+    padding: 10px 8px 20px 8px !important;
 }
 
 .is-landscape .input-area {
