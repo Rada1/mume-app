@@ -39,6 +39,7 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         handleLogClick,
         handleLogDoubleClick,
         handleDragStart,
+        handleDragEnd,
         spatButtons,
         setSpatButtons,
         executeCommand,
@@ -121,13 +122,9 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                 <MessageLog
                     onLogClick={handleLogClick}
                     onMouseUp={handleMouseUp}
-                    onDoubleClick={handleLogDoubleClick}
                     onPointerDown={handleLogPointerDown}
                     onDragStart={handleDragStart}
-                    onDragEnd={(e) => {
-                        const targetEl = (e.target as HTMLElement).closest('.inline-btn');
-                        if (targetEl) targetEl.classList.remove('dragging');
-                    }}
+                    onDragEnd={handleDragEnd}
                 />
             </div>
 

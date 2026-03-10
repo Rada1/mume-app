@@ -1,12 +1,11 @@
 import React from 'react';
-import { X, Music, Cog, Activity } from 'lucide-react';
+import { X, Music, Cog, Activity, HelpCircle } from 'lucide-react';
 import { useGame } from '../context/GameContext';
 import GeneralSettings from './Settings/GeneralSettings';
 import DataManagement from './Settings/DataManagement';
 import SoundSettings from './Settings/SoundSettings';
 import ActionSettings from './Settings/ActionSettings';
 import HelpGuides from './Settings/HelpGuides';
-import { HelpCircle } from 'lucide-react';
 import { SettingsModalProps } from '../types';
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -45,6 +44,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsImmersionMode,
     isMobileBrevityMode,
     setIsMobileBrevityMode,
+    showLegacyButtons,
+    setShowLegacyButtons,
 }) => {
     const {
         setIsSettingsOpen, settingsTab, setSettingsTab,
@@ -116,6 +117,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsImmersionMode={setIsImmersionMode}
                                 isMobileBrevityMode={isMobileBrevityMode}
                                 setIsMobileBrevityMode={setIsMobileBrevityMode}
+                                showLegacyButtons={showLegacyButtons}
+                                setShowLegacyButtons={setShowLegacyButtons}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

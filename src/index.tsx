@@ -118,8 +118,8 @@ const MudClient = () => {
         if (btn.isEditMode) {
             const target = e.target as HTMLElement;
             // Don't clear selection if clicking on a button, its handle, or a cluster
-            if (target.closest('.custom-btn') || 
-                target.closest('.hud-cluster') || 
+            if (target.closest('.custom-btn') ||
+                target.closest('.hud-cluster') ||
                 target.closest('.xbox-cluster') ||
                 target.closest('.joystick-cluster') ||
                 target.closest('.resize-handle') ||
@@ -191,7 +191,7 @@ const MudClient = () => {
                     logContainer.classList.remove('drop-hover-active');
                 }
 
-                const dataStr = e.dataTransfer.getData('application/json');
+                const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
                 if (!dataStr) return;
 
                 let data;

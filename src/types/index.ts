@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'shop-item' | 'practice-skill' | 'practice-header';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
@@ -8,6 +8,11 @@ export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 's
 export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
 export type TriggerAction = 'show' | 'switch_set';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
+export interface InlineCategoryConfig {
+    id: string; // The base name of the category (e.g. 'lantern')
+    keywords: string[];
+    color?: string;
+}
 
 export interface Message {
     id: string;
@@ -21,6 +26,33 @@ export interface Message {
     stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")
     isComm?: boolean; // True if this is a communication message (says, tells, etc.)
     isRoomName?: boolean; // True if this line is a room title/name
+    shopItem?: ShopItem; // Optional structured shop item data
+    practiceSkill?: PracticeSkill; // Optional structured practice skill data
+    practiceHeader?: { sessionsLeft: number }; // Optional practice header data
+}
+
+export interface ShopItem {
+    id: string;
+    name: string;
+    shortName?: string;
+    description: string;
+    price: string;
+    condition?: string;
+    count?: string;
+}
+
+export interface PracticeSkill {
+    name: string;
+    sessions: string; // e.g., "1/43"
+    knowledge: string; // e.g., "24%"
+    proficiency: number; // numeric percentage
+    difficulty: string; // e.g., "Hard"
+    advice: string;
+}
+
+export interface PracticeData {
+    sessionsLeft: number;
+    skills: PracticeSkill[];
 }
 
 export interface DrawerLine {
@@ -122,7 +154,7 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice';
     setId: string;
     context?: string;
     assignSourceId?: string;
@@ -142,7 +174,7 @@ export interface PopoverManagerProps {
     buttons: CustomButton[];
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
     availableSets: string[];
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean; fromUi?: boolean }) => void;
     addMessage: (type: MessageType, content: string) => void;
     setTarget: (target: string | null) => void;
     teleportTargets: TeleportTarget[];
@@ -151,6 +183,7 @@ export interface PopoverManagerProps {
     triggerHaptic: (ms: number) => void;
     roomPlayers: string[];
     setSettings: Record<string, ButtonSetSettings>;
+    inlineCategories?: InlineCategoryConfig[];
 }
 
 
@@ -198,6 +231,8 @@ export interface SettingsModalProps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    showLegacyButtons: boolean;
+    setShowLegacyButtons: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -227,6 +262,8 @@ export interface SavedSettings {
     disableSmoothScroll?: boolean;
     isImmersionMode?: boolean;
     isMobileBrevityMode?: boolean;
+    showLegacyButtons?: boolean;
+    inlineCategories?: InlineCategoryConfig[];
 }
 
 export interface RoomNode {

@@ -29,6 +29,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setIsSettingsOpen,
         settingsTab,
         setSettingsTab,
+        inlineCategories,
+        setInlineCategories,
         connectionUrl,
         setConnectionUrl,
         bgImage,
@@ -80,7 +82,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         isImmersionMode,
         setIsImmersionMode,
         isMobileBrevityMode,
-        setIsMobileBrevityMode
+        setIsMobileBrevityMode,
+        showLegacyButtons,
+        setShowLegacyButtons
     } = useGame() as any;
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
@@ -154,6 +158,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsImmersionMode={setIsImmersionMode}
                     isMobileBrevityMode={isMobileBrevityMode}
                     setIsMobileBrevityMode={setIsMobileBrevityMode}
+                    showLegacyButtons={showLegacyButtons}
+                    setShowLegacyButtons={setShowLegacyButtons}
                 />
             )}
 
@@ -217,6 +223,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     onToggleSmartPopulate={btn.setIsSmartPopulateEnabled}
                     setSettings={btn.setSettings}
                     setSetSettings={btn.setSetSettings}
+                    inlineCategories={inlineCategories}
+                    setInlineCategories={setInlineCategories}
                 />
             )}
 
@@ -236,6 +244,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 triggerHaptic={triggerHaptic}
                 roomPlayers={roomPlayers}
                 setSettings={setSettings || {}}
+                inlineCategories={inlineCategories}
             />
 
             <DrawerManager

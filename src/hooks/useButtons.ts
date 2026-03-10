@@ -4,8 +4,9 @@ import { DEFAULT_BUTTONS, DEFAULT_UI_POSITIONS, DEFAULT_SET_SETTINGS } from '../
 import MASTER_SETTINGS from '../constants/mastersettings.json';
 import { useButtonPersistence } from './useButtonPersistence';
 import { useButtonLogic } from './useButtonLogic';
+import { getCategoryForName } from '../utils/categorizationUtils';
 
-export const useButtons = (abilities: Record<string, number>, characterClass: string) => {
+export const useButtons = (abilities: Record<string, number>, characterClass: string, target: string | null = null, inlineCategories: import('../types').InlineCategoryConfig[] = []) => {
     const [activeSet, setActiveSet] = useState('main');
     const [isEditMode, setIsEditMode] = useState(false);
     const [editingButtonId, setEditingButtonId] = useState<string | null>(null);
@@ -35,7 +36,8 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
 
     const [rawButtons, setRawButtons] = useState<CustomButton[]>(() => {
         const saved = localStorage.getItem('mud-buttons');
-        const defaultButtons = (MASTER_SETTINGS as any).buttons || DEFAULT_BUTTONS;
+        const masterButtons = (MASTER_SETTINGS as any).buttons || [];
+        const defaultButtons = [...masterButtons, ...DEFAULT_BUTTONS.filter(d => !masterButtons.some((m: any) => m.id === d.id))];
 
         if (saved) {
             try {
@@ -58,7 +60,7 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         return defaultButtons;
     });
 
-    const buttons = useButtonLogic(rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled);
+    const buttons = useButtonLogic(rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled, target, inlineCategories);
     const { resetToDefaults } = useButtonPersistence(rawButtons, setRawButtons, uiPositions, setUiPositions);
 
     const buttonsRef = useRef(buttons);
@@ -104,8 +106,10 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
             if (b.setId) sets.add(b.setId);
             if (b.trigger?.type === 'switch_set' && b.trigger.targetSet) sets.add(b.trigger.targetSet);
         });
+        // Add all configured inline categories so they show up in managers even if empty
+        inlineCategories.forEach(cat => sets.add(`inline-${cat.id}`));
         return Array.from(sets);
-    }, [rawButtons]);
+    }, [rawButtons, inlineCategories]);
 
     useEffect(() => {
         const themeColor = setSettings[activeSet]?.themeColor;
@@ -154,6 +158,6 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
 
     return useMemo(() => ({
         buttons, setButtons: setRawButtons, rawButtons, buttonsRef, activeSet, setActiveSet, isEditMode, setIsEditMode, editingButtonId, setEditingButtonId, selectedButtonIds, setSelectedIds, toggleSelection, uiPositions, setUiPositions, dragState, setDragState, availableSets, createButton, deleteButton, deleteSet, resetToDefaults: (m?: any) => resetToDefaults(addMessageRef.current || undefined), buttonTimers, combatSet, setCombatSet, defaultSet, setDefaultSet, isGridEnabled, setIsGridEnabled, gridSize, setGridSize, setAddMessage: (fn: any) => { addMessageRef.current = fn; },
-        setSettings, setSetSettings, isSmartPopulateEnabled, setIsSmartPopulateEnabled
-    }), [buttons, rawButtons, activeSet, isEditMode, editingButtonId, selectedButtonIds, uiPositions, dragState, availableSets, combatSet, defaultSet, isGridEnabled, gridSize, createButton, deleteButton, deleteSet, resetToDefaults, setSettings, isSmartPopulateEnabled]);
+        setSettings, setSetSettings, isSmartPopulateEnabled, setIsSmartPopulateEnabled, target
+    }), [buttons, rawButtons, activeSet, isEditMode, editingButtonId, selectedButtonIds, uiPositions, dragState, availableSets, combatSet, defaultSet, isGridEnabled, gridSize, createButton, deleteButton, deleteSet, resetToDefaults, setSettings, isSmartPopulateEnabled, target]);
 };

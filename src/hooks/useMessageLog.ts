@@ -4,377 +4,213 @@ import { ansiConvert } from '../utils/ansi';
 import { numToWord, pluralizeMumeSubject, pluralizeVerb, pluralizeRest, extractNoun, simplifyDescription } from '../utils/gameUtils';
 
 // ---------------------------------------------------------------------------
-// Helper functions (previously top-level in index.tsx)
-// ---------------------------------------------------------------------------
-
-
-// ---------------------------------------------------------------------------
-// Regex constants (previously top-level in index.tsx)
+// Regex constants
 // ---------------------------------------------------------------------------
 
 export const ARRIVE_REGEX = /^(.+)\s+(has arrived from|arrives from)\s+(the\s+)?(.+)\.?$/i;
 export const LEAVE_REGEX = /^(.+)\s+leaves\s+(the\s+)?(.+)\.?$/i;
-export const HERE_REGEX = /^(.+?)\s+(is here|is standing here|is resting here|is sleeping here|is sitting here)(?:.*)?$/i;
-export const NPC_LINE_REGEX = /^((?:A|An|The|Some)\s+[\w\s-]+?)\s+(\w+s)\b\s*(.*)$/i;
+export const HERE_REGEX = /^(.+?)\s+(is [\w\s,]+? here|stands? here|sits? here|rests? here|sleeps? here)(?:.*)?$/i;
+export const NPC_LINE_REGEX = /^((?:A|An|The|Some)?\s*[\w\s,-]+?)\s+(\w+s)\b\s*(.*)$/i;
 
 // ---------------------------------------------------------------------------
 // Hook
 // ---------------------------------------------------------------------------
 
 export function useMessageLog(
-    inCombatRef: React.RefObject<boolean>, 
+    inCombatRef: React.RefObject<boolean>,
     isMobileBrevityMode: boolean,
-    roomOccupants: { players: string[], npcs: string[], items: string[] }
+    roomContext: { players: string[], npcs: string[], items: string[], roomName?: string | null }
 ) {
-    const occupantsRef = useRef(roomOccupants);
-    useEffect(() => { occupantsRef.current = roomOccupants; }, [roomOccupants]);
-    
     const [messages, setMessages] = useState<Message[]>([]);
-
-    // Performance optimization: batch rapid incoming messages into a single React render
+    const lastMessageRef = useRef<Message | null>(null);
     const messageBufferRef = useRef<Message[]>([]);
     const flushTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    const roomLineBufferRef = useRef<{ subject: string, action: string, original: string }[]>([]);
+    const roomBufferTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const isCombatLine = useCallback((textLower: string): boolean => {
-        const t = textLower;
         const combatVerbs = [
             'hit', 'miss', 'wound', 'slay', 'kill', 'scratch', 'bruise', 'maul', 'decimate',
             'devastate', 'obliterate', 'massacre', 'mutilate', 'eviscerate', 'pierce',
             'cleave', 'stab', 'slash', 'pound', 'crush', 'smite', 'shoot', 'blast', 'burn',
             'freeze', 'choke', 'strike'
         ];
-
-        const hasCombatVerb = combatVerbs.some(v => t.includes(` ${v}s `) || t.includes(` ${v} `) || t.includes(`${v}s you`) || t.includes(`${v} you`));
-
-        return (
-            hasCombatVerb ||
-            ((t.includes('dodge') || t.includes('parry') || t.includes('flee')) && inCombatRef.current) ||
-            t.includes('you dodge') || t.includes('you parry') ||
-            t.includes('you flee') || t.includes('you rescue') ||
-            t.includes('you disarm') || t.includes('you bash') ||
-            t.includes('you bite') ||
-            t.includes('your arm') || t.includes('your head') ||
-            t.includes('your leg') || t.includes('your body') ||
-            t.includes('your chest') || t.includes('your neck') ||
-            t.includes('is dead!') || t.includes('is slain') ||
-            t.includes('you have been killed') || t.includes('you are dead') ||
-            t.includes('you feel less protected') ||
-            t.includes('your opponent') || t.includes('your foe') ||
-            // Spellcasting is always combat-relevant
-            t.includes('strange incantations') ||
-            t.includes('utters the words') ||
-            t.includes('cast a spell') || t.includes('casts a spell') ||
-            /^\s*(k|kill|f|flee|b|bash|c|cast|u|use|rescue|disarm|kick|bite)\b/i.test(t) ||
-            /^\w+ (dodges|parries|flees|rescues|disarms|bashes|kicks|bites|hits|stabs|cleaves|slashes|pounds|crushes|smites|shoots)/.test(t)
-        );
+        return combatVerbs.some(v => textLower.includes(` ${v}s `) || textLower.includes(` ${v} `) || textLower.includes(`${v}s you`) || textLower.includes(`${v} you`)) ||
+            ((textLower.includes('dodge') || textLower.includes('parry') || textLower.includes('flee')) && inCombatRef.current);
     }, [inCombatRef]);
 
     const isCommunicationLine = useCallback((textLower: string): boolean => {
-        const t = textLower;
-        return (
-            t.includes(' says ') || t.includes(' narrate ') || t.includes(' narrates ') ||
-            t.includes(' tell ') || t.includes(' tells ') || t.includes(' whisper ') ||
-            t.includes(' whispers ') || t.includes(' yell ') || t.includes(' yells ') ||
-            t.includes(' states ') || t.includes(' state ') ||
-            t.includes(' gtell ') || t.includes(' group-tell ') || t.includes(' tells the group ') ||
-            /^you (tell|say|whisper|yell|narrate|state|gtell|group-tell)\b/i.test(t) ||
-            /^\w+ (says|narrates|tells|whispers|yells|states|gtells)\b/i.test(t)
-        );
+        return textLower.includes(' says ') || textLower.includes(' tell ') || textLower.includes(' whisper ') || textLower.includes(' group-tell ') ||
+            /^you (tell|say|whisper|yell|narrate|state|gtell)\b/i.test(textLower);
     }, []);
 
     const flushMessages = useCallback(() => {
         if (messageBufferRef.current.length === 0) return;
-
-        // Take a snapshot of the buffer so we don't clear it in an impure state update.
         const pending = [...messageBufferRef.current];
         messageBufferRef.current = [];
-
         setMessages(prev => {
             const nextMessages = [...prev, ...pending];
-            if (nextMessages.length >= 500) {
-                return nextMessages.slice(nextMessages.length - 500);
+            return nextMessages.length >= 500 ? nextMessages.slice(nextMessages.length - 500) : nextMessages;
+        });
+        flushTimeoutRef.current = null;
+    }, []);
+
+    const addMessageRef = useRef<any>(null);
+
+    const flushRoomBuffer = useCallback(() => {
+        if (roomLineBufferRef.current.length === 0) return;
+        const items = roomLineBufferRef.current;
+        roomLineBufferRef.current = [];
+        if (roomBufferTimeoutRef.current) {
+            clearTimeout(roomBufferTimeoutRef.current);
+            roomBufferTimeoutRef.current = null;
+        }
+
+        const actionGroups: Record<string, string[]> = {};
+        const textChunks: string[] = [];
+
+        items.forEach(item => {
+            if (item.action === "text-chunk") textChunks.push(item.original);
+            else {
+                if (!actionGroups[item.action]) actionGroups[item.action] = [];
+                actionGroups[item.action].push(item.subject);
             }
-            return nextMessages;
         });
 
-        if (flushTimeoutRef.current) {
-            clearTimeout(flushTimeoutRef.current);
-            flushTimeoutRef.current = null;
-        }
-    }, [setMessages]);
+        const actionStrings = Object.entries(actionGroups).map(([action, subjects]) => {
+            if (subjects.length === 0) return "";
+            const unique = Array.from(new Set(subjects));
+            let subjectStr = unique.length === 1 ? unique[0] : (unique.length === 2 ? `${unique[0]} and ${unique[1]}` : `${unique.slice(0, -1).join(', ')}, and ${unique[unique.length - 1]}`);
+            let verb = unique.length > 1 ? (action.startsWith('is ') ? 'are ' + action.slice(3) : pluralizeVerb(action)) : action;
+            return `${subjectStr} ${verb}`;
+        }).filter(Boolean);
 
-    // We must track the absolute last message added (even if it's already in state)
-    // to properly handle stack stacking when the buffer is empty.
-    const lastMessageRef = useRef<Message | null>(null);
+        const allSentences = [...textChunks, ...actionStrings].map(s => s.trim()).filter(Boolean);
+        if (allSentences.length === 0) return;
 
-    const addMessage = useCallback((type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => {
-        if (type === 'prompt') return;
+        const punctuated = allSentences.map((s, idx) => {
+            let t = s;
+            const isLast = idx === allSentences.length - 1;
 
-        const textOnly = precalculated ? precalculated.textOnly : text.replace(/\x1b\[[0-9;]*m/g, '').trim();
-        const textLower = precalculated ? precalculated.lower : textOnly.toLowerCase();
-
-        // ---------------------------------------------------------------------------
-        // Mobile Brevity: GMCP-Driven Occupant Listing
-        // ---------------------------------------------------------------------------
-        if (isMobileBrevityMode && type === 'system' && text.startsWith('BREVITY_SUMMARY:')) {
-            try {
-                const data = JSON.parse(text.substring(16));
-                const { players, npcs } = data as { players: string[], npcs: string[] };
-                if (players.length === 0 && npcs.length === 0) return;
-
-                // Create a clean, interactive sentence from the GMCP data
-                // We use simplifyDescription to get the core nouns (e.g. "a bartender")
-                const names = [...players, ...npcs].map(n => simplifyDescription(n));
-                
-                let summaryText = "";
-                if (names.length === 1) {
-                    summaryText = `${names[0]} is here.`;
-                } else if (names.length === 2) {
-                    summaryText = `${names[0]} and ${names[1]} are here.`;
-                } else {
-                    const last = names.pop();
-                    summaryText = `${names.join(', ')}, and ${last} are here.`;
-                }
-
-                // Call addMessage recursively with the formatted text, but as a game message
-                // We mark it as a room name or something special if needed, 
-                // but 'game' type with cyan color is good.
-                addMessage('game', `\x1b[1;36m${summaryText}\x1b[0m`, false, mid, false, { textOnly: summaryText, lower: summaryText.toLowerCase() });
-                return;
-            } catch (e) { return; }
-        }
-
-        // ---------------------------------------------------------------------------
-        // Mobile Brevity: Suppression of redundant terminal text
-        // ---------------------------------------------------------------------------
-        if (isMobileBrevityMode && type === 'game' && !isRoomName) {
-            // A. Standard Entity Patterns (always suppress, GMCP summary handles listing)
-            if (HERE_REGEX.test(textOnly) || NPC_LINE_REGEX.test(textOnly)) {
-                // Ensure we don't suppress the summary we just generated!
-                if (!textOnly.includes(' are here.') && !textOnly.includes(' is here.')) {
-                     // Wait, the summary DOES include "is here." 
-                     // We need to check if the text is our specific summary color or arrives from 'system'
-                     // Actually, we can check if it's the exact text we just generated or common patterns.
-                }
-                
-                // If it's a standard pattern like "A dealer is here." we suppress it.
-               return;
+            // Normalize punctuation
+            if (t.endsWith('.') || t.endsWith('..') || t.endsWith('...')) {
+                t = t.replace(/\.+$/, '');
             }
 
-            // B. Aggressive Match (Starts with A/An/The and is short/looks like a description)
-            if (/^(a|an|the|some)\s+[\w\s-]+?\.?$/i.test(textOnly) && textOnly.length < 100) {
-                return;
-            }
+            if (isLast) return t + '.';
+            return t + '...';
+        });
 
-            // C. GMCP based suppression (Use Ref for freshest data)
-            const occupants = occupantsRef.current;
-            if (occupants) {
-                const allOccupants = [...occupants.players, ...occupants.npcs];
-                const foundInLine = allOccupants.some(name => {
-                    const lowerName = name.toLowerCase();
-                    const cleanName = lowerName.replace(/^(a|an|the)\s+/i, '');
-                    
-                    // Match if line starts with name, or contains it and looks like a description
-                    return textLower.startsWith(lowerName) || 
-                           textLower.startsWith(cleanName) ||
-                           (cleanName.length > 5 && textLower.includes(cleanName));
-                });
+        const finalPara = punctuated.join(' ');
 
-                if (foundInLine) {
-                    // Suppress this line! It's covered by the GMCP summary.
-                    return;
-                }
-            }
+        if (finalPara) {
+            const finalParagraph = finalPara.charAt(0).toUpperCase() + finalPara.slice(1);
+            const msgText = `\x1b[1;37m${finalParagraph.replace(/\s+/g, ' ')}\x1b[0m`;
+            addMessageRef.current?.('game', msgText, false, undefined, false, { textOnly: finalParagraph, lower: finalParagraph.toLowerCase() }, undefined, undefined, undefined, true);
         }
+    }, []);
 
-        let isThisCombat = combatOverride ?? (type === 'game' ? isCombatLine(textLower) : type === 'user');
+    const addMessage = useCallback((
+        type: MessageType,
+        text: string,
+        combatOverride?: boolean,
+        mid?: string,
+        isRoomName?: boolean,
+        precalculated?: { textOnly: string, lower: string },
+        shopItem?: any,
+        practiceSkill?: any,
+        practiceHeader?: any,
+        skipBrevity: boolean = false
+    ) => {
+        const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
+        const textLower = precalculated?.lower || textOnly.toLowerCase();
+
+        const isCombat = combatOverride ?? (type === 'game' ? isCombatLine(textLower) : false);
         const isComm = type === 'game' && isCommunicationLine(textLower);
 
-        // Mobile Brevity: Combat Simplification
-        if (isMobileBrevityMode && isThisCombat && type === 'game') {
-            // Simplified combat message: Remove extra fluff after the body part or basic action
-            // Example: "An orc slashes your left arm extremely hard and shatters it!" -> "An orc slashes your left arm"
-            const combatSimplifierRegex = /^(.+?\s+(?:hits|slashes|stabs|cleaves|pounds|crushes|smites|blasts|burns|pierces|mauls|bruises|wounds)\s+(?:your|the|a|an)\s+[\w\s-]+?)(?:[\s,.].*)?$/i;
-            const simplifiedMatch = textOnly.match(combatSimplifierRegex);
-            if (simplifiedMatch) {
-                text = simplifiedMatch[1].trim();
-                if (!text.endsWith('.')) text += '.';
-            }
+        const robustRoomAnsi = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(text);
+        const curRoom = roomContext.roomName;
+        const isActuallyRoomName = isRoomName || robustRoomAnsi || (curRoom && (
+            textOnly === curRoom ||
+            textLower === curRoom.toLowerCase() ||
+            textOnly === curRoom + '.' ||
+            textLower === curRoom.toLowerCase() + '.' ||
+            (textOnly.length < curRoom.length + 8 && (textOnly.startsWith(curRoom) || textLower.startsWith(curRoom.toLowerCase())))
+        ));
+
+        if (isActuallyRoomName) {
+            flushRoomBuffer();
+            skipBrevity = true;
         }
 
-        const dimmedInCombat = inCombatRef.current && !isThisCombat;
+        if (isMobileBrevityMode && type === 'game' && !isActuallyRoomName && !isCombat && !isComm && !skipBrevity) {
+            if (textOnly.length === 0) return;
+            const hereMatch = textOnly.match(HERE_REGEX);
+            const npcMatch = textOnly.match(NPC_LINE_REGEX);
 
+            if (hereMatch || npcMatch) {
+                const subject = hereMatch ? hereMatch[1] : (npcMatch ? npcMatch[1] : "");
+                const action = hereMatch ? hereMatch[2] : (npcMatch ? `${npcMatch[2]} ${npcMatch[3]}` : "");
+                roomLineBufferRef.current.push({ subject, action: action.trim(), original: textOnly });
+            } else {
+                roomLineBufferRef.current.push({ subject: "", action: "text-chunk", original: textOnly });
+            }
+
+            if (roomBufferTimeoutRef.current) clearTimeout(roomBufferTimeoutRef.current);
+            roomBufferTimeoutRef.current = setTimeout(flushRoomBuffer, 300);
+            return;
+        } else {
+            flushRoomBuffer();
+        }
+
+        addMessageRef.current = addMessage;
+
+        const dimmedInCombat = inCombatRef.current && !isCombat;
         let stackId = '';
-        let subject = '';
-        let actionText = '';
-        let direction = '';
+        let subject = '', actionText = '', direction = '';
 
         const arriveMatch = textOnly.match(ARRIVE_REGEX);
         const leaveMatch = textOnly.match(LEAVE_REGEX);
         const hereMatch = textOnly.match(HERE_REGEX);
         const npcMatch = textOnly.match(NPC_LINE_REGEX);
 
-        if (arriveMatch) {
-            subject = arriveMatch[1];
-            actionText = arriveMatch[2];
-            direction = arriveMatch[4];
-            stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`;
-        } else if (leaveMatch) {
-            subject = leaveMatch[1];
-            actionText = 'leaves';
-            direction = leaveMatch[3];
-            stackId = `leave:${subject.toLowerCase()}:${direction.toLowerCase()}`;
-        } else if (hereMatch) {
-            subject = hereMatch[1];
-            actionText = hereMatch[2];
-            stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`;
-        } else if (npcMatch) {
-            subject = npcMatch[1];
-            actionText = npcMatch[2];
-            direction = npcMatch[3];
-            stackId = `npc:${textOnly.toLowerCase()}`;
-        }
-
-        // REMOVED: Legacy regex-based condensation that causes inconsistencies.
-        // We now rely on BREVITY_SUMMARY system messages triggered by GMCP updates.
-        let customBrevityStack = false;
+        if (arriveMatch) { subject = arriveMatch[1]; actionText = arriveMatch[2]; direction = arriveMatch[4]; stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
+        else if (leaveMatch) { subject = leaveMatch[1]; actionText = 'leaves'; direction = leaveMatch[3]; stackId = `leave:${subject.toLowerCase()}:${direction.toLowerCase()}`; }
+        else if (hereMatch) { subject = hereMatch[1]; actionText = hereMatch[2]; stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`; }
+        else if (npcMatch) { subject = npcMatch[1]; actionText = npcMatch[2]; direction = npcMatch[3]; stackId = `npc:${textOnly.toLowerCase()}`; }
 
         const lastMsg = lastMessageRef.current;
-
-        if (stackId && lastMsg && lastMsg.stackId === stackId && lastMsg.type === type) {
-            let newTextRaw = '';
+        if (stackId && lastMsg && lastMsg.stackId === stackId && lastMsg.type === type && !isActuallyRoomName) {
             let newCount = (lastMsg.stackCount || 1) + 1;
+            const pluralSubject = pluralizeMumeSubject(subject);
+            let verb = '', rest = direction;
+            if (actionText.includes('arrive')) verb = 'have arrived';
+            else if (actionText.includes('leave')) verb = 'leave';
+            else if (actionText.toLowerCase().startsWith('is ')) {
+                if (actionText.toLowerCase().includes('standing')) verb = 'stand ' + actionText.slice(12);
+                else if (actionText.toLowerCase().includes('resting')) verb = 'rest ' + actionText.slice(11);
+                else if (actionText.toLowerCase().includes('sleeping')) verb = 'sleep ' + actionText.slice(12);
+                else if (actionText.toLowerCase().includes('sitting')) verb = 'sit ' + actionText.slice(11);
+                else verb = 'are ' + actionText.slice(3);
+            } else { verb = pluralizeVerb(actionText); rest = pluralizeRest(direction); }
 
-            if (customBrevityStack) {
-                // Formatting: "A, B, and C are here."
-                // Use a more robust split that handles "and" and ", and"
-                const listText = lastMsg.textRaw.replace(/\s+(are|is)\s+here\.$/i, '');
-                const existingNames = listText.split(/(?:, and | and |, )/).map(n => n.trim());
-                
-                const isUnique = /^[A-Z]/.test(subject) && !/^(a|an|the)\b/i.test(subject);
-                const cleanNewSubject = isUnique ? subject : (subject.toLowerCase().startsWith('a ') || subject.toLowerCase().startsWith('an ') || subject.toLowerCase().startsWith('the ') ? subject : `a ${subject}`);
-                
-                if (!existingNames.includes(cleanNewSubject)) {
-                    existingNames.push(cleanNewSubject);
-                    if (existingNames.length === 1) {
-                        newTextRaw = `${existingNames[0].charAt(0).toUpperCase() + existingNames[0].slice(1)} is here.`;
-                    } else if (existingNames.length === 2) {
-                        newTextRaw = `${existingNames[0].charAt(0).toUpperCase() + existingNames[0].slice(1)} and ${existingNames[1]} are here.`;
-                    } else {
-                        const lastOne = existingNames.pop();
-                        newTextRaw = `${existingNames.map(n => n.charAt(0).toUpperCase() + n.slice(1)).join(', ')}, and ${lastOne} are here.`;
-                    }
-                } else {
-                    // Already in list
-                    newTextRaw = lastMsg.textRaw;
-                }
-
-                lastMsg.textRaw = newTextRaw;
-                lastMsg.html = ansiConvert.toHtml(newTextRaw); // UPDATE HTML
-                lastMsg.timestamp = Date.now();
-                setMessages(prev => {
-                    const nextMessages = [...prev];
-                    if (nextMessages.length > 0) {
-                        nextMessages[nextMessages.length - 1] = lastMsg;
-                    }
-                    return nextMessages;
-                });
-                return;
-            } else {
-                const pluralSubject = pluralizeMumeSubject(subject);
-                let verb = '';
-                let rest = direction;
-
-                if (actionText.includes('arrive')) verb = 'have arrived';
-                else if (actionText.includes('leave')) verb = 'leave';
-                else if (actionText.toLowerCase().startsWith('is ')) {
-                    if (actionText.toLowerCase().includes('standing')) verb = 'stand ' + actionText.slice(12);
-                    else if (actionText.toLowerCase().includes('resting')) verb = 'rest ' + actionText.slice(11);
-                    else if (actionText.toLowerCase().includes('sleeping')) verb = 'sleep ' + actionText.slice(12);
-                    else if (actionText.toLowerCase().includes('sitting')) verb = 'sit ' + actionText.slice(11);
-                    else verb = 'are ' + actionText.slice(3);
-                } else {
-                    verb = pluralizeVerb(actionText);
-                    rest = pluralizeRest(direction);
-                }
-
-                newTextRaw = `${numToWord(newCount).charAt(0).toUpperCase() + numToWord(newCount).slice(1)} ${pluralSubject} ${verb}${actionText.includes('arrive') ? ' from ' : ''}${rest}${rest || actionText.includes('is ') ? '' : ' '}.`.replace(/\s+/g, ' ').replace(/\.\./g, '.');
-            }
-
-            const updatedMsg: Message = {
-                ...lastMsg,
-                textRaw: newTextRaw,
-                html: ansiConvert.toHtml(`\x1b[1;37m${newTextRaw}\x1b[0m`),
-                stackCount: newCount,
-                timestamp: Date.now()
-            };
-
+            const newTextRaw = `${numToWord(newCount).charAt(0).toUpperCase() + numToWord(newCount).slice(1)} ${pluralSubject} ${verb}${actionText.includes('arrive') ? ' from ' : ''}${rest}.`.replace(/\s+/g, ' ');
+            const updatedMsg: Message = { ...lastMsg, textRaw: newTextRaw, html: ansiConvert.toHtml(`\x1b[1;37m${newTextRaw}\x1b[0m`), stackCount: newCount, timestamp: Date.now() };
             lastMessageRef.current = updatedMsg;
-
-            if (messageBufferRef.current.length > 0) {
-                // If it's in the buffer, just update the last item in the buffer
-                messageBufferRef.current[messageBufferRef.current.length - 1] = updatedMsg;
-            } else {
-                // If the buffer is empty, it means the message was already flushed to state.
-                // We must update it directly in state.
-                setMessages(prev => {
-                    const nextMessages = [...prev];
-                    if (nextMessages.length > 0) {
-                        nextMessages[nextMessages.length - 1] = updatedMsg;
-                    }
-                    return nextMessages;
-                });
-            }
+            if (messageBufferRef.current.length > 0) messageBufferRef.current[messageBufferRef.current.length - 1] = updatedMsg;
+            else setMessages(prev => { const next = [...prev]; if (next.length > 0) next[next.length - 1] = updatedMsg; return next; });
             return;
         }
 
         let html = ansiConvert.toHtml(text);
-        
-        // Wrap spellcasting incantations to ensure they appear "bright"
-        if (textLower.includes('strange incantations') || textLower.includes('utters the words')) {
-            html = `<span class="spell-incant">${html}</span>`;
-        }
-        if (type === 'game' && text.toLowerCase().includes("key: '")) {
-            const keyMatch = textOnly.match(/key:\s*'([^']*)'/i);
-            if (keyMatch) {
-                const roomId = keyMatch[1];
-                const escapedKey = roomId.replace(/'/g, '(&apos;|&#39;|\')');
-                const pattern = new RegExp(`key:\\s*(&apos;|&#39;|')(${escapedKey})(&apos;|&#39;|')`, 'i');
-                html = html.replace(pattern, (_match, _p1, _p2, _p3) => {
-                    return `<span class="inline-btn teleport-key" data-teleport-id="${roomId}" data-action="save-teleport" style="--glow-color: rgba(255, 255, 100, 0.6); border-bottom: 1px dashed gold; padding: 0 4px; border-radius: 2px; cursor: pointer; display: inline-block;">key: '${roomId}'</span>`;
-                });
-            }
-        }
+        if (textLower.includes('strange incantations') || textLower.includes('utters the words')) html = `<span class="spell-incant">${html}</span>`;
 
-        const msg: Message = {
-            id: mid || Math.random().toString(36).substring(7),
-            html,
-            textRaw: text,
-            type,
-            timestamp: Date.now(),
-            isCombat: isThisCombat,
-            dimmedInCombat,
-            stackId: stackId || undefined,
-            stackCount: 1,
-            isComm,
-            isRoomName
-        };
-
+        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
         lastMessageRef.current = msg;
         messageBufferRef.current.push(msg);
+        if (!flushTimeoutRef.current) flushTimeoutRef.current = setTimeout(flushMessages, 32);
+    }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 
-        if (!flushTimeoutRef.current) {
-            flushTimeoutRef.current = setTimeout(flushMessages, 32);
-        }
-
-    }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomOccupants]);
-
-    return {
-        messages,
-        setMessages,
-        addMessage,
-        flushMessages,
-        isCombatLine,
-        isCommunicationLine,
-    };
+    return { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine };
 }

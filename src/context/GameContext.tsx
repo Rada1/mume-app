@@ -16,6 +16,7 @@ import { useCommandController } from '../hooks/useCommandController';
 import { useSettings } from '../hooks/useSettings';
 import { useSoundSystem } from '../hooks/useSoundSystem';
 import { useSpatButtons } from '../hooks/useSpatButtons';
+import { usePracticeHandler } from '../hooks/usePracticeHandler';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
 import { GameContextType, VitalsContextType } from './GameContext/types';
@@ -90,11 +91,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
     const { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine } = useMessageLog(
-        inCombatHookRef, 
+        inCombatHookRef,
         s.isMobileBrevityMode,
-        { players: s.roomPlayers, npcs: s.roomNpcs, items: s.roomItems }
+        { players: s.roomPlayers, npcs: s.roomNpcs, items: s.roomItems, roomName: s.roomName }
     );
-    const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }), [addMessage]);
+    const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
     const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
@@ -124,7 +125,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
 
-    const btn = useButtons(abilities, characterClass);
+    const btn = useButtons(abilities, characterClass, v.target, s.inlineCategories);
     const joystick = useJoystick(triggerHaptic);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
@@ -146,6 +147,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setDetectLighting: (fn) => { /* internal use */ }
     });
 
+    const practice = usePracticeHandler(s.setAbilities);
+
     const { audioCtxRef, initAudio, triggerHaptic: soundSystemHaptic } = useSoundSystem();
     // Wire the real haptic function into the ref immediately
     triggerHapticRef.current = soundSystemHaptic;
@@ -164,12 +167,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         disable3dScroll: s.disable3dScroll, setDisable3dScroll: s.setDisable3dScroll,
         disableSmoothScroll: s.disableSmoothScroll, setDisableSmoothScroll: s.setDisableSmoothScroll,
         isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
-        isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode
+        isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode,
+        showLegacyButtons: s.showLegacyButtons, setShowLegacyButtons: s.setShowLegacyButtons,
+        inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories
     });
 
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems);
-
     const [input, setInput] = useState("");
+    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories);
+
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -208,12 +213,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setStatsLines: s.setStatsLines,
         setEqLines: s.setEqLines,
         captureStage: s.captureStage,
+        practice,
         isDrawerCapture: s.isDrawerCapture,
         isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats,
         isWaitingForEq: s.isWaitingForEq,
         isWaitingForInv: s.isWaitingForInv,
         roomNameRef: s.roomNameRef,
+        roomName: s.roomName,
         showDebugEchoes: s.showDebugEchoes,
         addDiagnosticLog
     });
@@ -265,10 +272,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         viewport,
         ui: s.ui,
         actions: s.actions,
-        setActions: s.setActions
+        setActions: s.setActions,
+        setActiveDragData: s.setActiveDragData,
+        practice
     });
 
-    const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleDragStart } = controller;
+    const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd } = controller;
 
     // Update the ref so the parser components can call it
     useEffect(() => {
@@ -321,6 +330,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             lastSyncedCharRef.current = null;
         }
     }, [s.characterName, s.status, executeCommand]);
+
+    // Open Practice Popover when data arrives (REMOVED: Now inline)
 
     // Only on mount
     useEffect(() => {
@@ -391,16 +402,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
         onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
         onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
-        messages, setMessages, addMessage, addSystemMessage,
+        messages, setMessages,
+        addMessage: (t, txt, cob, mid, rn, pre, shop, skill, hdr, skip) => addMessage(t, txt, cob, mid, rn, pre, shop, skill, hdr, skip),
+        addSystemMessage,
         isCombatLine, isCommunicationLine,
         playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
         btn, joystick, editor, containerRef, viewport, env, processMessageHtml,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
         input, setInput,
         handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+        handleDragStart, handleDragEnd,
         hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
         mapperRef, ...settings, audioCtxRef,
-        telnet, parser,
+        telnet, parser, practice,
         spatButtons, setSpatButtons,
         diagnosticLogs, addDiagnosticLog,
         detectLighting: env.detectLighting,
@@ -413,7 +427,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isCombatLine, isCommunicationLine, playSound, triggerHaptic,
         btn, joystick, editor, viewport, env, processMessageHtml,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
-        settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog
+        handleDragStart, handleDragEnd,
+        settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
+        s.showLegacyButtons
     ]);
 
     return (

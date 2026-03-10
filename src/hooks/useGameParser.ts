@@ -4,11 +4,13 @@ import { ansiConvert } from '../utils/ansi';
 import { extractNoun } from '../utils/gameUtils';
 import { usePracticeParser } from './usePracticeParser';
 import { useTriggerProcessor } from './useTriggerProcessor';
+import { useShopHandler } from './useShopHandler';
+import { usePracticeHandler } from './usePracticeHandler';
 
 export interface UseGameParserDeps {
     isItemsOpen: boolean; isCharacterOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }) => void;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
     setWeather: (val: any) => void; setIsFoggy: (val: boolean) => void;
     setStats: (val: GameStats | ((prev: GameStats) => GameStats)) => void;
@@ -25,22 +27,25 @@ export interface UseGameParserDeps {
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
+    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'none'>;
+    practice: ReturnType<typeof usePracticeHandler>;
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
     roomNameRef: React.RefObject<string | null>;
+    roomName: string | null;
     showDebugEchoes?: boolean;
     addDiagnosticLog?: (msg: string) => void;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog } = deps;
 
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
+    const { parseShopLine, isShopListingActive, setIsShopListingActive } = useShopHandler();
 
     const containerStackRef = useRef<{ depth: number, noun: string }[]>([]);
     const counterRef = useRef(0);
@@ -78,13 +83,47 @@ export function useGameParser(deps: UseGameParserDeps) {
 
             textOnly = attachedText;
             lower = textOnly.toLowerCase();
-            
+
             const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*)/;
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
         }
 
-        let isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
-        let isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
+        const currentRoomName = roomNameRef.current;
+        const textOnlyRaw = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
+        const lowerRaw = textOnlyRaw.toLowerCase();
+
+        // SPLIT logic: If the line starts with the room name followed by a dot/space, and it's a long line, split it.
+        // This handles cases where the MUD sends the header and first description line in one go during movement.
+        if (currentRoomName && (textOnlyRaw.startsWith(currentRoomName) || lowerRaw.startsWith(currentRoomName.toLowerCase()))) {
+            const headerPart = textOnlyRaw.startsWith(currentRoomName) ? currentRoomName : textOnlyRaw.substring(0, currentRoomName.length);
+            const remaining = textOnlyRaw.substring(headerPart.length);
+            const nextChar = remaining[0];
+
+            // If it's the exact match or followed by typical header terminators
+            if (!nextChar || nextChar === '.' || nextChar === ' ' || nextChar === '[') {
+                const headerEndIdx = cleanLine.indexOf(headerPart) + headerPart.length;
+                let finalHeaderEndIdx = headerEndIdx;
+                if (cleanLine[headerEndIdx] === '.') finalHeaderEndIdx++;
+
+                // If there's significant text after the header, split and recurse
+                if (cleanLine.substring(finalHeaderEndIdx).trim().length > 3) {
+                    const headerText = cleanLine.substring(0, finalHeaderEndIdx);
+                    const restText = cleanLine.substring(finalHeaderEndIdx).trim();
+                    processLine(headerText);
+                    processLine(restText);
+                    return;
+                }
+            }
+        }
+
+        let isRoomMatched = currentRoomName && (
+            textOnly === currentRoomName ||
+            lower === currentRoomName.toLowerCase() ||
+            textOnly === currentRoomName + '.' ||
+            lower === currentRoomName.toLowerCase() + '.' ||
+            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
+        );
+        let isRoomAnsiMatch = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
         let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
         if (isRoomName && captureStage.current === 'none' && !isWaitingForStats.current && !isWaitingForEq.current && !isWaitingForInv.current) {
@@ -110,27 +149,52 @@ export function useGameParser(deps: UseGameParserDeps) {
             setTimeout(() => setLightningEnabled(false), 450);
         }
 
-        if (lower.includes("alas, you cannot go that way") || 
-            lower.includes("there is no exit") || 
+        if (lower.includes("alas, you cannot go that way") ||
+            lower.includes("there is no exit") ||
             lower.includes("you bump into")) {
             setRumble(true);
             triggerHaptic(40);
             setTimeout(() => setRumble(false), 300);
         }
 
-        if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) { 
-            isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = []; 
+        if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
+            isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = [];
         }
         if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
             isWaitingForEq.current = false; captureStage.current = 'eq'; containerStackRef.current = [];
-            setEqLines([]); 
+            setEqLines([]);
         }
         if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
             isWaitingForInv.current = false; captureStage.current = 'inv'; containerStackRef.current = [];
             setInventoryLines([]);
         }
         if (lower.includes('skill / spell') || lower.includes('knowledge') || (lower.includes('sessions') && lower.includes('practice'))) {
-            captureStage.current = 'practice';
+            if (deps.practice.isUiRequested) {
+                captureStage.current = 'practice';
+                isSilentCapture.current = 1;
+            }
+        }
+
+        if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
+            captureStage.current = 'shop';
+            setIsShopListingActive(true);
+            addDiagnosticLog?.('Shop parsing activated');
+        }
+
+        // Detect end of shop listing (prompt)
+        const isPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*$/.test(textOnly) ||
+            (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
+
+        if (isPrompt && (captureStage.current === 'shop' || isShopListingActive)) {
+            captureStage.current = 'none';
+            setIsShopListingActive(false);
+            addDiagnosticLog?.('Shop parsing terminated by prompt');
+        }
+
+        if (isPrompt && (captureStage.current === 'practice' || deps.practice.isPracticeActive)) {
+            captureStage.current = 'none';
+            deps.practice.setIsPracticeActive(false);
+            deps.practice.setIsUiRequested(false);
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
@@ -180,8 +244,31 @@ export function useGameParser(deps: UseGameParserDeps) {
                     setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
                 }
             } else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
-        } else {
-            if (captureStage.current === 'practice') parsePracticeLine(textOnly);
+        } else if (captureStage.current === 'shop') {
+            const shopItem = parseShopLine(textOnly);
+            if (shopItem) {
+                const stableId = `shop-${shopItem.id}-${Date.now()}-${counterRef.current++}`;
+                addMessage('shop-item', textOnly, undefined, stableId, false, { textOnly, lower }, shopItem, undefined, undefined, true);
+                return;
+            }
+        }
+
+        // Practice updates can happen outside of captureStage (after table is closed)
+        const practiceResult = deps.practice.parsePracticeLine(textOnly);
+        if (captureStage.current === 'practice') {
+            if (typeof practiceResult === 'object' && practiceResult !== null) {
+                if ('sessionsLeft' in practiceResult) {
+                    addMessage('practice-header', textOnly, undefined, `prac-hdr-${Date.now()}`, false, { textOnly, lower }, undefined, undefined, practiceResult, true);
+                } else {
+                    const stableId = `prac-${practiceResult.name}-${Date.now()}-${counterRef.current++}`;
+                    addMessage('practice-skill', textOnly, undefined, stableId, false, { textOnly, lower }, undefined, practiceResult);
+                }
+                return;
+            } else if (practiceResult === true) {
+                return; // Suppress header/sessions text
+            }
+            parsePracticeLine(textOnly); // Still update the abilities in state
+            return; // Suppress ANY other line while in practice capture stage
         }
 
         const trackAction = () => {
@@ -295,18 +382,24 @@ export function useGameParser(deps: UseGameParserDeps) {
         trackAction();
         processTriggers(textOnly);
 
-        isRoomMatched = roomNameRef.current && (textOnly === roomNameRef.current || lower === roomNameRef.current.toLowerCase());
-        isRoomAnsiMatch = cleanLine.includes('\x1b[1;32m') || cleanLine.includes('\x1b[0;32m');
+        isRoomMatched = currentRoomName && (
+            textOnly === currentRoomName ||
+            lower === currentRoomName.toLowerCase() ||
+            textOnly === currentRoomName + '.' ||
+            lower === currentRoomName.toLowerCase() + '.' ||
+            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
+        );
+        isRoomAnsiMatch = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
         isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
-        const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following|practice|sessions/i.test(lower);
+        const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following/i.test(lower);
         const shouldShow = (isSilentCapture.current === 0 || isImportantMessage);
 
         if (shouldShow) {
             const finalRawText = cleanLine;
             const precalculated = { textOnly: textOnly, lower: lower };
             const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
-            addMessage('game', finalRawText, undefined, stableId, isRoomName, precalculated);
+            addMessage('game', finalRawText, undefined, stableId, isRoomName, precalculated, undefined, undefined, undefined, false);
         }
     }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);
 

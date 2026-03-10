@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { CustomButton } from '../types';
 import { MAGE_SPELLS, CLERIC_SPELLS, WARRIOR_SKILLS, RANGER_SKILLS, THIEF_SKILLS, CLASS_MAPPINGS } from '../utils/spellLists';
+import { getCategoryForName } from '../utils/categorizationUtils';
 
 export const useButtonLogic = (
     rawButtons: CustomButton[],
@@ -8,7 +9,9 @@ export const useButtonLogic = (
     abilities: Record<string, number>,
     characterClass: string,
     isEditMode: boolean,
-    isSmartPopulateEnabled: boolean = true
+    isSmartPopulateEnabled: boolean = true,
+    target: string | null = null,
+    inlineCategories: import('../types').InlineCategoryConfig[] = []
 ) => {
     return useMemo(() => {
         const classNames = ['ranger', 'warrior', 'mage', 'cleric', 'thief'];
@@ -66,7 +69,7 @@ export const useButtonLogic = (
                 if (classKey) {
                     const skills = CLASS_MAPPINGS[classKey] || [];
                     const knownCount = skills.filter(s => (abilities[s.toLowerCase()] || 0) > 0).length;
-                    
+
                     if (knownCount === 0) {
                         modified.isDimmed = true;
                     }
@@ -143,6 +146,9 @@ export const useButtonLogic = (
             });
         });
 
+        // 3. Dynamic target-based buttons logic moved away because buttons now have correct prefix by default
+        // We just return what we have.
+
         return [...filtered, ...allGenerated];
-    }, [rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled]);
+    }, [rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled, target]);
 };

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DrawerLine } from '../../types';
+import { useGame } from '../../context/GameContext';
 
 interface EquipmentDrawerProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     isLandscape,
     executeCommand
 }) => {
+    const { activeDragData } = useGame();
     const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number } | null>(null);
     const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
@@ -269,15 +271,20 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''}`}
                     data-item-name={line.context || line.id}
                     onPointerDown={(e) => handlePointerDown(e, line, source)}
-                    onClick={(e) => {
+                    onPointerUp={(e) => {
                         if (isDraggingRef.current) return;
+                        if (!line.isItem) return;
+
+                        // If we didn't drag far enough to start a "drag" item move, 
+                        // and we aren't already dragging something, then treat as a tap/click
+                        // to open the menu.
                         triggerHaptic(20);
                         handleButtonClick({
                             id: `drawer-${line.id}`,
                             command: listType,
                             label: line.context || 'Item',
                             actionType: 'menu'
-                        } as any, e, line.context);
+                        } as any, e as any, line.context);
                     }}
                     style={{
                         backgroundColor: isBeingDragged ? 'rgba(100, 255, 100, 0.02)' :
@@ -349,30 +356,55 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isNativeDragOver ? 'native-drag-over' : ''}`}
                 onDragOver={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     e.dataTransfer.dropEffect = 'move';
                     if (!isNativeDragOver) setIsNativeDragOver(true);
                 }}
                 onDragLeave={() => setIsNativeDragOver(false)}
                 onDrop={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
+                    console.log('[DEBUG] Drop Event on Drawer');
                     setIsNativeDragOver(false);
                     try {
-                        const dataStr = e.dataTransfer.getData('application/json');
-                        if (!dataStr) return;
-                        const data = JSON.parse(dataStr);
-                        if (data.type === 'inline-btn' && (data.context || data.cmd === 'target')) {
+                        const jsonData = e.dataTransfer.getData('application/json');
+                        const textData = e.dataTransfer.getData('text/plain');
+                        console.log('[DEBUG] Drop Data (native):', { jsonData, textData });
+                        console.log('[DEBUG] Drop Data (global):', activeDragData);
+
+                        const dataStr = jsonData || textData;
+                        let data = activeDragData;
+
+                        if (!data && dataStr) {
+                            try {
+                                data = JSON.parse(dataStr);
+                            } catch (pErr) {
+                                console.error('[DEBUG] Failed to parse native data string');
+                            }
+                        }
+
+                        if (!data) {
+                            console.warn('[DEBUG] No data retrieved in drop');
+                            return;
+                        }
+
+                        console.log('[DEBUG] Final Data for Processing:', data);
+
+                        if (data && data.type === 'inline-btn' && (data.context || data.cmd === 'target')) {
                             triggerHaptic(40);
-                            const noun = (data.cmd === 'target') ? 'target' : data.context;
+                            const noun = (data.cmd === 'target') ? '<target>' : data.context;
+                            console.log('[DEBUG] Executing Command:', `get ${noun}`);
                             executeCommand(`get ${noun}`);
+
                             // Flash the inventory section
                             const invSection = drawerRef.current?.querySelector('[data-drawer-section="inventory"]');
                             if (invSection) {
                                 invSection.classList.add('drop-flash');
                                 setTimeout(() => invSection.classList.remove('drop-flash'), 500);
-                                }
+                            }
                         }
                     } catch (err) {
-                        console.error('Failed to parse drop data', err);
+                        console.error('[DEBUG] Drop Error:', err);
                     }
                 }}
                 onPointerDown={(e) => {

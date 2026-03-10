@@ -4,9 +4,11 @@ import { DialMenu } from './DialMenu';
 import { StandardMenuPopover } from './StandardMenuPopover';
 import { RecipientSelectPopover } from './RecipientSelectPopover';
 import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } from './TeleportPopovers';
+import ShopSearchPopover from './ShopSearchPopover';
+import { getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
-    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings
+    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories
 }) => {
 
     useLayoutEffect(() => {
@@ -38,6 +40,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [popoverState, popoverRef]);
 
     const lastHoveredIndex = React.useRef<number | null>(null);
+    const scrollIntervalRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
         if (!popoverState || popoverState.menuDisplay === 'dial') return;
@@ -45,6 +48,12 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         const handlePointerMove = (e: PointerEvent) => {
             const menuContainer = document.querySelector('.popover-menu') as HTMLElement;
             if (!menuContainer) return;
+
+            // Ensure we keep receiving events even if finger leaves the menu bounds
+            if (e.target && 'setPointerCapture' in e.target) {
+                try { (e.target as any).setPointerCapture(e.pointerId); } catch (e) { }
+            }
+
             const items = Array.from(menuContainer.querySelectorAll('.popover-item[data-menu-item="true"]')) as HTMLElement[];
             if (items.length === 0) return;
 
@@ -56,7 +65,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 const rect = items[i].getBoundingClientRect();
                 // Check if pointer is within the vertical bounds of this item
                 // We allow a bit of horizontal "slop" so you don't lose highlight if you slide slightly left/right
-                if (e.clientY >= rect.top && e.clientY <= rect.bottom && 
+                if (e.clientY >= rect.top && e.clientY <= rect.bottom &&
                     e.clientX >= rect.left - 40 && e.clientX <= rect.right + 40) {
                     targetIndex = i;
                     break;
@@ -69,15 +78,35 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 else if (e.clientY >= menuRect.bottom - 10) targetIndex = items.length - 1;
             }
 
-            // Auto-Scrolling logic
-            if (targetIndex !== -1) {
-                const scrollThreshold = 60;
-                const scrollSpeed = 14;
-                if (e.clientY > menuRect.bottom - scrollThreshold) {
-                    menuContainer.scrollTop += scrollSpeed;
-                } else if (e.clientY < menuRect.top + scrollThreshold) {
-                    menuContainer.scrollTop -= scrollSpeed;
-                }
+            // Continuous scrolling logic
+            if (scrollIntervalRef.current) {
+                cancelAnimationFrame(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+
+            const scrollThreshold = 60;
+            const maxScrollSpeed = 15;
+
+            if (e.clientY > menuRect.bottom - scrollThreshold || e.clientY < menuRect.top + scrollThreshold) {
+                const startScroll = () => {
+                    const rect = menuContainer.getBoundingClientRect();
+                    if (!rect) return;
+
+                    let speed = 0;
+                    if (e.clientY > rect.bottom - scrollThreshold) {
+                        const ratio = Math.min(1, (e.clientY - (rect.bottom - scrollThreshold)) / scrollThreshold);
+                        speed = ratio * maxScrollSpeed;
+                    } else if (e.clientY < rect.top + scrollThreshold) {
+                        const ratio = Math.min(1, ((rect.top + scrollThreshold) - e.clientY) / scrollThreshold);
+                        speed = -ratio * maxScrollSpeed;
+                    }
+
+                    if (speed !== 0) {
+                        menuContainer.scrollTop += speed;
+                        scrollIntervalRef.current = requestAnimationFrame(startScroll);
+                    }
+                };
+                scrollIntervalRef.current = requestAnimationFrame(startScroll);
             }
 
             // Haptic and highlighting
@@ -95,25 +124,46 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         };
 
         const handlePointerUp = (e: PointerEvent) => {
+            if (scrollIntervalRef.current) {
+                cancelAnimationFrame(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+
             const activeItem = document.querySelector('.popover-item[data-menu-item="true"].active-drag') as HTMLElement;
             if (activeItem) {
                 const isMenu = activeItem.getAttribute('data-is-menu') === 'true';
                 activeItem.click();
                 if (!isMenu) setPopoverState(null);
             }
+
+            // Clean up capture
+            if (e.target && 'releasePointerCapture' in e.target) {
+                try { (e.target as any).releasePointerCapture(e.pointerId); } catch (e) { }
+            }
         };
 
         // Use capture phase to ensure we see events even if children try to stop them
-        window.addEventListener('pointermove', handlePointerMove, { capture: true, passive: true });
+        window.addEventListener('pointermove', handlePointerMove, { capture: true, passive: false });
         window.addEventListener('pointerup', handlePointerUp, { capture: true, passive: true });
 
         return () => {
             window.removeEventListener('pointermove', handlePointerMove, { capture: true });
             window.removeEventListener('pointerup', handlePointerUp, { capture: true });
+            if (scrollIntervalRef.current) cancelAnimationFrame(scrollIntervalRef.current);
         };
     }, [popoverState, triggerHaptic, setPopoverState]);
 
     if (!popoverState) return null;
+
+    // Resolve theme color for this menu
+    let themeColor = setSettings[popoverState.setId]?.themeColor;
+    if (!themeColor) {
+        if (popoverState.setId === 'inlineplayer') themeColor = 'rgba(100, 100, 255, 0.9)';
+        else if (popoverState.setId === 'inlinenpc') themeColor = 'rgba(255, 100, 100, 0.9)';
+        else if (popoverState.setId === 'inline-guildmaster') themeColor = 'rgba(168, 85, 247, 0.9)';
+        else if (popoverState.setId === 'inline-default') themeColor = 'rgba(255, 255, 0, 0.9)';
+        else if (popoverState.setId?.startsWith('inline-')) themeColor = getGlowColorForCategory(popoverState.setId, inlineCategories || []) || undefined;
+    }
 
     if (popoverState.menuDisplay === 'dial') {
         return (
@@ -136,24 +186,25 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     }
                 }}
                 triggerHaptic={triggerHaptic}
-                themeColor={setSettings[popoverState.setId]?.themeColor}
+                themeColor={themeColor}
             />
         );
     }
 
     return (
-        <div className="popover-menu" ref={popoverRef} style={{
+        <div className={`popover-menu ${popoverState.type === 'shop-search' ? 'shop-search-active' : ''}`} ref={popoverRef} style={{
             position: 'fixed',
             left: popoverState.x,
             top: popoverState.y,
             zIndex: 25000,
-            '--accent': setSettings[popoverState.setId]?.themeColor || 'var(--set-accent, var(--accent))'
+            '--accent': themeColor || 'var(--set-accent, var(--accent))'
         } as any}>
             {popoverState.type === 'teleport-save' && <TeleportSavePopover popoverState={popoverState} setPopoverState={setPopoverState} setTeleportTargets={setTeleportTargets} addMessage={addMessage} />}
             {popoverState.type === 'teleport-select' && <TeleportSelectPopover popoverState={popoverState} setPopoverState={setPopoverState} teleportTargets={teleportTargets} executeCommand={executeCommand} />}
             {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}
             {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} executeCommand={executeCommand} setPopoverState={setPopoverState} />}
-            {!popoverState.type && <StandardMenuPopover popoverState={popoverState} buttons={buttons} availableSets={availableSets} setPopoverState={setPopoverState} setButtons={setButtons} handleButtonClick={handleButtonClick} setTarget={setTarget} addMessage={addMessage} themeColor={setSettings[popoverState.setId]?.themeColor} />}
+            {popoverState.type === 'shop-search' && <ShopSearchPopover executeCommand={executeCommand} onClose={() => setPopoverState(null)} />}
+            {!popoverState.type && <StandardMenuPopover popoverState={popoverState} buttons={buttons} availableSets={availableSets} setPopoverState={setPopoverState} setButtons={setButtons} handleButtonClick={handleButtonClick} setTarget={setTarget} addMessage={addMessage} themeColor={themeColor} />}
         </div>
     );
 };

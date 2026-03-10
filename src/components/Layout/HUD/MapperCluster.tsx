@@ -1,8 +1,6 @@
 import React from 'react';
 import { Mapper } from '../../Mapper/Mapper';
-import { MapperRef } from '../../Mapper/mapperTypes';
-import { CustomButton, GameStats } from '../../../types';
-import VitalsDisplay from '../../VitalsDisplay';
+import { LineCluster } from './LineCluster';
 import { useGame } from '../../../context/GameContext';
 
 interface MapperClusterProps {
@@ -15,18 +13,53 @@ interface MapperClusterProps {
     mapperRef: React.RefObject<any>;
     dragState: any;
     isLandscape?: boolean;
+    wasDraggingRef: React.MutableRefObject<boolean>;
+    heldButton: any;
+    setHeldButton: React.Dispatch<React.SetStateAction<any>>;
+    setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
-    dragState, isLandscape
+    dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview
 }) => {
-    const { ui, setUI, triggerHaptic } = useGame();
+    const { ui, setUI, triggerHaptic, showLegacyButtons, showControls, viewport, btn, handleButtonClick, setPopoverState, activePrompt, executeCommand, joystick, target, stats } = useGame();
     const isExpanded = ui.mapExpanded;
+    const { isKeyboardOpen } = viewport;
 
     if (isMobile) {
         return (
             <div className={`mobile-bottom-gutter ${isExpanded ? 'map-expanded' : ''}`}>
+                {!showLegacyButtons && showControls && !isKeyboardOpen && !isLandscape && (
+                    <div className="line-cluster-container">
+                        <LineCluster
+                            isEditMode={isEditMode}
+                            handleDragStart={handleDragStart}
+                            buttons={btn.buttons.filter(b => !['Score', 'Inv', 'Look', 'Combat', 'Set'].includes(b.label || ''))}
+                            selectedButtonIds={btn.selectedButtonIds}
+                            dragState={dragState}
+                            handleButtonClick={handleButtonClick}
+                            wasDraggingRef={wasDraggingRef}
+                            triggerHaptic={triggerHaptic}
+                            setPopoverState={setPopoverState}
+                            setEditingButtonId={btn.setEditingButtonId}
+                            setSelectedIds={btn.setSelectedIds}
+                            activePrompt={activePrompt}
+                            executeCommand={executeCommand}
+                            setCommandPreview={setCommandPreview}
+                            heldButton={heldButton}
+                            setHeldButton={setHeldButton}
+                            joystick={joystick}
+                            target={target}
+                            isGridEnabled={btn.isGridEnabled}
+                            gridSize={btn.gridSize}
+                            setActiveSet={btn.setActiveSet}
+                            setButtons={btn.setButtons}
+                            isMobile={isMobile}
+                            stats={stats}
+                        />
+                    </div>
+                )}
                 <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
                     <Mapper
                         ref={mapperRef}

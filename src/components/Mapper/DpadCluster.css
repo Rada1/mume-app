@@ -1,0 +1,80 @@
+.dpad-cluster {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 140px;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.dpad-btn {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.1s ease-out;
+}
+
+.dpad-btn:active {
+    transform: scale(0.9);
+    background: var(--accent);
+    border-color: white;
+}
+
+/* Positioning around player (140px cluster size) */
+.dpad-btn.n {
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.dpad-btn.s {
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.dpad-btn.w {
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.dpad-btn.e {
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Diagonal/Z-axis buttons spaced out */
+.dpad-btn.u {
+    top: 10px;
+    left: 10px;
+    width: 32px;
+    height: 32px;
+    opacity: 0.8;
+}
+
+.dpad-btn.d {
+    bottom: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    opacity: 0.8;
+}
+
+.dpad-btn svg {
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+}

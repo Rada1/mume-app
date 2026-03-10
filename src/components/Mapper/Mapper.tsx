@@ -11,6 +11,7 @@ import { PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './mapperUtils';
 import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
+import { DpadCluster } from './DpadCluster';
 
 interface MapperProps {
     isMinimized?: boolean;
@@ -51,11 +52,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { addMessage, triggerHaptic, executeCommand, theme } = useGame();
+    const { addMessage, triggerHaptic, executeCommand, theme, showLegacyButtons } = useGame();
     const isDarkMode = theme === 'dark';
 
     // Pass a dummy onRecenter first to controller
-    const controller = useMapperController(characterName ?? null, ref, { 
+    const controller = useMapperController(characterName ?? null, ref, {
         onRecenter: () => { handleCenterOnPlayer() },
         triggerRender: () => { setRenderVersion(v => v + 1); }
     });
@@ -158,6 +159,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 viewZ={viewZ}
                 firstExploredAtRef={controller.firstExploredAtRef}
             />
+            {!showLegacyButtons && currentRoomId && rooms[currentRoomId] && (
+                <DpadCluster exits={rooms[currentRoomId].exits} />
+            )}
             <MapperToolbar
                 mode={mode}
                 setMode={setMode}

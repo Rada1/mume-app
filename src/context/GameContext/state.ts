@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
+import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
 export const useGameProviderState = () => {
     // Settings & Mode
@@ -23,6 +24,8 @@ export const useGameProviderState = () => {
     const [disableSmoothScroll, setDisableSmoothScroll] = usePersistentState('mud-disable-smooth-scroll', (MASTER_SETTINGS as any).disableSmoothScroll ?? false);
     const [isImmersionMode, setIsImmersionMode] = usePersistentState('mud-immersion-mode', (MASTER_SETTINGS as any).isImmersionMode ?? true);
     const [isMobileBrevityMode, setIsMobileBrevityMode] = usePersistentState('mud-mobile-brevity', false);
+    const [showLegacyButtons, setShowLegacyButtons] = usePersistentState('mud-show-legacy-buttons', false);
+    const [inlineCategories, setInlineCategories] = usePersistentState<import('../../types').InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
@@ -47,8 +50,13 @@ export const useGameProviderState = () => {
     const [roomNpcs, setRoomNpcs] = useState<string[]>([]);
     const [roomItems, setRoomItems] = useState<string[]>([]);
     const [currentTerrain, setCurrentTerrain] = useState<string>('city');
-    const [roomName, setRoomName] = useState<string | null>(null);
+    const [roomName, _setRoomName] = useState<string | null>(null);
     const roomNameRef = useRef<string | null>(null);
+    const setRoomName = useCallback((name: string | null) => {
+        roomNameRef.current = name;
+        _setRoomName(name);
+    }, []);
+    // Still keep the effect for sync if needed by other components
     useEffect(() => { roomNameRef.current = roomName; }, [roomName]);
 
     // UI state
@@ -139,12 +147,13 @@ export const useGameProviderState = () => {
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
-    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'none'>('none');
+    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'none'>('none');
     const isDrawerCapture = useRef<number>(0);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);
     const isWaitingForInv = useRef<boolean>(false);
+    const [activeDragData, setActiveDragData] = useState<any>(null);
 
     const vitals = useMemo(() => ({
         stats, setStats,
@@ -194,15 +203,19 @@ export const useGameProviderState = () => {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
-        roomName, setRoomName, roomNameRef
+        showLegacyButtons, setShowLegacyButtons,
+        roomName, setRoomName, roomNameRef,
+        inlineCategories, setInlineCategories,
+        activeDragData, setActiveDragData
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
-        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode, 
-        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, roomName
+        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
+        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName,
+        inlineCategories, activeDragData
     ]);
 
     return { vitals, game };

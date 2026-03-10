@@ -53,7 +53,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                     const dest = (exitsData as any)[d];
                     const rawDestId = typeof dest === 'number' ? dest : (typeof dest === 'object' ? (dest as any).id || (dest as any).target : (typeof dest === 'string' ? dest : null));
                     const destId = rawDestId !== null ? Number(rawDestId) : null;
-                    
+
                     if (destId !== null && !isNaN(destId)) {
                         mappedExits[dirKey] = {
                             target: `m_${destId}`,
@@ -205,12 +205,28 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
                         );
                     })}
                     {room.loadFlags?.map(f => {
-                        const isHerb = f.includes('HERB');
-                        const isWater = f.includes('WATER');
-                        let color = '#fab387'; // Orange
-                        let bg = 'rgba(250, 179, 135, 0.1)';
+                        const flag = f.toUpperCase();
+                        const isHerb = flag.includes('HERB');
+                        const isWater = flag.includes('WATER') || flag.includes('POND') || flag.includes('WELL') || flag.includes('FOUNTAIN');
+                        const isFood = /FOOD|BERRY|VEGETABLE/i.test(flag);
+                        const isHorse = /HORSE|STALLION|DONKEY/i.test(flag);
+                        const isBoat = /BOAT/i.test(flag);
+                        const isStable = /STABLE/i.test(flag);
+                        const isDT = /DT|DEATHTRAP/i.test(flag);
+                        const isFerry = /FERRY/i.test(flag);
+                        const isCoach = /COACH/i.test(flag);
+
+                        let color = '#94e2d5'; // DEFAULT TEAL
+                        let bg = 'rgba(148, 226, 213, 0.1)';
                         if (isHerb) { color = '#a6e3a1'; bg = 'rgba(166, 227, 161, 0.15)'; }
                         else if (isWater) { color = '#89b4fa'; bg = 'rgba(137, 180, 250, 0.15)'; }
+                        else if (isFood) { color = '#f9e2af'; bg = 'rgba(249, 226, 175, 0.15)'; }
+                        else if (isHorse) { color = '#cba6f7'; bg = 'rgba(203, 166, 247, 0.15)'; }
+                        else if (isBoat) { color = '#94e2d5'; bg = 'rgba(148, 226, 213, 0.15)'; }
+                        else if (isStable) { color = '#fab387'; bg = 'rgba(250, 179, 135, 0.15)'; }
+                        else if (isDT) { color = '#f38ba8'; bg = 'rgba(243, 139, 168, 0.15)'; }
+                        else if (isFerry) { color = '#74c7ec'; bg = 'rgba(116, 199, 236, 0.15)'; }
+                        else if (isCoach) { color = '#b4befe'; bg = 'rgba(180, 190, 254, 0.15)'; }
 
                         return (
                             <span key={f} style={{ color, backgroundColor: bg, padding: '4px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 'bold', border: `1px solid ${color}33`, textTransform: 'uppercase' }}>

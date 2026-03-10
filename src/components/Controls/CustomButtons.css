@@ -44,7 +44,8 @@
     .custom-btn {
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
-        background-color: rgba(30, 41, 59, 0.85); /* Solid fallback */
+        background-color: rgba(30, 41, 59, 0.85);
+        /* Solid fallback */
     }
 }
 
@@ -231,4 +232,47 @@
 .reset-zoom-fab:active {
     transform: scale(0.9);
     background: rgba(var(--accent-rgb, 74, 144, 226), 0.2);
+}
+
+/* Diamond Button Variant */
+.custom-btn.is-diamond {
+    transform: rotate(45deg);
+    overflow: visible;
+}
+
+.custom-btn.is-diamond>*:not(.diamond-vitals) {
+    transform: rotate(-45deg);
+}
+
+/* Diamond Vitals Bars */
+.diamond-vitals {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    padding: 2px;
+}
+
+.diamond-vitals .vitals-bar {
+    width: 2px;
+    height: 0%;
+    transition: height 0.3s ease;
+    border-radius: 1px;
+}
+
+.diamond-vitals .vitals-bar.hp {
+    background: #ef4444;
+}
+
+.diamond-vitals .vitals-bar.mana {
+    background: #3b82f6;
+}
+
+.diamond-vitals .vitals-bar.move {
+    background: #10b981;
 }

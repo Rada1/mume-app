@@ -33,6 +33,7 @@ interface GameButtonProps {
     hpRatio?: number;
     manaRatio?: number;
     moveRatio?: number;
+    variant?: 'default' | 'diamond';
 }
 
 import { CircularVitals } from './CircularVitals';
@@ -63,17 +64,18 @@ export const GameButton: React.FC<GameButtonProps> = ({
     isMobile = false,
     hpRatio,
     manaRatio,
-    moveRatio
+    moveRatio,
+    variant = 'default'
 }) => {
     const [activeDir, setActiveDir] = React.useState<any>(null);
     const [isCancelling, setIsCancelling] = React.useState(false);
     const [wheelPos, setWheelPos] = React.useState({ x: 0, y: 0 });
     const buttonRef = useRef<HTMLDivElement>(null);
 
-    const [renderParams, setRenderParams] = React.useState({ 
-        w: button.style.w, 
-        h: button.style.h, 
-        radius: button.style.borderRadius || 8 
+    const [renderParams, setRenderParams] = React.useState({
+        w: button.style.w,
+        h: button.style.h,
+        radius: button.style.borderRadius || 8
     });
 
     const gestures = useButtonGestures({
@@ -85,7 +87,8 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
     if (button.display === 'inline') return null;
 
-    const needsCircularVitals = hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined;
+    const needsCircularVitals = (hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined) && variant === 'default';
+    const needsDiamondVitals = (hpRatio !== undefined || manaRatio !== undefined || moveRatio !== undefined) && variant === 'diamond';
 
     React.useEffect(() => {
         if (heldButton?.id === button.id && heldButton.dx !== undefined && heldButton.dy !== undefined) {
@@ -135,8 +138,9 @@ export const GameButton: React.FC<GameButtonProps> = ({
     return (
         <div
             ref={buttonRef}
-            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${className}`}
+            className={`custom-btn ${isFloating ? 'floating' : ''} ${isEditMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''} ${button.trigger?.enabled && button.isVisible ? 'triggered' : ''} ${activeDir ? 'is-swiping' : ''} ${variant === 'diamond' ? 'is-diamond' : ''} ${className}`}
             data-id={button.id}
+            data-variant={variant}
             style={{
                 left: useDefaultPositioning ? `${button.style.x}%` : undefined,
                 top: useDefaultPositioning ? `${button.style.y}%` : undefined,
@@ -149,7 +153,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 '--btn-theme-rgb': getRgb(button.style.borderColor, '255, 255, 255'),
                 color: button.style.color || '#fff',
                 fontSize: `${button.style.fontSize || 0.8}rem`,
-                borderRadius: `${button.style.borderRadius || 8}px`,
+                borderRadius: variant === 'diamond' ? '0' : `${button.style.borderRadius || 8}px`,
                 '--set-accent': button.style.borderColor || 'var(--accent)',
                 '--set-accent-rgb': getRgb(button.style.borderColor, '255, 255, 255'),
                 opacity: (button.isVisible || isEditMode || button.setId === 'Xbox') ? (button.isDimmed ? 0.35 : 1) : 0,
@@ -162,15 +166,22 @@ export const GameButton: React.FC<GameButtonProps> = ({
             } as any}
             {...gestures}
         >
+            {needsDiamondVitals && (
+                <div className="diamond-vitals">
+                    {hpRatio !== undefined && <div className="vitals-bar hp" style={{ height: `${hpRatio * 100}%` }} />}
+                    {manaRatio !== undefined && <div className="vitals-bar mana" style={{ height: `${manaRatio * 100}%` }} />}
+                    {moveRatio !== undefined && <div className="vitals-bar move" style={{ height: `${moveRatio * 100}%` }} />}
+                </div>
+            )}
             {needsCircularVitals && (
-                <CircularVitals 
-                    hpRatio={hpRatio} 
-                    manaRatio={manaRatio} 
-                    moveRatio={moveRatio} 
-                    w={renderParams.w} 
+                <CircularVitals
+                    hpRatio={hpRatio}
+                    manaRatio={manaRatio}
+                    moveRatio={moveRatio}
+                    w={renderParams.w}
                     h={renderParams.h}
                     borderRadius={renderParams.radius}
-                    isOuter={true} 
+                    isOuter={true}
                 />
             )}
             <ButtonSwipeOverlay button={button} activeDir={activeDir} isCancelling={isCancelling} />

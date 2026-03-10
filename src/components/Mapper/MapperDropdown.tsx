@@ -24,7 +24,23 @@ export const MapperDropdown: React.FC<MapperDropdownProps> = ({
 
             <>
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }} onClick={() => setIsOpen(false)} />
-                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', backgroundColor: '#1e1e2e', border: '1px solid #313244', borderRadius: '8px', padding: '8px', minWidth: '180px', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    marginTop: '10px',
+                    backgroundColor: isDarkMode ? 'rgba(30, 30, 46, 0.05)' : 'rgba(255, 255, 255, 0.05)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.12)',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    minWidth: '220px',
+                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '6px'
+                }}>
                     <div style={{ padding: '6px 12px', fontSize: '11px', color: '#585b70', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 'bold' }}>Settings</div>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', cursor: 'pointer', userSelect: 'none', borderRadius: '4px' }}>
                         <input type="checkbox" checked={allowPersistence} onChange={(e) => setAllowPersistence(e.target.checked)} style={{ cursor: 'pointer', accentColor: '#a6e3a1', width: '16px', height: '16px' }} />

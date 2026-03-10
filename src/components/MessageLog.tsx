@@ -2,28 +2,32 @@ import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { Message } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import TypewriterText from './TypewriterText';
+import ShopItemCard from './ShopItemCard';
+import PracticeSkillCard from './PracticeSkillCard';
+import PracticeHeaderCard from './PracticeHeaderCard';
 
 import { useBaseGame, useVitals } from '../context/GameContext';
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
     onMouseUp?: (e: React.MouseEvent) => void;
-    onDoubleClick?: (e: React.MouseEvent) => void;
     onPointerDown?: (e: React.PointerEvent) => void;
     onDragStart?: (e: React.DragEvent) => void;
     onDragEnd?: (e: React.DragEvent) => void;
 }
 
-    const MessageItem = React.memo(({
+const MessageItem = React.memo(({
     msg,
     processMessageHtml,
     inCombat,
     scrollToBottom,
+    executeCommand,
 }: {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string,
     inCombat: boolean,
     scrollToBottom: (force?: boolean, instant?: boolean, source?: string) => void;
+    executeCommand: (cmd: string) => void;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName), [msg.html, msg.id, msg.isRoomName, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -38,13 +42,19 @@ interface MessageLogProps {
                 <span>{msg.textRaw}</span>
             ) : msg.isComm ? (
                 isRecent ? (
-                    <TypewriterText 
-                        html={content} 
-                        speed={2} 
+                    <TypewriterText
+                        html={content}
+                        speed={2}
                     />
                 ) : (
                     <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
                 )
+            ) : msg.type === 'shop-item' && msg.shopItem ? (
+                <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
+            ) : msg.type === 'practice-skill' && msg.practiceSkill ? (
+                <PracticeSkillCard skill={msg.practiceSkill} />
+            ) : msg.type === 'practice-header' && msg.practiceHeader ? (
+                <PracticeHeaderCard sessionsLeft={msg.practiceHeader.sessionsLeft} />
             ) : (
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
@@ -55,17 +65,16 @@ interface MessageLogProps {
 const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,
     onMouseUp,
-    onDoubleClick,
     onPointerDown,
     onDragStart,
     onDragEnd
 }) => {
-    const { messages, inCombat, viewport, processMessageHtml } = useBaseGame();
+    const { messages, inCombat, viewport, processMessageHtml, executeCommand } = useBaseGame();
     const { activePrompt } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
     // Removed virtualization to ensure bit-perfect scroll height accuracy
-    
+
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
         if (!container) return;
@@ -103,7 +112,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 viewport.isLockedToBottomRef.current = true;
                 if (!isThrottled || lastMsg?.type === 'user') {
                     lastScrollCallRef.current = now;
-                    viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage'); 
+                    viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage');
                 }
             }
         } else if (viewport.isLockedToBottomRef.current && !isThrottled) {
@@ -120,6 +129,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 processMessageHtml={processMessageHtml}
                 inCombat={inCombat}
                 scrollToBottom={scrollToBottom}
+                executeCommand={executeCommand}
             />
         ));
     }, [messages, processMessageHtml, inCombat]);
@@ -143,7 +153,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
             onPointerDown={onPointerDown}
             onClick={onLogClick}
             onMouseUp={onMouseUp}
-            onDoubleClick={onDoubleClick}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
         >

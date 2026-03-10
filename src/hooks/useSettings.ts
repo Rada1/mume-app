@@ -38,6 +38,10 @@ interface UseSettingsDeps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    showLegacyButtons: boolean;
+    setShowLegacyButtons: (val: boolean) => void;
+    inlineCategories: import('../types').InlineCategoryConfig[];
+    setInlineCategories: (val: import('../types').InlineCategoryConfig[]) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -53,7 +57,9 @@ export function useSettings(deps: UseSettingsDeps) {
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
-        isMobileBrevityMode, setIsMobileBrevityMode
+        isMobileBrevityMode, setIsMobileBrevityMode,
+        showLegacyButtons, setShowLegacyButtons,
+        inlineCategories, setInlineCategories
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState((MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
@@ -113,7 +119,8 @@ export function useSettings(deps: UseSettingsDeps) {
             uiMode,
             disable3dScroll,
             disableSmoothScroll,
-            isImmersionMode
+            isImmersionMode,
+            inlineCategories
         };
         // Note: buttons array is injected by the caller — see MudClient.exportSettings wrapper
         return settings;
@@ -134,7 +141,8 @@ export function useSettings(deps: UseSettingsDeps) {
             uiMode,
             disable3dScroll,
             disableSmoothScroll,
-            isImmersionMode
+            isImmersionMode,
+            inlineCategories
         };
         const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -172,6 +180,8 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.disableSmoothScroll !== undefined) setDisableSmoothScroll(settings.disableSmoothScroll);
                     if (settings.isImmersionMode !== undefined) setIsImmersionMode(settings.isImmersionMode);
                     if (settings.isMobileBrevityMode !== undefined) setIsMobileBrevityMode(settings.isMobileBrevityMode);
+                    if (settings.showLegacyButtons !== undefined) setShowLegacyButtons(settings.showLegacyButtons);
+                    if (settings.inlineCategories) setInlineCategories(settings.inlineCategories);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -249,6 +259,7 @@ export function useSettings(deps: UseSettingsDeps) {
         disable3dScroll, setDisable3dScroll,
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
-        isMobileBrevityMode, setIsMobileBrevityMode
+        isMobileBrevityMode, setIsMobileBrevityMode,
+        showLegacyButtons, setShowLegacyButtons
     };
 }

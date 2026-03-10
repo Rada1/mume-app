@@ -23,14 +23,24 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     return (
         <>
             <div className="popover-header"
-                onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
-                style={{ cursor: !isSetManager ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '4px', paddingBottom: '4px' }}
+                onPointerDown={(e) => { e.stopPropagation(); }}
+                style={{
+                    cursor: !isSetManager ? 'pointer' : 'default',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
+                    marginBottom: '4px',
+                    paddingBottom: '4px',
+                    color: 'var(--accent)',
+                    fontWeight: 'bold'
+                }}
                 onClick={() => { if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
-                {isSetManager ? 'Select Button Set' : `Actions: ${popoverState.context || popoverState.setId} ▾`}
+                {isSetManager ? 'Select Button Set' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-/, '').toUpperCase())}
             </div>
 
             {isTargetable && (
-                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }} onClick={() => {
+                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => {
                     setTarget(popoverState.context || null); setPopoverState(null);
                     addMessage('system', `Target set to: ${popoverState.context}`);
                 }}>Set as Target</div>
@@ -43,7 +53,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         className="popover-item"
                         data-menu-item="true"
                         data-is-menu="true"
-                        onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
+                        onPointerDown={(e) => { e.stopPropagation(); }}
                         onClick={() => setPopoverState({ ...popoverState, setId: setName })}
                     >
                         {setName}
@@ -55,7 +65,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         <div
                             className="popover-item"
                             data-menu-item="true"
-                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
+                            onPointerDown={(e) => { e.stopPropagation(); }}
                             style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }}
                             onClick={() => {
                                 const setName = popoverState.setId;
@@ -67,13 +77,20 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             Assign {popoverState.setId.toUpperCase()} as Menu
                         </div>
                     )}
-                    {buttons.filter(b => b.setId === popoverState.setId).map(button => (
+                    {buttons.filter(b => {
+                        if (b.setId === popoverState.setId) return true;
+                        // Special case: Shopkeepers, Innkeepers, and Mounts also show standard NPC buttons
+                        if (['inline-shopkeeper', 'inline-innkeeper', 'inline-mounts', 'inline-guildmaster'].includes(popoverState.setId) && b.setId === 'inlinenpc') {
+                            return true;
+                        }
+                        return false;
+                    }).map(button => (
                         <div
                             key={button.id}
                             className="popover-item"
                             data-menu-item="true"
                             data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' ? "true" : "false"}
-                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
+                            onPointerDown={(e) => { e.stopPropagation(); }}
                             onClick={(e) => {
                                 if (popoverState.assignSourceId) {
                                     const isExecute = popoverState.executeAndAssign;
@@ -112,7 +129,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                             key={act.label}
                                             className="popover-item"
                                             style={{ color: 'var(--accent)' }}
-                                            onPointerDown={(e) => { if (e.cancelable) e.preventDefault(); e.stopPropagation(); }}
+                                            onPointerDown={(e) => { e.stopPropagation(); }}
                                             onClick={(e) => {
                                                 handleButtonClick({
                                                     id: `dynamic-${act.label}`,
@@ -128,9 +145,30 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                 </>
                             );
                         }
+
+                        const isShopkeeper = popoverState.setId === 'inline-shopkeeper';
+                        if (isShopkeeper) {
+                            return (
+                                <div
+                                    className="popover-item"
+                                    data-menu-item="true"
+                                    data-is-menu="true"
+                                    style={{ color: 'var(--accent)', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px' }}
+                                    onPointerDown={(e) => { e.stopPropagation(); }}
+                                    onClick={() => setPopoverState({ ...popoverState, type: 'shop-search' })}
+                                >
+                                    Browse Shop...
+                                </div>
+                            );
+                        }
+
                         return null;
                     })()}
-                    {buttons.filter(b => b.setId === popoverState.setId).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
+                    {buttons.filter(b => {
+                        if (b.setId === popoverState.setId) return true;
+                        if (['inline-shopkeeper', 'inline-innkeeper', 'inline-mounts', 'inline-guildmaster'].includes(popoverState.setId) && b.setId === 'inlinenpc') return true;
+                        return false;
+                    }).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
                 </>
             )}
         </>

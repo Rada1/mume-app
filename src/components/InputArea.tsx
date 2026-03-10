@@ -1,7 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
-import { useVitals } from '../context/GameContext';
+
 
 interface InputAreaProps {
     input: string;

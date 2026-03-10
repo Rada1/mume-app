@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Trash2, Edit2, Plus, X } from 'lucide-react';
-import { CustomButton, ButtonSetSettings } from '../types';
+import { Trash2, Edit2, Plus, X, Tag, Settings2 } from 'lucide-react';
+import { CustomButton, ButtonSetSettings, InlineCategoryConfig } from '../types';
+import CategorySettings from './Settings/CategorySettings';
 
 interface SetManagerModalProps {
     buttons: CustomButton[];
@@ -24,6 +25,8 @@ interface SetManagerModalProps {
     onToggleSmartPopulate: (enabled: boolean) => void;
     setSettings?: Record<string, ButtonSetSettings>;
     setSetSettings?: (settings: Record<string, ButtonSetSettings>) => void;
+    inlineCategories?: InlineCategoryConfig[];
+    setInlineCategories?: (cats: InlineCategoryConfig[]) => void;
 }
 
 const SetManagerModal: React.FC<SetManagerModalProps> = ({
@@ -47,8 +50,11 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
     isSmartPopulateEnabled,
     onToggleSmartPopulate,
     setSettings = {},
-    setSetSettings
+    setSetSettings,
+    inlineCategories = [],
+    setInlineCategories
 }) => {
+    const [activeTab, setActiveTab] = useState<'sets' | 'categories'>('sets');
     const [selectedSet, setSelectedSet] = useState(lastSelectedSet || availableSets[0] || 'main');
 
     const handleSetChange = (set: string) => {
@@ -68,233 +74,253 @@ const SetManagerModal: React.FC<SetManagerModalProps> = ({
                     </button>
                 </div>
 
-                <div className="setting-group" style={{
-                    padding: '12px',
-                    background: 'var(--border-color, rgba(255, 255, 255, 0.03))',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
-                    marginBottom: '15px'
-                }}>
-                    <div className="modal-title" style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>LAYOUT & DISPLAY SETTINGS</div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', minWidth: '120px' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={isGridEnabled}
-                                    onChange={e => onToggleGrid(e.target.checked)}
-                                />
-                                Snap to Grid
-                            </label>
-
-                            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>Size:</span>
-                                <input
-                                    type="range"
-                                    min="2"
-                                    max="20"
-                                    step="1"
-                                    value={gridSize}
-                                    onChange={e => onGridSizeChange(parseInt(e.target.value))}
-                                    style={{ flex: 1 }}
-                                />
-                                <span style={{ fontSize: '0.8rem', minWidth: '30px' }}>{gridSize}%</span>
-                            </div>
-                        </div>
-
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: 'var(--accent)' }}>
-                            <input
-                                type="checkbox"
-                                checked={isSmartPopulateEnabled}
-                                onChange={e => onToggleSmartPopulate(e.target.checked)}
-                            />
-                            Smart Populate (Hide Unknown Skills/Spells)
-                        </label>
+                <div className="modal-tabs">
+                    <div className={`modal-tab ${activeTab === 'sets' ? 'active' : ''}`} onClick={() => setActiveTab('sets')}>
+                        <Settings2 size={16} /> <span>Sets</span>
+                    </div>
+                    <div className={`modal-tab ${activeTab === 'categories' ? 'active' : ''}`} onClick={() => setActiveTab('categories')}>
+                        <Tag size={16} /> <span>Categorization</span>
                     </div>
                 </div>
 
-                <div className="setting-group" style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-                    <div style={{ flex: 1 }}>
-                        <label className="setting-label" style={{ fontSize: '0.8rem' }}>Default Set</label>
-                        <select
-                            className="setting-input"
-                            value={defaultSet || 'main'}
-                            onChange={e => onSetDefaultSet && onSetDefaultSet(e.target.value)}
-                        >
-                            {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                        <label className="setting-label" style={{ fontSize: '0.8rem' }}>Combat Set (Auto-switch)</label>
-                        <select
-                            className="setting-input"
-                            value={combatSet || ''}
-                            onChange={e => onSetCombatSet && onSetCombatSet(e.target.value)}
-                        >
-                            <option value="">(None)</option>
-                            {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
-                        </select>
-                    </div>
-                </div>
-
-                <div className="setting-group" style={{ marginBottom: '15px' }}>
-                    <label className="setting-label">Select Set to Edit</label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <select
-                            className="setting-input"
-                            value={selectedSet}
-                            onChange={e => handleSetChange(e.target.value)}
-                            style={{ flex: 1 }}
-                        >
-                            {availableSets.map(set => (
-                                <option key={set} value={set}>{set}</option>
-                            ))}
-                        </select>
-                        <button
-                            className="btn-primary"
-                            style={{ width: 'auto', padding: '0 15px' }}
-                            onClick={() => {
-                                const newSet = prompt('Enter new set name:');
-                                if (newSet) handleSetChange(newSet);
-                            }}
-                            title="Create New Set"
-                        >
-                            <Plus size={18} />
-                        </button>
-                        {selectedSet !== 'main' && (
-                            <button
-                                className="btn-secondary"
-                                style={{ width: 'auto', padding: '0 15px', borderColor: 'var(--ansi-red, #ef4444)', color: 'var(--ansi-red, #ef4444)', margin: 0 }}
-                                onClick={() => {
-                                    if (confirm(`Are you SURE you want to delete the "${selectedSet}" set and ALL its buttons?`)) {
-                                        onDeleteSet(selectedSet);
-                                        setSelectedSet('main');
-                                    }
-                                }}
-                                title="Delete Current Set"
-                            >
-                                <Trash2 size={18} />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                <div className="setting-group" style={{ marginBottom: '15px' }}>
-                    <label className="setting-label" style={{ fontSize: '0.8rem' }}>Set Theme Color (Highlights, Swipes, Rays)</label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <input
-                            type="color"
-                            value={setSettings[selectedSet]?.themeColor || '#4a90e2'}
-                            onChange={e => {
-                                if (setSetSettings) {
-                                    setSetSettings({
-                                        ...setSettings,
-                                        [selectedSet]: {
-                                            ...setSettings[selectedSet],
-                                            themeColor: e.target.value
-                                        }
-                                    });
-                                }
-                            }}
-                            style={{ width: '50px', height: '30px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
-                        />
-                        <input
-                            type="text"
-                            className="setting-input"
-                            value={setSettings[selectedSet]?.themeColor || ''}
-                            placeholder="Current set accent color (Hex)"
-                            onChange={e => {
-                                if (setSetSettings) {
-                                    setSetSettings({
-                                        ...setSettings,
-                                        [selectedSet]: {
-                                            ...setSettings[selectedSet],
-                                            themeColor: e.target.value
-                                        }
-                                    });
-                                }
-                            }}
-                            style={{ flex: 1 }}
-                        />
-                        <button
-                            className="btn-secondary"
-                            style={{ margin: 0, width: 'auto', padding: '0 10px' }}
-                            onClick={() => {
-                                if (setSetSettings) {
-                                    const next = { ...setSettings };
-                                    if (next[selectedSet]) {
-                                        const newSetSettings = { ...next[selectedSet] };
-                                        delete newSetSettings.themeColor;
-                                        next[selectedSet] = newSetSettings;
-                                        setSetSettings(next);
-                                    }
-                                }
-                            }}
-                        >
-                            Reset
-                        </button>
-                    </div>
-                </div>
-
-                <div className="buttons-list" style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid var(--border-color, #333)', borderRadius: '8px', padding: '10px' }}>
-                    {filteredButtons.length === 0 ? (
-                        <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-dim, #666)', fontStyle: 'italic' }}>
-                            No buttons in this set.
-                        </div>
-                    ) : (
-                        filteredButtons.map(button => (
-                            <div key={button.id} className="buttons-list-item" style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '10px',
-                                borderBottom: '1px solid var(--border-color, #222)',
-                                background: 'var(--border-color, rgba(255,255,255,0.02))',
-                                marginBottom: '5px',
-                                borderRadius: '4px'
+                <div className="modal-body" style={{ maxHeight: '70vh', overflowY: 'auto', padding: '15px' }}>
+                    {activeTab === 'sets' ? (
+                        <>
+                            <div className="setting-group" style={{
+                                padding: '12px',
+                                background: 'var(--border-color, rgba(255, 255, 255, 0.03))',
+                                borderRadius: '8px',
+                                border: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))',
+                                marginBottom: '15px'
                             }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{
-                                        width: '12px',
-                                        height: '12px',
-                                        borderRadius: '50%',
-                                        backgroundColor: button.style.backgroundColor,
-                                        border: '1px solid var(--border-color, #555)'
-                                    }} />
-                                    <div>
-                                        <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{button.label}</div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{button.command}</div>
+                                <div className="modal-title" style={{ fontSize: '0.8rem', opacity: 0.6, marginBottom: '10px' }}>LAYOUT & DISPLAY SETTINGS</div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', minWidth: '120px' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={isGridEnabled}
+                                                onChange={e => onToggleGrid(e.target.checked)}
+                                            />
+                                            Snap to Grid
+                                        </label>
+
+                                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>Size:</span>
+                                            <input
+                                                type="range"
+                                                min="2"
+                                                max="20"
+                                                step="1"
+                                                value={gridSize}
+                                                onChange={e => onGridSizeChange(parseInt(e.target.value))}
+                                                style={{ flex: 1 }}
+                                            />
+                                            <span style={{ fontSize: '0.8rem', minWidth: '30px' }}>{gridSize}%</span>
+                                        </div>
                                     </div>
+
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.9rem', color: 'var(--accent)' }}>
+                                        <input
+                                            type="checkbox"
+                                            checked={isSmartPopulateEnabled}
+                                            onChange={e => onToggleSmartPopulate(e.target.checked)}
+                                        />
+                                        Smart Populate (Hide Unknown Skills/Spells)
+                                    </label>
                                 </div>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button
-                                        onClick={() => onEditButton(button.id, selectedSet)}
-                                        style={{ background: 'var(--border-color, #333)', border: 'none', color: 'var(--text-primary, #fff)', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
-                                        title="Edit Layout/Details"
+                            </div>
+
+                            <div className="setting-group" style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <label className="setting-label" style={{ fontSize: '0.8rem' }}>Default Set</label>
+                                    <select
+                                        className="setting-input"
+                                        value={defaultSet || 'main'}
+                                        onChange={e => onSetDefaultSet && onSetDefaultSet(e.target.value)}
                                     >
-                                        <Edit2 size={16} />
+                                        {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <label className="setting-label" style={{ fontSize: '0.8rem' }}>Combat Set (Auto-switch)</label>
+                                    <select
+                                        className="setting-input"
+                                        value={combatSet || ''}
+                                        onChange={e => onSetCombatSet && onSetCombatSet(e.target.value)}
+                                    >
+                                        <option value="">(None)</option>
+                                        {availableSets.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="setting-group" style={{ marginBottom: '15px' }}>
+                                <label className="setting-label">Select Set to Edit</label>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <select
+                                        className="setting-input"
+                                        value={selectedSet}
+                                        onChange={e => handleSetChange(e.target.value)}
+                                        style={{ flex: 1 }}
+                                    >
+                                        {availableSets.map(set => (
+                                            <option key={set} value={set}>{set}</option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        className="btn-primary"
+                                        style={{ width: 'auto', padding: '0 15px' }}
+                                        onClick={() => {
+                                            const newSet = prompt('Enter new set name:');
+                                            if (newSet) handleSetChange(newSet);
+                                        }}
+                                        title="Create New Set"
+                                    >
+                                        <Plus size={18} />
                                     </button>
+                                    {selectedSet !== 'main' && (
+                                        <button
+                                            className="btn-secondary"
+                                            style={{ width: 'auto', padding: '0 15px', borderColor: 'var(--ansi-red, #ef4444)', color: 'var(--ansi-red, #ef4444)', margin: 0 }}
+                                            onClick={() => {
+                                                if (confirm(`Are you SURE you want to delete the "${selectedSet}" set and ALL its buttons?`)) {
+                                                    onDeleteSet(selectedSet);
+                                                    setSelectedSet('main');
+                                                }
+                                            }}
+                                            title="Delete Current Set"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="setting-group" style={{ marginBottom: '15px' }}>
+                                <label className="setting-label" style={{ fontSize: '0.8rem' }}>Set Theme Color (Highlights, Swipes, Rays)</label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <input
+                                        type="color"
+                                        value={setSettings[selectedSet]?.themeColor || '#4a90e2'}
+                                        onChange={e => {
+                                            if (setSetSettings) {
+                                                setSetSettings({
+                                                    ...setSettings,
+                                                    [selectedSet]: {
+                                                        ...setSettings[selectedSet],
+                                                        themeColor: e.target.value
+                                                    }
+                                                });
+                                            }
+                                        }}
+                                        style={{ width: '50px', height: '30px', padding: 0, border: 'none', background: 'none', cursor: 'pointer' }}
+                                    />
+                                    <input
+                                        type="text"
+                                        className="setting-input"
+                                        value={setSettings[selectedSet]?.themeColor || ''}
+                                        placeholder="Current set accent color (Hex)"
+                                        onChange={e => {
+                                            if (setSetSettings) {
+                                                setSetSettings({
+                                                    ...setSettings,
+                                                    [selectedSet]: {
+                                                        ...setSettings[selectedSet],
+                                                        themeColor: e.target.value
+                                                    }
+                                                });
+                                            }
+                                        }}
+                                        style={{ flex: 1 }}
+                                    />
                                     <button
-                                        onClick={() => onDeleteButton(button.id)}
-                                        style={{ background: 'var(--ansi-red-faded, rgba(239, 68, 68, 0.2))', border: 'none', color: 'var(--ansi-red, #ef4444)', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
-                                        title="Delete Button"
+                                        className="btn-secondary"
+                                        style={{ margin: 0, width: 'auto', padding: '0 10px' }}
+                                        onClick={() => {
+                                            if (setSetSettings) {
+                                                const next = { ...setSettings };
+                                                if (next[selectedSet]) {
+                                                    const newSetSettings = { ...next[selectedSet] };
+                                                    delete newSetSettings.themeColor;
+                                                    next[selectedSet] = newSetSettings;
+                                                    setSetSettings(next);
+                                                }
+                                            }
+                                        }}
                                     >
-                                        <Trash2 size={16} />
+                                        Reset
                                     </button>
                                 </div>
                             </div>
-                        ))
-                    )}
-                </div>
 
-                <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
-                    <button
-                        className="btn-primary"
-                        style={{ flex: 1 }}
-                        onClick={() => onCreateButton({ setId: selectedSet })}
-                    >
-                        <Plus size={18} /> Add Button to "{selectedSet}"
-                    </button>
+                            <div className="buttons-list" style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid var(--border-color, #333)', borderRadius: '8px', padding: '10px' }}>
+                                {filteredButtons.length === 0 ? (
+                                    <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-dim, #666)', fontStyle: 'italic' }}>
+                                        No buttons in this set.
+                                    </div>
+                                ) : (
+                                    filteredButtons.map(button => (
+                                        <div key={button.id} className="buttons-list-item" style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            padding: '10px',
+                                            borderBottom: '1px solid var(--border-color, #222)',
+                                            background: 'var(--border-color, rgba(255,255,255,0.02))',
+                                            marginBottom: '5px',
+                                            borderRadius: '4px'
+                                        }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <div style={{
+                                                    width: '12px',
+                                                    height: '12px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: button.style.backgroundColor,
+                                                    border: '1px solid var(--border-color, #555)'
+                                                }} />
+                                                <div>
+                                                    <div style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{button.label}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>{button.command}</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button
+                                                    onClick={() => onEditButton(button.id, selectedSet)}
+                                                    style={{ background: 'var(--border-color, #333)', border: 'none', color: 'var(--text-primary, #fff)', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
+                                                    title="Edit Layout/Details"
+                                                >
+                                                    <Edit2 size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={() => onDeleteButton(button.id)}
+                                                    style={{ background: 'var(--ansi-red-faded, rgba(239, 68, 68, 0.2))', border: 'none', color: 'var(--ansi-red, #ef4444)', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}
+                                                    title="Delete Button"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+
+                            <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+                                <button
+                                    className="btn-primary"
+                                    style={{ flex: 1 }}
+                                    onClick={() => onCreateButton({ setId: selectedSet })}
+                                >
+                                    <Plus size={18} /> Add Button to "{selectedSet}"
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <CategorySettings
+                            categories={inlineCategories}
+                            setCategories={setInlineCategories || (() => { })}
+                        />
+                    )}
                 </div>
             </div>
         </div>

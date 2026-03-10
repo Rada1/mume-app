@@ -60,6 +60,10 @@ export interface GameContextType {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    showLegacyButtons: boolean;
+    setShowLegacyButtons: (val: boolean) => void;
+    inlineCategories: import('../../types').InlineCategoryConfig[];
+    setInlineCategories: Dispatch<SetStateAction<import('../../types').InlineCategoryConfig[]>>;
 
     mood: string;
     setMood: (val: string) => void;
@@ -168,7 +172,7 @@ export interface GameContextType {
     // Messages
     messages: Message[];
     setMessages: Dispatch<SetStateAction<Message[]>>;
-    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: import('../../types').ShopItem, practiceSkill?: import('../../types').PracticeSkill, practiceHeader?: { sessionsLeft: number }, skipBrevity?: boolean) => void;
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
     isCommunicationLine: (text: string) => boolean;
@@ -207,6 +211,7 @@ export interface GameContextType {
     handleLogClick: (e: MouseEvent) => void;
     handleLogDoubleClick: (e: MouseEvent) => void;
     handleDragStart: (e: React.DragEvent) => void;
+    handleDragEnd: (e: React.DragEvent) => void;
     mapperRef: RefObject<MapperRef>;
 
     // Parser State
@@ -227,6 +232,7 @@ export interface GameContextType {
     // Network & Parser Engines
     telnet: any;
     parser: any;
+    practice: any; // Type-safe version could be ReturnType<typeof usePracticeHandler>
 
     // Sound & Haptics
     playSound: (buffer: AudioBuffer) => void;
@@ -257,4 +263,6 @@ export interface GameContextType {
 
     diagnosticLogs: string[];
     addDiagnosticLog: (msg: string) => void;
+    activeDragData: any;
+    setActiveDragData: Dispatch<SetStateAction<any>>;
 }

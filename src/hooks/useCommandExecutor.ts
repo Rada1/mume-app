@@ -12,7 +12,7 @@ export interface ExecutorDeps {
     teleportTargets: TeleportTarget[];
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
+    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
@@ -83,7 +83,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             const lower = cmd.toLowerCase().trim();
             // Intelligent auto-append for common combat/magic prefixes if no explicit target provided
             const isCastOrSkill = lower.startsWith('cast ') || lower.startsWith('skill ');
-            
+
             // Common standalone verbs that usually want a target if one is available
             const combatVerbs = ['kill', 'k', 'hit', 'bash', 'kick', 'trip', 'bs', 'backstab', 'murder', 'charge', 'circle', 'assist', 'rescue', 'shoot', 'throw', 'track', 'consider', 'examine'];
             const isStandaloneCombat = combatVerbs.includes(lower);
@@ -233,7 +233,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         // Re-centering is handled automatically by the mapper's internal animation loop
         // when autoCenter is active. Explicitly calling handleCenterOnPlayer here
         // can cause imprecise 'snaps' on mobile that conflict with smooth animations.
-        }, [        status, target, teleportTargets, initAudio, addMessage, setTarget, setPopoverState,
+    }, [status, target, teleportTargets, initAudio, addMessage, setTarget, setPopoverState,
         telnet, navIntervalRef, mapperRef, isDrawerCapture, captureStage, isWaitingForInv,
         isWaitingForStats, isWaitingForEq, setInventoryLines, setStatsLines, setEqLines,
         setIsCharacterOpen, setIsItemsDrawerOpen

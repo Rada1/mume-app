@@ -34,6 +34,8 @@ interface GeneralSettingsProps {
     setIsImmersionMode: (val: boolean) => void;
     isMobileBrevityMode: boolean;
     setIsMobileBrevityMode: (val: boolean) => void;
+    showLegacyButtons: boolean;
+    setShowLegacyButtons: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -68,6 +70,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsImmersionMode,
     isMobileBrevityMode,
     setIsMobileBrevityMode,
+    showLegacyButtons,
+    setShowLegacyButtons,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -480,6 +484,31 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             position: 'absolute',
                             top: '2px',
                             left: isMobileBrevityMode ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Legacy Buttons</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
+                            Show the old Joystick and Xbox-style clusters instead of the new Dpad and Line layouts.
+                        </div>
+                    </div>
+                    <button
+                        className={`setting-toggle ${showLegacyButtons ? 'active' : ''}`}
+                        onClick={() => setShowLegacyButtons(!showLegacyButtons)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showLegacyButtons ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: showLegacyButtons ? '22px' : '2px',
                             transition: 'all 0.3s'
                         }} />
                     </button>

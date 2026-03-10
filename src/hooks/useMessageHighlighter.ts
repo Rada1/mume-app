@@ -1,61 +1,56 @@
 import { useCallback, RefObject, useRef } from 'react';
-import { CustomButton } from '../types';
+import { CustomButton, InlineCategoryConfig } from '../types';
 import { pluralizeMumeSubject } from '../utils/gameUtils';
+import { getCategoryForName, getGlowColorForCategory } from '../utils/categorizationUtils';
 
-export function useMessageHighlighter(
+export const useMessageHighlighter = (
     target: string | null,
     buttonsRef: RefObject<CustomButton[]>,
     roomPlayers: string[],
     roomNpcs: string[],
     characterName: string | null,
-    roomItems: string[]
-) {
+    roomItems: string[],
+    inlineCategories: InlineCategoryConfig[] = []
+) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
 
-    const buttonsHash = JSON.stringify(buttonsRef.current?.map(b => ({ id: b.id, pattern: b.trigger?.pattern, enabled: b.trigger?.enabled })) || []);
-    const depsHash = JSON.stringify([target, roomPlayers, roomNpcs, roomItems, characterName, buttonsHash]);
+    const safeHighlight = (currentHtml: string, patternStr: string, isRegex: boolean, replacer: (match: string, matchObj: RegExpExecArray | null) => string) => {
+        if (!patternStr) return currentHtml;
 
-    const processMessageHtml = useCallback((html: string, mid?: string, isRoomName?: boolean) => {
-        if (!mid) return html;
+        const escaped = isRegex ? patternStr : patternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const parts = currentHtml.split(/(<[^>]+>)/g);
+        let changed = false;
 
+        const regex = new RegExp(escaped, 'gi');
+
+        for (let i = 0; i < parts.length; i++) {
+            if (!parts[i].startsWith('<')) {
+                const nodeText = parts[i];
+                const replaced = nodeText.replace(regex, (m, ...args) => {
+                    const matchObj = isRegex ? (regex.exec(nodeText) || null) : null;
+                    if (isRegex) regex.lastIndex = 0;
+                    return replacer(m, matchObj as any);
+                });
+
+                if (replaced !== nodeText) {
+                    parts[i] = replaced;
+                    changed = true;
+                }
+            }
+        }
+
+        return changed ? parts.join('') : currentHtml;
+    };
+
+    const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean) => {
+        const depsHash = JSON.stringify({ target, p: roomPlayers, n: roomNpcs, i: roomItems, cat: inlineCategories });
         const cached = cacheRef.current.get(mid);
-        if (cached && cached.deps === depsHash && cached.htmlRaw === html) {
+        if (cached && cached.htmlRaw === originalHtml && cached.deps === depsHash) {
             return cached.html;
         }
 
-        let newHtml = html;
-        const originalHtml = html;
+        let newHtml = originalHtml;
 
-        // Use a more robust pattern matching strategy that avoids clobbering existing tags
-        const safeHighlight = (currentHtml: string, patternStr: string, isRegex: boolean, replacer: (match: string, matchObj: RegExpExecArray | null) => string) => {
-            try {
-                let regexSource: string;
-                if (isRegex) {
-                    regexSource = `(<[^>]+>)|(${patternStr})`;
-                } else {
-                    // Escape regex specials
-                    let escaped = patternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    // Replace literal spaces with flexible whitespace match to handle MUD formatting
-                    escaped = escaped.replace(/\s+/g, '\\s+');
-                    regexSource = `(<[^>]+>)|(\\b${escaped}\\b)`;
-                }
-
-                const regex = new RegExp(regexSource, 'gi');
-
-                return currentHtml.replace(regex, (wholeMatch, tag, ...args) => {
-                    if (tag) return tag; // Skip tags
-                    // With global regex and capture groups: wholeMatch, tag, patternMatch, [additional groups], offset, string
-                    // But our regex is EITHER (tag) OR (pattern).
-                    // So if it's not a tag, patternMatch is args[0].
-                    // But if patternStr has its own groups, they will be in args[1], args[2]...
-                    // Let's use a simpler approach: if it matched our pattern group, re-run exec to get captures
-                    const matchResult = isRegex ? new RegExp(patternStr, 'i').exec(wholeMatch) : null;
-                    return replacer(wholeMatch, matchResult);
-                });
-            } catch (e) { return currentHtml; }
-        };
-
-        // Gather all highlight candidates
         interface Candidate {
             pattern: string;
             isRegex?: boolean;
@@ -65,22 +60,26 @@ export function useMessageHighlighter(
         }
         const candidates: Candidate[] = [];
 
-        // 1. Current Target
-        if (target) {
-            candidates.push({
-                pattern: target,
-                priority: 10,
-                replacer: (m, _match) => `<span class="inline-btn target-highlight" draggable="true" data-id="target-hl" data-mid="${mid}" data-cmd="target" data-context="${m}" data-action="menu" style="--glow-color: rgba(255, 215, 0, 0.6)">${m}</span>`,
-                length: target.length
-            });
-        }
-
         if (!isRoomName) {
+            // 1. Active Target
+            if (target) {
+                const category = getCategoryForName(target, inlineCategories) || 'inline-default';
+                const glowColor = getGlowColorForCategory(category, inlineCategories);
+                const command = category;
+
+                candidates.push({
+                    pattern: target,
+                    priority: 90,
+                    replacer: (m, _match) => `<span class="inline-btn auto-target active-target" draggable="true" data-id="auto-target-${target}" data-mid="${mid}" data-cmd="${command}" data-context="${m}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
+                    length: target.length
+                });
+            }
+
             // 2. Buttons
             buttonsRef.current?.filter(b => (b.display === 'inline' || b.trigger?.spit) && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
                 const pattern = b.trigger!.pattern!;
                 const isRegex = b.trigger!.isRegex;
-                
+
                 candidates.push({
                     pattern: pattern,
                     isRegex: isRegex,
@@ -128,10 +127,14 @@ export function useMessageHighlighter(
                 const patterns = [originalName, stripped, pluralizeMumeSubject(originalName), pluralizeMumeSubject(stripped)].filter(Boolean);
 
                 patterns.forEach(p => {
+                    const category = getCategoryForName(originalName, inlineCategories);
+                    const glowColor = category ? getGlowColorForCategory(category, inlineCategories) : 'rgba(255, 100, 100, 0.9)';
+                    const command = category || 'inlinenpc';
+
                     candidates.push({
                         pattern: p,
                         priority: 5,
-                        replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="inlinenpc" data-context="${originalName}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(255, 100, 100, 0.9)">${m}</span>`,
+                        replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="${command}" data-context="${originalName}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
                         length: p.length
                     });
                 });
@@ -139,16 +142,19 @@ export function useMessageHighlighter(
 
             // 5. Items
             roomItems.forEach(name => {
+                const category = getCategoryForName(name, inlineCategories) || 'inline-default';
+                const glowColor = getGlowColorForCategory(category, inlineCategories);
+                const command = category;
+
                 candidates.push({
                     pattern: name,
                     priority: 5,
-                    replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${name}" data-mid="${mid}" data-cmd="selection" data-context="${m}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 255, 100, 0.5)">${m}</span>`,
+                    replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${name}" data-mid="${mid}" data-cmd="${command}" data-context="${m}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
                     length: name.length
                 });
             });
         }
 
-        // Apply candidates: sort by priority DESC, then length DESC
         candidates
             .sort((a, b) => {
                 if (b.priority !== a.priority) return b.priority - a.priority;
@@ -165,7 +171,7 @@ export function useMessageHighlighter(
         }
 
         return newHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, depsHash]);
+    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories]);
 
     return { processMessageHtml };
-}
+};

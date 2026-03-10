@@ -42,6 +42,7 @@ export interface InteractionDeps {
         drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
     };
+    setActiveDragData: (val: any) => void;
 }
 
 export const useInteractionHandlers = (deps: InteractionDeps) => {
@@ -50,7 +51,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
         setIsMapExpanded, setIsCharacterOpen, setIsItemsDrawerOpen,
         setInventoryLines, setEqLines, setStatsLines, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        ui
+        ui, setActiveDragData
     } = deps;
     const lastLogClickRef = useRef<number>(0);
 
@@ -90,10 +91,13 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
 
         if (button.actionType === 'nav' || button.actionType === 'menu') {
             const rect = targetEl?.getBoundingClientRect();
+            const eventX = (e as any).clientX !== undefined ? (e as any).clientX : (e as any).nativeEvent?.clientX;
+            const eventY = (e as any).clientY !== undefined ? (e as any).clientY : (e as any).nativeEvent?.clientY;
+
             setPopoverState({
                 ...popoverState,
-                x: rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2,
-                y: rect ? rect.top : (e as any).clientY || window.innerHeight / 2,
+                x: eventX || (rect ? rect.right + 10 : window.innerWidth / 2),
+                y: eventY || (rect ? rect.top : window.innerHeight / 2),
                 setId: button.command,
                 context: context || button.label,
                 assignSourceId: popoverState?.assignSourceId,
@@ -111,9 +115,12 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         }
         else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(button.actionType || '')) {
             const rect = targetEl?.getBoundingClientRect();
+            const eventX = (e as any).clientX !== undefined ? (e as any).clientX : (e as any).nativeEvent?.clientX;
+            const eventY = (e as any).clientY !== undefined ? (e as any).clientY : (e as any).nativeEvent?.clientY;
+
             setPopoverState({
-                x: rect ? rect.right + 10 : (e as any).clientX || window.innerWidth / 2,
-                y: rect ? rect.top : (e as any).clientY || window.innerHeight / 2,
+                x: eventX || (rect ? rect.right + 10 : window.innerWidth / 2),
+                y: eventY || (rect ? rect.top : window.innerHeight / 2),
                 sourceHeight: rect?.height, setId: button.command,
                 context: button.actionType === 'select-assign' ? (joystick.currentDir || (joystick.isTargetModifierActive ? target : '')) : (context || button.label),
                 assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
@@ -131,7 +138,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             const isInputPrefix = finalCmd.startsWith('input:');
             const prefill = isInputPrefix ? finalCmd.slice(6) : (button.command + (button.command.endsWith(' ') ? '' : ' '));
             setInput(prefill);
-            
+
             // Only trigger keyboard on mobile if it's explicitly an 'input:' command
             const shouldFocus = !viewport.isMobile || isInputPrefix;
 
@@ -142,9 +149,9 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                         // On mobile, we need to temporarily disable readOnly to allow focus to trigger keyboard
                         const wasReadOnly = inputEl.readOnly;
                         if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
-                        
+
                         inputEl.focus();
-                        
+
                         // Restore readOnly after a short delay so the keyboard stays up but future taps are protected
                         if (isInputPrefix && viewport.isMobile) {
                             setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
@@ -159,8 +166,8 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             setTarget(null); addMessage('system', 'Target cleared.');
         } else {
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
-            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
-            
+            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false, fromUi: true });
+
             // Handle Close Keyboard feature
             if (button.trigger?.closeKeyboard) {
                 const inputEl = document.querySelector('input') as HTMLInputElement;
@@ -307,7 +314,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 // Also handle the $1 style placeholders if they were passed through
                 finalCmd = finalCmd.replace(/\$1/g, context);
             }
-            
+
             if (action === 'preload' || finalCmd.startsWith('input:')) {
                 const isInputPrefix = finalCmd.startsWith('input:');
                 const prefill = isInputPrefix ? finalCmd.slice(6) : (finalCmd + (finalCmd.endsWith(' ') ? '' : ' '));
@@ -322,9 +329,9 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                         if (inputEl) {
                             const wasReadOnly = inputEl.readOnly;
                             if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
-                            
+
                             inputEl.focus();
-                            
+
                             if (isInputPrefix && viewport.isMobile) {
                                 setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
                             }
@@ -335,7 +342,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                     }, 10);
                 }
             } else {
-                executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
+                executeCommand(finalCmd, false, false, false, false, { shouldFocus: false, fromUi: true });
             }
         }
         else if (cmd === 'target' && context) {
@@ -352,6 +359,8 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         const context = targetEl.getAttribute('data-context');
         const id = targetEl.getAttribute('data-id');
 
+        console.log('[DEBUG] Drag Start:', { cmd, context, id });
+
         if (context) {
             const dragData = {
                 type: 'inline-btn',
@@ -359,7 +368,16 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 context: context,
                 id: id
             };
-            e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+
+            // Set global state for robust retrieval
+            setActiveDragData(dragData);
+
+            const jsonStr = JSON.stringify(dragData);
+            console.log('[DEBUG] Setting Data:', jsonStr);
+
+            // Set both types for maximum cross-browser compatibility
+            e.dataTransfer.setData('application/json', jsonStr);
+            e.dataTransfer.setData('text/plain', jsonStr);
             e.dataTransfer.effectAllowed = 'move';
 
             // Highlight that we're dragging
@@ -367,7 +385,17 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
 
             triggerHaptic(10);
         }
-    }, [triggerHaptic]);
+    }, [triggerHaptic, setActiveDragData]);
 
-    return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart };
+    const handleDragEnd = useCallback((e: React.DragEvent) => {
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        if (targetEl) {
+            targetEl.classList.remove('dragging');
+        }
+        // Always clear the global state
+        console.log('[DEBUG] Drag End - Clearing Global State');
+        setActiveDragData(null);
+    }, [setActiveDragData]);
+
+    return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd };
 };

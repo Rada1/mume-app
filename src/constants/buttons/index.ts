@@ -8,6 +8,7 @@ import { INVENTORY_BUTTONS } from './inventory';
 import { COMMUNICATION_BUTTONS } from './communication';
 import { SOCIAL_BUTTONS } from './socials';
 import { DOOR_BUTTONS } from './doors';
+import { INLINE_CATEGORY_BUTTONS } from './inline_categories';
 
 export { DEFAULT_UI_POSITIONS };
 
@@ -19,7 +20,8 @@ export const DEFAULT_BUTTONS: CustomButton[] = [
     ...INVENTORY_BUTTONS,
     ...COMMUNICATION_BUTTONS,
     ...SOCIAL_BUTTONS,
-    ...DOOR_BUTTONS
+    ...DOOR_BUTTONS,
+    ...INLINE_CATEGORY_BUTTONS
 ];
 
 export const DEFAULT_SET_SETTINGS: Record<string, ButtonSetSettings> = {
@@ -35,4 +37,13 @@ export const DEFAULT_SET_SETTINGS: Record<string, ButtonSetSettings> = {
     thiefskilllist: { themeColor: '#94a3b8' },
     doors: { themeColor: '#78350f' },
     'social list': { themeColor: '#06b6d4' },
+    'inline-default': { themeColor: '#facc15' },
+    'inline-mounts': { themeColor: '#78350f' },
+    'inline-lantern': { themeColor: '#facc15' },
+    'inline-food': { themeColor: '#4ade80' },
+    'inline-water': { themeColor: '#3b82f6' },
+    'inline-shopkeeper': { themeColor: '#8b5cf6' },
+    'inline-shopitem': { themeColor: '#8b5cf6' },
+    'inline-innkeeper': { themeColor: '#ec4899' },
+    'inline-corpses': { themeColor: '#94a3b8' },
 };

@@ -38,7 +38,7 @@
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
     font-size: var(--dynamic-log-size, 16px);
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, black 150px);
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, black 150px);
     position: relative;
     user-select: text;
     -webkit-user-select: text;
@@ -51,8 +51,9 @@
 }
 
 .immersion-mode .message-log {
-    padding-bottom: 5px !important; /* Tightest safe margin for 3D tilt */
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, black 120px) !important;
+    padding-bottom: 5px !important;
+    /* Tightest safe margin for 3D tilt */
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, black 120px) !important;
 }
 
 .no-3d-scroll .message-log {
@@ -79,7 +80,7 @@
     will-change: transform, opacity;
     image-rendering: pixelated;
     -webkit-font-smoothing: subpixel-antialiased;
-    
+
     /* Fallback for browsers without animation-timeline */
     transform-origin: 50% 0%;
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
@@ -106,6 +107,7 @@
         transform: translateZ(0) rotateX(0);
         filter: blur(0);
     }
+
     to {
         opacity: 0.3;
         transform: translateZ(-300px) rotateX(-25deg);
@@ -123,6 +125,7 @@
         opacity: 0;
         transform: translateY(8px) scale(0.99);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -132,13 +135,13 @@
 .message.combat-dim {
     opacity: 0.25 !important;
     filter: grayscale(0.5) blur(0.2px);
-    transition: opacity 0.8s ease, filter 0.8s ease;
+    transition: opacity 1.2s ease-in-out, filter 1.2s ease-in-out;
 }
 
 .message-log.combat-mode .message:not(.combat-dim) {
     opacity: 1;
     filter: saturate(1.4) brightness(1.1);
-    transition: opacity 0.3s ease, filter 0.3s ease;
+    transition: opacity 1.2s ease-in-out, filter 1.2s ease-in-out;
 }
 
 .message.user {
@@ -399,9 +402,11 @@
         transform: translate3d(var(--spit-distance), 0, 0) scale(1.2);
         opacity: 0;
     }
+
     15% {
         opacity: 1;
     }
+
     100% {
         transform: translate3d(0, 0, 0) scale(1);
         opacity: 1;
@@ -412,4 +417,100 @@
     color: #fff;
     text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
     font-weight: 500;
+}
+
+/* Shop Item Cards (Interactive) */
+.shop-item-card.inline-btn {
+    display: flex !important;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin: 2px 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-bottom: 2px solid #8b5cf6;
+    max-width: 500px;
+    cursor: pointer;
+    overflow: hidden;
+    text-shadow: none;
+    line-height: 1.2;
+}
+
+.shop-item-card:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.6);
+    transform: translateY(-2px);
+}
+
+.shop-item-card.recent-entry {
+    animation: smooth-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+}
+
+.shop-item-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
+    width: 100%;
+}
+
+.shop-item-info {
+    flex: 1;
+}
+
+.shop-item-header {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.shop-item-id {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #8b5cf6;
+    opacity: 0.8;
+}
+
+.shop-item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.shop-item-condition {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+.shop-item-price {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--ansi-yellow);
+    font-weight: bold;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.price-icon {
+    opacity: 0.8;
+}
+
+.shop-item-tap-hint {
+    font-size: 0.7rem;
+    color: #8b5cf6;
+    opacity: 0;
+    text-align: right;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: opacity 0.3s ease;
+}
+
+.shop-item-card:hover .shop-item-tap-hint {
+    opacity: 0.8;
 }

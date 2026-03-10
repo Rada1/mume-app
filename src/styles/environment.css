@@ -114,18 +114,18 @@
 
 .lighting-sun .lighting-inner {
     /* Concentrated shaft from top center - slightly strengthened */
-    background: radial-gradient(ellipse 45% 120% at 50% -10%, 
-        rgba(255, 245, 180, 0.65) 0%, 
-        rgba(255, 210, 50, 0.25) 35%, 
-        transparent 85%);
+    background: radial-gradient(ellipse 45% 120% at 50% -10%,
+            rgba(255, 245, 180, 0.65) 0%,
+            rgba(255, 210, 50, 0.25) 35%,
+            transparent 85%);
 }
 
 .is-mobile .lighting-sun .lighting-inner {
     /* Spans horizontally across the log, but shorter reach vertically */
-    background: radial-gradient(ellipse 100% 70% at 50% -10%, 
-        rgba(255, 245, 180, 0.65) 0%, 
-        rgba(255, 210, 50, 0.25) 30%, 
-        transparent 75%);
+    background: radial-gradient(ellipse 100% 70% at 50% -10%,
+            rgba(255, 245, 180, 0.65) 0%,
+            rgba(255, 210, 50, 0.25) 30%,
+            transparent 75%);
 }
 
 .lighting-moon .lighting-inner {
@@ -211,16 +211,16 @@
     z-index: 2;
     filter: blur(1px) brightness(0.9) grayscale(0.6) contrast(1.6);
 }
- 
+
 .weather-cloud.storm-clouds {
     background: rgba(30, 35, 50, 0.4);
 }
- 
+
 .weather-cloud.storm-clouds::before {
     background: rgba(20, 25, 40, 0.6);
     mix-blend-mode: multiply;
 }
- 
+
 .weather-cloud.storm-clouds::after {
     filter: blur(2px) brightness(0.4) grayscale(0.9) contrast(2);
     opacity: 0.9;
@@ -252,7 +252,7 @@
     inset: 0;
     z-index: 101;
     backdrop-filter: grayscale(0);
-    transition: backdrop-filter 0.5s ease;
+    transition: backdrop-filter 1.2s ease-in-out;
     pointer-events: none;
 }
 
@@ -266,7 +266,7 @@
     background: radial-gradient(circle at center, transparent 30%, rgba(180, 0, 0, 0.2) 100%);
     z-index: 12;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 1.2s ease-in-out;
     pointer-events: none;
 }
 

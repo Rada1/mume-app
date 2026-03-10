@@ -5,14 +5,14 @@ import { useInteractionHandlers } from './useInteractionHandlers';
 
 export interface CommandControllerDeps {
     telnet: { sendCommand: (cmd: string) => void };
-    addMessage: (type: any, text: string) => void;
+    addMessage: (type: any, text: string, combat?: boolean, mid?: string, room?: boolean, pre?: any, shop?: any, skill?: any, hdr?: any, skip?: boolean) => void;
     initAudio: () => void;
     navIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
     mapperRef: React.RefObject<any>;
     teleportTargets: any[];
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
+    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
@@ -45,30 +45,32 @@ export interface CommandControllerDeps {
     };
     actions: import('../types').GameAction[];
     setActions: (val: import('../types').GameAction[] | ((prev: import('../types').GameAction[]) => import('../types').GameAction[])) => void;
+    setActiveDragData: (val: any) => void;
+    practice: any;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {
     const { input, setInput, isNoviceMode, viewport, triggerHaptic, setTarget, addMessage } = deps;
 
     const executor = useCommandExecutor(deps);
-    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean }) => {
+    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }) => {
         if (!isSystem && !silent) {
             // Defensive focus: only focus elements if explicitly requested or on desktop.
             // On mobile, never auto-focus unless it's a specific 'input:' command AND we want that behavior.
             const isInputPrefix = cmd.startsWith('input:');
-            const shouldFocus = options?.shouldFocus !== undefined 
-                ? options.shouldFocus 
+            const shouldFocus = options?.shouldFocus !== undefined
+                ? options.shouldFocus
                 : (!viewport.isMobile || isInputPrefix);
-            
+
             if (shouldFocus) {
                 setTimeout(() => {
                     const inputEl = document.querySelector('input') as HTMLInputElement;
                     if (inputEl) {
                         const wasReadOnly = inputEl.readOnly;
                         if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
-                        
+
                         if (document.activeElement !== inputEl) inputEl.focus();
-                        
+
                         if (isInputPrefix && viewport.isMobile) {
                             setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
                         }
@@ -83,11 +85,17 @@ export function useCommandController(deps: CommandControllerDeps) {
                 }
             }
         }
-        
+
+        if (cmd.toLowerCase().startsWith('practice ')) {
+            deps.practice.setLastPracticedSkill(cmd.substring(9).trim());
+        } else if (cmd.toLowerCase() === 'practice' && options?.fromUi) {
+            deps.practice.setIsUiRequested(true);
+        }
+
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
     }, [executor, viewport.isMobile]);
 
-    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart } = useInteractionHandlers({
+    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd } = useInteractionHandlers({
         ...deps, executeCommand, ui: deps.ui
     });
 
@@ -106,5 +114,5 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     }, [input, executeCommand, viewport, isNoviceMode, setInput, deps.mapperRef]);
 
-    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleDragStart };
+    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd };
 }
