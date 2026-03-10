@@ -123,6 +123,16 @@ export const useButtonGestures = ({
         setCommandPreview(preview?.cmd || null);
 
         const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        let snappedAngle = Math.round(angle / 45) * 45;
+
+        // Prevent wrap-around jump at 180/-180 by tracking continuous rotation
+        if (el._lastAngle !== undefined) {
+            let diff = snappedAngle - el._lastAngle;
+            while (diff > 180) { snappedAngle -= 360; diff -= 360; }
+            while (diff < -180) { snappedAngle += 360; diff += 360; }
+        }
+        el._lastAngle = snappedAngle;
+
         const isSwipedOut = el._maxDist > 25;
         const cancelX = window.innerWidth / 2 + 200;
         const cancelY = window.innerHeight / 2;
@@ -156,7 +166,6 @@ export const useButtonGestures = ({
             setIsCancelling(false);
         }
 
-        const snappedAngle = Math.round(angle / 45) * 45;
         if (distToCenter > 20 && snappedAngle !== el._lastSnappedAngle) {
             triggerHaptic(15);
             el._lastSnappedAngle = snappedAngle;

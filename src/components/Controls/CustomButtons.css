@@ -240,8 +240,15 @@
     overflow: visible;
 }
 
-.custom-btn.is-diamond>*:not(.diamond-vitals) {
+.custom-btn.is-diamond>*:not(.diamond-vitals):not(.swipe-ray) {
     transform: rotate(-45deg);
+}
+
+/* Counter-rotate ray if the parent is a rotated diamond */
+.is-diamond .swipe-ray {
+    /* We subtract 45deg because the parent button is rotated 45deg.
+       We use !important to ensure this dynamic transform wins over static child transforms. */
+    transform: translateY(-50%) rotate(calc(var(--ray-angle, 0deg) - 45deg)) !important;
 }
 
 /* Diamond Vitals Bars */

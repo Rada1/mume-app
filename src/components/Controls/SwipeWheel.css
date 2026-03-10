@@ -8,13 +8,21 @@
     height: 3px;
     background: linear-gradient(to right, var(--ray-color, var(--set-accent, var(--accent))) 0%, var(--ray-color, var(--set-accent, var(--accent))) 70%, transparent 100%);
     transform-origin: left center;
+    /* Basic rotation */
     transform: translateY(-50%) rotate(var(--ray-angle, 0deg));
     opacity: var(--ray-opacity, 0);
     pointer-events: none;
     z-index: -1;
     box-shadow: 0 0 15px var(--ray-color, var(--set-accent, var(--accent)));
-    transition: opacity 0.1s ease, transform 0.1s cubic-bezier(0.1, 0.9, 0.2, 1);
+    transition: opacity 0.1s ease, transform 0.05s ease-out;
+    /* Faster, smoother transition */
     border-radius: 99px;
+    will-change: transform, opacity;
+}
+
+/* Counter-rotate ray if the parent is a rotated diamond */
+.is-diamond .swipe-ray {
+    transform: translateY(-50%) rotate(calc(var(--ray-angle, 0deg) - 45deg));
 }
 
 .cancel-indicator {

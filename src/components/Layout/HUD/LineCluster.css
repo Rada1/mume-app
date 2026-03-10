@@ -17,7 +17,8 @@
 /* Default vertical layout for Desktop and Landscape */
 .line-cluster-container {
     position: absolute;
-    right: 25px;
+    right: 35px;
+    /* Moved further from the right edge */
     top: 50%;
     transform: translateY(-50%);
     z-index: 2500;
@@ -28,11 +29,13 @@
 
 .line-cluster-container .line-cluster {
     flex-direction: column;
-    padding: 24px 12px;
-    gap: 32px;
-    /* More space for vertical diamonds */
+    padding: 14px 10px;
+    /* Reduced vertical padding for landscape/desktop */
+    gap: 14px;
+    /* Reduced gap between buttons to save vertical space */
     height: auto;
-    min-height: 100px;
+    min-height: unset;
+    /* Remove min-height to allow tighter fit */
 }
 
 /* Override GameButton defaults inside the cluster */
@@ -41,19 +44,23 @@
     left: auto !important;
     top: auto !important;
     margin: 0 !important;
-    width: 48px !important;
-    /* EXPLICIT SIZE */
-    height: 48px !important;
-    /* EXPLICIT SIZE */
-    min-width: 48px !important;
-    min-height: 48px !important;
+    width: 32px !important;
+    /* Reduced size for better fit */
+    height: 32px !important;
+    /* Reduced size for better fit */
+    min-width: 32px !important;
+    min-height: 32px !important;
     flex-shrink: 0;
 }
 
-/* Hide labels in the line cluster if they are too long or per user preference */
+/* Adjust labels and icons for smaller buttons */
+.line-cluster .custom-btn .button-icon {
+    font-size: 1.1rem !important;
+}
+
 .line-cluster .custom-btn .button-label {
-    font-size: 0.6rem !important;
-    max-width: 40px;
+    font-size: 0.45rem !important;
+    max-width: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,7 +75,7 @@
 /* Mobile Portrait Override (Inside MapperCluster) */
 @media (max-width: 768px) and (orientation: portrait) {
     .line-cluster-container {
-        top: 35px;
+        top: 5px;
         /* Strictly below the blue bar */
         bottom: auto;
         left: 50%;
@@ -79,10 +86,32 @@
 
     .line-cluster-container .line-cluster {
         flex-direction: row !important;
-        gap: 20px;
-        padding: 10px 18px;
+        gap: 16px;
+        /* Increased padding between buttons */
+        padding: 4px 14px;
+        /* Minimal vertical padding */
         width: max-content;
         height: auto;
+        min-height: unset !important;
+        border-radius: 16px;
+        /* Tighter fit for 32px diamonds */
+    }
+
+    .line-cluster .custom-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+    }
+
+    /* Smaller icons and labels for mobile */
+    .line-cluster .custom-btn .button-icon {
+        font-size: 1.1rem !important;
+    }
+
+    .line-cluster .custom-btn .button-label {
+        font-size: 0.5rem !important;
+        max-width: 32px;
     }
 
     .line-cluster-container.hud-hidden {
@@ -93,7 +122,7 @@
 /* Specific override for when it's inside the MapperCluster gutter */
 .mobile-bottom-gutter .line-cluster-container {
     position: absolute !important;
-    top: 35px !important;
+    top: 5px !important;
     left: 50% !important;
     right: auto !important;
     bottom: auto !important;
@@ -105,4 +134,25 @@
 .mobile-bottom-gutter .line-cluster {
     flex-direction: row !important;
     width: max-content !important;
+    gap: 16px !important;
+    /* Increased padding between buttons */
+    padding: 4px 14px !important;
+    min-height: unset !important;
+    border-radius: 16px !important;
+}
+
+.mobile-bottom-gutter .line-cluster .custom-btn {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+}
+
+.mobile-bottom-gutter .line-cluster .custom-btn .button-icon {
+    font-size: 1.1rem !important;
+}
+
+.mobile-bottom-gutter .line-cluster .custom-btn .button-label {
+    font-size: 0.5rem !important;
+    max-width: 32px;
 }
