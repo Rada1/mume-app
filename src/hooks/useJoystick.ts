@@ -80,7 +80,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             }
         } else {
             let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
-            
+
             // Strictly 4-way Cardinal Zones for visual feedback
             let dir: any = null;
             if (angle >= 315 || angle < 45) dir = 'e';
@@ -116,7 +116,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
 
         const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
-        
+
         // Calculate actual displacement from the touch start point
         const touchDX = touchStartPos.current ? (e.clientX - touchStartPos.current.x) : 0;
         const touchDY = touchStartPos.current ? (e.clientY - touchStartPos.current.y) : 0;
@@ -139,17 +139,17 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             if (displacement < 20) {
                 // This was a tap, not a swipe (little to no movement)
                 if (e.cancelable) e.preventDefault();
-                
+
                 // Only dead center (relative to joystick center) triggers 'look'
                 if (dist < 12 && !suppressDefault) {
                     executeCommand('look');
                     triggerHaptic(10);
                 }
                 // Taps on the edges of the joystick base now do nothing
-                
+
                 joystickStartPos.current = null;
                 touchStartPos.current = null;
-                return true; 
+                return true;
             } else if (dist >= 32) {
                 // Full Swipe Mode (Significant movement from start AND far from center)
                 let angle = Math.atan2(dyOriginal, dxOriginal) * (180 / Math.PI); if (angle < 0) angle += 360;
@@ -198,6 +198,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
     return {
         joystickActive,
         currentDir,
+        setCurrentDir,
         isJoystickConsumed,
         setIsJoystickConsumed,
         isTargetModifierActive,

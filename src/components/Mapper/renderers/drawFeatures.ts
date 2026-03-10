@@ -1,5 +1,5 @@
 import { RenderContext, drawLine } from './rendererUtils';
-import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT } from '../mapperUtils';
+import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState } from '../mapperUtils';
 
 const drawRoomFlags = (
     ctx: CanvasRenderingContext2D,
@@ -66,31 +66,6 @@ export const drawFeatures = (
     const { ctx, dpr, isDarkMode, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, camera } = rCtx;
     const s = GRID_SIZE;
 
-    const getGateState = (rA: any, wE: any, d: string) => {
-        // Authoritative data source: trust live exits if they exist.
-        // If we have live data for the room, and the direction is missing, a wall exists.
-        const exA = rA?.exits ? rA.exits[d] : wE?.[d];
-        if (!exA) return { hasExit: false };
-
-        const tV = String(exA.target || exA.gmcpDestId || ""), oD = DIRS[d]?.opp;
-        const nId = tV && !tV.startsWith('m_') ? `m_${tV}` : tV;
-        const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
-        const exB = n?.exits?.[oD], hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
-
-        // Neighbor check: if the neighbor is discovered but has no exit back, we shouldn't draw a door.
-        const neighborIsLive = n && (allRooms[nId] || allRooms[tV]);
-        if (neighborIsLive && !exB) return { hasExit: true, hasDoor: false, isClosed: false };
-
-        const neighborPointsBack = exB && String(exB.target || exB.gmcpDestId || "").replace(/^m_/, '') === String(rA?.id || "").replace(/^m_/, '');
-        let hasD = !!(exA.hasDoor || hasDF(exA.flags) || (neighborPointsBack && (exB.hasDoor || hasDF(exB.flags))));
-
-        if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
-
-        let isC = (exA.closed !== false);
-        if (exB && exB.closed === false) isC = false;
-
-        return { hasExit: true, hasDoor: hasD, isClosed: isC };
-    };
 
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const featureFont = `bold 14px "Inter", sans-serif`;
@@ -138,7 +113,7 @@ export const drawFeatures = (
                 // 2. High-Detail Walls and Doors (Zoom > 0.15)
                 if (camera.zoom > 0.15) {
                     for (const d of ['n', 's', 'e', 'w']) {
-                        const { hasExit, hasDoor, isClosed } = getGateState(localRoom, ghostExits, d);
+                        const { hasExit, hasDoor, isClosed } = getGateState(localRoom, ghostExits, d, allRooms, preloaded);
                         let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                         if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
 
@@ -216,29 +191,6 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const localFeatureFont = `bold 14px "Inter", sans-serif`;
 
-    const getLGS = (rA: any, d: string) => {
-        const rId = String(rA.id).startsWith('m_') ? rA.id.substring(2) : rA.id;
-        const wEx = preloaded[rId]?.[4]?.[d];
-        const exA = rA.exits ? rA.exits[d] : wEx;
-        if (!exA) return { hasExit: false };
-
-        const tV = String(exA.target || exA.gmcpDestId || ""), oD = DIRS[d]?.opp;
-        const nId = tV && !tV.startsWith('m_') ? `m_${tV}` : tV;
-        const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
-        const exB = n?.exits?.[oD];
-
-        // Neighbor check for doors: if neighbor is live and lacks exit back, no door.
-        const neighborIsLive = n && (allRooms[nId] || allRooms[tV]);
-        if (neighborIsLive && !exB) return { hasExit: true, hasDoor: false, isClosed: false };
-
-        const hasDF = (f?: any[]) => f?.some((x: any) => /door|gate|portcullis|secret/i.test(String(x)));
-        const neighborPointsBack = exB && String(exB.target || exB.gmcpDestId || "").replace(/^m_/, '') === String(rA?.id || "").replace(/^m_/, '');
-        const hasD = !!(exA.hasDoor || hasDF(exA.flags) || (neighborPointsBack && (exB.hasDoor || hasDF(exB.flags))));
-
-        if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
-
-        return { hasExit: true, hasDoor: hasD, isClosed: exA.closed !== false };
-    };
 
     for (const room of localRooms) {
         // Skip if this room is already in the preloaded map (to avoid double drawing overlaps)
@@ -297,7 +249,9 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             if (preloaded[vnum] || Math.abs((room.z || 0) - currentZ) > 1.5) continue;
             const wx = room.x * s, wy = room.y * s;
             for (const d of ['n', 's', 'e', 'w']) {
-                const { hasExit, hasDoor, isClosed } = getLGS(room, d);
+                const rId = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
+                const wEx = preloaded[rId]?.[4]?.[d];
+                const { hasExit, hasDoor, isClosed } = getGateState(room, wEx, d, allRooms, preloaded);
                 let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                 if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
                 if (!hasExit) {

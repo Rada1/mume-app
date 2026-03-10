@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 export function useViewport(
-    uiMode: import('../types').UiMode = 'auto', 
-    disableSmoothScroll: boolean = false, 
+    uiMode: import('../types').UiMode = 'auto',
+    disableSmoothScroll: boolean = false,
     disable3dScroll: boolean = false,
     isImmersionMode: boolean = true
 ) {
@@ -48,7 +48,7 @@ export function useViewport(
         const targetScroll = Math.max(0, container.scrollHeight - container.clientHeight);
 
         if (!force) {
-            const threshold = 15; 
+            const threshold = 15;
             const isNearBottom = targetScroll - currentScroll < threshold;
             if (!isNearBottom) return;
         }
@@ -57,7 +57,7 @@ export function useViewport(
         // If already animating and the target has moved, we don't want to cancel and restart (laggy).
         // Instead, we let the existing loop know about the new target distance.
         const isSmoothEnabled = !instant && !disableSmoothScroll && isImmersionMode;
-        
+
         if (isSmoothEnabled && Math.abs(targetScroll - currentScroll) > 0.5) {
             // Store the target for the animation loop to consume
             (container as any).lastTargetScroll = targetScroll;
@@ -71,7 +71,7 @@ export function useViewport(
 
             isAutoScrollingRef.current = true;
             const startTime = performance.now();
-            const duration = 250; 
+            const duration = 250;
             const startScroll = container.scrollTop;
 
             const animate = (currentTime: number) => {
@@ -82,13 +82,13 @@ export function useViewport(
 
                 const elapsed = currentTime - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 // Exponential ease-out for that "premium" feel
                 const easeOut = 1 - Math.pow(2, -10 * progress);
-                
+
                 const dynamicTarget = container.scrollHeight - container.clientHeight;
                 const currentDistance = dynamicTarget - startScroll;
-                
+
                 // Velocity-aware smoothing: if the gap is tiny, just snap
                 if (progress < 1 && Math.abs(dynamicTarget - container.scrollTop) > 0.5) {
                     const newScroll = startScroll + (currentDistance * easeOut);
@@ -129,7 +129,7 @@ export function useViewport(
         const resizeObserver = new ResizeObserver(() => {
             const newHeight = container.scrollHeight;
             if (newHeight === lastHeight) return;
-            
+
             // If already animating, the animation loop itself will track the height.
             // But for simple snaps or stillness, let's follow the growth.
             if (isAutoScrollingRef.current) {
@@ -169,7 +169,7 @@ export function useViewport(
         if (!isMobile) return;
 
         const handleTouchStart = (e: TouchEvent) => {
-            if ((e.target as HTMLElement).closest('.map-canvas, .joystick-cluster, .xbox-cluster, .joystick-container, .game-button, .custom-button')) return;
+            if (!(e.target as HTMLElement).closest('.message-log')) return;
             if (e.touches.length === 2) {
                 const dist = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -180,7 +180,7 @@ export function useViewport(
         };
 
         const handleTouchMove = (e: TouchEvent) => {
-            if ((e.target as HTMLElement).closest('.map-canvas, .joystick-cluster, .xbox-cluster, .joystick-container, .game-button, .custom-button')) return;
+            if (!(e.target as HTMLElement).closest('.message-log')) return;
             if (e.touches.length === 2 && touchDistRef.current !== null) {
                 const distContext = Math.hypot(
                     e.touches[0].pageX - e.touches[1].pageX,
@@ -254,7 +254,7 @@ export function useViewport(
 
         // --- Robust Base Height Detection ---
         const widthChanged = Math.abs(currentWidth - lastWidthRef.current) > 50;
-        
+
         if (offsetTop === 0 || baseHeightRef.current === 0 || widthChanged) {
             if (currentHeight > 500 || widthChanged || baseHeightRef.current === 0) {
                 if (widthChanged || currentHeight > baseHeightRef.current) {
@@ -268,7 +268,7 @@ export function useViewport(
         const heightDrop = baseHeightRef.current - currentHeight;
         const threshold = isLandscape ? 40 : 60;
         const isKeyboardPhysicallyPresent = heightDrop > threshold || (baseHeightRef.current > 0 && currentHeight < baseHeightRef.current * 0.8);
-        
+
         const targetState = isKeyboardPhysicallyPresent;
 
         const applyLock = (h: number, off: number, isLocked: boolean) => {
@@ -284,7 +284,7 @@ export function useViewport(
                 container.style.height = `${h}px`;
                 container.style.transform = `translate3d(0, ${off}px, 0)`;
                 container.style.overflow = 'hidden';
-                
+
                 if (Math.abs(window.scrollY) > 1) window.scrollTo(0, 0);
                 if (isFocusableActive) {
                     const input = document.activeElement as HTMLElement;
@@ -306,7 +306,7 @@ export function useViewport(
 
         requestAnimationFrame(() => {
             applyLock(currentHeight, offsetTop, targetState);
-            
+
             if (targetState) {
                 setTimeout(() => {
                     const v = window.visualViewport;
@@ -318,7 +318,7 @@ export function useViewport(
             }
 
             lastViewportHeightRef.current = currentHeight;
-            
+
             if (targetState !== isKeyboardOpen) {
                 setIsKeyboardOpen(targetState);
             }
@@ -352,12 +352,12 @@ export function useViewport(
         else if (uiMode === 'portrait') root.classList.add('force-portrait');
         else if (uiMode === 'landscape') root.classList.add('force-landscape');
     }, [uiMode]);
-    
+
     useEffect(() => {
         const root = document.documentElement;
         if (disable3dScroll || !isImmersionMode) root.classList.add('no-3d-scroll');
         else root.classList.remove('no-3d-scroll');
-        
+
         if (isImmersionMode) root.classList.add('immersion-mode');
         else root.classList.remove('immersion-mode');
     }, [disable3dScroll, isImmersionMode]);

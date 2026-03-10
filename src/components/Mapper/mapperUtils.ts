@@ -34,7 +34,7 @@ export const generateId = () => Math.random().toString(36).substr(2, 9);
 export const normalizeTerrain = (t: string | number | null): string => {
     if (t === null || t === undefined) return 'Field';
     const tStr = typeof t === 'number' ? TERRAIN_MAP[String(t)] || String(t) : t;
-    
+
     const low = tStr.toLowerCase().trim();
     if (low.includes('city') || low.includes('town')) return 'City';
     if (low.includes('build')) return 'Building';
@@ -51,7 +51,7 @@ export const normalizeTerrain = (t: string | number | null): string => {
     if (low.includes('cavern')) return 'Cavern';
     if (low.includes('underwater')) return 'Underwater';
     if (low.includes('brush') || low.includes('swamp') || low.includes('shrub')) return 'Brush';
-    
+
     // Match symbols
     for (const [sym, val] of Object.entries(TERRAIN_MAP)) {
         if (tStr === sym) return val;
@@ -125,3 +125,28 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
     }
 };
 
+
+export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<string, any>, preloaded: Record<string, any>) => {
+    // Authoritative data source: trust live exits if they exist.
+    const exA = rA?.exits ? rA.exits[d] : wE?.[d];
+    if (!exA) return { hasExit: false, hasDoor: false, isClosed: false };
+
+    const tV = String(exA.target || exA.gmcpDestId || ""), oD = DIRS[d]?.opp;
+    const nId = tV && !tV.startsWith('m_') ? `m_${tV}` : tV;
+    const n = tV ? (allRooms[nId] || allRooms[tV] || (preloaded[tV] ? { exits: preloaded[tV][4] } : null)) : null;
+    const exB = n?.exits?.[oD], hasDF = (f?: any[]) => f?.some(x => /^(door|gate|portcullis|secret)$/i.test(String(x)));
+
+    // Neighbor check: if the neighbor is discovered but has no exit back, we shouldn't draw a door.
+    const neighborIsLive = n && (allRooms[nId] || allRooms[tV]);
+    if (neighborIsLive && !exB) return { hasExit: true, hasDoor: false, isClosed: false };
+
+    const neighborPointsBack = exB && String(exB.target || exB.gmcpDestId || "").replace(/^m_/, '') === String(rA?.id || "").replace(/^m_/, '');
+    const hasD = !!(exA.hasDoor || hasDF(exA.flags) || (neighborPointsBack && (exB.hasDoor || hasDF(exB.flags))));
+
+    if (!hasD) return { hasExit: true, hasDoor: false, isClosed: false };
+
+    let isC = (exA.closed !== false);
+    if (exB && exB.closed === false) isC = false;
+
+    return { hasExit: true, hasDoor: hasD, isClosed: isC };
+};

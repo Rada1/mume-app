@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUp, ArrowDown } from 'lucide-react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
 interface JoystickProps {
     joystickKnobRef: React.RefObject<HTMLDivElement | null>;
@@ -38,7 +38,7 @@ const Joystick: React.FC<JoystickProps> = ({
                     onPointerUp={() => onNavEnd('up')}
                     onPointerCancel={() => onNavEnd('up')}
                 >
-                    <ArrowUp size={24} />
+                    <ChevronUp size={24} />
                 </div>
                 <div
                     className={`nav-btn ${btnGlow.down ? 'glow-active' : ''}`}
@@ -49,7 +49,7 @@ const Joystick: React.FC<JoystickProps> = ({
                     onPointerUp={() => onNavEnd('down')}
                     onPointerCancel={() => onNavEnd('down')}
                 >
-                    <ArrowDown size={24} />
+                    <ChevronDown size={24} />
                 </div>
             </div>
 

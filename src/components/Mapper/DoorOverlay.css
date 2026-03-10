@@ -1,0 +1,20 @@
+.door-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.door-map-btn {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5) !important;
+    transition: transform 0.2s ease-out, background-color 0.2s ease-out;
+    border-radius: 50% !important;
+}
+
+.door-map-btn:active {
+    transform: scale(0.9);
+}
+
+.door-button-wrapper {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}

@@ -159,8 +159,13 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 viewZ={viewZ}
                 firstExploredAtRef={controller.firstExploredAtRef}
             />
-            {!showLegacyButtons && currentRoomId && rooms[currentRoomId] && (
-                <DpadCluster exits={rooms[currentRoomId].exits} />
+            {!showLegacyButtons && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`]) && (
+                <DpadCluster
+                    exits={(rooms[currentRoomId] || rooms[`m_${currentRoomId}`]).exits}
+                    currentRoomId={currentRoomId}
+                    rooms={rooms}
+                    preloaded={preloadedCoordsRef.current}
+                />
             )}
             <MapperToolbar
                 mode={mode}
