@@ -105,13 +105,12 @@
     from {
         opacity: 1;
         transform: translateZ(0) rotateX(0);
-        filter: blur(0);
+
     }
 
     to {
         opacity: 0.3;
         transform: translateZ(-300px) rotateX(-25deg);
-        filter: blur(0.8px);
     }
 }
 
