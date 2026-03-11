@@ -40,11 +40,11 @@ export const useMapAnimation = ({
         if (!cvs) return false;
         
         const now = performance.now();
-        // Render Throttle: Cap mapper rendering to ~30fps during animations/movement
-        // This is crucial because heavy combat/walking streams text and drawing thousands
-        // of rooms at 60fps+ steals CPU cycles from the React MessageLog render loop,
-        // causing perceived input lag and choppy text logs.
-        if (now - lastFrameTimeRef.current < 32) return true;
+        // Render Throttle: Cap mapper rendering to ~60fps (16ms) during animations/movement
+        // Previously capped to 30fps (32ms) which caused stuttering in player movement.
+        // We rely on `needsNextFrame` to naturally stop the loop when the player finishes moving
+        // to prevent stealing CPU cycles.
+        if (now - lastFrameTimeRef.current < 16) return true;
         lastFrameTimeRef.current = now;
 
         if (!ctxRef.current) {

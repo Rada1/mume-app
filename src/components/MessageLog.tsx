@@ -81,15 +81,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const container = scrollContainerRef.current;
         if (!container) return;
 
+        // Skip costly read operations if we're programmatically scrolling
+        if (viewport.isAutoScrollingRef.current) return;
+
         const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 40;
 
-        if (!viewport.isAutoScrollingRef.current) {
-            if (viewport.isLockedToBottomRef.current !== isNearBottom) {
-                viewport.isLockedToBottomRef.current = isNearBottom;
-            }
+        if (viewport.isLockedToBottomRef.current !== isNearBottom) {
+            viewport.isLockedToBottomRef.current = isNearBottom;
         }
 
-    }, [viewport, messages.length]);
+    }, [viewport]);
 
     const virtualizer = useVirtualizer({
         count: messages.length,
@@ -107,10 +108,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }, [messages]),
         overscan: 20, // Keep more items in DOM to avoid flashing
     });
-
-    useEffect(() => {
-        handleScroll();
-    }, [messages.length, activePrompt, handleScroll]);
 
     const lastScrollCallRef = React.useRef(0);
     const lastMessagesRef = React.useRef(messages);
