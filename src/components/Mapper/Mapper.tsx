@@ -162,6 +162,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 unveilMap={unveilMap}
                 viewZ={viewZ}
                 firstExploredAtRef={controller.firstExploredAtRef}
+                preMoveRef={controller.preMoveRef}
             />
             {currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`]) && (
                 <DpadCluster

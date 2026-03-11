@@ -52,8 +52,12 @@ export interface MapperRef {
     handleAddRoom: (wx: number, wy: number, z: number) => string;
     handleDeleteRoom: (id: string) => void;
     pushPendingMove: (dir: string) => void;
+    pushPreMove: (dir: string, targetRoomId: string) => void;
     handleMoveFailure: () => void;
     handleCenterOnPlayer: () => void;
+    stableRoomIdRef: React.MutableRefObject<string | null>;
+    stableRoomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
 }
 
 export interface MapperProps {

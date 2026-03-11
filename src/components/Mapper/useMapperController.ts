@@ -27,6 +27,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
 
     // Shared refs
     const pendingMovesRef = useRef<{ dir: string, time: number }[]>([]);
+    const preMoveRef = useRef<{ dir: string, targetId: string, time: number } | null>(null);
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
     const discoverySourceRef = useRef<string | null>(null);
@@ -110,7 +111,8 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     const { handleRoomInfo, handleUpdateExits, handleTerrain } = useMapGmcphandlers({
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
-        showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender: options.triggerRender
+        showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender: options.triggerRender,
+        onRoomInfoProcessed: () => { preMoveRef.current = null; }
     });
 
     useImperativeHandle(ref, () => ({
@@ -120,13 +122,23 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         handleUpdateExits,
         handleTerrain,
         handleResetAndSync,
-        preloadedCoordsRef,
         discoverySourceRef,
         firstExploredAtRef,
         pushPendingMove: (dir: string) => pendingMovesRef.current.push({ dir, time: Date.now() }),
-        handleMoveFailure: () => pendingMovesRef.current.shift(),
-        handleCenterOnPlayer: options.onRecenter
-    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync, options.onRecenter]);
+        pushPreMove: (dir: string, targetId: string) => {
+            preMoveRef.current = { dir, targetId, time: Date.now() };
+            options.triggerRender?.();
+        },
+        handleMoveFailure: () => {
+            pendingMovesRef.current.shift();
+            preMoveRef.current = null;
+            options.triggerRender?.();
+        },
+        handleCenterOnPlayer: options.onRecenter,
+        stableRoomIdRef: currentRoomIdRef,
+        stableRoomsRef: roomsRef,
+        preloadedCoordsRef: preloadedCoordsRef
+    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -134,12 +146,21 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         const onExits = (e: any) => handleUpdateExits(e.detail);
         const onTerrain = (e: any) => handleTerrain(e.detail);
         const onPush = (e: any) => pendingMovesRef.current.push({ dir: e.detail, time: Date.now() });
-        const onFail = () => pendingMovesRef.current.shift();
+        const onPre = (e: any) => {
+            preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() };
+            options.triggerRender?.();
+        };
+        const onFail = () => {
+            pendingMovesRef.current.shift();
+            preMoveRef.current = null;
+            options.triggerRender?.();
+        };
 
         window.addEventListener('mume-mapper-room-info', onInfo);
         window.addEventListener('mume-mapper-update-exits', onExits);
         window.addEventListener('mume-mapper-terrain', onTerrain);
         window.addEventListener('mume-mapper-push-move', onPush);
+        window.addEventListener('mume-mapper-push-pre-move', onPre);
         window.addEventListener('mume-mapper-move-fail', onFail);
 
         return () => {
@@ -147,6 +168,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             window.removeEventListener('mume-mapper-update-exits', onExits);
             window.removeEventListener('mume-mapper-terrain', onTerrain);
             window.removeEventListener('mume-mapper-push-move', onPush);
+            window.removeEventListener('mume-mapper-push-pre-move', onPre);
             window.removeEventListener('mume-mapper-move-fail', onFail);
         };
     }, [handleRoomInfo, handleUpdateExits, handleTerrain]);
@@ -156,6 +178,6 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         currentRoomId, setCurrentRoomId, allowPersistence, setAllowPersistence,
         cameraRef, handleAddRoom, handleDeleteRoom, roomsRef, currentRoomIdRef, markersRef,
         preloadedCoordsRef, spatialIndexRef, discoverySourceRef, firstExploredAtRef, unveilMap, setUnveilMap,
-        handleResetAndSync, handleSyncLocation, handleClearMap, loadImportedMapData
+        handleResetAndSync, handleSyncLocation, handleClearMap, loadImportedMapData, preMoveRef
     };
 };

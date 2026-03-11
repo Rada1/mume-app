@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
+import { getGateState } from '../components/Mapper/mapperUtils';
 
 export interface ExecutorDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -222,6 +223,29 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         };
         const dir = dirMap[moveCmd];
         if (dir) {
+            // Responsive Pre-movement
+            const currentRoomId = mapperRef.current?.stableRoomIdRef?.current;
+            const rooms = mapperRef.current?.stableRoomsRef?.current;
+            const preloaded = mapperRef.current?.preloadedCoordsRef?.current;
+            
+            if (currentRoomId && rooms && preloaded) {
+                const room = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
+                const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
+                const wEx = preloaded[rawId]?.[4]?.[dir];
+                
+                const { hasExit, hasDoor, isClosed } = getGateState(room, wEx, dir, rooms, preloaded);
+                
+                if (hasExit && (!hasDoor || !isClosed)) {
+                    const exA = room?.exits ? room.exits[dir] : wEx;
+                    const targetId = exA?.target || exA?.gmcpDestId;
+                    if (targetId) {
+                        const finalTargetId = String(targetId).startsWith('m_') ? String(targetId) : `m_${targetId}`;
+                        mapperRef.current?.pushPreMove(dir, finalTargetId);
+                        if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-pre-move', { detail: { dir, targetId: finalTargetId } }));
+                    }
+                }
+            }
+
             mapperRef.current?.pushPendingMove(dir);
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-move', { detail: dir }));
         }

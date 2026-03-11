@@ -19,12 +19,13 @@ interface AnimationProps {
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
+    preMoveRef?: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
 }
 
 export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, 
-    stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef
+    stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preMoveRef
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
@@ -64,10 +65,15 @@ export const useMapAnimation = ({
 
         // Auto-centering & Player Animation
         const activeRoomId = stableRoomIdRef.current;
-        if (playerPosRef.current && activeRoomId && stableRoomsRef.current[activeRoomId]) {
-            const target = stableRoomsRef.current[activeRoomId];
-            const px = playerPosRef.current.x, py = playerPosRef.current.y;
-            const targetX = target.x, targetY = target.y;
+        const preMove = preMoveRef?.current;
+        
+        if (playerPosRef.current && (activeRoomId || preMove) && stableRoomsRef.current) {
+            const targetId = preMove ? preMove.targetId : activeRoomId;
+            const target = targetId ? stableRoomsRef.current[targetId] : null;
+            
+            if (target) {
+                const px = playerPosRef.current.x, py = playerPosRef.current.y;
+                const targetX = target.x, targetY = target.y;
 
             const dx = targetX - px, dy = targetY - py;
             const distSq = dx * dx + dy * dy;
@@ -93,9 +99,9 @@ export const useMapAnimation = ({
                 if (distSq < 0.00001) {
                    playerPosRef.current.x = targetX;
                    playerPosRef.current.y = targetY;
-                } else {
-                   needsNextFrame = true;
                 }
+                }
+                needsNextFrame = true;
             }
 
             if (autoCenter && !isDragging) {
@@ -172,7 +178,7 @@ export const useMapAnimation = ({
                 requestRef.current = null;
             }
         };
-    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms]);
+    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms, preMoveRef]);
 
     return { tick: tickRef.current };
 };

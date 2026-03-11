@@ -17,6 +17,7 @@ interface RoomInfoProps {
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender?: () => void;
+    onRoomInfoProcessed?: () => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
 }
@@ -24,7 +25,7 @@ interface RoomInfoProps {
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
-    firstExploredAtRef, triggerRender, addMessage, showDebugEchoes
+    firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes
 }: RoomInfoProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -222,7 +223,8 @@ export const useRoomInfoHandler = ({
 
         setCurrentRoomId(targetId);
         currentRoomIdRef.current = targetId;
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, addMessage, showDebugEchoes]);
+        onRoomInfoProcessed?.();
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes]);
 
     return { handleRoomInfo };
 };
