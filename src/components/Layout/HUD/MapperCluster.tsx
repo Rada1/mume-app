@@ -63,7 +63,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     </div>
                 )}
                 <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-                    <Mapper
+            <Mapper
                         ref={mapperRef}
                         isDesignMode={isEditMode}
                         characterName={characterName}
@@ -71,6 +71,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         isMobile={true}
                         isExpanded={isExpanded}
                         setIsMinimized={(min) => setUI(prev => ({ ...prev, mapExpanded: !min }))}
+                        heldButton={heldButton}
+                        setHeldButton={setHeldButton}
+                        setCommandPreview={setCommandPreview}
                     />
                 </div>
             </div>

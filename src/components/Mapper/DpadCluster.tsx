@@ -6,17 +6,22 @@ import { GameButton } from '../Controls/GameButton/GameButton';
 import { CustomButton } from '../../types';
 import './DpadCluster.css';
 
+import { getButtonCommand } from '../../utils/buttonUtils';
+
 interface DpadClusterProps {
     exits: Record<string, any>;
     currentRoomId?: string | null;
     rooms?: Record<string, any>;
     preloaded?: Record<string, any>;
+    heldButton?: any;
+    setHeldButton?: (val: any) => void;
+    setCommandPreview?: (val: string | null) => void;
 }
 
 export const DpadCluster: React.FC<DpadClusterProps> = ({
-    exits, currentRoomId, rooms, preloaded
+    exits, currentRoomId, rooms, preloaded, heldButton, setHeldButton, setCommandPreview
 }) => {
-    const { executeCommand, triggerHaptic, joystick, handleButtonClick } = useGame();
+    const { executeCommand, triggerHaptic, joystick, handleButtonClick, btn } = useGame();
     const { target } = useVitals();
     const { setPopoverState } = useUI();
 
@@ -35,17 +40,31 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
 
     const onPointerUp = useCallback((dir: string, e: React.PointerEvent) => {
         e.stopPropagation();
+        const dirMap: Record<string, string> = {
+            n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down'
+        };
+        const fullDir = dirMap[dir] || dir;
 
-        if (!isJoystickConsumed) {
-            const dirMap: Record<string, string> = {
-                n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down'
-            };
-            executeCommand(dirMap[dir] || dir);
+        if (heldButton && !heldButton.didFire) {
+            const hbtn = btn.buttons.find(b => b.id === heldButton.id);
+            if (hbtn) {
+                const result = getButtonCommand(hbtn, heldButton.dx || 0, heldButton.dy || 0, undefined, 0, heldButton.modifiers, joystick, target);
+                if (result && result.cmd) {
+                    const finalCmd = `${result.cmd} ${fullDir}`;
+                    executeCommand(finalCmd);
+                    triggerHaptic(60);
+                    if (setHeldButton) setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                    if (setCommandPreview) setCommandPreview(null);
+                    setIsJoystickConsumed(true);
+                }
+            }
+        } else if (!isJoystickConsumed) {
+            executeCommand(fullDir);
         }
 
         setCurrentDir(null);
         setIsJoystickConsumed(false);
-    }, [executeCommand, isJoystickConsumed, setCurrentDir, setIsJoystickConsumed]);
+    }, [executeCommand, isJoystickConsumed, setCurrentDir, setIsJoystickConsumed, heldButton, btn.buttons, joystick, target, setHeldButton, setCommandPreview]);
 
     const onPointerCancel = useCallback(() => {
         setCurrentDir(null);

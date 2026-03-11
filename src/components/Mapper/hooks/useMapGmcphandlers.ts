@@ -18,6 +18,7 @@ interface UseMapGmcphandlersProps {
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender?: () => void;
+    onRoomInfoProcessed?: () => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
 }
@@ -39,6 +40,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         lastDetectedTerrainRef: props.lastDetectedTerrainRef,
         firstExploredAtRef: props.firstExploredAtRef,
         triggerRender: props.triggerRender,
+        onRoomInfoProcessed: props.onRoomInfoProcessed,
         addMessage: props.addMessage,
         showDebugEchoes: props.showDebugEchoes
     });

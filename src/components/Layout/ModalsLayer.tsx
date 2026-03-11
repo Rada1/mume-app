@@ -4,7 +4,7 @@ import EditButtonModal from '../EditButtonModal';
 import SetManagerModal from '../SetManagerModal';
 import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
-import { useGame } from '../../context/GameContext';
+import { useGame, useUI } from '../../context/GameContext';
 import { OnboardingOverlay } from '../OnboardingOverlay';
 
 interface ModalsLayerProps {
@@ -25,10 +25,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
     connect
 }) => {
     const {
-        isSettingsOpen,
-        setIsSettingsOpen,
-        settingsTab,
-        setSettingsTab,
         inlineCategories,
         setInlineCategories,
         connectionUrl,
@@ -51,9 +47,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setNewSoundRegex,
         handleSoundUpload,
         btn,
-        ui,
-        setUI,
-        setIsSetManagerOpen,
         inventoryLines,
         statsLines,
         eqLines,
@@ -64,8 +57,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setTeleportTargets,
         roomPlayers,
         triggerHaptic,
-        popoverState,
-        setPopoverState,
         addMessage,
         setSettings,
         autoConnect,
@@ -86,6 +77,18 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         showLegacyButtons,
         setShowLegacyButtons
     } = useGame() as any;
+
+    const {
+        isSettingsOpen,
+        setIsSettingsOpen,
+        settingsTab,
+        setSettingsTab,
+        setIsSetManagerOpen,
+        popoverState,
+        setPopoverState,
+        ui,
+        setUI
+    } = useUI();
 
     const popoverRef = React.useRef<HTMLDivElement>(null);
 

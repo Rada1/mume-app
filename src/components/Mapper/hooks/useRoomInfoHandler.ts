@@ -17,6 +17,7 @@ interface RoomInfoProps {
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender?: () => void;
+    onRoomInfoProcessed?: () => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
 }
@@ -24,7 +25,7 @@ interface RoomInfoProps {
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
-    firstExploredAtRef, triggerRender, addMessage, showDebugEchoes
+    firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes
 }: RoomInfoProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -270,20 +271,8 @@ export const useRoomInfoHandler = ({
 
         // Update the current room reference immediately for canvas consumption
         currentRoomIdRef.current = targetId;
-
-        if (topologyChanged) {
-            roomsRef.current = newRooms;
-            setRooms(newRooms);
-            setCurrentRoomId(targetId);
-        } else if (activeRoomId !== targetId) {
-            // Even if topology didn't change, we moved rooms.
-            // The canvas loop tracks `currentRoomIdRef`, so it will animate smoothly without a React render.
-            // But we do want to eventually update React so other components (Dpad, Header) catch up.
-            // A requestAnimationFrame defers it out of the immediate synchronous update loop, improving perceived latency.
-            requestAnimationFrame(() => setCurrentRoomId(targetId));
-        }
-
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, addMessage, showDebugEchoes]);
+        onRoomInfoProcessed?.();
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes]);
 
     return { handleRoomInfo };
 };

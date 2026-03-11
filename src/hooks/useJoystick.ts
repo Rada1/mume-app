@@ -103,7 +103,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             longPressTimer.current = null;
         }
 
-        if (!joystickActive || !joystickStartPos.current) return;
+        if (!joystickActive || !joystickStartPos.current) return false;
 
         const wasConsumed = isJoystickConsumed || isTargetModifierActive;
         const wasTargetActive = isTargetModifierActive;
@@ -111,6 +111,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         setJoystickActive(false);
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
+        const finalDir = currentDir;
         setCurrentDir(null);
         lastHapticDirRef.current = null;
 
@@ -134,6 +135,12 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
         }
 
+        // Return detailed data if suppressed for combo processing
+        if (suppressDefault) {
+             const isCenterTap = displacement < 20 && dist < 12;
+             return { isCenterTap, dir: finalDir || null };
+        }
+
         // Only execute command if NOT consumed by another button
         if (!wasConsumed) {
             if (displacement < 20) {
@@ -141,15 +148,11 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
                 if (e.cancelable) e.preventDefault();
 
                 // Only dead center (relative to joystick center) triggers 'look'
-                if (dist < 12 && !suppressDefault) {
+                if (dist < 12) {
                     executeCommand('look');
                     triggerHaptic(10);
+                    return true;
                 }
-                // Taps on the edges of the joystick base now do nothing
-
-                joystickStartPos.current = null;
-                touchStartPos.current = null;
-                return true;
             } else if (dist >= 32) {
                 // Full Swipe Mode (Significant movement from start AND far from center)
                 let angle = Math.atan2(dyOriginal, dxOriginal) * (180 / Math.PI); if (angle < 0) angle += 360;
@@ -165,13 +168,14 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
                     executeCommand(cmd);
                     setJoystickGlow(true);
                     setTimeout(() => setJoystickGlow(false), 300);
+                    return true;
                 }
             }
         }
 
         joystickStartPos.current = null;
         return false;
-    }, [joystickActive, isJoystickConsumed, isTargetModifierActive]);
+    }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir]);
 
     const handleNavStart = useCallback((dir: 'up' | 'down', e: React.PointerEvent) => {
         if (e.cancelable) e.preventDefault();
