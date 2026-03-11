@@ -209,7 +209,18 @@ export function useMessageLog(
         const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
         lastMessageRef.current = msg;
         messageBufferRef.current.push(msg);
-        if (!flushTimeoutRef.current) flushTimeoutRef.current = setTimeout(flushMessages, 32);
+
+        // If it's a user command, flush immediately for zero latency feel.
+        if (type === 'user') {
+            if (flushTimeoutRef.current) {
+                clearTimeout(flushTimeoutRef.current);
+                flushTimeoutRef.current = null;
+            }
+            flushMessages();
+        } else if (!flushTimeoutRef.current) {
+            // Otherwise, batch at ~60fps (16ms) instead of 32ms
+            flushTimeoutRef.current = setTimeout(flushMessages, 16);
+        }
     }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 
     return { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine };

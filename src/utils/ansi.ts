@@ -1,6 +1,6 @@
 import Convert from 'ansi-to-html';
 
-export const ansiConvert = new Convert({
+const converter = new Convert({
     fg: 'var(--text-primary)',
     bg: 'transparent',
     newline: false,
@@ -25,3 +25,31 @@ export const ansiConvert = new Convert({
         15: 'var(--ansi-bright-white)'
     }
 });
+
+// A simple Map-based cache to avoid re-parsing identical ANSI strings (like prompts or common attacks)
+const cache = new Map<string, string>();
+const MAX_CACHE_SIZE = 1000;
+
+export const ansiConvert = {
+    toHtml: (text: string): string => {
+        if (!text) return '';
+
+        let result = cache.get(text);
+        if (result !== undefined) {
+            return result;
+        }
+
+        result = converter.toHtml(text);
+
+        if (cache.size >= MAX_CACHE_SIZE) {
+            // Evict the oldest entry (Map iterates in insertion order)
+            const firstKey = cache.keys().next().value;
+            if (firstKey !== undefined) cache.delete(firstKey);
+        }
+        cache.set(text, result);
+
+        return result;
+    },
+    // Expose the raw converter for anything else that might need it
+    raw: converter
+};
