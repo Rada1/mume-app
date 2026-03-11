@@ -400,7 +400,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         const shouldShow = (isSilentCapture.current === 0 || isImportantMessage);
 
         if (shouldShow) {
-            const finalRawText = cleanLine;
+            let finalRawText = cleanLine;
+            // Prevent color bleeding from room names into room descriptions by ensuring a reset
+            if (isRoomName && !finalRawText.endsWith('\x1b[0m')) {
+                finalRawText += '\x1b[0m';
+            }
+
             const precalculated = { textOnly: textOnly, lower: lower };
             const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
             addMessage('game', finalRawText, undefined, stableId, isRoomName, precalculated, undefined, undefined, undefined, false);
