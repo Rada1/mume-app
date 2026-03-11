@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBaseGame } from '../context/GameContext';
+import { useBaseGame, useLog } from '../context/GameContext';
 import { Plus } from 'lucide-react';
 import { PracticeSkill } from '../types';
 import './Popovers/PracticePopover.css'; // Reuse existing styles
@@ -10,6 +10,7 @@ interface PracticeSkillCardProps {
 
 const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSkill }) => {
     const { practice, executeCommand } = useBaseGame();
+    const { addMessage } = useLog();
     const { practiceData, setLastPracticedSkill } = practice;
 
     // Find the latest version of this skill from the central state

@@ -23,71 +23,101 @@ const TypewriterText: React.FC<TypewriterTextProps> = ({ html, speed = 4, onUpda
     useEffect(() => {
         if (!containerRef.current) return;
 
-        // Simple HTML parser to separate tags from text
-        const parts: { type: 'tag' | 'text', content: string }[] = [];
-        let current = '';
-        let i = 0;
+        // Instead of building a string, we build DOM nodes to avoid innerHTML thrashing
+        // We parse the entire HTML once into a shadow div, then transfer nodes and characters over.
 
-        while (i < html.length) {
-            if (html[i] === '<') {
-                if (current) parts.push({ type: 'text', content: current });
-                let tag = '';
-                while (i < html.length && html[i] !== '>') {
-                    tag += html[i];
-                    i++;
+        containerRef.current.innerHTML = '';
+
+        const sourceDiv = document.createElement('div');
+        sourceDiv.innerHTML = html;
+
+        // Flatten the DOM tree into a sequence of operations
+        // An operation is either "enter node", "leave node", or "type character"
+        type Operation =
+            | { type: 'enter', node: Node, parent: Node }
+            | { type: 'leave' }
+            | { type: 'char', char: string, parent: Node };
+
+        const operations: Operation[] = [];
+
+        // We'll keep track of the target tree as we build it
+        const buildTargetTree = (sourceNode: Node, targetParent: Node) => {
+            for (let i = 0; i < sourceNode.childNodes.length; i++) {
+                const child = sourceNode.childNodes[i];
+                if (child.nodeType === Node.TEXT_NODE) {
+                    const text = child.textContent || '';
+                    for (let j = 0; j < text.length; j++) {
+                        operations.push({ type: 'char', char: text[j], parent: targetParent });
+                    }
+                } else if (child.nodeType === Node.ELEMENT_NODE) {
+                    // Clone the element without children
+                    const clone = child.cloneNode(false) as Element;
+                    operations.push({ type: 'enter', node: clone, parent: targetParent });
+                    buildTargetTree(child, clone);
+                    operations.push({ type: 'leave' });
                 }
-                tag += '>';
-                parts.push({ type: 'tag', content: tag });
-                current = '';
-            } else {
-                current += html[i];
             }
-            i++;
-        }
-        if (current) parts.push({ type: 'text', content: current });
+        };
 
-        let currentPartIndex = 0;
-        let currentCharIndex = 0;
-        let cumulativeHtml = '';
+        buildTargetTree(sourceDiv, containerRef.current);
+
+        let opIndex = 0;
         let lastTime = performance.now();
+        // Maintain the current parent node we're appending to
+        const parentStack: Node[] = [containerRef.current];
+        let currentTextNode: Text | null = null;
 
         const animate = (time: number) => {
             if (!containerRef.current) return;
 
             const delta = time - lastTime;
             if (delta >= speed) {
-                // Calculate how many characters we should process this frame based on elapsed time
-                const charsToProcess = Math.floor(delta / speed);
-                lastTime = time - (delta % speed); // Keep the remainder for smooth timing
+                // Determine how many characters to process this frame
+                const charsToProcess = Math.max(1, Math.floor(delta / speed));
+                // Clamp max time accumulation to prevent huge jumps if tab was hidden
+                lastTime = Math.max(time - (delta % speed), time - 50);
 
                 let charsProcessed = 0;
-                let htmlChanged = false;
+                let domChanged = false;
 
-                while (charsProcessed < charsToProcess && currentPartIndex < parts.length) {
-                    const part = parts[currentPartIndex];
-                    if (part.type === 'tag') {
-                        cumulativeHtml += part.content;
-                        currentPartIndex++;
-                        htmlChanged = true;
-                    } else {
-                        cumulativeHtml += part.content[currentCharIndex];
-                        currentCharIndex++;
-                        charsProcessed++;
-                        htmlChanged = true;
+                while (charsProcessed < charsToProcess && opIndex < operations.length) {
+                    const op = operations[opIndex];
 
-                        if (currentCharIndex >= part.content.length) {
-                            currentPartIndex++;
-                            currentCharIndex = 0;
+                    if (op.type === 'enter') {
+                        // Enter a new element node
+                        const currentParent = parentStack[parentStack.length - 1];
+                        currentParent.appendChild(op.node);
+                        parentStack.push(op.node);
+                        currentTextNode = null; // Reset text node since we're in a new element
+                        domChanged = true;
+                    } else if (op.type === 'leave') {
+                        // Leave the current element node
+                        parentStack.pop();
+                        currentTextNode = null;
+                        domChanged = true;
+                    } else if (op.type === 'char') {
+                        // Type a character
+                        const currentParent = parentStack[parentStack.length - 1];
+
+                        // If we don't have an active text node for this parent, create one
+                        if (!currentTextNode || currentTextNode.parentNode !== currentParent) {
+                            currentTextNode = document.createTextNode('');
+                            currentParent.appendChild(currentTextNode);
                         }
+
+                        currentTextNode.textContent += op.char;
+                        charsProcessed++;
+                        domChanged = true;
                     }
+
+                    opIndex++;
                 }
 
-                if (htmlChanged) {
-                    containerRef.current.innerHTML = cumulativeHtml;
+                if (domChanged) {
                     if (onUpdateRef.current) onUpdateRef.current();
                 }
 
-                if (currentPartIndex >= parts.length) {
+                if (opIndex >= operations.length) {
                     if (onCompleteRef.current) onCompleteRef.current();
                     return; // Animation complete
                 }

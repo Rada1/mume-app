@@ -1,12 +1,13 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import { Message } from '../types';
 import { ansiConvert } from '../utils/ansi';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import TypewriterText from './TypewriterText';
 import ShopItemCard from './ShopItemCard';
 import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
 
-import { useBaseGame, useVitals } from '../context/GameContext';
+import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
@@ -69,7 +70,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { messages, inCombat, viewport, processMessageHtml, executeCommand } = useBaseGame();
+    const { inCombat, viewport, executeCommand } = useBaseGame();
+    const { messages, processMessageHtml } = useLog();
     const { activePrompt } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
@@ -87,8 +89,24 @@ const MessageLog: React.FC<MessageLogProps> = ({
             }
         }
 
-        // Virtualization removed to fix scroll height drift (Diff > 200px)
     }, [viewport, messages.length]);
+
+    const virtualizer = useVirtualizer({
+        count: messages.length,
+        getScrollElement: () => scrollContainerRef.current,
+        estimateSize: useCallback((index: number) => {
+            const msg = messages[index];
+            if (!msg) return 24;
+            // Provide better estimates to prevent drift
+            if (msg.type === 'shop-item') return 120;
+            if (msg.type === 'practice-skill') return 80;
+            if (msg.type === 'practice-header') return 100;
+            if (msg.textRaw.length > 200) return 60;
+            if (msg.textRaw.length > 100) return 40;
+            return 24;
+        }, [messages]),
+        overscan: 20, // Keep more items in DOM to avoid flashing
+    });
 
     useEffect(() => {
         handleScroll();
@@ -102,8 +120,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
         const lastMsg = messages[messages.length - 1];
         lastMessagesRef.current = messages;
 
-        // Rate limiting: Don't hammer scrollToBottom during massive log bursts
-        // 16ms = ~60fps target. If we just flushed 50 lines, we only need one scroll.
         const now = Date.now();
         const isThrottled = now - lastScrollCallRef.current < 16;
 
@@ -121,18 +137,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
     }, [messages, activePrompt, viewport]);
 
-    const renderedMessages = useMemo(() => {
-        return messages.map((msg) => (
-            <MessageItem
-                key={msg.id}
-                msg={msg}
-                processMessageHtml={processMessageHtml}
-                inCombat={inCombat}
-                scrollToBottom={scrollToBottom}
-                executeCommand={executeCommand}
-            />
-        ));
-    }, [messages, processMessageHtml, inCombat]);
+    const virtualItems = virtualizer.getVirtualItems();
 
     const activePromptContent = useMemo(() => {
         if (!activePrompt) return null;
@@ -156,7 +161,39 @@ const MessageLog: React.FC<MessageLogProps> = ({
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
         >
-            {renderedMessages}
+            <div
+                style={{
+                    height: `${virtualizer.getTotalSize()}px`,
+                    width: '100%',
+                    position: 'relative',
+                }}
+            >
+                {virtualItems.map((virtualItem) => {
+                    const msg = messages[virtualItem.index];
+                    return (
+                        <div
+                            key={virtualItem.key}
+                            data-index={virtualItem.index}
+                            ref={virtualizer.measureElement}
+                            style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                transform: `translateY(${virtualItem.start}px)`,
+                            }}
+                        >
+                            <MessageItem
+                                msg={msg}
+                                processMessageHtml={processMessageHtml}
+                                inCombat={inCombat}
+                                scrollToBottom={scrollToBottom}
+                                executeCommand={executeCommand}
+                            />
+                        </div>
+                    );
+                })}
+            </div>
             {activePromptContent}
             {/* 12px "Visual Safe Zone" clears the input bar shadow and 3D perspective distortion */}
             <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '12px', flexShrink: 0 }} />

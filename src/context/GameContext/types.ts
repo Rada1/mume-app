@@ -26,6 +26,47 @@ export interface VitalsContextType {
     setDeathStage: (val: DeathStage) => void;
 }
 
+export interface LogContextType {
+    messages: Message[];
+    setMessages: Dispatch<SetStateAction<Message[]>>;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: import('../../types').ShopItem, practiceSkill?: import('../../types').PracticeSkill, practiceHeader?: { sessionsLeft: number }, skipBrevity?: boolean) => void;
+    addSystemMessage: (text: string) => void;
+    isCombatLine: (text: string) => boolean;
+    isCommunicationLine: (text: string) => boolean;
+    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string;
+}
+
+export interface UIContextType {
+    ui: {
+        drawer: 'none' | 'character' | 'items';
+        isDrawerPeeking: boolean;
+        setManagerOpen: boolean;
+        mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: 'main' | 'availableSets';
+    };
+    setUI: Dispatch<SetStateAction<{
+        drawer: 'none' | 'character' | 'items';
+        isDrawerPeeking: boolean;
+        setManagerOpen: boolean;
+        mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: 'main' | 'availableSets';
+    }>>;
+    popoverState: PopoverState | null;
+    setPopoverState: (val: PopoverState | null) => void;
+    isSettingsOpen: boolean;
+    setIsSettingsOpen: (val: boolean) => void;
+    settingsTab: 'general' | 'sound' | 'actions' | 'help';
+    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'help') => void;
+    setIsCharacterOpen: (open: boolean) => void;
+    setIsItemsDrawerOpen: (open: boolean) => void;
+    setIsMapExpanded: (open: boolean) => void;
+    setIsSetManagerOpen: (open: boolean) => void;
+}
+
 export interface GameContextType {
     // High-frequency but log-related
     inCombat: boolean;
@@ -96,32 +137,6 @@ export interface GameContextType {
     roomName: string | null;
     roomNameRef: RefObject<string | null>;
 
-    // Shared UI state
-    ui: {
-        drawer: 'none' | 'character' | 'items';
-        isDrawerPeeking: boolean;
-        setManagerOpen: boolean;
-        mapExpanded: boolean;
-        isMenuOpen: boolean;
-        isSetMenuOpen: boolean;
-        menuView: 'main' | 'availableSets';
-    };
-    setUI: Dispatch<SetStateAction<{
-        drawer: 'none' | 'character' | 'items';
-        isDrawerPeeking: boolean;
-        setManagerOpen: boolean;
-        mapExpanded: boolean;
-        isMenuOpen: boolean;
-        isSetMenuOpen: boolean;
-        menuView: 'main' | 'availableSets';
-    }>>;
-
-    popoverState: PopoverState | null;
-    setPopoverState: (val: PopoverState | null) => void;
-    isSettingsOpen: boolean;
-    setIsSettingsOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions' | 'help';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'help') => void;
     accentColor: string;
     setAccentColor: (val: string) => void;
     abilities: Record<string, number>;
@@ -130,12 +145,6 @@ export interface GameContextType {
     setActions: Dispatch<SetStateAction<GameAction[]>>;
     characterClass: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none';
     setCharacterClass: (val: 'ranger' | 'warrior' | 'mage' | 'cleric' | 'thief' | 'none') => void;
-
-    // Helpers for UI
-    setIsCharacterOpen: (open: boolean) => void;
-    setIsItemsDrawerOpen: (open: boolean) => void;
-    setIsMapExpanded: (open: boolean) => void;
-    setIsSetManagerOpen: (open: boolean) => void;
 
     detectLighting: (symbol: string) => void;
     soundTriggersRef: RefObject<SoundTrigger[]>;
@@ -168,15 +177,6 @@ export interface GameContextType {
     setOnRemoveNpc: (fn: (data: any) => void) => void;
     onOpponentChange?: (name: string | null) => void;
     setOnOpponentChange: (fn: (name: string | null) => void) => void;
-
-    // Messages
-    messages: Message[];
-    setMessages: Dispatch<SetStateAction<Message[]>>;
-    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: import('../../types').ShopItem, practiceSkill?: import('../../types').PracticeSkill, practiceHeader?: { sessionsLeft: number }, skipBrevity?: boolean) => void;
-    addSystemMessage: (text: string) => void;
-    isCombatLine: (text: string) => boolean;
-    isCommunicationLine: (text: string) => boolean;
-    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string;
 
     // Settings
     bgImage: string;
