@@ -141,45 +141,72 @@ export const useRoomInfoHandler = ({
 
         if (!targetId) targetId = generateId();
 
-        setRooms(prevRooms => {
-            const newRooms = { ...prevRooms };
-            const existingRoom = newRooms[targetId!];
+        // Check for any changes without relying on React's functional updater closures,
+        // which can lead to stale local variables in strict mode.
+        let topologyChanged = false;
 
-            if (!existingRoom) {
-                let nx = predX, ny = predY, nz = predZ;
-                if (ghostData) [nx, ny, nz] = ghostData;
-                else if (!currentActiveRoom && !ghostData) { nx = 0; ny = 0; nz = 0; }
+        // Use the current stable ref to determine changes synchronously
+        const prevRooms = roomsRef.current;
+        let newRooms = prevRooms;
+        let existingRoom = newRooms[targetId!];
 
-                const newRoom: MapperRoom = {
-                    id: targetId!, gmcpId: Number(gmcpId) || 0, name, desc,
-                    x: nx, y: ny, z: nz,
-                    zone, terrain: freshTerrain || lastDetectedTerrainRef.current || 'Unknown Terrain',
-                    exits: {}, notes: "",
-                    mobFlags: ghostData ? ghostData[7] : [],
-                    loadFlags: ghostData ? ghostData[8] : [],
-                    roomQuestFlags: questFlags,
-                    createdAt: Date.now()
+        if (!existingRoom) {
+            topologyChanged = true;
+            newRooms = { ...prevRooms };
+            let nx = predX, ny = predY, nz = predZ;
+            if (ghostData) [nx, ny, nz] = ghostData;
+            else if (!currentActiveRoom && !ghostData) { nx = 0; ny = 0; nz = 0; }
+
+            const newRoom: MapperRoom = {
+                id: targetId!, gmcpId: Number(gmcpId) || 0, name, desc,
+                x: nx, y: ny, z: nz,
+                zone, terrain: freshTerrain || lastDetectedTerrainRef.current || 'Unknown Terrain',
+                exits: {}, notes: "",
+                mobFlags: ghostData ? ghostData[7] : [],
+                loadFlags: ghostData ? ghostData[8] : [],
+                roomQuestFlags: questFlags,
+                createdAt: Date.now()
+            };
+            newRooms[targetId!] = newRoom;
+
+            if (currentActiveRoom && dirUsed && activeRoomId !== targetId) {
+                newRooms[currentActiveRoom.id] = {
+                    ...currentActiveRoom,
+                    exits: { ...currentActiveRoom.exits, [dirUsed]: { ...currentActiveRoom.exits[dirUsed], target: targetId!, gmcpDestId: Number(gmcpId) || 0, closed: false } }
                 };
-                newRooms[targetId!] = newRoom;
+                const d = DIRS[dirUsed];
+                if (d && d.opp) newRooms[targetId!].exits[d.opp] = { ...newRooms[targetId!].exits[d.opp], target: currentActiveRoom.id, closed: false };
+            }
+        } else {
+            const finalTerrain = (data.terrain || data.environment) ? normalizeTerrain(data.terrain || data.environment) : existingRoom.terrain;
+            const newMobFlags = ghostData ? ghostData[7] : existingRoom.mobFlags || [];
+            const newLoadFlags = ghostData ? ghostData[8] : existingRoom.loadFlags || [];
+            const newRoomQuestFlags = questFlags.length > 0 ? questFlags : existingRoom.roomQuestFlags || [];
 
-                if (currentActiveRoom && dirUsed && activeRoomId !== targetId) {
-                    newRooms[currentActiveRoom.id] = {
-                        ...currentActiveRoom,
-                        exits: { ...currentActiveRoom.exits, [dirUsed]: { ...currentActiveRoom.exits[dirUsed], target: targetId!, gmcpDestId: Number(gmcpId) || 0, closed: false } }
-                    };
-                    const d = DIRS[dirUsed];
-                    if (d && d.opp) newRooms[targetId!].exits[d.opp] = { ...newRooms[targetId!].exits[d.opp], target: currentActiveRoom.id, closed: false };
-                }
-            } else {
-                const finalTerrain = (data.terrain || data.environment) ? normalizeTerrain(data.terrain || data.environment) : existingRoom.terrain;
+            // Check dynamic properties too
+            const arraysDiffer = (a: any[], b: any[]) => a.length !== b.length || a.some((v, i) => v !== b[i]);
+
+            const needsUpdate =
+                existingRoom.terrain !== finalTerrain ||
+                existingRoom.name !== name ||
+                existingRoom.desc !== desc ||
+                arraysDiffer(existingRoom.mobFlags || [], newMobFlags) ||
+                arraysDiffer(existingRoom.loadFlags || [], newLoadFlags) ||
+                arraysDiffer(existingRoom.roomQuestFlags || [], newRoomQuestFlags) ||
+                (ghostData && (existingRoom.x !== ghostData[0] || existingRoom.y !== ghostData[1])) ||
+                (currentActiveRoom && dirUsed && activeRoomId !== targetId);
+
+            if (needsUpdate) {
+                topologyChanged = true;
+                newRooms = { ...prevRooms };
                 newRooms[targetId!] = {
                     ...existingRoom,
                     gmcpId: Number(gmcpId) || 0,
                     name, desc, zone,
                     terrain: finalTerrain,
-                    mobFlags: ghostData ? ghostData[7] : existingRoom.mobFlags || [],
-                    loadFlags: ghostData ? ghostData[8] : existingRoom.loadFlags || [],
-                    roomQuestFlags: questFlags.length > 0 ? questFlags : existingRoom.roomQuestFlags || []
+                    mobFlags: newMobFlags,
+                    loadFlags: newLoadFlags,
+                    roomQuestFlags: newRoomQuestFlags
                 };
                 if (ghostData) {
                     const [nx, ny, nz] = ghostData;
@@ -191,37 +218,71 @@ export const useRoomInfoHandler = ({
                     if (d && d.opp) newRooms[targetId!] = { ...newRooms[targetId!], exits: { ...newRooms[targetId!].exits, [d.opp]: { ...newRooms[targetId!].exits[d.opp], target: currentActiveRoom.id, closed: false } } };
                 }
             }
+        }
 
-            if (data.exits) {
-                const room = newRooms[targetId!];
-                const updatedExits: Record<string, any> = {};
-                for (const dir in data.exits) {
-                    const gmcpExit = data.exits[dir];
-                    if (gmcpExit === false) continue;
-                    const gmcpDestId = typeof gmcpExit === 'number' ? gmcpExit : gmcpExit.id;
-                    let exName = undefined, exFlags = undefined;
-                    if (typeof gmcpExit === 'object') { exName = gmcpExit.name; exFlags = gmcpExit.flags; }
+        if (data.exits) {
+            const room = newRooms[targetId!];
+            const updatedExits: Record<string, any> = {};
+            let exitsChanged = false;
 
-                    let internalTarget = undefined;
-                    if (gmcpDestId) {
-                        if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
-                        else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId));
+            for (const dir in data.exits) {
+                const gmcpExit = data.exits[dir];
+                if (gmcpExit === false) continue;
+                const gmcpDestId = typeof gmcpExit === 'number' ? gmcpExit : gmcpExit.id;
+                let exName = undefined, exFlags = undefined;
+                if (typeof gmcpExit === 'object') { exName = gmcpExit.name; exFlags = gmcpExit.flags; }
+
+                let internalTarget = undefined;
+                if (gmcpDestId) {
+                    if (preloadedCoordsRef.current[String(gmcpDestId)]) internalTarget = `m_${gmcpDestId}`;
+                    else internalTarget = Object.keys(newRooms).find(key => String(newRooms[key].gmcpId) === String(gmcpDestId));
+                }
+                const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
+                const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
+                const isDoor = isClosed || (typeof gmcpExit === 'object' && (gmcpExit as any).door) || !!exName || exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
+
+                updatedExits[dir] = { target: internalTarget || "", gmcpDestId, name: exName, flags: exFlags || [], closed: isClosed, hasDoor: !!isDoor };
+
+                const existingExit = room.exits && room.exits[dir];
+                if (!existingExit || existingExit.gmcpDestId !== gmcpDestId || existingExit.closed !== isClosed) {
+                    exitsChanged = true;
+                }
+            }
+
+            // Also check if any exits were removed
+            if (!exitsChanged && room.exits) {
+                for (const dir in room.exits) {
+                    if (!(dir in updatedExits)) {
+                        exitsChanged = true;
+                        break;
                     }
-                    const exFlagsLow = (exFlags || []).map(f => f.toLowerCase());
-                    const isClosed = exFlagsLow.includes('closed') || exFlagsLow.includes('locked');
-                    const isDoor = isClosed || (typeof gmcpExit === 'object' && (gmcpExit as any).door) || !!exName || exFlagsLow.some(f => /door|gate|portcullis|secret/i.test(f));
+                }
+            }
 
-                    updatedExits[dir] = { target: internalTarget || "", gmcpDestId, name: exName, flags: exFlags || [], closed: isClosed, hasDoor: !!isDoor };
+            if (exitsChanged) {
+                if (!topologyChanged) {
+                    newRooms = { ...prevRooms };
+                    topologyChanged = true;
                 }
                 newRooms[targetId!] = { ...room, exits: updatedExits };
             }
-            
-            roomsRef.current = newRooms;
-            return newRooms;
-        });
+        }
 
-        setCurrentRoomId(targetId);
+        // Update the current room reference immediately for canvas consumption
         currentRoomIdRef.current = targetId;
+
+        if (topologyChanged) {
+            roomsRef.current = newRooms;
+            setRooms(newRooms);
+            setCurrentRoomId(targetId);
+        } else if (activeRoomId !== targetId) {
+            // Even if topology didn't change, we moved rooms.
+            // The canvas loop tracks `currentRoomIdRef`, so it will animate smoothly without a React render.
+            // But we do want to eventually update React so other components (Dpad, Header) catch up.
+            // A requestAnimationFrame defers it out of the immediate synchronous update loop, improving perceived latency.
+            requestAnimationFrame(() => setCurrentRoomId(targetId));
+        }
+
     }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, addMessage, showDebugEchoes]);
 
     return { handleRoomInfo };
