@@ -91,7 +91,7 @@
     .message {
         animation: vanish-into-distance linear both;
         animation-timeline: view();
-        animation-range: exit -150px exit 100%;
+        animation-range: exit 0% exit 100%;
     }
 }
 
@@ -111,7 +111,7 @@
     to {
         opacity: 0.3;
         transform: translateZ(-300px) rotateX(-25deg);
-        filter: blur(1.5px);
+        filter: blur(0.8px);
     }
 }
 

@@ -21,6 +21,9 @@ interface MapperProps {
     isExpanded?: boolean;
     isDesignMode?: boolean;
     isMmapperMode?: boolean;
+    heldButton?: any;
+    setHeldButton?: (val: any) => void;
+    setCommandPreview?: (val: string | null) => void;
 }
 
 export interface MapperHandle {
@@ -31,7 +34,7 @@ export interface MapperHandle {
 }
 
 export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
-    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded } = props;
+    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, setHeldButton, setCommandPreview } = props;
     const effectiveIsMinimized = isMinimizedProp ?? (isExpanded !== undefined ? !isExpanded : false);
     const [mode, setMode] = useState<'play' | 'edit'>('play');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -160,12 +163,15 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 viewZ={viewZ}
                 firstExploredAtRef={controller.firstExploredAtRef}
             />
-            {!showLegacyButtons && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`]) && (
+            {currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`]) && (
                 <DpadCluster
                     exits={(rooms[currentRoomId] || rooms[`m_${currentRoomId}`]).exits}
                     currentRoomId={currentRoomId}
                     rooms={rooms}
                     preloaded={preloadedCoordsRef.current}
+                    heldButton={heldButton}
+                    setHeldButton={setHeldButton}
+                    setCommandPreview={setCommandPreview || (() => {})}
                 />
             )}
             <MapperToolbar

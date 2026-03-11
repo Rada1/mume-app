@@ -111,26 +111,26 @@ export const useMapperRenderer = ({
         const cacheParams = `${curZInt}_${camera.zoom}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}`;
         
         // Cache rebuild threshold should scale with zoom.
-        // At high zoom, we want tight bounds (GRID_SIZE * 2.5).
+        // At high zoom, we want tight bounds (GRID_SIZE * 5).
         // At low zoom, we can tolerate much more movement before rebuilding the expensive background.
-        const movementThreshold = Math.max(GRID_SIZE * 2.5, (GRID_SIZE * 5) / Math.max(0.01, camera.zoom));
-        const cameraDist = Math.hypot(camera.x - (cache as any).lastCamX, camera.y - (cache as any).lastCamY);
+        const movementThreshold = Math.max(GRID_SIZE * 5, (GRID_SIZE * 20) / Math.max(0.1, camera.zoom));
+        const lastCamX = (cache as any).lastCamX ?? 0;
+        const lastCamY = (cache as any).lastCamY ?? 0;
+        const cameraDist = Math.hypot(camera.x - lastCamX, camera.y - lastCamY);
         
         const needsRebuild = cache.lastParams !== cacheParams || cameraDist > movementThreshold;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
             offCtx.setTransform(1, 0, 0, 1, 0, 0);
-            // Darker grey for light mode background
             offCtx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
             offCtx.fillRect(0, 0, w, h);
             
             offCtx.save();
-            offCtx.imageSmoothingEnabled = false; // Pixel-perfect static layer
+            offCtx.imageSmoothingEnabled = false; 
             offCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
             offCtx.translate(-camera.x, -camera.y);
 
-            // Re-fetch visible data for the cache
             const vCache = visibleCacheRef.current;
             const roomAtCoord: Record<string, any> = {};
             const visitedAtCoord: Record<string, boolean> = {};
@@ -139,8 +139,7 @@ export const useMapperRenderer = ({
             const floorIndex = spatialIndexRef.current[curZInt];
             
             // Adjust bucket size based on zoom for spatial lookups
-            // When zoomed out, we look up a much larger area
-            const lookSpan = camera.zoom < 0.1 ? 20 : (camera.zoom < 0.2 ? 10 : 5);
+            const lookSpan = camera.zoom < 0.05 ? 30 : (camera.zoom < 0.1 ? 15 : 8);
             const bX1 = Math.floor(gX1 / 5) - lookSpan, bY1 = Math.floor(gY1 / 5) - lookSpan;
             const bX2 = Math.floor(gX2 / 5) + lookSpan, bY2 = Math.floor(gY2 / 5) + lookSpan;
 

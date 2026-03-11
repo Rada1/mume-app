@@ -68,19 +68,22 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                 onJoystickStart={joystick.handleJoystickStart}
                 onJoystickMove={joystick.handleJoystickMove}
                 onJoystickEnd={(e) => {
-                    const isCenterTap = joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow, !!heldButton);
-                    if (isCenterTap && heldButton?.dx !== undefined) {
+                    const resultData = joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow, !!heldButton);
+                    const isCenterTap = resultData === true || resultData?.isCenterTap;
+
+                    if (heldButton?.dx !== undefined) {
                         const button = buttons.find(b => b.id === heldButton.id);
                         if (button) {
+                            let comboDir = resultData?.dir;
+                            if (isCenterTap) comboDir = null; // center tap means no direction, use default
+
                             const result = getButtonCommand(button, heldButton.dx, heldButton.dy, undefined, undefined, heldButton.modifiers, joystick, target, true);
-                            if (result) {
-                                if (result.actionType === 'nav') setActiveSet(result.cmd);
-                                else if (['assign', 'menu', 'select-assign'].includes(result.actionType || '')) {
+                            if (result && (isCenterTap || comboDir)) {
+                                if (result.actionType === 'nav' && !comboDir) setActiveSet(result.cmd);
+                                else if (['assign', 'menu', 'select-assign'].includes(result.actionType || '') && !comboDir) {
                                     const isDial = button.menuDisplay === 'dial';
                                     const initialX = heldButton.initialX ?? window.innerWidth / 2;
                                     const initialY = heldButton.initialY ?? window.innerHeight * 0.8;
-
-                                    // For list menus triggered via combo, appear at the BUTTON finger, not joystick
                                     const fingerX = (heldButton.initialX || 0) + (heldButton.dx || 0);
                                     const fingerY = (heldButton.initialY || 0) + (heldButton.dy || 0);
 
@@ -95,7 +98,11 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                                         initialPointerX: isDial ? initialX : undefined,
                                         initialPointerY: isDial ? initialY : undefined
                                     });
-                                } else executeCommand(result.cmd);
+                                } else {
+                                    const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
+                                    const finalCmd = comboDir ? `${result.cmd} ${dirMap[comboDir] || comboDir}` : result.cmd;
+                                    executeCommand(finalCmd);
+                                }
                                 setHeldButton(prev => prev ? { ...prev, didFire: true } : null);
                                 setCommandPreview(null);
                                 triggerHaptic(60);

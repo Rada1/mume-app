@@ -40,11 +40,14 @@ export const useMapAnimation = ({
         if (!cvs) return false;
         
         const now = performance.now();
-        // Render Throttle: Cap mapper rendering to ~30fps during animations/movement
-        // This is crucial because heavy combat/walking streams text and drawing thousands
-        // of rooms at 60fps+ steals CPU cycles from the React MessageLog render loop,
-        // causing perceived input lag and choppy text logs.
-        if (now - lastFrameTimeRef.current < 32) return true;
+        const deltaTime = now - lastFrameTimeRef.current;
+        
+        // Increase throttle to ~60fps (16ms) instead of 30fps (32ms)
+        // Since we've optimized the rendering, we can afford more frames.
+        if (deltaTime < 16) return true;
+        
+        // Calculate a normalized factor for lerping based on time (aiming for 60fps base)
+        const frameScale = Math.min(2, deltaTime / 16.67);
         lastFrameTimeRef.current = now;
 
         if (!ctxRef.current) {
@@ -68,12 +71,14 @@ export const useMapAnimation = ({
 
             const dx = targetX - px, dy = targetY - py;
             const distSq = dx * dx + dy * dy;
+            
             if (distSq > 0.0000001) {
-                const lerpFactor = 0.12; // Smoother player glide
+                // Delta-time aware lerp for "super smooth" glide
+                const lerpFactor = 1 - Math.pow(0.88, frameScale); 
                 playerPosRef.current.x += dx * lerpFactor;
                 playerPosRef.current.y += dy * lerpFactor;
                 
-                // Push trail dots during glide for smoothness
+                // Optimized trail update
                 if (distSq > 0.001) {
                     playerTrailRef.current.push({
                         x: playerPosRef.current.x,
@@ -81,10 +86,10 @@ export const useMapAnimation = ({
                         z: playerPosRef.current.z,
                         alpha: 0.8
                     });
-                    if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
+                    // Cap trail length efficiently
+                    if (playerTrailRef.current.length > 30) playerTrailRef.current.shift();
                 }
 
-                // Snap if very close to prevent micro-frames
                 if (distSq < 0.00001) {
                    playerPosRef.current.x = targetX;
                    playerPosRef.current.y = targetY;
@@ -101,7 +106,7 @@ export const useMapAnimation = ({
                 const cdx = targetCamX - camera.current.x;
                 const cdy = targetCamY - camera.current.y;
                 if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
-                    const camLerp = 0.1; // Smoother camera glide
+                    const camLerp = 1 - Math.pow(0.9, frameScale);
                     camera.current.x += cdx * camLerp;
                     camera.current.y += cdy * camLerp;
                     needsNextFrame = true;
@@ -114,9 +119,11 @@ export const useMapAnimation = ({
 
         if (playerTrailRef.current.length > 0) {
             let trailChanged = false;
+            // Use a more efficient decay constant
+            const decay = Math.pow(0.93, frameScale);
             playerTrailRef.current = playerTrailRef.current.filter(t => {
-                if (t.alpha > 0.01) {
-                    t.alpha *= 0.93; // Slower trail decay for better persistence
+                if (t.alpha > 0.05) {
+                    t.alpha *= decay;
                     trailChanged = true;
                     return true;
                 }

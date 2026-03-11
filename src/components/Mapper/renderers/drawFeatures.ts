@@ -1,60 +1,79 @@
 import { RenderContext, drawLine } from './rendererUtils';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState } from '../mapperUtils';
 
-const drawRoomFlags = (
+// Pre-render common indicators for performance
+const indicatorIcons: Record<string, HTMLCanvasElement> = {};
+const getIndicatorIcon = (sym: string, color: string) => {
+    const key = `${sym}_${color}`;
+    if (indicatorIcons[key]) return indicatorIcons[key];
+    const canvas = document.createElement('canvas');
+    canvas.width = 24; canvas.height = 24;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = color;
+    ctx.font = 'bold 20px "Inter", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(sym, 12, 12);
+    indicatorIcons[key] = canvas;
+    return canvas;
+};
+
+const drawRoomFlagsOptimized = (
     ctx: CanvasRenderingContext2D,
     anchorX: number,
     anchorY: number,
     zoom: number,
-    font: string,
     mobF: string[],
     loadF: string[],
     questF: string[]
 ) => {
-    ctx.save();
-    ctx.font = font;
     let off = 0;
-    const spacing = 10 / zoom;
+    const spacing = 12 / zoom;
+    const iconSize = 16 / zoom;
 
     // Standard Flags (Aggressive, Shop, Guild, Rent)
     for (const f of mobF) {
         const flag = String(f).toUpperCase();
-        if (flag.includes('AGGRESSIVE')) { ctx.fillStyle = '#f38ba8'; ctx.fillText('!', anchorX + off, anchorY); off += spacing; }
-        else if (flag.includes('SHOP')) { ctx.fillStyle = '#f9e2af'; ctx.fillText('$', anchorX + off, anchorY); off += spacing; }
-        else if (flag.includes('GUILD')) { ctx.fillStyle = '#cba6f7'; ctx.fillText('G', anchorX + off, anchorY); off += spacing; }
-        else if (flag.includes('RENT')) { ctx.fillStyle = '#89b4fa'; ctx.fillText('R', anchorX + off, anchorY); off += spacing; }
+        let icon = null;
+        if (flag.includes('AGGRESSIVE')) icon = getIndicatorIcon('!', '#f38ba8');
+        else if (flag.includes('SHOP')) icon = getIndicatorIcon('$', '#f9e2af');
+        else if (flag.includes('GUILD')) icon = getIndicatorIcon('G', '#cba6f7');
+        else if (flag.includes('RENT')) icon = getIndicatorIcon('R', '#89b4fa');
+        
+        if (icon) {
+            ctx.drawImage(icon, anchorX + off - iconSize/2, anchorY - iconSize/2, iconSize, iconSize);
+            off += spacing;
+        }
     }
 
     // Quest Flags
     for (const f of questF) {
-        ctx.fillStyle = '#fab387';
-        ctx.fillText('?', anchorX + off, anchorY); off += spacing;
+        const icon = getIndicatorIcon('?', '#fab387');
+        ctx.drawImage(icon, anchorX + off - iconSize/2, anchorY - iconSize/2, iconSize, iconSize);
+        off += spacing;
     }
 
     // Expanded Load/Room Flags
     const allFlagsStr = [...mobF, ...loadF].join('|').toUpperCase();
 
     const indicators = [
-        { regex: /WATER|POND|FOUNTAIN|WELL/i, sym: '~', color: '#89b4fa' }, // Light Blue
-        { regex: /HERB/i, sym: '*', color: '#a6e3a1' },                   // Green
-        { regex: /FOOD|BERRY|VEGETABLE/i, sym: 'f', color: '#f9e2af' },    // Yellow
-        { regex: /HORSE|STALLION|DONKEY/i, sym: 'h', color: '#cba6f7' },   // Lavender
-        { regex: /BOAT/i, sym: 'b', color: '#94e2d5' },                    // Cyan
-        { regex: /STABLE/i, sym: 'S', color: '#fab387' },                  // Orange
-        { regex: /DT|DEATHTRAP/i, sym: '☠', color: '#f38ba8' },            // Red
-        { regex: /FERRY/i, sym: 'F', color: '#74c7ec' },                   // Teal
-        { regex: /COACH/i, sym: 'C', color: '#b4befe' }                   // Purple
+        { regex: /WATER|POND|FOUNTAIN|WELL/i, sym: '~', color: '#89b4fa' },
+        { regex: /HERB/i, sym: '*', color: '#a6e3a1' },
+        { regex: /FOOD|BERRY|VEGETABLE/i, sym: 'f', color: '#f9e2af' },
+        { regex: /HORSE|STALLION|DONKEY/i, sym: 'h', color: '#cba6f7' },
+        { regex: /BOAT/i, sym: 'b', color: '#94e2d5' },
+        { regex: /STABLE/i, sym: 'S', color: '#fab387' },
+        { regex: /DT|DEATHTRAP/i, sym: '☠', color: '#f38ba8' },
+        { regex: /FERRY/i, sym: 'F', color: '#74c7ec' },
+        { regex: /COACH/i, sym: 'C', color: '#b4befe' }
     ];
 
     for (const ind of indicators) {
         if (ind.regex.test(allFlagsStr)) {
-            ctx.fillStyle = ind.color;
-            ctx.fillText(ind.sym, anchorX + off, anchorY);
+            const icon = getIndicatorIcon(ind.sym, ind.color);
+            ctx.drawImage(icon, anchorX + off - iconSize/2, anchorY - iconSize/2, iconSize, iconSize);
             off += spacing;
         }
     }
-
-    ctx.restore();
 };
 
 
@@ -66,9 +85,8 @@ export const drawFeatures = (
     const { ctx, dpr, isDarkMode, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, camera } = rCtx;
     const s = GRID_SIZE;
 
-
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    const featureFont = `bold 14px "Inter", sans-serif`;
+    // Fast return if no buckets
+    if (!floorIndex) return;
 
     for (let bx = bX1; bx <= bX2; bx++) {
         for (let by = bY1; by <= bY2; by++) {
@@ -84,7 +102,7 @@ export const drawFeatures = (
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
 
                 // 1. Roads and trails (Zoom >= 0.1)
-                if (ghostExits) {
+                if (ghostExits && camera.zoom >= 0.1) {
                     const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
                     const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
                     for (const dir in ghostExits) {
@@ -94,16 +112,15 @@ export const drawFeatures = (
                             const combinedFlags = [...(exObj.flags || []), ...(currentRoomObj.exits?.[dir]?.flags || [])];
                             const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
                             const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
-                            if (hasRoadFlag && camera.zoom >= 0.1) {
+                            if (hasRoadFlag) {
                                 const roadWidth = 12;
                                 const pathWidth = 6;
                                 if (isCurrentRoad && normalizeTerrain(targetData[3] as any) === 'Road') drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? ROAD_COLOR_DARK : ROAD_COLOR_LIGHT, roadWidth, dpr, invZoom);
                                 else drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? PATH_COLOR_DARK : PATH_COLOR_LIGHT, pathWidth, dpr, invZoom);
-                            } else if (camera.zoom >= 0.1) {
+                            } else {
                                 const dx = Math.abs(rx - targetData[0]), dy = Math.abs(ry - targetData[1]);
                                 if (dx > 1.1 || dy > 1.1 || dir === 'u' || dir === 'd') {
-                                    const connWidth = 2;
-                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)', connWidth, dpr, invZoom);
+                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)', 2, dpr, invZoom);
                                 }
                             }
                         }
@@ -140,15 +157,21 @@ export const drawFeatures = (
                 if (camera.zoom > 0.2) {
                     const mobF = localRoom?.mobFlags || rData[7] || [], loadF = localRoom?.loadFlags || rData[8] || [], questF = localRoom?.roomQuestFlags || [];
                     if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
-                        drawRoomFlags(ctx, anchorX, anchorY, camera.zoom, featureFont, mobF, loadF, questF);
+                        drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, mobF, loadF, questF);
                     }
 
                     if (ghostExits && (ghostExits.u || ghostExits.d)) {
-                        ctx.save(); ctx.font = featureFont; ctx.fillStyle = isDarkMode ? '#fab387' : '#e67e22';
+                        ctx.fillStyle = isDarkMode ? '#fab387' : '#e67e22';
                         const vOff = 14 / camera.zoom;
-                        if (ghostExits.u) ctx.fillText('▲', anchorX, anchorY - vOff);
-                        if (ghostExits.d) ctx.fillText('▼', anchorX, anchorY + vOff);
-                        ctx.restore();
+                        const arrowSize = 16 / camera.zoom;
+                        if (ghostExits.u) {
+                            const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
+                            ctx.drawImage(icon, anchorX - arrowSize/2, anchorY - vOff - arrowSize/2, arrowSize, arrowSize);
+                        }
+                        if (ghostExits.d) {
+                            const icon = getIndicatorIcon('▼', isDarkMode ? '#fab387' : '#e67e22');
+                            ctx.drawImage(icon, anchorX - arrowSize/2, anchorY + vOff - arrowSize/2, arrowSize, arrowSize);
+                        }
                     }
                 }
             }
@@ -188,15 +211,10 @@ export const drawFeatures = (
 export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
     const { ctx, isDarkMode, currentZ, preloaded, camera, allRooms, dpr, invZoom } = rCtx;
     const s = GRID_SIZE;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    const localFeatureFont = `bold 14px "Inter", sans-serif`;
-
 
     for (const room of localRooms) {
-        // Skip if this room is already in the preloaded map (to avoid double drawing overlaps)
         const vnum = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
         if (preloaded[vnum]) continue;
-
         if (Math.abs((room.z || 0) - currentZ) > 1.5) continue;
         const wx = room.x * s, wy = room.y * s, cX = wx + s / 2, cY = wy + s / 2;
 
@@ -219,11 +237,17 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
         }
 
         // Local Up/Down Indicators
-        if (room.exits && (room.exits.u || room.exits.d)) {
-            ctx.save(); ctx.font = localFeatureFont; ctx.fillStyle = isDarkMode ? '#fab387' : '#e67e22';
-            if (room.exits.u) ctx.fillText('▲', cX, cY - 14 / camera.zoom);
-            if (room.exits.d) ctx.fillText('▼', cX, cY + 14 / camera.zoom);
-            ctx.restore();
+        if (room.exits && (room.exits.u || room.exits.d) && camera.zoom > 0.2) {
+            const vOff = 14 / camera.zoom;
+            const arrowSize = 16 / camera.zoom;
+            if (room.exits.u) {
+                const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
+                ctx.drawImage(icon, cX - arrowSize/2, cY - vOff - arrowSize/2, arrowSize, arrowSize);
+            }
+            if (room.exits.d) {
+                const icon = getIndicatorIcon('▼', isDarkMode ? '#fab387' : '#e67e22');
+                ctx.drawImage(icon, cX - arrowSize/2, cY + vOff - arrowSize/2, arrowSize, arrowSize);
+            }
         }
     }
 
@@ -276,7 +300,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
             const wx = room.x * s, wy = room.y * s, cX = wx + s / 2, cY = wy + s / 2;
             const mobF = room.mobFlags || [], loadF = room.loadFlags || [], questF = room.roomQuestFlags || [];
             if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
-                drawRoomFlags(ctx, cX, cY, camera.zoom, localFeatureFont, mobF, loadF, questF);
+                drawRoomFlagsOptimized(ctx, cX, cY, camera.zoom, mobF, loadF, questF);
             }
         }
     }
