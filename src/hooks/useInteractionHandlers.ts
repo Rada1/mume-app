@@ -166,7 +166,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             setTarget(null); addMessage('system', 'Target cleared.');
         } else {
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
-            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false, fromUi: true });
+            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
 
             // Handle Close Keyboard feature
             if (button.trigger?.closeKeyboard) {
@@ -342,7 +342,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                     }, 10);
                 }
             } else {
-                executeCommand(finalCmd, false, false, false, false, { shouldFocus: false, fromUi: true });
+                executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
             }
         }
         else if (cmd === 'target' && context) {

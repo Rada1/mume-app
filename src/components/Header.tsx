@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import { EnvControls } from './Layout/EnvControls';
 import { LightingType, WeatherType } from '../types';
-import { useGame } from '../context/GameContext';
+import { useGame, useUI, useVitals } from '../context/GameContext';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -23,18 +23,14 @@ const Header: React.FC<HeaderProps> = ({
         isFoggy,
         inCombat,
         btn,
-        target,
-        setTarget,
-        setIsSettingsOpen,
-        setIsSetManagerOpen,
         teleportTargets,
-        setPopoverState,
         showControls,
         setShowControls,
         viewport,
-        ui,
-        setUI
     } = useGame();
+
+    const { target, setTarget } = useVitals();
+    const { ui, setUI, setIsSettingsOpen, setIsSetManagerOpen, setPopoverState } = useUI();
 
     const effectiveShowControls = showControls;
     const { activeSet, isEditMode, setIsEditMode, availableSets, setActiveSet } = btn;

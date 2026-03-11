@@ -19,16 +19,30 @@ import { useSpatButtons } from '../hooks/useSpatButtons';
 import { usePracticeHandler } from '../hooks/usePracticeHandler';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
-import { GameContextType, VitalsContextType } from './GameContext/types';
+import { GameContextType, VitalsContextType, LogContextType, UIContextType } from './GameContext/types';
 import { useGmcpHandlers } from '../hooks/useGmcpHandlers';
 import { useGameProviderState } from './GameContext/state';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
+export const LogContext = createContext<LogContextType | undefined>(undefined);
+export const UIContext = createContext<UIContextType | undefined>(undefined);
 
 export const useBaseGame = () => {
     const context = useContext(GameContext);
     if (!context) throw new Error('useBaseGame must be used within a GameProvider');
+    return context;
+};
+
+export const useLog = () => {
+    const context = useContext(LogContext);
+    if (!context) throw new Error('useLog must be used within a GameProvider');
+    return context;
+};
+
+export const useUI = () => {
+    const context = useContext(UIContext);
+    if (!context) throw new Error('useUI must be used within a GameProvider');
     return context;
 };
 
@@ -37,7 +51,11 @@ export const useGame = () => {
     if (!context) throw new Error('useGame must be used within a GameProvider');
     const vitals = useContext(VitalsContext);
     if (!vitals) throw new Error('useVitals must be used within a GameProvider');
-    return useMemo(() => ({ ...context, ...vitals }), [context, vitals]);
+    const log = useContext(LogContext);
+    if (!log) throw new Error('useLog must be used within a GameProvider');
+    const ui = useContext(UIContext);
+    if (!ui) throw new Error('useUI must be used within a GameProvider');
+    return useMemo(() => ({ ...context, ...vitals, ...log, ...ui }), [context, vitals, log, ui]);
 };
 
 export const useVitals = () => {
@@ -384,11 +402,22 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         });
     }, [viewport.isKeyboardOpen, btn.setButtons, btn.rawButtons, triggerSpitManual]);
 
-    const gameValue = useMemo(() => ({
-        ...s,
+    const uiValue = useMemo(() => ({
+        ui: s.ui, setUI: s.setUI,
         popoverState, setPopoverState,
         isSettingsOpen, setIsSettingsOpen,
         settingsTab, setSettingsTab,
+        setIsCharacterOpen: s.setIsCharacterOpen,
+        setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
+        setIsMapExpanded: s.setIsMapExpanded,
+        setIsSetManagerOpen: s.setIsSetManagerOpen,
+    }), [
+        s.ui, popoverState, isSettingsOpen, settingsTab,
+        s.setIsCharacterOpen, s.setIsItemsDrawerOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI
+    ]);
+
+    const gameValue = useMemo(() => ({
+        ...s,
         accentColor, setAccentColor,
         teleportTargets, setTeleportTargets,
         onRoomInfo: roomInfoFn, setOnRoomInfo: setRoomInfoFn,
@@ -402,12 +431,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
         onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
         onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
-        messages, setMessages,
-        addMessage: (t, txt, cob, mid, rn, pre, shop, skill, hdr, skip) => addMessage(t, txt, cob, mid, rn, pre, shop, skill, hdr, skip),
-        addSystemMessage,
-        isCombatLine, isCommunicationLine,
         playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
-        btn, joystick, editor, containerRef, viewport, env, processMessageHtml,
+        btn, joystick, editor, containerRef, viewport, env,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
         input, setInput,
         handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
@@ -420,22 +445,35 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         detectLighting: env.detectLighting,
         setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
     }), [
-        s, popoverState, isSettingsOpen, settingsTab, accentColor, teleportTargets,
+        s, accentColor, teleportTargets,
         roomInfoFn, roomExitsFn, charVitalsFn, roomPlayersFn, roomNpcsFn, roomItemsFn,
         addPlayerFn, addNpcFn, removePlayerFn, removeNpcFn, opponentChangeFn,
-        messages, setMessages, addMessage, addSystemMessage,
-        isCombatLine, isCommunicationLine, playSound, triggerHaptic,
-        btn, joystick, editor, viewport, env, processMessageHtml,
+        playSound, triggerHaptic,
+        btn, joystick, editor, viewport, env,
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
         handleDragStart, handleDragEnd,
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
         s.showLegacyButtons
     ]);
 
+    const logValue = useMemo(() => ({
+        messages,
+        setMessages,
+        addMessage: (t: any, txt: string, cob?: boolean, mid?: string, rn?: boolean, pre?: any, shop?: any, skill?: any, hdr?: any, skip?: boolean) => addMessage(t, txt, cob, mid, rn, pre, shop, skill, hdr, skip),
+        addSystemMessage,
+        isCombatLine,
+        isCommunicationLine,
+        processMessageHtml
+    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, isCommunicationLine, processMessageHtml]);
+
     return (
         <GameContext.Provider value={gameValue as any}>
             <VitalsContext.Provider value={v}>
-                {children}
+                <UIContext.Provider value={uiValue as any}>
+                    <LogContext.Provider value={logValue as any}>
+                        {children}
+                    </LogContext.Provider>
+                </UIContext.Provider>
             </VitalsContext.Provider>
         </GameContext.Provider>
     );

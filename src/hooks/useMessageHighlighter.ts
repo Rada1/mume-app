@@ -42,8 +42,15 @@ export const useMessageHighlighter = (
         return changed ? parts.join('') : currentHtml;
     };
 
+    // Create a fast hash string instead of using expensive JSON.stringify
+    const generateDepsHash = useCallback(() => {
+        return `${target || ''}:${roomPlayers.length}:${roomNpcs.length}:${roomItems.length}:${inlineCategories.length}`;
+    }, [target, roomPlayers.length, roomNpcs.length, roomItems.length, inlineCategories.length]);
+
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean) => {
-        const depsHash = JSON.stringify({ target, p: roomPlayers, n: roomNpcs, i: roomItems, cat: inlineCategories });
+        // Use the fast hash instead of full JSON serialization
+        const depsHash = generateDepsHash();
+
         const cached = cacheRef.current.get(mid);
         if (cached && cached.htmlRaw === originalHtml && cached.deps === depsHash) {
             return cached.html;
@@ -171,7 +178,7 @@ export const useMessageHighlighter = (
         }
 
         return newHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories]);
+    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash]);
 
     return { processMessageHtml };
 };

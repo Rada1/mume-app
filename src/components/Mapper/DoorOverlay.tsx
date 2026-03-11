@@ -94,7 +94,14 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
                         down: `close ${dirName}`,
                         left: `unlock ${dirName}`,
                         right: `bash ${dirName}`
-                    } as any // Extending CustomButton type contextually
+                    } as any, // Extending CustomButton type contextually
+                    trigger: {
+                        enabled: false,
+                        pattern: '',
+                        isRegex: false,
+                        autoHide: false,
+                        duration: 0
+                    }
                 };
 
                 if (!isClosed) {
