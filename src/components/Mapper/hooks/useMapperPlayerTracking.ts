@@ -27,7 +27,7 @@ export const useMapperPlayerTracking = (
                 });
                 if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
             }
-            
+
             // Initialize if null, otherwise let useMapAnimation glide X/Y
             if (!playerPosRef.current) {
                 playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
@@ -44,7 +44,10 @@ export const useMapperPlayerTracking = (
                 setViewZ(null);
             }
 
+            // Always allow triggerRender to fire, otherwise stationary map updates
+            // (e.g. an NPC entering the room changing mob flags) won't redraw.
             triggerRender();
+
         } else if (!currentRoomId) {
             lastRoomIdRef.current = null;
             playerPosRef.current = null;
@@ -60,4 +63,4 @@ export const useMapperPlayerTracking = (
     }, [triggerRender, setViewZ, setAutoCenter]);
 
     return { handleCenterOnPlayer };
-};
+};
