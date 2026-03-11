@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useVitals } from '../../context/GameContext';
 import { EnvironmentEffects } from '../Atmosphere/EnvironmentEffects';
 
 export const AtmosphericLayer: React.FC = () => {
@@ -8,11 +8,10 @@ export const AtmosphericLayer: React.FC = () => {
         weather,
         isFoggy,
         inCombat,
-        hitFlash,
         lightningEnabled,
-        deathStage,
         isImmersionMode
     } = useGame();
+    const { hitFlash, deathStage } = useVitals();
 
     return (
         <EnvironmentEffects

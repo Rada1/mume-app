@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { GameButton } from '../Controls/GameButton/GameButton';
 import { GRID_SIZE, DIRS, getGateState } from './mapperUtils';
 import { CustomButton } from '../../types';
@@ -17,10 +17,12 @@ export const DoorOverlay: React.FC<DoorOverlayProps> = ({
     rooms, currentRoomId, camera, canvasRect, preloaded
 }) => {
     const {
-        triggerHaptic, executeCommand, setPopoverState,
-        viewport, btn, handleButtonClick, target, stats,
-        ui, setUI, joystick
+        triggerHaptic, executeCommand,
+        viewport, btn, handleButtonClick, joystick
     } = useGame();
+
+    const { target, stats } = useVitals();
+    const { ui, setUI, setPopoverState } = useUI();
 
     const doorButtons = useMemo(() => {
         if (!currentRoomId || !canvasRect) return [];

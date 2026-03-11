@@ -1,6 +1,6 @@
 import React from 'react';
 import { CloudFog, Swords, Crosshair } from 'lucide-react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useVitals, useUI } from '../../context/GameContext';
 
 interface EnvControlsProps {
     getLightingIcon: () => React.ReactNode;
@@ -9,7 +9,9 @@ interface EnvControlsProps {
 }
 
 export const EnvControls: React.FC<EnvControlsProps> = ({ getLightingIcon, getWeatherIcon, isLandscape }) => {
-    const { lighting, weather, isFoggy, inCombat, target, setTarget, teleportTargets, viewport, setPopoverState } = useGame();
+    const { lighting, weather, isFoggy, inCombat, teleportTargets, viewport } = useGame();
+    const { target, setTarget } = useVitals();
+    const { setPopoverState } = useUI();
     const teleportTargetsCount = teleportTargets.length;
     const onClearTarget = () => setTarget(null);
     const onTeleportClick = () => {

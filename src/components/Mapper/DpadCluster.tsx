@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { getGateState, DIRS } from './mapperUtils';
 import { GameButton } from '../Controls/GameButton/GameButton';
 import { CustomButton } from '../../types';
@@ -16,10 +16,9 @@ interface DpadClusterProps {
 export const DpadCluster: React.FC<DpadClusterProps> = ({
     exits, currentRoomId, rooms, preloaded
 }) => {
-    const {
-        executeCommand, triggerHaptic, joystick,
-        handleButtonClick, setPopoverState, target
-    } = useGame();
+    const { executeCommand, triggerHaptic, joystick, handleButtonClick } = useGame();
+    const { target } = useVitals();
+    const { setPopoverState } = useUI();
 
     const {
         setCurrentDir = () => { },

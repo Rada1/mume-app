@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Music, Cog, Activity, HelpCircle } from 'lucide-react';
-import { useGame } from '../context/GameContext';
+import { useGame, useUI } from '../context/GameContext';
 import GeneralSettings from './Settings/GeneralSettings';
 import DataManagement from './Settings/DataManagement';
 import SoundSettings from './Settings/SoundSettings';
@@ -48,7 +48,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setShowLegacyButtons,
 }) => {
     const {
-        setIsSettingsOpen, settingsTab, setSettingsTab,
         isMmapperMode, setIsMmapperMode,
         isSoundEnabled, setIsSoundEnabled,
         isNoviceMode, setIsNoviceMode,
@@ -56,6 +55,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         actions, setActions,
         status
     } = useGame();
+
+    const { setIsSettingsOpen, settingsTab, setSettingsTab } = useUI();
 
     return (
         <div className="modal-overlay" onClick={() => setIsSettingsOpen(false)}>

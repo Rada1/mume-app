@@ -44,8 +44,13 @@ export const useMessageHighlighter = (
 
     // Create a fast hash string instead of using expensive JSON.stringify
     const generateDepsHash = useCallback(() => {
-        return `${target || ''}:${roomPlayers.length}:${roomNpcs.length}:${roomItems.length}:${inlineCategories.length}`;
-    }, [target, roomPlayers.length, roomNpcs.length, roomItems.length, inlineCategories.length]);
+        const rp = roomPlayers.join('|');
+        const rn = roomNpcs.join('|');
+        const ri = roomItems.join('|');
+        // For inline categories, we only care if the configuration itself changed length/structure roughly
+        const ic = inlineCategories.map(c => c.id).join('|');
+        return `${target || ''}:${rp}:${rn}:${ri}:${ic}`;
+    }, [target, roomPlayers, roomNpcs, roomItems, inlineCategories]);
 
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean) => {
         // Use the fast hash instead of full JSON serialization

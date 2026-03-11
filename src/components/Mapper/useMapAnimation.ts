@@ -40,10 +40,11 @@ export const useMapAnimation = ({
         if (!cvs) return false;
         
         const now = performance.now();
-        // Render Burst Protection: Don't render more than once per ~8ms (120fps cap) 
-        // even if rAF gives us more frames, unless we're in a high refresh rate mode.
-        // Actually, rAF is usually enough, but let's avoid redundant work if called manually.
-        if (now - lastFrameTimeRef.current < 4) return true; 
+        // Render Throttle: Cap mapper rendering to ~30fps during animations/movement
+        // This is crucial because heavy combat/walking streams text and drawing thousands
+        // of rooms at 60fps+ steals CPU cycles from the React MessageLog render loop,
+        // causing perceived input lag and choppy text logs.
+        if (now - lastFrameTimeRef.current < 32) return true;
         lastFrameTimeRef.current = now;
 
         if (!ctxRef.current) {

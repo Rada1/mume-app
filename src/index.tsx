@@ -16,7 +16,7 @@ import { MainContentLayer } from './components/Layout/MainContentLayer';
 import { HUDClustersLayer } from './components/Layout/HUDClustersLayer';
 import { ModalsLayer } from './components/Layout/ModalsLayer';
 import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
-import { GameProvider, useGame } from './context/GameContext';
+import { GameProvider, useGame, useUI, useVitals, useLog } from './context/GameContext';
 import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 
@@ -26,8 +26,6 @@ const MudClient = () => {
     const {
         theme,
         accentColor,
-        rumble,
-        setIsSetManagerOpen,
         isLoading,
         bgImage,
         telnet,
@@ -38,16 +36,15 @@ const MudClient = () => {
         handleSend,
         handleInputSwipe,
         triggerHaptic,
-        messages,
-        popoverState,
         executeCommand,
-        setTarget,
-        addMessage,
         handleLogClick,
         handleLogDoubleClick,
-        env,
-        setUI
+        env
     } = useGame();
+
+    const { rumble, setTarget } = useVitals();
+    const { setIsSetManagerOpen, popoverState, setUI, ui } = useUI();
+    const { messages, addMessage } = useLog();
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
 
@@ -143,7 +140,7 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${useGame().ui.mapExpanded ? 'is-map-expanded' : ''}`}
+            className={`app-container ${theme}-mode ${isMobile ? 'is-mobile' : 'is-desktop'} ${isLandscape ? 'is-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''}`}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();

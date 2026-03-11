@@ -1,7 +1,7 @@
 import React from 'react';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
-import { useGame } from '../../../context/GameContext';
+import { useGame, useUI, useVitals } from '../../../context/GameContext';
 
 interface MapperClusterProps {
     uiPositions: any;
@@ -23,7 +23,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMmapperMode, isMobile, mapperRef,
     dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview
 }) => {
-    const { ui, setUI, triggerHaptic, showLegacyButtons, showControls, viewport, btn, handleButtonClick, setPopoverState, activePrompt, executeCommand, joystick, target, stats } = useGame();
+    const { triggerHaptic, showLegacyButtons, showControls, viewport, btn, handleButtonClick, executeCommand, joystick } = useGame();
+    const { target, activePrompt, stats } = useVitals();
+    const { ui, setUI, setPopoverState } = useUI();
     const isExpanded = ui.mapExpanded;
     const { isKeyboardOpen } = viewport;
 

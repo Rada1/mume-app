@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback, useImperativeHandle } from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useLog } from '../../context/GameContext';
 import { useMapData } from './hooks/useMapData';
 import { useMapPersistence } from './hooks/useMapPersistence';
 import { useMapActions } from './hooks/useMapActions';
 import { useMapGmcphandlers } from './hooks/useMapGmcphandlers';
 
 export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void, triggerRender?: () => void } = {}) => {
-    const { addMessage, executeCommand, showDebugEchoes } = useGame();
+    const { executeCommand, showDebugEchoes } = useGame();
+    const { addMessage } = useLog();
 
     // Core state and refs from useMapData
     const {

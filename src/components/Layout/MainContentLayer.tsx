@@ -2,7 +2,7 @@ import React from 'react';
 import Header from '../Header';
 import MessageLog from '../MessageLog';
 import InputArea from '../InputArea';
-import { useGame } from '../../context/GameContext';
+import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { getButtonCommand } from '../../utils/buttonUtils';
 
 interface MainContentLayerProps {
@@ -30,7 +30,6 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         env,
         input,
         setInput,
-        target,
         triggerHaptic,
         btn,
         joystick,
@@ -43,9 +42,11 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         spatButtons,
         setSpatButtons,
         executeCommand,
-        setPopoverState,
         isImmersionMode
     } = useGame();
+
+    const { target } = useVitals();
+    const { setPopoverState } = useUI();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
 
     React.useLayoutEffect(() => {

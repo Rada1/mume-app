@@ -1,6 +1,8 @@
+import { GameButton } from "../Controls/GameButton/GameButton";
+
+import { DpadCluster } from "../Mapper/DpadCluster";
+
 import React from 'react';
-import { GameButton } from '../Controls/GameButton/GameButton';
-import { useGame } from '../../context/GameContext';
 import { Plus, X, RotateCcw, Grid } from 'lucide-react';
 import { MapperCluster } from './HUD/MapperCluster';
 import { GridOverlay } from '../Grid/GridOverlay';
@@ -8,7 +10,7 @@ import { StatsCluster } from './HUD/StatsCluster';
 import { JoystickCluster } from './HUD/JoystickCluster';
 import { XboxCluster } from './HUD/XboxCluster';
 import { LineCluster } from './HUD/LineCluster';
-import { DpadCluster } from '../Mapper/DpadCluster';
+import { useGame, useUI, useVitals } from '../../context/GameContext';
 
 interface HUDClustersLayerProps {
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
@@ -26,7 +28,9 @@ interface HUDClustersLayerProps {
 export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, joystickGlow, setJoystickGlow, btnGlow, setBtnGlow
 }) => {
-    const { characterName, isMmapperMode, btn, joystick, mapperRef, target, triggerHaptic, executeCommand, handleButtonClick, setPopoverState, viewport, activePrompt, showControls, stats, showLegacyButtons } = useGame();
+    const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons } = useGame();
+    const { target, stats, activePrompt } = useVitals();
+    const { setPopoverState } = useUI();
     const { isMobile, isLandscape, logFontSize, resetLogFontSize, isKeyboardOpen } = viewport;
 
     const effectiveShowControls = showControls && (!isMobile || !isKeyboardOpen || btn.isEditMode);
