@@ -54,15 +54,17 @@ export function useGameParser(deps: UseGameParserDeps) {
         let cleanLine = line.replace(/\r$/, '');
         if (!cleanLine) return;
 
+        // Perform ANSI stripping ONCE here and reuse the result everywhere.
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
 
-        const promptRegex = /^((?:(?:\x1b\[[0-9;]*m)*?(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*?)*[>:])\s*/;
+        // Use the ALREADY STRIPPED text for the prompt regex. It's much faster.
+        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:]\s*/;
         const textPMatch = textOnly.match(promptRegex);
 
         if (textPMatch) {
-            const promptPart = textPMatch[1];
-            const attachedText = textOnly.slice(textPMatch[0].length).trim();
+            const promptPart = textPMatch[0];
+            const attachedText = textOnly.slice(promptPart.length).trim();
 
             const symbolMatch = promptPart.match(/[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]/);
             if (symbolMatch) {
@@ -84,13 +86,15 @@ export function useGameParser(deps: UseGameParserDeps) {
             textOnly = attachedText;
             lower = textOnly.toLowerCase();
 
+            // Strip the actual prompt part from the cleanLine so the ANSI HTML doesn't render it
             const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*)/;
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
         }
 
         const currentRoomName = roomNameRef.current;
-        const textOnlyRaw = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
-        const lowerRaw = textOnlyRaw.toLowerCase();
+        // Re-use textOnly and lower instead of re-stripping
+        const textOnlyRaw = textOnly;
+        const lowerRaw = lower;
 
         // SPLIT logic: If the line starts with the room name followed by a dot/space, and it's a long line, split it.
         // This handles cases where the MUD sends the header and first description line in one go during movement.
@@ -198,9 +202,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
-            const createLine = (l: string, cmd: string): DrawerLine => {
-                const lowerLine = l.toLowerCase();
-                const textOnlyLine = l.replace(/\x1b\[[0-9;]*m/g, '').trim();
+            const createLine = (l: string, tOnly: string, lLower: string, cmd: string): DrawerLine => {
+                const lowerLine = lLower;
+                const textOnlyLine = tOnly;
 
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
@@ -238,10 +242,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             };
 
             if (captureStage.current === 'inv') {
-                setInventoryLines(p => [...p, createLine(cleanLine, 'inventorylist')]);
+                setInventoryLines(p => [...p, createLine(cleanLine, textOnly, lower, 'inventorylist')]);
             } else if (captureStage.current === 'eq') {
                 if (textOnly.length > 0) {
-                    setEqLines(p => [...p, createLine(cleanLine, 'equipmentlist')]);
+                    setEqLines(p => [...p, createLine(cleanLine, textOnly, lower, 'equipmentlist')]);
                 }
             } else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
         } else if (captureStage.current === 'shop') {

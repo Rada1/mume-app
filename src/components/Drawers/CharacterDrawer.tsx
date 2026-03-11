@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import VitalsDisplay from '../VitalsDisplay';
 
@@ -20,8 +20,9 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
 }) => {
     const {
         mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
-        playerPosition, setPlayerPosition, stats, setStats, triggerHaptic, inCombat
+        playerPosition, setPlayerPosition, triggerHaptic, inCombat
     } = useGame();
+    const { stats, setStats } = useVitals();
 
     const handleWimpyChange = (val: number) => {
         setStats(prev => ({ ...prev, wimpy: val }));

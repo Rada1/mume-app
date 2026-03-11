@@ -49,13 +49,7 @@ export const useUI = () => {
 export const useGame = () => {
     const context = useContext(GameContext);
     if (!context) throw new Error('useGame must be used within a GameProvider');
-    const vitals = useContext(VitalsContext);
-    if (!vitals) throw new Error('useVitals must be used within a GameProvider');
-    const log = useContext(LogContext);
-    if (!log) throw new Error('useLog must be used within a GameProvider');
-    const ui = useContext(UIContext);
-    if (!ui) throw new Error('useUI must be used within a GameProvider');
-    return useMemo(() => ({ ...context, ...vitals, ...log, ...ui }), [context, vitals, log, ui]);
+    return context;
 };
 
 export const useVitals = () => {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
-import { useGame } from '../../context/GameContext';
+import { useGame, useLog } from '../../context/GameContext';
 import { useMapperController } from './useMapperController';
 import { MapCanvas } from './MapCanvas';
 import { MapperToolbar } from './MapperToolbar';
@@ -52,7 +52,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { addMessage, triggerHaptic, executeCommand, theme, showLegacyButtons } = useGame();
+    const { triggerHaptic, executeCommand, theme, showLegacyButtons } = useGame();
+    const { addMessage } = useLog();
     const isDarkMode = theme === 'dark';
 
     // Pass a dummy onRecenter first to controller
