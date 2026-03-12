@@ -36,7 +36,15 @@ export const useButtonEditor = (
                 });
                 ds.finalX = newX;
                 ds.finalY = newY;
-
+            } else if (ds.type === 'cluster-resize') {
+                const newW = Math.max(100, ds.initialW + dx);
+                const newH = Math.max(100, ds.initialH + dy);
+                ds.elements.forEach((item: any) => {
+                    item.el.style.width = `${newW}px`;
+                    item.el.style.height = `${newH}px`;
+                });
+                ds.finalW = newW;
+                ds.finalH = newH;
             } else if (ds.type === 'move') {
                 if (!ds.finalPositions) ds.finalPositions = {};
                 const parentW = ds.parentRect.width;
@@ -187,6 +195,11 @@ export const useButtonEditor = (
                     btn.setUiPositions((prev: any) => ({
                         ...prev,
                         [dsId]: { ...prev[dsId], x: finalX, y: finalY }
+                    }));
+                } else if (dsType === 'cluster-resize' && ds.finalW !== undefined) {
+                    btn.setUiPositions((prev: any) => ({
+                        ...prev,
+                        [dsId]: { ...prev[dsId], w: ds.finalW, h: ds.finalH }
                     }));
                 } else if (dsType === 'move' || dsType === 'resize') {
                     if (finalPos || finalSizes) {

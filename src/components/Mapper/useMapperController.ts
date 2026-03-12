@@ -4,6 +4,7 @@ import { useMapData } from './hooks/useMapData';
 import { useMapPersistence } from './hooks/useMapPersistence';
 import { useMapActions } from './hooks/useMapActions';
 import { useMapGmcphandlers } from './hooks/useMapGmcphandlers';
+import { getGateState } from './mapperUtils';
 
 export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void, triggerRender?: () => void } = {}) => {
     const { executeCommand, showDebugEchoes } = useGame();
@@ -26,7 +27,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     });
 
     // Shared refs
-    const pendingMovesRef = useRef<{ dir: string, time: number }[]>([]);
+    const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);
     const preMoveRef = useRef<{ dir: string, targetId: string, time: number } | null>(null);
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
@@ -115,6 +116,49 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         onRoomInfoProcessed: () => { preMoveRef.current = null; }
     });
 
+    const pushPendingMove = useCallback((dir: string) => {
+        const move = { dir, time: Date.now(), resolved: false };
+        pendingMovesRef.current.push(move);
+        
+        // Blind resolution timer: if GMCP doesn't arrive in 600ms, assume the move succeeded
+        // but didn't trigger a GMCP update (darkness/blindness).
+        setTimeout(() => {
+            const idx = pendingMovesRef.current.indexOf(move);
+            if (idx !== -1) {
+                // It's still there! No GMCP update consumed it.
+                const unresolvedMove = pendingMovesRef.current[idx];
+                pendingMovesRef.current.splice(idx, 1);
+                
+                const curId = currentRoomIdRef.current;
+                const rooms = roomsRef.current;
+                const preloaded = preloadedCoordsRef.current;
+                
+                if (curId && rooms && preloaded) {
+                    const room = rooms[curId] || rooms[`m_${curId}`];
+                    const rawId = curId.startsWith('m_') ? curId.substring(2) : curId;
+                    const wEx = preloaded[rawId]?.[4]?.[unresolvedMove.dir];
+                    
+                    // Use the existing gate state logic to see if we can reasonably "predict" the target
+                    const { hasExit, hasDoor, isClosed } = getGateState(room, wEx, unresolvedMove.dir, rooms, preloaded);
+                    
+                    if (hasExit && (!hasDoor || !isClosed)) {
+                        const ex = (room?.exits ? room.exits[unresolvedMove.dir] : wEx) as any;
+                        const targetId = ex?.target || ex?.gmcpDestId;
+                        if (targetId) {
+                            const finalTargetId = String(targetId).startsWith('m_') ? String(targetId) : `m_${targetId}`;
+                            if (showDebugEchoes) {
+                                addMessage?.('system', `[Mapper] Blind Move: Resolving ${unresolvedMove.dir} to ${finalTargetId}`);
+                            }
+                            setCurrentRoomId(finalTargetId);
+                            currentRoomIdRef.current = finalTargetId;
+                            options.triggerRender?.();
+                        }
+                    }
+                }
+            }
+        }, 600);
+    }, [currentRoomIdRef, roomsRef, preloadedCoordsRef, showDebugEchoes, addMessage, setCurrentRoomId, options.triggerRender]);
+
     useImperativeHandle(ref, () => ({
         handleRoomInfo,
         handleAddRoom,
@@ -124,12 +168,13 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         handleResetAndSync,
         discoverySourceRef,
         firstExploredAtRef,
-        pushPendingMove: (dir: string) => pendingMovesRef.current.push({ dir, time: Date.now() }),
+        pushPendingMove,
         pushPreMove: (dir: string, targetId: string) => {
             preMoveRef.current = { dir, targetId, time: Date.now() };
             options.triggerRender?.();
         },
         handleMoveFailure: () => {
+            // Remove the most recent pending move since it failed
             pendingMovesRef.current.shift();
             preMoveRef.current = null;
             options.triggerRender?.();
@@ -138,14 +183,14 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         stableRoomIdRef: currentRoomIdRef,
         stableRoomsRef: roomsRef,
         preloadedCoordsRef: preloadedCoordsRef
-    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef]);
+    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef, pushPendingMove]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
         const onInfo = (e: any) => handleRoomInfo(e.detail);
         const onExits = (e: any) => handleUpdateExits(e.detail);
         const onTerrain = (e: any) => handleTerrain(e.detail);
-        const onPush = (e: any) => pendingMovesRef.current.push({ dir: e.detail, time: Date.now() });
+        const onPush = (e: any) => pushPendingMove(e.detail);
         const onPre = (e: any) => {
             preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() };
             options.triggerRender?.();
@@ -156,16 +201,22 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             options.triggerRender?.();
         };
 
+        window.addEventListener('mume-mapper-room-info', onInfo);
+        window.addEventListener('mume-mapper-update-exits', onExits);
+        window.addEventListener('mume-mapper-terrain', onTerrain);
         window.addEventListener('mume-mapper-push-move', onPush);
         window.addEventListener('mume-mapper-push-pre-move', onPre);
         window.addEventListener('mume-mapper-move-fail', onFail);
 
         return () => {
+            window.removeEventListener('mume-mapper-room-info', onInfo);
+            window.removeEventListener('mume-mapper-update-exits', onExits);
+            window.removeEventListener('mume-mapper-terrain', onTerrain);
             window.removeEventListener('mume-mapper-push-move', onPush);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
             window.removeEventListener('mume-mapper-move-fail', onFail);
         };
-    }, [handleRoomInfo, handleUpdateExits, handleTerrain]);
+    }, [handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove]);
 
     return {
         rooms, setRooms, markers, setMarkers, exploredVnums, setExploredVnums, exploredRef,

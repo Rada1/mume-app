@@ -153,11 +153,19 @@ export function useGameParser(deps: UseGameParserDeps) {
             setTimeout(() => setLightningEnabled(false), 450);
         }
 
-        if (lower.includes("alas, you cannot go that way") ||
+        const stopMovementMsg = lower.includes("alas, you cannot go that way") ||
             lower.includes("there is no exit") ||
             lower.includes("you bump into") ||
             lower.includes("maybe you should get on your feet") ||
-            lower.includes("nah, you're too exhausted")) {
+            lower.includes("nah, you're too exhausted") ||
+            lower.includes("you are too exhausted") ||
+            lower.includes("you're too exhausted") ||
+            lower.includes("in your condition?") ||
+            lower.includes("you're too stunned") ||
+            lower.includes("you are too stunned") ||
+            lower.includes("is blocking the way");
+
+        if (stopMovementMsg) {
             setRumble(true);
             triggerHaptic(40);
             mapperRef.current?.handleMoveFailure();

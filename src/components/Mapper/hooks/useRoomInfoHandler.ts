@@ -43,21 +43,36 @@ export const useRoomInfoHandler = ({
             pendingMovesRef.current.shift();
         }
 
+        // --- Move Correlation Logic ---
         let dirUsed: string | null = null;
-        const nextMove = pendingMovesRef.current.shift();
-        if (nextMove) {
-            dirUsed = nextMove.dir;
-        } else if (!activeRoomId || !currentActiveRoom || currentActiveRoom.gmcpId != gmcpId) {
-            if (currentActiveRoom && currentActiveRoom.exits) {
-                const foundDir = Object.keys(currentActiveRoom.exits).find(d => {
-                    const ex = currentActiveRoom.exits[d];
-                    return ex && ex.gmcpDestId == gmcpId;
-                });
-                if (foundDir) dirUsed = foundDir;
+        const isVnumZero = String(gmcpId) === '0' || String(gmcpId) === 'null' || !gmcpId;
+        
+        // Treat it as a move if ID changed OR if we have a pending move (helps with VNUM 0 chains)
+        const idChanged = !currentActiveRoom || String(currentActiveRoom.gmcpId) !== String(gmcpId);
+        const hasPendingMove = pendingMovesRef.current.length > 0;
+        const hasMoved = idChanged || hasPendingMove;
+
+        if (hasMoved) {
+            // Only consume a move if we actually changed rooms, if it's the very first room, 
+            // or if we have a pending move that suggests a transition between identical VNUMs (like 0->0)
+            const nextMove = pendingMovesRef.current.shift();
+            if (nextMove) {
+                dirUsed = nextMove.dir;
+            } else if (!activeRoomId || !currentActiveRoom) {
+                // First room detection - no move needed
+            } else if (idChanged) {
+                // No pending move but ID changed - look for an exit that matches the new ID
+                if (currentActiveRoom.exits) {
+                    const foundDir = Object.keys(currentActiveRoom.exits).find(d => {
+                        const ex = currentActiveRoom.exits[d];
+                        return ex && String(ex.gmcpDestId) === String(gmcpId);
+                    });
+                    if (foundDir) dirUsed = foundDir;
+                }
             }
         }
+        // If !hasMoved, this is a REFRESH (look, etc) - do NOT consume pending moves.
 
-        const isVnumZero = String(gmcpId) === '0' || String(gmcpId) === 'null' || !gmcpId;
         let ghostData: any = null;
         let matchedInternalId: string | null = null;
         let discoverySource: string | null = null;
@@ -94,7 +109,21 @@ export const useRoomInfoHandler = ({
         }
 
         let targetId = null;
-        if (!isVnumZero) {
+        // Prioritize finding a room that's an existing exit from our current location
+        if (currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
+            const ex = currentActiveRoom.exits[dirUsed];
+            if (ex.target) {
+                // Double check it's likely the right room if GMCP is non-zero
+                if (!isVnumZero && ex.gmcpDestId && String(ex.gmcpDestId) !== String(gmcpId)) {
+                    // Mismatch - don't use this exit as targetId
+                } else {
+                    targetId = ex.target;
+                }
+            }
+        }
+
+        // If not found via exits, try global search (only for non-zero unique IDs)
+        if (!targetId && !isVnumZero) {
             targetId = Object.keys(roomsRef.current).find(key => String(roomsRef.current[key].gmcpId) === String(gmcpId)) || null;
         }
 
