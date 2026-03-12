@@ -220,20 +220,21 @@
 
 .swipe-slice-label {
     color: rgba(255, 255, 255, 0.5);
-    font-size: 0.75rem;
+    font-size: 0.68rem;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    white-space: nowrap;
+    letter-spacing: 0.5px;
+    white-space: normal;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
     /* Radiate out towards perimeter, starting just outside center button */
     text-align: left;
-    margin-left: 150px;
-    /* Positions label outside center button */
-    width: 65px;
-    mask-image: linear-gradient(to right, #000 70%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, #000 70%, transparent 100%);
+    margin-left: 155px;
+    /* Positions label outside center button (radius 35px from center 115px) */
+    width: 70px;
+    display: flex;
+    align-items: center;
+    line-height: 1.1;
 }
 
 /* Flip text on left side of wheel for legibility while radiating out */
@@ -246,11 +247,9 @@
 
 .swipe-slice.active .swipe-slice-label {
     color: #fff;
-    letter-spacing: 3px;
-    scale: 1.1;
+    letter-spacing: 1.5px;
+    scale: 1.05;
     text-shadow: 0 0 20px var(--set-accent, var(--accent));
-    mask-image: none;
-    -webkit-mask-image: none;
 }
 
 .button-label {
