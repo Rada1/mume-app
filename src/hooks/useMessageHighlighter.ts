@@ -1,5 +1,5 @@
 import { useCallback, RefObject, useRef } from 'react';
-import { CustomButton, InlineCategoryConfig } from '../types';
+import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
 import { pluralizeMumeSubject } from '../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../utils/categorizationUtils';
 
@@ -27,9 +27,11 @@ export const useMessageHighlighter = (
             if (!parts[i].startsWith('<')) {
                 const nodeText = parts[i];
                 const replaced = nodeText.replace(regex, (m, ...args) => {
-                    const matchObj = isRegex ? (regex.exec(nodeText) || null) : null;
-                    if (isRegex) regex.lastIndex = 0;
-                    return replacer(m, matchObj as any);
+                    // Extract capture groups based on the regex structure
+                    // The args array is [match, p1, p2, ..., offset, string]
+                    const groups = args.slice(0, -2);
+                    // For the replacer, we fake a match object if possible or just use the groups
+                    return replacer(m, groups as any);
                 });
 
                 if (replaced !== nodeText) {
@@ -52,9 +54,9 @@ export const useMessageHighlighter = (
         return `${target || ''}:${rp}:${rn}:${ri}:${ic}`;
     }, [target, roomPlayers, roomNpcs, roomItems, inlineCategories]);
 
-    const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean) => {
+    const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType) => {
         // Use the fast hash instead of full JSON serialization
-        const depsHash = generateDepsHash();
+        const depsHash = `${generateDepsHash()}:${type || ''}`;
 
         const cached = cacheRef.current.get(mid);
         if (cached && cached.htmlRaw === originalHtml && cached.deps === depsHash) {
@@ -72,10 +74,34 @@ export const useMessageHighlighter = (
         }
         const candidates: Candidate[] = [];
 
+        // 0. Specialized List Highlighting (WHO/WHERE)
+        if (type === 'who-list' || type === 'where-list') {
+            const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            const playerMatch = type === 'who-list'
+                ? textOnly.match(/^\s*(?:<[A-Z]>\s+)?([A-Z][A-Za-zÀ-ÿ\-']+)/)
+                : textOnly.match(/^\s*([A-Z][A-Za-zÀ-ÿ\-']+)/);
+
+            if (playerMatch && playerMatch[1]) {
+                const name = playerMatch[1];
+                let highlighted = false;
+                newHtml = safeHighlight(newHtml, name, false, (m) => {
+                    if (highlighted) return m;
+                    highlighted = true;
+                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 100, 255, 0.9)">${m}</span>`;
+                });
+            }
+        }
+
+        const pcNamesSet = new Set([...roomPlayers].filter(name => name !== characterName));
+        const npcNamesSet = new Set(roomNpcs);
+
         if (!isRoomName) {
             // 1. Active Target
-            if (target) {
-                const category = getCategoryForName(target, inlineCategories) || 'inline-default';
+            if (target && type !== 'who-list' && type !== 'where-list') {
+                let category = getCategoryForName(target, inlineCategories) || 'inline-default';
+                if (pcNamesSet.has(target)) category = 'inlineplayer';
+                else if (npcNamesSet.has(target)) category = 'inlinenpc';
+
                 const glowColor = getGlowColorForCategory(category, inlineCategories);
                 const command = category;
 
@@ -113,8 +139,7 @@ export const useMessageHighlighter = (
             });
 
             // 3. PCs
-            const pcNames = new Set([...roomPlayers].filter(name => name !== characterName));
-            pcNames.forEach(name => {
+            pcNamesSet.forEach(name => {
                 const patterns = [name, pluralizeMumeSubject(name)].filter(Boolean);
                 patterns.forEach(p => {
                     candidates.push({
@@ -128,7 +153,7 @@ export const useMessageHighlighter = (
 
             // 4. NPCs
             const npcNames = new Set(roomNpcs);
-            const pSet = new Set(Array.from(pcNames).map(p => p.toLowerCase()));
+            const pSet = new Set(Array.from(pcNamesSet).map(p => (p as string).toLowerCase()));
             if (characterName) pSet.add(characterName.toLowerCase());
 
             npcNames.forEach(originalName => {

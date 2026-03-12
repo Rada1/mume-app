@@ -19,14 +19,12 @@ interface HUDClustersLayerProps {
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
     heldButton: any;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
-    joystickGlow: boolean;
-    setJoystickGlow: React.Dispatch<React.SetStateAction<boolean>>;
     btnGlow: { up: boolean, down: boolean };
     setBtnGlow: React.Dispatch<React.SetStateAction<{ up: boolean, down: boolean }>>;
 }
 
 export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
-    handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, joystickGlow, setJoystickGlow, btnGlow, setBtnGlow
+    handleDragStart, wasDraggingRef, commandPreview, setCommandPreview, heldButton, setHeldButton, btnGlow, setBtnGlow
 }) => {
     const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons } = useGame();
     const { target, stats, activePrompt } = useVitals();
@@ -132,7 +130,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                         </div>
 
                         {showLegacyButtons && (
-                            <JoystickCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} dragState={btn.dragState} handleDragStart={handleDragStart} joystick={joystick} joystickGlow={joystickGlow} btnGlow={btnGlow} setJoystickGlow={setJoystickGlow} setBtnGlow={setBtnGlow} executeCommand={executeCommand} triggerHaptic={triggerHaptic} heldButton={heldButton} setHeldButton={setHeldButton} buttons={btn.buttons} target={target} setActiveSet={btn.setActiveSet} setPopoverState={setPopoverState} setCommandPreview={setCommandPreview} />
+                            <JoystickCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} dragState={btn.dragState} handleDragStart={handleDragStart} joystick={joystick} btnGlow={btnGlow} setBtnGlow={setBtnGlow} executeCommand={executeCommand} triggerHaptic={triggerHaptic} heldButton={heldButton} setHeldButton={setHeldButton} buttons={btn.buttons} target={target} setActiveSet={btn.setActiveSet} setPopoverState={setPopoverState} setCommandPreview={setCommandPreview} />
                         )}
                     </>
                 )}

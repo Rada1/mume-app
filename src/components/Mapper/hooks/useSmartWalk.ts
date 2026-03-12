@@ -9,6 +9,8 @@ export const useSmartWalk = (
     addMessage?: (type: any, text: string) => void
 ) => {
     const [isWalking, setIsWalking] = useState(false);
+    const [walkTargetId, setWalkTargetId] = useState<string | null>(null);
+    const [walkPath, setWalkPath] = useState<string[]>([]);
     const targetRoomIdRef = useRef<string | null>(null);
     const isHoldActiveRef = useRef(false);
     const lastRoomIdRef = useRef<string | null>(currentRoomId);
@@ -49,37 +51,31 @@ export const useSmartWalk = (
         return null;
     }, [rooms, preloadedCoordsRef]);
 
-    const findPath = useCallback((startId: string, endId: string): string[] | null => {
+    const findPath = useCallback((startId: string, endId: string): { dirs: string[], ids: string[] } | null => {
         if (!startId || !endId) return null;
         const normStart = normalizeId(startId);
         const normEnd = normalizeId(endId);
         
-        if (normStart === normEnd) return [];
+        if (normStart === normEnd) return { dirs: [], ids: [startId] };
 
         console.group(`[SmartWalk] BFS Trace: ${startId} -> ${endId}`);
         console.log(`Normalized: ${normStart} -> ${normEnd}`);
 
-        const queue: [string, string[]][] = [[startId, []]];
+        const queue: [string, string[], string[]][] = [[startId, [], [startId]]];
         const visited = new Set<string>([normStart]);
 
         let iterations = 0;
         while (queue.length > 0 && iterations < 3000) {
             iterations++;
-            const [curr, path] = queue.shift()!;
-            const normCurr = normalizeId(curr);
+            const [curr, dirs, ids] = queue.shift()!;
             
             const exits = getExits(curr);
-            if (!exits) {
-                console.log(`   (No exits for ${curr})`);
-                continue;
-            }
+            if (!exits) continue;
 
             for (const [dir, exit] of Object.entries(exits)) {
                 if (!exit.target || exit.closed) continue;
 
-                // Robust ID normalization for the target
-                let rawTarget = String(exit.target);
-                let nextId = rawTarget;
+                let nextId = String(exit.target);
                 if (!nextId.startsWith('m_') && !nextId.startsWith('r_') && /^\d+$/.test(nextId)) {
                     nextId = `m_${nextId}`;
                 }
@@ -87,14 +83,16 @@ export const useSmartWalk = (
                 const normNext = normalizeId(nextId);
 
                 if (normNext === normEnd) {
-                    console.log(`[SmartWalk] Success! Found path in ${iterations} steps:`, [...path, dir]);
+                    const finalDirs = [...dirs, dir];
+                    const finalIds = [...ids, nextId];
+                    console.log(`[SmartWalk] Success! Found path in ${iterations} steps:`, finalDirs);
                     console.groupEnd();
-                    return [...path, dir];
+                    return { dirs: finalDirs, ids: finalIds };
                 }
 
                 if (!visited.has(normNext)) {
                     visited.add(normNext);
-                    queue.push([nextId, [...path, dir]]);
+                    queue.push([nextId, [...dirs, dir], [...ids, nextId]]);
                 }
             }
         }
@@ -105,6 +103,8 @@ export const useSmartWalk = (
 
     const stopWalking = useCallback(() => {
         setIsWalking(false);
+        setWalkTargetId(null);
+        setWalkPath([]);
         isHoldActiveRef.current = false;
         targetRoomIdRef.current = null;
     }, []);
@@ -124,16 +124,18 @@ export const useSmartWalk = (
         }
 
         targetRoomIdRef.current = targetId;
+        setWalkTargetId(targetId);
         isHoldActiveRef.current = true;
         setIsWalking(true);
         lastRoomIdRef.current = currentRoomId;
 
-        const path = findPath(currentRoomId, targetId);
-        if (path && path.length > 0) {
+        const pathResult = findPath(currentRoomId, targetId);
+        if (pathResult && pathResult.dirs.length > 0) {
+            setWalkPath(pathResult.ids);
             const destRoom = rooms[targetId] || (targetId.startsWith('m_') ? null : rooms[`m_${targetId}`]);
             const destName = destRoom?.name || (preloadedCoordsRef.current[normTarget]?.[5]) || normTarget;
             addMessage?.('system', `Walking to: ${destName}...`);
-            executeCommand(path[0]);
+            executeCommand(pathResult.dirs[0]);
         } else if (normCurrent === normTarget) {
             addMessage?.('system', 'You are already there.');
             stopWalking();
@@ -157,15 +159,17 @@ export const useSmartWalk = (
 
             // Recalculate path from current position
             const newPath = findPath(currentRoomId, targetRoomIdRef.current!);
-            if (newPath && newPath.length > 0) {
-                executeCommand(newPath[0]);
+            if (newPath && newPath.dirs.length > 0) {
+                setWalkPath(newPath.ids);
+                executeCommand(newPath.dirs[0]);
             } else {
                 // If path is temporarily lost (e.g. room loading lag), wait ONE frame before stopping
                 setTimeout(() => {
                     if (isHoldActiveRef.current && isWalking) {
                         const retryPath = findPath(currentRoomId, targetRoomIdRef.current!);
-                        if (retryPath && retryPath.length > 0) {
-                            executeCommand(retryPath[0]);
+                        if (retryPath && retryPath.dirs.length > 0) {
+                            setWalkPath(retryPath.ids);
+                            executeCommand(retryPath.dirs[0]);
                         } else {
                             stopWalking();
                         }
@@ -182,5 +186,5 @@ export const useSmartWalk = (
         };
     }, []);
 
-    return { isWalking, startWalking, stopWalking };
+    return { isWalking, walkTargetId, walkPath, startWalking, stopWalking };
 };

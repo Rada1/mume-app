@@ -39,6 +39,10 @@ const MudClient = () => {
         executeCommand,
         handleLogClick,
         handleLogDoubleClick,
+        handleLogPointerDown,
+        handleLogPointerUp,
+        heldButton,
+        setHeldButton,
         env
     } = useGame();
 
@@ -48,9 +52,7 @@ const MudClient = () => {
 
     const { isMobile, isKeyboardOpen, isLandscape, scrollContainerRef } = viewport;
 
-    const [heldButton, setHeldButton] = useState<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>(null);
     const [commandPreview, setCommandPreview] = useState<string | null>(null);
-    const [joystickGlow, setJoystickGlow] = useState(false);
     const [btnGlow, setBtnGlow] = useState({ up: false, down: false });
     const [managerSelectedSet, setManagerSelectedSet] = useState<string | null>(null);
     const [returnToManager, setReturnToManager] = useState(false);
@@ -128,11 +130,7 @@ const MudClient = () => {
         }
     };
 
-    const handleMouseUp = useCallback(() => { }, []);
     const handleDoubleClick = useCallback(() => { }, []);
-    const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
-        // No longer needed for dragging as we use native HTML5 Drag and Drop
-    }, []);
 
     const handleSendCallback = useCallback((e?: React.FormEvent) => {
         handleSend(e);
@@ -216,8 +214,9 @@ const MudClient = () => {
 
 
                 <MainContentLayer
-                    handleMouseUp={handleMouseUp}
+                    handleMouseUp={() => { }}
                     handleLogPointerDown={handleLogPointerDown}
+                    handleLogPointerUp={handleLogPointerUp}
                     handleSend={handleSendCallback}
                     handleInputSwipe={handleInputSwipe}
                     commandPreview={commandPreview}
@@ -233,8 +232,6 @@ const MudClient = () => {
                     setCommandPreview={setCommandPreview}
                     heldButton={heldButton}
                     setHeldButton={setHeldButton}
-                    joystickGlow={joystickGlow}
-                    setJoystickGlow={setJoystickGlow}
                     btnGlow={btnGlow}
                     setBtnGlow={setBtnGlow}
                 />

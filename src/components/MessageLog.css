@@ -171,7 +171,7 @@
     margin: 0 8px 10px 8px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.35);
-    padding: 0 18px;
+    padding: 8px 18px;
     border-radius: 12px;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -181,8 +181,13 @@
     overflow: hidden;
     min-height: 54px;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 8px;
+}
+
+.input-area.focused {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.3), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* Terrain Glows with Rich Aesthetics */
@@ -245,10 +250,10 @@
 .input-form {
     display: flex;
     gap: 10px;
-    align-items: center;
-    height: 100%;
+    align-items: flex-end;
     flex: 1;
     min-width: 0;
+    padding: 4px 0;
 }
 
 .cmd-prompt {
@@ -257,6 +262,7 @@
     font-size: 1.2rem;
     display: flex;
     align-items: center;
+    height: 1.4em; /* Match textarea line-height */
 }
 
 .input-field {
@@ -270,9 +276,8 @@
     padding: 0;
     margin: 0;
     user-select: text;
-    height: 100%;
-    display: flex;
-    align-items: center;
+    -webkit-user-select: text;
+    min-height: 1.4em;
 }
 
 .input-field::placeholder {

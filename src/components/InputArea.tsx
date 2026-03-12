@@ -47,10 +47,69 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui } = useUI();
     const { viewport } = useBaseGame();
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLTextAreaElement>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
+
+    // Global listeners to catch fast swipes that leave the element bounds
+    React.useEffect(() => {
+        const handleGlobalPointerMove = (e: PointerEvent) => {
+            if (isSwiping.current && startPos.current) {
+                const dx = e.clientX - startPos.current.x;
+                const dy = e.clientY - startPos.current.y;
+
+                setOffset({
+                    x: Math.abs(dx) > Math.abs(dy) ? Math.max(-40, Math.min(40, dx)) : 0,
+                    y: Math.abs(dy) > Math.abs(dx) ? Math.max(-20, Math.min(20, dy)) : 0
+                });
+            }
+        };
+
+        const handleGlobalPointerUp = (e: PointerEvent) => {
+            if (isSwiping.current && startPos.current) {
+                const deltaX = e.clientX - startPos.current.x;
+                const deltaY = e.clientY - startPos.current.y;
+                const absX = Math.abs(deltaX);
+                const absY = Math.abs(deltaY);
+
+                // High sensitivity threshold (35px) for quick flicks
+                if (Math.max(absX, absY) > 35) {
+                    if (absY > absX) {
+                        onSwipe?.(deltaY < 0 ? 'up' : 'down');
+                    } else {
+                        onSwipe?.(deltaX < 0 ? 'left' : 'right');
+                    }
+                }
+            }
+            isSwiping.current = false;
+            startPos.current = null;
+            setOffset({ x: 0, y: 0 });
+        };
+
+        const handleGlobalPointerCancel = () => {
+            isSwiping.current = false;
+            startPos.current = null;
+            setOffset({ x: 0, y: 0 });
+        };
+
+        window.addEventListener('pointermove', handleGlobalPointerMove);
+        window.addEventListener('pointerup', handleGlobalPointerUp);
+        window.addEventListener('pointercancel', handleGlobalPointerCancel);
+
+        return () => {
+            window.removeEventListener('pointermove', handleGlobalPointerMove);
+            window.removeEventListener('pointerup', handleGlobalPointerUp);
+            window.removeEventListener('pointercancel', handleGlobalPointerCancel);
+        };
+    }, [onSwipe]);
+
+    // Reset height when input is cleared
+    React.useEffect(() => {
+        if (!input && inputRef.current) {
+            inputRef.current.style.height = 'auto';
+        }
+    }, [input]);
 
     // Hide spat buttons in portrait mode when map is expanded
     const shouldShowSpat = viewport.isLandscape || !ui.mapExpanded;
@@ -68,7 +127,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                 // For input field, we don't capture immediately to allow focus, 
                 // but we still record startPos to detect the bubble-up swipe.
-                if (targetElement.tagName !== 'INPUT') {
+                if (targetElement.tagName !== 'INPUT' && targetElement.tagName !== 'TEXTAREA') {
                     if (e.cancelable) e.preventDefault();
                     e.currentTarget.setPointerCapture(e.pointerId);
                 }
@@ -127,9 +186,12 @@ const InputArea: React.FC<InputAreaProps> = ({
                 borderRadius: '2px',
                 pointerEvents: 'none'
             }} />
-            <form className="input-form" onSubmit={onSend} style={{ pointerEvents: 'none', position: 'relative' }}>
+            <form className="input-form" onSubmit={onSend} style={{ position: 'relative' }}>
                 <span className="cmd-prompt" onPointerDown={(e) => e.preventDefault()} style={{ pointerEvents: 'auto' }}>{'>'}</span>
-                <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
+                <div 
+                    onClick={() => inputRef.current?.focus()}
+                    style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
+                >
                     {commandPreview && !input && (
                         <div style={{
                             position: 'absolute',
@@ -146,27 +208,39 @@ const InputArea: React.FC<InputAreaProps> = ({
                             {commandPreview}
                         </div>
                     )}
-                    <input
+                    <textarea
                         ref={inputRef}
-                        type="text"
                         className="input-field"
                         value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onFocus={() => {
+                        rows={1}
+                        onChange={(e) => {
+                            setInput(e.target.value);
+                            // Auto-resize logic
+                            const target = e.target as HTMLTextAreaElement;
+                            target.style.height = 'auto';
+                            target.style.height = `${target.scrollHeight}px`;
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                onSend();
+                            }
+                        }}
+                        onFocus={(e) => {
                             // Clear startPos on focus to prevent the 'keyboard pop-up' 
                             // from being detected as a swipe-up.
                             startPos.current = null;
+                            e.currentTarget.parentElement?.parentElement?.parentElement?.classList.add('focused');
                         }}
-                        onBlur={() => {
+                        onBlur={(e) => {
                             // On mobile, reset to readonly to prevent accidental keyboard pops
                             if (isMobile && inputRef.current) {
                                 inputRef.current.readOnly = true;
                             }
+                            e.currentTarget.parentElement?.parentElement?.parentElement?.classList.remove('focused');
                         }}
                         onClick={(e) => {
                             // Explicit click on mobile enables the keyboard
-                            // Stop propagation to prevent form-level clicks if any
-                            e.stopPropagation();
                             if (isMobile && inputRef.current) {
                                 inputRef.current.readOnly = false;
                                 inputRef.current.focus();
@@ -174,7 +248,30 @@ const InputArea: React.FC<InputAreaProps> = ({
                         }}
                         readOnly={isMobile}
                         placeholder={commandPreview ? "" : "Enter command..."}
-                        style={{ pointerEvents: 'auto', background: 'transparent', width: '100%', position: 'relative', zIndex: 1 }}
+                        style={{
+                            pointerEvents: 'auto',
+                            background: 'transparent',
+                            width: '100%',
+                            position: 'relative',
+                            zIndex: 1,
+                            resize: 'none',
+                            maxHeight: '150px',
+                            overflowY: 'auto',
+                            padding: '4px 0',
+                            border: 'none',
+                            outline: 'none',
+                            fontFamily: 'inherit',
+                            fontSize: 'inherit',
+                            color: 'inherit',
+                            lineHeight: '1.4',
+                            caretColor: '#ffffff',
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1,
+                            userSelect: 'text',
+                            WebkitUserSelect: 'text',
+                            touchAction: 'none'
+                        }}
                     />
                 </div>
 

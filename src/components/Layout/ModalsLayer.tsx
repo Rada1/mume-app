@@ -75,7 +75,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         isMobileBrevityMode,
         setIsMobileBrevityMode,
         showLegacyButtons,
-        setShowLegacyButtons
+        setShowLegacyButtons,
+        favorites,
+        setFavorites
     } = useGame() as any;
 
     const {
@@ -101,6 +103,12 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
             // Don't close if clicking inside the popover
             if (popoverRef.current && popoverRef.current.contains(target)) return;
 
+            console.log('[DEBUG] handleClickOutside triggered', { 
+                targetTag: (target as HTMLElement).tagName,
+                targetClass: (target as HTMLElement).className,
+                popoverState: !!popoverState
+            });
+
             // Also check for Dial Menu (it doesn't use popoverRef directly)
             if (popoverState.menuDisplay === 'dial') {
                 const dialOverlay = document.querySelector('.dial-menu-overlay');
@@ -109,9 +117,11 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 // If it's a dial overlay itself, the DialMenu logic will handle it, 
                 // but we might want to shut it down here too if it's "outside".
                 if (dialOverlay && !dialOverlay.contains(target)) {
+                    console.log('[DEBUG] Closing Dial Popover');
                     setPopoverState(null);
                 }
             } else {
+                console.log('[DEBUG] Closing Popover (Standard)');
                 setPopoverState(null);
             }
         };
@@ -235,7 +245,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 popoverState={popoverState}
                 setPopoverState={setPopoverState}
                 popoverRef={popoverRef}
-                buttons={btn.buttons}
+                buttons={btn.rawButtons}
                 setButtons={btn.setButtons}
                 availableSets={btn.availableSets}
                 executeCommand={executeCommand}
@@ -248,6 +258,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 roomPlayers={roomPlayers}
                 setSettings={setSettings || {}}
                 inlineCategories={inlineCategories}
+                favorites={favorites}
+                setFavorites={setFavorites}
             />
 
             <DrawerManager

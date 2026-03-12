@@ -12,7 +12,7 @@ export interface CommandControllerDeps {
     teleportTargets: any[];
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'none'>;
+    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
@@ -47,6 +47,8 @@ export interface CommandControllerDeps {
     setActions: (val: import('../types').GameAction[] | ((prev: import('../types').GameAction[]) => import('../types').GameAction[])) => void;
     setActiveDragData: (val: any) => void;
     practice: any;
+    heldButton: any;
+    setHeldButton: (val: any) => void;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {
@@ -95,7 +97,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
     }, [executor, viewport.isMobile]);
 
-    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd } = useInteractionHandlers({
+    const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
         ...deps, executeCommand, ui: deps.ui
     });
 
@@ -114,5 +116,5 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     }, [input, executeCommand, viewport, isNoviceMode, setInput, deps.mapperRef]);
 
-    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd };
+    return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd };
 }

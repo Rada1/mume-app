@@ -70,6 +70,8 @@ export function useSettings(deps: UseSettingsDeps) {
     const [newSoundPattern, setNewSoundPattern] = useState('');
     const [newSoundRegex, setNewSoundRegex] = useState(false);
 
+    const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
+
     // Keep a ref for isSoundEnabled so processLine can read it synchronously
     const isSoundEnabledRef = useRef(isSoundEnabled);
     useEffect(() => { isSoundEnabledRef.current = isSoundEnabled; }, [isSoundEnabled]);
@@ -120,7 +122,8 @@ export function useSettings(deps: UseSettingsDeps) {
             disable3dScroll,
             disableSmoothScroll,
             isImmersionMode,
-            inlineCategories
+            inlineCategories,
+            favorites
         };
         // Note: buttons array is injected by the caller — see MudClient.exportSettings wrapper
         return settings;
@@ -142,7 +145,8 @@ export function useSettings(deps: UseSettingsDeps) {
             disable3dScroll,
             disableSmoothScroll,
             isImmersionMode,
-            inlineCategories
+            inlineCategories,
+            favorites
         };
         const blob = new Blob([JSON.stringify(settings)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -182,6 +186,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.isMobileBrevityMode !== undefined) setIsMobileBrevityMode(settings.isMobileBrevityMode);
                     if (settings.showLegacyButtons !== undefined) setShowLegacyButtons(settings.showLegacyButtons);
                     if (settings.inlineCategories) setInlineCategories(settings.inlineCategories);
+                    if (settings.favorites) setFavorites(settings.favorites);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
                         const restored: SoundTrigger[] = [];
@@ -260,6 +265,7 @@ export function useSettings(deps: UseSettingsDeps) {
         disableSmoothScroll, setDisableSmoothScroll,
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
-        showLegacyButtons, setShowLegacyButtons
+        showLegacyButtons, setShowLegacyButtons,
+        favorites, setFavorites
     };
 }

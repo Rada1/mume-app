@@ -1,103 +1,172 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Direction } from '../types';
-
-interface JoystickProps {
-    executeCommand: (cmd: string) => void;
-    triggerHaptic: (duration: number) => void;
-    setJoystickGlow: (glow: boolean) => void;
-}
 
 export const useJoystick = (triggerHaptic: (ms: number) => void) => {
     const [joystickActive, setJoystickActive] = useState(false);
     const [currentDir, setCurrentDir] = useState<Direction | null>(null);
     const [isJoystickConsumed, setIsJoystickConsumed] = useState(false);
     const [isTargetModifierActive, setIsTargetModifierActive] = useState(false);
+    const [swipeRay, setSwipeRay] = useState<{ active: boolean, angle: number, dist: number, x?: number, y?: number }>({ active: false, angle: 0, dist: 0 });
+    const [joystickGlow, setJoystickGlow] = useState(false);
+
     const joystickKnobRef = useRef<HTMLDivElement>(null);
     const joystickStartPos = useRef<{ x: number, y: number } | null>(null);
     const longPressTimer = useRef<NodeJS.Timeout | null>(null);
     const lastHapticDirRef = useRef<Direction | null>(null);
     const touchStartPos = useRef<{ x: number, y: number } | null>(null);
+    const lockedDirRef = useRef<Direction | null>(null);
 
-    const handleJoystickStart = useCallback((e: React.PointerEvent) => {
-        if (e.cancelable) e.preventDefault();
+    // Command Execution Ref
+    const executeCommandRef = useRef<((cmd: string) => void) | null>(null);
+
+    const handleJoystickStart = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void) => {
+        if (executeCommand) executeCommandRef.current = executeCommand;
         setJoystickActive(true);
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
         e.currentTarget.setPointerCapture(e.pointerId);
-        const rect = e.currentTarget.getBoundingClientRect();
-        joystickStartPos.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-        touchStartPos.current = { x: e.clientX, y: e.clientY };
 
-        // Start long press timer for target modifier
+        // For trackpad, calculation start position is where the finger touched
+        const startX = e.clientX;
+        const startY = e.clientY;
+        
+        joystickStartPos.current = { x: startX, y: startY };
+        touchStartPos.current = { x: startX, y: startY };
+
         if (longPressTimer.current) clearTimeout(longPressTimer.current);
         longPressTimer.current = setTimeout(() => {
             setIsTargetModifierActive(true);
-            // Visual feedback could be added here
         }, 500);
+
+        lockedDirRef.current = null;
+
+        // Visuals (ray/wheel) should appear centered on the map/container
+        // We'll set x/y to undefined or center values and let CSS/Component handle centering
+        setSwipeRay({ 
+            active: false, 
+            angle: 0, 
+            dist: 0,
+            x: undefined, // Indicates center-aligned in Component
+            y: undefined
+        });
     }, []);
 
-    const handleJoystickMove = useCallback((e: React.PointerEvent) => {
-        if (!joystickActive || !joystickStartPos.current || !joystickKnobRef.current) return;
-        let dx = e.clientX - joystickStartPos.current.x;
-        let dy = e.clientY - joystickStartPos.current.y;
+    const handleJoystickMove = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void, suppressMove?: boolean) => {
+        if (executeCommand) executeCommandRef.current = executeCommand;
+        if (!joystickActive || !joystickStartPos.current) return null;
+        const dx = e.clientX - joystickStartPos.current.x;
+        const dy = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        // If moved significantly, cancel target modifier long press
         if (dist > 15 && longPressTimer.current) {
             clearTimeout(longPressTimer.current);
             longPressTimer.current = null;
-            if (isTargetModifierActive) setIsTargetModifierActive(false);
         }
 
-        // Snap visual knob to 8 directions
         const angleRad = Math.atan2(dy, dx);
-        const snappedAngle = Math.round(angleRad / (Math.PI / 4)) * (Math.PI / 4);
+        let angleDeg = angleRad * (180 / Math.PI);
+        if (angleDeg < 0) angleDeg += 360;
 
-        // Only snap if we are far enough from center to care about direction
-        if (dist > 10) {
-            dx = Math.cos(snappedAngle) * dist;
-            dy = Math.sin(snappedAngle) * dist;
+        // Update Swipe Ray
+        if (dist > 15) {
+            const snappedAngle = Math.round(angleDeg / 45) * 45;
+            setSwipeRay(prev => ({ ...prev, active: true, angle: snappedAngle + 90, dist: Math.min(dist, 100) }));
+        } else {
+            setSwipeRay(prev => prev.active ? { ...prev, active: false } : prev);
         }
 
-        const maxDist = 75;
-        const tiltX = -(dy / maxDist) * 20, tiltY = (dx / maxDist) * 20, transX = (dx / maxDist) * 20, transY = (dy / maxDist) * 20;
-        joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${transX}px, ${transY}px, 0)`;
-
-        // Update CSS variables for perimeter highlighting
-        const container = joystickKnobRef.current.closest('.joystick-container') as HTMLElement;
-        if (container) {
-            let angle = Math.atan2(dy, dx) * (180 / Math.PI);
-            container.style.setProperty('--joy-angle', `${angle}deg`);
-            container.style.setProperty('--joy-dist', `${Math.min(1, dist / maxDist)}`);
+        // Visual Enhancement (Minimal for centered trackpad)
+        if (joystickKnobRef.current && dist > 5) {
+            const maxDist = 75;
+            const tiltX = -(dy / maxDist) * 10, tiltY = (dx / maxDist) * 10;
+            joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
         }
 
-        // Update current direction state (Cardinals only on swipe)
-        if (dist < 32) {
+        let dir: Direction | null = null;
+
+        // Direction Logic
+        if (dist < 15) {
             setCurrentDir(null);
+            lockedDirRef.current = null;
             if (lastHapticDirRef.current !== null) {
-                triggerHaptic(2);
+                // Removed center-return haptic
                 lastHapticDirRef.current = null;
             }
         } else {
-            let angle = Math.atan2(dy, dx) * (180 / Math.PI); if (angle < 0) angle += 360;
+            // Direction Calculation with Even 45° Wedges
+            // All directions (N, S, E, W, NW, SE, NE, SW) are now equal (45° each)
+            let calculatedDir: Direction | null = null;
+            if (angleDeg >= 337.5 || angleDeg < 22.5) calculatedDir = 'e';
+            else if (angleDeg >= 22.5 && angleDeg < 67.5) calculatedDir = 'se';
+            else if (angleDeg >= 67.5 && angleDeg < 112.5) calculatedDir = 's';
+            else if (angleDeg >= 112.5 && angleDeg < 157.5) calculatedDir = 'sw';
+            else if (angleDeg >= 157.5 && angleDeg < 202.5) calculatedDir = 'w';
+            else if (angleDeg >= 202.5 && angleDeg < 247.5) calculatedDir = 'nw';
+            else if (angleDeg >= 247.5 && angleDeg < 292.5) calculatedDir = 'n';
+            else if (angleDeg >= 292.5 && angleDeg < 337.5) calculatedDir = 'ne';
 
-            // Strictly 4-way Cardinal Zones for visual feedback
-            let dir: any = null;
-            if (angle >= 315 || angle < 45) dir = 'e';
-            else if (angle >= 45 && angle < 135) dir = 's';
-            else if (angle >= 135 && angle < 225) dir = 'w';
-            else if (angle >= 225 && angle < 315) dir = 'n';
+            // Angular Stability & Hysteresis
+            const HYSTERESIS = 10;
+            if (dist <= 45) {
+                // Directional Lock (15px to 45px)
+                if (lockedDirRef.current) {
+                    dir = lockedDirRef.current;
+                } else {
+                    dir = calculatedDir;
+                    lockedDirRef.current = calculatedDir;
+                }
+            } else {
+                // Free Rotation (dist > 45px) with Hysteresis
+                if (lockedDirRef.current && calculatedDir !== lockedDirRef.current) {
+                    const lastDir = lockedDirRef.current;
+                    let shouldSwitch = false;
+                    
+                    const isOutside = (d: Direction, a: number) => {
+                        const buffer = HYSTERESIS;
+                        // 45° wedges: check if angle is +/- (22.5 + buffer) from center
+                        if (d === 'e') return (a > 22.5 + buffer && a < 337.5 - buffer);
+                        if (d === 'se') return (a < 22.5 - buffer || a > 67.5 + buffer);
+                        if (d === 's') return (a < 67.5 - buffer || a > 112.5 + buffer);
+                        if (d === 'sw') return (a < 112.5 - buffer || a > 157.5 + buffer);
+                        if (d === 'w') return (a < 157.5 - buffer || a > 202.5 + buffer);
+                        if (d === 'nw') return (a < 202.5 - buffer || a > 247.5 + buffer);
+                        if (d === 'n') return (a < 247.5 - buffer || a > 292.5 + buffer);
+                        if (d === 'ne') return (a < 292.5 - buffer || a > 337.5 + buffer);
+                        return true;
+                    };
+
+                    if (isOutside(lastDir, angleDeg)) {
+                        shouldSwitch = true;
+                    }
+
+                    if (shouldSwitch) {
+                        dir = calculatedDir;
+                        lockedDirRef.current = calculatedDir;
+                    } else {
+                        dir = lastDir;
+                    }
+                } else {
+                    dir = calculatedDir;
+                    lockedDirRef.current = calculatedDir;
+                }
+            }
 
             if (dir !== lastHapticDirRef.current) {
                 if (dir !== null) triggerHaptic(5);
                 lastHapticDirRef.current = dir;
             }
-
             setCurrentDir(dir);
-        }
-    }, [joystickActive, isTargetModifierActive, triggerHaptic]);
 
-    const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, setJoystickGlow: (g: boolean) => void, suppressDefault?: boolean) => {
+            if (suppressMove && dir && !isJoystickConsumed) {
+                setIsJoystickConsumed(true);
+            }
+        }
+        return dir;
+    }, [joystickActive, isJoystickConsumed, triggerHaptic]);
+
+    const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
+        executeCommandRef.current = executeCommand;
+
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
             longPressTimer.current = null;
@@ -106,19 +175,18 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         if (!joystickActive || !joystickStartPos.current) return false;
 
         const wasConsumed = isJoystickConsumed || isTargetModifierActive;
-        const wasTargetActive = isTargetModifierActive;
+        const initialDir = currentDir;
 
         setJoystickActive(false);
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
-        const finalDir = currentDir;
         setCurrentDir(null);
+        setSwipeRay({ active: false, angle: 0, dist: 0 });
         lastHapticDirRef.current = null;
+        lockedDirRef.current = null;
 
         const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
-
-        // Calculate actual displacement from the touch start point
         const touchDX = touchStartPos.current ? (e.clientX - touchStartPos.current.x) : 0;
         const touchDY = touchStartPos.current ? (e.clientY - touchStartPos.current.y) : 0;
         const displacement = Math.sqrt(touchDX * touchDX + touchDY * touchDY);
@@ -126,59 +194,41 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         if (joystickKnobRef.current) {
             joystickKnobRef.current.classList.add('resetting');
             joystickKnobRef.current.style.transform = '';
-
-            const container = joystickKnobRef.current.closest('.joystick-container') as HTMLElement;
-            if (container) {
-                container.style.setProperty('--joy-dist', '0');
-            }
-
             setTimeout(() => { if (joystickKnobRef.current) joystickKnobRef.current.classList.remove('resetting'); }, 500);
         }
 
-        // Return detailed data if suppressed for combo processing
         if (suppressDefault) {
-             const isCenterTap = displacement < 20 && dist < 12;
-             return { isCenterTap, dir: finalDir || null };
+             const isCenterTap = displacement < 20 && dist < 20;
+             return { isCenterTap, dir: initialDir || null };
         }
 
-        // Only execute command if NOT consumed by another button
         if (!wasConsumed) {
-            if (displacement < 20) {
-                // This was a tap, not a swipe (little to no movement)
-                if (e.cancelable) e.preventDefault();
-
-                // Only dead center (relative to joystick center) triggers 'look'
-                if (dist < 12) {
-                    executeCommand('look');
-                    triggerHaptic(10);
-                    return true;
-                }
-            } else if (dist >= 32) {
-                // Full Swipe Mode (Significant movement from start AND far from center)
-                let angle = Math.atan2(dyOriginal, dxOriginal) * (180 / Math.PI); if (angle < 0) angle += 360;
-
-                let cmd: string | null = null;
-                // Wide Cardinal Zones
-                if (angle >= 315 || angle < 45) cmd = 'east';
-                else if (angle >= 45 && angle < 135) cmd = 'south';
-                else if (angle >= 135 && angle < 225) cmd = 'west';
-                else if (angle >= 225 && angle < 315) cmd = 'north';
-
-                if (cmd) {
-                    executeCommand(cmd);
-                    setJoystickGlow(true);
-                    setTimeout(() => setJoystickGlow(false), 300);
-                    return true;
-                }
+            // Tap to Look
+            if (displacement < 20 && dist < 20) {
+                executeCommand('look');
+                // Removed release haptic for lookout/tap
+                return true;
+            }
+            
+            // Execute Move on Release
+            if (dist >= 25 && initialDir) {
+                const dirMap: Record<string, string> = {
+                    n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
+                    ne: 'northeast', nw: 'up', se: 'down', sw: 'southwest'
+                };
+                executeCommand(dirMap[initialDir] || initialDir);
+                // Removed release haptic for move
+                setJoystickGlow(true);
+                setTimeout(() => setJoystickGlow(false), 300);
+                return true;
             }
         }
 
         joystickStartPos.current = null;
         return false;
-    }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir]);
+    }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir, triggerHaptic]);
 
     const handleNavStart = useCallback((dir: 'up' | 'down', e: React.PointerEvent) => {
-        if (e.cancelable) e.preventDefault();
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
         setCurrentDir(dir === 'up' ? 'u' : 'd');
@@ -199,6 +249,25 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         }
     }, [isJoystickConsumed]);
 
+    const handleJoystickCancel = useCallback(() => {
+        if (longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+            longPressTimer.current = null;
+        }
+        setJoystickActive(false);
+        setIsJoystickConsumed(false);
+        setIsTargetModifierActive(false);
+        setCurrentDir(null);
+        setSwipeRay({ active: false, angle: 0, dist: 0 });
+        lastHapticDirRef.current = null;
+        lockedDirRef.current = null;
+        joystickStartPos.current = null;
+        touchStartPos.current = null;
+        if (joystickKnobRef.current) {
+            joystickKnobRef.current.style.transform = '';
+        }
+    }, []);
+
     return {
         joystickActive,
         currentDir,
@@ -207,10 +276,14 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         setIsJoystickConsumed,
         isTargetModifierActive,
         setIsTargetModifierActive,
+        swipeRay,
+        joystickGlow,
+        setJoystickGlow,
         joystickKnobRef,
         handleJoystickStart,
         handleJoystickMove,
         handleJoystickEnd,
+        handleJoystickCancel,
         handleNavStart,
         handleNavEnd
     };

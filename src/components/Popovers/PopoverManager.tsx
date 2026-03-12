@@ -8,7 +8,7 @@ import ShopSearchPopover from './ShopSearchPopover';
 import { getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
-    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories
+    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories, favorites, setFavorites
 }) => {
 
     useLayoutEffect(() => {
@@ -131,9 +131,25 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
 
             const activeItem = document.querySelector('.popover-item[data-menu-item="true"].active-drag') as HTMLElement;
             if (activeItem) {
-                const isMenu = activeItem.getAttribute('data-is-menu') === 'true';
-                activeItem.click();
-                if (!isMenu) setPopoverState(null);
+                // Check if the current pointer position is over a favorite star
+                const hitEl = document.elementFromPoint(e.clientX, e.clientY);
+                // elementFromPoint typically returns Elements, but we use safe closest just in case
+                const star = hitEl?.closest ? hitEl.closest('.favorite-star') : hitEl?.parentElement?.closest('.favorite-star');
+                
+                console.log('[DEBUG] PopoverManager PointerUp:', {
+                    x: e.clientX,
+                    y: e.clientY,
+                    hitEl: hitEl?.className,
+                    star: !!star
+                });
+
+                if (star) {
+                    (star as HTMLElement).click();
+                } else {
+                    const isMenu = activeItem.getAttribute('data-is-menu') === 'true';
+                    activeItem.click();
+                    if (!isMenu) setPopoverState(null);
+                }
             }
 
             // Clean up capture
@@ -204,7 +220,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}
             {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} executeCommand={executeCommand} setPopoverState={setPopoverState} />}
             {popoverState.type === 'shop-search' && <ShopSearchPopover executeCommand={executeCommand} onClose={() => setPopoverState(null)} />}
-            {!popoverState.type && <StandardMenuPopover popoverState={popoverState} buttons={buttons} availableSets={availableSets} setPopoverState={setPopoverState} setButtons={setButtons} handleButtonClick={handleButtonClick} setTarget={setTarget} addMessage={addMessage} themeColor={themeColor} />}
+            {!popoverState.type && <StandardMenuPopover popoverState={popoverState} buttons={buttons} availableSets={availableSets} setPopoverState={setPopoverState} setButtons={setButtons} handleButtonClick={handleButtonClick} setTarget={setTarget} addMessage={addMessage} themeColor={themeColor} favorites={favorites} setFavorites={setFavorites} />}
         </div>
     );
 };

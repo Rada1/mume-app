@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { Message } from '../types';
+import { Message, MessageType } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import TypewriterText from './TypewriterText';
@@ -8,13 +8,12 @@ import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
 
 import { useBaseGame, useVitals, useLog } from '../context/GameContext';
-import { useTextSelectionTarget } from '../hooks/useTextSelectionTarget';
-import { MagnificationBubble } from './Overlay/MagnificationBubble';
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
     onMouseUp?: (e: React.MouseEvent) => void;
     onPointerDown?: (e: React.PointerEvent) => void;
+    onPointerUp?: (e: React.PointerEvent) => void;
     onDragStart?: (e: React.DragEvent) => void;
     onDragEnd?: (e: React.DragEvent) => void;
 }
@@ -27,12 +26,12 @@ const MessageItem = React.memo(({
     executeCommand,
 }: {
     msg: Message,
-    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string,
+    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string,
     inCombat: boolean,
     scrollToBottom: (force?: boolean, instant?: boolean, source?: string) => void;
     executeCommand: (cmd: string) => void;
 }) => {
-    const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName), [msg.html, msg.id, msg.isRoomName, processMessageHtml]);
+    const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
 
     return (
@@ -69,6 +68,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onLogClick,
     onMouseUp,
     onPointerDown,
+    onPointerUp,
     onDragStart,
     onDragEnd
 }) => {
@@ -77,21 +77,14 @@ const MessageLog: React.FC<MessageLogProps> = ({
     const { activePrompt, setTarget } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
 
-    const { selection, handlePointerDown: onSelectionDown, handlePointerMove: onSelectionMove, handlePointerUp: onSelectionUp } = useTextSelectionTarget(setTarget, triggerHaptic);
-
     const handlePointerDownInternal = useCallback((e: React.PointerEvent) => {
-        onSelectionDown(e);
         if (onPointerDown) onPointerDown(e);
-    }, [onSelectionDown, onPointerDown]);
-
-    const handlePointerMoveInternal = useCallback((e: React.PointerEvent) => {
-        onSelectionMove(e);
-    }, [onSelectionMove]);
+    }, [onPointerDown]);
 
     const handlePointerUpInternal = useCallback((e: React.PointerEvent) => {
-        onSelectionUp(e);
+        if (onPointerUp) onPointerUp(e);
         if (onMouseUp) onMouseUp(e as any);
-    }, [onSelectionUp, onMouseUp]);
+    }, [onPointerUp, onMouseUp]);
 
     const handleScroll = useCallback(() => {
         const container = scrollContainerRef.current;
@@ -148,6 +141,21 @@ const MessageLog: React.FC<MessageLogProps> = ({
         }
     }, [messages, activePrompt, viewport]);
 
+    // Handle container resize (e.g. when input bar expands)
+    React.useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const observer = new ResizeObserver(() => {
+            if (viewport.isLockedToBottomRef.current) {
+                viewport.scrollToBottom(true, false, 'ContainerResize');
+            }
+        });
+
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, [viewport, scrollContainerRef]);
+
     const virtualItems = virtualizer.getVirtualItems();
 
     const activePromptContent = useMemo(() => {
@@ -166,10 +174,8 @@ const MessageLog: React.FC<MessageLogProps> = ({
             ref={scrollContainerRef}
             onScroll={handleScroll}
             onPointerDown={handlePointerDownInternal}
-            onPointerMove={handlePointerMoveInternal}
             onPointerUp={handlePointerUpInternal}
-            onPointerCancel={(e) => onSelectionUp(e)}
-            onContextMenu={(e) => selection.isActive && e.preventDefault()}
+            onPointerCancel={handlePointerUpInternal}
             onClick={onLogClick}
             onMouseUp={handlePointerUpInternal as any}
             onDragStart={onDragStart}
@@ -209,27 +215,6 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 })}
             </div>
             {activePromptContent}
-            {selection.isActive && selection.wordRect && (
-                <div 
-                    className="selection-highlight"
-                    style={{
-                        position: 'fixed',
-                        left: `${selection.wordRect.left}px`,
-                        top: `${selection.wordRect.top}px`,
-                        width: `${selection.wordRect.width}px`,
-                        height: `${selection.wordRect.height}px`,
-                        pointerEvents: 'none',
-                        zIndex: 9999
-                    }}
-                />
-            )}
-            <MagnificationBubble 
-                x={selection.x} 
-                y={selection.y} 
-                text={selection.word} 
-                isActive={selection.isActive} 
-            />
-            {/* 12px "Visual Safe Zone" clears the input bar shadow and 3D perspective distortion */}
             <div className="log-bottom-spacer" ref={messagesEndRef} style={{ height: '12px', flexShrink: 0 }} />
         </div>
     );

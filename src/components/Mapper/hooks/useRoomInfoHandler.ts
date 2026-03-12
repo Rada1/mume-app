@@ -47,21 +47,20 @@ export const useRoomInfoHandler = ({
         let dirUsed: string | null = null;
         const isVnumZero = String(gmcpId) === '0' || String(gmcpId) === 'null' || !gmcpId;
         
-        // Treat it as a move if ID changed OR if we have a pending move (helps with VNUM 0 chains)
+        // ID change is the strongest indicator of a move.
         const idChanged = !currentActiveRoom || String(currentActiveRoom.gmcpId) !== String(gmcpId);
+        
+        // If ID didn't change, it's usually a refresh (look) UNLESS we are in a VNUM 0 area 
+        // where multiple rooms might share the same "0" ID.
         const hasPendingMove = pendingMovesRef.current.length > 0;
-        const hasMoved = idChanged || hasPendingMove;
+        const isLikelyMove = idChanged || (hasPendingMove && isVnumZero);
 
-        if (hasMoved) {
-            // Only consume a move if we actually changed rooms, if it's the very first room, 
-            // or if we have a pending move that suggests a transition between identical VNUMs (like 0->0)
+        if (isLikelyMove) {
             const nextMove = pendingMovesRef.current.shift();
             if (nextMove) {
                 dirUsed = nextMove.dir;
-            } else if (!activeRoomId || !currentActiveRoom) {
-                // First room detection - no move needed
-            } else if (idChanged) {
-                // No pending move but ID changed - look for an exit that matches the new ID
+            } else if (idChanged && currentActiveRoom) {
+                // ID changed but no pending move recorded? Try to find a matching exit.
                 if (currentActiveRoom.exits) {
                     const foundDir = Object.keys(currentActiveRoom.exits).find(d => {
                         const ex = currentActiveRoom.exits[d];

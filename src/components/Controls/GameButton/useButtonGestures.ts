@@ -59,7 +59,6 @@ export const useButtonGestures = ({
                 handleDragStart(e, button.id, 'move');
             }
         } else {
-            e.stopPropagation();
             if (e.cancelable) e.preventDefault();
             const el = e.currentTarget as any;
             const rect = el.getBoundingClientRect();
@@ -206,7 +205,6 @@ export const useButtonGestures = ({
     }, [isEditMode, heldButton, button, activeDir, setActiveDir, setCommandPreview, wasDraggingRef, setHeldButton, joystick, target, setIsCancelling, triggerHaptic, setPopoverState]);
 
     const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
-        e.stopPropagation();
         if (e.cancelable) e.preventDefault();
         const el = e.currentTarget as any;
         if (isEditMode) return;

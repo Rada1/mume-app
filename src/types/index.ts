@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'shop-item' | 'practice-skill' | 'practice-header';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'shop-item' | 'practice-skill' | 'practice-header' | 'who-list' | 'where-list';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
@@ -185,6 +185,8 @@ export interface PopoverManagerProps {
     roomPlayers: string[];
     setSettings: Record<string, ButtonSetSettings>;
     inlineCategories?: InlineCategoryConfig[];
+    favorites: string[];
+    setFavorites: (val: string[]) => void;
 }
 
 
@@ -265,6 +267,7 @@ export interface SavedSettings {
     isMobileBrevityMode?: boolean;
     showLegacyButtons?: boolean;
     inlineCategories?: InlineCategoryConfig[];
+    favorites?: string[];
 }
 
 export interface RoomNode {

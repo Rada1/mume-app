@@ -11,14 +11,84 @@ interface StandardMenuProps {
     setTarget: (target: string | null) => void;
     addMessage: (type: MessageType, content: string) => void;
     themeColor?: string;
+    favorites: string[];
+    setFavorites: (val: string[]) => void;
 }
 
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
-    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor
+    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites
 }) => {
     const isSetManager = popoverState.setId === 'setmanager';
     const isTargetable = ['selection', 'inventorylist', 'equipmentlist'].includes(popoverState.setId);
+
+    const toggleFavorite = (e: React.MouseEvent, command: string) => {
+        e.stopPropagation();
+        if (favorites.includes(command)) {
+            setFavorites(favorites.filter(id => id !== command));
+        } else {
+            setFavorites([...favorites, command]);
+        }
+    };
+
+    const renderButton = (button: CustomButton) => {
+        const isFav = favorites.includes(button.command);
+        return (
+            <div
+                key={button.id}
+                className="popover-item"
+                data-menu-item="true"
+                data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' ? "true" : "false"}
+                onPointerDown={(e) => { e.stopPropagation(); }}
+                onClick={(e) => {
+                    // Prevent button action if clicking the star
+                    const target = e.target as any;
+                    if (target.closest ? target.closest('.favorite-star') : target.parentElement?.closest('.favorite-star')) return;
+
+                    if (popoverState.assignSourceId) {
+                        const isExecute = popoverState.executeAndAssign;
+                        const dir = popoverState.assignSwipeDir;
+                        setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: button.command }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: button.actionType || 'command' } } : { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' }) : b));
+                        if (isExecute) handleButtonClick(button, e, popoverState.context);
+                        setPopoverState(null); addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
+                    } else handleButtonClick(button, e, popoverState.context);
+                }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', overflow: 'hidden' }}
+            >
+                <span style={{ pointerEvents: 'none' }}>{button.label}</span>
+                <div 
+                    className={`favorite-star ${isFav ? 'active' : ''}`}
+                    onClick={(e) => toggleFavorite(e, button.command)}
+                    style={{ 
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        opacity: isFav ? 1 : 0.3, 
+                        color: isFav ? '#ffd700' : 'inherit',
+                        fontSize: '1.2rem',
+                        transition: 'all 0.2s ease',
+                        padding: '16px 20px', // Massive hitbox
+                        margin: '-16px -16px -16px auto', // Offset padding to maintain layout
+                        cursor: 'pointer',
+                        userSelect: 'none',
+                        WebkitTapHighlightColor: 'transparent',
+                        zIndex: 10
+                    }}
+                >
+                    {isFav ? '★' : '☆'}
+                </div>
+            </div>
+        );
+    };
+
+    const sectionButtons = buttons.filter(b => {
+        if (b.setId === popoverState.setId) return true;
+        if (['inline-shopkeeper', 'inline-innkeeper', 'inline-mounts', 'inline-guildmaster'].includes(popoverState.setId) && b.setId === 'inlinenpc') return true;
+        return false;
+    });
+
+    const favoritedButtons = sectionButtons.filter(b => favorites.includes(b.command));
+    const regularButtons = sectionButtons.filter(b => !favorites.includes(b.command));
 
     return (
         <>
@@ -77,33 +147,17 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                             Assign {popoverState.setId.toUpperCase()} as Menu
                         </div>
                     )}
-                    {buttons.filter(b => {
-                        if (b.setId === popoverState.setId) return true;
-                        // Special case: Shopkeepers, Innkeepers, and Mounts also show standard NPC buttons
-                        if (['inline-shopkeeper', 'inline-innkeeper', 'inline-mounts', 'inline-guildmaster'].includes(popoverState.setId) && b.setId === 'inlinenpc') {
-                            return true;
-                        }
-                        return false;
-                    }).map(button => (
-                        <div
-                            key={button.id}
-                            className="popover-item"
-                            data-menu-item="true"
-                            data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' ? "true" : "false"}
-                            onPointerDown={(e) => { e.stopPropagation(); }}
-                            onClick={(e) => {
-                                if (popoverState.assignSourceId) {
-                                    const isExecute = popoverState.executeAndAssign;
-                                    const dir = popoverState.assignSwipeDir;
-                                    setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: button.command }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: button.actionType || 'command' } } : { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' }) : b));
-                                    if (isExecute) handleButtonClick(button, e, popoverState.context);
-                                    setPopoverState(null); addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
-                                } else handleButtonClick(button, e, popoverState.context);
-                            }}
-                        >
-                            {button.label}
-                        </div>
-                    ))}
+                    
+                    {favoritedButtons.length > 0 && (
+                        <>
+                            <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
+                            {favoritedButtons.map(renderButton)}
+                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
+                        </>
+                    )}
+
+                    {regularButtons.map(renderButton)}
+
                     {(() => {
                         const context = (popoverState.context || '').toLowerCase();
                         const isInventoryOrEq = ['inventorylist', 'equipmentlist'].includes(popoverState.setId);
@@ -164,11 +218,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
 
                         return null;
                     })()}
-                    {buttons.filter(b => {
-                        if (b.setId === popoverState.setId) return true;
-                        if (['inline-shopkeeper', 'inline-innkeeper', 'inline-mounts', 'inline-guildmaster'].includes(popoverState.setId) && b.setId === 'inlinenpc') return true;
-                        return false;
-                    }).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
+                    {sectionButtons.length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
                 </>
             )}
         </>

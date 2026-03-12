@@ -21,6 +21,8 @@ export interface RenderContext {
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     selectedRoomIds: Set<string>;
     activeId: string | null;
+    walkTargetId?: string | null;
+    walkPath?: string[];
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

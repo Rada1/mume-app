@@ -286,10 +286,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         actions: s.actions,
         setActions: s.setActions,
         setActiveDragData: s.setActiveDragData,
-        practice
+        practice,
+        heldButton: v.heldButton,
+        setHeldButton: v.setHeldButton
     });
 
-    const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd } = controller;
+    const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = controller;
 
     // Update the ref so the parser components can call it
     useEffect(() => {
@@ -430,12 +432,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
         input, setInput,
         handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
+        handleLogPointerDown, handleLogPointerUp,
         handleDragStart, handleDragEnd,
         hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
         mapperRef, ...settings, audioCtxRef,
         telnet, parser, practice,
         spatButtons, setSpatButtons,
         diagnosticLogs, addDiagnosticLog,
+        heldButton: v.heldButton, setHeldButton: v.setHeldButton,
         detectLighting: env.detectLighting,
         setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
     }), [
@@ -447,7 +451,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
         handleDragStart, handleDragEnd,
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
-        s.showLegacyButtons
+        s.showLegacyButtons, v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp
     ]);
 
     const logValue = useMemo(() => ({
@@ -457,8 +461,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addSystemMessage,
         isCombatLine,
         isCommunicationLine,
-        processMessageHtml
-    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, isCommunicationLine, processMessageHtml]);
+        processMessageHtml,
+        handleLogPointerDown,
+        handleLogPointerUp
+    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, isCommunicationLine, processMessageHtml, handleLogPointerDown, handleLogPointerUp]);
 
     return (
         <GameContext.Provider value={gameValue as any}>

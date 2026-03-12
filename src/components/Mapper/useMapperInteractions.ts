@@ -3,6 +3,7 @@ import { MapperRoom, MapperMarker } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
 import { useMapWheelEvents } from './hooks/useMapWheelEvents';
+import { getButtonCommand } from '../../utils/buttonUtils';
 
 interface InteractionProps {
     rooms: Record<string, MapperRoom>;
@@ -33,6 +34,12 @@ interface InteractionProps {
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     startWalking: (targetId: string) => void;
     stopWalking: () => void;
+    executeCommand: (cmd: string) => void;
+    joystick: any;
+    btn: any;
+    heldButton: any;
+    setHeldButton: (val: any) => void;
+    target: any;
 }
 
 export const useMapperInteractions = ({
@@ -41,11 +48,11 @@ export const useMapperInteractions = ({
     isDesignMode, isMinimized, setAutoCenter, setContextMenu, setInfoRoomId,
     triggerHaptic, canvasRef, cardRef, setIsDragging, handleAddRoom, triggerRender,
     viewZ, setViewZ, preloadedCoordsRef, spatialIndexRef,
-    startWalking, stopWalking
+    startWalking, stopWalking, executeCommand, joystick, btn, heldButton, setHeldButton, target
 }: InteractionProps) => {
 
     const isDraggingInternalRef = useRef(false);
-    const dragTypeRef = useRef<'pan' | 'room' | 'pinch' | 'marquee' | 'marker' | null>(null);
+    const dragTypeRef = useRef<'pan' | 'room' | 'pinch' | 'marquee' | 'marker' | 'joystick' | null>(null);
     const activePointersRef = useRef<Map<number, { x: number, y: number }>>(new Map());
     const lastPointersRef = useRef<{ id: number, x: number, y: number }[]>([]);
     const lastMouseRef = useRef({ x: 0, y: 0 });
@@ -54,6 +61,7 @@ export const useMapperInteractions = ({
     const longPressTimerRef = useRef<any>(null);
     const scrollLockRef = useRef(false);
     const contextMenuTriggeredRef = useRef(false);
+    const comboFiredRef = useRef(false);
 
     const [marqueeStart, setMarqueeStart] = useState<{ x: number, y: number } | null>(null);
     const [marqueeEnd, setMarqueeEnd] = useState<{ x: number, y: number } | null>(null);
@@ -94,23 +102,27 @@ export const useMapperInteractions = ({
             const clickedMarkerId = getMarkerAt(world.x, world.y);
             const clickedRoomId = getRoomAt(world.x, world.y, true);
 
+            // Special case for joystick trackpad in play mode
+            const isJoystickMode = mode === 'play' && !isDesignMode;
+
             if (isDesignMode && !clickedMarkerId && !clickedRoomId && !e.altKey) return;
 
-            e.preventDefault(); e.stopPropagation();
+            // e.preventDefault(); // Stop bubbling to joystick
+            e.stopPropagation();
             activePointersRef.current.set(e.pointerId, { x: mx, y: my });
             cvs.setPointerCapture(e.pointerId);
 
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = pointers;
 
-            if (pointers.length === 1) {
-                if (e.button !== 0) return;
+            if (pointers.length === 1 || (pointers.length === 2 && heldButton)) {
+                if (e.button !== 0 && pointers.length === 1) return;
                 hasDraggedRef.current = false;
                 contextMenuTriggeredRef.current = false;
+                comboFiredRef.current = false;
 
                 longPressTimerRef.current = setTimeout(() => {
                     const latestWorld = screenToWorld(lastMouseRef.current.x, lastMouseRef.current.y);
-                    // Use non-strict Z for the initial walk trigger to be more forgiving on mobile
                     const latestRoomId = getRoomAt(latestWorld.x, latestWorld.y, false);
 
                     triggerHaptic(40);
@@ -120,10 +132,20 @@ export const useMapperInteractions = ({
                         if (latestRoomId) {
                             startWalking(latestRoomId);
                         }
-                    } else {
+                    } else if (!isJoystickMode) {
                         setContextMenu({ x: mx, y: my, wx: latestWorld.x, wy: latestWorld.y, roomId: latestRoomId });
                     }
                 }, 500);
+
+                if (isJoystickMode) {
+                    isDraggingInternalRef.current = true;
+                    dragTypeRef.current = 'joystick';
+                    setIsDragging(true);
+                    joystick.handleJoystickStart(e as any, executeCommand);
+                    startMouseRef.current = { x: mx, y: my };
+                    lastMouseRef.current = { x: mx, y: my };
+                    return;
+                }
 
                 if (clickedMarkerId && mode === 'edit') {
                     setSelectedMarkerId(clickedMarkerId); setInfoRoomId(null); setSelectedRoomIds(new Set());
@@ -133,8 +155,8 @@ export const useMapperInteractions = ({
                     if (e.shiftKey) {
                         setSelectedRoomIds(prev => {
                             const next = new Set(prev);
-                            if (next.has(clickedRoomId)) next.delete(clickedRoomId);
-                            else next.add(clickedRoomId);
+                            if (next.has(clickedRoomId)) (next as Set<string>).delete(clickedRoomId);
+                            else (next as Set<string>).add(clickedRoomId);
                             return next;
                         });
                     } else if (!selectedRoomIdsRef.current.has(clickedRoomId)) {
@@ -150,6 +172,9 @@ export const useMapperInteractions = ({
                     }
                 }
             } else if (pointers.length === 2) {
+                if (dragTypeRef.current === 'joystick') {
+                    joystick.handleJoystickCancel();
+                }
                 isDraggingInternalRef.current = true; dragTypeRef.current = 'pinch'; setIsDragging(true);
             }
             startMouseRef.current = { x: mx, y: my };
@@ -176,9 +201,35 @@ export const useMapperInteractions = ({
             activePointersRef.current.set(e.pointerId, { x: mx, y: my });
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
 
-            if (pointers.length === 1 && lastMouseRef.current) {
+            if ((pointers.length === 1 || (pointers.length === 2 && heldButton)) && lastMouseRef.current) {
                 const dx = mx - lastMouseRef.current.x, dy = my - lastMouseRef.current.y;
                 if (!hasDraggedRef.current && (Math.abs(mx - startMouseRef.current.x) > 3 || Math.abs(my - startMouseRef.current.y) > 3)) hasDraggedRef.current = true;
+                
+                if (dragTypeRef.current === 'joystick') {
+                    const dir = joystick.handleJoystickMove(e as any, executeCommand, !!heldButton);
+                    if (dir && heldButton && !comboFiredRef.current && setHeldButton) {
+                        const button = btn.buttons.find((b: any) => b.id === heldButton.id);
+                        if (button) {
+                            const result = getButtonCommand(button, heldButton.dx || 0, heldButton.dy || 0, undefined, undefined, heldButton.modifiers, { currentDir: dir, isTargetModifierActive: !!joystick.isTargetModifierActive }, target, !!joystick.isTargetModifierActive);
+                            if (result) {
+                                executeCommand(result.cmd);
+                                comboFiredRef.current = true;
+                                setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                                triggerHaptic(60);
+                            }
+                        } else if (heldButton.baseCommand) {
+                            const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down', nw: 'up', se: 'down' };
+                            const finalDir = dirMap[dir] || dir;
+                            executeCommand(`${heldButton.baseCommand} ${finalDir}`);
+                            comboFiredRef.current = true;
+                            setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                            triggerHaptic(60);
+                        }
+                    }
+                    lastMouseRef.current = { x: mx, y: my };
+                    return;
+                }
+
                 if (!hasDraggedRef.current) { lastMouseRef.current = { x: mx, y: my }; return; }
 
                 const cam = cameraRef.current;
@@ -203,16 +254,28 @@ export const useMapperInteractions = ({
                 } else if (dragTypeRef.current === 'marquee' && mode === 'edit') {
                     setMarqueeEnd({ x: mx, y: my });
                 }
-            } else if (pointers.length === 2 && dragTypeRef.current === 'pinch' && lastPointersRef.current.length === 2) {
+            } else if (pointers.length === 2 && dragTypeRef.current === 'pinch' && lastPointersRef.current.length === 2 && !heldButton) {
                 const p1 = pointers[0], p2 = pointers[1], lp1 = lastPointersRef.current[0], lp2 = lastPointersRef.current[1];
                 const dist = Math.hypot(p2.x - p1.x, p2.y - p1.y), lastDist = Math.hypot(lp2.x - lp1.x, lp2.y - lp1.y);
                 const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 }, lastMid = { x: (lp1.x + lp2.x) / 2, y: (lp1.y + lp2.y) / 2 };
+                
                 if (lastDist > 1 && dist > 1) {
                     const cam = cameraRef.current, oldZoom = cam.zoom;
                     const newZoom = Math.max(0.01, Math.min(oldZoom * (1 + (dist / lastDist - 1) * ZOOM_SENSITIVITY), 5));
-                    cam.x -= ((mid.x - lastMid.x) * DRAG_SENSITIVITY) / oldZoom; cam.y -= ((mid.y - lastMid.y) * DRAG_SENSITIVITY) / oldZoom;
-                    cam.x += (mid.x / oldZoom) - (mid.x / newZoom); cam.y += (mid.y / oldZoom) - (mid.y / newZoom); cam.zoom = newZoom;
+                    
+                    // Pan by midpoint delta
+                    const dx = mid.x - lastMid.x;
+                    const dy = mid.y - lastMid.y;
+                    cam.x -= (dx * DRAG_SENSITIVITY) / oldZoom;
+                    cam.y -= (dy * DRAG_SENSITIVITY) / oldZoom;
+                    
+                    // Zoom around midpoint
+                    cam.x += (mid.x / oldZoom) - (mid.x / newZoom);
+                    cam.y += (mid.y / oldZoom) - (mid.y / newZoom);
+                    cam.zoom = newZoom;
+                    
                     setAutoCenter(false);
+                    triggerRender();
                 }
             }
             lastPointersRef.current = pointers; lastMouseRef.current = { x: mx, y: my };
@@ -220,6 +283,7 @@ export const useMapperInteractions = ({
 
         const onUp = (e: PointerEvent) => {
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
+            comboFiredRef.current = false;
             scrollLockRef.current = false;
             activePointersRef.current.delete(e.pointerId);
             const remPointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
@@ -230,7 +294,9 @@ export const useMapperInteractions = ({
                     stopWalking();
                 }
 
-                if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
+                if (dragTypeRef.current === 'joystick') {
+                    joystick.handleJoystickEnd(e as any, executeCommand, triggerHaptic);
+                } else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
                     const w1 = screenToWorld(marqueeStart.x, marqueeStart.y), w2 = screenToWorld(marqueeEnd.x, marqueeEnd.y);
                     const x1 = Math.min(w1.x, w2.x), y1 = Math.min(w1.y, w2.y), x2 = Math.max(w1.x, w2.x), y2 = Math.max(w1.y, w2.y);
                     const currentZ = currentRoomIdRef.current ? (roomsRef.current[currentRoomIdRef.current]?.z || 0) : 0;
@@ -274,7 +340,7 @@ export const useMapperInteractions = ({
             window.removeEventListener('pointercancel', onUp);
             cvs.removeEventListener('wheel', onWheel);
         };
-    }, [mode, isDesignMode, isMinimized, canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel, startWalking, stopWalking, setContextMenu, setInfoRoomId, triggerHaptic, setSelectedMarkerId, setSelectedRoomIds, setIsDragging, setRooms, setMarkers]);
+    }, [mode, isDesignMode, isMinimized, canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel, startWalking, stopWalking, setContextMenu, setInfoRoomId, triggerHaptic, setSelectedMarkerId, setSelectedRoomIds, setIsDragging, setRooms, setMarkers, heldButton, setHeldButton, joystick, btn, target, executeCommand]);
 
     const outputMarquee = useMemo(() => ({ start: marqueeStart, end: marqueeEnd }), [marqueeStart, marqueeEnd]);
 

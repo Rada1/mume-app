@@ -24,6 +24,8 @@ export interface VitalsContextType {
     setHitFlash: (val: boolean) => void;
     deathStage: DeathStage;
     setDeathStage: (val: DeathStage) => void;
+    heldButton: any;
+    setHeldButton: (val: any) => void;
 }
 
 export interface LogContextType {
@@ -33,7 +35,9 @@ export interface LogContextType {
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
     isCommunicationLine: (text: string) => boolean;
-    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean) => string;
+    processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string;
+    handleLogPointerDown: (e: React.PointerEvent) => void;
+    handleLogPointerUp: (e: React.PointerEvent) => void;
 }
 
 export interface UIContextType {
@@ -105,6 +109,8 @@ export interface GameContextType {
     setShowLegacyButtons: (val: boolean) => void;
     inlineCategories: import('../../types').InlineCategoryConfig[];
     setInlineCategories: Dispatch<SetStateAction<import('../../types').InlineCategoryConfig[]>>;
+    favorites: string[];
+    setFavorites: (val: string[]) => void;
 
     mood: string;
     setMood: (val: string) => void;
@@ -210,6 +216,8 @@ export interface GameContextType {
     handleButtonClick: (button: CustomButton, e: MouseEvent, context?: string) => void;
     handleLogClick: (e: MouseEvent) => void;
     handleLogDoubleClick: (e: MouseEvent) => void;
+    handleLogPointerDown: (e: React.PointerEvent) => void;
+    handleLogPointerUp: (e: React.PointerEvent) => void;
     handleDragStart: (e: React.DragEvent) => void;
     handleDragEnd: (e: React.DragEvent) => void;
     mapperRef: RefObject<MapperRef>;
@@ -222,7 +230,7 @@ export interface GameContextType {
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
 
-    captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'none'>;
+    captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'none'>;
     isDrawerCapture: MutableRefObject<number>;
     isSilentCapture: MutableRefObject<number>;
     isWaitingForStats: MutableRefObject<boolean>;
@@ -265,4 +273,6 @@ export interface GameContextType {
     addDiagnosticLog: (msg: string) => void;
     activeDragData: any;
     setActiveDragData: Dispatch<SetStateAction<any>>;
+    heldButton: any;
+    setHeldButton: Dispatch<SetStateAction<any>>;
 }

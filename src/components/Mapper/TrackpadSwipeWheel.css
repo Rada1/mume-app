@@ -1,0 +1,103 @@
+.trackpad-swipe-wheel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 220px;
+    height: 220px;
+    pointer-events: none;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    /* No background or border as requested */
+    background: transparent;
+    pointer-events: none;
+}
+
+.wheel-slice {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s ease-out, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    pointer-events: none;
+}
+
+.wheel-slice.selected {
+    opacity: 1;
+}
+
+.direction-icon {
+    position: absolute;
+    color: var(--accent, #4a90e2);
+    /* Filter for glow instead of background slice */
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.8));
+    transition: all 0.2s ease;
+}
+
+.wheel-slice.selected .direction-icon {
+    scale: 1.2;
+    color: #fff;
+    filter: drop-shadow(0 0 12px var(--accent, #4a90e2));
+}
+
+/* 
+   Direct positioning for 8-way icons. 
+   Distance is exactly 25px from center.
+   Top: -25, Right: 25, Bottom: 25, Left: -25
+   Diagonals: sqrt(25^2 / 2) ≈ 18px
+*/
+.wheel-slice {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Start at center */
+    opacity: 0;
+    transition: opacity 0.1s ease-out;
+    pointer-events: none;
+    z-index: 1105;
+}
+
+.wheel-slice.selected {
+    opacity: 1;
+}
+
+.wheel-slice.n  { transform: translate(-50%, calc(-50% - 70px)); }
+.wheel-slice.ne { display: none; }
+.wheel-slice.e  { transform: translate(calc(-50% + 70px), -50%); }
+.wheel-slice.se { transform: translate(calc(-50% + 49px), calc(-50% + 49px)); }
+.wheel-slice.s  { transform: translate(-50%, calc(-50% + 70px)); }
+.wheel-slice.sw { display: none; }
+.wheel-slice.w  { transform: translate(calc(-50% - 70px), -50%); }
+.wheel-slice.nw { transform: translate(calc(-50% - 49px), calc(-50% - 49px)); }
+
+.direction-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent, #4a90e2);
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.8));
+}
+
+.wheel-center-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    z-index: 1110;
+}

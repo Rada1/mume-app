@@ -26,6 +26,7 @@ export const useGameProviderState = () => {
     const [isMobileBrevityMode, setIsMobileBrevityMode] = usePersistentState('mud-mobile-brevity', false);
     const [showLegacyButtons, setShowLegacyButtons] = usePersistentState('mud-show-legacy-buttons', false);
     const [inlineCategories, setInlineCategories] = usePersistentState<import('../../types').InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
+    const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
@@ -147,13 +148,14 @@ export const useGameProviderState = () => {
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
-    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'none'>('none');
+    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>('none');
     const isDrawerCapture = useRef<number>(0);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);
     const isWaitingForInv = useRef<boolean>(false);
     const [activeDragData, setActiveDragData] = useState<any>(null);
+    const [heldButton, setHeldButton] = useState<any>(null);
 
     const vitals = useMemo(() => ({
         stats, setStats,
@@ -162,7 +164,8 @@ export const useGameProviderState = () => {
         rumble, setRumble,
         hitFlash, setHitFlash,
         deathStage, setDeathStage,
-    }), [stats, target, activePrompt, rumble, hitFlash, deathStage]);
+        heldButton, setHeldButton,
+    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton]);
 
     const game = useMemo(() => ({
         inCombat, setInCombat,
@@ -206,7 +209,9 @@ export const useGameProviderState = () => {
         showLegacyButtons, setShowLegacyButtons,
         roomName, setRoomName, roomNameRef,
         inlineCategories, setInlineCategories,
-        activeDragData, setActiveDragData
+        favorites, setFavorites,
+        activeDragData, setActiveDragData,
+        heldButton, setHeldButton,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -215,7 +220,7 @@ export const useGameProviderState = () => {
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName,
-        inlineCategories, activeDragData
+        inlineCategories, favorites, activeDragData, heldButton
     ]);
 
     return { vitals, game };

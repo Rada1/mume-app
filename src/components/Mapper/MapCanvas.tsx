@@ -37,6 +37,8 @@ interface MapCanvasProps {
     viewZ?: number | null;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     preMoveRef?: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
+    walkTargetId?: string | null;
+    walkPath?: string[];
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -50,7 +52,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
-        unveilMap, viewZ, firstExploredAtRef, preMoveRef
+        unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -58,7 +60,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         cameraRef: camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
-        unveilMap, viewZ, firstExploredAtRef
+        unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath
     });
 
     useMapAnimation({
@@ -79,7 +81,9 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         stableRoomIdRef: props.stableRoomIdRef,
         stableMarkersRef: props.stableMarkersRef,
         firstExploredAtRef,
-        preMoveRef
+        preMoveRef,
+        walkTargetId: props.walkTargetId,
+        walkPath: props.walkPath
     });
 
     useEffect(() => {

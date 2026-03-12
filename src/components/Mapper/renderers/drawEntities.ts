@@ -125,6 +125,74 @@ export const drawEntities = (
         ctx.arc(px, py, 8, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
+
+        // 3. Walk Target & Path Highlighting
+        const walkId = rCtx.walkTargetId;
+        if (walkId) {
+            const room = allRooms[walkId] || allRooms[`m_${walkId}`];
+            let tx, ty, tz;
+            if (room) {
+                tx = room.x; ty = room.y; tz = room.z || 0;
+            } else {
+                const rawId = walkId.startsWith('m_') ? walkId.substring(2) : walkId;
+                const pData = preloaded[rawId];
+                if (pData) {
+                    tx = pData[0]; ty = pData[1]; tz = pData[2] || 0;
+                }
+            }
+
+            if (tx !== undefined && ty !== undefined && Math.abs(tz - currentZ) < 1.0) {
+                const targetX = tx * GRID_SIZE, targetY = ty * GRID_SIZE;
+                
+                // Target Highlight (White Border)
+                ctx.save();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3 / rCtx.camera.zoom;
+                ctx.setLineDash([]);
+                ctx.strokeRect(targetX - 2, targetY - 2, GRID_SIZE + 4, GRID_SIZE + 4);
+                
+                // White outer glow
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 15;
+                ctx.strokeRect(targetX - 2, targetY - 2, GRID_SIZE + 4, GRID_SIZE + 4);
+                ctx.restore();
+
+                // Path Line (Dashed White)
+                ctx.save();
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 2 / rCtx.camera.zoom;
+                ctx.setLineDash([5 / rCtx.camera.zoom, 5 / rCtx.camera.zoom]);
+                
+                // If we have a full path, follow it
+                if (rCtx.walkPath && rCtx.walkPath.length > 0) {
+                    ctx.moveTo(px, py);
+                    rCtx.walkPath.forEach((stepId) => {
+                        const sRoom = allRooms[stepId] || allRooms[`m_${stepId}`];
+                        let sx, sy;
+                        if (sRoom) {
+                            sx = sRoom.x; sy = sRoom.y;
+                        } else {
+                            const rsId = stepId.startsWith('m_') ? stepId.substring(2) : stepId;
+                            const psData = preloaded[rsId];
+                            if (psData) {
+                                sx = psData[0]; sy = psData[1];
+                            }
+                        }
+                        if (sx !== undefined && sy !== undefined) {
+                            ctx.lineTo(sx * GRID_SIZE + GRID_SIZE / 2, sy * GRID_SIZE + GRID_SIZE / 2);
+                        }
+                    });
+                } else {
+                    // Fallback to direct line if no path but target exists
+                    ctx.moveTo(px, py);
+                    ctx.lineTo(targetX + GRID_SIZE / 2, targetY + GRID_SIZE / 2);
+                }
+                
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
     }
 };
 

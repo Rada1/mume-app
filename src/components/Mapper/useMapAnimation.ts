@@ -20,12 +20,15 @@ interface AnimationProps {
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     preMoveRef?: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
+    walkTargetId?: string | null;
+    walkPath?: string[];
 }
 
 export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, 
-    stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preMoveRef
+    stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preMoveRef,
+    walkTargetId, walkPath
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
@@ -34,6 +37,8 @@ export const useMapAnimation = ({
     const trackerRef = useRef<{ endTimes: number[] }>({ endTimes: [] });
 
     const lastFrameTimeRef = useRef<number>(0);
+    const animationQueueRef = useRef<{ x: number, y: number, z: number }[]>([]);
+    const lastProcessedRoomIdRef = useRef<string | null>(null);
 
     // Keep tick logic in a ref so the loop can access the latest version without restarting
     (tickRef as any).current = () => {
@@ -66,25 +71,59 @@ export const useMapAnimation = ({
         // Auto-centering & Player Animation
         const activeRoomId = stableRoomIdRef.current;
         const preMove = preMoveRef?.current;
-        
-        if (playerPosRef.current && (activeRoomId || preMove) && stableRoomsRef.current) {
-            const targetId = preMove ? preMove.targetId : activeRoomId;
-            const target = targetId ? stableRoomsRef.current[targetId] : null;
-            
-            if (target) {
-                const px = playerPosRef.current.x, py = playerPosRef.current.y;
-                const targetX = target.x, targetY = target.y;
+        const targetId = preMove ? preMove.targetId : activeRoomId;
+        const roomsData = stableRoomsRef.current;
+
+        // 1. Process Queue - if room changed, add to queue
+        if (targetId && targetId !== lastProcessedRoomIdRef.current && roomsData) {
+            const newTarget = roomsData[targetId];
+            if (newTarget) {
+                // If this is a real GMCP update (not a preMove) and it differs from what we processed last,
+                // we might need to clear the queue if it was a prediction miss.
+                const isRealMove = activeRoomId === targetId;
+                if (isRealMove && lastProcessedRoomIdRef.current && lastProcessedRoomIdRef.current !== targetId) {
+                    // Prediction miss or correction - clear pending predicted animations
+                    animationQueueRef.current = [];
+                }
+
+                // If we have a walkPath, find intermediate steps
+                if (walkPath && walkPath.length > 0) {
+                    const lastIdx = walkPath.indexOf(lastProcessedRoomIdRef.current || '');
+                    const currentIdx = walkPath.indexOf(targetId);
+                    
+                    if (lastIdx !== -1 && currentIdx !== -1 && currentIdx > lastIdx) {
+                        // Intermediate rooms between last and current in the path
+                        for (let i = lastIdx + 1; i <= currentIdx; i++) {
+                            const stepId = walkPath[i];
+                            const step = roomsData[stepId];
+                            if (step) animationQueueRef.current.push({ x: step.x, y: step.y, z: step.z || 0 });
+                        }
+                    } else {
+                        // Just push the target if path isn't helpful
+                        animationQueueRef.current.push({ x: newTarget.x, y: newTarget.y, z: newTarget.z || 0 });
+                    }
+                } else {
+                    animationQueueRef.current.push({ x: newTarget.x, y: newTarget.y, z: newTarget.z || 0 });
+                }
+                lastProcessedRoomIdRef.current = targetId;
+            }
+        }
+
+        // 2. Animate Player toward the head of the queue
+        if (playerPosRef.current && animationQueueRef.current.length > 0) {
+            const target = animationQueueRef.current[0];
+            const px = playerPosRef.current.x, py = playerPosRef.current.y;
+            const targetX = target.x, targetY = target.y;
 
             const dx = targetX - px, dy = targetY - py;
             const distSq = dx * dx + dy * dy;
-            
+
             if (distSq > 0.0000001) {
-                // Delta-time aware lerp for "super smooth" glide
-                const lerpFactor = 1 - Math.pow(0.88, frameScale); 
+                const lerpFactor = 1 - Math.pow(0.85, frameScale);
                 playerPosRef.current.x += dx * lerpFactor;
                 playerPosRef.current.y += dy * lerpFactor;
-                
-                // Optimized trail update
+                playerPosRef.current.z = target.z; // Snap Z for clipping
+
                 if (distSq > 0.001) {
                     playerTrailRef.current.push({
                         x: playerPosRef.current.x,
@@ -92,34 +131,50 @@ export const useMapAnimation = ({
                         z: playerPosRef.current.z,
                         alpha: 0.8
                     });
-                    // Cap trail length efficiently
                     if (playerTrailRef.current.length > 30) playerTrailRef.current.shift();
                 }
 
-                if (distSq < 0.00001) {
-                   playerPosRef.current.x = targetX;
-                   playerPosRef.current.y = targetY;
+                if (distSq < 0.002) {
+                    playerPosRef.current.x = targetX;
+                    playerPosRef.current.y = targetY;
+                    animationQueueRef.current.shift();
                 }
-                }
-                needsNextFrame = true;
+            } else {
+                animationQueueRef.current.shift();
             }
+            needsNextFrame = true;
+        }
 
-            if (autoCenter && !isDragging) {
-                const zoom = camera.current.zoom || 1;
-                const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
-                const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
-
-                const cdx = targetCamX - camera.current.x;
-                const cdy = targetCamY - camera.current.y;
-                if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
-                    const camLerp = 1 - Math.pow(0.9, frameScale);
-                    camera.current.x += cdx * camLerp;
-                    camera.current.y += cdy * camLerp;
+        // 3. Fallback: if queue is empty but player is not at targetId
+        if (targetId && animationQueueRef.current.length === 0 && playerPosRef.current && roomsData) {
+            const target = roomsData[targetId];
+            if (target) {
+                const dx = target.x - playerPosRef.current.x;
+                const dy = target.y - playerPosRef.current.y;
+                if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
+                    const lerpFactor = 1 - Math.pow(0.88, frameScale);
+                    playerPosRef.current.x += dx * lerpFactor;
+                    playerPosRef.current.y += dy * lerpFactor;
                     needsNextFrame = true;
-                } else {
-                    camera.current.x = targetCamX;
-                    camera.current.y = targetCamY;
                 }
+            }
+        }
+
+        if ((autoCenter || walkTargetId) && playerPosRef.current && !isDragging) {
+            const zoom = camera.current.zoom || 1;
+            const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
+            const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
+
+            const cdx = targetCamX - camera.current.x;
+            const cdy = targetCamY - camera.current.y;
+            if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
+                const camLerp = 1 - Math.pow(0.9, frameScale);
+                camera.current.x += cdx * camLerp;
+                camera.current.y += cdy * camLerp;
+                needsNextFrame = true;
+            } else {
+                camera.current.x = targetCamX;
+                camera.current.y = targetCamY;
             }
         }
 
@@ -178,7 +233,7 @@ export const useMapAnimation = ({
                 requestRef.current = null;
             }
         };
-    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms, preMoveRef]);
+    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms, preMoveRef, walkTargetId]);
 
     return { tick: tickRef.current };
 };

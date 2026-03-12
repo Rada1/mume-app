@@ -29,14 +29,16 @@ interface RendererProps {
     firstExploredAtRef: MutableRefObject<Record<string, number>>;
     preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>>;
     spatialIndexRef: MutableRefObject<Record<number, Record<string, string[]>>>;
+    walkTargetId?: string | null;
+    walkPath?: string[];
 }
 
 export const useMapperRenderer = ({
-    selectedRoomIds, selectedMarkerId,
+    rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
-    playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef, preloadedCoordsRef,
-    spatialIndexRef, exploredRef, renderVersion,
-    unveilMap, viewZ, firstExploredAtRef
+    playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
+    preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
+    unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath
 }: RendererProps) => {
 
     const offscreenCacheRef = useRef<{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, lastParams: string } | null>(null);
@@ -186,7 +188,7 @@ export const useMapperRenderer = ({
             const rCtx: RenderContext = {
                 ctx: offCtx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
-                allRooms, roomAtCoord: vCache.roomAtCoord, visitedAtCoord: vCache.visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId
+                allRooms, roomAtCoord: vCache.roomAtCoord, visitedAtCoord: vCache.visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath
             };
 
             drawGrid(rCtx, gX1, gY1, gX2, gY2);
@@ -228,7 +230,7 @@ export const useMapperRenderer = ({
             ctx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
             allRooms, roomAtCoord: visibleCacheRef.current.roomAtCoord, visitedAtCoord: visibleCacheRef.current.visitedAtCoord, 
-            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId
+            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath
         };
 
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
-import { useGame, useLog } from '../../context/GameContext';
+import { useGame, useLog, useVitals } from '../../context/GameContext';
 import { useMapperController } from './useMapperController';
 import { MapCanvas } from './MapCanvas';
 import { MapperToolbar } from './MapperToolbar';
@@ -56,7 +56,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { triggerHaptic, executeCommand, theme, showLegacyButtons } = useGame();
+    const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick } = useGame();
+    const { target } = useVitals();
     const { addMessage } = useLog();
     const isDarkMode = theme === 'dark';
 
@@ -74,7 +75,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         unveilMap, setUnveilMap, handleResetAndSync, handleSyncLocation, handleClearMap
     } = controller;
 
-    const { isWalking, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
+    const { isWalking, walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
 
     const triggerRender = useCallback(() => setRenderVersion(v => v + 1), []);
 
@@ -94,7 +95,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         triggerRender, viewZ, setViewZ,
         preloadedCoordsRef,
         spatialIndexRef: controller.spatialIndexRef,
-        startWalking, stopWalking
+        startWalking, stopWalking,
+        executeCommand, joystick, btn, heldButton, setHeldButton, target
     });
 
     useEffect(() => {
@@ -164,6 +166,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 viewZ={viewZ}
                 firstExploredAtRef={controller.firstExploredAtRef}
                 preMoveRef={controller.preMoveRef}
+                walkTargetId={walkTargetId}
+                walkPath={walkPath}
             />
             <div className="vignette-container" />
             {currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (() => {
@@ -176,13 +180,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 
                 return (
                     <DpadCluster
-                        exits={exits}
-                        currentRoomId={currentRoomId}
-                        rooms={rooms}
-                        preloaded={preloadedCoordsRef.current}
                         heldButton={heldButton}
                         setHeldButton={setHeldButton}
-                        setCommandPreview={setCommandPreview || (() => {})}
                     />
                 );
             })()}

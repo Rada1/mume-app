@@ -20,7 +20,7 @@ export const getButtonCommand = (
 
     // Cancellation is now handled via screen-absolute position in GameButton.tsx
 
-    let cmd = (isLong && !isSwiped) ? (button.longCommand || '') : (isSwiped ? '' : button.command);
+    let cmd = (isLong && !isSwiped) ? (button.longCommand || button.command || '') : (isSwiped ? '' : (button.command || ''));
     let actionType = (isLong && !isSwiped && button.longCommand) ? (button.longActionType || 'command') : (button.actionType || 'command');
     let dir: SwipeDirection | undefined = undefined;
 
@@ -37,23 +37,21 @@ export const getButtonCommand = (
                 cmd = button.longSwipeCommands![dir]!;
                 actionType = button.longSwipeActionTypes?.[dir] || 'command';
             } else {
-                // If in Long mode but NO long swipe is defined, don't fall back to short swipe menus
-                cmd = '';
-                actionType = 'command';
+                // If in Long mode but NO long swipe is defined, fall back to base swipe if it exists
+                if (hasBase) {
+                    cmd = button.swipeCommands![dir]!;
+                    actionType = button.swipeActionTypes?.[dir] || 'command';
+                }
             }
         } else if (hasBase) {
             cmd = button.swipeCommands![dir]!;
             actionType = button.swipeActionTypes?.[dir] || 'command';
-        } else {
-            // Visual feedback only - no command execution
-            cmd = '';
-            actionType = 'command';
         }
     }
 
     if (context) {
         if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, context);
-        else cmd = `${cmd} ${context}`;
+        else cmd = cmd ? `${cmd} ${context}` : context;
     }
 
     if (!cmd && (!joystickState || !joystickState.currentDir) && !isSwiped) {

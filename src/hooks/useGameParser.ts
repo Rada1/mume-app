@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { GameStats, DrawerLine, GameAction } from '../types';
+import { GameStats, DrawerLine, GameAction, MessageType } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import { extractNoun } from '../utils/gameUtils';
 import { usePracticeParser } from './usePracticeParser';
@@ -27,7 +27,7 @@ export interface UseGameParserDeps {
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'none'>;
+    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>;
     practice: ReturnType<typeof usePracticeHandler>;
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
@@ -197,6 +197,14 @@ export function useGameParser(deps: UseGameParserDeps) {
             addDiagnosticLog?.('Shop parsing activated');
         }
 
+        if (textOnly === 'who:' || lower === 'allies' || lower === 'minions') {
+            captureStage.current = 'who';
+        }
+
+        if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
+            captureStage.current = 'where';
+        }
+
         // Detect end of shop listing (prompt)
         const isPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*$/.test(textOnly) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
@@ -211,6 +219,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             captureStage.current = 'none';
             deps.practice.setIsPracticeActive(false);
             deps.practice.setIsUiRequested(false);
+        }
+
+        if (isPrompt && (captureStage.current === 'who' || captureStage.current === 'where')) {
+            captureStage.current = 'none';
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
@@ -418,9 +430,13 @@ export function useGameParser(deps: UseGameParserDeps) {
                 finalRawText += '\x1b[0m';
             }
 
+            let msgType: MessageType = 'game';
+            if (captureStage.current === 'who' && textOnly !== 'who:' && lower !== 'allies' && lower !== 'minions' && !textOnly.startsWith('---')) msgType = 'who-list';
+            else if (captureStage.current === 'where' && !textOnly.startsWith('Player') && !textOnly.startsWith('Who') && !textOnly.startsWith('---')) msgType = 'where-list';
+
             const precalculated = { textOnly: textOnly, lower: lower };
             const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
-            addMessage('game', finalRawText, undefined, stableId, isRoomName, precalculated, undefined, undefined, undefined, false);
+            addMessage(msgType, finalRawText, undefined, stableId, isRoomName, precalculated, undefined, undefined, undefined, false);
         }
     }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);
 

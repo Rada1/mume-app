@@ -9,9 +9,7 @@ interface JoystickClusterProps {
     dragState: any;
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
     joystick: any;
-    joystickGlow: boolean;
     btnGlow: any;
-    setJoystickGlow: (val: boolean) => void;
     setBtnGlow: (val: any) => void;
     executeCommand: (cmd: string) => void;
     triggerHaptic: (ms: number) => void;
@@ -25,8 +23,8 @@ interface JoystickClusterProps {
 }
 
 export const JoystickCluster: React.FC<JoystickClusterProps> = ({
-    uiPositions, isEditMode, dragState, handleDragStart, joystick, joystickGlow, btnGlow,
-    setJoystickGlow, setBtnGlow, executeCommand, triggerHaptic, heldButton, setHeldButton,
+    uiPositions, isEditMode, dragState, handleDragStart, joystick, btnGlow,
+    setBtnGlow, executeCommand, triggerHaptic, heldButton, setHeldButton,
     buttons, target, setActiveSet, setPopoverState, setCommandPreview
 }) => {
     const { viewport } = useGame();
@@ -63,12 +61,29 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
 
             <Joystick
                 joystickKnobRef={joystick.joystickKnobRef}
-                joystickGlow={joystickGlow}
+                joystickGlow={joystick.joystickGlow}
                 btnGlow={btnGlow}
-                onJoystickStart={joystick.handleJoystickStart}
-                onJoystickMove={joystick.handleJoystickMove}
+                onJoystickStart={(e) => {
+                    e.stopPropagation();
+                    if (e.cancelable) e.preventDefault();
+                    joystick.handleJoystickStart(e, executeCommand);
+                }}
+                onJoystickMove={(e) => {
+                    const dir = joystick.handleJoystickMove(e, executeCommand, !!heldButton);
+                    if (dir && heldButton && !heldButton.didFire) {
+                        const button = buttons.find((b: any) => b.id === heldButton.id);
+                        if (button) {
+                            const result = getButtonCommand(button, heldButton.dx || 0, heldButton.dy || 0, undefined, undefined, heldButton.modifiers, { currentDir: dir, isTargetModifierActive: !!joystick.isTargetModifierActive }, target, true);
+                            if (result) {
+                                executeCommand(result.cmd);
+                                setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                                triggerHaptic(60);
+                            }
+                        }
+                    }
+                }}
                 onJoystickEnd={(e) => {
-                    const resultData = joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, setJoystickGlow, !!heldButton);
+                    const resultData = joystick.handleJoystickEnd(e, executeCommand, triggerHaptic, !!heldButton);
                     const isCenterTap = resultData === true || resultData?.isCenterTap;
 
                     if (heldButton?.dx !== undefined) {

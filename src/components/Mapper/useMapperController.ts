@@ -119,45 +119,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     const pushPendingMove = useCallback((dir: string) => {
         const move = { dir, time: Date.now(), resolved: false };
         pendingMovesRef.current.push(move);
-        
-        // Blind resolution timer: if GMCP doesn't arrive in 600ms, assume the move succeeded
-        // but didn't trigger a GMCP update (darkness/blindness).
-        setTimeout(() => {
-            const idx = pendingMovesRef.current.indexOf(move);
-            if (idx !== -1) {
-                // It's still there! No GMCP update consumed it.
-                const unresolvedMove = pendingMovesRef.current[idx];
-                pendingMovesRef.current.splice(idx, 1);
-                
-                const curId = currentRoomIdRef.current;
-                const rooms = roomsRef.current;
-                const preloaded = preloadedCoordsRef.current;
-                
-                if (curId && rooms && preloaded) {
-                    const room = rooms[curId] || rooms[`m_${curId}`];
-                    const rawId = curId.startsWith('m_') ? curId.substring(2) : curId;
-                    const wEx = preloaded[rawId]?.[4]?.[unresolvedMove.dir];
-                    
-                    // Use the existing gate state logic to see if we can reasonably "predict" the target
-                    const { hasExit, hasDoor, isClosed } = getGateState(room, wEx, unresolvedMove.dir, rooms, preloaded);
-                    
-                    if (hasExit && (!hasDoor || !isClosed)) {
-                        const ex = (room?.exits ? room.exits[unresolvedMove.dir] : wEx) as any;
-                        const targetId = ex?.target || ex?.gmcpDestId;
-                        if (targetId) {
-                            const finalTargetId = String(targetId).startsWith('m_') ? String(targetId) : `m_${targetId}`;
-                            if (showDebugEchoes) {
-                                addMessage?.('system', `[Mapper] Blind Move: Resolving ${unresolvedMove.dir} to ${finalTargetId}`);
-                            }
-                            setCurrentRoomId(finalTargetId);
-                            currentRoomIdRef.current = finalTargetId;
-                            options.triggerRender?.();
-                        }
-                    }
-                }
-            }
-        }, 600);
-    }, [currentRoomIdRef, roomsRef, preloadedCoordsRef, showDebugEchoes, addMessage, setCurrentRoomId, options.triggerRender]);
+    }, []);
 
     useImperativeHandle(ref, () => ({
         handleRoomInfo,

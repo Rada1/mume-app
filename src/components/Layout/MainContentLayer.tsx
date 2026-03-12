@@ -8,6 +8,7 @@ import { getButtonCommand } from '../../utils/buttonUtils';
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
     handleLogPointerDown: (e: React.PointerEvent) => void;
+    handleLogPointerUp: (e: React.PointerEvent) => void;
     handleSend: (e?: React.FormEvent) => void;
     handleInputSwipe: (dir: 'up' | 'down' | 'left' | 'right') => void;
     commandPreview: string | null;
@@ -19,6 +20,7 @@ interface MainContentLayerProps {
 export const MainContentLayer: React.FC<MainContentLayerProps> = ({
     handleMouseUp,
     handleLogPointerDown,
+    handleLogPointerUp,
     handleSend,
     handleInputSwipe,
     commandPreview,
@@ -124,6 +126,7 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                     onLogClick={handleLogClick}
                     onMouseUp={handleMouseUp}
                     onPointerDown={handleLogPointerDown}
+                    onPointerUp={handleLogPointerUp}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
                 />

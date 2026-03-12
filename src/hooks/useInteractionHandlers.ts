@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { CustomButton, MessageType } from '../types';
+import { getButtonCommand } from '../utils/buttonUtils';
 
 export interface InteractionDeps {
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
@@ -43,6 +44,8 @@ export interface InteractionDeps {
         setManagerOpen: boolean;
     };
     setActiveDragData: (val: any) => void;
+    heldButton: any;
+    setHeldButton: (val: any) => void;
 }
 
 export const useInteractionHandlers = (deps: InteractionDeps) => {
@@ -51,7 +54,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
         setIsMapExpanded, setIsCharacterOpen, setIsItemsDrawerOpen,
         setInventoryLines, setEqLines, setStatsLines, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        ui, setActiveDragData
+        ui, setActiveDragData, heldButton, setHeldButton
     } = deps;
     const lastLogClickRef = useRef<number>(0);
 
@@ -183,13 +186,13 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             }
         }
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef]);
+    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef, viewport]);
 
     const handleInputSwipe = useCallback((dir: string) => {
         triggerHaptic(20);
         if (dir === 'up') setIsMapExpanded(true);
         else if (dir === 'down') {
-            if (deps.ui.mapExpanded) {
+            if (ui.mapExpanded) {
                 setIsMapExpanded(false);
             } else if (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInv.current) {
                 setIsItemsDrawerOpen(false); setIsCharacterOpen(false); setIsMapExpanded(false);
@@ -201,7 +204,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
             setIsItemsDrawerOpen(true);
         }
-    }, [viewport.isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsCharacterOpen, setIsItemsDrawerOpen, executeCommand, setStatsLines, setInventoryLines, setEqLines, ui]);
+    }, [viewport.isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsCharacterOpen, setIsItemsDrawerOpen, executeCommand, ui]);
 
     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
         let selection = window.getSelection()?.toString().trim();
@@ -275,44 +278,84 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
 
     const handleLogClick = useCallback((e: React.MouseEvent) => {
         const now = Date.now();
-        // Increase threshold slightly for mobile tap latency
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+
+        console.log('[DEBUG] handleLogClick:', {
+            now,
+            lastLogClick: lastLogClickRef.current,
+            hasTarget: !!targetEl,
+            targetText: targetEl?.innerText,
+            targetCmd: targetEl?.getAttribute('data-cmd')
+        });
+
+        // --- Double-tap detection FIRST (before any targetEl guard) ---
+        // This allows double-tapping on plain text to set target, not just inline buttons.
         const doubleTapThreshold = viewport.isMobile ? 400 : 300;
 
         if (now - lastLogClickRef.current < doubleTapThreshold) {
-            handleLogDoubleClick(e);
+            console.log('[DEBUG] Double Tap Detected');
             lastLogClickRef.current = 0;
+            // If an inline btn was double-tapped, pass its context as the selection
+            if (targetEl) {
+                const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+                if (context) {
+                    setTarget(context);
+                    addMessage('system', `Target set to: ${context}`);
+                    triggerHaptic(30);
+                    e.stopPropagation();
+                }
+            } else {
+                handleLogDoubleClick(e);
+            }
             return;
         }
         lastLogClickRef.current = now;
 
-        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        // After double-tap check, single-tap only works on inline buttons
         if (!targetEl) return;
 
+        // Stop propagation to prevent message log selection or container clicks
         e.stopPropagation();
-        triggerHaptic(20);
 
         const cmd = targetEl.getAttribute('data-cmd');
-        const action = targetEl.getAttribute('data-action');
         const context = targetEl.getAttribute('data-context');
+        const action = targetEl.getAttribute('data-action');
+        const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
 
-        // Use client coordinates or fallback for popover placement
-        const x = e.clientX || (e.nativeEvent as MouseEvent).clientX;
-        const y = e.clientY || (e.nativeEvent as MouseEvent).clientY;
+        console.log('[DEBUG] Inline Action:', { action, cmd, context });
+
+        // BUTTON COMBO LOGIC: If a physical action GameButton is being held, 
+        // and we tap an inline button, fire that action at this target.
+        // Note: 'log-inline-' ids are inline-log tracking, not GameButton holds.
+        if (heldButton && !heldButton.didFire && heldButton.baseCommand && !heldButton.id.startsWith('log-inline-')) {
+            console.log('[DEBUG] Executing Button Combo:', { button: heldButton.id, target: context });
+            const contextStr = context || targetEl.innerText.trim();
+            // Use getButtonCommand or manually construct it if it's a simple command
+            let finalCmd = heldButton.baseCommand;
+            if (contextStr) {
+                if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, contextStr);
+                else finalCmd = `${finalCmd} ${contextStr}`;
+            }
+            
+            executeCommand(finalCmd);
+            setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+            triggerHaptic(60);
+            return;
+        }
 
         if (action === 'menu') {
+            console.log('[DEBUG] Opening Popover Menu - Position:', e.clientX, e.clientY);
             setPopoverState({
-                x: x || window.innerWidth / 2,
-                y: y || window.innerHeight / 2,
+                x: e.clientX || (e.nativeEvent as MouseEvent).clientX,
+                y: e.clientY || (e.nativeEvent as MouseEvent).clientY,
                 setId: cmd || 'selection',
-                context: context || undefined
+                context: context || undefined,
+                menuDisplay
             });
-        }
-        else if ((action === 'command' || action === 'preload') && cmd) {
+        } else if ((action === 'command' || action === 'preload') && cmd) {
             let finalCmd = cmd;
             if (context) {
-                finalCmd = finalCmd.replace(/%n/g, context);
-                // Also handle the $1 style placeholders if they were passed through
-                finalCmd = finalCmd.replace(/\$1/g, context);
+                finalCmd = finalCmd.replace(/%n/g, context).replace(/\$1/g, context);
             }
 
             if (action === 'preload' || finalCmd.startsWith('input:')) {
@@ -320,22 +363,17 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 const prefill = isInputPrefix ? finalCmd.slice(6) : (finalCmd + (finalCmd.endsWith(' ') ? '' : ' '));
                 setInput(prefill);
 
-                // Only trigger keyboard on mobile if it's explicitly an 'input:' command
                 const shouldFocus = !viewport.isMobile || isInputPrefix;
-
                 if (shouldFocus) {
                     setTimeout(() => {
                         const inputEl = document.querySelector('input') as HTMLInputElement;
                         if (inputEl) {
                             const wasReadOnly = inputEl.readOnly;
                             if (isInputPrefix && viewport.isMobile) inputEl.readOnly = false;
-
                             inputEl.focus();
-
                             if (isInputPrefix && viewport.isMobile) {
                                 setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
                             }
-
                             const len = inputEl.value.length;
                             inputEl.setSelectionRange(len, len);
                         }
@@ -344,12 +382,70 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             } else {
                 executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
             }
-        }
-        else if (cmd === 'target' && context) {
+            triggerHaptic(40);
+        } else if (cmd === 'target' && context) {
             setTarget(context);
             addMessage('system', `Target set to: ${context}`);
+            triggerHaptic(30);
         }
-    }, [triggerHaptic, setPopoverState, executeCommand, setTarget, addMessage, handleLogDoubleClick, viewport.isMobile]);
+    }, [handleLogDoubleClick, viewport.isMobile, heldButton, executeCommand, setHeldButton, triggerHaptic, setPopoverState, setInput, setTarget, addMessage]);
+
+    const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
+        const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        console.log('[DEBUG] handleLogPointerDown:', targetEl?.innerText);
+        if (!targetEl) return;
+
+        triggerHaptic(15);
+
+        // BUTTON COMBO (multi-touch): If a GameButton is already held, fire the combo
+        // immediately on pointerdown. We cannot rely on 'click' here because secondary
+        // touch fingers do not generate click events on mobile browsers.
+        if (heldButton && !heldButton.didFire && heldButton.baseCommand && !heldButton.id.startsWith('log-inline-')) {
+            const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
+            console.log('[DEBUG] Inline Combo (pointerdown):', { button: heldButton.id, target: context });
+            let finalCmd = heldButton.baseCommand;
+            if (context) {
+                if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, context);
+                else finalCmd = `${finalCmd} ${context}`;
+            }
+            executeCommand(finalCmd);
+            setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+            triggerHaptic(60);
+            return; // Don't overwrite heldButton or set a log-inline tracker
+        }
+
+        // No GameButton held — track this inline button as held (for future drag/long-press use).
+        // Prefix with 'log-inline-' to distinguish from GameButton holds.
+        // Only track on mobile to prevent rapid re-renders on desktop that swallow the click event.
+        if (viewport.isMobile) {
+            const id = 'log-inline-' + (targetEl.getAttribute('data-id') || Math.random());
+            const cmd = targetEl.getAttribute('data-cmd') || '';
+            const context = targetEl.getAttribute('data-context') || '';
+            const rect = targetEl.getBoundingClientRect();
+
+            const baseCommand = cmd.includes('%n') ? cmd.replace(/%n/g, context) : (cmd ? `${cmd} ${context}` : context);
+
+            setHeldButton({
+                id,
+                baseCommand,
+                modifiers: [],
+                dx: 0,
+                dy: 0,
+                didFire: false,
+                initialX: rect.left + rect.width / 2,
+                initialY: rect.top + rect.height / 2
+            });
+        }
+    }, [setHeldButton, triggerHaptic, heldButton, executeCommand, viewport.isMobile]);
+
+    const handleLogPointerUp = useCallback((e: React.PointerEvent) => {
+        // Only clear heldButton if it was set by the log's own pointerdown handler.
+        // GameButton holds (no 'log-inline-' prefix) must be cleared by the GameButton's onPointerUp.
+        if (heldButton && heldButton.id.startsWith('log-inline-')) {
+            console.log('[DEBUG] Clearing log-inline heldButton on PointerUp');
+            setHeldButton(null);
+        }
+    }, [heldButton, setHeldButton]);
 
     const handleDragStart = useCallback((e: React.DragEvent) => {
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
@@ -397,5 +493,5 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         setActiveDragData(null);
     }, [setActiveDragData]);
 
-    return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleDragStart, handleDragEnd };
+    return { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd };
 };
