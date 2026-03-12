@@ -158,14 +158,15 @@ select.setting-input {
 
 .popover-menu {
     position: fixed;
-    background: rgba(15, 23, 42, 0.85);
-    border: 1px solid var(--accent, rgba(255, 255, 255, 0.25));
+    /* Frosted Glass - Highly Transparent & Subtle Blur */
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--accent, rgba(255, 255, 255, 0.2));
     border-radius: 12px;
     padding: 12px;
     z-index: 35000;
-    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -242,7 +243,10 @@ select.setting-input {
     transform: translate(-50%, -50%);
     width: 110px;
     height: 110px;
-    background: var(--bg-panel, rgba(10, 10, 10, 0.85));
+    /* Frosted Glass - Highly Transparent & Subtle Blur */
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border: 2px solid var(--accent, rgba(255, 255, 255, 0.2));
     border-radius: 50%;
     display: flex;
@@ -255,8 +259,6 @@ select.setting-input {
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.05);
     pointer-events: none;
     z-index: 5;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 }
 
 .dial-center-icon {
@@ -372,13 +374,14 @@ select.setting-input {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    /* Frosted Glass - Highly Transparent & Subtle Blur */
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));
     border-radius: 12px;
     min-width: 220px;
-    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 10px 48px rgba(0, 0, 0, 0.6);
     z-index: 10000;
     padding: 8px;
     display: flex;

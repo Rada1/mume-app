@@ -129,13 +129,15 @@
     scale: 1;
     animation: swipe-wheel-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     border-radius: 50%;
-    background: radial-gradient(circle at center, rgba(10, 10, 10, 0.55) 0%, rgba(5, 5, 5, 0.7) 100%);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 2px solid rgba(var(--set-accent-rgb, 255, 255, 255), 0.4);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6),
-        0 0 30px 5px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.6),
-        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    /* Frosted Glass - Highly Transparent & Subtle Blur */
+    background: rgba(255, 255, 255, 0.03); 
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 0 15px rgba(var(--set-accent-rgb, var(--accent-rgb)), 0.3),
+        inset 0 0 1px 1px rgba(255, 255, 255, 0.05);
     /* Overflow hidden removed to allow selected slice to grow outward */
 }
 

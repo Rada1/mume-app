@@ -134,8 +134,9 @@ const InputArea: React.FC<InputAreaProps> = ({
                         <div style={{
                             position: 'absolute',
                             left: '0',
-                            color: 'var(--text-faded)',
-                            opacity: 0.5,
+                            color: 'var(--accent)',
+                            opacity: 0.9,
+                            fontWeight: '500',
                             pointerEvents: 'none',
                             fontFamily: 'inherit',
                             fontSize: 'inherit',

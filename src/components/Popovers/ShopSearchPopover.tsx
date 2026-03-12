@@ -20,13 +20,6 @@ const ShopSearchPopover: React.FC<ShopSearchPopoverProps> = ({ executeCommand, o
         }
     };
 
-    const categories = [
-        { label: 'All', icon: Zap, query: '' },
-        { label: 'Weapons', icon: Sword, query: 'weapon' },
-        { label: 'Armor', icon: Shield, query: 'armor' },
-        { label: 'Food', icon: Apple, query: 'food' },
-    ];
-
     return (
         <div className="shop-search-popover" onPointerDown={(e) => e.stopPropagation()}>
             <div className="popover-header" style={{ marginBottom: '12px' }}>
@@ -47,20 +40,7 @@ const ShopSearchPopover: React.FC<ShopSearchPopoverProps> = ({ executeCommand, o
                 />
             </div>
 
-            <div className="shop-category-grid">
-                {categories.map((cat) => (
-                    <button
-                        key={cat.label}
-                        onClick={() => handleSearch(cat.query)}
-                        className="shop-category-btn"
-                    >
-                        <cat.icon size={18} />
-                        <span>{cat.label}</span>
-                    </button>
-                ))}
-            </div>
-
-            <button onClick={() => handleSearch('')} className="shop-search-submit">
+            <button onClick={() => handleSearch('')} className="shop-search-submit" style={{ marginTop: '12px' }}>
                 View Full List
             </button>
         </div>
