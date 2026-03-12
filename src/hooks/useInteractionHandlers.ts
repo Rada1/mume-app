@@ -81,11 +81,11 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         let cmd = button.command;
         if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : cmd; }
         let finalCmd = cmd;
-        if (joystick.currentDir) {
+        if (joystick.currentDir && !(button as any)._skipJoystick) {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
             finalCmd = `${finalCmd} ${dirMap[joystick.currentDir] || joystick.currentDir}`;
             joystick.setIsJoystickConsumed(true);
-        } else if (joystick.isTargetModifierActive && target) {
+        } else if (joystick.isTargetModifierActive && target && !(button as any)._skipJoystick) {
             finalCmd = `${finalCmd} ${target}`; joystick.setIsJoystickConsumed(true);
         }
 

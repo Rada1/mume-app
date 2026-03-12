@@ -32,7 +32,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     if (isMobile) {
         return (
             <div className={`mobile-bottom-gutter ${isExpanded ? 'map-expanded' : ''}`}>
-                {!showLegacyButtons && showControls && !isKeyboardOpen && !isLandscape && (
+                {!showLegacyButtons && showControls && !isKeyboardOpen && !isLandscape && !isExpanded && (
                     <div className="line-cluster-container">
                         <LineCluster
                             isEditMode={isEditMode}

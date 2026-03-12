@@ -269,8 +269,26 @@ export const useRoomInfoHandler = ({
             }
         }
 
+        // Apply topology changes to state
+        if (topologyChanged) {
+            roomsRef.current = newRooms; // Sync ref immediately to prevent race conditions on fast updates
+            setRooms(newRooms);
+        }
+
+        // Update the current room ID state if it changed
+        const roomChanged = targetId !== activeRoomId;
+        if (roomChanged) {
+            setCurrentRoomId(targetId);
+        }
+
         // Update the current room reference immediately for canvas consumption
         currentRoomIdRef.current = targetId;
+        
+        // Always trigger a render update for the map canvas if anything changed
+        if (topologyChanged || roomChanged) {
+            triggerRender?.();
+        }
+        
         onRoomInfoProcessed?.();
     }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes]);
 

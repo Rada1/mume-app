@@ -33,19 +33,18 @@
     overflow-wrap: break-word;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
-    touch-action: pan-y;
     /* scroll-padding-bottom: 20px; - Removed to fix manual scroll math conflicts */
     scrollbar-width: thin;
     scrollbar-color: var(--text-faded) transparent;
     font-size: var(--dynamic-log-size, 16px);
     mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, black 150px);
     position: relative;
-    user-select: text;
+    user-select: text; /* Allow text selection to not block interactions */
     -webkit-user-select: text;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    cursor: text;
+    touch-action: pan-y !important;
+    cursor: default;
     min-height: 0;
     transform-style: preserve-3d;
 }

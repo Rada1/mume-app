@@ -8,7 +8,7 @@ export const CLERIC_COMBAT_SPELLS: CustomButton[] = [
     {
         "id": "cleric-smother-6",
         "label": "Smother",
-        "command": "cast 'Smother' target",
+        "command": "cast 'Smother'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -20,7 +20,7 @@ export const CLERIC_COMBAT_SPELLS: CustomButton[] = [
     {
         "id": "cleric-cure-blindness-7",
         "label": "Cure Blindness",
-        "command": "cast 'Cure Blindness' target",
+        "command": "cast 'Cure Blindness'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -32,7 +32,7 @@ export const CLERIC_COMBAT_SPELLS: CustomButton[] = [
     {
         "id": "cleric-cure-serious-8",
         "label": "Cure Serious",
-        "command": "cast 'Cure Serious' target",
+        "command": "cast 'Cure Serious'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -44,7 +44,7 @@ export const CLERIC_COMBAT_SPELLS: CustomButton[] = [
     {
         "id": "cleric-remove-poison-9",
         "label": "Remove Poison",
-        "command": "cast 'Remove Poison' target",
+        "command": "cast 'Remove Poison'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -56,7 +56,7 @@ export const CLERIC_COMBAT_SPELLS: CustomButton[] = [
     {
         "id": "cleric-bless-10",
         "label": "Bless",
-        "command": "cast 'Bless' target",
+        "command": "cast 'Bless'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -68,7 +68,7 @@ export const CLERIC_COMBAT_SPELLS: CustomButton[] = [
     {
         "id": "cleric-blindness-11",
         "label": "Blindness",
-        "command": "cast 'Blindness' target",
+        "command": "cast 'Blindness'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",

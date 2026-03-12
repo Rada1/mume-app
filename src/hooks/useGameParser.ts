@@ -155,9 +155,13 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         if (lower.includes("alas, you cannot go that way") ||
             lower.includes("there is no exit") ||
-            lower.includes("you bump into")) {
+            lower.includes("you bump into") ||
+            lower.includes("maybe you should get on your feet") ||
+            lower.includes("nah, you're too exhausted")) {
             setRumble(true);
             triggerHaptic(40);
+            mapperRef.current?.handleMoveFailure();
+            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail'));
             setTimeout(() => setRumble(false), 300);
         }
 

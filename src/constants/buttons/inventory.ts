@@ -30,7 +30,7 @@ export const INVENTORY_BUTTONS: CustomButton[] = [
     {
         "id": "inv-put",
         "label": "Put Target",
-        "command": "put %n target",
+        "command": "put %n",
         "setId": "inventorylist",
         "actionType": "command",
         "display": "floating",

@@ -8,7 +8,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-charm-11",
         "label": "Charm",
-        "command": "cast 'Charm' target",
+        "command": "cast 'Charm'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -20,7 +20,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-silence-12",
         "label": "Silence",
-        "command": "cast 'Silence' target",
+        "command": "cast 'Silence'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -32,7 +32,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-sleep-13",
         "label": "Sleep",
-        "command": "cast 'Sleep' target",
+        "command": "cast 'Sleep'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -44,7 +44,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-ventriloquate-14",
         "label": "Ventriloquate",
-        "command": "cast 'Ventriloquate' target",
+        "command": "cast 'Ventriloquate'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -56,7 +56,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-call-familiar-15",
         "label": "Call Familiar",
-        "command": "cast 'Call Familiar' target",
+        "command": "cast 'Call Familiar'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -68,7 +68,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-block-door-16",
         "label": "Block Door",
-        "command": "cast 'Block Door' target",
+        "command": "cast 'Block Door'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -80,7 +80,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-control-weather-17",
         "label": "Control Weather",
-        "command": "cast 'Control Weather' target",
+        "command": "cast 'Control Weather'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -92,7 +92,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-create-light-18",
         "label": "Create Light",
-        "command": "cast 'Create Light' target",
+        "command": "cast 'Create Light'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -104,7 +104,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-enchant-19",
         "label": "Enchant",
-        "command": "cast 'Enchant' target",
+        "command": "cast 'Enchant'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -116,7 +116,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-night-vision-20",
         "label": "Night Vision",
-        "command": "cast 'Night Vision' target",
+        "command": "cast 'Night Vision'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -128,7 +128,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-store-21",
         "label": "Store",
-        "command": "cast 'Store' target",
+        "command": "cast 'Store'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -140,7 +140,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-armour-22",
         "label": "Armour",
-        "command": "cast 'Armour' target",
+        "command": "cast 'Armour'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -152,7 +152,7 @@ export const MAGE_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "mage-shield-23",
         "label": "Shield",
-        "command": "cast 'Shield' target",
+        "command": "cast 'Shield'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",

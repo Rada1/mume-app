@@ -114,7 +114,7 @@ export const XBOX_BUTTONS: CustomButton[] = [
     {
         "id": "xbox-z",
         "label": "Warrior",
-        "command": "hit target",
+        "command": "hit",
         "setId": "Xbox",
         "actionType": "command",
         "display": "floating",

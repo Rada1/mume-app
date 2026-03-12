@@ -12,6 +12,7 @@ import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
+import '../Mapper.css';
 
 interface MapperProps {
     isMinimized?: boolean;
@@ -164,17 +165,27 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 firstExploredAtRef={controller.firstExploredAtRef}
                 preMoveRef={controller.preMoveRef}
             />
-            {currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`]) && (
-                <DpadCluster
-                    exits={(rooms[currentRoomId] || rooms[`m_${currentRoomId}`]).exits}
-                    currentRoomId={currentRoomId}
-                    rooms={rooms}
-                    preloaded={preloadedCoordsRef.current}
-                    heldButton={heldButton}
-                    setHeldButton={setHeldButton}
-                    setCommandPreview={setCommandPreview || (() => {})}
-                />
-            )}
+            <div className="vignette-container" />
+            {currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (() => {
+                const roomData = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
+                const vnum = String(currentRoomId).replace(/^m_/, '');
+                const preData = preloadedCoordsRef.current[vnum];
+                
+                // Construct a temporary exits object if room state isn't populated yet
+                const exits = roomData?.exits || (preData?.[4] || {});
+                
+                return (
+                    <DpadCluster
+                        exits={exits}
+                        currentRoomId={currentRoomId}
+                        rooms={rooms}
+                        preloaded={preloadedCoordsRef.current}
+                        heldButton={heldButton}
+                        setHeldButton={setHeldButton}
+                        setCommandPreview={setCommandPreview || (() => {})}
+                    />
+                );
+            })()}
             <MapperToolbar
                 mode={mode}
                 setMode={setMode}

@@ -280,9 +280,9 @@ export const useButtonGestures = ({
             } else if (previewCmd.actionType === 'preload' || (previewCmd.cmd && previewCmd.cmd.startsWith('input:'))) {
                 const prefill = previewCmd.cmd.startsWith('input:') ? previewCmd.cmd.slice(6) : (previewCmd.cmd + (previewCmd.cmd.endsWith(' ') ? '' : ' '));
                 // We need to use the actual setter passed from parent
-                (handleButtonClick as any)({ ...button, command: prefill, actionType: 'preload' }, e);
+                (handleButtonClick as any)({ ...button, command: prefill, actionType: 'preload', _skipJoystick: true }, e);
             } else if (previewCmd.cmd === '__clear_target__') {
-                handleButtonClick({ ...button, command: '__clear_target__', actionType: 'command' }, e);
+                handleButtonClick({ ...button, command: '__clear_target__', actionType: 'command', _skipJoystick: true }, e);
             } else if (previewCmd.cmd && previewCmd.cmd.trim() !== '') {
                 executeCommand(previewCmd.cmd, false, false);
                 if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
@@ -304,7 +304,7 @@ export const useButtonGestures = ({
                         return;
                     }
                 }
-                handleButtonClick(button, e);
+                handleButtonClick({ ...button, _skipJoystick: false } as any, e);
             }
         }
 

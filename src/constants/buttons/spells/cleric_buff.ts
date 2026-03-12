@@ -8,7 +8,7 @@ export const CLERIC_BUFF_SPELLS: CustomButton[] = [
     {
         "id": "cleric-strength-12",
         "label": "Strength",
-        "command": "cast 'Strength' target",
+        "command": "cast 'Strength'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -20,7 +20,7 @@ export const CLERIC_BUFF_SPELLS: CustomButton[] = [
     {
         "id": "cleric-sense-life-13",
         "label": "Sense Life",
-        "command": "cast 'Sense Life' target",
+        "command": "cast 'Sense Life'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -32,7 +32,7 @@ export const CLERIC_BUFF_SPELLS: CustomButton[] = [
     {
         "id": "cleric-heal-14",
         "label": "Heal",
-        "command": "cast 'Heal' target",
+        "command": "cast 'Heal'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -44,7 +44,7 @@ export const CLERIC_BUFF_SPELLS: CustomButton[] = [
     {
         "id": "cleric-cure-critical-15",
         "label": "Cure Critical",
-        "command": "cast 'Cure Critical' target",
+        "command": "cast 'Cure Critical'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -56,7 +56,7 @@ export const CLERIC_BUFF_SPELLS: CustomButton[] = [
     {
         "id": "cleric-breath-of-briskness-16",
         "label": "Breath of Briskness",
-        "command": "cast 'Breath of Briskness' target",
+        "command": "cast 'Breath of Briskness'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -68,7 +68,7 @@ export const CLERIC_BUFF_SPELLS: CustomButton[] = [
     {
         "id": "cleric-fear-17",
         "label": "Fear",
-        "command": "cast 'Fear' target",
+        "command": "cast 'Fear'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",

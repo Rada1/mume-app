@@ -81,3 +81,8 @@
   width: 65vw !important;
   overflow: visible !important;
 }
+/* Hide interactive buttons in portrait mode when map is expanded to prevent toolbar overlap */
+.app-container.is-map-expanded:not(.is-landscape) .spat-container,
+.app-container.is-map-expanded:not(.is-landscape) .line-cluster-container {
+  display: none !important;
+}

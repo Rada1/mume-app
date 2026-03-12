@@ -156,17 +156,11 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             options.triggerRender?.();
         };
 
-        window.addEventListener('mume-mapper-room-info', onInfo);
-        window.addEventListener('mume-mapper-update-exits', onExits);
-        window.addEventListener('mume-mapper-terrain', onTerrain);
         window.addEventListener('mume-mapper-push-move', onPush);
         window.addEventListener('mume-mapper-push-pre-move', onPre);
         window.addEventListener('mume-mapper-move-fail', onFail);
 
         return () => {
-            window.removeEventListener('mume-mapper-room-info', onInfo);
-            window.removeEventListener('mume-mapper-update-exits', onExits);
-            window.removeEventListener('mume-mapper-terrain', onTerrain);
             window.removeEventListener('mume-mapper-push-move', onPush);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
             window.removeEventListener('mume-mapper-move-fail', onFail);

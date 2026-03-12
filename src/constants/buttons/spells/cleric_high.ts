@@ -8,7 +8,7 @@ export const CLERIC_HIGH_SPELLS: CustomButton[] = [
     {
         "id": "cleric-transfer-18",
         "label": "Transfer",
-        "command": "cast 'Transfer' target",
+        "command": "cast 'Transfer'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -20,7 +20,7 @@ export const CLERIC_HIGH_SPELLS: CustomButton[] = [
     {
         "id": "cleric-darkness-19",
         "label": "Darkness",
-        "command": "cast 'Darkness' target",
+        "command": "cast 'Darkness'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -32,7 +32,7 @@ export const CLERIC_HIGH_SPELLS: CustomButton[] = [
     {
         "id": "cleric-sanctuary-20",
         "label": "Sanctuary",
-        "command": "cast 'Sanctuary' target",
+        "command": "cast 'Sanctuary'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -44,7 +44,7 @@ export const CLERIC_HIGH_SPELLS: CustomButton[] = [
     {
         "id": "cleric-summon-21",
         "label": "Summon",
-        "command": "cast 'Summon' target",
+        "command": "cast 'Summon'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -56,7 +56,7 @@ export const CLERIC_HIGH_SPELLS: CustomButton[] = [
     {
         "id": "cleric-hammer-of-faith-22",
         "label": "Hammer of Faith",
-        "command": "cast 'Hammer of Faith' target",
+        "command": "cast 'Hammer of Faith'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -68,7 +68,7 @@ export const CLERIC_HIGH_SPELLS: CustomButton[] = [
     {
         "id": "cleric-dispel-evil-23",
         "label": "Dispel Evil",
-        "command": "cast 'Dispel Evil' target",
+        "command": "cast 'Dispel Evil'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",

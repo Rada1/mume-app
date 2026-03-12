@@ -25,41 +25,6 @@
     margin: 0;
 }
 
-.door-sidebar {
-    position: absolute;
-    left: 50%;
-    /* Start from the exact center of the map */
-    top: 50%;
-    /* calc(50% + 120px) means: take half of map width (the center) and add 120px offset to the right */
-    transform: translate(calc(-50% + 150px), -50%);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 0;
-    background: none;
-    backdrop-filter: none;
-    border: none;
-    box-shadow: none;
-    pointer-events: auto;
-    z-index: 1001;
-}
-
-.door-sidebar-btn {
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    width: 40px !important;
-    height: 70px !important;
-    transform: none !important;
-    margin: 0 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
-}
-
-.door-sidebar-btn:active {
-    transform: scale(0.95) !important;
-}
-
 .dpad-btn {
     position: absolute;
     width: 44px;

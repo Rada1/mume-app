@@ -1,6 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
+import { useUI, useBaseGame } from '../context/GameContext';
 
 
 interface InputAreaProps {
@@ -43,11 +44,16 @@ const InputArea: React.FC<InputAreaProps> = ({
     input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState
 }) => {
+    const { ui } = useUI();
+    const { viewport } = useBaseGame();
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLInputElement>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
     const [offset, setOffset] = React.useState({ x: 0, y: 0 });
     const isSwiping = useRef(false);
+
+    // Hide spat buttons in portrait mode when map is expanded
+    const shouldShowSpat = viewport.isLandscape || !ui.mapExpanded;
 
     return (
         <div
@@ -219,15 +225,17 @@ const InputArea: React.FC<InputAreaProps> = ({
                 <button type="submit" style={{ display: 'none' }}>Send</button>
             </form>
 
-            <SpatButtons
-                spatButtons={spatButtons}
-                isMobile={!!isMobile}
-                isKeyboardOpen={isKeyboardOpen}
-                setActiveSet={setActiveSet}
-                executeCommand={executeCommand}
-                setSpatButtons={setSpatButtons}
-                setPopoverState={setPopoverState}
-            />
+            {shouldShowSpat && (
+                <SpatButtons
+                    spatButtons={spatButtons}
+                    isMobile={!!isMobile}
+                    isKeyboardOpen={isKeyboardOpen}
+                    setActiveSet={setActiveSet}
+                    executeCommand={executeCommand}
+                    setSpatButtons={setSpatButtons}
+                    setPopoverState={setPopoverState}
+                />
+            )}
         </div>
     );
 };

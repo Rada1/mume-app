@@ -8,7 +8,7 @@ export const MAGE_SPELLS: CustomButton[] = [
     {
         "id": "mage-burning-hands-0",
         "label": "Burning Hands",
-        "command": "cast 'Burning Hands' target",
+        "command": "cast 'Burning Hands'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",

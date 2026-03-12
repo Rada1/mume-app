@@ -8,7 +8,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-burning-hands-0",
         "label": "Burning Hands",
-        "command": "cast 'Burning Hands' target",
+        "command": "cast 'Burning Hands'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -20,7 +20,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-call-lightning-1",
         "label": "Call Lightning",
-        "command": "cast 'Call Lightning' target",
+        "command": "cast 'Call Lightning'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -32,7 +32,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-chill-touch-2",
         "label": "Chill Touch",
-        "command": "cast 'Chill Touch' target",
+        "command": "cast 'Chill Touch'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -44,7 +44,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-colour-spray-3",
         "label": "Colour Spray",
-        "command": "cast 'Colour Spray' target",
+        "command": "cast 'Colour Spray'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -56,7 +56,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-earthquake-4",
         "label": "Earthquake",
-        "command": "cast 'Earthquake' target",
+        "command": "cast 'Earthquake'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -68,7 +68,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-dispel-magic-5",
         "label": "Dispel Magic",
-        "command": "cast 'Dispel Magic' target",
+        "command": "cast 'Dispel Magic'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -80,7 +80,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-fireball-6",
         "label": "Fireball",
-        "command": "cast 'Fireball' target",
+        "command": "cast 'Fireball'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -92,7 +92,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-lightning-bolt-7",
         "label": "Lightning Bolt",
-        "command": "cast 'Lightning Bolt' target",
+        "command": "cast 'Lightning Bolt'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -104,7 +104,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-magic-blast-8",
         "label": "Magic Blast",
-        "command": "cast 'Magic Blast' target",
+        "command": "cast 'Magic Blast'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -116,7 +116,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-magic-missile-9",
         "label": "Magic Missile",
-        "command": "cast 'Magic Missile' target",
+        "command": "cast 'Magic Missile'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",
@@ -128,7 +128,7 @@ export const MAGE_ATTACK_SPELLS: CustomButton[] = [
     {
         "id": "mage-shocking-grasp-10",
         "label": "Shocking Grasp",
-        "command": "cast 'Shocking Grasp' target",
+        "command": "cast 'Shocking Grasp'",
         "setId": "magespelllist",
         "actionType": "command",
         "display": "floating",

@@ -8,7 +8,7 @@ export const CLERIC_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "cleric-armour-0",
         "label": "Armour",
-        "command": "cast 'Armour' target",
+        "command": "cast 'Armour'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -20,7 +20,7 @@ export const CLERIC_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "cleric-cure-light-1",
         "label": "Cure Light",
-        "command": "cast 'Cure Light' target",
+        "command": "cast 'Cure Light'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -32,7 +32,7 @@ export const CLERIC_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "cleric-create-water-2",
         "label": "Create Water",
-        "command": "cast 'Create Water' target",
+        "command": "cast 'Create Water'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -44,7 +44,7 @@ export const CLERIC_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "cleric-detect-poison-3",
         "label": "Detect Poison",
-        "command": "cast 'Detect Poison' target",
+        "command": "cast 'Detect Poison'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -56,7 +56,7 @@ export const CLERIC_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "cleric-detect-evil-4",
         "label": "Detect Evil",
-        "command": "cast 'Detect Evil' target",
+        "command": "cast 'Detect Evil'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",
@@ -68,7 +68,7 @@ export const CLERIC_UTILITY_SPELLS: CustomButton[] = [
     {
         "id": "cleric-create-food-5",
         "label": "Create Food",
-        "command": "cast 'Create Food' target",
+        "command": "cast 'Create Food'",
         "setId": "clericspelllist",
         "actionType": "command",
         "display": "floating",

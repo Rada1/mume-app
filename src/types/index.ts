@@ -133,6 +133,7 @@ export interface CustomButton {
     };
     hideIfUnknown?: boolean;
     isDimmed?: boolean; // True if button should be visible but heavily transparent
+    _skipJoystick?: boolean; // Internal: prevent double direction appending
 }
 
 export interface SoundTrigger {
