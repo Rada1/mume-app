@@ -151,11 +151,17 @@ export interface TeleportTarget {
     expiresAt: number;
 }
 
+export interface ParleyState {
+    active: boolean;
+    command: string; // e.g., 'tell', 'whisper', 'say'
+    target: string | null;
+}
+
 export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target';
     setId: string;
     context?: string;
     assignSourceId?: string;
@@ -187,6 +193,9 @@ export interface PopoverManagerProps {
     inlineCategories?: InlineCategoryConfig[];
     favorites: string[];
     setFavorites: (val: string[]) => void;
+    parley: ParleyState;
+    setParley: React.Dispatch<React.SetStateAction<ParleyState>>;
+    whoList: string[];
 }
 
 

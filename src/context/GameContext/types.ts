@@ -111,6 +111,9 @@ export interface GameContextType {
     setInlineCategories: Dispatch<SetStateAction<import('../../types').InlineCategoryConfig[]>>;
     favorites: string[];
     setFavorites: (val: string[]) => void;
+    parley: import('../../types').ParleyState;
+    setParley: Dispatch<SetStateAction<import('../../types').ParleyState>>;
+    whoList: string[];
 
     mood: string;
     setMood: (val: string) => void;

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction } from '../../types';
+import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
@@ -47,6 +47,8 @@ export const useGameProviderState = () => {
     useEffect(() => { inCombatRef.current = inCombat; }, [inCombat]);
 
     const [characterName, setCharacterName] = useState<string | null>(null);
+    const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null });
+    const [whoList, setWhoList] = useState<string[]>([]);
     const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
     const [roomNpcs, setRoomNpcs] = useState<string[]>([]);
     const [roomItems, setRoomItems] = useState<string[]>([]);
@@ -207,6 +209,8 @@ export const useGameProviderState = () => {
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
         showLegacyButtons, setShowLegacyButtons,
+        parley, setParley,
+        whoList, setWhoList,
         roomName, setRoomName, roomNameRef,
         inlineCategories, setInlineCategories,
         favorites, setFavorites,
@@ -220,7 +224,8 @@ export const useGameProviderState = () => {
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName,
-        inlineCategories, favorites, activeDragData, heldButton
+        inlineCategories, favorites, activeDragData, heldButton,
+        parley, whoList
     ]);
 
     return { vitals, game };

@@ -224,6 +224,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setInventoryLines: s.setInventoryLines,
         setStatsLines: s.setStatsLines,
         setEqLines: s.setEqLines,
+        setWhoList: s.setWhoList,
         captureStage: s.captureStage,
         practice,
         isDrawerCapture: s.isDrawerCapture,
@@ -288,7 +289,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setActiveDragData: s.setActiveDragData,
         practice,
         heldButton: v.heldButton,
-        setHeldButton: v.setHeldButton
+        setHeldButton: v.setHeldButton,
+        parley: s.parley,
+        setParley: s.setParley
     });
 
     const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = controller;

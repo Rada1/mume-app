@@ -77,7 +77,10 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         showLegacyButtons,
         setShowLegacyButtons,
         favorites,
-        setFavorites
+        setFavorites,
+        parley,
+        setParley,
+        whoList
     } = useGame() as any;
 
     const {
@@ -260,6 +263,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 inlineCategories={inlineCategories}
                 favorites={favorites}
                 setFavorites={setFavorites}
+                parley={parley}
+                setParley={setParley}
+                whoList={whoList}
             />
 
             <DrawerManager

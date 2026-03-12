@@ -196,7 +196,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             // in a capture stage from a background drawer task that hung or is taking too long.
             isDrawerCapture.current = 0;
             isSilentCapture.current = 0;
-            captureStage.current = 'none';
+            // Don't reset captureStage for 'who'/'where' — the parser sets it when the server's
+            // header line arrives, and we need it to survive so list entries are tagged correctly.
+            if (lowerCmd !== 'who' && lowerCmd !== 'where') {
+                captureStage.current = 'none';
+            }
         }
 
         if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {

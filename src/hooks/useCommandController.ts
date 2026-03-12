@@ -49,6 +49,8 @@ export interface CommandControllerDeps {
     practice: any;
     heldButton: any;
     setHeldButton: (val: any) => void;
+    parley: import('../types').ParleyState;
+    setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {
@@ -98,7 +100,7 @@ export function useCommandController(deps: CommandControllerDeps) {
     }, [executor, viewport.isMobile]);
 
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
-        ...deps, executeCommand, ui: deps.ui
+        ...deps, executeCommand, ui: deps.ui, parley: deps.parley, setParley: deps.setParley
     });
 
     const handleSend = useCallback((e?: React.FormEvent) => {
@@ -106,15 +108,28 @@ export function useCommandController(deps: CommandControllerDeps) {
         const cmd = input.trim();
         setInput('');
 
-        if (isNoviceMode && cmd) {
-            const result = mudParser.parse(cmd);
-            if (result.finalOutput?.length) result.finalOutput.forEach(c => executeCommand(c));
-            else executeCommand(cmd);
-        } else {
-            executeCommand(cmd);
+        let finalCmd = cmd;
+        if (deps.parley.active && cmd) {
+            const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing'];
+            const isTargetless = TARGETLESS.includes(deps.parley.command);
+            if (isTargetless) {
+                finalCmd = `${deps.parley.command} ${cmd}`;
+            } else if (deps.parley.target) {
+                finalCmd = `${deps.parley.command} ${deps.parley.target} ${cmd}`;
+            } else {
+                finalCmd = `${deps.parley.command} ${cmd}`;
+            }
         }
 
-    }, [input, executeCommand, viewport, isNoviceMode, setInput, deps.mapperRef]);
+        if (isNoviceMode && finalCmd) {
+            const result = mudParser.parse(finalCmd);
+            if (result.finalOutput?.length) result.finalOutput.forEach(c => executeCommand(c));
+            else executeCommand(finalCmd);
+        } else {
+            executeCommand(finalCmd);
+        }
+
+    }, [input, executeCommand, viewport, isNoviceMode, setInput, deps.mapperRef, deps.parley]);
 
     return { executeCommand, handleButtonClick, handleInputSwipe, handleSend, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd };
 }

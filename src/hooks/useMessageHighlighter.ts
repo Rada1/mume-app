@@ -77,9 +77,19 @@ export const useMessageHighlighter = (
         // 0. Specialized List Highlighting (WHO/WHERE)
         if (type === 'who-list' || type === 'where-list') {
             const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-            const playerMatch = type === 'who-list'
-                ? textOnly.match(/^\s*(?:<[A-Z]>\s+)?([A-Z][A-Za-zÀ-ÿ\-']+)/)
-                : textOnly.match(/^\s*([A-Z][A-Za-zÀ-ÿ\-']+)/);
+            
+            // Strip away MUME prefixes like [ 50 Ran], <AFK>, (PK), or *Wanted*
+            let cleanText = textOnly.trim();
+            let lastLength = 0;
+            while (cleanText.length !== lastLength) {
+                lastLength = cleanText.length;
+                cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
+                cleanText = cleanText.replace(/^<.*?>\s*/, '');
+                cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
+                cleanText = cleanText.replace(/^\*+/, '');
+            }
+
+            const playerMatch = cleanText.match(/^([A-Z][A-Za-zÀ-ÿ\-']+)/);
 
             if (playerMatch && playerMatch[1]) {
                 const name = playerMatch[1];

@@ -27,6 +27,7 @@ export interface UseGameParserDeps {
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
     captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>;
     practice: ReturnType<typeof usePracticeHandler>;
     isDrawerCapture: React.MutableRefObject<number>;
@@ -41,7 +42,7 @@ export interface UseGameParserDeps {
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog } = deps;
 
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -59,7 +60,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         let lower = textOnly.toLowerCase();
 
         // Use the ALREADY STRIPPED text for the prompt regex. It's much faster.
-        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:]\s*/;
+        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>:]\s*/;
         const textPMatch = textOnly.match(promptRegex);
 
         if (textPMatch) {
@@ -87,7 +88,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             lower = textOnly.toLowerCase();
 
             // Strip the actual prompt part from the cleanLine so the ANSI HTML doesn't render it
-            const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*)/;
+            const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>:])\s*)/ ;
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
         }
 
@@ -199,6 +200,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         if (textOnly === 'who:' || lower === 'allies' || lower === 'minions') {
             captureStage.current = 'who';
+            setWhoList([]); // Clear when list starts
         }
 
         if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
@@ -206,8 +208,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         // Detect end of shop listing (prompt)
-        const isPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(])\s*)*[>:])\s*$/.test(textOnly) ||
+        const isPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>:])\s*$/.test(textOnly) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
+
+        if (isPrompt && (captureStage.current === 'who' || captureStage.current === 'where')) {
+            captureStage.current = 'none';
+        }
 
         if (isPrompt && (captureStage.current === 'shop' || isShopListingActive)) {
             captureStage.current = 'none';
@@ -221,7 +227,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             deps.practice.setIsUiRequested(false);
         }
 
-        if (isPrompt && (captureStage.current === 'who' || captureStage.current === 'where')) {
+        if (isPrompt && captureStage.current === 'who') {
             captureStage.current = 'none';
         }
 
@@ -278,6 +284,24 @@ export function useGameParser(deps: UseGameParserDeps) {
                 const stableId = `shop-${shopItem.id}-${Date.now()}-${counterRef.current++}`;
                 addMessage('shop-item', textOnly, undefined, stableId, false, { textOnly, lower }, shopItem, undefined, undefined, true);
                 return;
+            }
+        } else if (captureStage.current === 'who') {
+            // Extract player names from WHO list
+            let cleanText = textOnly.trim();
+            if (cleanText && !cleanText.startsWith('---') && cleanText !== 'who:' && lower !== 'allies' && lower !== 'minions') {
+                let lastLength = 0;
+                while (cleanText.length !== lastLength) {
+                    lastLength = cleanText.length;
+                    cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
+                    cleanText = cleanText.replace(/^<.*?>\s*/, '');
+                    cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
+                    cleanText = cleanText.replace(/^\*+/, '');
+                }
+                const playerMatch = cleanText.match(/^([A-Z][A-Za-zÀ-ÿ\-']+)/);
+                if (playerMatch && playerMatch[1]) {
+                    const name = playerMatch[1];
+                    setWhoList(prev => prev.includes(name) ? prev : [...prev, name]);
+                }
             }
         }
 

@@ -120,3 +120,74 @@
     filter: none;
     transition: all 0.3s ease-in-out;
 }
+
+/* Parley Indicators */
+.parley-indicator-container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 8px;
+    padding: 4px 6px;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: slideInLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.parley-indicator {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.parley-command {
+    background: rgba(var(--accent-rgb), 0.2);
+    color: var(--accent);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+}
+
+.parley-command:hover {
+    background: rgba(var(--accent-rgb), 0.3);
+}
+
+.parley-target {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.parley-target:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.parley-clear-btn {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.parley-clear-btn:hover {
+    background: rgba(239, 68, 68, 0.4);
+    color: white;
+}
+
+@keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
+}

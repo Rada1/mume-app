@@ -8,7 +8,7 @@ import ShopSearchPopover from './ShopSearchPopover';
 import { getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
-    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories, favorites, setFavorites
+    popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories, favorites, setFavorites, parley, setParley, whoList
 }) => {
 
     useLayoutEffect(() => {
@@ -220,7 +220,24 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}
             {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} executeCommand={executeCommand} setPopoverState={setPopoverState} />}
             {popoverState.type === 'shop-search' && <ShopSearchPopover executeCommand={executeCommand} onClose={() => setPopoverState(null)} />}
-            {!popoverState.type && <StandardMenuPopover popoverState={popoverState} buttons={buttons} availableSets={availableSets} setPopoverState={setPopoverState} setButtons={setButtons} handleButtonClick={handleButtonClick} setTarget={setTarget} addMessage={addMessage} themeColor={themeColor} favorites={favorites} setFavorites={setFavorites} />}
+            {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || !popoverState.type) && (
+                <StandardMenuPopover 
+                    popoverState={popoverState} 
+                    buttons={buttons} 
+                    availableSets={availableSets} 
+                    setPopoverState={setPopoverState} 
+                    setButtons={setButtons} 
+                    handleButtonClick={handleButtonClick} 
+                    setTarget={setTarget} 
+                    addMessage={addMessage} 
+                    themeColor={themeColor} 
+                    favorites={favorites} 
+                    setFavorites={setFavorites}
+                    parley={parley}
+                    setParley={setParley}
+                    whoList={whoList}
+                />
+            )}
         </div>
     );
 };

@@ -44,7 +44,10 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         spatButtons,
         setSpatButtons,
         executeCommand,
-        isImmersionMode
+        isImmersionMode,
+        parley,
+        setParley,
+        whoList
     } = useGame();
 
     const { target } = useVitals();
@@ -148,6 +151,9 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                 executeCommand={executeCommand}
                 setSpatButtons={setSpatButtons}
                 setPopoverState={setPopoverState}
+                parley={parley}
+                setParley={setParley}
+                whoList={whoList}
             />
         </div>
     );

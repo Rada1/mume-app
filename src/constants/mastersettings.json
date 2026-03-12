@@ -307,6 +307,29 @@
             }
         },
         {
+            "id": "inlp-parley",
+            "label": "Parley",
+            "command": "__parley__",
+            "setId": "inlineplayer",
+            "actionType": "command",
+            "display": "floating",
+            "style": {
+                "x": 0,
+                "y": 0,
+                "w": 90,
+                "h": 40,
+                "backgroundColor": "#f59e0b",
+                "shape": "pill"
+            },
+            "trigger": {
+                "enabled": false,
+                "pattern": "",
+                "isRegex": false,
+                "autoHide": false,
+                "duration": 0
+            }
+        },
+        {
             "id": "inlp-whois",
             "label": "Whois",
             "command": "whois %n",

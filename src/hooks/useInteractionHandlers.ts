@@ -46,6 +46,8 @@ export interface InteractionDeps {
     setActiveDragData: (val: any) => void;
     heldButton: any;
     setHeldButton: (val: any) => void;
+    parley: import('../types').ParleyState;
+    setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
 }
 
 export const useInteractionHandlers = (deps: InteractionDeps) => {
@@ -54,7 +56,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
         setIsMapExpanded, setIsCharacterOpen, setIsItemsDrawerOpen,
         setInventoryLines, setEqLines, setStatsLines, isWaitingForStats, isWaitingForEq, isWaitingForInv,
-        ui, setActiveDragData, heldButton, setHeldButton
+        ui, setActiveDragData, heldButton, setHeldButton, parley, setParley
     } = deps;
     const lastLogClickRef = useRef<number>(0);
 
@@ -167,6 +169,22 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
             }
         } else if (finalCmd === '__clear_target__' || button.command === '__clear_target__') {
             setTarget(null); addMessage('system', 'Target cleared.');
+        } else if (finalCmd === '__parley__') {
+            const parleyTarget = context || target || '';
+            setParley({ active: true, command: parley.command || 'tell', target: parleyTarget });
+            
+            // Focus keyboard
+            setTimeout(() => {
+                const inputEl = document.querySelector('input') as HTMLInputElement;
+                if (inputEl) {
+                    const wasReadOnly = inputEl.readOnly;
+                    if (viewport.isMobile) inputEl.readOnly = false;
+                    inputEl.focus();
+                    if (viewport.isMobile) {
+                        setTimeout(() => { if (inputEl) inputEl.readOnly = wasReadOnly; }, 100);
+                    }
+                }
+            }, 10);
         } else {
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
             setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });

@@ -20,6 +20,9 @@ interface InputAreaProps {
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
     setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
+    parley: import('../types').ParleyState;
+    setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
+    whoList: string[];
 }
 
 const normalizeTerrain = (t: string): string => {
@@ -42,7 +45,7 @@ const normalizeTerrain = (t: string): string => {
 
 const InputArea: React.FC<InputAreaProps> = ({
     input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
-    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState
+    spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList
 }) => {
     const { ui } = useUI();
     const { viewport } = useBaseGame();
@@ -110,6 +113,37 @@ const InputArea: React.FC<InputAreaProps> = ({
             inputRef.current.style.height = 'auto';
         }
     }, [input]);
+
+    const handleParleyCommandClick = (e: React.MouseEvent) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPopoverState({
+            x: rect.left + rect.width / 2,
+            y: rect.top,
+            type: 'select-parley-command',
+            setId: 'parley-commands',
+            context: 'Select Command',
+            menuDisplay: 'list'
+        });
+    };
+
+    const handleParleyTargetClick = (e: React.MouseEvent) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        setPopoverState({
+            x: rect.left + rect.width / 2,
+            y: rect.top,
+            type: 'select-parley-target',
+            setId: 'parley-targets',
+            context: 'Select Target',
+            menuDisplay: 'list'
+        });
+    };
+
+    const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing'];
+
+    const handleParleyClear = () => {
+        setParley({ ...parley, active: false });
+    };
+
 
     // Hide spat buttons in portrait mode when map is expanded
     const shouldShowSpat = viewport.isLandscape || !ui.mapExpanded;
@@ -188,6 +222,27 @@ const InputArea: React.FC<InputAreaProps> = ({
             }} />
             <form className="input-form" onSubmit={onSend} style={{ position: 'relative' }}>
                 <span className="cmd-prompt" onPointerDown={(e) => e.preventDefault()} style={{ pointerEvents: 'auto' }}>{'>'}</span>
+                
+                {parley.active && (() => {
+                    const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
+                    return (
+                        <div className="parley-indicator-container">
+                            <div className="parley-indicator parley-command" onClick={handleParleyCommandClick}>
+                                {parley.command}
+                            </div>
+                            <div
+                                className="parley-indicator parley-target"
+                                onClick={handleParleyTargetClick}
+                                title={isTargetless ? 'This command has no target' : undefined}
+                            >
+                                {isTargetless ? '' : (parley.target ?? '')}
+                            </div>
+                            <div className="parley-clear-btn" onClick={handleParleyClear}>
+                                ×
+                            </div>
+                        </div>
+                    );
+                })()}
                 <div 
                     onClick={() => inputRef.current?.focus()}
                     style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}

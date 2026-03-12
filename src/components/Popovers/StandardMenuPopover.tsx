@@ -13,11 +13,14 @@ interface StandardMenuProps {
     themeColor?: string;
     favorites: string[];
     setFavorites: (val: string[]) => void;
+    parley: import('../../types').ParleyState;
+    setParley: (val: import('../../types').ParleyState) => void;
+    whoList: string[];
 }
 
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
-    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites
+    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites, parley, setParley, whoList
 }) => {
     const isSetManager = popoverState.setId === 'setmanager';
     const isTargetable = ['selection', 'inventorylist', 'equipmentlist'].includes(popoverState.setId);
@@ -221,6 +224,85 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     {sectionButtons.length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
                 </>
             )}
+
+            {popoverState.type === 'select-parley-command' && (() => {
+                const COMMANDS = ['tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing'];
+                const favCmds = COMMANDS.filter(c => favorites.includes(`parley-cmd-${c}`));
+                const otherCmds = COMMANDS.filter(c => !favorites.includes(`parley-cmd-${c}`));
+                const renderCmd = (cmd: string) => {
+                    const favKey = `parley-cmd-${cmd}`;
+                    const isFav = favorites.includes(favKey);
+                    const isActive = parley.command === cmd;
+                    return (
+                        <div key={cmd} className="popover-item" data-menu-item="true"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                            onClick={() => { setParley({ ...parley, command: cmd as any }); setPopoverState(null); }}>
+                            <span style={{ pointerEvents: 'none' }}>
+                                {isActive && <span style={{ marginRight: 6, color: 'var(--accent)', fontSize: '0.9rem' }}>✓ </span>}
+                                {cmd.toUpperCase()}
+                            </span>
+                            <div className={`favorite-star ${isFav ? 'active' : ''}`}
+                                onClick={(e) => { e.stopPropagation(); setFavorites(isFav ? favorites.filter(f => f !== favKey) : [...favorites, favKey]); }}
+                                style={{ opacity: isFav ? 1 : 0.3, color: isFav ? '#ffd700' : 'inherit', fontSize: '1.2rem', padding: '16px 20px', margin: '-16px -16px -16px auto', cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
+                                {isFav ? '★' : '☆'}
+                            </div>
+                        </div>
+                    );
+                };
+                return (
+                    <>
+                        {favCmds.length > 0 && (<>
+                            <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
+                            {favCmds.map(renderCmd)}
+                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
+                        </>)}
+                        {otherCmds.map(renderCmd)}
+                    </>
+                );
+            })()}
+
+
+            {popoverState.type === 'select-parley-target' && (() => {
+                const favTargets = whoList.filter(n => favorites.includes(`parley-tgt-${n}`));
+                const otherTargets = whoList.filter(n => !favorites.includes(`parley-tgt-${n}`));
+                const renderTarget = (name: string | null) => {
+                    const favKey = name ? `parley-tgt-${name}` : null;
+                    const isFav = favKey ? favorites.includes(favKey) : false;
+                    const isActive = parley.target === name;
+                    const label = name ?? '(No Target)';
+                    return (
+                        <div key={label} className="popover-item" data-menu-item="true"
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: name === null ? 0.6 : 1 }}
+                            onClick={() => { setParley({ ...parley, target: name }); setPopoverState(null); }}>
+                            <span style={{ pointerEvents: 'none' }}>
+                                {isActive && <span style={{ marginRight: 6, color: 'var(--accent)', fontSize: '0.9rem' }}>✓ </span>}
+                                {label}
+                            </span>
+                            {favKey && (
+                                <div className={`favorite-star ${isFav ? 'active' : ''}`}
+                                    onClick={(e) => { e.stopPropagation(); setFavorites(isFav ? favorites.filter(f => f !== favKey) : [...favorites, favKey]); }}
+                                    style={{ opacity: isFav ? 1 : 0.3, color: isFav ? '#ffd700' : 'inherit', fontSize: '1.2rem', padding: '16px 20px', margin: '-16px -16px -16px auto', cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
+                                    {isFav ? '★' : '☆'}
+                                </div>
+                            )}
+                        </div>
+                    );
+                };
+                return (
+                    <>
+                        {renderTarget(null)}
+                        {favTargets.length > 0 && (<>
+                            <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', borderTop: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
+                            {favTargets.map(n => renderTarget(n))}
+                            <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
+                        </>)}
+                        {whoList.length === 0
+                            ? <div className="popover-empty">No players in WHO list</div>
+                            : otherTargets.map(n => renderTarget(n))
+                        }
+                    </>
+                );
+            })()}
         </>
     );
 };
