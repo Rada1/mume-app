@@ -167,6 +167,22 @@ export const useMessageHighlighter = (
             });
         }
 
+        // 6. Room Exits (Contextual)
+        const textOnly = originalHtml.replace(/<[^>]+>/g, '').trim();
+        if (textOnly.startsWith('Exits: ')) {
+            const directions = ['north', 'south', 'east', 'west', 'up', 'down', 'northeast', 'northwest', 'southeast', 'southwest', 'n', 's', 'e', 'w', 'u', 'd', 'ne', 'nw', 'se', 'sw'];
+            directions.forEach(dir => {
+                newHtml = safeHighlight(newHtml, `\\b${dir}\\b`, true, (m) => {
+                    const fullDir = dir.length <= 2 ? (
+                        dir === 'n' ? 'north' : dir === 's' ? 'south' : dir === 'e' ? 'east' : dir === 'w' ? 'west' :
+                        dir === 'ne' ? 'northeast' : dir === 'nw' ? 'northwest' : dir === 'se' ? 'southeast' : dir === 'sw' ? 'southwest' :
+                        dir === 'u' ? 'up' : dir === 'd' ? 'down' : dir
+                    ) : dir;
+                    return `<span class="inline-btn exit-btn" draggable="true" data-id="exit-${fullDir}" data-mid="${mid}" data-cmd="${fullDir}" data-context="${fullDir}" data-action="command" style="--glow-color: rgba(0, 255, 100, 0.8)">${m}</span>`;
+                });
+            });
+        }
+
         candidates
             .sort((a, b) => {
                 if (b.priority !== a.priority) return b.priority - a.priority;

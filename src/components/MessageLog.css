@@ -301,6 +301,16 @@
     text-shadow: 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.8));
 }
 
+.inline-btn.exit-btn {
+    border-bottom: 2px solid rgba(0, 255, 100, 0.6);
+    background-color: rgba(0, 255, 100, 0.05) !important;
+}
+
+.inline-btn.exit-btn:hover {
+    background-color: rgba(0, 255, 100, 0.15) !important;
+    text-shadow: 0 0 15px rgba(0, 255, 100, 0.9);
+}
+
 .inline-btn.is-triggered {
     animation: spat-trigger-glow 0.8s ease-out forwards !important;
     z-index: 100;
@@ -444,14 +454,14 @@
 }
 
 .shop-item-id {
-    font-size: 0.75rem;
+    font-size: 0.85em;
     font-weight: bold;
     color: #8b5cf6;
     opacity: 0.8;
 }
 
 .shop-item-name {
-    font-size: 1rem;
+    font-size: 1em;
     font-weight: 600;
     color: var(--text-primary);
 }
@@ -468,7 +478,7 @@
     gap: 4px;
     color: var(--ansi-yellow);
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 1em;
     white-space: nowrap;
 }
 

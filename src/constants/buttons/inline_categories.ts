@@ -110,30 +110,6 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
 
-    // --- SHOPKEEPERS ---
-    {
-        id: 'cat-shop-list',
-        label: 'List Items',
-        command: 'list',
-        setId: 'inline-shopkeeper',
-        actionType: 'command',
-        display: 'floating',
-        isVisible: true,
-        style: { x: 0, y: 0, w: 100, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
-        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
-    },
-    {
-        id: 'cat-shop-buy',
-        label: 'Buy...',
-        command: 'buy ',
-        setId: 'inline-shopkeeper',
-        actionType: 'preload',
-        display: 'floating',
-        isVisible: true,
-        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
-        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
-    },
-
     // --- INNKEEPERS ---
     {
         id: 'cat-innkeeper-offer',
