@@ -106,6 +106,22 @@ export const useRoomInfoHandler = ({
                     if (ghostData) discoverySource = 'FINGERPRINT';
                 }
             }
+        } else if (currentActiveRoom && dirUsed && currentActiveRoom.id.startsWith('m_')) {
+            // Dark room fallback: use previous room's ArdaMap ID (which is the VNUM) to predict location
+            const prevVnum = currentActiveRoom.id.substring(2);
+            const ardaMapping = preloadedCoordsRef.current[prevVnum];
+            if (ardaMapping && ardaMapping[4]) {
+                const nextVnum = ardaMapping[4][dirUsed];
+                if (nextVnum) {
+                    const nextVnumStr = String(nextVnum);
+                    const ardaData = preloadedCoordsRef.current[nextVnumStr];
+                    if (ardaData) {
+                        matchedInternalId = nextVnumStr;
+                        ghostData = ardaData;
+                        discoverySource = 'ARDA_FALLBACK';
+                    }
+                }
+            }
         }
 
         let targetId = null;

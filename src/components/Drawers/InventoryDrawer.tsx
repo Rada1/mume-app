@@ -19,78 +19,179 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     handleButtonClick,
     executeCommand
 }) => {
-    const [isDragOver, setIsDragOver] = React.useState(false);
-    return (
-        <div
-            className={`inventory-drawer ${isOpen ? 'open' : ''} ${isDragOver ? 'drag-over' : ''}`}
-            onDragOver={(e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-                if (!isDragOver) setIsDragOver(true);
-            }}
-            onDragLeave={() => setIsDragOver(false)}
-            onDrop={(e) => {
-                e.preventDefault();
-                setIsDragOver(false);
-                try {
-                    const dataStr = e.dataTransfer.getData('application/json');
-                    if (!dataStr) return;
-                    const data = JSON.parse(dataStr);
-                    if (data.type === 'inline-btn' && (data.context || data.cmd === 'target')) {
-                        triggerHaptic(40);
-                        const noun = data.cmd === 'target' ? 'target' : data.context;
-                        executeCommand(`get ${noun}`);
-                    }
-                } catch (err) {
-                    console.error('Failed to parse drop data', err);
+    const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number } | null>(null);
+    const [primedItemId, setPrimedItemId] = React.useState<string | null>(null);
+    const [activeDropTarget, setActiveDropTarget] = React.useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
+
+    const ghostRef = React.useRef<HTMLDivElement>(null);
+    const longPressTimerRef = React.useRef<any>(null);
+    const startPosRef = React.useRef<{ x: number; y: number } | null>(null);
+    const pendingDragRef = React.useRef<DrawerLine | null>(null);
+    const isDraggingRef = React.useRef(false);
+
+    const cleanupDrag = () => {
+        if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+        document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+        setDraggedItem(null);
+        setPrimedItemId(null);
+        setActiveDropTarget(null);
+        startPosRef.current = null;
+        pendingDragRef.current = null;
+        isDraggingRef.current = false;
+        window.removeEventListener('pointermove', handleGlobalPointerMove);
+        window.removeEventListener('pointerup', handleGlobalPointerUp);
+        window.removeEventListener('pointercancel', cleanupDrag);
+    };
+
+    React.useEffect(() => {
+        return () => cleanupDrag();
+    }, []);
+
+    const startActiveDrag = (x: number, y: number) => {
+        if (pendingDragRef.current && !isDraggingRef.current) {
+            triggerHaptic(40);
+            isDraggingRef.current = true;
+            const line = pendingDragRef.current;
+            setDraggedItem({ line, x, y });
+            setPrimedItemId(null);
+            window.addEventListener('pointercancel', cleanupDrag);
+        }
+    };
+
+    const handlePointerDownItem = (e: React.PointerEvent, line: DrawerLine) => {
+        if (!line.isItem) return;
+        cleanupDrag();
+        // Capture the pointer to ensure move events are received even if the finger moves fast
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        
+        startPosRef.current = { x: e.clientX, y: e.clientY };
+        pendingDragRef.current = line;
+        setPrimedItemId(line.id);
+
+        window.addEventListener('pointermove', handleGlobalPointerMove);
+        window.addEventListener('pointerup', handleGlobalPointerUp);
+
+        longPressTimerRef.current = setTimeout(() => {
+            if (startPosRef.current) {
+                startActiveDrag(startPosRef.current.x, startPosRef.current.y);
+            }
+        }, 350);
+    };
+
+    const moveCountRef = React.useRef(0);
+    const handleGlobalPointerMove = (e: PointerEvent) => {
+        if (startPosRef.current && !isDraggingRef.current) {
+            const dist = Math.sqrt(Math.pow(e.clientX - startPosRef.current.x, 2) + Math.pow(e.clientY - startPosRef.current.y, 2));
+            
+            // If we are in the "priming" phase (waiting for long press)
+            // Any significant movement should cancel the drag so the user can scroll
+            const threshold = e.pointerType === 'mouse' ? 15 : 5;
+            if (dist > threshold) {
+                cleanupDrag();
+                return;
+            }
+        }
+
+        if (isDraggingRef.current) {
+            if (ghostRef.current) {
+                ghostRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(1.05)`;
+            }
+
+            // Performance: only check drop target every other move event
+            moveCountRef.current++;
+            if (moveCountRef.current % 2 !== 0) return;
+
+            const target = document.elementFromPoint(e.clientX, e.clientY);
+            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+
+            // Target Highlighting
+            const logArea = target?.closest('.message-log-container');
+            if (logArea) {
+                logArea.classList.add('drop-hover-active');
+                setActiveDropTarget({ type: 'log', id: 'ground' });
+                return;
+            }
+
+            const container = target?.closest('.inline-btn.is-container');
+            if (container) {
+                container.classList.add('drop-hover-active');
+                setActiveDropTarget({ type: 'container', id: container.getAttribute('data-item-name') || '' });
+                return;
+            }
+            setActiveDropTarget(null);
+        }
+    };
+
+    const handleGlobalPointerUp = (e: PointerEvent) => {
+        if (isDraggingRef.current && pendingDragRef.current) {
+            const target = document.elementFromPoint(e.clientX, e.clientY);
+            const itemNoun = pendingDragRef.current.context || pendingDragRef.current.id;
+
+            const logArea = target?.closest('.message-log-container');
+            if (logArea) {
+                triggerHaptic(60);
+                executeCommand(`drop ${itemNoun}`);
+            } else {
+                const container = target?.closest('.inline-btn.is-container');
+                const targetName = container?.getAttribute('data-item-name');
+                if (targetName && targetName !== itemNoun) {
+                    triggerHaptic(60);
+                    executeCommand(`put ${itemNoun} ${targetName}`);
                 }
-            }}
-            onPointerDown={(e) => {
-                const target = e.target as HTMLElement;
-                if (target.closest('button') || target.closest('a')) return;
-                e.currentTarget.setPointerCapture(e.pointerId);
-                (e.currentTarget as any)._startY = e.clientY;
-                (e.currentTarget as any)._startX = e.clientX;
-            }}
-            onPointerUp={(e) => {
-                const startY = (e.currentTarget as any)._startY;
-                const startX = (e.currentTarget as any)._startX;
+            }
+        }
+        cleanupDrag();
+    };
 
-                if (startY !== undefined && startY !== null && startX !== undefined && startX !== null) {
-                    const deltaY = e.clientY - startY;
-                    const deltaX = e.clientX - startX;
-                    const absDeltaX = Math.abs(deltaX);
-
-                    const isDownSwipe = deltaY > 20 && deltaY > absDeltaX;
-                    if (isDownSwipe) {
-                        const drawerContent = e.currentTarget.querySelector('.drawer-content');
-                        const scrolled = drawerContent ? drawerContent.scrollTop : 0;
-                        if (scrolled <= 5 || deltaY > 100 || (e.target as HTMLElement).closest('.drawer-header')) {
+    return (
+        <div className={`inventory-drawer ${isOpen ? 'open' : ''}`} style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'none' }}>
+            {draggedItem && (
+                <div 
+                    ref={ghostRef}
+                    style={{
+                        position: 'fixed',
+                        left: 0,
+                        top: 0,
+                        pointerEvents: 'none',
+                        zIndex: 99999,
+                        transform: `translate3d(${draggedItem.x}px, ${draggedItem.y}px, 0) translate(-50%, -50%) scale(1.05)`,
+                        background: 'rgba(30, 40, 60, 0.7)',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '2px solid var(--accent)',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                        opacity: 0.8,
+                        whiteSpace: 'nowrap',
+                        fontSize: '0.85rem',
+                        color: '#fff',
+                        visibility: 'visible',
+                        transition: 'none',
+                        willChange: 'transform'
+                    }} dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+            )}
+            <div className="drawer-header"
+                onPointerDown={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button')) return;
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                    (e.currentTarget as any)._startY = e.clientY;
+                }}
+                onPointerUp={(e) => {
+                    const startY = (e.currentTarget as any)._startY;
+                    if (startY !== undefined && startY !== null) {
+                        if (e.clientY - startY > 50) {
                             triggerHaptic(40);
                             onClose();
                         }
-                    } else if (absDeltaX > 30 && absDeltaX > Math.abs(deltaY)) {
-                        triggerHaptic(40);
-                        onClose();
                     }
-                }
-                (e.currentTarget as any)._startY = null;
-                (e.currentTarget as any)._startX = null;
-            }}
-            onPointerCancel={(e) => {
-                (e.currentTarget as any)._startY = null;
-                (e.currentTarget as any)._startX = null;
-            }}
-            style={{ touchAction: 'pan-x pan-y' }}
-        >
-            <div className="drawer-header"
-                style={{ cursor: 'ns-resize', touchAction: 'none', height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
+                }}
+                style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
             >
                 <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
                 <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory</span>
                 <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
             </div>
-            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-y', padding: '10px' }}>
+            <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
                 {inventoryLines.length === 0 ? (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.3 }}>
                         <span>Inventory is currently empty</span>
@@ -98,31 +199,18 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {inventoryLines.map(line => {
+                            const isPrimed = primedItemId === line.id;
+                            const isBeingDragged = draggedItem?.line.id === line.id;
                             const depth = line.depth || 0;
+                            
                             return (
                                 <div
                                     key={line.id}
-                                    className={line.isItem ? "inline-btn auto-item" : ""}
-                                    draggable={line.isItem}
-                                    onDragStart={(e) => {
-                                        if (!line.isItem) return;
-                                        const dragData = {
-                                            type: 'inline-btn',
-                                            cmd: 'inventorylist',
-                                            context: line.context,
-                                            id: `inv-${line.id}`
-                                        };
-                                        e.dataTransfer.setData('application/json', JSON.stringify(dragData));
-                                        e.dataTransfer.effectAllowed = 'move';
-
-                                        // Optional: add a dragging class for visual feedback
-                                        e.currentTarget.classList.add('dragging');
-                                        triggerHaptic(10);
-                                    }}
-                                    onDragEnd={(e) => {
-                                        e.currentTarget.classList.remove('dragging');
-                                    }}
-                                    onClick={(e) => {
+                                    className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''}`}
+                                    data-item-name={line.context || line.id}
+                                    onPointerDown={(e) => handlePointerDownItem(e, line)}
+                                    onPointerUp={(e) => {
+                                        if (isDraggingRef.current) return;
                                         if (!line.isItem) return;
                                         triggerHaptic(20);
                                         handleButtonClick({
@@ -130,22 +218,24 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                             command: 'inventorylist',
                                             label: line.context || 'Item',
                                             actionType: 'menu'
-                                        } as any, e, line.context);
+                                        } as any, e as any, line.context);
                                     }}
                                     style={{
                                         padding: '8px 12px',
                                         background: line.isItem ?
-                                            (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)')
-                                            : 'rgba(0,0,0,0.2)',
+                                            (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)'))
+                                            : 'transparent',
                                         borderRadius: depth > 0 ? '0 6px 6px 0' : '6px',
                                         border: '1px solid rgba(255,255,255,0.05)',
                                         borderLeft: depth > 0 ? `${depth * 3}px solid #89b4fa` : '1px solid rgba(255,255,255,0.05)',
                                         fontSize: depth > 0 ? '0.8rem' : '0.85rem',
-                                        cursor: line.isItem ? 'pointer' : 'default',
+                                        cursor: line.isItem ? 'grab' : 'default',
                                         marginLeft: `${depth * 20}px`,
                                         fontWeight: line.isContainer ? 'bold' : 'normal',
+                                        opacity: isBeingDragged ? 0.3 : 1,
                                         color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
-                                        transition: 'all 0.2s ease'
+                                        transition: 'all 0.2s ease',
+                                        touchAction: 'none'
                                     }}
                                     dangerouslySetInnerHTML={{ __html: line.html }}
                                 />

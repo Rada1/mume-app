@@ -27,11 +27,11 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 }) => {
     const { activeDragData } = useGame();
     const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number } | null>(null);
-    const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
     const [isNativeDragOver, setIsNativeDragOver] = useState(false);
 
+    const ghostRef = useRef<HTMLDivElement>(null);
     const longPressTimerRef = useRef<any>(null);
     const startPosRef = useRef<{ x: number; y: number } | null>(null);
     const pendingDragRef = useRef<{ line: DrawerLine; source: 'inventory' | 'equipment' } | null>(null);
@@ -49,7 +49,6 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
         document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
         setDraggedItem(null);
-        setDragPos(null);
         setPrimedItemId(null);
         setActiveDropTarget(null);
         startPosRef.current = null;
@@ -58,6 +57,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         isDraggingRef.current = false;
         window.removeEventListener('pointermove', handleGlobalPointerMove);
         window.removeEventListener('pointerup', handleGlobalPointerUp);
+        window.removeEventListener('pointercancel', cleanupDrag);
     };
 
     useEffect(() => {
@@ -78,10 +78,11 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const source = pendingDragRef.current.source;
             draggedRef.current = { line, source };
             setDraggedItem({ line, source, x, y });
-            setDragPos({ x, y });
             isDraggingRef.current = true;
             setPrimedItemId(null);
             if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+
+            window.addEventListener('pointercancel', cleanupDrag);
         }
     };
 
@@ -89,6 +90,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         if (!line.isItem) return;
 
         cleanupDrag();
+        // Capture the pointer to ensure move events are received even if the finger moves fast
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        
         startPosRef.current = { x: e.clientX, y: e.clientY };
         pendingDragRef.current = { line, source };
         setPrimedItemId(line.id);
@@ -100,34 +104,43 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             if (startPosRef.current) {
                 startActiveDrag(startPosRef.current.x, startPosRef.current.y);
             }
-        }, 250);
+        }, 350); // Increased to 350ms for better intentionality
     };
 
+    const moveCountRef = useRef(0);
     const handleGlobalPointerMove = (e: PointerEvent) => {
         if (startPosRef.current && !isDraggingRef.current) {
             const dx = Math.abs(e.clientX - startPosRef.current.x);
             const dy = Math.abs(e.clientY - startPosRef.current.y);
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            if (e.pointerType === 'mouse' && dist > 5) {
-                startActiveDrag(e.clientX, e.clientY);
-            } else if (dist > 30) {
+            // If we are in the "priming" phase (waiting for long press)
+            // Any significant movement should cancel the drag so the user can scroll
+            const threshold = e.pointerType === 'mouse' ? 15 : 5;
+            if (dist > threshold) {
                 cleanupDrag();
+                return;
             }
         }
 
         if (isDraggingRef.current) {
-            setDragPos({ x: e.clientX, y: e.clientY });
+            // High-performance direct DOM update for the "ghost" item
+            if (ghostRef.current) {
+                ghostRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(1.05)`;
+            }
 
             // Auto-close drawer if dragging out of it
             if (isOpen && drawerRef.current) {
                 const rect = drawerRef.current.getBoundingClientRect();
-                // Close if pointer is to the left of the drawer, with a buffer for mobile
-                // If the drawer is full-screen (rect.left < 50), we use a larger 80px gutter
-                if (e.clientX < rect.left - 10 || (rect.left < 50 && e.clientX < 80)) {
+                // Close if pointer is to the left of the drawer, with a larger 40px gutter for fast movement
+                if (e.clientX < rect.left - 50 || (rect.left < 50 && e.clientX < 80)) {
                     onClose();
                 }
             }
+
+            // Performance: only check drop target every other move event
+            moveCountRef.current++;
+            if (moveCountRef.current % 2 !== 0) return;
 
             // Detect drop target for highlighting
             const target = document.elementFromPoint(e.clientX, e.clientY);
@@ -330,26 +343,30 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
     return (
         <>
-            {draggedItem && dragPos && (
-                <div style={{
-                    position: 'fixed',
-                    left: dragPos.x,
-                    top: dragPos.y,
-                    pointerEvents: 'none',
-                    zIndex: 99999,
-                    transform: 'translate(-50%, -50%) scale(1.05)',
-                    background: 'rgba(30, 40, 60, 0.7)',
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    border: '2px solid var(--accent)',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                    opacity: 0.8,
-                    whiteSpace: 'nowrap',
-                    fontSize: '0.85rem',
-                    color: '#fff',
-                    visibility: 'visible',
-                    boxSizing: 'border-box'
-                }} dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+            {draggedItem && (
+                <div 
+                    ref={ghostRef}
+                    style={{
+                        position: 'fixed',
+                        left: 0,
+                        top: 0,
+                        pointerEvents: 'none',
+                        zIndex: 99999,
+                        transform: `translate3d(${draggedItem.x}px, ${draggedItem.y}px, 0) translate(-50%, -50%) scale(1.05)`,
+                        background: 'rgba(30, 40, 60, 0.7)',
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '2px solid var(--accent)',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                        opacity: 0.8,
+                        whiteSpace: 'nowrap',
+                        fontSize: '0.85rem',
+                        color: '#fff',
+                        visibility: 'visible',
+                        boxSizing: 'border-box',
+                        transition: 'none',
+                        willChange: 'transform'
+                    }} dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
             )}
             <div
                 ref={drawerRef}
