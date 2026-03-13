@@ -27,7 +27,7 @@
                 "pattern": "you are hungry",
                 "isRegex": false,
                 "autoHide": true,
-                "duration": 10,
+                "duration": 5,
                 "type": "show",
                 "spit": true
             }
@@ -52,7 +52,7 @@
                 "pattern": "you are thirsty",
                 "isRegex": false,
                 "autoHide": true,
-                "duration": 10,
+                "duration": 5,
                 "type": "show",
                 "spit": true
             }

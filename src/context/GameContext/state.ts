@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState } from '../../types';
+import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
@@ -145,12 +145,13 @@ export const useGameProviderState = () => {
     const [alertness, setAlertness] = useState('normal');
     const [activePrompt, setActivePrompt] = useState("");
     const [playerPosition, setPlayerPosition] = useState('standing');
+    const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
 
     // Parser State
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
-    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>('none');
+    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'container' | 'none'>('none');
     const isDrawerCapture = useRef<number>(0);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
@@ -216,6 +217,7 @@ export const useGameProviderState = () => {
         favorites, setFavorites,
         activeDragData, setActiveDragData,
         heldButton, setHeldButton,
+        popoverState, setPopoverState,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -225,7 +227,7 @@ export const useGameProviderState = () => {
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName,
         inlineCategories, favorites, activeDragData, heldButton,
-        parley, whoList
+        parley, whoList, popoverState
     ]);
 
     return { vitals, game };

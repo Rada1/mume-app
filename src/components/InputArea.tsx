@@ -288,20 +288,13 @@ const InputArea: React.FC<InputAreaProps> = ({
                             e.currentTarget.parentElement?.parentElement?.parentElement?.classList.add('focused');
                         }}
                         onBlur={(e) => {
-                            // On mobile, reset to readonly to prevent accidental keyboard pops
-                            if (isMobile && inputRef.current) {
-                                inputRef.current.readOnly = true;
-                            }
                             e.currentTarget.parentElement?.parentElement?.parentElement?.classList.remove('focused');
                         }}
                         onClick={(e) => {
-                            // Explicit click on mobile enables the keyboard
                             if (isMobile && inputRef.current) {
-                                inputRef.current.readOnly = false;
                                 inputRef.current.focus();
                             }
                         }}
-                        readOnly={isMobile}
                         placeholder={commandPreview ? "" : "Enter command..."}
                         style={{
                             pointerEvents: 'auto',

@@ -158,8 +158,8 @@ select.setting-input {
 
 .popover-menu {
     position: fixed;
-    /* Frosted Glass - Highly Transparent & Subtle Blur */
-    background: rgba(255, 255, 255, 0.03); 
+    /* Frosted Glass - Darker & Subtle Blur */
+    background: rgba(15, 23, 42, 0.8); 
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border: 1px solid var(--accent, rgba(255, 255, 255, 0.2));
@@ -243,8 +243,8 @@ select.setting-input {
     transform: translate(-50%, -50%);
     width: 110px;
     height: 110px;
-    /* Frosted Glass - Highly Transparent & Subtle Blur */
-    background: rgba(255, 255, 255, 0.03); 
+    /* Frosted Glass - Darker & Subtle Blur */
+    background: rgba(15, 23, 42, 0.8); 
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border: 2px solid var(--accent, rgba(255, 255, 255, 0.2));
@@ -374,8 +374,8 @@ select.setting-input {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
-    /* Frosted Glass - Highly Transparent & Subtle Blur */
-    background: rgba(255, 255, 255, 0.03); 
+    /* Frosted Glass - Darker & Subtle Blur */
+    background: rgba(15, 23, 42, 0.8); 
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border: 1px solid var(--border-color, rgba(255, 255, 255, 0.2));

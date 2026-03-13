@@ -216,7 +216,7 @@ export interface GameContextType {
     handleSend: (e?: FormEvent) => void;
     handleInputSwipe: (dir: string) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
-    handleButtonClick: (button: CustomButton, e: MouseEvent, context?: string) => void;
+    handleButtonClick: (button: CustomButton, e: MouseEvent, context?: string, isContainer?: boolean) => void;
     handleLogClick: (e: MouseEvent) => void;
     handleLogDoubleClick: (e: MouseEvent) => void;
     handleLogPointerDown: (e: React.PointerEvent) => void;

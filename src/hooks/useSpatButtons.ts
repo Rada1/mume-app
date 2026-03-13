@@ -9,10 +9,19 @@ export const useSpatButtons = (
     const [spatButtons, setSpatButtons] = useState<SpatButton[]>([]);
     const spatButtonsRef = useRef(spatButtons);
     const firedTriggerOccurrencesRef = useRef(new Set<string>());
+    const buttonTimersRef = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
     useEffect(() => {
         spatButtonsRef.current = spatButtons;
     }, [spatButtons]);
+
+    // Cleanup timers on unmount
+    useEffect(() => {
+        const timers = buttonTimersRef.current;
+        return () => {
+            Object.values(timers).forEach(clearTimeout);
+        };
+    }, []);
 
     const triggerSpit = useCallback((el: HTMLElement) => {
         const btnId = el.dataset.id || '';
@@ -29,6 +38,9 @@ export const useSpatButtons = (
             if (el.dataset.swipes) swipeCommands = JSON.parse(el.dataset.swipes);
             if (el.dataset.swipeActions) swipeActionTypes = JSON.parse(el.dataset.swipeActions);
         } catch (e) { }
+
+        const durationAttr = el.dataset.duration;
+        const duration = durationAttr ? parseInt(durationAttr, 10) : undefined;
 
         const newSpat: SpatButton = {
             id,
@@ -47,13 +59,23 @@ export const useSpatButtons = (
             swipeActionTypes,
             menuDisplay: el.dataset.menuDisplay as 'list' | 'dial',
             closeKeyboard: el.dataset.closeKeyboard === 'true',
-            offKeyboard: el.dataset.offKeyboard === 'true'
+            offKeyboard: el.dataset.offKeyboard === 'true',
+            duration
         };
 
         setSpatButtons(prev => {
             if (prev.some(sb => sb.btnId === newSpat.btnId)) return prev;
             return [...prev, newSpat].slice(-10);
         });
+
+        if (duration && duration > 0) {
+            if (buttonTimersRef.current[id]) clearTimeout(buttonTimersRef.current[id]);
+            buttonTimersRef.current[id] = setTimeout(() => {
+                setSpatButtons(prev => prev.filter(sb => sb.id !== id));
+                delete buttonTimersRef.current[id];
+            }, duration * 1000);
+        }
+
         triggerHaptic(10);
     }, [triggerHaptic]);
 
@@ -63,6 +85,8 @@ export const useSpatButtons = (
         const id = Math.random().toString(36).substring(7);
         const startX = 0; 
         const targetX = 100; 
+
+        const duration = b.trigger?.duration;
 
         const newSpat: SpatButton = {
             id,
@@ -81,13 +105,23 @@ export const useSpatButtons = (
             swipeActionTypes: b.swipeActionTypes,
             menuDisplay: b.menuDisplay,
             closeKeyboard: b.trigger?.closeKeyboard,
-            offKeyboard: b.trigger?.offKeyboard
+            offKeyboard: b.trigger?.offKeyboard,
+            duration
         };
 
         setSpatButtons(prev => {
             if (prev.some(sb => sb.btnId === b.id)) return prev;
             return [...prev, newSpat].slice(-10);
         });
+
+        if (duration && duration > 0) {
+            if (buttonTimersRef.current[id]) clearTimeout(buttonTimersRef.current[id]);
+            buttonTimersRef.current[id] = setTimeout(() => {
+                setSpatButtons(prev => prev.filter(sb => sb.id !== id));
+                delete buttonTimersRef.current[id];
+            }, duration * 1000);
+        }
+
         triggerHaptic(10);
     }, [triggerHaptic]);
 

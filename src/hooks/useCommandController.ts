@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { mudParser } from '../services/parser/services/mudParser';
 import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
+import { CaptureStage } from '../types';
 
 export interface CommandControllerDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -12,7 +13,7 @@ export interface CommandControllerDeps {
     teleportTargets: any[];
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>;
+    captureStage: React.MutableRefObject<CaptureStage>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
@@ -33,6 +34,7 @@ export interface CommandControllerDeps {
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
     setIsMapExpanded: (open: boolean) => void;
+    setUI: React.Dispatch<React.SetStateAction<any>>;
     viewport: any;
     triggerHaptic: (ms: number) => void;
     btn: any;
@@ -42,6 +44,7 @@ export interface CommandControllerDeps {
         mapExpanded: boolean;
         drawer: 'none' | 'character' | 'items';
         setManagerOpen: boolean;
+        isDrawerPeeking: boolean;
     };
     actions: import('../types').GameAction[];
     setActions: (val: import('../types').GameAction[] | ((prev: import('../types').GameAction[]) => import('../types').GameAction[])) => void;

@@ -8,6 +8,7 @@ export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 's
 export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
 export type TriggerAction = 'show' | 'switch_set';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
+export type CaptureStage = 'none' | 'stat' | 'inv' | 'eq' | 'practice' | 'container' | 'shop' | 'who' | 'where';
 export interface InlineCategoryConfig {
     id: string; // The base name of the category (e.g. 'lantern')
     keywords: string[];
@@ -65,6 +66,8 @@ export interface DrawerLine {
     cmd?: string;
     context?: string;
     depth?: number;
+    prefix?: string;
+    prefixHtml?: string;
 }
 
 export interface GameStats {
@@ -161,9 +164,10 @@ export interface PopoverState {
     x: number;
     y: number;
     sourceHeight?: number;
-    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target';
+    type?: 'menu' | 'teleport-select' | 'teleport-save' | 'teleport-manage' | 'give-recipient-select' | 'shop-search' | 'practice' | 'select-parley-command' | 'select-parley-target' | 'container';
     setId: string;
     context?: string;
+    containerItems?: DrawerLine[];
     assignSourceId?: string;
     assignSwipeDir?: SwipeDirection;
     executeAndAssign?: boolean;
@@ -172,6 +176,7 @@ export interface PopoverState {
     initialPointerY?: number;
     teleportId?: string; // For saving
     spellCommand?: string; // e.g. "cast 'teleport'"
+    isContainer?: boolean;
 }
 
 export interface PopoverManagerProps {
@@ -186,7 +191,7 @@ export interface PopoverManagerProps {
     setTarget: (target: string | null) => void;
     teleportTargets: TeleportTarget[];
     setTeleportTargets: React.Dispatch<React.SetStateAction<TeleportTarget[]>>;
-    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string) => void;
+    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
     triggerHaptic: (ms: number) => void;
     roomPlayers: string[];
     setSettings: Record<string, ButtonSetSettings>;
@@ -311,6 +316,7 @@ export interface SpatButton {
     menuDisplay?: 'list' | 'dial';
     closeKeyboard?: boolean;
     offKeyboard?: boolean;
+    duration?: number;
 }
 
 // --- GMCP INTERFACES ---

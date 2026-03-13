@@ -5,6 +5,7 @@ import { StandardMenuPopover } from './StandardMenuPopover';
 import { RecipientSelectPopover } from './RecipientSelectPopover';
 import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } from './TeleportPopovers';
 import ShopSearchPopover from './ShopSearchPopover';
+import { ContainerPopover } from './ContainerPopover';
 import { getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
@@ -220,6 +221,15 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             {popoverState.type === 'teleport-manage' && <TeleportManagePopover teleportTargets={teleportTargets} setTeleportTargets={setTeleportTargets} setPopoverState={setPopoverState} />}
             {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} executeCommand={executeCommand} setPopoverState={setPopoverState} />}
             {popoverState.type === 'shop-search' && <ShopSearchPopover executeCommand={executeCommand} onClose={() => setPopoverState(null)} />}
+            {popoverState.type === 'container' && (
+                <ContainerPopover 
+                    popoverState={popoverState} 
+                    setPopoverState={setPopoverState} 
+                    handleButtonClick={handleButtonClick} 
+                    addMessage={addMessage} 
+                    themeColor={themeColor} 
+                />
+            )}
             {(popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target' || !popoverState.type) && (
                 <StandardMenuPopover 
                     popoverState={popoverState} 
@@ -236,6 +246,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     parley={parley}
                     setParley={setParley}
                     whoList={whoList}
+                    executeCommand={executeCommand}
                 />
             )}
         </div>

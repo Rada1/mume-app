@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction } from '../types';
+import { Direction, TeleportTarget, MessageType, DrawerLine, GameAction, CaptureStage } from '../types';
 import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 import { getGateState } from '../components/Mapper/mapperUtils';
@@ -13,7 +13,7 @@ export interface ExecutorDeps {
     teleportTargets: TeleportTarget[];
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>;
+    captureStage: React.MutableRefObject<CaptureStage>;
     isWaitingForStats: React.MutableRefObject<boolean>;
     isWaitingForEq: React.MutableRefObject<boolean>;
     isWaitingForInv: React.MutableRefObject<boolean>;
@@ -86,7 +86,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             const isCastOrSkill = lower.startsWith('cast ') || lower.startsWith('skill ');
 
             // Common standalone verbs that usually want a target if one is available
-            const combatVerbs = ['kill', 'k', 'hit', 'bash', 'kick', 'trip', 'bs', 'backstab', 'murder', 'charge', 'circle', 'assist', 'rescue', 'shoot', 'throw', 'track', 'consider', 'examine'];
+            const combatVerbs = ['kill', 'k', 'hit', 'bash', 'kick', 'trip', 'bs', 'backstab', 'murder', 'charge', 'circle', 'assist', 'rescue', 'shoot', 'throw', 'track', 'consider', 'examine', 'eat', 'drink', 'quaff', 'sip'];
             const isStandaloneCombat = combatVerbs.includes(lower);
 
             if (isCastOrSkill || isStandaloneCombat) {
@@ -179,6 +179,13 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                 setIsSettingsOpen(true);
                 return;
             }
+        }
+
+        // Container Interception
+        if (lowerCmd.startsWith('look in ')) {
+            captureStage.current = 'container';
+            isDrawerCapture.current = 1;
+            setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [] } : prev);
         }
 
         if (fromDrawer) {

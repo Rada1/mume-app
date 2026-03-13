@@ -245,6 +245,18 @@ const MudClient = () => {
                 setManagerSelectedSet={setManagerSelectedSet}
                 connect={() => telnet.connect()}
             />
+
+            {heldButton?.isLogDragging && (
+                <div 
+                    className="log-drag-ghost" 
+                    style={{ 
+                        left: heldButton.x, 
+                        top: heldButton.y 
+                    }}
+                >
+                    {heldButton.label || heldButton.baseCommand}
+                </div>
+            )}
         </div>
     );
 };

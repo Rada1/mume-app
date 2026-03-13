@@ -16,11 +16,11 @@ interface StandardMenuProps {
     parley: import('../../types').ParleyState;
     setParley: (val: import('../../types').ParleyState) => void;
     whoList: string[];
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
 }
 
-
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
-    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites, parley, setParley, whoList
+    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites, parley, setParley, whoList, executeCommand
 }) => {
     const isSetManager = popoverState.setId === 'setmanager';
     const isTargetable = ['selection', 'inventorylist', 'equipmentlist'].includes(popoverState.setId);
@@ -164,7 +164,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     {(() => {
                         const context = (popoverState.context || '').toLowerCase();
                         const isInventoryOrEq = ['inventorylist', 'equipmentlist'].includes(popoverState.setId);
-                        const isContainer = /sack|satchel|pouch|pack|quiver/i.test(context);
+                        const isContainer = popoverState.isContainer || /sack|satchel|pouch|pack|quiver/i.test(context);
 
                         if (isInventoryOrEq && isContainer) {
                             const isQuiver = /quiver/i.test(context);
@@ -188,12 +188,25 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                             style={{ color: 'var(--accent)' }}
                                             onPointerDown={(e) => { e.stopPropagation(); }}
                                             onClick={(e) => {
-                                                handleButtonClick({
-                                                    id: `dynamic-${act.label}`,
-                                                    command: act.cmd,
-                                                    label: act.label,
-                                                    actionType: 'command'
-                                                } as any, e, popoverState.context);
+                                                if (act.label === 'Look In') {
+                                                    // Specialized Container Submenu flow
+                                                    // @ts-ignore - captureStage added to deps, but we can access it via ref if we pass it, 
+                                                    // but here we just need to trigger the sequence.
+                                                    // Actually we need to set captureStage.current = 'container'
+                                                    // Since we don't have direct access to captureStage ref here, 
+                                                    // we'll rely on handleButtonClick or a specific pattern.
+                                                    // Let's pass a special command prefix or rely on executeCommand.
+                                                    executeCommand(`look in ${popoverState.context}`, true, true, true);
+                                                    // We'll need a way to set the capture stage. 
+                                                    // Let's use a convention: commands starting with 'look in ' trigger it.
+                                                } else {
+                                                    handleButtonClick({
+                                                        id: `dynamic-${act.label}`,
+                                                        command: act.cmd,
+                                                        label: act.label,
+                                                        actionType: 'command'
+                                                    } as any, e, popoverState.context);
+                                                }
                                             }}
                                         >
                                             {act.label}

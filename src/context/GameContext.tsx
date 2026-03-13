@@ -234,8 +234,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForInv: s.isWaitingForInv,
         roomNameRef: s.roomNameRef,
         roomName: s.roomName,
-        showDebugEchoes: s.showDebugEchoes,
-        addDiagnosticLog
+        addDiagnosticLog,
+        popoverState: s.popoverState,
+        setPopoverState: s.setPopoverState
     });
 
     const { processLine } = parser;
@@ -284,6 +285,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsMapExpanded: s.setIsMapExpanded,
         viewport,
         ui: s.ui,
+        setUI: s.setUI,
         actions: s.actions,
         setActions: s.setActions,
         setActiveDragData: s.setActiveDragData,

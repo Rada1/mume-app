@@ -8,7 +8,7 @@ interface EquipmentDrawerProps {
     onClose: () => void;
     eqLines: DrawerLine[];
     inventoryLines: DrawerLine[];
-    handleButtonClick: (button: any, e: React.MouseEvent, context?: string) => void;
+    handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
     triggerHaptic: (ms: number) => void;
     isLandscape?: boolean;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
@@ -99,6 +99,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
         window.addEventListener('pointermove', handleGlobalPointerMove);
         window.addEventListener('pointerup', handleGlobalPointerUp);
+        window.addEventListener('pointercancel', cleanupDrag);
 
         longPressTimerRef.current = setTimeout(() => {
             if (startPosRef.current) {
@@ -267,7 +268,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 }
             }
         }
-        cleanupDrag();
+        setTimeout(() => cleanupDrag(), 0);
     };
 
     const renderLine = (line: DrawerLine, listType: 'inventorylist' | 'equipmentlist') => {
@@ -279,49 +280,69 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         if (line.isItem) {
             const isPrimed = primedItemId === line.id;
             return (
-                <div
-                    key={line.id}
-                    className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''}`}
-                    data-item-name={line.context || line.id}
-                    onPointerDown={(e) => handlePointerDown(e, line, source)}
-                    onPointerUp={(e) => {
-                        if (isDraggingRef.current) return;
-                        if (!line.isItem) return;
+                <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
+                    {line.prefixHtml && (
+                        <div 
+                            style={{ 
+                                padding: '0 8px 0 0', 
+                                opacity: 0.5, 
+                                fontSize: '0.75rem', 
+                                whiteSpace: 'nowrap',
+                                color: 'var(--accent)',
+                                fontStyle: 'italic',
+                                flexShrink: 0
+                            }}
+                            dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
+                        />
+                    )}
+                    <div
+                        className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''}`}
+                        data-item-name={line.context || line.id}
+                        onPointerDown={(e) => handlePointerDown(e, line, source)}
+                        onPointerUp={(e) => {
+                            if (isDraggingRef.current) {
+                                return;
+                            }
+                            cleanupDrag();
+                            if (!line.isItem) return;
 
-                        // If we didn't drag far enough to start a "drag" item move, 
-                        // and we aren't already dragging something, then treat as a tap/click
-                        // to open the menu.
-                        triggerHaptic(20);
-                        handleButtonClick({
-                            id: `drawer-${line.id}`,
-                            command: listType,
-                            label: line.context || 'Item',
-                            actionType: 'menu'
-                        } as any, e as any, line.context);
-                    }}
-                    style={{
-                        backgroundColor: isBeingDragged ? 'rgba(100, 255, 100, 0.02)' :
-                            isTargeted ? 'rgba(255, 255, 100, 0.2)' :
-                                isPrimed ? 'rgba(100, 255, 100, 0.04)' :
-                                    line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)',
-                        borderBottom: '1px solid rgba(255,255,255,0.1)',
-                        borderLeft: depth > 0 ? `${depth * 3}px solid #89b4fa` : 'none',
-                        padding: '8px 12px',
-                        marginLeft: `${depth * 20}px`,
-                        borderRadius: depth > 0 ? '0 4px 4px 0' : '4px',
-                        marginBottom: '4px',
-                        cursor: 'grab',
-                        opacity: isBeingDragged ? 0.3 : isPrimed ? 0.6 : 1,
-                        transform: isTargeted ? 'scale(1.02)' : isPrimed ? 'scale(0.95)' : 'scale(1)',
-                        transition: 'all 0.15s ease',
-                        boxShadow: isTargeted ? '0 0 10px rgba(137, 180, 250, 0.3)' : 'none',
-                        touchAction: draggedItem ? 'none' : 'pan-y',
-                        fontWeight: line.isContainer ? 'bold' : 'normal',
-                        color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
-                        fontSize: depth > 0 ? '0.8rem' : '0.85rem'
-                    }}
-                    dangerouslySetInnerHTML={{ __html: line.html }}
-                />
+                            // If we didn't drag far enough to start a "drag" item move, 
+                            // and we aren't already dragging something, then treat as a tap/click
+                            // to open the menu.
+                            triggerHaptic(20);
+                            handleButtonClick({
+                                id: `drawer-${line.id}`,
+                                command: listType,
+                                label: line.context || 'Item',
+                                actionType: 'menu'
+                            } as any, e as any, line.context, line.isContainer);
+                        }}
+                        style={{
+                            flex: 1,
+                            backgroundColor: isBeingDragged ? 'rgba(100, 255, 100, 0.02)' :
+                                isTargeted ? 'rgba(255, 255, 100, 0.2)' :
+                                    isPrimed ? 'rgba(100, 255, 100, 0.04)' :
+                                        line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)',
+                            borderBottom: '1px solid rgba(255,255,255,0.1)',
+                            borderLeft: depth > 0 && !line.prefixHtml ? `${depth * 3}px solid #89b4fa` : 'none',
+                            padding: '8px 12px',
+                            borderRadius: depth > 0 ? '0 4px 4px 0' : '4px',
+                            cursor: 'grab',
+                            opacity: isBeingDragged ? 0.3 : isPrimed ? 0.6 : 1,
+                            transform: isTargeted ? 'scale(1.02)' : isPrimed ? 'scale(0.95)' : 'scale(1)',
+                            transition: 'all 0.15s ease',
+                            boxShadow: isTargeted ? '0 0 10px rgba(137, 180, 250, 0.3)' : 'none',
+                            touchAction: draggedItem ? 'none' : 'pan-y',
+                            fontWeight: line.isContainer ? 'bold' : 'normal',
+                            color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
+                            fontSize: depth > 0 ? '0.8rem' : '0.85rem',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                        }}
+                        dangerouslySetInnerHTML={{ __html: line.html }}
+                    />
+                </div>
             );
         }
         return (

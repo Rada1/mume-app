@@ -70,6 +70,12 @@ export const useMapperInteractions = ({
     const markersRef = useRef(markers);
     const selectedRoomIdsRef = useRef(selectedRoomIds);
     const currentRoomIdRef = useRef(currentRoomId);
+    
+    // Stable refs for volatile dependencies
+    const depsRef = useRef({ mode, isDesignMode, joystick, btn, heldButton, setHeldButton, target, executeCommand, triggerHaptic, setContextMenu, setInfoRoomId, setSelectedRoomIds, setSelectedMarkerId, setIsDragging, startWalking, stopWalking, setRooms, setMarkers });
+    useEffect(() => {
+        depsRef.current = { mode, isDesignMode, joystick, btn, heldButton, setHeldButton, target, executeCommand, triggerHaptic, setContextMenu, setInfoRoomId, setSelectedRoomIds, setSelectedMarkerId, setIsDragging, startWalking, stopWalking, setRooms, setMarkers };
+    }, [mode, isDesignMode, joystick, btn, heldButton, setHeldButton, target, executeCommand, triggerHaptic, setContextMenu, setInfoRoomId, setSelectedRoomIds, setSelectedMarkerId, setIsDragging, startWalking, stopWalking, setRooms, setMarkers]);
 
     useEffect(() => { roomsRef.current = rooms; }, [rooms]);
     useEffect(() => { markersRef.current = markers; }, [markers]);
@@ -94,6 +100,8 @@ export const useMapperInteractions = ({
                 return;
             }
             scrollLockRef.current = false;
+            
+            const { mode, isDesignMode, joystick, triggerHaptic, setContextMenu, setSelectedMarkerId, setInfoRoomId, setSelectedRoomIds, setIsDragging, startWalking, executeCommand, heldButton } = depsRef.current;
 
             const rect = cvs.getBoundingClientRect();
             const mx = e.clientX - rect.left;
@@ -109,8 +117,8 @@ export const useMapperInteractions = ({
 
             // e.preventDefault(); // Stop bubbling to joystick
             e.stopPropagation();
+            try { cvs.setPointerCapture(e.pointerId); } catch(err) {}
             activePointersRef.current.set(e.pointerId, { x: mx, y: my });
-            cvs.setPointerCapture(e.pointerId);
 
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = pointers;
@@ -128,9 +136,9 @@ export const useMapperInteractions = ({
                     triggerHaptic(40);
                     contextMenuTriggeredRef.current = true;
 
-                    if (mode === 'play') {
+                    if (depsRef.current.mode === 'play') {
                         if (latestRoomId) {
-                            startWalking(latestRoomId);
+                            depsRef.current.startWalking(latestRoomId);
                         }
                     } else if (!isJoystickMode) {
                         setContextMenu({ x: mx, y: my, wx: latestWorld.x, wy: latestWorld.y, roomId: latestRoomId });
@@ -182,6 +190,7 @@ export const useMapperInteractions = ({
         };
 
         const onMove = (e: PointerEvent) => {
+            const { mode, joystick, executeCommand, heldButton, setHeldButton, btn, target, triggerHaptic, setRooms, setMarkers } = depsRef.current;
             const rect = cvs.getBoundingClientRect();
             const mx = e.clientX - rect.left, my = e.clientY - rect.top;
 
@@ -282,10 +291,14 @@ export const useMapperInteractions = ({
         };
 
         const onUp = (e: PointerEvent) => {
+            const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
+            
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
             comboFiredRef.current = false;
             scrollLockRef.current = false;
             activePointersRef.current.delete(e.pointerId);
+            try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+            
             const remPointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = remPointers;
 
@@ -339,8 +352,10 @@ export const useMapperInteractions = ({
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', onUp);
             cvs.removeEventListener('wheel', onWheel);
+            activePointersRef.current.clear();
+            isDraggingInternalRef.current = false;
         };
-    }, [mode, isDesignMode, isMinimized, canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel, startWalking, stopWalking, setContextMenu, setInfoRoomId, triggerHaptic, setSelectedMarkerId, setSelectedRoomIds, setIsDragging, setRooms, setMarkers, heldButton, setHeldButton, joystick, btn, target, executeCommand]);
+    }, [canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel]);
 
     const outputMarquee = useMemo(() => ({ start: marqueeStart, end: marqueeEnd }), [marqueeStart, marqueeEnd]);
 

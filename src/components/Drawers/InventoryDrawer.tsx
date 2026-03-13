@@ -7,7 +7,7 @@ interface InventoryDrawerProps {
     onClose: () => void;
     triggerHaptic: (ms: number) => void;
     inventoryLines: DrawerLine[];
-    handleButtonClick: (button: any, e: React.MouseEvent, context?: string) => void;
+    handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
 }
 
@@ -70,6 +70,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
 
         window.addEventListener('pointermove', handleGlobalPointerMove);
         window.addEventListener('pointerup', handleGlobalPointerUp);
+        window.addEventListener('pointercancel', cleanupDrag);
 
         longPressTimerRef.current = setTimeout(() => {
             if (startPosRef.current) {
@@ -140,7 +141,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 }
             }
         }
-        cleanupDrag();
+        setTimeout(() => cleanupDrag(), 0);
     };
 
     return (
@@ -204,41 +205,62 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                             const depth = line.depth || 0;
                             
                             return (
-                                <div
-                                    key={line.id}
-                                    className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''}`}
-                                    data-item-name={line.context || line.id}
-                                    onPointerDown={(e) => handlePointerDownItem(e, line)}
-                                    onPointerUp={(e) => {
-                                        if (isDraggingRef.current) return;
-                                        if (!line.isItem) return;
-                                        triggerHaptic(20);
-                                        handleButtonClick({
-                                            id: `inv-${line.id}`,
-                                            command: 'inventorylist',
-                                            label: line.context || 'Item',
-                                            actionType: 'menu'
-                                        } as any, e as any, line.context);
-                                    }}
-                                    style={{
-                                        padding: '8px 12px',
-                                        background: line.isItem ?
-                                            (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)'))
-                                            : 'transparent',
-                                        borderRadius: depth > 0 ? '0 6px 6px 0' : '6px',
-                                        border: '1px solid rgba(255,255,255,0.05)',
-                                        borderLeft: depth > 0 ? `${depth * 3}px solid #89b4fa` : '1px solid rgba(255,255,255,0.05)',
-                                        fontSize: depth > 0 ? '0.8rem' : '0.85rem',
-                                        cursor: line.isItem ? 'grab' : 'default',
-                                        marginLeft: `${depth * 20}px`,
-                                        fontWeight: line.isContainer ? 'bold' : 'normal',
-                                        opacity: isBeingDragged ? 0.3 : 1,
-                                        color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
-                                        transition: 'all 0.2s ease',
-                                        touchAction: 'none'
-                                    }}
-                                    dangerouslySetInnerHTML={{ __html: line.html }}
-                                />
+                                <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
+                                    {line.prefixHtml && (
+                                        <div 
+                                            style={{ 
+                                                padding: '0 8px 0 0', 
+                                                opacity: 0.5, 
+                                                fontSize: '0.75rem', 
+                                                whiteSpace: 'nowrap',
+                                                color: 'var(--accent)',
+                                                fontStyle: 'italic',
+                                                flexShrink: 0
+                                            }}
+                                            dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
+                                        />
+                                    )}
+                                    <div
+                                        className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''}`}
+                                        data-item-name={line.context || line.id}
+                                        onPointerDown={(e) => handlePointerDownItem(e, line)}
+                                        onPointerUp={(e) => {
+                                            if (isDraggingRef.current) {
+                                                return;
+                                            }
+                                            cleanupDrag();
+                                            if (!line.isItem) return;
+                                            triggerHaptic(20);
+                                            handleButtonClick({
+                                                id: `inv-${line.id}`,
+                                                command: 'inventorylist',
+                                                label: line.context || 'Item',
+                                                actionType: 'menu'
+                                            } as any, e as any, line.context, line.isContainer);
+                                        }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '8px 12px',
+                                            background: line.isItem ?
+                                                (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)'))
+                                                : 'transparent',
+                                            borderRadius: depth > 0 ? '0 6px 6px 0' : '6px',
+                                            border: '1px solid rgba(255,255,255,0.05)',
+                                            borderLeft: depth > 0 && !line.prefixHtml ? `${depth * 3}px solid #89b4fa` : '1px solid rgba(255,255,255,0.05)',
+                                            fontSize: depth > 0 ? '0.8rem' : '0.85rem',
+                                            cursor: line.isItem ? 'grab' : 'default',
+                                            fontWeight: line.isContainer ? 'bold' : 'normal',
+                                            opacity: isBeingDragged ? 0.3 : 1,
+                                            color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
+                                            transition: 'all 0.2s ease',
+                                            touchAction: 'none',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap'
+                                        }}
+                                        dangerouslySetInnerHTML={{ __html: line.html }}
+                                    />
+                                </div>
                             );
                         })}
                     </div>

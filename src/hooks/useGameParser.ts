@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { GameStats, DrawerLine, GameAction, MessageType } from '../types';
+import { GameStats, DrawerLine, GameAction, MessageType, PopoverState } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import { extractNoun } from '../utils/gameUtils';
 import { usePracticeParser } from './usePracticeParser';
@@ -28,7 +28,7 @@ export interface UseGameParserDeps {
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'none'>;
+    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'container' | 'none'>;
     practice: ReturnType<typeof usePracticeHandler>;
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
@@ -39,10 +39,12 @@ export interface UseGameParserDeps {
     roomName: string | null;
     showDebugEchoes?: boolean;
     addDiagnosticLog?: (msg: string) => void;
+    popoverState: PopoverState | null;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState } = deps;
 
     const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -64,6 +66,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         const textPMatch = textOnly.match(promptRegex);
 
         if (textPMatch) {
+            captureStage.current = 'none';
             const promptPart = textPMatch[0];
             const attachedText = textOnly.slice(promptPart.length).trim();
 
@@ -231,19 +234,36 @@ export function useGameParser(deps: UseGameParserDeps) {
             captureStage.current = 'none';
         }
 
-        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat') {
-            const createLine = (l: string, tOnly: string, lLower: string, cmd: string): DrawerLine => {
-                const lowerLine = lLower;
-                const textOnlyLine = tOnly;
+        if (isPrompt && captureStage.current === 'container') {
+             captureStage.current = 'none';
+        }
 
+        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container') {
+            const createLine = (l: string, tOnly: string, lLower: string, cmd: string): DrawerLine => {
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
 
-                const isHdr = /you are (carrying|using|equipped with)|contains/i.test(lowerLine);
-                const isNothing = /nothing/i.test(lowerLine).valueOf();
-                const isContainer = lowerLine.includes('(containing)') || lowerLine.endsWith(':');
+                const isHdr = /you are (carrying|using|equipped with)|contains/i.test(lLower);
+                const isNothing = /nothing/i.test(lLower).valueOf();
+                const isContainer = lLower.includes('(containing)') || lLower.endsWith(':');
 
-                const noun = extractNoun(l);
+                let prefix = '';
+                let prefixHtml = '';
+                let mainText = tOnly;
+                let mainHtml = ansiConvert.toHtml(l);
+
+                if (cmd === 'equipmentlist') {
+                    // Match pattern like " <worn as shield> " or "<worn as shield>"
+                    const eqMatch = l.match(/^(\s*(?:\x1b\[[0-9;]*m)*<[^>]+>(?:\x1b\[[0-9;]*m)*\s*)(.*)/);
+                    if (eqMatch) {
+                        prefixHtml = ansiConvert.toHtml(eqMatch[1]);
+                        prefix = tOnly.match(/^<[^>]+>\s*/)?.[0] || '';
+                        mainHtml = ansiConvert.toHtml(eqMatch[2]);
+                        mainText = tOnly.replace(/^<[^>]+>\s*/, '');
+                    }
+                }
+
+                const noun = extractNoun(mainText || l);
 
                 while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) {
                     containerStackRef.current.pop();
@@ -260,8 +280,10 @@ export function useGameParser(deps: UseGameParserDeps) {
 
                 return {
                     id: Math.random().toString(36).substring(7),
-                    text: textOnlyLine,
-                    html: ansiConvert.toHtml(l),
+                    text: mainText,
+                    html: mainHtml,
+                    prefix,
+                    prefixHtml,
                     isItem: !isHdr && !isNothing,
                     isHeader: isHdr,
                     isContainer,
@@ -276,6 +298,20 @@ export function useGameParser(deps: UseGameParserDeps) {
             } else if (captureStage.current === 'eq') {
                 if (textOnly.length > 0) {
                     setEqLines(p => [...p, createLine(cleanLine, textOnly, lower, 'equipmentlist')]);
+                }
+            } else if (captureStage.current === 'container') {
+                console.log('[DEBUG Container]', { textOnly, lower, isContains: lower.includes('contains:') });
+                if (textOnly.length > 0 && !lower.includes('contains:')) {
+                    const line = createLine(cleanLine, textOnly, lower, 'lookin');
+                    // @ts-ignore - containerItems added to type
+                    setPopoverState((prev: any) => {
+                        if (!prev) return prev;
+                        return {
+                            ...prev,
+                            type: 'container',
+                            containerItems: [...(prev.containerItems || []), line]
+                        };
+                    });
                 }
             } else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
         } else if (captureStage.current === 'shop') {

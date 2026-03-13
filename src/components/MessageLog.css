@@ -298,12 +298,15 @@
     transition: all 0.2s ease;
 }
 
-.inline-btn:hover {
+.inline-btn:hover,
+.inline-btn.drop-hover-active {
     filter: brightness(1.4);
     transform: scale(1.04);
     background-color: rgba(255, 255, 255, 0.1) !important;
-    border-bottom-style: solid;
+    border-bottom: 2px solid var(--glow-color, #4ade80);
+    box-shadow: 0 0 15px var(--glow-color, rgba(74, 222, 128, 0.5));
     text-shadow: 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.8));
+    z-index: 10;
 }
 
 .inline-btn.exit-btn {
@@ -505,3 +508,36 @@
 .shop-item-card:hover .shop-item-tap-hint {
     opacity: 0.8;
 }
+
+/* --- Inline Log Drag Ghost --- */
+.log-drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    background: rgba(30, 30, 35, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: 2px solid var(--accent, #8b5cf6);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    transform: translate(-50%, -120%);
+    white-space: nowrap;
+    animation: ghost-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    will-change: transform, opacity;
+}
+
+@keyframes ghost-pop {
+    from { 
+        transform: translate(-50%, -50%) scale(0.6); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translate(-50%, -120%) scale(1); 
+        opacity: 1; 
+    }
+}
