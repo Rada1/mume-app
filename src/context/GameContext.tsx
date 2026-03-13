@@ -276,6 +276,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCommandPreview: () => { }, setInput, triggerHaptic, btn, joystick,
         wasDraggingRef: editor.wasDraggingRef,
         setIsSettingsOpen, setSettingsTab,
+        finalizeCapture: parser.finalizeCapture,
         captureStage: s.captureStage, isDrawerCapture: s.isDrawerCapture, isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats, isWaitingForEq: s.isWaitingForEq, isWaitingForInv: s.isWaitingForInv,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines, setEqLines: s.setEqLines,

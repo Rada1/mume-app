@@ -8,8 +8,26 @@ export const extractNoun = (text: string): string => {
     // Remove tags and brackets
     clean = clean.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
     clean = clean.replace(/[.,:;!]+$/, '');
-    const words = clean.split(/[\s,.-]+/).filter(w => w.length > 1 && !/^(a|an|the|of|in|on|at|to|some|several)$/i.test(w));
-    return words.length > 0 ? words[words.length - 1].toLowerCase().replace(/[.,:;!?"'()[\]{}<>*#~]/g, '') : '';
+    
+    // Filter out articles and quantity words
+    const filterRegex = /^(a|an|the|of|in|on|at|to|some|several|many|numerous|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)$/i;
+    const words = clean.split(/[\s,.-]+/).filter(w => w.length > 1 && !filterRegex.test(w));
+    
+    if (words.length === 0) return '';
+    
+    let noun = words[words.length - 1].toLowerCase().replace(/[.,:;!?"'()[\]{}<>*#~]/g, '');
+    
+    // Basic singularization for MUME interaction (flagons -> flagon, etc.)
+    if (noun.endsWith('ies')) return noun.slice(0, -3) + 'y';
+    if (noun.endsWith('ves')) return noun.slice(0, -3) + 'f'; // wolves -> wolf
+    
+    // Words ending in 's' that should NOT be singularized
+    const exclusions = ['glass', 'dress', 'grass', 'moss', 'bias', 'trousers', 'status', 'compass', 'chaos', 'lens', 'atlas'];
+    if (noun.endsWith('s') && !noun.endsWith('ss') && !exclusions.includes(noun)) {
+        return noun.slice(0, -1);
+    }
+    
+    return noun;
 };
 
 /**

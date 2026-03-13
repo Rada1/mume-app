@@ -27,6 +27,7 @@ export interface CommandControllerDeps {
     status: 'connected' | 'disconnected' | 'connecting';
     target: string | null;
     setTarget: (val: string | null) => void;
+    finalizeCapture: (targetStage?: CaptureStage) => void;
     popoverState: any;
     setPopoverState: (val: any) => void;
     setIsCharacterOpen: (open: boolean) => void;

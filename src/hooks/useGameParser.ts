@@ -57,23 +57,45 @@ export function useGameParser(deps: UseGameParserDeps) {
     const tempEqRef = useRef<DrawerLine[]>([]);
     const tempInvRef = useRef<DrawerLine[]>([]);
 
-    const processLine = useCallback((line: string) => {
-        const finalizeCapture = () => {
-            const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'practice'];
-            if (stagesToTerminate.includes(captureStage.current as any)) {
-                const currentStage = captureStage.current as CaptureStage;
-                console.log(`[Parser] Finalizing ${currentStage} capture. Buffers: eq=${tempEqRef.current.length}, inv=${tempInvRef.current.length}`);
-                if (currentStage === 'eq') {
-                    setEqLines([...tempEqRef.current]);
-                } else if (currentStage === 'inv') {
-                    setInventoryLines([...tempInvRef.current]);
-                }
-                captureStage.current = 'none';
-                isDrawerCapture.current = 0;
-                isSilentCapture.current = 0;
-                containerStackRef.current = [];
+    const finalizeCapture = useCallback((targetStage?: CaptureStage) => {
+        const currentStage = captureStage.current as CaptureStage;
+        if (currentStage === 'none') return false;
+        
+        // If targetStage is provided, only finalize if we match
+        if (targetStage && currentStage !== targetStage) return false;
+
+        const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'practice'];
+        if (stagesToTerminate.includes(currentStage as any)) {
+            const eqLen = tempEqRef.current.length;
+            const invLen = tempInvRef.current.length;
+            
+            console.log(`[Parser] Finalizing ${currentStage} capture. Buffers: eq=${eqLen}, inv=${invLen}`);
+            addDiagnosticLog?.(`Finalizing ${currentStage} capture. Eq: ${eqLen}, Inv: ${invLen}`);
+            
+            if (currentStage === 'eq' && eqLen > 0) {
+                // Buffer is already pushed incrementally, so we just clear it here.
+                // Note: We don't call setEqLines again with the buffer because then 
+                // nested items injected into the drawer would be wiped out.
+                tempEqRef.current = []; 
+            } else if (currentStage === 'inv' && invLen > 0) {
+                // Buffer is already pushed incrementally, so we just clear it here.
+                tempInvRef.current = []; 
+            } else if (currentStage === 'eq' || currentStage === 'inv') {
+                // If it was eq or inv but len was 0, it might be an empty list or an accidental trigger.
+                // We DON'T clear the buffers if they are already empty to avoid "resetting" state if we re-enter.
+                console.log(`[Parser] ${currentStage} finalized with 0 items. Keeping existing lines.`);
             }
-        };
+            
+            captureStage.current = 'none';
+            isDrawerCapture.current = 0;
+            isSilentCapture.current = 0;
+            containerStackRef.current = [];
+            return true;
+        }
+        return false;
+    }, [addDiagnosticLog, setEqLines, setInventoryLines, captureStage, isDrawerCapture, isSilentCapture]);
+
+    const processLine = useCallback((line: string) => {
 
         let cleanLine = line.replace(/\r$/, '').normalize('NFC');
         if (!cleanLine) return;
@@ -82,8 +104,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
 
-        // Use the ALREADY STRIPPED text for the prompt regex. It's much faster.
-        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>:]\s*/;
+        // Use strictly > as terminator to avoid header colons
+        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>]\s*/;
         const textPMatch = textOnly.match(promptRegex);
 
         if (textPMatch || captureStage.current === 'none') {
@@ -91,6 +113,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (textPMatch) {
+            // This prompt belongs to the PREVIOUS TURN if it's at the start of the line
+            if (captureStage.current !== 'none') {
+                console.log('[Parser] Start-prompt detected, finalizing previous stage:', captureStage.current);
+                finalizeCapture();
+            }
+
             const promptPart = textPMatch[0];
             const attachedText = textOnly.slice(promptPart.length).trim();
 
@@ -104,15 +132,14 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
 
             if (!attachedText) {
-                finalizeCapture();
                 return;
             }
 
             textOnly = attachedText;
             lower = textOnly.toLowerCase();
 
-            // Strip the actual prompt part from the cleanLine so the ANSI HTML doesn't render it
-            const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>:])\s*)/ ;
+            // Strip the actual prompt part from the cleanLine
+            const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>])\s*)/ ;
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
         }
 
@@ -193,43 +220,67 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: stat');
+            addDiagnosticLog?.('Entering Stage: stat');
             isWaitingForStats.current = false; (captureStage as any).current = 'stat'; containerStackRef.current = [];
         }
         if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: eq');
+            addDiagnosticLog?.('Entering Stage: eq');
             isWaitingForEq.current = false; (captureStage as any).current = 'eq'; containerStackRef.current = [];
             tempEqRef.current = [];
             isDrawerCapture.current = 1;
         }
         if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: inv');
+            addDiagnosticLog?.('Entering Stage: inv');
             isWaitingForInv.current = false; (captureStage as any).current = 'inv'; containerStackRef.current = [];
             tempInvRef.current = [];
             isDrawerCapture.current = 1;
+            // Ensure other buffer is NOT cleared if it has data but we are starting a NEW stage
         }
         if (lower.includes('skill / spell') || lower.includes('knowledge') || (lower.includes('sessions') && lower.includes('practice'))) {
             if (deps.practice.isUiRequested) {
+                if (captureStage.current !== 'none') finalizeCapture();
+                console.log('[Parser] Entering Stage: practice');
+                addDiagnosticLog?.('Entering Stage: practice');
                 (captureStage as any).current = 'practice';
                 isSilentCapture.current = 1;
             }
         }
 
         if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: shop');
+            addDiagnosticLog?.('Entering Stage: shop');
             (captureStage as any).current = 'shop';
             setIsShopListingActive(true);
             addDiagnosticLog?.('Shop parsing activated');
         }
 
         if (textOnly === 'who:' || lower === 'allies' || lower === 'minions') {
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: who');
+            addDiagnosticLog?.('Entering Stage: who');
             (captureStage as any).current = 'who';
             setWhoList([]); // Clear when list starts
         }
 
         if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: where');
+            addDiagnosticLog?.('Entering Stage: where');
             (captureStage as any).current = 'where';
         }
 
         // Detect container header: "In a large sack (in inventory):"
         if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
             console.log('[Parser] Detected container header, triggering container capture');
+            if (captureStage.current !== 'none') finalizeCapture();
+            addDiagnosticLog?.(`Entering Stage: container (${textOnly})`);
             (captureStage as any).current = 'container';
             // Sync isDrawerCapture if we are expanding a container in a drawer
             if (deps.pendingDrawerContainerRef?.current) {
@@ -237,20 +288,20 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
         }
 
-        // Detect end of shop listing (prompt)
-        const isPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>:])\s*$/.test(textOnly) ||
+        // Detect end of capture listing (prompt at END of line)
+        const isEndPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
-        if (isPrompt) {
-            console.log('[Parser] isPrompt=true', { textOnly, captureStage: captureStage.current });
+        if (isEndPrompt) {
+            console.log('[Parser] End-prompt detected:', { textOnly, stage: captureStage.current });
         }
 
-        if (isPrompt && (captureStage.current === 'shop' || isShopListingActive)) {
+        if (isEndPrompt && (captureStage.current === 'shop' || isShopListingActive)) {
             setIsShopListingActive(false);
             addDiagnosticLog?.('Shop parsing terminated by prompt');
         }
 
-        if (isPrompt && (captureStage.current === 'practice' || deps.practice.isPracticeActive)) {
+        if (isEndPrompt && (captureStage.current === 'practice' || deps.practice.isPracticeActive)) {
             deps.practice.setIsPracticeActive(false);
             deps.practice.setIsUiRequested(false);
         }
@@ -321,12 +372,18 @@ export function useGameParser(deps: UseGameParserDeps) {
             };
 
             if (captureStage.current === 'inv') {
+                const line = createLine(cleanLine, textOnly, lower, 'inventorylist');
                 console.log('[Parser] Capturing to inventory buffer:', textOnly);
-                tempInvRef.current.push(createLine(cleanLine, textOnly, lower, 'inventorylist'));
+                tempInvRef.current.push(line);
+                // Incremental update for better perceived performance
+                setInventoryLines(prev => [...prev, line]);
             } else if (captureStage.current === 'eq') {
                 if (textOnly.length > 0) {
+                    const line = createLine(cleanLine, textOnly, lower, 'equipmentlist');
                     console.log('[Parser] Capturing to equipment buffer:', textOnly);
-                    tempEqRef.current.push(createLine(cleanLine, textOnly, lower, 'equipmentlist'));
+                    tempEqRef.current.push(line);
+                    // Incremental update for better perceived performance
+                    setEqLines(prev => [...prev, line]);
                 }
             } else if (captureStage.current === 'container') {
                 if (textOnly.length > 0 && !lower.includes('contains:')) {
@@ -620,10 +677,10 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         // --- Post-processing Capture Termination ---
-        if (isPrompt) {
+        if (isEndPrompt) {
             finalizeCapture();
         }
-    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, triggerHaptic, mapperRef, deps, parsePracticeLine, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState]);
+    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, triggerHaptic, mapperRef, deps, parsePracticeLine, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture]);
 
-    return { processLine };
+    return { processLine, finalizeCapture };
 }

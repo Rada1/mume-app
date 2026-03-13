@@ -21,6 +21,7 @@ export interface ExecutorDeps {
     setStatsLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setEqLines: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void;
     setTarget: (val: string | null) => void;
+    finalizeCapture: (targetStage?: CaptureStage) => void;
     target: string | null;
     setPopoverState: (val: any) => void;
     status: 'connected' | 'disconnected' | 'connecting';
@@ -52,7 +53,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                 if (isSilentCapture.current > 0) {
                     console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current})`);
                     isSilentCapture.current = 0;
-                    if (captureStage.current !== 'container') captureStage.current = 'none';
+                    if (captureStage.current !== 'container') {
+                        deps.finalizeCapture();
+                    }
                 }
             }, 8000);
         }
@@ -202,7 +205,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                     if (captureStage.current === 'container') {
                          // Don't reset if we are actively capturing a container
                     } else {
-                         captureStage.current = 'none';
+                         deps.finalizeCapture();
                     }
                 }
             }, 8000);
@@ -214,7 +217,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             // Don't reset captureStage for 'who'/'where' — the parser sets it when the server's
             // header line arrives, and we need it to survive so list entries are tagged correctly.
             if (lowerCmd !== 'who' && lowerCmd !== 'where') {
-                captureStage.current = 'none';
+                deps.finalizeCapture();
             }
         }
 

@@ -222,7 +222,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                         // We use the parentNoun (which is the context of the parent) to refresh it
                         executeCommand(`look in ${parentNoun}`, true, true);
                     }
-                }, 1000);
+                }, 400);
             }
         }
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));

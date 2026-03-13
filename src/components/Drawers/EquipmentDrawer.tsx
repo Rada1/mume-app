@@ -206,17 +206,26 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const currentItem = draggedRef.current.line;
             const currentSource = draggedRef.current.source;
 
+            // Helper to get the pure item handle from potentially context-aware IDs like "1.knife.sack"
+            const itemNoun = currentItem.parentItemNoun && currentItem.id.endsWith(`.${currentItem.parentItemNoun}`) 
+                ? currentItem.id.slice(0, -(currentItem.parentItemNoun.length + 1))
+                : currentItem.id;
+
             // 1. Log Target (Give)
             const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
             if (logRecipient) {
                 const recipientName = logRecipient.getAttribute('data-context');
                 if (recipientName) {
                     triggerHaptic(60);
-                    const itemNoun = currentItem.context || currentItem.id;
                     if (currentSource === 'equipment') {
                         executeCommand(`remove ${itemNoun}`, false, false);
+                        setTimeout(() => executeCommand(`give ${itemNoun} ${recipientName}`, false, false), 100);
+                    } else if (currentItem.parentItemNoun) {
+                        executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
+                        setTimeout(() => executeCommand(`give ${itemNoun} ${recipientName}`, false, false), 100);
+                    } else {
+                        executeCommand(`give ${itemNoun} ${recipientName}`, false, false);
                     }
-                    executeCommand(`give ${itemNoun} ${recipientName}`, false, false);
                     cleanupDrag();
                     return;
                 }
@@ -230,66 +239,87 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             // Ensure we aren't dropping onto ourselves
             if (isTargetContainer && targetItemName !== (currentItem.context || currentItem.id)) {
                 triggerHaptic(60);
-                const itemNoun = currentItem.context || currentItem.id;
                 if (currentSource === 'equipment') {
                     executeCommand(`remove ${itemNoun}`, false, false);
+                    setTimeout(() => executeCommand(`put ${itemNoun} ${targetItemName}`, false, false), 100);
+                } else if (currentItem.parentItemNoun) {
+                    executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
+                    setTimeout(() => executeCommand(`put ${itemNoun} ${targetItemName}`, false, false), 100);
+                } else {
+                    executeCommand(`put ${itemNoun} ${targetItemName}`, false, false);
                 }
-                executeCommand(`put ${itemNoun} ${targetItemName}`, false, false);
                 cleanupDrag();
                 return;
             }
 
-            // 2.b. Main Log Target (Drop on ground)
             const mainLog = target?.closest('.message-log-container');
             if (mainLog && !target?.closest('.right-drawer')) {
                 triggerHaptic(60);
-                const fullItemNoun = currentItem.context || currentItem.id;
-                const itemNoun = fullItemNoun.split('.')[0];
                 if (currentSource === 'equipment') {
                     executeCommand(`remove ${itemNoun}`, false, false);
-                }
-                if (currentItem.parentItemNoun) {
+                    setTimeout(() => executeCommand(`drop ${itemNoun}`, false, false), 100);
+                } else if (currentItem.parentItemNoun) {
                     executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
-                    setTimeout(() => executeCommand(`look in ${currentItem.parentItemNoun}`, true, true), 1000);
+                    setTimeout(() => executeCommand(`drop ${itemNoun}`, false, false), 100);
+                } else {
+                    executeCommand(`drop ${itemNoun}`, false, false);
                 }
-                executeCommand(`drop ${itemNoun}`, false, false);
                 // Refresh lists
                 setTimeout(() => {
                     executeCommand('inv', false, true, true, true);
                     executeCommand('eq', false, true, true, true);
-                }, 1000);
+                    if (currentItem.parentItemNoun) {
+                        executeCommand(`look in ${currentItem.parentItemNoun}`, true, true);
+                    }
+                }, 400);
                 cleanupDrag();
                 return;
             }
 
-            // 3. Section Target (Wear/Remove/Get)
             const sectionWrapper = target?.closest('[data-drawer-section]');
             const section = sectionWrapper?.getAttribute('data-drawer-section');
             if (section) {
-                const fullItemNoun = currentItem.context || currentItem.id;
-                const itemNoun = fullItemNoun.split('.')[0];
-
                 if (section !== currentSource) {
                     triggerHaptic(60);
                     if (currentItem.parentItemNoun) {
+                        // Step 1: Get the item from the container
                         executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
-                        setTimeout(() => executeCommand(`look in ${currentItem.parentItemNoun!}`, true, true), 1000);
+                        const cmd = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
+                        // Step 2: Execute the action on the item itself (not item.container)
+                        setTimeout(() => {
+                            executeCommand(`${cmd} ${itemNoun}`, false, false);
+                            // Refresh lists after a short delay
+                            setTimeout(() => {
+                                executeCommand('inv', false, true, true, true);
+                                executeCommand('eq', false, true, true, true);
+                            }, 400);
+                        }, 100);
+                        
+                        if (currentItem.parentItemNoun) {
+                            setTimeout(() => executeCommand(`look in ${currentItem.parentItemNoun!}`, true, true), 500);
+                        }
+                    } else {
+                        const cmd = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
+                        executeCommand(`${cmd} ${itemNoun}`, false, false);
+                        // Refresh lists
+                        setTimeout(() => {
+                            executeCommand('inv', false, true, true, true);
+                            executeCommand('eq', false, true, true, true);
+                        }, 400);
                     }
-                    const cmd = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
-                    executeCommand(`${cmd} ${itemNoun}`, false, false);
-                    // Refresh lists
-                    setTimeout(() => {
-                        executeCommand('inv', false, true, true, true);
-                        executeCommand('eq', false, true, true, true);
-                    }, 1000);
                 } else {
                     // Same-section move might be an explicit get [noun] [container] from a nested item
-                    const dotIndex = fullItemNoun.indexOf('.');
-                    if (dotIndex !== -1) {
+                    const parts = currentItem.id.split('.');
+                    if (parts.length >= 2) {
                          triggerHaptic(60);
-                         const noun = fullItemNoun.substring(0, dotIndex);
-                         const container = fullItemNoun.substring(dotIndex + 1);
-                         executeCommand(`get ${noun} ${container}`, false, false);
+                         // Logic to handle 1.flagon.sack vs flagon.sack
+                         let handle = parts[0];
+                         let container = parts[1];
+                         if (!isNaN(parseInt(handle)) && parts.length >= 3) {
+                             handle = `${parts[0]}.${parts[1]}`;
+                             container = parts[2];
+                         }
+                         executeCommand(`get ${handle} ${container}`, false, false);
                     }
                 }
             }
