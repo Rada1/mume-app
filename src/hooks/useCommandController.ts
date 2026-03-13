@@ -103,7 +103,7 @@ export function useCommandController(deps: CommandControllerDeps) {
     }, [executor, viewport.isMobile]);
 
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
-        ...deps, executeCommand, ui: deps.ui, parley: deps.parley, setParley: deps.setParley
+        ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley
     });
 
     const handleSend = useCallback((e?: React.FormEvent) => {

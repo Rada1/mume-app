@@ -4,6 +4,7 @@ import { getButtonCommand } from '../utils/buttonUtils';
 
 export interface InteractionDeps {
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
+    input: string;
     setInput: (val: string) => void;
     setTarget: (val: string | null) => void;
     addMessage: (type: MessageType, text: string) => void;
@@ -55,7 +56,7 @@ export interface InteractionDeps {
 
 export const useInteractionHandlers = (deps: InteractionDeps) => {
     const {
-        executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
+        executeCommand, input, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
         setIsMapExpanded, setIsCharacterOpen, setIsItemsDrawerOpen,
         setInventoryLines, setEqLines, setStatsLines, isWaitingForStats, isWaitingForEq, isWaitingForInv,
@@ -517,18 +518,31 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                         } else {
                             const targetUnderPointer = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
                             const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter');
+                            const isOverInput = targetUnderPointer?.closest('.input-area');
                             
                             // Cleanup previous highlights
                             document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
                             
-                            if (recipient && !recipient.classList.contains('dragging')) {
+                            if (isOverInput) {
+                                isOverInput.classList.add('drop-hover-active');
+                                setHeldButton((prev: any) => {
+                                    if (!prev) return null;
+                                    const original = prev.originalLabel || prev.label;
+                                    const newLabel = `append: ${original}`;
+                                    if (prev.label === newLabel) return prev;
+                                    setCommandPreview(original); // Preview just the word to append? 
+                                    // Actually, if we're "appending", maybe show nothing in preview to avoid confusion with "replace"
+                                    // A clean implementation is to show the word itself.
+                                    return { ...prev, label: newLabel };
+                                });
+                            } else if (recipient && !recipient.classList.contains('dragging')) {
                                 recipient.classList.add('drop-hover-active');
                                 const recipientName = recipient.getAttribute('data-context');
                                 if (recipientName) {
                                     setHeldButton((prev: any) => {
                                         if (!prev) return null;
                                         const original = prev.originalLabel || prev.label;
-                                        const newLabel = `give ${recipientName} ${original}`;
+                                        const newLabel = `give ${original} ${recipientName}`;
                                         if (prev.label === newLabel) return prev;
                                         setCommandPreview(newLabel);
                                         return { ...prev, label: newLabel };
@@ -582,6 +596,17 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                         if (draggedNoun) {
                             triggerHaptic(40);
                             executeCommand(`get ${draggedNoun}`);
+                        }
+                    } else {
+                        // Check if dropped on input bar
+                        const targetUnderPointer = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
+                        if (targetUnderPointer?.closest('.input-area')) {
+                            const draggedNoun = context;
+                            if (draggedNoun) {
+                                triggerHaptic(30);
+                                const trimmed = input.trim();
+                                setInput(trimmed ? `${trimmed} ${draggedNoun} ` : `${draggedNoun} `);
+                            }
                         }
                     }
 

@@ -509,6 +509,14 @@
     opacity: 0.8;
 }
 
+/* --- Drag & Drop Target Highlighting --- */
+.input-area.drop-hover-active {
+    box-shadow: 0 0 20px var(--accent) !important;
+    border-top: 1px solid var(--accent) !important;
+    background: rgba(var(--accent-rgb), 0.1) !important;
+    transition: all 0.2s ease !important;
+}
+
 /* --- Inline Log Drag Ghost --- */
 .log-drag-ghost {
     position: fixed;
