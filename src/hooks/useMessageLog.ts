@@ -207,6 +207,14 @@ export function useMessageLog(
         if (textLower.includes('strange incantations') || textLower.includes('utters the words')) html = `<span class="spell-incant">${html}</span>`;
 
         const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
+        
+        if (isCombat) {
+            // Haptic feedback for combat
+            try {
+                if (window.navigator?.vibrate) window.navigator.vibrate(15);
+            } catch (e) {}
+        }
+
         lastMessageRef.current = msg;
         messageBufferRef.current.push(msg);
 

@@ -24,6 +24,7 @@ interface GmcpHandlersProps {
     setPlayerPosition: (pos: string) => void;
     setRoomName: (name: string | null) => void;
     isMobileBrevityMode: boolean;
+    setRoomExits: (exits: string[]) => void;
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
 }
 
@@ -39,7 +40,8 @@ export const useGmcpHandlers = ({
     setCharacterName,
     setPlayerPosition,
     setRoomName,
-    isMobileBrevityMode
+    isMobileBrevityMode,
+    setRoomExits
 }: GmcpHandlersProps) => {
 
     // --- Room Info & Exits ---
@@ -50,12 +52,18 @@ export const useGmcpHandlers = ({
         const terrain = data.terrain || data.environment;
         if (terrain) setCurrentTerrain(terrain);
         if (data.name) setRoomName(data.name);
-    }, [mapperRef, setCurrentTerrain, setRoomName]);
+        if (data.exits) {
+            setRoomExits(Object.keys(data.exits));
+        }
+    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomExits]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         mapperRef.current?.handleUpdateExits(data);
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-update-exits', { detail: data }));
-    }, [mapperRef]);
+        if (data.exits) {
+            setRoomExits(Object.keys(data.exits));
+        }
+    }, [mapperRef, setRoomExits]);
 
     // --- Character Status ---
 

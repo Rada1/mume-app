@@ -80,7 +80,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setFavorites,
         parley,
         setParley,
-        whoList
+        whoList,
+        refreshLogHighlights
     } = useGame() as any;
 
     const {
@@ -267,6 +268,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 parley={parley}
                 setParley={setParley}
                 whoList={whoList}
+                refreshLogHighlights={refreshLogHighlights}
             />
 
             <DrawerManager

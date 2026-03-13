@@ -25,13 +25,16 @@ interface StandardMenuProps {
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
     setIsItemsDrawerOpen?: (open: boolean) => void;
+    refreshLogHighlights?: () => void;
+    triggerHaptic?: (ms: number) => void;
 }
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites, parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
-    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen
+    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights, triggerHaptic
 }) => {
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
+    const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
     const isSetManager = popoverState.setId === 'setmanager';
     const isTargetable = ['selection', 'inventorylist', 'equipmentlist'].includes(popoverState.setId);
 
@@ -159,13 +162,17 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     padding: '6px', 
                                     fontSize: '0.7rem', 
                                     textAlign: 'center',
-                                    background: popoverState.setId === `inline-${cat.id}` ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                    background: selectedCatId === cat.id ? 'var(--accent)' : (popoverState.setId === `inline-${cat.id}` ? 'rgba(255,255,255,0.1)' : 'transparent'),
                                     border: `1px solid ${cat.color || 'rgba(255,255,255,0.2)'}`,
-                                    color: cat.color || '#fff'
+                                    color: selectedCatId === cat.id ? '#000' : (cat.color || '#fff'),
+                                    transition: 'all 0.1s ease'
                                 }}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     if (!setInlineCategories || !inlineCategories || !popoverState.context) return;
+                                    
+                                    triggerHaptic?.(30);
+                                    setSelectedCatId(cat.id);
                                     
                                     const keyword = popoverState.context.toLowerCase();
                                     setInlineCategories(prev => {
@@ -180,8 +187,12 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     });
                                     
                                     addMessage('system', `Categorized '${popoverState.context}' as ${cat.id.toUpperCase()}`);
-                                    setIsChoosingCategory(false);
-                                    setPopoverState(null); // Close menu to refresh highlights
+                                    refreshLogHighlights?.();
+                                    
+                                    setTimeout(() => {
+                                        setIsChoosingCategory(false);
+                                        setPopoverState(null); // Close menu to refresh highlights
+                                    }, 150);
                                 }}
                             >
                                 {cat.id.toUpperCase()}

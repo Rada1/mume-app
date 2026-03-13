@@ -54,6 +54,7 @@ export const useGameProviderState = () => {
     const [roomItems, setRoomItems] = useState<string[]>([]);
     const [currentTerrain, setCurrentTerrain] = useState<string>('city');
     const [roomName, _setRoomName] = useState<string | null>(null);
+    const [roomExits, setRoomExits] = useState<string[]>([]);
     const roomNameRef = useRef<string | null>(null);
     const setRoomName = useCallback((name: string | null) => {
         roomNameRef.current = name;
@@ -219,6 +220,7 @@ export const useGameProviderState = () => {
         parley, setParley,
         whoList, setWhoList,
         roomName, setRoomName, roomNameRef,
+        roomExits, setRoomExits,
         inlineCategories, setInlineCategories,
         favorites, setFavorites,
         activeDragData, setActiveDragData,
@@ -231,7 +233,7 @@ export const useGameProviderState = () => {
         setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
-        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName,
+        disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
         inlineCategories, favorites, activeDragData, heldButton,
         parley, whoList, popoverState
     ]);

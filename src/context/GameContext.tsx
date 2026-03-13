@@ -59,6 +59,12 @@ export const useVitals = () => {
 };
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+// --- Section: Game Logic Refresh ---
+    const [highlightVersion, setHighlightVersion] = useState(0);
+    const refreshLogHighlights = useCallback(() => {
+        setHighlightVersion(v => v + 1);
+    }, []);
+
     const { vitals, game } = useGameProviderState();
     const v = vitals;
     const s = game;
@@ -132,13 +138,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCharacterName: s.setCharacterName,
         setPlayerPosition: s.setPlayerPosition,
         setRoomName: s.setRoomName,
-        isMobileBrevityMode: s.isMobileBrevityMode
+        isMobileBrevityMode: s.isMobileBrevityMode,
+        setRoomExits: s.setRoomExits
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
 
     const btn = useButtons(abilities, characterClass, v.target, s.inlineCategories);
-    const joystick = useJoystick(triggerHaptic);
+    const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
     const env = useEnvironment({
@@ -185,7 +192,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const [input, setInput] = useState("");
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories);
+    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, highlightVersion);
 
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -446,6 +453,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         telnet, parser, practice,
         spatButtons, setSpatButtons,
         diagnosticLogs, addDiagnosticLog,
+        refreshLogHighlights,
         isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
         mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
         heldButton: v.heldButton, setHeldButton: v.setHeldButton,
@@ -472,9 +480,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isCombatLine,
         isCommunicationLine,
         processMessageHtml,
+        refreshLogHighlights,
         handleLogPointerDown,
         handleLogPointerUp
-    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, isCommunicationLine, processMessageHtml, handleLogPointerDown, handleLogPointerUp]);
+    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, isCommunicationLine, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp]);
 
     // Reset mending mode when drawer closes
     useEffect(() => {

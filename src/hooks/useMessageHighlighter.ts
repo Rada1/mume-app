@@ -10,9 +10,17 @@ export const useMessageHighlighter = (
     roomNpcs: string[],
     characterName: string | null,
     roomItems: string[],
-    inlineCategories: InlineCategoryConfig[] = []
+    inlineCategories: InlineCategoryConfig[] = [],
+    highlightVersion: number = 0
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
+
+    // Clear cache when highlight version changes to force re-processing
+    const lastVersionRef = useRef(highlightVersion);
+    if (highlightVersion !== lastVersionRef.current) {
+        cacheRef.current.clear();
+        lastVersionRef.current = highlightVersion;
+    }
 
     const safeHighlight = (currentHtml: string, patternStr: string, isRegex: boolean, replacer: (match: string, matchObj: RegExpExecArray | null) => string) => {
         if (!patternStr) return currentHtml;
@@ -51,8 +59,8 @@ export const useMessageHighlighter = (
         const ri = roomItems.join('|');
         // For inline categories, we only care if the configuration itself changed length/structure roughly
         const ic = inlineCategories.map(c => c.id).join('|');
-        return `${target || ''}:${rp}:${rn}:${ri}:${ic}`;
-    }, [target, roomPlayers, roomNpcs, roomItems, inlineCategories]);
+        return `${target || ''}:${rp}:${rn}:${ri}:${ic}:${highlightVersion}`;
+    }, [target, roomPlayers, roomNpcs, roomItems, inlineCategories, highlightVersion]);
 
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType) => {
         // Use the fast hash instead of full JSON serialization
@@ -235,7 +243,7 @@ export const useMessageHighlighter = (
         }
 
         return newHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash]);
+    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion]);
 
     return { processMessageHtml };
 };

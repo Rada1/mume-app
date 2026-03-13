@@ -44,6 +44,7 @@ export function useTelnet(options: TelnetOptions) {
     const { handlers, connectionUrl, processLine, setPrompt } = options;
     const socketRef = useRef<WebSocket | null>(null);
     const bufferRef = useRef<string>("");
+    const isBackgroundedRef = useRef<boolean>(false);
 
     // Stability fix: use a ref for handlers to avoid stale closures in GmcpDecoder
     const handlersRef = useRef(handlers);
@@ -195,6 +196,23 @@ export function useTelnet(options: TelnetOptions) {
             socketRef.current = ws;
         } catch (e) { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Invalid URL.', undefined, undefined, undefined, { textOnly: 'Invalid URL.', lower: 'invalid url.' }); }
     };
+
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                isBackgroundedRef.current = false;
+                // If we were backgrounded and disconnected, reconnect immediately
+                if (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED) {
+                    connect();
+                }
+            } else {
+                isBackgroundedRef.current = true;
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, [connect]);
 
     return {
         connect, disconnect: () => socketRef.current?.close(),

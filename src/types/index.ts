@@ -208,6 +208,7 @@ export interface PopoverManagerProps {
     setIsMendingMode?: (val: boolean) => void;
     setMendingTarget?: (val: string | null) => void;
     setIsItemsDrawerOpen?: (open: boolean) => void;
+    refreshLogHighlights?: () => void;
 }
 
 

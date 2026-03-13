@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Direction } from '../types';
 
-export const useJoystick = (triggerHaptic: (ms: number) => void) => {
+export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = []) => {
     const [joystickActive, setJoystickActive] = useState(false);
     const [currentDir, setCurrentDir] = useState<Direction | null>(null);
     const [isJoystickConsumed, setIsJoystickConsumed] = useState(false);
@@ -58,17 +58,32 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         const dy = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist > 15 && longPressTimer.current) {
-            clearTimeout(longPressTimer.current);
-            longPressTimer.current = null;
-        }
-
         const angleRad = Math.atan2(dy, dx);
         let angleDeg = angleRad * (180 / Math.PI);
         if (angleDeg < 0) angleDeg += 360;
 
+        let calculatedDir: Direction | null = null;
+        if (angleDeg >= 337.5 || angleDeg < 22.5) calculatedDir = 'e';
+        else if (angleDeg >= 22.5 && angleDeg < 67.5) calculatedDir = 'se';
+        else if (angleDeg >= 67.5 && angleDeg < 112.5) calculatedDir = 's';
+        else if (angleDeg >= 112.5 && angleDeg < 157.5) calculatedDir = 'sw';
+        else if (angleDeg >= 157.5 && angleDeg < 202.5) calculatedDir = 'w';
+        else if (angleDeg >= 202.5 && angleDeg < 247.5) calculatedDir = 'nw';
+        else if (angleDeg >= 247.5 && angleDeg < 292.5) calculatedDir = 'n';
+        else if (angleDeg >= 292.5 && angleDeg < 337.5) calculatedDir = 'ne';
+
+        // Adaptive Threshold Logic
+        let threshold = 25;
+        if (calculatedDir === 'nw' && !availableExits.includes('u')) threshold = 60;
+        else if (calculatedDir === 'se' && !availableExits.includes('d')) threshold = 60;
+
+        if (dist > threshold && longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+            longPressTimer.current = null;
+        }
+
         // Update Swipe Ray
-        if (dist > 15) {
+        if (dist > threshold) {
             const snappedAngle = Math.round(angleDeg / 45) * 45;
             setSwipeRay(prev => ({ ...prev, active: true, angle: snappedAngle + 90, dist: Math.min(dist, 100) }));
         } else {
@@ -85,7 +100,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
         let dir: Direction | null = null;
 
         // Direction Logic
-        if (dist < 15) {
+        if (dist < threshold) {
             setCurrentDir(null);
             lockedDirRef.current = null;
             if (lastHapticDirRef.current !== null) {
@@ -93,17 +108,10 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
                 lastHapticDirRef.current = null;
             }
         } else {
-            // Direction Calculation with Even 45° Wedges
-            // All directions (N, S, E, W, NW, SE, NE, SW) are now equal (45° each)
-            let calculatedDir: Direction | null = null;
-            if (angleDeg >= 337.5 || angleDeg < 22.5) calculatedDir = 'e';
-            else if (angleDeg >= 22.5 && angleDeg < 67.5) calculatedDir = 'se';
-            else if (angleDeg >= 67.5 && angleDeg < 112.5) calculatedDir = 's';
-            else if (angleDeg >= 112.5 && angleDeg < 157.5) calculatedDir = 'sw';
-            else if (angleDeg >= 157.5 && angleDeg < 202.5) calculatedDir = 'w';
-            else if (angleDeg >= 202.5 && angleDeg < 247.5) calculatedDir = 'nw';
-            else if (angleDeg >= 247.5 && angleDeg < 292.5) calculatedDir = 'n';
-            else if (angleDeg >= 292.5 && angleDeg < 337.5) calculatedDir = 'ne';
+            // Direction Logic with Even 45° Wedges
+            dir = calculatedDir;
+            // ... (rest of hysteresis logic is fine)
+            // Note: We'll simplify the calculated logic below to match original structure
 
             // Angular Stability & Hysteresis
             const HYSTERESIS = 10;
@@ -211,7 +219,11 @@ export const useJoystick = (triggerHaptic: (ms: number) => void) => {
             }
             
             // Execute Move on Release
-            if (dist >= 25 && initialDir) {
+            let threshold = 25;
+            if (initialDir === 'nw' && !availableExits.includes('u')) threshold = 60;
+            else if (initialDir === 'se' && !availableExits.includes('d')) threshold = 60;
+
+            if (dist >= threshold && initialDir) {
                 const dirMap: Record<string, string> = {
                     n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
                     ne: 'northeast', nw: 'up', se: 'down', sw: 'southwest'

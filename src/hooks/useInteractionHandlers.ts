@@ -93,6 +93,10 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
 
         let cmd = button.command;
         if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : cmd; }
+        else if (cmd.includes('%n') && target) {
+            cmd = cmd.replace(/%n/g, target);
+        }
+
         let finalCmd = cmd;
         if (joystick.currentDir && !(button as any)._skipJoystick) {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
@@ -367,20 +371,23 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         // BUTTON COMBO LOGIC: If a physical action GameButton is being held, 
         // and we tap an inline button, fire that action at this target.
         // Note: 'log-inline-' ids are inline-log tracking, not GameButton holds.
-        if (heldButton && !heldButton.didFire && heldButton.baseCommand && !heldButton.id.startsWith('log-inline-')) {
+        if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
             console.log('[DEBUG] Executing Button Combo:', { button: heldButton.id, target: context });
             const contextStr = context || targetEl.innerText.trim();
-            // Use getButtonCommand or manually construct it if it's a simple command
-            let finalCmd = heldButton.baseCommand;
-            if (contextStr) {
-                if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, contextStr);
-                else finalCmd = `${finalCmd} ${contextStr}`;
-            }
+            const isLong = joystick.isTargetModifierActive;
+            let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
             
-            executeCommand(finalCmd);
-            setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
-            triggerHaptic(60);
-            return;
+            if (finalCmd) {
+                if (contextStr) {
+                    if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, contextStr);
+                    else finalCmd = `${finalCmd} ${contextStr}`;
+                }
+                
+                executeCommand(finalCmd);
+                setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                triggerHaptic(60);
+                return;
+            }
         }
 
         if (action === 'menu') {
@@ -438,17 +445,22 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         triggerHaptic(15);
 
         // --- Multi-touch Button Combo ---
-        if (heldButton && !heldButton.didFire && heldButton.baseCommand && !heldButton.id.startsWith('log-inline-')) {
+        if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
             const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
-            let finalCmd = heldButton.baseCommand;
-            if (context) {
-                if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, context);
-                else finalCmd = `${finalCmd} ${context}`;
+            const isLong = joystick.isTargetModifierActive;
+            let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
+            
+            if (finalCmd) {
+                if (context) {
+                    if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, context);
+                    else finalCmd = `${finalCmd} ${context}`;
+                }
+                
+                executeCommand(finalCmd);
+                setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                triggerHaptic(60);
+                return;
             }
-            executeCommand(finalCmd);
-            setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
-            triggerHaptic(60);
-            return;
         }
 
         if (viewport.isMobile) {

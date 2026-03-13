@@ -8,8 +8,8 @@ export interface UseButtonGesturesProps {
     handleDragStart: (e: React.PointerEvent, id: string, type: 'move' | 'resize' | 'cluster' | 'cluster-resize') => void;
     wasDraggingRef: React.RefObject<boolean>;
     triggerHaptic: (ms: number) => void;
-    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>>;
-    heldButton: { id: string, baseCommand: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null;
+    setHeldButton: React.Dispatch<React.SetStateAction<{ id: string, baseCommand: string, longCommand?: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null>>;
+    heldButton: { id: string, baseCommand: string, longCommand?: string, modifiers: string[], dx?: number, dy?: number, didFire?: boolean, initialX?: number, initialY?: number } | null;
     joystick: { isActive: boolean, currentDir: string | null, isTargetModifierActive: boolean, setIsJoystickConsumed: (val: boolean) => void };
     target: string | null;
     setCommandPreview: (cmd: string | null) => void;
@@ -76,6 +76,7 @@ export const useButtonGestures = ({
             setHeldButton({
                 id: button.id,
                 baseCommand: button.command,
+                longCommand: button.longCommand,
                 modifiers: [],
                 dx: 0,
                 dy: 0,
@@ -110,7 +111,7 @@ export const useButtonGestures = ({
 
         if (dist > 15) {
             if (!heldButton || heldButton.id !== button.id) {
-                setHeldButton({ id: button.id, baseCommand: button.command, modifiers: heldButton?.modifiers || [], dx, dy });
+                setHeldButton({ id: button.id, baseCommand: button.command, longCommand: button.longCommand, modifiers: heldButton?.modifiers || [], dx, dy });
             } else if (heldButton.dx !== dx || heldButton.dy !== dy) {
                 setHeldButton(prev => prev ? { ...prev, dx, dy } : null);
             }
