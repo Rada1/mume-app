@@ -9,7 +9,7 @@ export const extractNoun = (text: string): string => {
     clean = clean.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
     clean = clean.replace(/[.,:;!]+$/, '');
     const words = clean.split(/[\s,.-]+/).filter(w => w.length > 1 && !/^(a|an|the|of|in|on|at|to|some|several)$/i.test(w));
-    return words.length > 0 ? words[words.length - 1].toLowerCase().replace(/[^\w]/g, '') : '';
+    return words.length > 0 ? words[words.length - 1].toLowerCase().replace(/[.,:;!?"'()[\]{}<>*#~]/g, '') : '';
 };
 
 /**
@@ -120,4 +120,25 @@ export const pluralizeRest = (text: string) => {
         .replace(/\bitself\b/g, 'themselves')
         .replace(/\bhis\b/g, 'their')
         .replace(/\bher\b/g, 'their');
+};
+
+/**
+ * Detects if a game item is a container based on its description and MUME-specific tags.
+ */
+export const isItemContainer = (text: string): boolean => {
+    // Strip ANSI escape codes first
+    const cleanRaw = text.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase();
+    
+    // Check for MUME-specific status tags
+    if (cleanRaw.includes('(containing)') || 
+        cleanRaw.includes('(closed)') || 
+        cleanRaw.includes('(open)') || 
+        cleanRaw.includes('contains:') || 
+        cleanRaw.trim().endsWith(':')) {
+        return true;
+    }
+
+    // Keyword detection for common MUME containers that might be empty/open/not displaying tags
+    const containerKeywords = /sack|satchel|pouch|pack|quiver|backpack|bag|chest|box|barrel|crate|keg|vial|flask|bottle|waterskin|beltpouch|moneybelt/i;
+    return containerKeywords.test(cleanRaw);
 };

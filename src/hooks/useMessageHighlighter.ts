@@ -76,7 +76,7 @@ export const useMessageHighlighter = (
 
         // 0. Specialized List Highlighting (WHO/WHERE)
         if (type === 'who-list' || type === 'where-list') {
-            const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+            const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').normalize('NFC');
             
             // Strip away MUME prefixes like [ 50 Ran], <AFK>, (PK), or *Wanted*
             let cleanText = textOnly.trim();
@@ -89,10 +89,11 @@ export const useMessageHighlighter = (
                 cleanText = cleanText.replace(/^\*+/, '');
             }
 
-            const playerMatch = cleanText.match(/^([A-Z][A-Za-zÀ-ÿ\-']+)/);
+            // Extract the first word as the player name
+            const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
 
-            if (playerMatch && playerMatch[1]) {
-                const name = playerMatch[1];
+            if (nameCandidate && nameCandidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) {
+                const name = nameCandidate;
                 let highlighted = false;
                 newHtml = safeHighlight(newHtml, name, false, (m) => {
                     if (highlighted) return m;

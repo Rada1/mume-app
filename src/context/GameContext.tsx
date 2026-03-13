@@ -236,7 +236,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomName: s.roomName,
         addDiagnosticLog,
         popoverState: s.popoverState,
-        setPopoverState: s.setPopoverState
+        setPopoverState: s.setPopoverState,
+        pendingDrawerContainerRef: s.pendingDrawerContainerRef
     });
 
     const { processLine } = parser;

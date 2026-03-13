@@ -517,6 +517,15 @@
     transition: all 0.2s ease !important;
 }
 
+.auto-item.is-container span {
+    display: inline-block;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.auto-item.is-container.expanded span {
+    transform: rotate(90deg);
+}
+
 /* --- Inline Log Drag Ghost --- */
 .log-drag-ghost {
     position: fixed;

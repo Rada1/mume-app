@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
-import { GameStats, DrawerLine, GameAction, MessageType, PopoverState } from '../types';
+import { GameStats, DrawerLine, GameAction, MessageType, PopoverState, CaptureStage } from '../types';
 import { ansiConvert } from '../utils/ansi';
-import { extractNoun } from '../utils/gameUtils';
+import { extractNoun, isItemContainer } from '../utils/gameUtils';
 import { usePracticeParser } from './usePracticeParser';
 import { useTriggerProcessor } from './useTriggerProcessor';
 import { useShopHandler } from './useShopHandler';
@@ -41,6 +41,7 @@ export interface UseGameParserDeps {
     addDiagnosticLog?: (msg: string) => void;
     popoverState: PopoverState | null;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
+    pendingDrawerContainerRef?: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
@@ -50,11 +51,31 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
     const { parseShopLine, isShopListingActive, setIsShopListingActive } = useShopHandler();
 
-    const containerStackRef = useRef<{ depth: number, noun: string }[]>([]);
+    const containerStackRef = useRef<{ depth: number, noun: string, context: string }[]>([]);
+    const nounCountsRef = useRef<Record<string, number>>({});
     const counterRef = useRef(0);
+    const tempEqRef = useRef<DrawerLine[]>([]);
+    const tempInvRef = useRef<DrawerLine[]>([]);
 
     const processLine = useCallback((line: string) => {
-        let cleanLine = line.replace(/\r$/, '');
+        const finalizeCapture = () => {
+            const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'practice'];
+            if (stagesToTerminate.includes(captureStage.current as any)) {
+                const currentStage = captureStage.current as CaptureStage;
+                console.log(`[Parser] Finalizing ${currentStage} capture. Buffers: eq=${tempEqRef.current.length}, inv=${tempInvRef.current.length}`);
+                if (currentStage === 'eq') {
+                    setEqLines([...tempEqRef.current]);
+                } else if (currentStage === 'inv') {
+                    setInventoryLines([...tempInvRef.current]);
+                }
+                captureStage.current = 'none';
+                isDrawerCapture.current = 0;
+                isSilentCapture.current = 0;
+                containerStackRef.current = [];
+            }
+        };
+
+        let cleanLine = line.replace(/\r$/, '').normalize('NFC');
         if (!cleanLine) return;
 
         // Perform ANSI stripping ONCE here and reuse the result everywhere.
@@ -62,11 +83,14 @@ export function useGameParser(deps: UseGameParserDeps) {
         let lower = textOnly.toLowerCase();
 
         // Use the ALREADY STRIPPED text for the prompt regex. It's much faster.
-        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>:]\s*/;
+        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>:]\s*/;
         const textPMatch = textOnly.match(promptRegex);
 
+        if (textPMatch || captureStage.current === 'none') {
+            nounCountsRef.current = {};
+        }
+
         if (textPMatch) {
-            captureStage.current = 'none';
             const promptPart = textPMatch[0];
             const attachedText = textOnly.slice(promptPart.length).trim();
 
@@ -80,10 +104,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
 
             if (!attachedText) {
-                captureStage.current = 'none';
-                isDrawerCapture.current = 0;
-                isSilentCapture.current = 0;
-                containerStackRef.current = [];
+                finalizeCapture();
                 return;
             }
 
@@ -96,24 +117,18 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         const currentRoomName = roomNameRef.current;
-        // Re-use textOnly and lower instead of re-stripping
         const textOnlyRaw = textOnly;
         const lowerRaw = lower;
 
-        // SPLIT logic: If the line starts with the room name followed by a dot/space, and it's a long line, split it.
-        // This handles cases where the MUD sends the header and first description line in one go during movement.
+        // SPLIT logic
         if (currentRoomName && (textOnlyRaw.startsWith(currentRoomName) || lowerRaw.startsWith(currentRoomName.toLowerCase()))) {
             const headerPart = textOnlyRaw.startsWith(currentRoomName) ? currentRoomName : textOnlyRaw.substring(0, currentRoomName.length);
             const remaining = textOnlyRaw.substring(headerPart.length);
             const nextChar = remaining[0];
-
-            // If it's the exact match or followed by typical header terminators
             if (!nextChar || nextChar === '.' || nextChar === ' ' || nextChar === '[') {
                 const headerEndIdx = cleanLine.indexOf(headerPart) + headerPart.length;
                 let finalHeaderEndIdx = headerEndIdx;
                 if (cleanLine[headerEndIdx] === '.') finalHeaderEndIdx++;
-
-                // If there's significant text after the header, split and recurse
                 if (cleanLine.substring(finalHeaderEndIdx).trim().length > 3) {
                     const headerText = cleanLine.substring(0, finalHeaderEndIdx);
                     const restText = cleanLine.substring(finalHeaderEndIdx).trim();
@@ -178,64 +193,66 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
-            isWaitingForStats.current = false; captureStage.current = 'stat'; containerStackRef.current = [];
+            isWaitingForStats.current = false; (captureStage as any).current = 'stat'; containerStackRef.current = [];
         }
         if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
-            isWaitingForEq.current = false; captureStage.current = 'eq'; containerStackRef.current = [];
-            setEqLines([]);
+            isWaitingForEq.current = false; (captureStage as any).current = 'eq'; containerStackRef.current = [];
+            tempEqRef.current = [];
+            isDrawerCapture.current = 1;
         }
         if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
-            isWaitingForInv.current = false; captureStage.current = 'inv'; containerStackRef.current = [];
-            setInventoryLines([]);
+            isWaitingForInv.current = false; (captureStage as any).current = 'inv'; containerStackRef.current = [];
+            tempInvRef.current = [];
+            isDrawerCapture.current = 1;
         }
         if (lower.includes('skill / spell') || lower.includes('knowledge') || (lower.includes('sessions') && lower.includes('practice'))) {
             if (deps.practice.isUiRequested) {
-                captureStage.current = 'practice';
+                (captureStage as any).current = 'practice';
                 isSilentCapture.current = 1;
             }
         }
 
         if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
-            captureStage.current = 'shop';
+            (captureStage as any).current = 'shop';
             setIsShopListingActive(true);
             addDiagnosticLog?.('Shop parsing activated');
         }
 
         if (textOnly === 'who:' || lower === 'allies' || lower === 'minions') {
-            captureStage.current = 'who';
+            (captureStage as any).current = 'who';
             setWhoList([]); // Clear when list starts
         }
 
         if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
-            captureStage.current = 'where';
+            (captureStage as any).current = 'where';
+        }
+
+        // Detect container header: "In a large sack (in inventory):"
+        if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
+            console.log('[Parser] Detected container header, triggering container capture');
+            (captureStage as any).current = 'container';
+            // Sync isDrawerCapture if we are expanding a container in a drawer
+            if (deps.pendingDrawerContainerRef?.current) {
+                isDrawerCapture.current = 1;
+            }
         }
 
         // Detect end of shop listing (prompt)
-        const isPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>:])\s*$/.test(textOnly) ||
+        const isPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>:])\s*$/.test(textOnly) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
-        if (isPrompt && (captureStage.current === 'who' || captureStage.current === 'where')) {
-            captureStage.current = 'none';
+        if (isPrompt) {
+            console.log('[Parser] isPrompt=true', { textOnly, captureStage: captureStage.current });
         }
 
         if (isPrompt && (captureStage.current === 'shop' || isShopListingActive)) {
-            captureStage.current = 'none';
             setIsShopListingActive(false);
             addDiagnosticLog?.('Shop parsing terminated by prompt');
         }
 
         if (isPrompt && (captureStage.current === 'practice' || deps.practice.isPracticeActive)) {
-            captureStage.current = 'none';
             deps.practice.setIsPracticeActive(false);
             deps.practice.setIsUiRequested(false);
-        }
-
-        if (isPrompt && captureStage.current === 'who') {
-            captureStage.current = 'none';
-        }
-
-        if (isPrompt && captureStage.current === 'container') {
-             captureStage.current = 'none';
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container') {
@@ -243,9 +260,14 @@ export function useGameParser(deps: UseGameParserDeps) {
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
 
-                const isHdr = /you are (carrying|using|equipped with)|contains/i.test(lLower);
+                const isContainer = isItemContainer(l);
+                
+                const isHdr = /you are (carrying|using|equipped with)|contains|in your (.*?):/i.test(lLower);
                 const isNothing = /nothing/i.test(lLower).valueOf();
-                const isContainer = lLower.includes('(containing)') || lLower.endsWith(':');
+
+                if (!isHdr && !isNothing && isContainer) {
+                    addDiagnosticLog?.(`Detected container: ${textOnly}`);
+                }
 
                 let prefix = '';
                 let prefixHtml = '';
@@ -264,22 +286,27 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
 
                 const noun = extractNoun(mainText || l);
+                
+                // Track stable IDs within this capture session
+                nounCountsRef.current[noun] = (nounCountsRef.current[noun] || 0) + 1;
+                const count = nounCountsRef.current[noun];
+                const stableId = count > 1 ? `${count}.${noun}` : noun;
 
                 while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) {
                     containerStackRef.current.pop();
                 }
 
-                let context = noun;
+                let context = stableId;
                 if (depth > 0 && containerStackRef.current.length > 0) {
-                    context = `${noun}.${containerStackRef.current[containerStackRef.current.length - 1].noun}`;
+                    context = `${stableId}.${containerStackRef.current[containerStackRef.current.length - 1].context}`;
                 }
 
                 if (isContainer) {
-                    containerStackRef.current.push({ depth, noun });
+                    containerStackRef.current.push({ depth, noun, context });
                 }
 
                 return {
-                    id: Math.random().toString(36).substring(7),
+                    id: context || stableId || Math.random().toString(36).substring(7),
                     text: mainText,
                     html: mainHtml,
                     prefix,
@@ -294,26 +321,118 @@ export function useGameParser(deps: UseGameParserDeps) {
             };
 
             if (captureStage.current === 'inv') {
-                setInventoryLines(p => [...p, createLine(cleanLine, textOnly, lower, 'inventorylist')]);
+                console.log('[Parser] Capturing to inventory buffer:', textOnly);
+                tempInvRef.current.push(createLine(cleanLine, textOnly, lower, 'inventorylist'));
             } else if (captureStage.current === 'eq') {
                 if (textOnly.length > 0) {
-                    setEqLines(p => [...p, createLine(cleanLine, textOnly, lower, 'equipmentlist')]);
+                    console.log('[Parser] Capturing to equipment buffer:', textOnly);
+                    tempEqRef.current.push(createLine(cleanLine, textOnly, lower, 'equipmentlist'));
                 }
             } else if (captureStage.current === 'container') {
-                console.log('[DEBUG Container]', { textOnly, lower, isContains: lower.includes('contains:') });
                 if (textOnly.length > 0 && !lower.includes('contains:')) {
-                    const line = createLine(cleanLine, textOnly, lower, 'lookin');
-                    // @ts-ignore - containerItems added to type
-                    setPopoverState((prev: any) => {
-                        if (!prev) return prev;
-                        return {
-                            ...prev,
-                            type: 'container',
-                            containerItems: [...(prev.containerItems || []), line]
+                    const containerLine = createLine(cleanLine, textOnly, lower, 'lookin');
+                    const drawerPending = deps.pendingDrawerContainerRef?.current;
+                    if (drawerPending) {
+                        // Inject into the correct drawer list right after the container item
+                        const { containerId, cmd, afterId } = drawerPending;
+                        const injectedLine: DrawerLine = {
+                            ...containerLine,
+                            cmd,
+                            // Depth is at minimum one level inside the container
+                            depth: Math.max(containerLine.depth, 1)
                         };
-                    });
+                        if (cmd === 'inventorylist') {
+                            setInventoryLines(prev => {
+                                const parentIdx = prev.findLastIndex(l => l.isContainer && l.id === containerId);
+                                if (parentIdx === -1) {
+                                    console.log('[Parser] Injection failed: parent not found in inventoryLines', containerId);
+                                    return prev;
+                                }
+                                
+                                const parent = prev[parentIdx];
+                                const parentDepth = parent.depth || 0;
+                                const injectedLine: DrawerLine = {
+                                    ...containerLine,
+                                    id: `${containerLine.id}.${containerId}`,
+                                    cmd,
+                                    depth: parentDepth + Math.max(containerLine.depth, 1),
+                                    parentItemId: parent.id,
+                                    parentItemNoun: parent.context || parent.id,
+                                    context: `${containerLine.context || containerLine.id}.${parent.context || parent.id}`
+                                };
+
+                                console.log('[Parser] Injecting into inventory:', {
+                                    item: injectedLine.id,
+                                    parent: containerId,
+                                    depth: injectedLine.depth
+                                });
+
+                                // Prevent duplicates
+                                if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) {
+                                    return prev;
+                                }
+
+                                const next = [...prev];
+                                next.splice(parentIdx + 1, 0, injectedLine);
+                                return next;
+                            });
+                        } else {
+                            setEqLines(prev => {
+                                const parentIdx = prev.findLastIndex(l => l.isContainer && l.id === containerId);
+                                if (parentIdx === -1) {
+                                    console.log('[Parser] Injection failed: parent not found in eqLines', containerId);
+                                    return prev;
+                                }
+
+                                const parent = prev[parentIdx];
+                                const parentDepth = parent.depth || 0;
+                                const injectedLine: DrawerLine = {
+                                    ...containerLine,
+                                    id: `${containerLine.id}.${containerId}`,
+                                    cmd,
+                                    depth: parentDepth + Math.max(containerLine.depth, 1),
+                                    parentItemId: parent.id,
+                                    parentItemNoun: parent.context || parent.id,
+                                    context: `${containerLine.context || containerLine.id}.${parent.context || parent.id}`
+                                };
+
+                                console.log('[Parser] Injecting into equipment:', {
+                                    item: injectedLine.id,
+                                    parent: containerId,
+                                    depth: injectedLine.depth
+                                });
+
+                                // Prevent duplicates
+                                if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) {
+                                    return prev;
+                                }
+
+                                const next = [...prev];
+                                next.splice(parentIdx + 1, 0, injectedLine);
+                                return next;
+                            });
+                        }
+                    } else {
+                        console.log('[Parser] drawerPending is null, falling back to popover mode');
+                        // Fall back to popover for standalone look in commands
+                        // @ts-ignore - containerItems added to type
+                        setPopoverState((prev: any) => {
+                            if (!prev) return prev;
+                            const next = {
+                                ...prev,
+                                type: 'container',
+                                containerItems: [...(prev.containerItems || []), containerLine]
+                            };
+                            return next;
+                        });
+                    }
                 }
-            } else setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+                
+                return; // Prevent fall-through to log
+            } else {
+                setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
+            }
+            return; // Suppress from log
         } else if (captureStage.current === 'shop') {
             const shopItem = parseShopLine(textOnly);
             if (shopItem) {
@@ -333,10 +452,11 @@ export function useGameParser(deps: UseGameParserDeps) {
                     cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
                     cleanText = cleanText.replace(/^\*+/, '');
                 }
-                const playerMatch = cleanText.match(/^([A-Z][A-Za-zÀ-ÿ\-']+)/);
-                if (playerMatch && playerMatch[1]) {
-                    const name = playerMatch[1];
-                    setWhoList(prev => prev.includes(name) ? prev : [...prev, name]);
+                // Extract player name as the first word
+                const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
+                // Basic validation: MUME names start with A-Z or accented equivalent
+                if (nameCandidate && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) {
+                    setWhoList(prev => prev.includes(nameCandidate) ? prev : [...prev, nameCandidate]);
                 }
             }
         }
@@ -481,7 +601,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following/i.test(lower);
-        const shouldShow = (isSilentCapture.current === 0 || isImportantMessage);
+        const shouldShow = (isSilentCapture.current === 0 && !isDrawerCapture.current) || isImportantMessage;
 
         if (shouldShow) {
             let finalRawText = cleanLine;
@@ -498,7 +618,12 @@ export function useGameParser(deps: UseGameParserDeps) {
             const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
             addMessage(msgType, finalRawText, undefined, stableId, isRoomName, precalculated, undefined, undefined, undefined, false);
         }
-    }, [addMessage, setStats, setRumble, setHitFlash, setDeathStage, setInventoryLines, setStatsLines, setEqLines, triggerHaptic, mapperRef, parsePracticeLine, processTriggers, roomNameRef, executeCommandRef, captureStage, isDrawerCapture, isSilentCapture]);
+
+        // --- Post-processing Capture Termination ---
+        if (isPrompt) {
+            finalizeCapture();
+        }
+    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, triggerHaptic, mapperRef, deps, parsePracticeLine, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState]);
 
     return { processLine };
 }

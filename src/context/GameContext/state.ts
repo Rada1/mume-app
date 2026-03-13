@@ -157,6 +157,8 @@ export const useGameProviderState = () => {
     const isWaitingForStats = useRef<boolean>(false);
     const isWaitingForEq = useRef<boolean>(false);
     const isWaitingForInv = useRef<boolean>(false);
+    // Signals parser to inject container contents into a drawer instead of popover
+    const pendingDrawerContainerRef = useRef<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>(null);
     const [activeDragData, setActiveDragData] = useState<any>(null);
     const [heldButton, setHeldButton] = useState<any>(null);
 
@@ -200,7 +202,7 @@ export const useGameProviderState = () => {
         inventoryLines, setInventoryLines,
         statsLines, setStatsLines,
         eqLines, setEqLines,
-        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv,
+        captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, pendingDrawerContainerRef,
         autoConnect, setAutoConnect,
         hasSeenOnboarding, setHasSeenOnboarding,
         showDebugEchoes, setShowDebugEchoes,

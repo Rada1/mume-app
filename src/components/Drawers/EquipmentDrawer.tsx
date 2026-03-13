@@ -12,6 +12,7 @@ interface EquipmentDrawerProps {
     triggerHaptic: (ms: number) => void;
     isLandscape?: boolean;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    pendingDrawerContainerRef: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
 }
 
 export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
@@ -23,13 +24,15 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     handleButtonClick,
     triggerHaptic,
     isLandscape,
-    executeCommand
+    executeCommand,
+    pendingDrawerContainerRef
 }) => {
     const { activeDragData } = useGame();
     const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number } | null>(null);
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
     const [isNativeDragOver, setIsNativeDragOver] = useState(false);
+    const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
 
     const ghostRef = useRef<HTMLDivElement>(null);
     const longPressTimerRef = useRef<any>(null);
@@ -240,11 +243,21 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const mainLog = target?.closest('.message-log-container');
             if (mainLog && !target?.closest('.right-drawer')) {
                 triggerHaptic(60);
-                const itemNoun = currentItem.context || currentItem.id;
+                const fullItemNoun = currentItem.context || currentItem.id;
+                const itemNoun = fullItemNoun.split('.')[0];
                 if (currentSource === 'equipment') {
                     executeCommand(`remove ${itemNoun}`, false, false);
                 }
+                if (currentItem.parentItemNoun) {
+                    executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
+                    setTimeout(() => executeCommand(`look in ${currentItem.parentItemNoun}`, true, true), 1000);
+                }
                 executeCommand(`drop ${itemNoun}`, false, false);
+                // Refresh lists
+                setTimeout(() => {
+                    executeCommand('inv', false, true, true, true);
+                    executeCommand('eq', false, true, true, true);
+                }, 1000);
                 cleanupDrag();
                 return;
             }
@@ -253,18 +266,31 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const sectionWrapper = target?.closest('[data-drawer-section]');
             const section = sectionWrapper?.getAttribute('data-drawer-section');
             if (section) {
-                const itemNoun = currentItem.context || currentItem.id;
+                const fullItemNoun = currentItem.context || currentItem.id;
+                const itemNoun = fullItemNoun.split('.')[0];
 
-                // Nested Get handling (e.g., "item 1.sack")
-                const isNested = itemNoun.includes('.');
-                if (isNested && (section === 'inventory' || section === 'equipment')) {
+                if (section !== currentSource) {
                     triggerHaptic(60);
-                    const [noun, container] = itemNoun.split('.');
-                    executeCommand(`get ${noun} ${container}`, false, false);
-                } else if (section !== currentSource) {
-                    triggerHaptic(60);
+                    if (currentItem.parentItemNoun) {
+                        executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
+                        setTimeout(() => executeCommand(`look in ${currentItem.parentItemNoun!}`, true, true), 1000);
+                    }
                     const cmd = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
                     executeCommand(`${cmd} ${itemNoun}`, false, false);
+                    // Refresh lists
+                    setTimeout(() => {
+                        executeCommand('inv', false, true, true, true);
+                        executeCommand('eq', false, true, true, true);
+                    }, 1000);
+                } else {
+                    // Same-section move might be an explicit get [noun] [container] from a nested item
+                    const dotIndex = fullItemNoun.indexOf('.');
+                    if (dotIndex !== -1) {
+                         triggerHaptic(60);
+                         const noun = fullItemNoun.substring(0, dotIndex);
+                         const container = fullItemNoun.substring(dotIndex + 1);
+                         executeCommand(`get ${noun} ${container}`, false, false);
+                    }
                 }
             }
         }
@@ -304,18 +330,57 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 return;
                             }
                             cleanupDrag();
+                            if (!line.id) {
+                                console.log('[Drawer] Tap on line with no ID:', line);
+                                return;
+                            }
                             if (!line.isItem) return;
 
-                            // If we didn't drag far enough to start a "drag" item move, 
-                            // and we aren't already dragging something, then treat as a tap/click
-                            // to open the menu.
+                            console.log('[Drawer] Tap on item:', {
+                                id: line.id,
+                                context: line.context,
+                                isContainer: line.isContainer,
+                                depth: line.depth
+                            });
                             triggerHaptic(20);
-                            handleButtonClick({
+
+                            if (line.isContainer) {
+                                const newExpanded = new Set(expandedContainers);
+                                if (newExpanded.has(line.id)) {
+                                    console.log('[Drawer] Collapsing container:', line.id);
+                                    newExpanded.delete(line.id);
+                                } else {
+                                    console.log('[Drawer] Expanding container:', line.id);
+                                    newExpanded.add(line.id);
+                                    const drawerCmd = source === 'equipment' ? 'equipmentlist' : 'inventorylist';
+                                    pendingDrawerContainerRef.current = {
+                                        containerId: line.id,
+                                        cmd: drawerCmd,
+                                        afterId: line.id
+                                    };
+                                    const cmd = `look in ${line.context || line.id}`;
+                                    console.log('[Drawer] Sending command:', cmd);
+                                    executeCommand(cmd, true, true);
+                                    
+                                    const thisId = line.id;
+                                    setTimeout(() => { 
+                                        if (pendingDrawerContainerRef.current?.containerId === thisId) {
+                                            console.log('[Drawer] Clearing stale pending ref for:', thisId);
+                                            pendingDrawerContainerRef.current = null; 
+                                        }
+                                    }, 5000);
+                                }
+                                setExpandedContainers(newExpanded);
+                                return;
+                            }
+
+                            console.log('[Drawer] Item is NOT a container, opening menu.');
+                            (handleButtonClick as any)({
                                 id: `drawer-${line.id}`,
                                 command: listType,
                                 label: line.context || 'Item',
                                 actionType: 'menu'
-                            } as any, e as any, line.context, line.isContainer);
+                            }, e as any, line.context, line.isContainer, line.parentItemNoun);
                         }}
                         style={{
                             flex: 1,
@@ -500,7 +565,18 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     >
                         <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'equipment' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>EQUIPMENT</div>
                         <div className="drawer-section-content" data-drawer-section="equipment" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'transparent', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
-                            {eqLines.map(line => renderLine(line, 'equipmentlist'))}
+                            {(() => {
+                                const visibleLines: DrawerLine[] = [];
+                                const collapsedDepths: Set<number> = new Set();
+                                for (const line of eqLines) {
+                                    const depth = line.depth || 0;
+                                    Array.from(collapsedDepths).forEach(d => { if (d >= depth) collapsedDepths.delete(d); });
+                                    if (collapsedDepths.size > 0) continue;
+                                    visibleLines.push(line);
+                                    if (line.isContainer && !expandedContainers.has(line.id)) collapsedDepths.add(depth);
+                                }
+                                return visibleLines.map(line => renderLine(line, 'equipmentlist'));
+                            })()}
                         </div>
                     </div>
                     {isLandscape && <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)', height: '100%' }} />}
@@ -521,7 +597,18 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     >
                         <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'inventory' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>INVENTORY</div>
                         <div className="drawer-section-content" data-drawer-section="inventory" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'transparent', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
-                            {inventoryLines.map(line => renderLine(line, 'inventorylist'))}
+                            {(() => {
+                                const visibleLines: DrawerLine[] = [];
+                                const collapsedDepths: Set<number> = new Set();
+                                for (const line of inventoryLines) {
+                                    const depth = line.depth || 0;
+                                    Array.from(collapsedDepths).forEach(d => { if (d >= depth) collapsedDepths.delete(d); });
+                                    if (collapsedDepths.size > 0) continue;
+                                    visibleLines.push(line);
+                                    if (line.isContainer && !expandedContainers.has(line.id)) collapsedDepths.add(depth);
+                                }
+                                return visibleLines.map(line => renderLine(line, 'inventorylist'));
+                            })()}
                         </div>
                     </div>
                 </div>

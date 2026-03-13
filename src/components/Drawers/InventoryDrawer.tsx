@@ -9,6 +9,7 @@ interface InventoryDrawerProps {
     inventoryLines: DrawerLine[];
     handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    pendingDrawerContainerRef: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
 }
 
 export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
@@ -17,11 +18,13 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     triggerHaptic,
     inventoryLines,
     handleButtonClick,
-    executeCommand
+    executeCommand,
+    pendingDrawerContainerRef
 }) => {
     const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number } | null>(null);
     const [primedItemId, setPrimedItemId] = React.useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = React.useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
+    const [expandedContainers, setExpandedContainers] = React.useState<Set<string>>(new Set());
 
     const ghostRef = React.useRef<HTMLDivElement>(null);
     const longPressTimerRef = React.useRef<any>(null);
@@ -126,18 +129,37 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const handleGlobalPointerUp = (e: PointerEvent) => {
         if (isDraggingRef.current && pendingDragRef.current) {
             const target = document.elementFromPoint(e.clientX, e.clientY);
-            const itemNoun = pendingDragRef.current.context || pendingDragRef.current.id;
+            const fullItemNoun = pendingDragRef.current.context || pendingDragRef.current.id;
+            const itemNoun = fullItemNoun.split('.')[0];
 
             const logArea = target?.closest('.message-log-container');
             if (logArea) {
                 triggerHaptic(60);
+                if (pendingDragRef.current.parentItemNoun) {
+                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                    setTimeout(() => executeCommand(`look in ${pendingDragRef.current.parentItemNoun!}`, true, true), 1000);
+                }
                 executeCommand(`drop ${itemNoun}`);
+                // Refresh lists
+                setTimeout(() => {
+                    executeCommand('inv', false, true, true, true);
+                    executeCommand('eq', false, true, true, true);
+                }, 1000);
             } else {
                 const container = target?.closest('.inline-btn.is-container');
                 const targetName = container?.getAttribute('data-item-name');
                 if (targetName && targetName !== itemNoun) {
                     triggerHaptic(60);
+                    if (pendingDragRef.current.parentItemNoun) {
+                        executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                        setTimeout(() => executeCommand(`look in ${pendingDragRef.current.parentItemNoun!}`, true, true), 1000);
+                    }
                     executeCommand(`put ${itemNoun} ${targetName}`);
+                    // Refresh lists
+                    setTimeout(() => {
+                        executeCommand('inv', false, true, true, true);
+                        executeCommand('eq', false, true, true, true);
+                    }, 1000);
                 }
             }
         }
@@ -199,70 +221,148 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                     </div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        {inventoryLines.map(line => {
-                            const isPrimed = primedItemId === line.id;
-                            const isBeingDragged = draggedItem?.line.id === line.id;
-                            const depth = line.depth || 0;
-                            
-                            return (
-                                <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
-                                    {line.prefixHtml && (
-                                        <div 
-                                            style={{ 
-                                                padding: '0 8px 0 0', 
-                                                opacity: 0.5, 
-                                                fontSize: '0.75rem', 
-                                                whiteSpace: 'nowrap',
-                                                color: 'var(--accent)',
-                                                fontStyle: 'italic',
-                                                flexShrink: 0
+                        {(() => {
+                            const visibleLines: DrawerLine[] = [];
+                            const collapsedDepths: Set<number> = new Set();
+
+                            for (const line of inventoryLines) {
+                                const depth = line.depth || 0;
+                                
+                                // Remove any collapsed depths that are >= current depth
+                                Array.from(collapsedDepths).forEach(d => {
+                                    if (d >= depth) collapsedDepths.delete(d);
+                                });
+
+                                // Check if current line is hidden by any parent
+                                if (collapsedDepths.size > 0) continue;
+
+                                visibleLines.push(line);
+
+                                // If this line is a container and NOT expanded, mark its depth as collapsed
+                                if (line.isContainer && !expandedContainers.has(line.id)) {
+                                    collapsedDepths.add(depth);
+                                }
+                            }
+
+                            return visibleLines.map(line => {
+                                const isPrimed = primedItemId === line.id;
+                                const isBeingDragged = draggedItem?.line.id === line.id;
+                                const depth = line.depth || 0;
+                                const isExpanded = expandedContainers.has(line.id);
+                                
+                                return (
+                                    <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px', position: 'relative' }}>
+                                        {depth > 0 && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                left: '-10px',
+                                                top: '-8px',
+                                                bottom: '50%',
+                                                width: '2px',
+                                                background: 'rgba(137, 180, 250, 0.3)',
+                                                borderRadius: '1px'
+                                            }} />
+                                        )}
+                                        {line.prefixHtml && (
+                                            <div 
+                                                style={{ 
+                                                    padding: '0 8px 0 0', 
+                                                    opacity: 0.5, 
+                                                    fontSize: '0.75rem', 
+                                                    whiteSpace: 'nowrap',
+                                                    color: 'var(--accent)',
+                                                    fontStyle: 'italic',
+                                                    flexShrink: 0
+                                                }}
+                                                dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
+                                            />
+                                        )}
+                                        <div
+                                            className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''} ${isExpanded ? 'expanded' : ''}`}
+                                            data-item-name={line.context || line.id}
+                                            onPointerDown={(e) => handlePointerDownItem(e, line)}
+                                            onPointerUp={(e) => {
+                                                if (isDraggingRef.current) {
+                                                    return;
+                                                }
+                                                cleanupDrag();
+                                                if (!line.isItem) return;
+                                                triggerHaptic(20);
+
+                                                if (line.isContainer) {
+                                                    const newExpanded = new Set(expandedContainers);
+                                                    if (newExpanded.has(line.id)) {
+                                                        newExpanded.delete(line.id);
+                                                        // Remove children of this container from the list
+                                                        // (they'll be re-fetched on next expand)
+                                                    } else {
+                                                        newExpanded.add(line.id);
+                                                        // Set the pending container ref so parser routes to drawer
+                                                        pendingDrawerContainerRef.current = {
+                                                            containerId: line.id,
+                                                            cmd: 'inventorylist',
+                                                            afterId: line.id
+                                                        };
+                                                        // Use the context (noun) for the look in command
+                                                        executeCommand(`look in ${line.context || line.id}`, true, true);
+                                                        
+                                                        const thisId = line.id;
+                                                        // Clear ref after 5s delay (server should respond quickly)
+                                                        setTimeout(() => { 
+                                                            if (pendingDrawerContainerRef.current?.containerId === thisId) {
+                                                                pendingDrawerContainerRef.current = null; 
+                                                            }
+                                                        }, 5000);
+                                                    }
+                                                    setExpandedContainers(newExpanded);
+                                                    return;
+                                                }
+
+                                                (handleButtonClick as any)({
+                                                    id: `inv-${line.id}`,
+                                                    command: 'inventorylist',
+                                                    label: line.context || 'Item',
+                                                    actionType: 'menu'
+                                                }, e as any, line.context, line.isContainer, line.parentItemNoun);
                                             }}
-                                            dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
-                                        />
-                                    )}
-                                    <div
-                                        className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''}`}
-                                        data-item-name={line.context || line.id}
-                                        onPointerDown={(e) => handlePointerDownItem(e, line)}
-                                        onPointerUp={(e) => {
-                                            if (isDraggingRef.current) {
-                                                return;
-                                            }
-                                            cleanupDrag();
-                                            if (!line.isItem) return;
-                                            triggerHaptic(20);
-                                            handleButtonClick({
-                                                id: `inv-${line.id}`,
-                                                command: 'inventorylist',
-                                                label: line.context || 'Item',
-                                                actionType: 'menu'
-                                            } as any, e as any, line.context, line.isContainer);
-                                        }}
-                                        style={{
-                                            flex: 1,
-                                            padding: '8px 12px',
-                                            background: line.isItem ?
-                                                (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)'))
-                                                : 'transparent',
-                                            borderRadius: depth > 0 ? '0 6px 6px 0' : '6px',
-                                            border: '1px solid rgba(255,255,255,0.05)',
-                                            borderLeft: depth > 0 && !line.prefixHtml ? `${depth * 3}px solid #89b4fa` : '1px solid rgba(255,255,255,0.05)',
-                                            fontSize: depth > 0 ? '0.8rem' : '0.85rem',
-                                            cursor: line.isItem ? 'grab' : 'default',
-                                            fontWeight: line.isContainer ? 'bold' : 'normal',
-                                            opacity: isBeingDragged ? 0.3 : 1,
-                                            color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
-                                            transition: 'all 0.2s ease',
-                                            touchAction: 'none',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap'
-                                        }}
-                                        dangerouslySetInnerHTML={{ __html: line.html }}
-                                    />
-                                </div>
-                            );
-                        })}
+                                            style={{
+                                                flex: 1,
+                                                padding: '8px 12px',
+                                                background: line.isItem ?
+                                                    (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)'))
+                                                    : 'transparent',
+                                                borderRadius: depth > 0 ? '0 6px 6px 0' : '6px',
+                                                border: '1px solid rgba(255,255,255,0.05)',
+                                                borderLeft: depth > 0 && !line.prefixHtml ? `${depth * 3}px solid #89b4fa` : '1px solid rgba(255,255,255,0.05)',
+                                                fontSize: depth > 0 ? '0.8rem' : '0.85rem',
+                                                cursor: line.isItem ? 'grab' : 'default',
+                                                fontWeight: line.isContainer ? 'bold' : 'normal',
+                                                opacity: isBeingDragged ? 0.3 : 1,
+                                                color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
+                                                transition: 'all 0.2s ease',
+                                                touchAction: 'none',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                display: 'flex',
+                                                alignItems: 'center'
+                                            }}
+                                        >
+                                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
+                                            {line.isContainer && (
+                                                <span style={{ 
+                                                    fontSize: '0.7rem', 
+                                                    opacity: 0.5, 
+                                                    marginLeft: '8px',
+                                                    transition: 'transform 0.2s ease',
+                                                    transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
+                                                }}>▶</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            });
+                        })()}
                     </div>
                 )}
             </div>

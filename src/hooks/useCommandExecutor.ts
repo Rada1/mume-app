@@ -52,9 +52,9 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                 if (isSilentCapture.current > 0) {
                     console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current})`);
                     isSilentCapture.current = 0;
-                    captureStage.current = 'none';
+                    if (captureStage.current !== 'container') captureStage.current = 'none';
                 }
-            }, 3000);
+            }, 8000);
         }
 
         // Target Setting
@@ -185,7 +185,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (lowerCmd.startsWith('look in ')) {
             captureStage.current = 'container';
             isDrawerCapture.current = 1;
-            setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [] } : prev);
+            // Only reset popover if this is NOT a silent (drawer-triggered) look in
+            // Drawer-triggered look in commands route results into the drawer list directly
+            if (!silent) {
+                setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [] } : prev);
+            }
         }
 
         if (fromDrawer) {
@@ -195,9 +199,13 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                 if (isDrawerCapture.current > 0) {
                     console.log(`[Executor] Drawer capture safety reset (Count: ${isDrawerCapture.current})`);
                     isDrawerCapture.current = 0;
-                    captureStage.current = 'none';
+                    if (captureStage.current === 'container') {
+                         // Don't reset if we are actively capturing a container
+                    } else {
+                         captureStage.current = 'none';
+                    }
                 }
-            }, 3000);
+            }, 8000);
         } else if (!isSystem) {
             // CRITICAL: If the user sends a manual command, we MUST ensure they aren't stuck 
             // in a capture stage from a background drawer task that hung or is taking too long.

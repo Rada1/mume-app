@@ -68,6 +68,8 @@ export interface DrawerLine {
     depth?: number;
     prefix?: string;
     prefixHtml?: string;
+    parentItemId?: string;
+    parentItemNoun?: string;
 }
 
 export interface GameStats {

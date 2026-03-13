@@ -68,9 +68,9 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     const isLogDraggingRef = useRef(false);
     const moveCountRef = useRef(0);
 
-    const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean) => {
+    const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
         e.stopPropagation();
-
+        
         if (btn.isEditMode) {
             if (button.setId !== 'Xbox' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
             return;
@@ -196,6 +196,12 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 }
             }, 10);
         } else {
+            // Prepend 'get' if item is in a container
+            if (parentNoun && context) {
+                const itemNoun = context.split('.')[0];
+                executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
+            }
+
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
             setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
 
@@ -210,7 +216,13 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 setTimeout(() => {
                     if (button.setId === 'inventorylist' || button.command.includes('remove')) executeCommand('inv', false, true, true, true);
                     if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold')) executeCommand('eq', false, true, true, true);
-                }, 500);
+                    
+                    // Refresh parent container if it was extracted from
+                    if (parentNoun) {
+                        // We use the parentNoun (which is the context of the parent) to refresh it
+                        executeCommand(`look in ${parentNoun}`, true, true);
+                    }
+                }, 1000);
             }
         }
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));

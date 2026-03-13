@@ -16,41 +16,53 @@
         - button "More Actions" [ref=e21] [cursor=pointer]:
           - img [ref=e22]
       - generic [ref=e26]:
-        - generic [ref=e28]:
-          - generic [ref=e31]: Connecting to wss://mume.org/ws-play/...
-          - generic [ref=e34]: Connected! Negotiating...
-          - generic [ref=e37]: GMCP negotiated. Requesting data...
-        - generic [ref=e39]: Test Button
-      - generic [ref=e41]:
-        - generic [ref=e42]: ">"
-        - textbox "Enter command..." [ref=e44]
-    - generic [ref=e46]:
-      - generic [ref=e48]:
-        - generic [ref=e49]:
-          - button "Edit" [ref=e50] [cursor=pointer]
-          - button "Play" [ref=e51] [cursor=pointer]
-        - button "ON" [ref=e53] [cursor=pointer]:
-          - img [ref=e54]
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - generic [ref=e31]: Connecting to wss://mume.org/ws-play/...
+            - generic [ref=e34]: Connected! Negotiating...
+            - generic [ref=e37]: GMCP negotiated. Requesting data...
+            - generic [ref=e40]: "*** MUME IX ***"
+            - generic [ref=e43]: In progress at FIRE
+            - generic [ref=e46]: (Free Internet Roleplay Experiences)
+            - generic [ref=e49]: Hosted at HEIG-VD (www.heig-vd.ch)
+            - generic [ref=e52]: Adapted from J.R.R. Tolkien's Middle-earth world and
+            - generic [ref=e55]: maintained by CryHavoc, Manwe, and Nada.
+            - generic [ref=e58]: "Original code DikuMUD I (help credits), created by:"
+            - generic [ref=e61]: S. Hammer, T. Madsen, K. Nyboe, M. Seifert, and H.H. Staerfeldt.
+            - generic [ref=e64]: If you have never played MUME before, type NEW to create a new character,
+            - generic [ref=e67]: or ? for help.
+          - generic [ref=e69]: By what name do you wish to be known?
+        - generic [ref=e71]: Test Button
+      - generic [ref=e73]:
+        - generic [ref=e74]: ">"
+        - textbox "Enter command..." [ref=e76]
+    - generic [ref=e78]:
+      - generic [ref=e80]:
+        - generic [ref=e81]:
+          - button "Edit" [ref=e82] [cursor=pointer]
+          - button "Play" [ref=e83] [cursor=pointer]
+        - button "ON" [ref=e85] [cursor=pointer]:
+          - img [ref=e86]
           - text: "ON"
-        - button "Sync" [ref=e57] [cursor=pointer]:
-          - img [ref=e58]
+        - button "Sync" [ref=e89] [cursor=pointer]:
+          - img [ref=e90]
           - text: Sync
-        - button "Center" [ref=e64] [cursor=pointer]:
-          - img [ref=e65]
+        - button "Center" [ref=e96] [cursor=pointer]:
+          - img [ref=e97]
           - text: Center
-        - button "More" [ref=e68] [cursor=pointer]:
-          - img [ref=e69]
+        - button "More" [ref=e100] [cursor=pointer]:
+          - img [ref=e101]
           - text: More
-        - button "Minimize" [ref=e73] [cursor=pointer]:
-          - img [ref=e74]
+        - button "Minimize" [ref=e105] [cursor=pointer]:
+          - img [ref=e106]
       - generic: "Z: 0.0"
-  - generic "Character Stats" [ref=e80] [cursor=pointer]:
-    - img [ref=e81]
-    - generic [ref=e84]: Stats
-  - generic "Items & Equipment" [ref=e85] [cursor=pointer]:
-    - img [ref=e86]
-    - generic [ref=e90]: Items
-  - generic "Map View" [ref=e91] [cursor=pointer]:
-    - img [ref=e92]
-    - generic [ref=e94]: Map
+  - generic "Character Stats" [ref=e112] [cursor=pointer]:
+    - img [ref=e113]
+    - generic [ref=e116]: Stats
+  - generic "Items & Equipment" [ref=e117] [cursor=pointer]:
+    - img [ref=e118]
+    - generic [ref=e122]: Items
+  - generic "Map View" [ref=e123] [cursor=pointer]:
+    - img [ref=e124]
+    - generic [ref=e126]: Map
 ```

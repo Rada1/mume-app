@@ -239,6 +239,7 @@ export interface GameContextType {
     isWaitingForStats: MutableRefObject<boolean>;
     isWaitingForEq: MutableRefObject<boolean>;
     isWaitingForInv: MutableRefObject<boolean>;
+    pendingDrawerContainerRef: MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
 
     // Network & Parser Engines
     telnet: any;

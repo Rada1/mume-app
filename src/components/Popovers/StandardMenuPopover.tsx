@@ -1,5 +1,6 @@
 import React from 'react';
 import { CustomButton, MessageType, PopoverState } from '../../types';
+import { isItemContainer } from '../../utils/gameUtils';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -162,9 +163,9 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     {regularButtons.map(renderButton)}
 
                     {(() => {
-                        const context = (popoverState.context || '').toLowerCase();
                         const isInventoryOrEq = ['inventorylist', 'equipmentlist'].includes(popoverState.setId);
-                        const isContainer = popoverState.isContainer || /sack|satchel|pouch|pack|quiver/i.test(context);
+                        const context = (popoverState.context || '');
+                        const isContainer = popoverState.isContainer || isItemContainer(context);
 
                         if (isInventoryOrEq && isContainer) {
                             const isQuiver = /quiver/i.test(context);
