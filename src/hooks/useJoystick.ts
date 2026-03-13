@@ -208,24 +208,28 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         }
 
         if (suppressDefault) {
-             const isCenterTap = displacement < 20 && dist < 20;
+             // For suppressed defaults (like the map swipe wheel), we only care if it was a distinct tap vs a swipe.
+             // We use displacement to check if the finger moved from initial touch.
+             const isCenterTap = displacement < 20 && dist < 20 && !initialDir;
              return { isCenterTap, dir: initialDir || null };
         }
 
         if (!wasConsumed) {
             // Tap to Look
-            if (displacement < 20 && dist < 20) {
+            // If there's no initialDir, it means handleJoystickMove never crossed the minimum
+            // threshold to assign a direction. It was a stationary tap.
+            if (!initialDir && displacement < 20 && dist < 20) {
                 executeCommand('look');
                 // Removed release haptic for lookout/tap
                 return true;
             }
             
             // Execute Move on Release
-            let threshold = 25;
-            if (initialDir === 'nw' && !availableExits.includes('u')) threshold = 60;
-            else if (initialDir === 'se' && !availableExits.includes('d')) threshold = 60;
-
-            if (dist >= threshold && initialDir) {
+            // If initialDir is set, it means the user swiped far enough during handleJoystickMove
+            // to cross the threshold and trigger the haptic feedback. We implicitly trust this state
+            // instead of recalculating dist on pointerUp, because PointerEvent.clientX/Y are often
+            // 0 or extremely unreliable on mobile touch release events.
+            if (initialDir) {
                 const dirMap: Record<string, string> = {
                     n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
                     ne: 'northeast', nw: 'up', se: 'down', sw: 'southwest'
