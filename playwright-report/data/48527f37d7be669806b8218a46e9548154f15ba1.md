@@ -1,0 +1,70 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic:
+      - banner [ref=e4]:
+        - generic [ref=e5]: MUME
+        - generic [ref=e6]:
+          - generic "No Target" [ref=e7] [cursor=pointer]:
+            - img [ref=e8]
+            - generic [ref=e10]: NO TARGET
+          - generic "Stored Teleport Rooms" [ref=e11] [cursor=pointer]:
+            - img [ref=e12]
+            - generic [ref=e18]: "0"
+        - button "More Actions" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - generic [ref=e32]: Two Connecting tos wss://mume.org/ws-play/....
+            - generic [ref=e35]: Connection error.
+            - generic [ref=e38]: Connection closed.
+            - generic [ref=e41]: Connected! Negotiating...
+            - generic [ref=e44]: GMCP negotiated. Requesting data...
+            - generic [ref=e47]: "*** MUME IX ***"
+            - generic [ref=e50]: In progress at FIRE
+            - generic [ref=e53]: (Free Internet Roleplay Experiences)
+            - generic [ref=e56]: Hosted at HEIG-VD (www.heig-vd.ch)
+            - generic [ref=e59]: Adapted from J.R.R. Tolkien's Middle-earth world and
+            - generic [ref=e62]: maintained by CryHavoc, Manwe, and Nada.
+            - generic [ref=e65]: "Original code DikuMUD I (help credits), created by:"
+            - generic [ref=e68]: S. Hammer, T. Madsen, K. Nyboe, M. Seifert, and H.H. Staerfeldt.
+            - generic [ref=e71]: If you have never played MUME before, type NEW to create a new character,
+            - generic [ref=e74]: or ? for help.
+          - generic [ref=e76]: By what name do you wish to be known?
+        - generic [ref=e78]: "[Test Item]"
+      - generic [ref=e80]:
+        - generic [ref=e81]: ">"
+        - textbox "Enter command..." [ref=e83]
+    - generic [ref=e85]:
+      - generic [ref=e87]:
+        - generic [ref=e88]:
+          - button "Edit" [ref=e89] [cursor=pointer]
+          - button "Play" [ref=e90] [cursor=pointer]
+        - button "ON" [ref=e92] [cursor=pointer]:
+          - img [ref=e93]
+          - text: "ON"
+        - button "Sync" [ref=e96] [cursor=pointer]:
+          - img [ref=e97]
+          - text: Sync
+        - button "Center" [ref=e103] [cursor=pointer]:
+          - img [ref=e104]
+          - text: Center
+        - button "More" [ref=e107] [cursor=pointer]:
+          - img [ref=e108]
+          - text: More
+        - button "Minimize" [ref=e112] [cursor=pointer]:
+          - img [ref=e113]
+      - generic: "Z: 0.0"
+  - generic "Character Stats" [ref=e119] [cursor=pointer]:
+    - img [ref=e120]
+    - generic [ref=e123]: Stats
+  - generic "Items & Equipment" [ref=e124] [cursor=pointer]:
+    - img [ref=e125]
+    - generic [ref=e129]: Items
+  - generic "Map View" [ref=e130] [cursor=pointer]:
+    - img [ref=e131]
+    - generic [ref=e133]: Map
+```

@@ -113,7 +113,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (msg.textRaw.length > 100) return 40;
             return 24;
         }, [messages]),
-        overscan: 20,
+        overscan: 5,
     });
 
     const lastScrollCallRef = React.useRef(0);
@@ -132,12 +132,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
                 viewport.isLockedToBottomRef.current = true;
                 if (!isThrottled || lastMsg?.type === 'user') {
                     lastScrollCallRef.current = now;
-                    viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage');
+                    requestAnimationFrame(() => {
+                        viewport.scrollToBottom(true, lastMsg?.type === 'user', 'NewMessage');
+                    });
                 }
             }
         } else if (viewport.isLockedToBottomRef.current && !isThrottled) {
             lastScrollCallRef.current = now;
-            viewport.scrollToBottom(true, false, 'LayoutEffect');
+            requestAnimationFrame(() => {
+                viewport.scrollToBottom(true, false, 'LayoutEffect');
+            });
         }
     }, [messages, activePrompt, viewport]);
 
@@ -148,7 +152,9 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
         const observer = new ResizeObserver(() => {
             if (viewport.isLockedToBottomRef.current) {
-                viewport.scrollToBottom(true, false, 'ContainerResize');
+                requestAnimationFrame(() => {
+                    viewport.scrollToBottom(true, false, 'ContainerResize');
+                });
             }
         });
 
