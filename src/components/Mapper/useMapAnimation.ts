@@ -39,6 +39,12 @@ export const useMapAnimation = ({
     const lastFrameTimeRef = useRef<number>(0);
     const animationQueueRef = useRef<{ x: number, y: number, z: number }[]>([]);
     const lastProcessedRoomIdRef = useRef<string | null>(null);
+    const isDraggingRef = useRef<boolean>(isDragging);
+
+    // Keep the latest drag state available to the animation loop without needing a teardown
+    useEffect(() => {
+        isDraggingRef.current = isDragging;
+    }, [isDragging]);
 
     // Keep tick logic in a ref so the loop can access the latest version without restarting
     (tickRef as any).current = () => {
@@ -209,31 +215,38 @@ export const useMapAnimation = ({
         return needsNextFrame;
     };
 
+    // A stable function to kickstart the animation loop if it's dead
+    const startAnimationLoop = useCallback(() => {
+        if (!requestRef.current) {
+            lastFrameTimeRef.current = performance.now();
+
+            const animate = () => {
+                const needsNextFrame = tickRef.current?.() ?? false;
+                if (needsNextFrame || isDraggingRef.current) {
+                    requestRef.current = requestAnimationFrame(animate);
+                } else {
+                    requestRef.current = null;
+                }
+            };
+            requestRef.current = requestAnimationFrame(animate);
+        }
+    }, []);
+
+    // When React state changes (like currentRoomId), we just ensure the loop is running.
+    // We do NOT tear down the loop or nullify the Canvas 2D context.
     useEffect(() => {
-        // Reset context if canvas dimensions or properties change (triggering useEffect)
-        ctxRef.current = null;
-        let active = true;
+        startAnimationLoop();
+    }, [renderVersion, isDragging, drawMap, currentRoomId, preMoveRef, walkTargetId, startAnimationLoop]);
 
-        const animate = () => {
-            if (!active) return;
-            const needsNextFrame = tickRef.current?.() ?? false;
-            if (needsNextFrame || isDragging) {
-                requestRef.current = requestAnimationFrame(animate);
-            } else {
-                requestRef.current = null;
-            }
-        };
-
-        animate();
-
+    // Cleanup ONLY on unmount, not on every state change
+    useEffect(() => {
         return () => {
-            active = false;
             if (requestRef.current) {
                 cancelAnimationFrame(requestRef.current);
                 requestRef.current = null;
             }
         };
-    }, [renderVersion, isDragging, drawMap, currentRoomId, rooms, preMoveRef, walkTargetId]);
+    }, []);
 
     return { tick: tickRef.current };
 };
