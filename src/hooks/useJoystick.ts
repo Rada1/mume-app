@@ -195,6 +195,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
+
+        joystickStartPos.current = null;
         const touchDX = touchStartPos.current ? (e.clientX - touchStartPos.current.x) : 0;
         const touchDY = touchStartPos.current ? (e.clientY - touchStartPos.current.y) : 0;
         const displacement = Math.sqrt(touchDX * touchDX + touchDY * touchDY);
@@ -236,7 +238,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             }
         }
 
-        joystickStartPos.current = null;
         return false;
     }, [joystickActive, isJoystickConsumed, isTargetModifierActive, currentDir, triggerHaptic]);
 
