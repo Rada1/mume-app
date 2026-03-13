@@ -56,9 +56,15 @@ export function useViewport(
         // --- Continuous Glide Logic ---
         // If already animating and the target has moved, we don't want to cancel and restart (laggy).
         // Instead, we let the existing loop know about the new target distance.
-        const isSmoothEnabled = !instant && !disableSmoothScroll && isImmersionMode;
 
-        if (isSmoothEnabled && Math.abs(targetScroll - currentScroll) > 0.5) {
+        // Dynamic Snap: If the distance is too great (e.g. command spam), instantly snap instead of
+        // trying to smooth glide through hundreds of pixels which creates a "lagging behind" visual effect.
+        const dist = Math.abs(targetScroll - currentScroll);
+        const shouldSnap = instant || dist > 250;
+
+        const isSmoothEnabled = !shouldSnap && !disableSmoothScroll && isImmersionMode;
+
+        if (isSmoothEnabled && dist > 0.5) {
             // Store the target for the animation loop to consume
             (container as any).lastTargetScroll = targetScroll;
 

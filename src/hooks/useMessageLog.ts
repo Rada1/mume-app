@@ -226,8 +226,8 @@ export function useMessageLog(
             }
             flushMessages();
         } else if (!flushTimeoutRef.current) {
-            // Otherwise, batch at ~60fps (16ms) instead of 32ms
-            flushTimeoutRef.current = setTimeout(flushMessages, 16);
+            // Batch at ~20fps (50ms) to reduce React render thrashing on the main thread
+            flushTimeoutRef.current = setTimeout(flushMessages, 50);
         }
     }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 
