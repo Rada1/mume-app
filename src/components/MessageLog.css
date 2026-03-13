@@ -301,12 +301,24 @@
 .inline-btn:hover,
 .inline-btn.drop-hover-active {
     filter: brightness(1.4);
-    transform: scale(1.04);
-    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: scale(1.06);
+    background-color: rgba(255, 255, 255, 0.15) !important;
     border-bottom: 2px solid var(--glow-color, #4ade80);
-    box-shadow: 0 0 15px var(--glow-color, rgba(74, 222, 128, 0.5));
+    box-shadow: 0 0 20px var(--glow-color, rgba(74, 222, 128, 0.6)), 
+                inset 0 0 10px rgba(74, 222, 128, 0.2);
     text-shadow: 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.8));
     z-index: 10;
+    transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.inline-btn.drop-hover-active {
+    animation: drop-pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes drop-pulse {
+    0% { transform: scale(1.06); box-shadow: 0 0 20px var(--glow-color, rgba(74, 222, 128, 0.6)); }
+    50% { transform: scale(1.1); box-shadow: 0 0 35px var(--glow-color, rgba(74, 222, 128, 0.8)); }
+    100% { transform: scale(1.06); box-shadow: 0 0 20px var(--glow-color, rgba(74, 222, 128, 0.6)); }
 }
 
 .inline-btn.exit-btn {
@@ -511,10 +523,18 @@
 
 /* --- Drag & Drop Target Highlighting --- */
 .input-area.drop-hover-active {
-    box-shadow: 0 0 20px var(--accent) !important;
-    border-top: 1px solid var(--accent) !important;
-    background: rgba(var(--accent-rgb), 0.1) !important;
-    transition: all 0.2s ease !important;
+    box-shadow: 0 0 25px var(--accent), 
+                inset 0 0 15px rgba(var(--accent-rgb), 0.3) !important;
+    border-color: var(--accent) !important;
+    background: rgba(var(--accent-rgb), 0.15) !important;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+    animation: drop-pulse-strong 1.5s infinite ease-in-out;
+}
+
+@keyframes drop-pulse-strong {
+    0% { box-shadow: 0 0 25px var(--accent), inset 0 0 15px rgba(var(--accent-rgb), 0.3); }
+    50% { box-shadow: 0 0 40px var(--accent), inset 0 0 25px rgba(var(--accent-rgb), 0.5); }
+    100% { box-shadow: 0 0 25px var(--accent), inset 0 0 15px rgba(var(--accent-rgb), 0.3); }
 }
 
 .auto-item.is-container span {

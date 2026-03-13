@@ -261,6 +261,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 roomPlayers={roomPlayers}
                 setSettings={setSettings || {}}
                 inlineCategories={inlineCategories}
+                setInlineCategories={setInlineCategories}
                 favorites={favorites}
                 setFavorites={setFavorites}
                 parley={parley}

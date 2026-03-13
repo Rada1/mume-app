@@ -198,11 +198,16 @@ export interface PopoverManagerProps {
     roomPlayers: string[];
     setSettings: Record<string, ButtonSetSettings>;
     inlineCategories?: InlineCategoryConfig[];
+    setInlineCategories?: React.Dispatch<React.SetStateAction<InlineCategoryConfig[]>>;
     favorites: string[];
     setFavorites: (val: string[]) => void;
     parley: ParleyState;
     setParley: React.Dispatch<React.SetStateAction<ParleyState>>;
     whoList: string[];
+    isMendingMode?: boolean;
+    setIsMendingMode?: (val: boolean) => void;
+    setMendingTarget?: (val: string | null) => void;
+    setIsItemsDrawerOpen?: (open: boolean) => void;
 }
 
 

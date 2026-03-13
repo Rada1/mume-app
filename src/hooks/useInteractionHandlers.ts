@@ -481,8 +481,17 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                         logEl.style.touchAction = 'none';
                     }
 
-                    // CAPTURE POINTER
-                    try { targetEl.setPointerCapture(pointerId); } catch (err) { console.error('Capture failed', err); }
+                    // CAPTURE POINTER - Only if still connected
+                    if (targetEl.isConnected) {
+                        try {
+                            targetEl.setPointerCapture(pointerId);
+                        } catch (err) {
+                            // InvalidStateError is common if the pointer session ended just as the timeout fired
+                            if (!(err instanceof Error && err.name === 'InvalidStateError')) {
+                                console.warn('[Interaction] Pointer capture failed:', err);
+                            }
+                        }
+                    }
 
                     setHeldButton((prev: any) => ({
                         ...prev,
@@ -646,6 +655,11 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
                 window.removeEventListener('pointerup', handleGlobalUp as any);
                 window.removeEventListener('pointercancel', handleGlobalUp as any);
             };
+
+            // Cleanup previous listeners if any (guard against rapid restarts)
+            window.removeEventListener('pointermove', handleGlobalMove);
+            window.removeEventListener('pointerup', handleGlobalUp as any);
+            window.removeEventListener('pointercancel', handleGlobalUp as any);
 
             window.addEventListener('pointermove', handleGlobalMove);
             window.addEventListener('pointerup', handleGlobalUp);

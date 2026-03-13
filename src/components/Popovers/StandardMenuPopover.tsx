@@ -1,6 +1,7 @@
 import React from 'react';
-import { CustomButton, MessageType, PopoverState } from '../../types';
+import { CustomButton, MessageType, PopoverState, InlineCategoryConfig } from '../../types';
 import { isItemContainer } from '../../utils/gameUtils';
+import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -18,11 +19,19 @@ interface StandardMenuProps {
     setParley: (val: import('../../types').ParleyState) => void;
     whoList: string[];
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    inlineCategories?: InlineCategoryConfig[];
+    setInlineCategories?: React.Dispatch<React.SetStateAction<InlineCategoryConfig[]>>;
+    isMendingMode?: boolean;
+    setIsMendingMode?: (val: boolean) => void;
+    setMendingTarget?: (val: string | null) => void;
+    setIsItemsDrawerOpen?: (open: boolean) => void;
 }
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
-    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites, parley, setParley, whoList, executeCommand
+    popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites, parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
+    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen
 }) => {
+    const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const isSetManager = popoverState.setId === 'setmanager';
     const isTargetable = ['selection', 'inventorylist', 'equipmentlist'].includes(popoverState.setId);
 
@@ -47,15 +56,22 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                 onClick={(e) => {
                     // Prevent button action if clicking the star
                     const target = e.target as any;
-                    if (target.closest ? target.closest('.favorite-star') : target.parentElement?.closest('.favorite-star')) return;
-
                     if (popoverState.assignSourceId) {
                         const isExecute = popoverState.executeAndAssign;
                         const dir = popoverState.assignSwipeDir;
                         setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: button.command }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: button.actionType || 'command' } } : { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' }) : b));
                         if (isExecute) handleButtonClick(button, e, popoverState.context);
-                        setPopoverState(null); addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
-                    } else handleButtonClick(button, e, popoverState.context);
+                        setPopoverState(null);
+                        addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
+                    } else if (button.command === 'shop-mend') {
+                        setIsMendingMode?.(true);
+                        setMendingTarget?.(popoverState.context || null);
+                        setIsItemsDrawerOpen?.(true);
+                        setPopoverState(null);
+                        addMessage('system', 'Selection Mode: Select items to mend, then tap Mend Selected.');
+                    } else {
+                        handleButtonClick(button, e, popoverState.context);
+                    }
                 }}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', overflow: 'hidden' }}
             >
@@ -110,8 +126,70 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     fontWeight: 'bold'
                 }}
                 onClick={() => { if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
-                {isSetManager ? 'Select Button Set' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-/, '').toUpperCase())}
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {isSetManager ? 'Select Button Set' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-/, '').toUpperCase())}
+                </span>
+                {!isSetManager && popoverState.setId.startsWith('inline-') && (
+                    <div 
+                        onClick={(e) => { e.stopPropagation(); setIsChoosingCategory(!isChoosingCategory); }}
+                        style={{ 
+                            marginLeft: '8px', 
+                            padding: '4px 8px', 
+                            fontSize: '0.65rem', 
+                            background: isChoosingCategory ? 'var(--accent)' : 'rgba(255,255,255,0.1)', 
+                            color: isChoosingCategory ? '#000' : 'var(--accent)', 
+                            borderRadius: '4px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        TAG
+                    </div>
+                )}
             </div>
+
+            {isChoosingCategory && (
+                <div style={{ padding: '4px', borderBottom: '1px solid rgba(255,255,255,0.1)', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '0.65rem', opacity: 0.5, marginBottom: '6px', textAlign: 'center' }}>CHANGE CATEGORY</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px' }}>
+                        {DEFAULT_INLINE_CATEGORIES.map(cat => (
+                            <div 
+                                key={cat.id}
+                                className="popover-item"
+                                style={{ 
+                                    padding: '6px', 
+                                    fontSize: '0.7rem', 
+                                    textAlign: 'center',
+                                    background: popoverState.setId === `inline-${cat.id}` ? 'rgba(255,255,255,0.1)' : 'transparent',
+                                    border: `1px solid ${cat.color || 'rgba(255,255,255,0.2)'}`,
+                                    color: cat.color || '#fff'
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (!setInlineCategories || !inlineCategories || !popoverState.context) return;
+                                    
+                                    const keyword = popoverState.context.toLowerCase();
+                                    setInlineCategories(prev => {
+                                        // 1. Remove this keyword from all other categories
+                                        const next = prev.map(c => ({
+                                            ...c,
+                                            keywords: c.keywords.filter(k => k.toLowerCase() !== keyword)
+                                        }));
+                                        
+                                        // 2. Add it to the selected category
+                                        return next.map(c => c.id === cat.id ? { ...c, keywords: [...c.keywords, keyword] } : c);
+                                    });
+                                    
+                                    addMessage('system', `Categorized '${popoverState.context}' as ${cat.id.toUpperCase()}`);
+                                    setIsChoosingCategory(false);
+                                    setPopoverState(null); // Close menu to refresh highlights
+                                }}
+                            >
+                                {cat.id.toUpperCase()}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {isTargetable && (
                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => {

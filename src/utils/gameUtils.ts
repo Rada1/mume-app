@@ -160,3 +160,13 @@ export const isItemContainer = (text: string): boolean => {
     const containerKeywords = /sack|satchel|pouch|pack|quiver|backpack|bag|chest|box|barrel|crate|keg|vial|flask|bottle|waterskin|beltpouch|moneybelt/i;
     return containerKeywords.test(cleanRaw);
 };
+
+/**
+ * Detects if a game item is a fluid container (skin, flask, cup, etc.)
+ */
+export const isFluidContainer = (text: string): boolean => {
+    const cleanRaw = text.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase();
+    const fluidKeywords = /\bskin\b|\bflask\b|\bcup\b|\bflagon\b|\bjag\b|\bbottle\b|\bjug\b|\bbarrel\b|\bkeg\b/i;
+    return fluidKeywords.test(cleanRaw);
+};
+

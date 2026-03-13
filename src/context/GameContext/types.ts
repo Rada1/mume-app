@@ -26,6 +26,10 @@ export interface VitalsContextType {
     setDeathStage: (val: DeathStage) => void;
     heldButton: any;
     setHeldButton: (val: any) => void;
+    isMendingMode: boolean;
+    setIsMendingMode: (val: boolean) => void;
+    mendingTarget: string | null;
+    setMendingTarget: (val: string | null) => void;
 }
 
 export interface LogContextType {
@@ -277,6 +281,10 @@ export interface GameContextType {
     addDiagnosticLog: (msg: string) => void;
     activeDragData: any;
     setActiveDragData: Dispatch<SetStateAction<any>>;
+    isMendingMode: boolean;
+    setIsMendingMode: (val: boolean) => void;
+    mendingTarget: string | null;
+    setMendingTarget: (val: string | null) => void;
     heldButton: any;
     setHeldButton: Dispatch<SetStateAction<any>>;
 }

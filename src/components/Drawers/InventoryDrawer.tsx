@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { DrawerLine } from '../../types';
+import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
 
 interface InventoryDrawerProps {
     isOpen: boolean;
@@ -21,7 +21,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     executeCommand,
     pendingDrawerContainerRef
 }) => {
-    const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number } | null>(null);
+    const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number; commandLabel?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = React.useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = React.useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
     const [expandedContainers, setExpandedContainers] = React.useState<Set<string>>(new Set());
@@ -46,6 +46,131 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         window.removeEventListener('pointercancel', cleanupDrag);
     };
 
+    const moveCountRef = React.useRef(0);
+
+    const handleGlobalPointerMove = (e: PointerEvent) => {
+        if (startPosRef.current && !isDraggingRef.current) {
+            const dist = Math.sqrt(Math.pow(e.clientX - startPosRef.current.x, 2) + Math.pow(e.clientY - startPosRef.current.y, 2));
+            const threshold = e.pointerType === 'mouse' ? 15 : 5;
+            if (dist > threshold) {
+                cleanupDrag();
+                return;
+            }
+        }
+
+        if (isDraggingRef.current) {
+            if (ghostRef.current) {
+                ghostRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(1.05)`;
+            }
+
+            moveCountRef.current++;
+            if (moveCountRef.current % 2 !== 0) return;
+
+            const target = document.elementFromPoint(e.clientX, e.clientY);
+            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+
+            const itemNoun = pendingDragRef.current?.context || pendingDragRef.current?.id || '';
+            let label = "";
+
+            const logArea = target?.closest('.message-log-container');
+            const targetItem = target?.closest('.inline-btn.auto-item') as HTMLElement | null;
+            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter') as HTMLElement | null;
+
+            if (logRecipient) {
+                const ctx = logRecipient.getAttribute('data-context');
+                if (ctx) {
+                    logRecipient.classList.add('drop-hover-active');
+                    setActiveDropTarget({ type: 'log', id: ctx });
+                    label = `Give ${itemNoun.split('.')[0]} to ${ctx}`;
+                }
+            } else if (targetItem) {
+                const targetCmd = targetItem.getAttribute('data-cmd');
+                const targetContext = targetItem.getAttribute('data-context');
+                const targetName = targetItem.getAttribute('data-item-name');
+                const isTargetContainer = targetItem.classList.contains('is-container');
+
+                if (targetCmd === 'inline-water' && isFluidContainer(pendingDragRef.current!.text)) {
+                    targetItem.classList.add('drop-hover-active');
+                    setActiveDropTarget({ type: 'log', id: targetContext || 'water' });
+                    label = `Fill ${itemNoun.split('.')[0]} from ${targetContext || 'water'}`;
+                } else if (isTargetContainer && targetName !== itemNoun) {
+                    targetItem.classList.add('drop-hover-active');
+                    setActiveDropTarget({ type: 'container', id: targetName || '' });
+                    label = `Put ${itemNoun.split('.')[0]} in ${targetName}`;
+                }
+            } else if (logArea) {
+                logArea.classList.add('drop-hover-active');
+                setActiveDropTarget({ type: 'log', id: 'ground' });
+                label = `Drop ${itemNoun.split('.')[0]} on ground`;
+            } else {
+                setActiveDropTarget(null);
+            }
+
+            setDraggedItem(prev => prev ? { ...prev, x: e.clientX, y: e.clientY, commandLabel: label } : null);
+        }
+    };
+
+    const handleGlobalPointerUp = (e: PointerEvent) => {
+        if (isDraggingRef.current && pendingDragRef.current) {
+            const target = document.elementFromPoint(e.clientX, e.clientY);
+            const fullItemNoun = pendingDragRef.current.context || pendingDragRef.current.id;
+            const itemNoun = fullItemNoun.split('.')[0];
+
+            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
+            if (logRecipient) {
+                 const recipientName = logRecipient.getAttribute('data-context');
+                 if (recipientName) {
+                     triggerHaptic(60);
+                     if (pendingDragRef.current.parentItemNoun) {
+                         executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                     }
+                     executeCommand(`give ${itemNoun} ${recipientName}`);
+                     cleanupDrag();
+                     return;
+                 }
+            }
+
+            const targetItem = target?.closest('.inline-btn.auto-item');
+            const targetCmd = targetItem?.getAttribute('data-cmd');
+            const targetContext = targetItem?.getAttribute('data-context');
+            const targetName = targetItem?.getAttribute('data-item-name');
+
+            if (targetCmd === 'inline-water' && isFluidContainer(pendingDragRef.current.text)) {
+                triggerHaptic(60);
+                if (pendingDragRef.current.parentItemNoun) {
+                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                }
+                executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`);
+                cleanupDrag();
+                return;
+            }
+
+            if (targetItem?.classList.contains('is-container') && targetName && targetName !== itemNoun) {
+                triggerHaptic(60);
+                if (pendingDragRef.current.parentItemNoun) {
+                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                }
+                executeCommand(`put ${itemNoun} ${targetName}`);
+                cleanupDrag();
+                return;
+            }
+
+            const logArea = target?.closest('.message-log-container');
+            if (logArea) {
+                triggerHaptic(60);
+                if (pendingDragRef.current.parentItemNoun) {
+                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                }
+                executeCommand(`drop ${itemNoun}`);
+                setTimeout(() => {
+                    executeCommand('inv', false, true, true, true);
+                    executeCommand('eq', false, true, true, true);
+                }, 400);
+            }
+        }
+        setTimeout(() => cleanupDrag(), 0);
+    };
+
     React.useEffect(() => {
         return () => cleanupDrag();
     }, []);
@@ -64,9 +189,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const handlePointerDownItem = (e: React.PointerEvent, line: DrawerLine) => {
         if (!line.isItem) return;
         cleanupDrag();
-        // Capture the pointer to ensure move events are received even if the finger moves fast
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-        
         startPosRef.current = { x: e.clientX, y: e.clientY };
         pendingDragRef.current = line;
         setPrimedItemId(line.id);
@@ -82,90 +205,6 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         }, 350);
     };
 
-    const moveCountRef = React.useRef(0);
-    const handleGlobalPointerMove = (e: PointerEvent) => {
-        if (startPosRef.current && !isDraggingRef.current) {
-            const dist = Math.sqrt(Math.pow(e.clientX - startPosRef.current.x, 2) + Math.pow(e.clientY - startPosRef.current.y, 2));
-            
-            // If we are in the "priming" phase (waiting for long press)
-            // Any significant movement should cancel the drag so the user can scroll
-            const threshold = e.pointerType === 'mouse' ? 15 : 5;
-            if (dist > threshold) {
-                cleanupDrag();
-                return;
-            }
-        }
-
-        if (isDraggingRef.current) {
-            if (ghostRef.current) {
-                ghostRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(1.05)`;
-            }
-
-            // Performance: only check drop target every other move event
-            moveCountRef.current++;
-            if (moveCountRef.current % 2 !== 0) return;
-
-            const target = document.elementFromPoint(e.clientX, e.clientY);
-            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
-
-            // Target Highlighting
-            const logArea = target?.closest('.message-log-container');
-            if (logArea) {
-                logArea.classList.add('drop-hover-active');
-                setActiveDropTarget({ type: 'log', id: 'ground' });
-                return;
-            }
-
-            const container = target?.closest('.inline-btn.is-container');
-            if (container) {
-                container.classList.add('drop-hover-active');
-                setActiveDropTarget({ type: 'container', id: container.getAttribute('data-item-name') || '' });
-                return;
-            }
-            setActiveDropTarget(null);
-        }
-    };
-
-    const handleGlobalPointerUp = (e: PointerEvent) => {
-        if (isDraggingRef.current && pendingDragRef.current) {
-            const target = document.elementFromPoint(e.clientX, e.clientY);
-            const fullItemNoun = pendingDragRef.current.context || pendingDragRef.current.id;
-            const itemNoun = fullItemNoun.split('.')[0];
-
-            const logArea = target?.closest('.message-log-container');
-            if (logArea) {
-                triggerHaptic(60);
-                if (pendingDragRef.current.parentItemNoun) {
-                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
-                    setTimeout(() => executeCommand(`look in ${pendingDragRef.current.parentItemNoun!}`, true, true), 1000);
-                }
-                executeCommand(`drop ${itemNoun}`);
-                // Refresh lists
-                setTimeout(() => {
-                    executeCommand('inv', false, true, true, true);
-                    executeCommand('eq', false, true, true, true);
-                }, 1000);
-            } else {
-                const container = target?.closest('.inline-btn.is-container');
-                const targetName = container?.getAttribute('data-item-name');
-                if (targetName && targetName !== itemNoun) {
-                    triggerHaptic(60);
-                    if (pendingDragRef.current.parentItemNoun) {
-                        executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
-                        setTimeout(() => executeCommand(`look in ${pendingDragRef.current.parentItemNoun!}`, true, true), 1000);
-                    }
-                    executeCommand(`put ${itemNoun} ${targetName}`);
-                    // Refresh lists
-                    setTimeout(() => {
-                        executeCommand('inv', false, true, true, true);
-                        executeCommand('eq', false, true, true, true);
-                    }, 1000);
-                }
-            }
-        }
-        setTimeout(() => cleanupDrag(), 0);
-    };
-
     return (
         <div className={`inventory-drawer ${isOpen ? 'open' : ''}`} style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'none' }}>
             {draggedItem && (
@@ -173,8 +212,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                     ref={ghostRef}
                     style={{
                         position: 'fixed',
-                        left: 0,
-                        top: 0,
+                        left: 0, top: 0,
                         pointerEvents: 'none',
                         zIndex: 99999,
                         transform: `translate3d(${draggedItem.x}px, ${draggedItem.y}px, 0) translate(-50%, -50%) scale(1.05)`,
@@ -185,34 +223,26 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                         boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
                         opacity: 0.8,
                         whiteSpace: 'nowrap',
-                        fontSize: '0.85rem',
-                        color: '#fff',
-                        visibility: 'visible',
-                        transition: 'none',
-                        willChange: 'transform'
-                    }} dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+                        color: '#fff'
+                    }}
+                >
+                    <div dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+                    {draggedItem.commandLabel && (
+                        <div style={{
+                            marginTop: '4px',
+                            fontSize: '0.7rem',
+                            background: 'var(--accent)',
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            textAlign: 'center'
+                        }}>{draggedItem.commandLabel}</div>
+                    )}
+                </div>
             )}
-            <div className="drawer-header"
-                onPointerDown={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (target.closest('button')) return;
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                    (e.currentTarget as any)._startY = e.clientY;
-                }}
-                onPointerUp={(e) => {
-                    const startY = (e.currentTarget as any)._startY;
-                    if (startY !== undefined && startY !== null) {
-                        if (e.clientY - startY > 50) {
-                            triggerHaptic(40);
-                            onClose();
-                        }
-                    }
-                }}
-                style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}
-            >
+            <div className="drawer-header" style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}>
                 <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
                 <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory</span>
-                <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
+                <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', fontSize: '1rem' }}>✕</button>
             </div>
             <div className="drawer-content" style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
                 {inventoryLines.length === 0 ? (
@@ -224,24 +254,12 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                         {(() => {
                             const visibleLines: DrawerLine[] = [];
                             const collapsedDepths: Set<number> = new Set();
-
                             for (const line of inventoryLines) {
                                 const depth = line.depth || 0;
-                                
-                                // Remove any collapsed depths that are >= current depth
-                                Array.from(collapsedDepths).forEach(d => {
-                                    if (d >= depth) collapsedDepths.delete(d);
-                                });
-
-                                // Check if current line is hidden by any parent
+                                Array.from(collapsedDepths).forEach(d => { if (d >= depth) collapsedDepths.delete(d); });
                                 if (collapsedDepths.size > 0) continue;
-
                                 visibleLines.push(line);
-
-                                // If this line is a container and NOT expanded, mark its depth as collapsed
-                                if (line.isContainer && !expandedContainers.has(line.id)) {
-                                    collapsedDepths.add(depth);
-                                }
+                                if (line.isContainer && !expandedContainers.has(line.id)) collapsedDepths.add(depth);
                             }
 
                             return visibleLines.map(line => {
@@ -252,111 +270,36 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                 
                                 return (
                                     <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px', position: 'relative' }}>
-                                        {depth > 0 && (
-                                            <div style={{
-                                                position: 'absolute',
-                                                left: '-10px',
-                                                top: '-8px',
-                                                bottom: '50%',
-                                                width: '2px',
-                                                background: 'rgba(137, 180, 250, 0.3)',
-                                                borderRadius: '1px'
-                                            }} />
-                                        )}
-                                        {line.prefixHtml && (
-                                            <div 
-                                                style={{ 
-                                                    padding: '0 8px 0 0', 
-                                                    opacity: 0.5, 
-                                                    fontSize: '0.75rem', 
-                                                    whiteSpace: 'nowrap',
-                                                    color: 'var(--accent)',
-                                                    fontStyle: 'italic',
-                                                    flexShrink: 0
-                                                }}
-                                                dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
-                                            />
-                                        )}
                                         <div
                                             className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''} ${isExpanded ? 'expanded' : ''}`}
                                             data-item-name={line.context || line.id}
                                             onPointerDown={(e) => handlePointerDownItem(e, line)}
                                             onPointerUp={(e) => {
-                                                if (isDraggingRef.current) {
-                                                    return;
-                                                }
+                                                if (isDraggingRef.current) return;
                                                 cleanupDrag();
                                                 if (!line.isItem) return;
                                                 triggerHaptic(20);
-
                                                 if (line.isContainer) {
                                                     const newExpanded = new Set(expandedContainers);
                                                     if (newExpanded.has(line.id)) {
                                                         newExpanded.delete(line.id);
-                                                        // Remove children of this container from the list
-                                                        // (they'll be re-fetched on next expand)
                                                     } else {
                                                         newExpanded.add(line.id);
-                                                        // Set the pending container ref so parser routes to drawer
-                                                        pendingDrawerContainerRef.current = {
-                                                            containerId: line.id,
-                                                            cmd: 'inventorylist',
-                                                            afterId: line.id
-                                                        };
-                                                        // Use the context (noun) for the look in command
+                                                        pendingDrawerContainerRef.current = { containerId: line.id, cmd: 'inventorylist', afterId: line.id };
                                                         executeCommand(`look in ${line.context || line.id}`, true, true);
-                                                        
-                                                        const thisId = line.id;
-                                                        // Clear ref after 5s delay (server should respond quickly)
-                                                        setTimeout(() => { 
-                                                            if (pendingDrawerContainerRef.current?.containerId === thisId) {
-                                                                pendingDrawerContainerRef.current = null; 
-                                                            }
-                                                        }, 5000);
                                                     }
                                                     setExpandedContainers(newExpanded);
-                                                    return;
                                                 }
-
-                                                (handleButtonClick as any)({
-                                                    id: `inv-${line.id}`,
-                                                    command: 'inventorylist',
-                                                    label: line.context || 'Item',
-                                                    actionType: 'menu'
-                                                }, e as any, line.context, line.isContainer, line.parentItemNoun);
                                             }}
                                             style={{
-                                                flex: 1,
-                                                padding: '8px 12px',
-                                                background: line.isItem ?
-                                                    (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)'))
-                                                    : 'transparent',
-                                                borderRadius: depth > 0 ? '0 6px 6px 0' : '6px',
-                                                border: '1px solid rgba(255,255,255,0.05)',
-                                                borderLeft: depth > 0 && !line.prefixHtml ? `${depth * 3}px solid #89b4fa` : '1px solid rgba(255,255,255,0.05)',
-                                                fontSize: depth > 0 ? '0.8rem' : '0.85rem',
-                                                cursor: line.isItem ? 'grab' : 'default',
-                                                fontWeight: line.isContainer ? 'bold' : 'normal',
-                                                opacity: isBeingDragged ? 0.3 : 1,
-                                                color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
-                                                transition: 'all 0.2s ease',
-                                                touchAction: 'none',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap',
-                                                display: 'flex',
-                                                alignItems: 'center'
+                                                flex: 1, padding: '8px 12px', borderRadius: '6px', cursor: 'grab',
+                                                background: line.isItem ? (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)')) : 'transparent',
+                                                opacity: isBeingDragged ? 0.3 : 1, transition: 'all 0.2s ease', touchAction: 'none', display: 'flex', alignItems: 'center'
                                             }}
                                         >
                                             <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
                                             {line.isContainer && (
-                                                <span style={{ 
-                                                    fontSize: '0.7rem', 
-                                                    opacity: 0.5, 
-                                                    marginLeft: '8px',
-                                                    transition: 'transform 0.2s ease',
-                                                    transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'
-                                                }}>▶</span>
+                                                <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▶</span>
                                             )}
                                         </div>
                                     </div>

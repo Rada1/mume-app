@@ -261,6 +261,17 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         isVisible: true,
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#3b82f6', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-shopkeeper-mend',
+        label: 'Mend',
+        command: 'shop-mend',
+        setId: 'inline-shopkeeper',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     }
 ];
 
@@ -269,10 +280,10 @@ export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
     'inline-food': ['cat-food-eat', 'cat-food-get'],
     'inline-water': ['cat-water-drink'],
     'inline-corpses': ['cat-corpse-examine', 'cat-corpse-gac', 'cat-corpse-drag'],
-    'inline-shopkeeper': ['innpc-kill', 'innpc-ex'],
-    'inline-innkeeper': ['cat-innkeeper-offer', 'cat-innkeeper-rent', 'innpc-kill', 'innpc-ex'],
-    'inline-mounts': ['cat-mount-ride', 'cat-mount-lead', 'cat-mount-saddle', 'cat-mount-unsaddle', 'cat-mount-unsaddle-all', 'innpc-kill', 'innpc-ex', 'cat-mount-abandon'],
+    'inline-shopkeeper': ['cat-shopkeeper-mend', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-innkeeper': ['cat-innkeeper-offer', 'cat-innkeeper-rent', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-mounts': ['cat-mount-ride', 'cat-mount-lead', 'cat-mount-saddle', 'cat-mount-unsaddle', 'cat-mount-unsaddle-all', 'innpc-consider', 'innpc-kill', 'innpc-ex', 'cat-mount-abandon'],
     'inline-shopitem': ['cat-shopitem-buy', 'cat-shopitem-show'],
-    'inline-guildmaster': ['cat-guildmaster-practice', 'innpc-kill', 'innpc-ex'],
-    'inline-default': ['cat-default-kill', 'cat-default-examine']
+    'inline-guildmaster': ['cat-guildmaster-practice', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-default': ['cat-default-kill', 'cat-default-examine', 'innpc-consider']
 };

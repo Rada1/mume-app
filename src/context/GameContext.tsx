@@ -446,6 +446,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         telnet, parser, practice,
         spatButtons, setSpatButtons,
         diagnosticLogs, addDiagnosticLog,
+        isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
+        mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
         heldButton: v.heldButton, setHeldButton: v.setHeldButton,
         detectLighting: env.detectLighting,
         setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
@@ -458,6 +460,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         input, handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
         handleDragStart, handleDragEnd,
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
+        v.isMendingMode, v.setIsMendingMode, v.mendingTarget, v.setMendingTarget,
         s.showLegacyButtons, v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp
     ]);
 
@@ -472,6 +475,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         handleLogPointerDown,
         handleLogPointerUp
     }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, isCommunicationLine, processMessageHtml, handleLogPointerDown, handleLogPointerUp]);
+
+    // Reset mending mode when drawer closes
+    useEffect(() => {
+        if (s.ui.drawer === 'none' && v.isMendingMode) {
+            v.setIsMendingMode(false);
+            v.setMendingTarget(null);
+        }
+    }, [s.ui.drawer, v.isMendingMode]);
 
     return (
         <GameContext.Provider value={gameValue as any}>

@@ -161,6 +161,8 @@ export const useGameProviderState = () => {
     const pendingDrawerContainerRef = useRef<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>(null);
     const [activeDragData, setActiveDragData] = useState<any>(null);
     const [heldButton, setHeldButton] = useState<any>(null);
+    const [isMendingMode, setIsMendingMode] = useState(false);
+    const [mendingTarget, setMendingTarget] = useState<string | null>(null);
 
     const vitals = useMemo(() => ({
         stats, setStats,
@@ -170,7 +172,9 @@ export const useGameProviderState = () => {
         hitFlash, setHitFlash,
         deathStage, setDeathStage,
         heldButton, setHeldButton,
-    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton]);
+        isMendingMode, setIsMendingMode,
+        mendingTarget, setMendingTarget
+    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton, isMendingMode, mendingTarget]);
 
     const game = useMemo(() => ({
         inCombat, setInCombat,

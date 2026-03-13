@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DrawerLine } from '../../types';
+import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
 import { useGame } from '../../context/GameContext';
 
 interface EquipmentDrawerProps {
@@ -27,12 +28,14 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     executeCommand,
     pendingDrawerContainerRef
 }) => {
-    const { activeDragData } = useGame();
-    const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number } | null>(null);
+    const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number; commandLabel?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
-    const [isNativeDragOver, setIsNativeDragOver] = useState(false);
+    const lastHoveredTargetRef = useRef<HTMLElement | null>(null);
     const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
+    const [selectedMendItems, setSelectedMendItems] = useState<Set<string>>(new Set());
+
+    const { activeDragData, isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useGame();
 
     const ghostRef = useRef<HTMLDivElement>(null);
     const longPressTimerRef = useRef<any>(null);
@@ -42,18 +45,13 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const isDraggingRef = useRef(false);
     const drawerRef = useRef<HTMLDivElement>(null);
 
-    const handleSectionScroll = () => {
-        if (!isDraggingRef.current && (longPressTimerRef.current || pendingDragRef.current || primedItemId)) {
-            cleanupDrag();
-        }
-    };
-
     const cleanupDrag = () => {
         if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
         document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
         setDraggedItem(null);
         setPrimedItemId(null);
         setActiveDropTarget(null);
+        lastHoveredTargetRef.current = null;
         startPosRef.current = null;
         pendingDragRef.current = null;
         draggedRef.current = null;
@@ -63,63 +61,17 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         window.removeEventListener('pointercancel', cleanupDrag);
     };
 
-    useEffect(() => {
-        return () => cleanupDrag();
-    }, []);
-
-    useEffect(() => {
-        if (!isOpen && !isDraggingRef.current) {
-            cleanupDrag();
-        }
-    }, [isOpen]);
-
-
-    const startActiveDrag = (x: number, y: number) => {
-        if (pendingDragRef.current && !isDraggingRef.current) {
-            triggerHaptic(40);
-            const line = pendingDragRef.current.line;
-            const source = pendingDragRef.current.source;
-            draggedRef.current = { line, source };
-            setDraggedItem({ line, source, x, y });
-            isDraggingRef.current = true;
-            setPrimedItemId(null);
-            if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-
-            window.addEventListener('pointercancel', cleanupDrag);
-        }
-    };
-
-    const handlePointerDown = (e: React.PointerEvent, line: DrawerLine, source: 'inventory' | 'equipment') => {
-        if (!line.isItem) return;
-
-        cleanupDrag();
-        // Capture the pointer to ensure move events are received even if the finger moves fast
-        (e.target as HTMLElement).setPointerCapture(e.pointerId);
-        
-        startPosRef.current = { x: e.clientX, y: e.clientY };
-        pendingDragRef.current = { line, source };
-        setPrimedItemId(line.id);
-
-        window.addEventListener('pointermove', handleGlobalPointerMove);
-        window.addEventListener('pointerup', handleGlobalPointerUp);
-        window.addEventListener('pointercancel', cleanupDrag);
-
-        longPressTimerRef.current = setTimeout(() => {
-            if (startPosRef.current) {
-                startActiveDrag(startPosRef.current.x, startPosRef.current.y);
-            }
-        }, 350); // Increased to 350ms for better intentionality
-    };
-
     const moveCountRef = useRef(0);
+
+    const handleSectionScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        // Placeholder to avoid reference error, can be implemented later if sticky headers are needed
+    };
+
     const handleGlobalPointerMove = (e: PointerEvent) => {
         if (startPosRef.current && !isDraggingRef.current) {
             const dx = Math.abs(e.clientX - startPosRef.current.x);
             const dy = Math.abs(e.clientY - startPosRef.current.y);
             const dist = Math.sqrt(dx * dx + dy * dy);
-
-            // If we are in the "priming" phase (waiting for long press)
-            // Any significant movement should cancel the drag so the user can scroll
             const threshold = e.pointerType === 'mouse' ? 15 : 5;
             if (dist > threshold) {
                 cleanupDrag();
@@ -128,75 +80,87 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         }
 
         if (isDraggingRef.current) {
-            // High-performance direct DOM update for the "ghost" item
             if (ghostRef.current) {
                 ghostRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(1.05)`;
             }
 
-            // Auto-close drawer if dragging out of it
             if (isOpen && drawerRef.current) {
                 const rect = drawerRef.current.getBoundingClientRect();
-                // Close if pointer is to the left of the drawer, with a larger 40px gutter for fast movement
                 if (e.clientX < rect.left - 50 || (rect.left < 50 && e.clientX < 80)) {
                     onClose();
                 }
             }
 
-            // Performance: only check drop target every other move event
             moveCountRef.current++;
             if (moveCountRef.current % 2 !== 0) return;
 
-            // Detect drop target for highlighting
             const target = document.elementFromPoint(e.clientX, e.clientY);
             const currentDragged = draggedRef.current;
+            if (!currentDragged) return;
 
-            // Cleanup previous highlight
-            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+            const itemNoun = currentDragged.line.parentItemNoun && currentDragged.line.id.endsWith(`.${currentDragged.line.parentItemNoun}`) 
+                ? currentDragged.line.id.slice(0, -(currentDragged.line.parentItemNoun.length + 1))
+                : currentDragged.line.id;
 
-            // 1. Log Target (Highlighters for giving)
-            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
+            let commandLabel = "";
+            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter') as HTMLElement | null;
+            const inputArea = target?.closest('.input-area') as HTMLElement | null;
+            const mainLog = target?.closest('.message-log-container') as HTMLElement | null;
+            const targetItem = target?.closest('.inline-btn.auto-item') as HTMLElement | null;
+            const sectionTarget = target?.closest('[data-drawer-section]') as HTMLElement | null;
+
+            const logicalTarget = logRecipient || inputArea || (mainLog && !target?.closest('.right-drawer') ? mainLog : null) || targetItem || sectionTarget;
+
+            if (logicalTarget !== lastHoveredTargetRef.current) {
+                document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+                lastHoveredTargetRef.current = logicalTarget;
+                if (logicalTarget && (!sectionTarget || logicalTarget !== sectionTarget)) {
+                    logicalTarget.classList.add('drop-hover-active');
+                }
+            }
+
             if (logRecipient) {
-                logRecipient.classList.add('drop-hover-active');
                 const ctx = logRecipient.getAttribute('data-context');
                 if (ctx) {
                     setActiveDropTarget({ type: 'log', id: ctx });
-                    return;
+                    commandLabel = `Give ${itemNoun} to ${ctx}`;
                 }
-            }
-
-            // 1.b. Main Log Target (Dropping item on ground)
-            const mainLog = target?.closest('.message-log-container');
-            if (mainLog && !target?.closest('.right-drawer')) {
-                mainLog.classList.add('drop-hover-active');
+            } else if (inputArea) {
+                setActiveDropTarget({ type: 'log', id: 'input' });
+                commandLabel = `Paste ${itemNoun} in Command Bar`;
+            } else if (mainLog && !target?.closest('.right-drawer')) {
                 setActiveDropTarget({ type: 'log', id: 'ground' });
-                return;
-            }
-
-            // 2. Container Target
-            const targetItem = target?.closest('.inline-btn.auto-item');
-            if (targetItem) {
-                const targetItemName = targetItem?.getAttribute('data-item-name');
-                const isTargetContainer = targetItemName && /sack|satchel|pouch|pack|quiver/i.test(targetItemName);
-                if (isTargetContainer && targetItemName !== (currentDragged?.line.context || currentDragged?.line.id)) {
-                    targetItem.classList.add('drop-hover-active');
+                commandLabel = `Drop ${itemNoun} on ground`;
+            } else if (targetItem) {
+                const targetCmd = targetItem.getAttribute('data-cmd');
+                const targetContext = targetItem.getAttribute('data-context');
+                const targetItemName = targetItem?.getAttribute('data-item-name') || targetContext;
+                const isTargetContainer = targetItemName && /sack|satchel|pouch|pack|quiver|backpack|bag|chest|box|barrel|crate|keg|vial|flask|bottle|waterskin|beltpouch|moneybelt/i.test(targetItemName);
+                
+                if (targetCmd === 'inline-water' && isFluidContainer(currentDragged.line.text)) {
+                    setActiveDropTarget({ type: 'log', id: targetContext || 'water' });
+                    commandLabel = `Fill ${itemNoun} from ${targetContext || 'water'}`;
+                } else if (isTargetContainer && targetItemName !== (currentDragged?.line.context || currentDragged?.line.id)) {
                     setActiveDropTarget({ type: 'container', id: targetItemName! });
-                    return;
+                    commandLabel = `Put ${itemNoun} in ${targetItemName}`;
                 }
+            } else if (sectionTarget) {
+                const section = sectionTarget.getAttribute('data-drawer-section');
+                if (section && section !== currentDragged?.source) {
+                    setActiveDropTarget({ type: 'section', id: section });
+                    const action = (section === 'equipment' || section === 'equipmentlist') ? 'Wear' : 'Remove';
+                    commandLabel = `${action} ${itemNoun}`;
+                } else if (section && currentDragged?.line.context?.includes('.')) {
+                    setActiveDropTarget({ type: 'section', id: section });
+                    commandLabel = `Get ${itemNoun} from ${currentDragged.line.parentItemNoun}`;
+                } else {
+                    setActiveDropTarget(null);
+                }
+            } else {
+                setActiveDropTarget(null);
             }
 
-            // 3. Section Target
-            const sectionWrapper = target?.closest('[data-drawer-section]');
-            const section = sectionWrapper?.getAttribute('data-drawer-section');
-            if (section && section !== currentDragged?.source) {
-                setActiveDropTarget({ type: 'section', id: section });
-                return;
-            } else if (section && currentDragged?.line.context?.includes('.')) {
-                // Nested items can be dropped in their own section to get them
-                setActiveDropTarget({ type: 'section', id: section });
-                return;
-            }
-
-            setActiveDropTarget(null);
+            setDraggedItem(prev => prev ? { ...prev, x: e.clientX, y: e.clientY, commandLabel } : null);
         }
     };
 
@@ -205,13 +169,10 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const target = document.elementFromPoint(e.clientX, e.clientY);
             const currentItem = draggedRef.current.line;
             const currentSource = draggedRef.current.source;
-
-            // Helper to get the pure item handle from potentially context-aware IDs like "1.knife.sack"
             const itemNoun = currentItem.parentItemNoun && currentItem.id.endsWith(`.${currentItem.parentItemNoun}`) 
                 ? currentItem.id.slice(0, -(currentItem.parentItemNoun.length + 1))
                 : currentItem.id;
 
-            // 1. Log Target (Give)
             const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
             if (logRecipient) {
                 const recipientName = logRecipient.getAttribute('data-context');
@@ -231,12 +192,27 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 }
             }
 
-            // 2. Container Target (Put)
             const targetBtn = target?.closest('.inline-btn.auto-item');
             const targetItemName = targetBtn?.getAttribute('data-item-name');
+            const targetCmd = targetBtn?.getAttribute('data-cmd');
+            const targetContext = targetBtn?.getAttribute('data-context');
             const isTargetContainer = targetItemName && /sack|satchel|pouch|pack|quiver/i.test(targetItemName);
 
-            // Ensure we aren't dropping onto ourselves
+            if (targetCmd === 'inline-water' && isFluidContainer(currentItem.text)) {
+                triggerHaptic(60);
+                if (currentSource === 'equipment') {
+                    executeCommand(`remove ${itemNoun}`, false, false);
+                    setTimeout(() => executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`, false, false), 100);
+                } else if (currentItem.parentItemNoun) {
+                    executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
+                    setTimeout(() => executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`, false, false), 100);
+                } else {
+                    executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`, false, false);
+                }
+                cleanupDrag();
+                return;
+            }
+
             if (isTargetContainer && targetItemName !== (currentItem.context || currentItem.id)) {
                 triggerHaptic(60);
                 if (currentSource === 'equipment') {
@@ -268,12 +244,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 setTimeout(() => {
                     executeCommand('inv', false, true, true, true);
                     executeCommand('eq', false, true, true, true);
-                    if (currentItem.parentItemNoun) {
-                        executeCommand(`look in ${currentItem.parentItemNoun}`, true, true);
-                    }
                 }, 400);
-                cleanupDrag();
-                return;
             }
 
             const sectionWrapper = target?.closest('[data-drawer-section]');
@@ -282,61 +253,133 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 if (section !== currentSource) {
                     triggerHaptic(60);
                     if (currentItem.parentItemNoun) {
-                        // Step 1: Get the item from the container
                         executeCommand(`get ${itemNoun} ${currentItem.parentItemNoun}`, true, true);
                         const cmd = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
-                        // Step 2: Execute the action on the item itself (not item.container)
                         setTimeout(() => {
                             executeCommand(`${cmd} ${itemNoun}`, false, false);
-                            // Refresh lists after a short delay
                             setTimeout(() => {
                                 executeCommand('inv', false, true, true, true);
                                 executeCommand('eq', false, true, true, true);
                             }, 400);
                         }, 100);
-                        
-                        if (currentItem.parentItemNoun) {
-                            setTimeout(() => executeCommand(`look in ${currentItem.parentItemNoun!}`, true, true), 500);
-                        }
+                        setTimeout(() => executeCommand(`look in ${currentItem.parentItemNoun!}`, true, true), 500);
                     } else {
                         const cmd = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
                         executeCommand(`${cmd} ${itemNoun}`, false, false);
-                        // Refresh lists
                         setTimeout(() => {
                             executeCommand('inv', false, true, true, true);
                             executeCommand('eq', false, true, true, true);
                         }, 400);
                     }
-                } else {
-                    // Same-section move might be an explicit get [noun] [container] from a nested item
-                    const parts = currentItem.id.split('.');
-                    if (parts.length >= 2) {
-                         triggerHaptic(60);
-                         // Logic to handle 1.flagon.sack vs flagon.sack
-                         let handle = parts[0];
-                         let container = parts[1];
-                         if (!isNaN(parseInt(handle)) && parts.length >= 3) {
-                             handle = `${parts[0]}.${parts[1]}`;
-                             container = parts[2];
-                         }
-                         executeCommand(`get ${handle} ${container}`, false, false);
-                    }
+                } else if (currentItem.id.includes('.')) {
+                     triggerHaptic(60);
+                     const parts = currentItem.id.split('.');
+                     let handle = parts[0];
+                     let container = parts[1];
+                     if (!isNaN(parseInt(handle)) && parts.length >= 3) {
+                         handle = `${parts[0]}.${parts[1]}`;
+                         container = parts[2];
+                     }
+                     executeCommand(`get ${handle} ${container}`, false, false);
                 }
             }
         }
         setTimeout(() => cleanupDrag(), 0);
     };
 
+    useEffect(() => {
+        return () => cleanupDrag();
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen && !isDraggingRef.current) {
+            cleanupDrag();
+        }
+    }, [isOpen]);
+
+    const startActiveDrag = (x: number, y: number) => {
+        if (pendingDragRef.current && !isDraggingRef.current) {
+            triggerHaptic(40);
+            const line = pendingDragRef.current.line;
+            const source = pendingDragRef.current.source;
+            draggedRef.current = { line, source };
+            setDraggedItem({ line, source, x, y });
+            isDraggingRef.current = true;
+            setPrimedItemId(null);
+            if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+            window.addEventListener('pointercancel', cleanupDrag);
+        }
+    };
+
+    const handlePointerDown = (e: React.PointerEvent, line: DrawerLine, source: 'inventory' | 'equipment') => {
+        if (!line.isItem) return;
+        if (isMendingMode) {
+            triggerHaptic(20);
+            const newSelected = new Set(selectedMendItems);
+            if (newSelected.has(line.id)) {
+                newSelected.delete(line.id);
+            } else {
+                newSelected.add(line.id);
+            }
+            setSelectedMendItems(newSelected);
+            return;
+        }
+        cleanupDrag();
+        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        startPosRef.current = { x: e.clientX, y: e.clientY };
+        pendingDragRef.current = { line, source };
+        setPrimedItemId(line.id);
+
+        window.addEventListener('pointermove', handleGlobalPointerMove);
+        window.addEventListener('pointerup', handleGlobalPointerUp);
+        window.addEventListener('pointercancel', cleanupDrag);
+
+        longPressTimerRef.current = setTimeout(() => {
+            if (startPosRef.current) {
+                startActiveDrag(startPosRef.current.x, startPosRef.current.y);
+            }
+        }, 350);
+    };
+
+
     const renderLine = (line: DrawerLine, listType: 'inventorylist' | 'equipmentlist') => {
         const source = listType === 'inventorylist' ? 'inventory' : 'equipment';
         const isBeingDragged = draggedItem?.line.id === line.id;
         const isTargeted = activeDropTarget?.type === 'container' && activeDropTarget.id === (line.context || line.id);
+        const isSelected = selectedMendItems.has(line.id);
         const depth = line.depth || 0;
 
         if (line.isItem) {
             const isPrimed = primedItemId === line.id;
             return (
                 <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
+                    {isMendingMode && (
+                        <div 
+                            className={`mending-checkbox ${isSelected ? 'selected' : ''}`}
+                            onClick={() => {
+                                triggerHaptic(20);
+                                const newSelected = new Set(selectedMendItems);
+                                if (newSelected.has(line.id)) newSelected.delete(line.id);
+                                else newSelected.add(line.id);
+                                setSelectedMendItems(newSelected);
+                            }}
+                            style={{
+                                width: '20px',
+                                height: '20px',
+                                borderRadius: '4px',
+                                border: '2px solid var(--accent)',
+                                marginRight: '10px',
+                                backgroundColor: isSelected ? 'var(--accent)' : 'transparent',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                                flexShrink: 0
+                            }}
+                        >
+                            {isSelected && <span style={{ color: '#000', fontSize: '14px', fontWeight: 'bold' }}>✓</span>}
+                        </div>
+                    )}
                     {line.prefixHtml && (
                         <div 
                             style={{ 
@@ -352,50 +395,30 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         />
                     )}
                     <div
-                        className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''}`}
+                        className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''} ${isSelected ? 'selected' : ''}`}
                         data-item-name={line.context || line.id}
                         onPointerDown={(e) => handlePointerDown(e, line, source)}
                         onPointerUp={(e) => {
-                            if (isDraggingRef.current) {
-                                return;
-                            }
+                            if (isDraggingRef.current || isMendingMode) return;
                             cleanupDrag();
-                            if (!line.id) {
-                                console.log('[Drawer] Tap on line with no ID:', line);
-                                return;
-                            }
                             if (!line.isItem) return;
-
-                            console.log('[Drawer] Tap on item:', {
-                                id: line.id,
-                                context: line.context,
-                                isContainer: line.isContainer,
-                                depth: line.depth
-                            });
                             triggerHaptic(20);
 
                             if (line.isContainer) {
                                 const newExpanded = new Set(expandedContainers);
                                 if (newExpanded.has(line.id)) {
-                                    console.log('[Drawer] Collapsing container:', line.id);
                                     newExpanded.delete(line.id);
                                 } else {
-                                    console.log('[Drawer] Expanding container:', line.id);
                                     newExpanded.add(line.id);
-                                    const drawerCmd = source === 'equipment' ? 'equipmentlist' : 'inventorylist';
                                     pendingDrawerContainerRef.current = {
                                         containerId: line.id,
-                                        cmd: drawerCmd,
+                                        cmd: listType,
                                         afterId: line.id
                                     };
-                                    const cmd = `look in ${line.context || line.id}`;
-                                    console.log('[Drawer] Sending command:', cmd);
-                                    executeCommand(cmd, true, true);
-                                    
+                                    executeCommand(`look in ${line.context || line.id}`, true, true);
                                     const thisId = line.id;
                                     setTimeout(() => { 
                                         if (pendingDrawerContainerRef.current?.containerId === thisId) {
-                                            console.log('[Drawer] Clearing stale pending ref for:', thisId);
                                             pendingDrawerContainerRef.current = null; 
                                         }
                                     }, 5000);
@@ -403,246 +426,154 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 setExpandedContainers(newExpanded);
                                 return;
                             }
-
-                            console.log('[Drawer] Item is NOT a container, opening menu.');
-                            (handleButtonClick as any)({
-                                id: `drawer-${line.id}`,
-                                command: listType,
-                                label: line.context || 'Item',
-                                actionType: 'menu'
-                            }, e as any, line.context, line.isContainer, line.parentItemNoun);
                         }}
                         style={{
                             flex: 1,
-                            backgroundColor: isBeingDragged ? 'rgba(100, 255, 100, 0.02)' :
-                                isTargeted ? 'rgba(255, 255, 100, 0.2)' :
-                                    isPrimed ? 'rgba(100, 255, 100, 0.04)' :
-                                        line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)',
-                            borderBottom: '1px solid rgba(255,255,255,0.1)',
-                            borderLeft: depth > 0 && !line.prefixHtml ? `${depth * 3}px solid #89b4fa` : 'none',
                             padding: '8px 12px',
-                            borderRadius: depth > 0 ? '0 4px 4px 0' : '4px',
+                            background: line.isItem ? (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)')) : 'transparent',
+                            borderRadius: '6px',
+                            border: '1px solid rgba(255,255,255,0.05)',
+                            fontSize: '0.85rem',
                             cursor: 'grab',
-                            opacity: isBeingDragged ? 0.3 : isPrimed ? 0.6 : 1,
-                            transform: isTargeted ? 'scale(1.02)' : isPrimed ? 'scale(0.95)' : 'scale(1)',
-                            transition: 'all 0.15s ease',
-                            boxShadow: isTargeted ? '0 0 10px rgba(137, 180, 250, 0.3)' : 'none',
-                            touchAction: draggedItem ? 'none' : 'pan-y',
                             fontWeight: line.isContainer ? 'bold' : 'normal',
-                            color: line.isContainer ? '#89b4fa' : (depth > 0 ? 'rgba(255,255,255,0.8)' : 'inherit'),
-                            fontSize: depth > 0 ? '0.8rem' : '0.85rem',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
+                            opacity: isBeingDragged ? 0.3 : 1,
+                            color: line.isContainer ? '#89b4fa' : 'inherit',
+                            transition: 'all 0.2s ease',
+                            touchAction: 'none',
+                            display: 'flex',
+                            alignItems: 'center'
                         }}
-                        dangerouslySetInnerHTML={{ __html: line.html }}
-                    />
+                    >
+                        <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
+                        {line.isContainer && (
+                            <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transition: 'transform 0.2s ease', transform: expandedContainers.has(line.id) ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+                        )}
+                    </div>
                 </div>
             );
         }
+
         return (
-            <div
-                key={line.id}
-                style={{
-                    padding: '4px 0',
-                    opacity: line.isHeader ? 0.7 : 1,
-                    whiteSpace: 'pre-wrap',
-                    marginLeft: `${depth * 20}px`,
-                    fontSize: line.isHeader ? '0.75rem' : '0.85rem',
-                    color: line.isHeader ? 'var(--accent)' : 'inherit',
-                    letterSpacing: line.isHeader ? '1px' : 'normal'
-                }}
-                dangerouslySetInnerHTML={{ __html: line.html }}
-            />
+            <div key={line.id} style={{ 
+                padding: '4px 10px', 
+                fontSize: '0.8rem', 
+                opacity: 0.6, 
+                borderBottom: '1px solid rgba(255,255,255,0.03)',
+                color: 'var(--accent)',
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+                marginTop: '8px'
+            }} dangerouslySetInnerHTML={{ __html: line.html }} />
         );
     };
 
     return (
-        <>
+        <div ref={drawerRef} className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape' : ''}`}>
+            <div className="drawer-header">
+                <div className="swipe-indicator" />
+                <span className="drawer-title">Equipment & Items</span>
+                <button className="close-btn" onClick={onClose}>✕</button>
+            </div>
+
+            <div className="drawer-content" onScroll={handleSectionScroll}>
+                <div className="drawer-section" data-drawer-section="equipmentlist">
+                    <div className="section-header">Equipment</div>
+                    {eqLines.map(line => renderLine(line, 'equipmentlist'))}
+                    {eqLines.length === 0 && <div className="empty-state">No equipment worn</div>}
+                </div>
+
+                <div className="drawer-section" data-drawer-section="inventorylist">
+                    <div className="section-header">Inventory</div>
+                    {inventoryLines.map(line => renderLine(line, 'inventorylist'))}
+                    {inventoryLines.length === 0 && <div className="empty-state">Inventory is empty</div>}
+                </div>
+            </div>
+
+            {isMendingMode && (
+                <div className="drawer-footer mending-footer" style={{
+                    padding: '12px',
+                    borderTop: '1px solid rgba(255,255,255,0.1)',
+                    display: 'flex',
+                    gap: '10px',
+                    background: 'rgba(0,0,0,0.3)',
+                    backdropFilter: 'blur(10px)'
+                }}>
+                    <button 
+                        className="footer-btn mend-cancel-btn"
+                        onClick={() => {
+                            setIsMendingMode(false);
+                            setMendingTarget(null);
+                            setSelectedMendItems(new Set());
+                        }}
+                        style={{
+                            flex: 1,
+                            padding: '12px',
+                            borderRadius: '8px',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            color: '#fff'
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        className="footer-btn mend-confirm-btn"
+                        disabled={selectedMendItems.size === 0}
+                        onClick={() => {
+                            const items = Array.from(selectedMendItems).map(id => {
+                                const line = [...eqLines, ...inventoryLines].find(l => l.id === id);
+                                if (!line) return null;
+                                const isEq = eqLines.some(l => l.id === id);
+                                return { handle: line.context || line.id, isEq };
+                            }).filter(Boolean);
+
+                            items.forEach((item, index) => {
+                                setTimeout(() => {
+                                    if (item?.isEq) {
+                                        executeCommand(`remove ${item.handle}`, false, false);
+                                        executeCommand(`mend ${item.handle}`, false, false);
+                                    } else {
+                                        executeCommand(`mend ${item?.handle}`, false, false);
+                                    }
+                                }, index * 350); // Stagger commands
+                            });
+
+                            setIsMendingMode(false);
+                            setMendingTarget(null);
+                            setSelectedMendItems(new Set());
+                            onClose();
+                        }}
+                        style={{
+                            flex: 2,
+                            padding: '12px',
+                            borderRadius: '8px',
+                            background: selectedMendItems.size > 0 ? 'var(--accent)' : 'rgba(255,255,255,0.02)',
+                            border: 'none',
+                            color: selectedMendItems.size > 0 ? '#000' : 'rgba(255,255,255,0.2)',
+                            fontWeight: 'bold',
+                            opacity: selectedMendItems.size > 0 ? 1 : 0.5
+                        }}
+                    >
+                        Mend Selected ({selectedMendItems.size})
+                    </button>
+                </div>
+            )}
+
             {draggedItem && (
                 <div 
                     ref={ghostRef}
+                    className="drag-ghost"
                     style={{
                         position: 'fixed',
                         left: 0,
                         top: 0,
-                        pointerEvents: 'none',
-                        zIndex: 99999,
                         transform: `translate3d(${draggedItem.x}px, ${draggedItem.y}px, 0) translate(-50%, -50%) scale(1.05)`,
-                        background: 'rgba(30, 40, 60, 0.7)',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        border: '2px solid var(--accent)',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                        opacity: 0.8,
-                        whiteSpace: 'nowrap',
-                        fontSize: '0.85rem',
-                        color: '#fff',
-                        visibility: 'visible',
-                        boxSizing: 'border-box',
-                        transition: 'none',
-                        willChange: 'transform'
-                    }} dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+                    }}
+                >
+                    <div className="ghost-content" dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+                    {draggedItem.commandLabel && <div className="ghost-label">{draggedItem.commandLabel}</div>}
+                </div>
             )}
-            <div
-                ref={drawerRef}
-                className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isNativeDragOver ? 'native-drag-over' : ''}`}
-                onDragOver={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.dataTransfer.dropEffect = 'move';
-                    if (!isNativeDragOver) setIsNativeDragOver(true);
-                }}
-                onDragLeave={() => setIsNativeDragOver(false)}
-                onDrop={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('[DEBUG] Drop Event on Drawer');
-                    setIsNativeDragOver(false);
-                    try {
-                        const jsonData = e.dataTransfer.getData('application/json');
-                        const textData = e.dataTransfer.getData('text/plain');
-                        console.log('[DEBUG] Drop Data (native):', { jsonData, textData });
-                        console.log('[DEBUG] Drop Data (global):', activeDragData);
-
-                        const dataStr = jsonData || textData;
-                        let data = activeDragData;
-
-                        if (!data && dataStr) {
-                            try {
-                                data = JSON.parse(dataStr);
-                            } catch (pErr) {
-                                console.error('[DEBUG] Failed to parse native data string');
-                            }
-                        }
-
-                        if (!data) {
-                            console.warn('[DEBUG] No data retrieved in drop');
-                            return;
-                        }
-
-                        console.log('[DEBUG] Final Data for Processing:', data);
-
-                        if (data && data.type === 'inline-btn' && (data.context || data.cmd === 'target')) {
-                            triggerHaptic(40);
-                            const noun = (data.cmd === 'target') ? '<target>' : data.context;
-                            console.log('[DEBUG] Executing Command:', `get ${noun}`);
-                            executeCommand(`get ${noun}`);
-
-                            // Flash the inventory section
-                            const invSection = drawerRef.current?.querySelector('[data-drawer-section="inventory"]');
-                            if (invSection) {
-                                invSection.classList.add('drop-flash');
-                                setTimeout(() => invSection.classList.remove('drop-flash'), 500);
-                            }
-                        }
-                    } catch (err) {
-                        console.error('[DEBUG] Drop Error:', err);
-                    }
-                }}
-                onPointerDown={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
-                    e.currentTarget.setPointerCapture(e.pointerId);
-                    (e.currentTarget as any)._startX = e.clientX;
-                    (e.currentTarget as any)._startY = e.clientY;
-                }}
-                onPointerUp={(e) => {
-                    const startX = (e.currentTarget as any)._startX;
-                    const startY = (e.currentTarget as any)._startY;
-                    if (startX !== undefined && startX !== null && !isDraggingRef.current) {
-                        const deltaX = e.clientX - startX;
-                        const deltaY = Math.abs(e.clientY - (startY || 0));
-                        if (deltaX > 20 && deltaX > deltaY) {
-                            triggerHaptic(40);
-                            onClose();
-                        }
-                    }
-                    (e.currentTarget as any)._startX = null;
-                    (e.currentTarget as any)._startY = null;
-                }}
-                onPointerCancel={(e) => {
-                    (e.currentTarget as any)._startX = null;
-                    (e.currentTarget as any)._startY = null;
-                }}
-                style={{ touchAction: draggedItem ? 'none' : 'pan-y' }}
-            >
-                {isPeeking && <div className="peek-indicator">DROP TO TARGET</div>}
-                <div className="drawer-header">
-                    <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>ITEMS</span>
-                    <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
-                </div>
-
-                <div className="drawer-content" style={{ display: 'flex', flexDirection: isLandscape ? 'row' : 'column', gap: isLandscape ? '15px' : '15px', flex: 1, overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '45px', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingLeft: '10px', zIndex: 100 }}>
-                        <div style={{ width: '6px', height: '80px', background: 'rgba(255,255,255,0.4)', borderRadius: '3px' }} />
-                    </div>
-
-                    <div
-                        data-drawer-section="equipment"
-                        className={`drawer-section ${activeDropTarget?.type === 'section' && activeDropTarget.id === 'equipment' ? 'drop-target-active' : ''}`}
-                        style={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            minHeight: 0,
-                            transition: 'all 0.2s ease',
-                            padding: '4px',
-                            borderRadius: '16px',
-                            background: activeDropTarget?.type === 'section' && activeDropTarget.id === 'equipment' ? 'rgba(255,255,100,0.05)' : 'transparent',
-                            border: activeDropTarget?.type === 'section' && activeDropTarget.id === 'equipment' ? '2px dashed rgba(255,255,100,0.4)' : '2px solid transparent'
-                        }}
-                    >
-                        <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'equipment' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>EQUIPMENT</div>
-                        <div className="drawer-section-content" data-drawer-section="equipment" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'transparent', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
-                            {(() => {
-                                const visibleLines: DrawerLine[] = [];
-                                const collapsedDepths: Set<number> = new Set();
-                                for (const line of eqLines) {
-                                    const depth = line.depth || 0;
-                                    Array.from(collapsedDepths).forEach(d => { if (d >= depth) collapsedDepths.delete(d); });
-                                    if (collapsedDepths.size > 0) continue;
-                                    visibleLines.push(line);
-                                    if (line.isContainer && !expandedContainers.has(line.id)) collapsedDepths.add(depth);
-                                }
-                                return visibleLines.map(line => renderLine(line, 'equipmentlist'));
-                            })()}
-                        </div>
-                    </div>
-                    {isLandscape && <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)', height: '100%' }} />}
-                    <div
-                        data-drawer-section="inventory"
-                        className={`drawer-section ${activeDropTarget?.type === 'section' && activeDropTarget.id === 'inventory' ? 'drop-target-active' : ''}`}
-                        style={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            minHeight: 0,
-                            transition: 'all 0.2s ease',
-                            padding: '4px',
-                            borderRadius: '16px',
-                            background: activeDropTarget?.type === 'section' && activeDropTarget.id === 'inventory' ? 'rgba(255,255,100,0.05)' : 'transparent',
-                            border: activeDropTarget?.type === 'section' && activeDropTarget.id === 'inventory' ? '2px dashed rgba(255,255,100,0.4)' : '2px solid transparent'
-                        }}
-                    >
-                        <div style={{ fontWeight: 'bold', color: activeDropTarget?.type === 'section' && activeDropTarget.id === 'inventory' ? '#ff0' : 'var(--accent)', marginBottom: '8px', borderBottom: '1px solid rgba(74, 222, 128, 0.3)', fontSize: '0.8rem', letterSpacing: '2px', flexShrink: 0, paddingBottom: '6px', transition: 'color 0.2s' }}>INVENTORY</div>
-                        <div className="drawer-section-content" data-drawer-section="inventory" onScroll={handleSectionScroll} style={{ flex: 1, overflow: draggedItem ? 'hidden' : 'auto', fontSize: '0.85rem', lineHeight: '1.5', background: 'transparent', padding: '10px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', WebkitOverflowScrolling: 'touch', touchAction: draggedItem ? 'none' : 'pan-y' }}>
-                            {(() => {
-                                const visibleLines: DrawerLine[] = [];
-                                const collapsedDepths: Set<number> = new Set();
-                                for (const line of inventoryLines) {
-                                    const depth = line.depth || 0;
-                                    Array.from(collapsedDepths).forEach(d => { if (d >= depth) collapsedDepths.delete(d); });
-                                    if (collapsedDepths.size > 0) continue;
-                                    visibleLines.push(line);
-                                    if (line.isContainer && !expandedContainers.has(line.id)) collapsedDepths.add(depth);
-                                }
-                                return visibleLines.map(line => renderLine(line, 'inventorylist'));
-                            })()}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
+        </div>
     );
 };

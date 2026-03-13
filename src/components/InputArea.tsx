@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
 import { useUI, useBaseGame } from '../context/GameContext';
@@ -114,6 +114,48 @@ const InputArea: React.FC<InputAreaProps> = ({
         }
     }, [input]);
 
+    // Use a ref for input to avoid closure issues in the event listener
+    const inputRefState = useRef(input);
+    useEffect(() => { inputRefState.current = input; }, [input]);
+
+    useEffect(() => {
+        const handlePasteEvent = (e: any) => {
+            const textToPaste = e.detail;
+            if (!textToPaste) return;
+            
+            const currentVal = inputRefState.current;
+            const trimmed = currentVal.trim();
+            const newVal = trimmed ? `${trimmed} ${textToPaste}` : textToPaste;
+            setInput(newVal);
+
+            // Use the DOM ref for immediate focus and selection
+            setTimeout(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    const len = inputRef.current.value.length;
+                    inputRef.current.setSelectionRange(len, len);
+                }
+            }, 50);
+        };
+
+        window.addEventListener('mume-input-paste', handlePasteEvent);
+        return () => window.removeEventListener('mume-input-paste', handlePasteEvent);
+    }, [setInput]);
+
+    const handleNativeDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
+        if (!dataStr) return;
+        
+        let text = dataStr;
+        try {
+            const parsed = JSON.parse(dataStr);
+            if (parsed && parsed.context) text = parsed.context;
+        } catch (err) {}
+        
+        window.dispatchEvent(new CustomEvent('mume-input-paste', { detail: text }));
+    };
+
     const handleParleyCommandClick = (e: React.MouseEvent) => {
         const rect = e.currentTarget.getBoundingClientRect();
         setPopoverState({
@@ -203,6 +245,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 startPos.current = null;
                 setOffset({ x: 0, y: 0 });
             }}
+            onDrop={handleNativeDrop}
             style={{
                 touchAction: 'none',
                 transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
