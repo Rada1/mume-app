@@ -1,0 +1,52 @@
+import { CaptureStage, CustomButton, MessageType, PopoverState } from '../../types';
+
+export interface InteractionDeps {
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
+    input: string;
+    setInput: (val: string) => void;
+    setTarget: (val: string | null) => void;
+    addMessage: (type: MessageType, text: string) => void;
+    triggerHaptic: (ms: number) => void;
+    btn: {
+        isEditMode: boolean;
+        setEditingButtonId: (id: string | null) => void;
+        setActiveSet: (setId: string) => void;
+        buttons: CustomButton[];
+        setButtons: (fn: (prev: CustomButton[]) => CustomButton[]) => void;
+    };
+    joystick: {
+        currentDir: string | null;
+        isTargetModifierActive: boolean;
+        setIsJoystickConsumed: (val: boolean) => void;
+    };
+    target: string | null;
+    popoverState: any;
+    setPopoverState: (val: any) => void;
+    setCommandPreview: (val: string | null) => void;
+    wasDraggingRef: React.RefObject<boolean>;
+    viewport: any;
+    setIsMapExpanded: (val: boolean) => void;
+    setIsCharacterOpen: (val: boolean) => void;
+    setIsItemsDrawerOpen: (val: boolean) => void;
+    setIsSettingsOpen: (val: boolean) => void;
+    setSettingsTab: (val: any) => void;
+    setInventoryLines: (val: any) => void;
+    setEqLines: (val: any) => void;
+    setStatsLines: (val: any) => void;
+    isWaitingForStats: React.MutableRefObject<boolean>;
+    isWaitingForEq: React.MutableRefObject<boolean>;
+    isWaitingForInv: React.MutableRefObject<boolean>;
+    captureStage: React.MutableRefObject<CaptureStage>;
+    ui: {
+        mapExpanded: boolean;
+        drawer: 'none' | 'character' | 'items';
+        setManagerOpen: boolean;
+        isDrawerPeeking: boolean;
+    };
+    setUI: React.Dispatch<React.SetStateAction<any>>;
+    setActiveDragData: (val: any) => void;
+    heldButton: any;
+    setHeldButton: React.Dispatch<React.SetStateAction<any>>;
+    parley: any;
+    setParley: React.Dispatch<React.SetStateAction<any>>;
+}
