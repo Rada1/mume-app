@@ -100,6 +100,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Perform ANSI stripping ONCE here and reuse the result everywhere.
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
+        
+        let content = textOnly;
+        let contentLower = lower;
 
         const currentRoomName = roomNameRef.current;
         const textOnlyRaw = textOnly;
