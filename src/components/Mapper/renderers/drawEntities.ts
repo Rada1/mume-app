@@ -2,25 +2,7 @@ import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
 
 // Pre-render glows for optimization
-let playerGlowCanvas: HTMLCanvasElement | null = null;
 let trailGlowCanvas: HTMLCanvasElement | null = null;
-
-const getPlayerGlow = () => {
-    if (playerGlowCanvas) return playerGlowCanvas;
-    const canvas = document.createElement('canvas');
-    const size = Math.round(GRID_SIZE * 2.5);
-    canvas.width = size; canvas.height = size;
-    const ctx = canvas.getContext('2d')!;
-    const center = size / 2;
-    const gradient = ctx.createRadialGradient(center, center, 0, center, center, size / 2);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.7)');
-    gradient.addColorStop(0.4, 'rgba(255, 255, 255, 0.3)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, size, size);
-    playerGlowCanvas = canvas;
-    return canvas;
-};
 
 const getTrailGlow = () => {
     if (trailGlowCanvas) return trailGlowCanvas;
@@ -40,26 +22,6 @@ const getTrailGlow = () => {
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
     return; // Gridlines disabled for a cleaner look
-    const { ctx, isDarkMode, camera, visitedAtCoord, unveilMap } = rCtx;
-    const s = GRID_SIZE;
-
-    if (camera.zoom < 0.15 || unveilMap) return; // Disable grid lines when map is revealed
-
-    ctx.beginPath();
-    ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.12)';
-    ctx.lineWidth = 1 / camera.zoom;
-    
-    // Optimize: Batch grid lines to reduce stroke calls
-    for (let gx = gX1; gx <= gX2; gx++) {
-        for (let gy = gY1; gy <= gY2; gy++) {
-            if (!visitedAtCoord[`${gx},${gy}`]) {
-                const x = gx * s, y = gy * s;
-                ctx.moveTo(x, y); ctx.lineTo(x + s, y);
-                ctx.moveTo(x, y); ctx.lineTo(x, y + s);
-            }
-        }
-    }
-    ctx.stroke();
 };
 
 export const drawEntities = (
@@ -72,7 +34,7 @@ export const drawEntities = (
     const trail = playerTrailRef.current;
     const tGlow = getTrailGlow();
 
-    // 1. Optimized Player Trail (No shadowBlur)
+    // 1. Optimized Player Trail
     if (trail.length > 0) {
         for (let i = 0; i < trail.length; i++) {
             const t = trail[i];
@@ -80,22 +42,25 @@ export const drawEntities = (
             if (zDist < 1.0) {
                 const alpha = Math.max(0, t.alpha * (1 - zDist));
                 ctx.globalAlpha = alpha;
-                const size = (2.5 + (t.alpha * 4)) * 3; // Glow radius
+                const size = (2.5 + (t.alpha * 4)) * 3;
                 ctx.drawImage(tGlow, t.x * GRID_SIZE + GRID_SIZE / 2 - size, t.y * GRID_SIZE + GRID_SIZE / 2 - size, size * 2, size * 2);
             }
         }
         ctx.globalAlpha = 1.0;
     }
 
-    // 2. Optimized Player (No shadowBlur, selective clipping)
+    // 2. Pulsing Player Orb (Authoritative Source)
     if (playerPosRef.current && Math.abs(playerPosRef.current.z - currentZ) < 1.0) {
         const px = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2, py = playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2;
         const alpha = Math.max(0, 1 - Math.abs(playerPosRef.current.z - currentZ));
         
+        const pulse = (Math.sin(rCtx.now / 300) + 1) / 2; // 0 to 1 pulse
+        const orbRadius = 8 + (pulse * 2);
+        
         ctx.save();
         ctx.globalAlpha = alpha;
         
-        // Wall-aware clipping: Only if zoomed in (too expensive for wide view)
+        // Wall-aware clipping: Only if zoomed in
         if (rCtx.camera.zoom > 0.1) {
             const room = activeId ? (allRooms[activeId] || allRooms[`m_${activeId}`]) : null;
             let exits = room?.exits;
@@ -117,14 +82,23 @@ export const drawEntities = (
             }
         }
 
-        const pGlow = getPlayerGlow();
-        ctx.drawImage(pGlow, px - pGlow.width / 2, py - pGlow.height / 2);
+        // Draw Layered Glowing Orb
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, orbRadius * 2.5);
+        grad.addColorStop(0, '#ef4444'); // Solid red core
+        grad.addColorStop(0.4, 'rgba(239, 68, 68, 0.6)'); // Inner glow
+        grad.addColorStop(1, 'rgba(239, 68, 68, 0)'); // Outer fade
         
-        // Solid Player Dot
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(px, py, orbRadius * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Solid core for sharp focus
         ctx.fillStyle = '#ef4444';
         ctx.beginPath();
-        ctx.arc(px, py, 8, 0, Math.PI * 2);
+        ctx.arc(px, py, orbRadius, 0, Math.PI * 2);
         ctx.fill();
+        
         ctx.restore();
 
         // 3. Walk Target & Path Highlighting
@@ -145,27 +119,23 @@ export const drawEntities = (
             if (tx !== undefined && ty !== undefined && Math.abs(tz - currentZ) < 1.0) {
                 const targetX = tx * GRID_SIZE, targetY = ty * GRID_SIZE;
                 
-                // Target Highlight (White Border)
                 ctx.save();
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 3 / rCtx.camera.zoom;
                 ctx.setLineDash([]);
                 ctx.strokeRect(targetX - 2, targetY - 2, GRID_SIZE + 4, GRID_SIZE + 4);
                 
-                // White outer glow
                 ctx.shadowColor = '#ffffff';
                 ctx.shadowBlur = 15;
                 ctx.strokeRect(targetX - 2, targetY - 2, GRID_SIZE + 4, GRID_SIZE + 4);
                 ctx.restore();
 
-                // Path Line (Dashed White)
                 ctx.save();
                 ctx.beginPath();
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
                 ctx.lineWidth = 2 / rCtx.camera.zoom;
                 ctx.setLineDash([5 / rCtx.camera.zoom, 5 / rCtx.camera.zoom]);
                 
-                // If we have a full path, follow it
                 if (rCtx.walkPath && rCtx.walkPath.length > 0) {
                     ctx.moveTo(px, py);
                     rCtx.walkPath.forEach((stepId) => {
@@ -185,7 +155,6 @@ export const drawEntities = (
                         }
                     });
                 } else {
-                    // Fallback to direct line if no path but target exists
                     ctx.moveTo(px, py);
                     ctx.lineTo(targetX + GRID_SIZE / 2, targetY + GRID_SIZE / 2);
                 }
@@ -216,7 +185,6 @@ export const drawMarkers = (
         
         ctx.save();
         if (mP < 1) {
-            // Animation phase: still uses some math but restricted
             const mR = dotSize * 6 * mP; 
             ctx.beginPath(); 
             for (let i = 0; i < 10; i++) {
@@ -232,14 +200,12 @@ export const drawMarkers = (
         ctx.fillStyle = isSelected ? '#ef4444' : '#000000'; 
         ctx.beginPath();
         if (mP < 1) {
-            // Animated irregular shape
             for (let i = 0; i < 8; i++) {
                 const angle = (i / 8) * Math.PI * 2;
                 const jitter = (getSeed(mSeed + i, 0) - 0.5) * (dotSize * 0.4);
                 ctx.lineTo(mx + Math.cos(angle) * (dotSize + jitter), my + Math.sin(angle) * (dotSize + jitter));
             }
         } else {
-            // Optimized static circle for established markers
             ctx.arc(mx, my, dotSize, 0, Math.PI * 2);
         }
         ctx.closePath(); 

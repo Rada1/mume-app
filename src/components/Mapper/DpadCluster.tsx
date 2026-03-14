@@ -21,7 +21,6 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
         handleJoystickStart,
         handleJoystickMove,
         handleJoystickEnd,
-        swipeRay,
         currentDir
     } = joystick || {};
 
@@ -53,23 +52,17 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
     }, [handleJoystickEnd, executeCommand, triggerHaptic]);
 
     return (
-        <div className="dpad-container-with-sidebar" style={{ pointerEvents: 'none' }}>
+        <div 
+            className="dpad-container-with-sidebar" 
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={joystick.handleJoystickCancel}
+        >
             <TrackpadSwipeWheel 
-                active={!!swipeRay?.active} 
+                active={joystick.joystickActive} 
                 currentDir={currentDir || null} 
             />
-            
-            {swipeRay?.active && (
-                <div 
-                    className="swipe-ray active" 
-                    style={{ 
-                        left: '50%',
-                        top: '50%',
-                        transform: `translate(-50%, -100%) rotate(${swipeRay.angle}deg)`,
-                        height: `${swipeRay.dist}px`
-                    }} 
-                />
-            )}
         </div>
     );
 };

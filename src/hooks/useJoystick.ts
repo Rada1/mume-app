@@ -16,14 +16,26 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const touchStartPos = useRef<{ x: number, y: number } | null>(null);
     const lockedDirRef = useRef<Direction | null>(null);
     const repeatMoveTimer = useRef<NodeJS.Timeout | null>(null);
-    const lastRepeatDirRef = useRef<Direction | null>(null);
+    const lastRepeatDirRef = useRef<string | null>(null);
+    const lastSentDirRef = useRef<Direction | null>(null);
 
     // Command Execution Ref
     const executeCommandRef = useRef<((cmd: string) => void) | null>(null);
 
     const dirMap: Record<string, string> = {
         n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
-        ne: 'northeast', nw: 'up', se: 'down', sw: 'southwest'
+        ne: 'northeast', nw: 'northwest', se: 'southeast', sw: 'southwest'
+    };
+
+    const REDIRECTION_MATRIX: Record<string, string[]> = {
+        n: ['nw', 'ne'],
+        s: ['sw', 'se'],
+        e: ['ne', 'se'],
+        w: ['nw', 'sw'],
+        ne: ['n', 'e'],
+        nw: ['w', 'n'],
+        se: ['e', 's'],
+        sw: ['s', 'w']
     };
 
     const stopRepeatTimer = useCallback(() => {
@@ -41,6 +53,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             if (executeCommandRef.current && currentLockedDir) {
                 const cmd = dirMap[currentLockedDir] || currentLockedDir;
                 executeCommandRef.current(cmd);
+                lastSentDirRef.current = currentLockedDir;
                 setIsJoystickConsumed(true);
                 triggerHaptic(10);
                 
@@ -100,21 +113,77 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         // 8 wedges of 45 degrees each
         if (angleDeg >= 337.5 || angleDeg < 22.5) dir = 'e';
-        else if (angleDeg >= 22.5 && angleDeg < 67.5) dir = 'se'; // Down
+        else if (angleDeg >= 22.5 && angleDeg < 67.5) dir = 'se';
         else if (angleDeg >= 67.5 && angleDeg < 112.5) dir = 's';
-        else if (angleDeg >= 112.5 && angleDeg < 157.5) {
-            if (lastDir === 's') dir = 'w';
-            else if (lastDir === 'w') dir = 's';
-            else dir = (angleDeg > 135) ? 'w' : 's';
-        }
+        else if (angleDeg >= 112.5 && angleDeg < 157.5) dir = 'sw';
         else if (angleDeg >= 157.5 && angleDeg < 202.5) dir = 'w';
-        else if (angleDeg >= 202.5 && angleDeg < 247.5) dir = 'nw'; // Up
+        else if (angleDeg >= 202.5 && angleDeg < 247.5) dir = 'nw';
         else if (angleDeg >= 247.5 && angleDeg < 292.5) dir = 'n';
-        else if (angleDeg >= 292.5 && angleDeg < 337.5) {
-            if (lastDir === 'e') dir = 'n';
-            else if (lastDir === 'n') dir = 'e';
-            else dir = (angleDeg > 315) ? 'e' : 'n';
-        }
+        else if (angleDeg >= 292.5 && angleDeg < 337.5) dir = 'ne';
+
+        // --- Magnetic Steering Logic ---
+        const mapToGameExit = (d: string) => {
+            if (d === 'nw' && availableExits.includes('u')) return 'u';
+            if (d === 'se' && availableExits.includes('d')) return 'd';
+            return d;
+        };
+
+        const getMagneticDir = (intended: string): Direction | null => {
+            const mapped = mapToGameExit(intended);
+            const isMutedDiag = ['ne', 'sw'].includes(intended);
+            
+            // 1. Muted Zones (NE/SW) always try neighbors first to act as cardinal bridges.
+            if (isMutedDiag) {
+                const neighbors = REDIRECTION_MATRIX[intended] || [];
+                const availableNeighbors = neighbors.filter(n => availableExits.includes(n));
+                
+                if (availableNeighbors.length > 0) {
+                    if (availableNeighbors.length === 1) return availableNeighbors[0] as Direction;
+                    if (lastSentDirRef.current) {
+                        const change = availableNeighbors.find(n => n !== lastSentDirRef.current);
+                        if (change) return change as Direction;
+                    }
+                    return availableNeighbors[0] as Direction;
+                }
+            }
+
+            // 2. Exact match (Cardinals and unmuted NW/SE).
+            if (availableExits.includes(mapped)) {
+                // If it's a corner swipe, check if we should "Favor Change" to a cardinal neighbor.
+                const isAnyDiag = ['ne', 'nw', 'se', 'sw'].includes(intended);
+                if (isAnyDiag) {
+                     const neighbors = REDIRECTION_MATRIX[intended] || [];
+                     const availableNeighbors = neighbors.filter(n => availableExits.includes(n));
+                     if (availableNeighbors.length >= 2 && lastSentDirRef.current) {
+                         const change = availableNeighbors.find(n => n !== lastSentDirRef.current);
+                         if (change) return change as Direction;
+                     }
+                }
+                return mapped as Direction;
+            }
+
+            // 3. Magnetic Redirection (Dead-Zone Protection).
+            const neighbors = REDIRECTION_MATRIX[intended] || [];
+            const candidates = neighbors.map(mapToGameExit).filter(n => availableExits.includes(n));
+
+            if (candidates.length === 0) {
+                // Fallback: If neighbors are blocked, but the diagonal itself exists and isn't muted.
+                if (!isMutedDiag && availableExits.includes(mapped)) return mapped as Direction;
+                return null;
+            }
+            if (candidates.length === 1) return candidates[0] as Direction;
+
+            // 4. Favor Change (Intelligent Redirection).
+            if (lastSentDirRef.current) {
+                const change = candidates.find(c => c !== lastSentDirRef.current);
+                if (change) return change as Direction;
+            }
+
+            return candidates[0] as Direction;
+        };
+
+        const steeredDir = dir ? getMagneticDir(dir) : null;
+        dir = steeredDir;
 
         let threshold = 25;
         if (dir === 'nw' && !availableExits.includes('u')) threshold = 60;
@@ -219,11 +288,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             else if (initialDir === 'se' && !availableExits.includes('d')) threshold = 60;
 
             if (dist >= threshold && initialDir) {
-                const dirMap: Record<string, string> = {
-                    n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
-                    ne: 'northeast', nw: 'up', se: 'down', sw: 'southwest'
-                };
                 executeCommand(dirMap[initialDir] || initialDir);
+                lastSentDirRef.current = initialDir;
                 // Removed release haptic for move
                 setJoystickGlow(true);
                 setTimeout(() => setJoystickGlow(false), 300);
