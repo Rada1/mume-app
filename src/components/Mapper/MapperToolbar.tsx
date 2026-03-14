@@ -114,7 +114,9 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                 }}
                 onClick={(e) => {
                     e.stopPropagation();
-                    if (typeof window !== 'undefined') {
+                    if (onUndock && !isMapFloating) {
+                        onUndock();
+                    } else if (typeof window !== 'undefined') {
                         window.dispatchEvent(new CustomEvent(isMapFloating ? 'mume-mapper-dock' : 'mume-mapper-undock'));
                     }
                 }}
