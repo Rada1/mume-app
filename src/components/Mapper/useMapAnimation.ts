@@ -19,6 +19,7 @@ interface AnimationProps {
     stableRoomIdRef: React.MutableRefObject<string | null>;
     stableMarkersRef: React.MutableRefObject<Record<string, any>>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
+    preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     preMoveRef?: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
     walkTargetId?: string | null;
     walkPath?: string[];
@@ -27,8 +28,8 @@ interface AnimationProps {
 export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, 
-    stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preMoveRef,
-    walkTargetId, walkPath
+    stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preloadedCoordsRef,
+    preMoveRef, walkTargetId, walkPath
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
@@ -76,7 +77,15 @@ export const useMapAnimation = ({
 
         // 1. Process Queue - if room changed, add to queue
         if (targetId && targetId !== lastProcessedRoomIdRef.current && roomsData) {
-            const newTarget = roomsData[targetId];
+            let newTarget = roomsData[targetId];
+            if (!newTarget) {
+                const rawId = targetId.startsWith('m_') ? targetId.substring(2) : targetId;
+                const pData = preloadedCoordsRef.current[rawId];
+                if (pData) {
+                    newTarget = { x: pData[0], y: pData[1], z: pData[2] || 0 };
+                }
+            }
+
             if (newTarget) {
                 // If this is a real GMCP update (not a preMove) and it differs from what we processed last,
                 // we might need to clear the queue if it was a prediction miss.
@@ -95,7 +104,12 @@ export const useMapAnimation = ({
                         // Intermediate rooms between last and current in the path
                         for (let i = lastIdx + 1; i <= currentIdx; i++) {
                             const stepId = walkPath[i];
-                            const step = roomsData[stepId];
+                            let step = roomsData[stepId];
+                            if (!step) {
+                                const rawStepId = stepId.startsWith('m_') ? stepId.substring(2) : stepId;
+                                const pStepData = preloadedCoordsRef.current[rawStepId];
+                                if (pStepData) step = { x: pStepData[0], y: pStepData[1], z: pStepData[2] || 0 };
+                            }
                             if (step) animationQueueRef.current.push({ x: step.x, y: step.y, z: step.z || 0 });
                         }
                     } else {
@@ -118,6 +132,13 @@ export const useMapAnimation = ({
             const dx = targetX - px, dy = targetY - py;
             const distSq = dx * dx + dy * dy;
 
+            // Teleportation Threshold: If distance > 20 rooms, snap immediately
+            if (distSq > 400) {
+                playerPosRef.current.x = targetX;
+                playerPosRef.current.y = targetY;
+                playerPosRef.current.z = target.z;
+                animationQueueRef.current.shift();
+                needsNextFrame = true;
             if (distSq > 0.0000001) {
                 const lerpFactor = 1 - Math.pow(0.85, frameScale);
                 playerPosRef.current.x += dx * lerpFactor;
@@ -134,7 +155,8 @@ export const useMapAnimation = ({
                     if (playerTrailRef.current.length > 30) playerTrailRef.current.shift();
                 }
 
-                if (distSq < 0.002) {
+                // Snap threshold: If we are very close, just finish the move
+                if (distSq < 0.005) {
                     playerPosRef.current.x = targetX;
                     playerPosRef.current.y = targetY;
                     animationQueueRef.current.shift();
@@ -147,11 +169,27 @@ export const useMapAnimation = ({
 
         // 3. Fallback: if queue is empty but player is not at targetId
         if (targetId && animationQueueRef.current.length === 0 && playerPosRef.current && roomsData) {
-            const target = roomsData[targetId];
+            let target = roomsData[targetId];
+            if (!target) {
+                const rawId = targetId.startsWith('m_') ? targetId.substring(2) : targetId;
+                const pData = preloadedCoordsRef.current[rawId];
+                if (pData) {
+                    target = { x: pData[0], y: pData[1], z: pData[2] || 0 };
+                }
+            }
+
             if (target) {
                 const dx = target.x - playerPosRef.current.x;
                 const dy = target.y - playerPosRef.current.y;
-                if (Math.abs(dx) > 0.01 || Math.abs(dy) > 0.01) {
+                const dsq = dx * dx + dy * dy;
+
+                if (dsq > 400) {
+                    // Teleport snap
+                    playerPosRef.current.x = target.x;
+                    playerPosRef.current.y = target.y;
+                    playerPosRef.current.z = target.z || 0;
+                    needsNextFrame = true;
+                } else if (dsq > 0.001) {
                     const lerpFactor = 1 - Math.pow(0.88, frameScale);
                     playerPosRef.current.x += dx * lerpFactor;
                     playerPosRef.current.y += dy * lerpFactor;

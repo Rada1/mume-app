@@ -124,12 +124,14 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                         <button onClick={() => { triggerHaptic(20); setUI(prev => ({ ...prev, mapExpanded: false })); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
                     </div>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
-                        <Mapper
-                            ref={mapperRef}
-                            characterName={characterName || ''}
-                            isMobile={viewport.isMobile}
-                            isExpanded={true}
-                        />
+                        {ui.mapExpanded && (
+                            <Mapper
+                                ref={mapperRef}
+                                characterName={characterName || ''}
+                                isMobile={viewport.isMobile}
+                                isExpanded={true}
+                            />
+                        )}
                     </div>
                 </div>
             )}

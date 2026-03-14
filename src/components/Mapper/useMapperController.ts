@@ -4,7 +4,7 @@ import { useMapData } from './hooks/useMapData';
 import { useMapPersistence } from './hooks/useMapPersistence';
 import { useMapActions } from './hooks/useMapActions';
 import { useMapGmcphandlers } from './hooks/useMapGmcphandlers';
-import { getGateState } from './mapperUtils';
+import { getGateState, DIRS } from './mapperUtils';
 
 export const useMapperController = (characterName: string | null, ref: React.Ref<any>, options: { onRecenter?: () => void, triggerRender?: () => void } = {}) => {
     const { executeCommand, showDebugEchoes } = useGame();
@@ -35,7 +35,9 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
     const firstExploredAtRef = useRef<Record<string, number>>({});
 
     // Initial Loading
-    const loadMasterMap = useCallback(async () => {
+    const hasLoadedRef = useRef(false);
+    const loadMasterMap = useCallback(async (force = false) => {
+        if (hasLoadedRef.current && !force) return;
         try {
             const res = await fetch('/mume_map_data.json?v=' + Date.now());
             if (!res.ok) throw new Error('No preloaded map data');
@@ -75,6 +77,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             if (showDebugEchoes) {
                 addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
             }
+            hasLoadedRef.current = true;
         } catch (err) {
             console.warn("[Mapper] Could not load master map data:", err);
             preloadedCoordsRef.current = {};
@@ -84,7 +87,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         }
     }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
 
-    useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
+    useEffect(() => { loadMasterMap(); }, []);
 
     // Persistence
     useMapPersistence({
@@ -121,6 +124,140 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         pendingMovesRef.current.push(move);
     }, []);
 
+
+
+    const handleMoveConfirmed = useCallback((e?: any) => {
+        const isDark = e?.detail?.isDark || false;
+        const now = Date.now();
+        
+        // Clear stale moves (> 5s)
+        while (pendingMovesRef.current.length > 0 && now - pendingMovesRef.current[0].time > 5000) {
+            pendingMovesRef.current.shift();
+        }
+
+        if (pendingMovesRef.current.length > 0) {
+            const move = pendingMovesRef.current[0]; 
+            if (move && currentRoomIdRef.current) {
+                const currentRoom = roomsRef.current[currentRoomIdRef.current];
+                const d = (DIRS as any)[move.dir];
+                
+                if (!d) {
+                    console.warn(`[Mapper] Invalid direction in pending move: ${move.dir}`);
+                    return;
+                }
+
+                // Enforce strict integer grid for all predictions
+                const startX = currentRoom ? Math.round(currentRoom.x) : 0;
+                const startY = currentRoom ? Math.round(currentRoom.y) : 0;
+                const startZ = currentRoom ? Math.round(currentRoom.z || 0) : 0;
+
+                let targetId = currentRoom?.exits[move.dir]?.target;
+                let ghostData = null;
+
+                // 1. Prediction via ArdaMap (ONLY for lit rooms)
+                if (!isDark && !targetId && currentRoomIdRef.current?.startsWith('m_')) {
+                    const vnum = currentRoomIdRef.current.substring(2);
+                    const ardaMapping = preloadedCoordsRef.current[vnum];
+                    if (ardaMapping && ardaMapping[4] && ardaMapping[4][move.dir]) {
+                        const targetVnum = String(ardaMapping[4][move.dir]);
+                        targetId = `m_${targetVnum}`;
+                        ghostData = preloadedCoordsRef.current[targetVnum];
+                    }
+                }
+
+                // 2. Prediction via Coordinates (Strict Integer Adjacency)
+                if (!targetId && currentRoom) {
+                    const px = startX + (d.dx || 0);
+                    const py = startY + (d.dy || 0);
+                    const pz = startZ + (d.dz || 0);
+                    const neighbor = Object.values(roomsRef.current).find(r => 
+                        Math.round(r.x) === px && Math.round(r.y) === py && Math.abs(Math.round(r.z || 0) - pz) < 0.5 && r.zone === currentRoom.zone
+                    );
+                    if (neighbor) targetId = neighbor.id;
+                }
+
+                // If authoritative movement is needed (Dark) or just visual (Light)
+                if (targetId || isDark) {
+                    const predX = ghostData ? Math.round(ghostData[0]) : (startX + (d.dx || 0));
+                    const predY = ghostData ? Math.round(ghostData[1]) : (startY + (d.dy || 0));
+                    const predZ = ghostData ? Math.round(ghostData[2]) : (startZ + (d.dz || 0));
+
+                    if (!targetId) {
+                        targetId = `ghost_${predX}_${predY}_${predZ}`;
+                    }
+
+                    if (isDark) {
+                        // For dark moves, the parser's confirmation is our only signal.
+                        pendingMovesRef.current.shift();
+                        if (showDebugEchoes) {
+                            const debugInfo = ghostData ? `Snap to Arda: ${predX},${predY}` : `Relative: ${startX},${startY} -> ${predX},${predY}`;
+                            addMessage?.('system', `[Mapper][DEBUG] Dark Move: ${move.dir} | ${debugInfo}`);
+                        }
+                        
+                        const targetIdVal = targetId; // Stable reference for updater
+                        setRooms(prev => {
+                            const currentId = currentRoomIdRef.current;
+                            let next = { ...prev };
+                            
+                            // 1. Create target room if it doesn't exist
+                            if (!next[targetIdVal]) {
+                                next[targetIdVal] = {
+                                    id: targetIdVal,
+                                    gmcpId: targetIdVal.startsWith('m_') ? Number(targetIdVal.substring(2)) : 0,
+                                    name: ghostData ? ghostData[5] : 'Unknown Room (Dark)',
+                                    desc: ghostData ? ghostData[9]?.[0] || "" : "",
+                                    x: predX, y: predY, z: predZ,
+                                    zone: ghostData ? ghostData[10] || currentRoom?.zone || "Unknown" : (currentRoom?.zone || "Unknown"),
+                                    terrain: ghostData ? (ghostData[11] || "Field") : (currentRoom?.terrain || "Field"),
+                                    exits: {}, createdAt: Date.now()
+                                };
+                            }
+
+                            // 2. Link current -> target
+                            if (currentId && next[currentId]) {
+                                next[currentId] = {
+                                    ...next[currentId],
+                                    exits: {
+                                        ...next[currentId].exits,
+                                        [move.dir]: { 
+                                            target: targetIdVal,
+                                            gmcpDestId: targetIdVal.startsWith('m_') ? Number(targetIdVal.substring(2)) : undefined
+                                        }
+                                    }
+                                };
+                            }
+
+                            // 3. Link target -> current (if direction has an opposite)
+                            if (currentId && next[targetIdVal] && d.opp) {
+                                next[targetIdVal] = {
+                                    ...next[targetIdVal],
+                                    exits: {
+                                        ...next[targetIdVal].exits,
+                                        [d.opp]: { 
+                                            target: currentId,
+                                            gmcpDestId: currentId.startsWith('m_') ? Number(currentId.substring(2)) : undefined
+                                        }
+                                    }
+                                };
+                            }
+
+                            return next;
+                        });
+                        
+                        setCurrentRoomId(targetIdVal);
+                        currentRoomIdRef.current = targetIdVal;
+                        preMoveRef.current = null;
+                    } else {
+                        // In lit rooms, we only set the preMove for visual gliding.
+                        // We DO NOT shift pendingMovesRef here; handleRoomInfo will do that authoritativeley.
+                        preMoveRef.current = { dir: move.dir, targetId: targetId, time: Date.now() };
+                    }
+                    options.triggerRender?.();
+                }
+            }
+        }
+    }, [setCurrentRoomId, currentRoomIdRef, roomsRef, preloadedCoordsRef, options, setRooms, showDebugEchoes, addMessage]);
+
     useImperativeHandle(ref, () => ({
         handleRoomInfo,
         handleAddRoom,
@@ -128,13 +265,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         handleUpdateExits,
         handleTerrain,
         handleResetAndSync,
-        discoverySourceRef,
-        firstExploredAtRef,
-        pushPendingMove,
-        pushPreMove: (dir: string, targetId: string) => {
-            preMoveRef.current = { dir, targetId, time: Date.now() };
-            options.triggerRender?.();
-        },
+        handleMoveConfirmed,
         handleMoveFailure: () => {
             // Remove the most recent pending move since it failed
             pendingMovesRef.current.shift();
@@ -144,8 +275,15 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         handleCenterOnPlayer: options.onRecenter,
         stableRoomIdRef: currentRoomIdRef,
         stableRoomsRef: roomsRef,
-        preloadedCoordsRef: preloadedCoordsRef
-    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef, pushPendingMove]);
+        preloadedCoordsRef,
+        discoverySourceRef,
+        firstExploredAtRef,
+        pushPendingMove,
+        pushPreMove: (dir: string, targetId: string) => {
+            preMoveRef.current = { dir, targetId, time: Date.now() };
+            options.triggerRender?.();
+        },
+    }), [handleRoomInfo, handleAddRoom, handleDeleteRoom, handleUpdateExits, handleTerrain, handleResetAndSync, handleMoveConfirmed, options.onRecenter, currentRoomIdRef, roomsRef, preloadedCoordsRef, pushPendingMove, options.triggerRender]);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -153,6 +291,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         const onExits = (e: any) => handleUpdateExits(e.detail);
         const onTerrain = (e: any) => handleTerrain(e.detail);
         const onPush = (e: any) => pushPendingMove(e.detail);
+        const onConfirm = (e: any) => handleMoveConfirmed(e);
         const onPre = (e: any) => {
             preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() };
             options.triggerRender?.();
@@ -167,6 +306,7 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
         window.addEventListener('mume-mapper-update-exits', onExits);
         window.addEventListener('mume-mapper-terrain', onTerrain);
         window.addEventListener('mume-mapper-push-move', onPush);
+        window.addEventListener('mume-mapper-move-confirmed', onConfirm);
         window.addEventListener('mume-mapper-push-pre-move', onPre);
         window.addEventListener('mume-mapper-move-fail', onFail);
 
@@ -175,10 +315,11 @@ export const useMapperController = (characterName: string | null, ref: React.Ref
             window.removeEventListener('mume-mapper-update-exits', onExits);
             window.removeEventListener('mume-mapper-terrain', onTerrain);
             window.removeEventListener('mume-mapper-push-move', onPush);
+            window.removeEventListener('mume-mapper-move-confirmed', onConfirm);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
             window.removeEventListener('mume-mapper-move-fail', onFail);
         };
-    }, [handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove]);
+    }, [handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed]);
 
     return {
         rooms, setRooms, markers, setMarkers, exploredVnums, setExploredVnums, exploredRef,

@@ -11,12 +11,21 @@ export const useMapperPlayerTracking = (
     playerTrailRef: MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>,
     lastRoomIdRef: MutableRefObject<string | null>,
     triggerRender: () => void,
-    setViewZ: (z: number | null) => void
+    setViewZ: (z: number | null) => void,
+    preloadedCoordsRef: MutableRefObject<Record<string, any>>
 ) => {
     // Handle Player Position & Trail
     useEffect(() => {
-        if (currentRoomId && rooms[currentRoomId]) {
-            const r = rooms[currentRoomId];
+        let r = currentRoomId ? rooms[currentRoomId] : null;
+        if (!r && currentRoomId) {
+            const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
+            const pData = preloadedCoordsRef.current[rawId];
+            if (pData) {
+                r = { x: pData[0], y: pData[1], z: pData[2] || 0 };
+            }
+        }
+
+        if (currentRoomId && r) {
             if (playerPosRef.current) {
                 // Add old position to trail
                 playerTrailRef.current.push({

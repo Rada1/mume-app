@@ -49,7 +49,6 @@ export const useGmcpHandlers = ({
     // --- Room Info & Exits ---
 
     const onRoomInfo = useCallback((data: GmcpRoomInfo) => {
-        mapperRef.current?.handleRoomInfo(data);
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-room-info', { detail: data }));
         const terrain = data.terrain || data.environment;
         if (terrain) setCurrentTerrain(terrain);
@@ -61,22 +60,25 @@ export const useGmcpHandlers = ({
     }, [mapperRef, setCurrentTerrain, setRoomName, setRoomExits, setDiscoveredItems]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
-        mapperRef.current?.handleUpdateExits(data);
         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-update-exits', { detail: data }));
         if (data.exits) {
             setRoomExits(Object.keys(data.exits));
         }
-    }, [mapperRef, setRoomExits]);
+    }, [setRoomExits]);
 
     // --- Character Status ---
 
     const onCharVitals = useCallback((data: GmcpCharVitals) => {
         if (data.terrain) {
-            mapperRef.current?.handleTerrain(data.terrain);
-            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
+                // Terrain change via GMCP is a strong signal of a successful move 
+                // if Room.Info was suppressed (e.g. in the dark).
+                window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed'));
+            }
             setCurrentTerrain(data.terrain);
         }
-    }, [mapperRef, setCurrentTerrain]);
+    }, [setCurrentTerrain]);
 
     // --- Room Occupants & Items ---
 

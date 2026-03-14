@@ -75,15 +75,11 @@ export function useGameParser(deps: UseGameParserDeps) {
             
             if (currentStage === 'eq' && eqLen > 0) {
                 // Buffer is already pushed incrementally, so we just clear it here.
-                // Note: We don't call setEqLines again with the buffer because then 
-                // nested items injected into the drawer would be wiped out.
                 tempEqRef.current = []; 
             } else if (currentStage === 'inv' && invLen > 0) {
                 // Buffer is already pushed incrementally, so we just clear it here.
                 tempInvRef.current = []; 
             } else if (currentStage === 'eq' || currentStage === 'inv') {
-                // If it was eq or inv but len was 0, it might be an empty list or an accidental trigger.
-                // We DON'T clear the buffers if they are already empty to avoid "resetting" state if we re-enter.
                 console.log(`[Parser] ${currentStage} finalized with 0 items. Keeping existing lines.`);
             }
             
@@ -104,6 +100,20 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Perform ANSI stripping ONCE here and reuse the result everywhere.
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
+
+        const currentRoomName = roomNameRef.current;
+        const textOnlyRaw = textOnly;
+        const lowerRaw = lower;
+
+        let isRoomMatched = currentRoomName && (
+            textOnly === currentRoomName ||
+            lower === currentRoomName.toLowerCase() ||
+            textOnly === currentRoomName + '.' ||
+            lower === currentRoomName.toLowerCase() + '.' ||
+            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
+        );
+        let isRoomAnsiMatch = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
+        let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
         // Use strictly > as terminator to avoid header colons
         const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>]\s*/;
@@ -144,10 +154,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
         }
 
-        const currentRoomName = roomNameRef.current;
-        const textOnlyRaw = textOnly;
-        const lowerRaw = lower;
-
         // SPLIT logic
         if (currentRoomName && (textOnlyRaw.startsWith(currentRoomName) || lowerRaw.startsWith(currentRoomName.toLowerCase()))) {
             const headerPart = textOnlyRaw.startsWith(currentRoomName) ? currentRoomName : textOnlyRaw.substring(0, currentRoomName.length);
@@ -167,20 +173,21 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
         }
 
-        let isRoomMatched = currentRoomName && (
-            textOnly === currentRoomName ||
-            lower === currentRoomName.toLowerCase() ||
-            textOnly === currentRoomName + '.' ||
-            lower === currentRoomName.toLowerCase() + '.' ||
-            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
-        );
-        let isRoomAnsiMatch = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
-        let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
-
         if (isRoomName && captureStage.current === 'none' && !isWaitingForStats.current && !isWaitingForEq.current && !isWaitingForInv.current) {
             captureStage.current = 'none';
             isDrawerCapture.current = 0;
             isSilentCapture.current = 0;
+
+            const isSameRoom = currentRoomName && (textOnly === currentRoomName || lower === currentRoomName.toLowerCase());
+            if (!isSameRoom) {
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', { detail: { isDark: false } }));
+                }
+            }
+        } else if (textOnly.includes('It is pitch black...') || textOnly.includes('You cannot see a thing!')) {
+             if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed', { detail: { isDark: true } }));
+            }
         }
 
         if (captureStage.current === 'none') {
@@ -215,7 +222,6 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (stopMovementMsg) {
             setRumble(true);
             triggerHaptic(40);
-            mapperRef.current?.handleMoveFailure();
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-move-fail'));
             setTimeout(() => setRumble(false), 300);
         }
@@ -241,7 +247,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             isWaitingForInv.current = false; (captureStage as any).current = 'inv'; containerStackRef.current = [];
             tempInvRef.current = [];
             isDrawerCapture.current = 1;
-            // Ensure other buffer is NOT cleared if it has data but we are starting a NEW stage
         }
         if (lower.includes('skill / spell') || lower.includes('knowledge') || (lower.includes('sessions') && lower.includes('practice'))) {
             if (deps.practice.isUiRequested) {
@@ -267,7 +272,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log('[Parser] Entering Stage: who');
             addDiagnosticLog?.('Entering Stage: who');
             (captureStage as any).current = 'who';
-            setWhoList([]); // Clear when list starts
+            setWhoList([]); 
         }
 
         if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
@@ -277,20 +282,17 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'where';
         }
 
-        // Detect container header: "In a large sack (in inventory):"
         if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
             console.log('[Parser] Detected container header, triggering container capture');
             if (captureStage.current !== 'none') finalizeCapture();
             addDiagnosticLog?.(`Entering Stage: container (${textOnly})`);
             (captureStage as any).current = 'container';
-            // Sync isDrawerCapture if we are expanding a container in a drawer
             if (deps.pendingDrawerContainerRef?.current) {
                 isDrawerCapture.current = 1;
             }
         }
 
-        // Detect end of capture listing (prompt at END of line)
-        const isEndPrompt = /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
+        const isEndPrompt = !!textPMatch || /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
         if (isEndPrompt) {
@@ -311,23 +313,13 @@ export function useGameParser(deps: UseGameParserDeps) {
             const createLine = (l: string, tOnly: string, lLower: string, cmd: string): DrawerLine => {
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
-
                 const isContainer = isItemContainer(l);
-                
                 const isHdr = /you are (carrying|using|equipped with)|contains|in your (.*?):/i.test(lLower);
                 const isNothing = /nothing/i.test(lLower).valueOf();
+                if (!isHdr && !isNothing && isContainer) addDiagnosticLog?.(`Detected container: ${textOnly}`);
 
-                if (!isHdr && !isNothing && isContainer) {
-                    addDiagnosticLog?.(`Detected container: ${textOnly}`);
-                }
-
-                let prefix = '';
-                let prefixHtml = '';
-                let mainText = tOnly;
-                let mainHtml = ansiConvert.toHtml(l);
-
+                let prefix = ''; let prefixHtml = ''; let mainText = tOnly; let mainHtml = ansiConvert.toHtml(l);
                 if (cmd === 'equipmentlist') {
-                    // Match pattern like " <worn as shield> " or "<worn as shield>"
                     const eqMatch = l.match(/^(\s*(?:\x1b\[[0-9;]*m)*<[^>]+>(?:\x1b\[[0-9;]*m)*\s*)(.*)/);
                     if (eqMatch) {
                         prefixHtml = ansiConvert.toHtml(eqMatch[1]);
@@ -338,52 +330,28 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
 
                 const noun = extractNoun(mainText || l);
-                
-                // Track stable IDs within this capture session
                 nounCountsRef.current[noun] = (nounCountsRef.current[noun] || 0) + 1;
                 const count = nounCountsRef.current[noun];
                 const stableId = count > 1 ? `${count}.${noun}` : noun;
-
-                while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) {
-                    containerStackRef.current.pop();
-                }
-
+                while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) containerStackRef.current.pop();
                 let context = stableId;
-                if (depth > 0 && containerStackRef.current.length > 0) {
-                    context = `${stableId}.${containerStackRef.current[containerStackRef.current.length - 1].context}`;
-                }
-
-                if (isContainer) {
-                    containerStackRef.current.push({ depth, noun, context });
-                }
-
+                if (depth > 0 && containerStackRef.current.length > 0) context = `${stableId}.${containerStackRef.current[containerStackRef.current.length - 1].context}`;
+                if (isContainer) containerStackRef.current.push({ depth, noun, context });
                 return {
                     id: context || stableId || Math.random().toString(36).substring(7),
-                    text: mainText,
-                    html: mainHtml,
-                    prefix,
-                    prefixHtml,
-                    isItem: !isHdr && !isNothing,
-                    isHeader: isHdr,
-                    isContainer,
-                    depth,
-                    cmd,
-                    context
+                    text: mainText, html: mainHtml, prefix, prefixHtml,
+                    isItem: !isHdr && !isNothing, isHeader: isHdr, isContainer, depth, cmd, context
                 };
             };
 
             if (captureStage.current === 'inv') {
                 const line = createLine(cleanLine, textOnly, lower, 'inventorylist');
-                console.log('[Parser] Capturing to inventory buffer:', textOnly);
                 tempInvRef.current.push(line);
-                // Incremental update for better perceived performance
                 setInventoryLines(prev => [...prev, line]);
             } else if (captureStage.current === 'eq') {
                 if (textOnly.length > 0) {
                     const line = createLine(cleanLine, textOnly, lower, 'equipmentlist');
-                    console.log('[Parser] Capturing to equipment buffer:', textOnly);
                     tempEqRef.current.push(line);
-                    // Incremental update for better perceived performance
                     setEqLines(prev => [...prev, line]);
                 }
             } else if (captureStage.current === 'container') {
@@ -391,113 +359,49 @@ export function useGameParser(deps: UseGameParserDeps) {
                     const containerLine = createLine(cleanLine, textOnly, lower, 'lookin');
                     const drawerPending = deps.pendingDrawerContainerRef?.current;
                     if (drawerPending) {
-                        // Inject into the correct drawer list right after the container item
-                        const { containerId, cmd, afterId } = drawerPending;
-                        const injectedLine: DrawerLine = {
-                            ...containerLine,
-                            cmd,
-                            // Depth is at minimum one level inside the container
-                            depth: Math.max(containerLine.depth, 1)
-                        };
+                        const { containerId, cmd } = drawerPending;
                         if (cmd === 'inventorylist') {
                             setInventoryLines(prev => {
                                 const parentIdx = prev.findLastIndex(l => l.isContainer && l.id === containerId);
-                                if (parentIdx === -1) {
-                                    console.log('[Parser] Injection failed: parent not found in inventoryLines', containerId);
-                                    return prev;
-                                }
-                                
+                                if (parentIdx === -1) return prev;
                                 const parent = prev[parentIdx];
-                                const parentDepth = parent.depth || 0;
                                 const injectedLine: DrawerLine = {
-                                    ...containerLine,
-                                    id: `${containerLine.id}.${containerId}`,
-                                    cmd,
-                                    depth: parentDepth + Math.max(containerLine.depth, 1),
-                                    parentItemId: parent.id,
-                                    parentItemNoun: parent.context || parent.id,
+                                    ...containerLine, id: `${containerLine.id}.${containerId}`, cmd,
+                                    depth: (parent.depth || 0) + Math.max(containerLine.depth, 1),
+                                    parentItemId: parent.id, parentItemNoun: parent.context || parent.id,
                                     context: `${containerLine.context || containerLine.id}.${parent.context || parent.id}`
                                 };
-
-                                console.log('[Parser] Injecting into inventory:', {
-                                    item: injectedLine.id,
-                                    parent: containerId,
-                                    depth: injectedLine.depth
-                                });
-
-                                // Prevent duplicates
-                                if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) {
-                                    return prev;
-                                }
-
-                                const next = [...prev];
-                                next.splice(parentIdx + 1, 0, injectedLine);
-                                return next;
+                                if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) return prev;
+                                const next = [...prev]; next.splice(parentIdx + 1, 0, injectedLine); return next;
                             });
                         } else {
                             setEqLines(prev => {
                                 const parentIdx = prev.findLastIndex(l => l.isContainer && l.id === containerId);
-                                if (parentIdx === -1) {
-                                    console.log('[Parser] Injection failed: parent not found in eqLines', containerId);
-                                    return prev;
-                                }
-
+                                if (parentIdx === -1) return prev;
                                 const parent = prev[parentIdx];
-                                const parentDepth = parent.depth || 0;
                                 const injectedLine: DrawerLine = {
-                                    ...containerLine,
-                                    id: `${containerLine.id}.${containerId}`,
-                                    cmd,
-                                    depth: parentDepth + Math.max(containerLine.depth, 1),
-                                    parentItemId: parent.id,
-                                    parentItemNoun: parent.context || parent.id,
+                                    ...containerLine, id: `${containerLine.id}.${containerId}`, cmd,
+                                    depth: (parent.depth || 0) + Math.max(containerLine.depth, 1),
+                                    parentItemId: parent.id, parentItemNoun: parent.context || parent.id,
                                     context: `${containerLine.context || containerLine.id}.${parent.context || parent.id}`
                                 };
-
-                                console.log('[Parser] Injecting into equipment:', {
-                                    item: injectedLine.id,
-                                    parent: containerId,
-                                    depth: injectedLine.depth
-                                });
-
-                                // Prevent duplicates
-                                if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) {
-                                    return prev;
-                                }
-
-                                const next = [...prev];
-                                next.splice(parentIdx + 1, 0, injectedLine);
-                                return next;
+                                if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) return prev;
+                                const next = [...prev]; next.splice(parentIdx + 1, 0, injectedLine); return next;
                             });
                         }
                     } else {
-                        console.log('[Parser] drawerPending is null, falling back to popover mode');
-                        // Fall back to popover for standalone look in commands
-                        // @ts-ignore - containerItems added to type
-                        setPopoverState((prev: any) => {
-                            if (!prev) return prev;
-                            const next = {
-                                ...prev,
-                                type: 'container',
-                                containerItems: [...(prev.containerItems || []), containerLine]
-                            };
-                            return next;
-                        });
+                        setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [...(prev.containerItems || []), containerLine] } : prev);
                     }
-                    
                     if (containerLine.isItem) {
                         const itmNoun = extractNoun(containerLine.text);
-                        if (itmNoun) {
-                            deps.setDiscoveredItems(prev => prev.includes(itmNoun) ? prev : [...prev, itmNoun]);
-                        }
+                        if (itmNoun) deps.setDiscoveredItems(prev => prev.includes(itmNoun) ? prev : [...prev, itmNoun]);
                     }
                 }
-                
-                return; // Prevent fall-through to log
+                return;
             } else {
                 setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             }
-            return; // Suppress from log
+            return;
         } else if (captureStage.current === 'shop') {
             const shopItem = parseShopLine(textOnly);
             if (shopItem) {
@@ -506,188 +410,115 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
         } else if (captureStage.current === 'who') {
-            // Extract player names from WHO list
             let cleanText = textOnly.trim();
             if (cleanText && !cleanText.startsWith('---') && cleanText !== 'who:' && lower !== 'allies' && lower !== 'minions') {
                 let lastLength = 0;
                 while (cleanText.length !== lastLength) {
                     lastLength = cleanText.length;
-                    cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
-                    cleanText = cleanText.replace(/^<.*?>\s*/, '');
-                    cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
-                    cleanText = cleanText.replace(/^\*+/, '');
+                    cleanText = cleanText.replace(/^\[.*?\]\s*/, '').replace(/^<.*?>\s*/, '').replace(/^\(.*?\)\s*/, '').replace(/^\*+/, '');
                 }
-                // Extract player name as the first word
                 const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-                // Basic validation: MUME names start with A-Z or accented equivalent
-                if (nameCandidate && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) {
-                    setWhoList(prev => prev.includes(nameCandidate) ? prev : [...prev, nameCandidate]);
-                }
+                if (nameCandidate && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) setWhoList(prev => prev.includes(nameCandidate) ? prev : [...prev, nameCandidate]);
             }
         }
 
-        // Practice updates can happen outside of captureStage (after table is closed)
         const practiceResult = deps.practice.parsePracticeLine(textOnly);
         if (captureStage.current === 'practice') {
             if (typeof practiceResult === 'object' && practiceResult !== null) {
-                if ('sessionsLeft' in practiceResult) {
-                    addMessage('practice-header', textOnly, undefined, `prac-hdr-${Date.now()}`, false, { textOnly, lower }, undefined, undefined, practiceResult, true);
-                } else {
-                    const stableId = `prac-${practiceResult.name}-${Date.now()}-${counterRef.current++}`;
-                    addMessage('practice-skill', textOnly, undefined, stableId, false, { textOnly, lower }, undefined, practiceResult);
-                }
+                if ('sessionsLeft' in practiceResult) addMessage('practice-header', textOnly, undefined, `prac-hdr-${Date.now()}`, false, { textOnly, lower }, undefined, undefined, practiceResult, true);
+                else addMessage('practice-skill', textOnly, undefined, `prac-${practiceResult.name}-${Date.now()}-${counterRef.current++}`, false, { textOnly, lower }, undefined, practiceResult);
                 return;
-            } else if (practiceResult === true) {
-                return; // Suppress header/sessions text
-            }
-            parsePracticeLine(textOnly); // Still update the abilities in state
-            return; // Suppress ANY other line while in practice capture stage
+            } else if (practiceResult === true) return;
+            parsePracticeLine(textOnly); return;
         }
 
         const trackAction = () => {
             if (isSilentCapture.current > 0 || isDrawerCapture.current) return;
-
             const wearMatch = cleanLine.match(/You (wear|put on) (.*?)\./i);
             if (wearMatch) {
                 const itemNoun = extractNoun(wearMatch[2]);
                 setInventoryLines(prev => {
                     const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
                     if (idx === -1) return prev;
-                    const item = prev[idx];
-                    setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
+                    const item = prev[idx]; setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
                     return prev.filter((_, i) => i !== idx);
-                });
-                return;
+                }); return;
             }
-
             const removeMatch = cleanLine.match(/You (remove|stop using) (.*?)\./i);
             if (removeMatch) {
                 const itemNoun = extractNoun(removeMatch[2]);
                 setEqLines(prev => {
                     const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
                     if (idx === -1) return prev;
-                    const item = prev[idx];
-                    setInventoryLines(inv => [...inv, { ...item, cmd: 'inventorylist' }]);
+                    const item = prev[idx]; setInventoryLines(inv => [...inv, { ...item, cmd: 'inventorylist' }]);
                     return prev.filter((_, i) => i !== idx);
-                });
-                return;
+                }); return;
             }
-
             const putMatch = cleanLine.match(/You put (.*?) in (.*?)\./i);
             if (putMatch) {
                 const itemNoun = extractNoun(putMatch[1]);
                 setInventoryLines(prev => {
                     const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
-                    if (idx === -1) return prev;
-                    return prev.filter((_, i) => i !== idx);
-                });
-                return;
+                    if (idx === -1) return prev; return prev.filter((_, i) => i !== idx);
+                }); return;
             }
-
             const getMatch = cleanLine.match(/You (get|take) (.*?)\.( from (.*?)\.)?/i);
             if (getMatch) {
                 const itemText = getMatch[2];
-                const newItem: DrawerLine = {
-                    id: Math.random().toString(36).substring(7),
-                    text: itemText,
-                    html: ansiConvert.toHtml(itemText),
-                    isItem: true,
-                    cmd: 'inventorylist',
-                    context: extractNoun(itemText)
-                };
-                setInventoryLines(prev => [...prev, newItem]);
+                setInventoryLines(prev => [...prev, { id: Math.random().toString(36).substring(7), text: itemText, html: ansiConvert.toHtml(itemText), isItem: true, cmd: 'inventorylist', context: extractNoun(itemText) }]);
                 return;
             }
-
             const receiveMatch = cleanLine.match(/(.*?) gives you (.*?)\./i);
             if (receiveMatch) {
                 const itemText = receiveMatch[2];
-                const newItem: DrawerLine = {
-                    id: Math.random().toString(36).substring(7),
-                    text: itemText,
-                    html: ansiConvert.toHtml(itemText),
-                    isItem: true,
-                    cmd: 'inventorylist',
-                    context: extractNoun(itemText)
-                };
-                setInventoryLines(prev => [...prev, newItem]);
+                setInventoryLines(prev => [...prev, { id: Math.random().toString(36).substring(7), text: itemText, html: ansiConvert.toHtml(itemText), isItem: true, cmd: 'inventorylist', context: extractNoun(itemText) }]);
                 return;
             }
-
             const giveMatch = cleanLine.match(/You (give|drop|junk) (.*?)\./i);
             if (giveMatch) {
                 const itemNoun = extractNoun(giveMatch[2]);
                 setInventoryLines(prev => {
                     const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
-                    if (idx === -1) return prev;
-                    return prev.filter((_, i) => i !== idx);
-                });
-                return;
+                    if (idx === -1) return prev; return prev.filter((_, i) => i !== idx);
+                }); return;
             }
-
             const wieldMatch = cleanLine.match(/You (wield|hold) (.*?)\./i);
             if (wieldMatch) {
                 const itemNoun = extractNoun(wieldMatch[2]);
                 setInventoryLines(prev => {
                     const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
                     if (idx === -1) return prev;
-                    const item = prev[idx];
-                    setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
+                    const item = prev[idx]; setEqLines(eq => [...eq, { ...item, cmd: 'equipmentlist' }]);
                     return prev.filter((_, i) => i !== idx);
-                });
-                return;
+                }); return;
             }
-
             const consumeMatch = cleanLine.match(/You (eat|quaff|drink) (.*?)\./i);
             if (consumeMatch) {
                 const itemNoun = extractNoun(consumeMatch[2]);
                 if (!consumeMatch[0].includes('from')) {
                     setInventoryLines(prev => {
                         const idx = prev.findIndex(l => l.isItem && (l.context === itemNoun || l.text.toLowerCase().includes(itemNoun)));
-                        if (idx === -1) return prev;
-                        return prev.filter((_, i) => i !== idx);
+                        if (idx === -1) return prev; return prev.filter((_, i) => i !== idx);
                     });
-                }
-                return;
+                } return;
             }
         };
 
-        trackAction();
-        processTriggers(textOnly);
-
-        isRoomMatched = currentRoomName && (
-            textOnly === currentRoomName ||
-            lower === currentRoomName.toLowerCase() ||
-            textOnly === currentRoomName + '.' ||
-            lower === currentRoomName.toLowerCase() + '.' ||
-            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
-        );
-        isRoomAnsiMatch = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
-        isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
+        trackAction(); processTriggers(textOnly);
 
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following/i.test(lower);
         const shouldShow = (isSilentCapture.current === 0 && !isDrawerCapture.current) || isImportantMessage;
 
         if (shouldShow) {
             let finalRawText = cleanLine;
-            // Prevent color bleeding from room names into room descriptions by ensuring a reset
-            if (isRoomName && !finalRawText.endsWith('\x1b[0m')) {
-                finalRawText += '\x1b[0m';
-            }
-
+            if (isRoomName && !finalRawText.endsWith('\x1b[0m')) finalRawText += '\x1b[0m';
             let msgType: MessageType = 'game';
             if (captureStage.current === 'who' && textOnly !== 'who:' && lower !== 'allies' && lower !== 'minions' && !textOnly.startsWith('---')) msgType = 'who-list';
             else if (captureStage.current === 'where' && !textOnly.startsWith('Player') && !textOnly.startsWith('Who') && !textOnly.startsWith('---')) msgType = 'where-list';
-
-            const precalculated = { textOnly: textOnly, lower: lower };
-            const stableId = `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
-            addMessage(msgType, finalRawText, undefined, stableId, isRoomName, precalculated, undefined, undefined, undefined, false);
+            addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false);
         }
 
-        // --- Post-processing Capture Termination ---
-        if (isEndPrompt) {
-            finalizeCapture();
-        }
+        if (isEndPrompt) finalizeCapture();
     }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, triggerHaptic, mapperRef, deps, parsePracticeLine, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture]);
 
     return { processLine, finalizeCapture };

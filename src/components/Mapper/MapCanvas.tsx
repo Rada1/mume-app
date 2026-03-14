@@ -81,6 +81,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         stableRoomIdRef: props.stableRoomIdRef,
         stableMarkersRef: props.stableMarkersRef,
         firstExploredAtRef,
+        preloadedCoordsRef: props.preloadedCoordsRef,
         preMoveRef,
         walkTargetId: props.walkTargetId,
         walkPath: props.walkPath

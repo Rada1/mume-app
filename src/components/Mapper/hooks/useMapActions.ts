@@ -15,7 +15,7 @@ interface UseMapActionsProps {
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     addMessage?: (type: string, msg: string) => void;
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
-    loadMasterMap: () => void;
+    loadMasterMap: (force?: boolean) => void;
 }
 
 export const useMapActions = ({
@@ -71,7 +71,7 @@ export const useMapActions = ({
         setCurrentRoomId(null);
         currentRoomIdRef.current = null;
 
-        loadMasterMap();
+        loadMasterMap(true);
 
         if (!silent) addMessage?.('system', '[Mapper] Local map data cleared.');
     }, [addMessage, loadMasterMap, setRooms, setMarkers, setExploredVnums, setCurrentRoomId, currentRoomIdRef]);

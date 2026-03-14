@@ -63,7 +63,17 @@ export const useMapperRenderer = ({
     const drawMap = useCallback((ctx: CanvasRenderingContext2D, dpr: number, canvasWidth: number, canvasHeight: number, marquee: { start: { x: number, y: number }, end: { x: number, y: number } } | null) => {
         const now = Date.now();
         const activeId = stableRoomIdRef.current;
-        const baseZ = activeId ? (stableRoomsRef.current[activeId]?.z || 0) : 0;
+        let baseZ = 0;
+        if (activeId) {
+            const room = stableRoomsRef.current[activeId];
+            if (room) {
+                baseZ = room.z || 0;
+            } else {
+                const rawId = activeId.startsWith('m_') ? activeId.substring(2) : activeId;
+                const pData = preloadedCoordsRef.current[rawId];
+                if (pData) baseZ = pData[2] || 0;
+            }
+        }
         const currentZ = viewZ !== null && viewZ !== undefined ? viewZ : baseZ;
         const camera = cameraRef.current;
         const invZoom = 1 / camera.zoom;

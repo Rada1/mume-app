@@ -96,7 +96,7 @@ export const drawEntities = (
         
         // Wall-aware clipping: Only if zoomed in (too expensive for wide view)
         if (rCtx.camera.zoom > 0.1) {
-            const room = activeId ? allRooms[activeId] : null;
+            const room = activeId ? (allRooms[activeId] || allRooms[`m_${activeId}`]) : null;
             let exits = room?.exits;
             if (!exits && activeId) {
                 const rawId = activeId.startsWith('m_') ? activeId.substring(2) : activeId;

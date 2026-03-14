@@ -80,7 +80,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const triggerRender = useCallback(() => setRenderVersion(v => v + 1), []);
 
     const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, controller);
-    const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ);
+    const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
 
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,

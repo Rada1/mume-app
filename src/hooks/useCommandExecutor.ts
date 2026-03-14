@@ -45,6 +45,16 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
     const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
         initAudio();
+        
+        // Handle semicolon-separated commands
+        const commands = cmd.split(';').map(c => c.trim()).filter(c => c.length > 0);
+        if (commands.length > 1) {
+            commands.forEach(subCmd => {
+                executeCommand(subCmd, silent, isSystem, _isHistorical, fromDrawer);
+            });
+            return;
+        }
+
         if (silent && isSystem) {
             isSilentCapture.current++;
             // Safety timeout: if a prompt isn't detected within 3s, assume the command finished
@@ -238,12 +248,14 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (!silent) (addMessage as any)('user', finalCmd, undefined, undefined, undefined, { textOnly: finalCmd, lower: finalCmd.toLowerCase() });
 
         const moveCmd = finalCmd.toLowerCase().trim();
-        const dirMap: Record<string, Direction> = {
+        const dirMap: Record<string, string> = {
             n: 'n', north: 'n', s: 's', south: 's', e: 'e', east: 'e', w: 'w', west: 'w',
             u: 'u', up: 'u', d: 'd', down: 'd', ne: 'ne', northeast: 'ne', nw: 'nw', northwest: 'nw',
             se: 'se', southeast: 'se', sw: 'sw', southwest: 'sw'
         };
-        const dir = dirMap[moveCmd];
+        
+        // Exact match only for move commands
+        const dir = dirMap[moveCmd] as Direction;
         if (dir) {
             // Responsive Pre-movement
             const currentRoomId = mapperRef.current?.stableRoomIdRef?.current;
@@ -262,13 +274,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
                     const targetId = exA?.target || exA?.gmcpDestId;
                     if (targetId) {
                         const finalTargetId = String(targetId).startsWith('m_') ? String(targetId) : `m_${targetId}`;
-                        mapperRef.current?.pushPreMove(dir, finalTargetId);
                         if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-pre-move', { detail: { dir, targetId: finalTargetId } }));
                     }
                 }
             }
 
-            mapperRef.current?.pushPendingMove(dir);
             if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('mume-mapper-push-move', { detail: dir }));
         }
 
