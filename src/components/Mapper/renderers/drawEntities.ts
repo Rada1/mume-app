@@ -39,6 +39,7 @@ const getTrailGlow = () => {
 };
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
+    return; // Gridlines disabled for a cleaner look
     const { ctx, isDarkMode, camera, visitedAtCoord, unveilMap } = rCtx;
     const s = GRID_SIZE;
 

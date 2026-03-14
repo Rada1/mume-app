@@ -49,18 +49,19 @@ export const drawTerrains = (
         }
     }
 
-    // Pass 1: Explored Background Colors (Opaque)
+    // Pass 1: Explored Background Colors (Opaque with Bleed)
     ctx.globalAlpha = 1.0;
     for (const color in exploredBatches) {
         ctx.fillStyle = color;
         const rooms = exploredBatches[color];
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
-            ctx.fillRect(r.x, r.y, s, s);
+            // Add 0.5px bleed to eliminate hairline gaps
+            ctx.fillRect(r.x - 0.5, r.y - 0.5, s + 1.0, s + 1.0);
         }
     }
 
-    // Pass 2: Revealed Background Colors (Opaque but distinct)
+    // Pass 2: Revealed Background Colors (Opaque but distinct with Bleed)
     if (unveilMap) {
         ctx.globalAlpha = 1.0; 
         for (const color in revealedBatches) {
@@ -70,38 +71,19 @@ export const drawTerrains = (
             ctx.fillStyle = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
             for (let i = 0; i < rooms.length; i++) {
                 const r = rooms[i];
-                ctx.fillRect(r.x, r.y, s, s);
+                ctx.fillRect(r.x - 0.5, r.y - 0.5, s + 1.0, s + 1.0);
             }
 
-            // Draw terrain at FULL opacity to ensure visibility. 
-            // We use the backdrop above to differentiate it from "Explored" 
+            // Draw terrain at FULL opacity
             ctx.fillStyle = color;
             for (let i = 0; i < rooms.length; i++) {
                 const r = rooms[i];
-                ctx.fillRect(r.x, r.y, s, s);
+                ctx.fillRect(r.x - 0.5, r.y - 0.5, s + 1.0, s + 1.0);
             }
         }
     }
 
-    // Pass 3: Borders (Subtle overlay)
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
-    for (const color in exploredBatches) {
-        const rooms = exploredBatches[color];
-        for (let i = 0; i < rooms.length; i++) {
-            const r = rooms[i];
-            ctx.strokeRect(r.x, r.y, s, s);
-        }
-    }
-    if (unveilMap) {
-        for (const color in revealedBatches) {
-            const rooms = revealedBatches[color];
-            for (let i = 0; i < rooms.length; i++) {
-                const r = rooms[i];
-                ctx.strokeRect(r.x, r.y, s, s);
-            }
-        }
-    }
+    // Pass 3: Borders REMOVED to eliminate gaps
 };
 
 export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
@@ -114,8 +96,9 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
         const rz = room.z || 0;
         if (Math.abs(rz - currentZ) > 1.5) continue;
         
-        const rx = room.x * s, ry = room.y * s;
+        const rx = Math.round(room.x) * s, ry = Math.round(room.y) * s;
         ctx.fillStyle = getTerrainColor(room.terrain, isDarkMode);
-        ctx.fillRect(rx - 1.0, ry - 1.0, s + 2.0, s + 2.0);
+        // Add bleed to local terrain as well
+        ctx.fillRect(rx - 0.5, ry - 0.5, s + 1.0, s + 1.0);
     }
 };

@@ -41,6 +41,24 @@ export const useMapAnimation = ({
     const animationQueueRef = useRef<{ x: number, y: number, z: number }[]>([]);
     const lastProcessedRoomIdRef = useRef<string | null>(null);
 
+    const isJoystickActiveRef = useRef(false);
+    const joystickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        const onPushMove = () => {
+            isJoystickActiveRef.current = true;
+            if (joystickTimeoutRef.current) clearTimeout(joystickTimeoutRef.current);
+            joystickTimeoutRef.current = setTimeout(() => {
+                isJoystickActiveRef.current = false;
+            }, 1100);
+        };
+        window.addEventListener('mume-mapper-push-move', onPushMove);
+        return () => {
+            window.removeEventListener('mume-mapper-push-move', onPushMove);
+            if (joystickTimeoutRef.current) clearTimeout(joystickTimeoutRef.current);
+        };
+    }, []);
+
     // Keep tick logic in a ref so the loop can access the latest version without restarting
     (tickRef as any).current = () => {
         const cvs = canvasRef.current;
@@ -139,7 +157,7 @@ export const useMapAnimation = ({
                 playerPosRef.current.z = target.z;
                 animationQueueRef.current.shift();
                 needsNextFrame = true;
-            if (distSq > 0.0000001) {
+            } else if (distSq > 0.0000001) {
                 const lerpFactor = 1 - Math.pow(0.85, frameScale);
                 playerPosRef.current.x += dx * lerpFactor;
                 playerPosRef.current.y += dy * lerpFactor;
@@ -161,10 +179,11 @@ export const useMapAnimation = ({
                     playerPosRef.current.y = targetY;
                     animationQueueRef.current.shift();
                 }
+                needsNextFrame = true;
             } else {
                 animationQueueRef.current.shift();
+                needsNextFrame = true;
             }
-            needsNextFrame = true;
         }
 
         // 3. Fallback: if queue is empty but player is not at targetId
@@ -198,7 +217,8 @@ export const useMapAnimation = ({
             }
         }
 
-        if ((autoCenter || walkTargetId) && playerPosRef.current && !isDragging) {
+        // Camera Centering logic (Allow auto-center even if dragging IF it's a joystick pulse)
+        if ((autoCenter || walkTargetId) && playerPosRef.current && (!isDragging || isJoystickActiveRef.current)) {
             const zoom = camera.current.zoom || 1;
             const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
             const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));

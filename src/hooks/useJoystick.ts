@@ -15,9 +15,49 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const lastHapticDirRef = useRef<Direction | null>(null);
     const touchStartPos = useRef<{ x: number, y: number } | null>(null);
     const lockedDirRef = useRef<Direction | null>(null);
+    const repeatMoveTimer = useRef<NodeJS.Timeout | null>(null);
+    const lastRepeatDirRef = useRef<Direction | null>(null);
 
     // Command Execution Ref
     const executeCommandRef = useRef<((cmd: string) => void) | null>(null);
+
+    const dirMap: Record<string, string> = {
+        n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
+        ne: 'northeast', nw: 'up', se: 'down', sw: 'southwest'
+    };
+
+    const stopRepeatTimer = useCallback(() => {
+        if (repeatMoveTimer.current) {
+            clearInterval(repeatMoveTimer.current);
+            repeatMoveTimer.current = null;
+        }
+    }, []);
+
+    const startRepeatTimer = useCallback((initialDir?: Direction) => {
+        if (repeatMoveTimer.current) return;
+        
+        const firePulse = () => {
+            const currentLockedDir = lockedDirRef.current;
+            if (executeCommandRef.current && currentLockedDir) {
+                const cmd = dirMap[currentLockedDir] || currentLockedDir;
+                executeCommandRef.current(cmd);
+                setIsJoystickConsumed(true);
+                triggerHaptic(10);
+                
+                // Dispatch both events to ensure map follows and knows joystick is active
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('mume-mapper-center-on-player'));
+                    window.dispatchEvent(new CustomEvent('mume-mapper-push-move', { detail: currentLockedDir }));
+                }
+            }
+        };
+
+        // Fire first pulse at the 0.5s mark
+        firePulse();
+        
+        // Maintain strict 0.75s heartbeat
+        repeatMoveTimer.current = setInterval(firePulse, 750);
+    }, [triggerHaptic]);
 
     const handleJoystickStart = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void) => {
         if (executeCommand) executeCommandRef.current = executeCommand;
@@ -26,7 +66,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         setIsTargetModifierActive(false);
         e.currentTarget.setPointerCapture(e.pointerId);
 
-        // For trackpad, calculation start position is where the finger touched
         const startX = e.clientX;
         const startY = e.clientY;
         
@@ -36,20 +75,14 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (longPressTimer.current) clearTimeout(longPressTimer.current);
         longPressTimer.current = setTimeout(() => {
             setIsTargetModifierActive(true);
+            // Start pulsing if we have a direction. If not yet moved, 
+            // the heartbeat will start as soon as handleJoystickMove locks a direction.
+            if (lockedDirRef.current) startRepeatTimer();
         }, 500);
 
         lockedDirRef.current = null;
-
-        // Visuals (ray/wheel) should appear centered on the map/container
-        // We'll set x/y to undefined or center values and let CSS/Component handle centering
-        setSwipeRay({ 
-            active: false, 
-            angle: 0, 
-            dist: 0,
-            x: undefined, // Indicates center-aligned in Component
-            y: undefined
-        });
-    }, []);
+        setSwipeRay({ active: false, angle: 0, dist: 0, x: undefined, y: undefined });
+    }, [startRepeatTimer]);
 
     const handleJoystickMove = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void, suppressMove?: boolean) => {
         if (executeCommand) executeCommandRef.current = executeCommand;
@@ -62,27 +95,36 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         let angleDeg = angleRad * (180 / Math.PI);
         if (angleDeg < 0) angleDeg += 360;
 
-        let calculatedDir: Direction | null = null;
-        if (angleDeg >= 337.5 || angleDeg < 22.5) calculatedDir = 'e';
-        else if (angleDeg >= 22.5 && angleDeg < 67.5) calculatedDir = 'se';
-        else if (angleDeg >= 67.5 && angleDeg < 112.5) calculatedDir = 's';
-        else if (angleDeg >= 112.5 && angleDeg < 157.5) calculatedDir = 'sw';
-        else if (angleDeg >= 157.5 && angleDeg < 202.5) calculatedDir = 'w';
-        else if (angleDeg >= 202.5 && angleDeg < 247.5) calculatedDir = 'nw';
-        else if (angleDeg >= 247.5 && angleDeg < 292.5) calculatedDir = 'n';
-        else if (angleDeg >= 292.5 && angleDeg < 337.5) calculatedDir = 'ne';
+        const lastDir = lockedDirRef.current;
+        let dir: Direction | null = null;
 
-        // Adaptive Threshold Logic
+        // 8 wedges of 45 degrees each
+        if (angleDeg >= 337.5 || angleDeg < 22.5) dir = 'e';
+        else if (angleDeg >= 22.5 && angleDeg < 67.5) dir = 'se'; // Down
+        else if (angleDeg >= 67.5 && angleDeg < 112.5) dir = 's';
+        else if (angleDeg >= 112.5 && angleDeg < 157.5) {
+            if (lastDir === 's') dir = 'w';
+            else if (lastDir === 'w') dir = 's';
+            else dir = (angleDeg > 135) ? 'w' : 's';
+        }
+        else if (angleDeg >= 157.5 && angleDeg < 202.5) dir = 'w';
+        else if (angleDeg >= 202.5 && angleDeg < 247.5) dir = 'nw'; // Up
+        else if (angleDeg >= 247.5 && angleDeg < 292.5) dir = 'n';
+        else if (angleDeg >= 292.5 && angleDeg < 337.5) {
+            if (lastDir === 'e') dir = 'n';
+            else if (lastDir === 'n') dir = 'e';
+            else dir = (angleDeg > 315) ? 'e' : 'n';
+        }
+
         let threshold = 25;
-        if (calculatedDir === 'nw' && !availableExits.includes('u')) threshold = 60;
-        else if (calculatedDir === 'se' && !availableExits.includes('d')) threshold = 60;
+        if (dir === 'nw' && !availableExits.includes('u')) threshold = 60;
+        else if (dir === 'se' && !availableExits.includes('d')) threshold = 60;
 
         if (dist > threshold && longPressTimer.current) {
             clearTimeout(longPressTimer.current);
             longPressTimer.current = null;
         }
 
-        // Update Swipe Ray
         if (dist > threshold) {
             const snappedAngle = Math.round(angleDeg / 45) * 45;
             setSwipeRay(prev => ({ ...prev, active: true, angle: snappedAngle + 90, dist: Math.min(dist, 100) }));
@@ -90,90 +132,43 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             setSwipeRay(prev => prev.active ? { ...prev, active: false } : prev);
         }
 
-        // Visual Enhancement (Minimal for centered trackpad)
         if (joystickKnobRef.current && dist > 5) {
             const maxDist = 75;
             const tiltX = -(dy / maxDist) * 10, tiltY = (dx / maxDist) * 10;
             joystickKnobRef.current.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
         }
 
-        let dir: Direction | null = null;
-
-        // Direction Logic
         if (dist < threshold) {
             setCurrentDir(null);
             lockedDirRef.current = null;
+            stopRepeatTimer();
             if (lastHapticDirRef.current !== null) {
-                // Removed center-return haptic
                 lastHapticDirRef.current = null;
             }
         } else {
-            // Direction Logic with Even 45° Wedges
-            dir = calculatedDir;
-            // ... (rest of hysteresis logic is fine)
-            // Note: We'll simplify the calculated logic below to match original structure
-
-            // Angular Stability & Hysteresis
-            const HYSTERESIS = 10;
-            if (dist <= 45) {
-                // Directional Lock (15px to 45px)
-                if (lockedDirRef.current) {
-                    dir = lockedDirRef.current;
-                } else {
-                    dir = calculatedDir;
-                    lockedDirRef.current = calculatedDir;
-                }
-            } else {
-                // Free Rotation (dist > 45px) with Hysteresis
-                if (lockedDirRef.current && calculatedDir !== lockedDirRef.current) {
-                    const lastDir = lockedDirRef.current;
-                    let shouldSwitch = false;
-                    
-                    const isOutside = (d: Direction, a: number) => {
-                        const buffer = HYSTERESIS;
-                        // 45° wedges: check if angle is +/- (22.5 + buffer) from center
-                        if (d === 'e') return (a > 22.5 + buffer && a < 337.5 - buffer);
-                        if (d === 'se') return (a < 22.5 - buffer || a > 67.5 + buffer);
-                        if (d === 's') return (a < 67.5 - buffer || a > 112.5 + buffer);
-                        if (d === 'sw') return (a < 112.5 - buffer || a > 157.5 + buffer);
-                        if (d === 'w') return (a < 157.5 - buffer || a > 202.5 + buffer);
-                        if (d === 'nw') return (a < 202.5 - buffer || a > 247.5 + buffer);
-                        if (d === 'n') return (a < 247.5 - buffer || a > 292.5 + buffer);
-                        if (d === 'ne') return (a < 292.5 - buffer || a > 337.5 + buffer);
-                        return true;
-                    };
-
-                    if (isOutside(lastDir, angleDeg)) {
-                        shouldSwitch = true;
-                    }
-
-                    if (shouldSwitch) {
-                        dir = calculatedDir;
-                        lockedDirRef.current = calculatedDir;
-                    } else {
-                        dir = lastDir;
-                    }
-                } else {
-                    dir = calculatedDir;
-                    lockedDirRef.current = calculatedDir;
-                }
-            }
-
             if (dir !== lastHapticDirRef.current) {
                 if (dir !== null) triggerHaptic(5);
                 lastHapticDirRef.current = dir;
             }
+            
             setCurrentDir(dir);
+            lockedDirRef.current = dir;
+            
+            // Critical Fix: Use a ref-based check for the hold timer to avoid re-render delays
+            // If we have swiped far enough AND the long-press threshold was met, start pulsing.
+            const holdThresholdMet = !longPressTimer.current && joystickActive;
+            if (dir && holdThresholdMet) startRepeatTimer();
 
             if (suppressMove && dir && !isJoystickConsumed) {
                 setIsJoystickConsumed(true);
             }
         }
         return dir;
-    }, [joystickActive, isJoystickConsumed, triggerHaptic]);
+    }, [joystickActive, isJoystickConsumed, triggerHaptic, startRepeatTimer, stopRepeatTimer, availableExits]);
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
         executeCommandRef.current = executeCommand;
+        stopRepeatTimer();
 
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
@@ -262,6 +257,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     }, [isJoystickConsumed]);
 
     const handleJoystickCancel = useCallback(() => {
+        stopRepeatTimer();
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
             longPressTimer.current = null;

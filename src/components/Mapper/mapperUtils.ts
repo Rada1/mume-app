@@ -3,6 +3,7 @@ export const ROAD_COLOR_DARK = '#8b7d6b'; // Warm tan for roads in dark mode
 export const ROAD_COLOR_LIGHT = '#d2b48c'; // Tan for roads in light mode
 export const PATH_COLOR_DARK = '#7c6f64'; // Slightly darker sand/path
 export const PATH_COLOR_LIGHT = '#c2b280'; // Sand color
+export const WALL_COLOR = '#3e2723'; // Much darker brown for walls
 
 export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string, name: string }> = {
     n: { dx: 0, dy: -1, opp: 's', name: 'North' },

@@ -7,6 +7,7 @@ import { MapperDropdown } from './MapperDropdown';
 import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
+import { useMapAnimation } from './useMapAnimation';
 
 import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
@@ -81,6 +82,12 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, controller);
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
+
+    useEffect(() => {
+        const onCenter = () => handleCenterOnPlayer();
+        window.addEventListener('mume-mapper-center-on-player', onCenter);
+        return () => window.removeEventListener('mume-mapper-center-on-player', onCenter);
+    }, [handleCenterOnPlayer]);
 
     const { marquee } = useMapperInteractions({
         rooms, setRooms, markers, setMarkers,

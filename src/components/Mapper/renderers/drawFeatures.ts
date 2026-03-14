@@ -1,5 +1,5 @@
 import { RenderContext, drawLine } from './rendererUtils';
-import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState } from '../mapperUtils';
+import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR } from '../mapperUtils';
 
 // Pre-render common indicators for performance
 const indicatorIcons: Record<string, HTMLCanvasElement> = {};
@@ -135,7 +135,7 @@ export const drawFeatures = (
                         if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
 
                         if (!hasExit) {
-                            ctx.beginPath(); ctx.strokeStyle = "#795548";
+                            ctx.beginPath(); ctx.strokeStyle = WALL_COLOR;
                             ctx.lineWidth = 2.5;
                             ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
                         } else if (hasDoor) {
@@ -162,8 +162,8 @@ export const drawFeatures = (
 
                     if (ghostExits && (ghostExits.u || ghostExits.d)) {
                         ctx.fillStyle = isDarkMode ? '#fab387' : '#e67e22';
-                        const vOff = 14 / camera.zoom;
-                        const arrowSize = 16 / camera.zoom;
+                        const vOff = 10 / camera.zoom; // Moved closer
+                        const arrowSize = 18 / camera.zoom; // Slightly larger for better clarity
                         if (ghostExits.u) {
                             const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
                             ctx.drawImage(icon, anchorX - arrowSize/2, anchorY - vOff - arrowSize/2, arrowSize, arrowSize);
@@ -180,7 +180,7 @@ export const drawFeatures = (
 
     // --- Fast Wall Pass (Low Zoom) ---
     if (camera.zoom <= 0.15) {
-        ctx.beginPath(); ctx.strokeStyle = "#795548";
+        ctx.beginPath(); ctx.strokeStyle = WALL_COLOR;
         ctx.lineWidth = 2.5;
         for (let bx = bX1; bx <= bX2; bx++) {
             for (let by = bY1; by <= bY2; by++) {
@@ -238,8 +238,8 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
 
         // Local Up/Down Indicators
         if (room.exits && (room.exits.u || room.exits.d) && camera.zoom > 0.2) {
-            const vOff = 14 / camera.zoom;
-            const arrowSize = 16 / camera.zoom;
+            const vOff = 10 / camera.zoom; // Moved closer
+            const arrowSize = 18 / camera.zoom; // Slightly larger
             if (room.exits.u) {
                 const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
                 ctx.drawImage(icon, cX - arrowSize/2, cY - vOff - arrowSize/2, arrowSize, arrowSize);
@@ -253,7 +253,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
 
     // --- Local Wall Rendering ---
     if (camera.zoom <= 0.15) {
-        ctx.beginPath(); ctx.strokeStyle = "#795548"; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.strokeStyle = WALL_COLOR; ctx.lineWidth = 2.5;
         for (const room of localRooms) {
             const vnum = String(room.id).startsWith('m_') ? room.id.substring(2) : room.id;
             if (preloaded[vnum] || Math.abs((room.z || 0) - currentZ) > 1.5) continue;
@@ -279,7 +279,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                 if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
                 if (!hasExit) {
-                    ctx.beginPath(); ctx.strokeStyle = "#795548";
+                    ctx.beginPath(); ctx.strokeStyle = WALL_COLOR;
                     ctx.lineWidth = 2.5;
                     ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
                 } else if (hasDoor && camera.zoom >= 0.1) {
