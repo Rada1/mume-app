@@ -15,6 +15,7 @@ interface EquipmentDrawerProps {
     isLandscape?: boolean;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
     pendingDrawerContainerRef: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
+    inlineCategories?: import('../../types').InlineCategoryConfig[];
 }
 
 export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
@@ -27,7 +28,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     triggerHaptic,
     isLandscape,
     executeCommand,
-    pendingDrawerContainerRef
+    pendingDrawerContainerRef,
+    inlineCategories = []
 }) => {
     const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number; commandLabel?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-    const { activeDragData, isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget, inlineCategories } = useGame();
+    const { activeDragData, isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useGame();
 
     const ghostRef = useRef<HTMLDivElement>(null);
     const longPressTimerRef = useRef<any>(null);
@@ -368,8 +370,16 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         if (line.isItem) {
             const isPrimed = primedItemId === line.id;
             const itemNoun = extractNoun(line.text);
-            const category = getCategoryForName(line.text, inlineCategories) || 'inline-default';
-            const glowColor = getGlowColorForCategory(category, inlineCategories);
+            const categories = (inlineCategories && inlineCategories.length > 0) ? inlineCategories : undefined;
+            const category = getCategoryForName(line.text, categories) || 'inline-default';
+            const glowColor = getGlowColorForCategory(category, categories);
+            
+            // Stronger visual cues: background, border, and subtle glow
+            const colorRgb = glowColor ? (glowColor.match(/rgba?\((\d+, \d+, \d+)/)?.[1] || '100, 255, 100') : '100, 255, 100';
+            const baseBackground = line.isContainer ? 'rgba(137, 180, 250, 0.25)' : (glowColor ? `rgba(${colorRgb}, 0.25)` : 'rgba(255, 255, 255, 0.05)');
+            const primedBackground = glowColor ? `rgba(${colorRgb}, 0.4)` : 'rgba(255, 255, 255, 0.12)';
+            const borderLeftStyle = glowColor ? `4px solid rgba(${colorRgb}, 0.8)` : '4px solid transparent';
+            const glowEffect = glowColor ? `0 0 12px rgba(${colorRgb}, 0.15)` : 'none';
 
             return (
                 <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
@@ -463,9 +473,10 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         style={{
                             flex: 1,
                             padding: '8px 12px',
-                            background: line.isItem ? (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)')) : 'transparent',
-                            borderRadius: '6px',
-                            border: '1px solid rgba(255,255,255,0.05)',
+                            background: line.isItem ? (isPrimed ? primedBackground : baseBackground) : 'transparent',
+                            borderRadius: '4px',
+                            borderLeft: line.isItem ? borderLeftStyle : 'none',
+                            boxShadow: line.isItem ? glowEffect : 'none',
                             fontSize: '0.85rem',
                             cursor: 'grab',
                             fontWeight: line.isContainer ? 'bold' : 'normal',
@@ -474,8 +485,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             transition: 'all 0.2s ease',
                             touchAction: 'none',
                             display: 'flex',
-                            alignItems: 'center',
-                            boxShadow: isSelected ? 'inset 0 0 0 1px var(--accent)' : 'none'
+                            alignItems: 'center'
                         }}
                     >
                         <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
@@ -502,11 +512,40 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     };
 
     return (
-        <div ref={drawerRef} className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape' : ''}`}>
-            <div className="drawer-header">
-                <div className="swipe-indicator" />
-                <span className="drawer-title">Equipment & Items</span>
-                <button className="close-btn" onClick={onClose}>✕</button>
+        <div 
+            ref={drawerRef} 
+            className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape' : ''}`}
+            onPointerDown={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.closest('.drawer-checkbox') || target.tagName === 'INPUT') return;
+                e.currentTarget.setPointerCapture(e.pointerId);
+                (e.currentTarget as any)._startX = e.clientX;
+                (e.currentTarget as any)._startY = e.clientY;
+            }}
+            onPointerUp={(e) => {
+                const startX = (e.currentTarget as any)._startX;
+                const startY = (e.currentTarget as any)._startY;
+                if (startX !== undefined && startX !== null) {
+                    const deltaX = startX - e.clientX;
+                    const deltaY = Math.abs(e.clientY - (startY || 0));
+                    // For right drawer, swiping right (negative deltaX) closes it
+                    if (deltaX < -20 && Math.abs(deltaX) > deltaY) {
+                        triggerHaptic(40);
+                        onClose();
+                    }
+                }
+                (e.currentTarget as any)._startX = null;
+                (e.currentTarget as any)._startY = null;
+            }}
+            onPointerCancel={(e) => {
+                (e.currentTarget as any)._startX = null;
+            }}
+            style={{ touchAction: 'pan-y' }}
+        >
+            <div className="drawer-header" style={{ display: 'flex', alignItems: 'center', padding: '15px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)', position: 'relative', background: 'rgba(255,255,255,0.03)' }}>
+                <div className="swipe-indicator" style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', width: '40px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px' }} />
+                <span className="drawer-title" style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px', color: 'var(--accent)' }}>Equipment & Items</span>
+                <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div className="drawer-content" onScroll={handleSectionScroll}>

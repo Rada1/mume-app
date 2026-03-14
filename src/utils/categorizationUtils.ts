@@ -9,9 +9,9 @@ export interface InlineCategoryConfig {
 }
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
-    { id: 'lantern', keywords: ['lantern'], color: 'rgba(59, 130, 246, 0.9)' },
-    { id: 'food', keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey'], color: 'rgba(52, 211, 153, 0.9)' },
-    { id: 'water', keywords: ['water', 'fountain', 'cup', 'skin'], color: 'rgba(52, 211, 153, 0.9)' },
+    { id: 'lantern', keywords: ['lantern', 'torch', 'lamp', 'candle', 'light'], color: 'rgba(59, 130, 246, 0.9)' },
+    { id: 'food', keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer'], color: 'rgba(52, 211, 153, 0.9)' },
+    { id: 'water', keywords: ['water', 'fountain', 'cup', 'skin', 'flagon', 'flask', 'bottle', 'jug', 'vial'], color: 'rgba(52, 211, 153, 0.9)' },
     { id: 'innkeeper', keywords: ['innkeeper'], color: 'rgba(236, 72, 153, 0.9)' },
     { id: 'shopkeeper', keywords: ['barman', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer'], color: 'rgba(139, 92, 246, 0.9)' },
     { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: 'rgba(139, 69, 19, 0.9)' },

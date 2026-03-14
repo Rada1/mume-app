@@ -54,7 +54,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     soundTriggers, newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex,
     handleSoundUpload, setSoundTriggers
 }) => {
-    const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef } = useGame();
+    const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories } = useGame();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     const anyOpen = ui.drawer !== 'none' || isMapDrawerOpen;
 
@@ -156,6 +156,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 isLandscape={viewport.isLandscape}
                 executeCommand={executeCommand}
                 pendingDrawerContainerRef={pendingDrawerContainerRef}
+                inlineCategories={inlineCategories}
             />
         </>
     );

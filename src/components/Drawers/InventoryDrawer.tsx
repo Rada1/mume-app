@@ -1,6 +1,7 @@
 import React from 'react';
 import { DrawerLine } from '../../types';
 import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
+import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 interface InventoryDrawerProps {
     isOpen: boolean;
@@ -10,6 +11,7 @@ interface InventoryDrawerProps {
     handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
     pendingDrawerContainerRef: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
+    inlineCategories?: import('../../types').InlineCategoryConfig[];
 }
 
 export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
@@ -19,7 +21,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     inventoryLines,
     handleButtonClick,
     executeCommand,
-    pendingDrawerContainerRef
+    pendingDrawerContainerRef,
+    inlineCategories = []
 }) => {
     const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number; commandLabel?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = React.useState<string | null>(null);
@@ -249,8 +252,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: 0.3 }}>
                         <span>Inventory is currently empty</span>
                     </div>
-                ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                ) : (                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         {(() => {
                             const visibleLines: DrawerLine[] = [];
                             const collapsedDepths: Set<number> = new Set();
@@ -263,40 +265,53 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                             }
 
                             return visibleLines.map(line => {
-                                const isPrimed = primedItemId === line.id;
-                                const isBeingDragged = draggedItem?.line.id === line.id;
-                                const depth = line.depth || 0;
-                                const isExpanded = expandedContainers.has(line.id);
-                                
-                                return (
-                                    <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px', position: 'relative' }}>
-                                        <div
-                                            className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''} ${isExpanded ? 'expanded' : ''}`}
-                                            data-item-name={line.context || line.id}
-                                            onPointerDown={(e) => handlePointerDownItem(e, line)}
-                                            onPointerUp={(e) => {
-                                                if (isDraggingRef.current) return;
-                                                cleanupDrag();
-                                                if (!line.isItem) return;
-                                                triggerHaptic(20);
-                                                if (line.isContainer) {
-                                                    const newExpanded = new Set(expandedContainers);
-                                                    if (newExpanded.has(line.id)) {
-                                                        newExpanded.delete(line.id);
-                                                    } else {
-                                                        newExpanded.add(line.id);
-                                                        pendingDrawerContainerRef.current = { containerId: line.id, cmd: 'inventorylist', afterId: line.id };
-                                                        executeCommand(`look in ${line.context || line.id}`, true, true);
-                                                    }
-                                                    setExpandedContainers(newExpanded);
-                                                }
-                                            }}
-                                            style={{
-                                                flex: 1, padding: '8px 12px', borderRadius: '6px', cursor: 'grab',
-                                                background: line.isItem ? (isPrimed ? 'rgba(100, 255, 100, 0.15)' : (line.isContainer ? 'rgba(137, 180, 250, 0.15)' : 'rgba(100, 255, 100, 0.08)')) : 'transparent',
-                                                opacity: isBeingDragged ? 0.3 : 1, transition: 'all 0.2s ease', touchAction: 'none', display: 'flex', alignItems: 'center'
-                                            }}
-                                        >
+                                 const isPrimed = primedItemId === line.id;
+                                 const isBeingDragged = draggedItem?.line.id === line.id;
+                                 const depth = line.depth || 0;
+                                 const isExpanded = expandedContainers.has(line.id);
+                                 
+                                 // Category-based colors
+                                 const categories = (inlineCategories && inlineCategories.length > 0) ? inlineCategories : undefined;
+                                 const category = getCategoryForName(line.text, categories) || 'inline-default';
+                                 const glowColor = getGlowColorForCategory(category, categories);
+                                 
+                                 const colorRgb = glowColor ? (glowColor.match(/rgba?\((\d+, \d+, \d+)/)?.[1] || '100, 255, 100') : '100, 255, 100';
+                                 const baseBackground = line.isContainer ? 'rgba(137, 180, 250, 0.25)' : (glowColor ? `rgba(${colorRgb}, 0.25)` : 'rgba(255, 255, 255, 0.05)');
+                                 const primedBackground = glowColor ? `rgba(${colorRgb}, 0.4)` : 'rgba(255, 255, 255, 0.12)';
+                                 const borderLeftStyle = glowColor ? `4px solid rgba(${colorRgb}, 0.8)` : '4px solid transparent';
+                                 const glowEffect = glowColor ? `0 0 12px rgba(${colorRgb}, 0.15)` : 'none';
+ 
+                                 return (
+                                     <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px', position: 'relative' }}>
+                                         <div
+                                             className={`auto-item ${line.isItem ? "inline-btn" : ""} ${isPrimed ? 'primed' : ''} ${line.isContainer ? 'is-container' : ''} ${isExpanded ? 'expanded' : ''}`}
+                                             data-item-name={line.context || line.id}
+                                             onPointerDown={(e) => handlePointerDownItem(e, line)}
+                                             onPointerUp={(e) => {
+                                                 if (isDraggingRef.current) return;
+                                                 cleanupDrag();
+                                                 if (!line.isItem) return;
+                                                 triggerHaptic(20);
+                                                 if (line.isContainer) {
+                                                     const newExpanded = new Set(expandedContainers);
+                                                     if (newExpanded.has(line.id)) {
+                                                         newExpanded.delete(line.id);
+                                                     } else {
+                                                         newExpanded.add(line.id);
+                                                         pendingDrawerContainerRef.current = { containerId: line.id, cmd: 'inventorylist', afterId: line.id };
+                                                         executeCommand(`look in ${line.context || line.id}`, true, true);
+                                                     }
+                                                     setExpandedContainers(newExpanded);
+                                                 }
+                                             }}
+                                             style={{
+                                                 flex: 1, padding: '8px 12px', borderRadius: '4px', cursor: 'grab',
+                                                 background: line.isItem ? (isPrimed ? primedBackground : baseBackground) : 'transparent',
+                                                 borderLeft: line.isItem ? borderLeftStyle : 'none',
+                                                 boxShadow: line.isItem ? glowEffect : 'none',
+                                                 opacity: isBeingDragged ? 0.3 : 1, transition: 'all 0.2s ease', touchAction: 'none', display: 'flex', alignItems: 'center'
+                                             }}
+                                         >
                                             <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
                                             {line.isContainer && (
                                                 <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▶</span>
@@ -304,7 +319,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                         </div>
                                     </div>
                                 );
-                            });
+                             });
                         })()}
                     </div>
                 )}

@@ -118,20 +118,21 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Use strictly > as terminator to avoid header colons
         const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>]\s*/;
         const textPMatch = textOnly.match(promptRegex);
+        let attachedText = '';
 
         if (textPMatch || captureStage.current === 'none') {
             nounCountsRef.current = {};
         }
 
         if (textPMatch) {
-            // This prompt belongs to the PREVIOUS TURN if it's at the start of the line
-            if (captureStage.current !== 'none') {
-                console.log('[Parser] Start-prompt detected, finalizing previous stage:', captureStage.current);
+            const promptPart = textPMatch[0];
+            attachedText = textOnly.slice(promptPart.length).trim();
+
+            // Only finalize if this is a standalone prompt at the start of a line
+            if (captureStage.current !== 'none' && !attachedText) {
+                console.log('[Parser] Standalone start-prompt detected, finalizing stage:', captureStage.current);
                 finalizeCapture();
             }
-
-            const promptPart = textPMatch[0];
-            const attachedText = textOnly.slice(promptPart.length).trim();
 
             const symbolMatch = promptPart.match(/[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]/);
             if (symbolMatch) {
@@ -231,6 +232,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log('[Parser] Entering Stage: stat');
             addDiagnosticLog?.('Entering Stage: stat');
             isWaitingForStats.current = false; (captureStage as any).current = 'stat'; containerStackRef.current = [];
+            if (deps.isCharacterOpen) isDrawerCapture.current = 1;
         }
         if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
             if (captureStage.current !== 'none') finalizeCapture();
@@ -238,7 +240,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             addDiagnosticLog?.('Entering Stage: eq');
             isWaitingForEq.current = false; (captureStage as any).current = 'eq'; containerStackRef.current = [];
             tempEqRef.current = [];
-            isDrawerCapture.current = 1;
+            if (deps.isCharacterOpen) isDrawerCapture.current = 1;
         }
         if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
             if (captureStage.current !== 'none') finalizeCapture();
@@ -246,7 +248,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             addDiagnosticLog?.('Entering Stage: inv');
             isWaitingForInv.current = false; (captureStage as any).current = 'inv'; containerStackRef.current = [];
             tempInvRef.current = [];
-            isDrawerCapture.current = 1;
+            if (deps.isItemsOpen) isDrawerCapture.current = 1;
         }
         if (lower.includes('skill / spell') || lower.includes('knowledge') || (lower.includes('sessions') && lower.includes('practice'))) {
             if (deps.practice.isUiRequested) {
@@ -292,7 +294,8 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
         }
 
-        const isEndPrompt = !!textPMatch || /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
+        // Refined isEndPrompt: A prompt only ends a stage if it's standalone or at the very end of the line.
+        const isEndPrompt = (!!textPMatch && !attachedText) || /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
         if (isEndPrompt) {
@@ -401,7 +404,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             } else {
                 setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             }
-            return;
         } else if (captureStage.current === 'shop') {
             const shopItem = parseShopLine(textOnly);
             if (shopItem) {
@@ -507,7 +509,24 @@ export function useGameParser(deps: UseGameParserDeps) {
         trackAction(); processTriggers(textOnly);
 
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following/i.test(lower);
-        const shouldShow = (isSilentCapture.current === 0 && !isDrawerCapture.current) || isImportantMessage;
+        
+        // Drawer-aware hiding: Strictly hide if the relevant drawer is open
+        let isDrawerHiding = false;
+        if (captureStage.current === 'inv' && deps.isItemsOpen) isDrawerHiding = true;
+        else if ((captureStage.current === 'eq' || captureStage.current === 'stat') && deps.isCharacterOpen) isDrawerHiding = true;
+        else if (captureStage.current === 'container') isDrawerHiding = true; 
+        else if (captureStage.current === 'none') {
+            // Heuristic for header lines that haven't set the stage yet
+            if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
+            if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) && deps.isCharacterOpen) isDrawerHiding = true;
+        }
+
+        const shouldShow = (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage;
+
+        // Diagnostic Visibility Logger
+        if (!shouldShow && showDebugEchoes) {
+            console.log(`[Parser] Suppressing line: "${textOnly.substring(0, 30)}${textOnly.length > 30 ? '...' : ''}" | Reasons: isSilent=${isSilentCapture.current}, isDrawerHiding=${isDrawerHiding}, stage=${captureStage.current}`);
+        }
 
         if (shouldShow) {
             let finalRawText = cleanLine;
