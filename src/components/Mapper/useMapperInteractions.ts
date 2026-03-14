@@ -95,6 +95,11 @@ export const useMapperInteractions = ({
         if (!cvs) return;
 
         const onDown = (e: PointerEvent) => {
+            if (!e.isPrimary) return;
+            
+            // IGNORE all internal map interactions if a window/cluster drag is in progress
+            if (document.body.classList.contains('global-dragging')) return;
+
             if (cardRef.current && cardRef.current.contains(e.target as Node)) {
                 scrollLockRef.current = true;
                 return;
@@ -138,6 +143,11 @@ export const useMapperInteractions = ({
 
                     if (depsRef.current.mode === 'play') {
                         if (latestRoomId) {
+                            // Cancel joystick steering once walk is confirmed
+                            if (dragTypeRef.current === 'joystick') {
+                                depsRef.current.joystick.handleJoystickCancel();
+                                dragTypeRef.current = 'pan'; // Switch to pan to prevent further joystick events
+                            }
                             depsRef.current.startWalking(latestRoomId);
                         }
                     } else if (!isJoystickMode) {
@@ -190,6 +200,7 @@ export const useMapperInteractions = ({
         };
 
         const onMove = (e: PointerEvent) => {
+            if (!e.isPrimary) return;
             const { mode, joystick, executeCommand, heldButton, setHeldButton, btn, target, triggerHaptic, setRooms, setMarkers } = depsRef.current;
             const rect = cvs.getBoundingClientRect();
             const mx = e.clientX - rect.left, my = e.clientY - rect.top;
@@ -291,6 +302,7 @@ export const useMapperInteractions = ({
         };
 
         const onUp = (e: PointerEvent) => {
+            if (!e.isPrimary) return;
             const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
             
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }

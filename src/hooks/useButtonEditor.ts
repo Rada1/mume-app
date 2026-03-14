@@ -36,6 +36,13 @@ export const useButtonEditor = (
                 });
                 ds.finalX = newX;
                 ds.finalY = newY;
+
+                // Dispatch real-time dragging event for docking zone detection
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('mud-cluster-dragging', { 
+                        detail: { id: ds.id, clientX: e.clientX, clientY: e.clientY } 
+                    }));
+                }
             } else if (ds.type === 'cluster-resize') {
                 const newW = Math.max(100, ds.initialW + dx);
                 const newH = Math.max(100, ds.initialH + dy);
@@ -84,8 +91,8 @@ export const useButtonEditor = (
         });
     }, [btn.isGridEnabled, btn.gridSize]);
 
-    const handleDragStart = (e: React.PointerEvent, id: string, type: 'move' | 'resize' | 'cluster' | 'cluster-resize') => {
-        if (!btn.isEditMode || btn.editingButtonId) return;
+    const handleDragStart = (e: React.PointerEvent, id: string, type: 'move' | 'resize' | 'cluster' | 'cluster-resize', force?: boolean) => {
+        if ((!btn.isEditMode || btn.editingButtonId) && !force) return;
         
         const container = containerRef?.current;
         if (!container) return;
@@ -95,6 +102,8 @@ export const useButtonEditor = (
         e.stopPropagation();
         const targetEl = e.currentTarget as HTMLElement;
         
+        // Use setPointerCapture on the target element to ensure we get all move events
+        // even if the finger leaves the handle area.
         try {
             targetEl.setPointerCapture(e.pointerId);
         } catch (err) { /* ignore */ }
@@ -122,7 +131,8 @@ export const useButtonEditor = (
                 initialW: pos.w ?? rect.width, initialH: pos.h ?? rect.height,
                 elements, parentRect: containerRect,
                 pointerId: e.pointerId,
-                targetEl
+                targetEl,
+                isForced: !!force
             };
         } else {
             let effectiveSelected = new Set(btn.selectedButtonIds);
@@ -187,6 +197,12 @@ export const useButtonEditor = (
             const dsId = ds.id;
             const dsType = ds.type;
 
+            if (typeof window !== 'undefined' && dsType === 'cluster') {
+                window.dispatchEvent(new CustomEvent('mud-cluster-drag-end', { 
+                    detail: { id: dsId, x: finalX, y: finalY, clientX: e.clientX, clientY: e.clientY, isIntentional } 
+                }));
+            }
+
             dragStateRef.current = null;
             btn.setDragState(null);
 
@@ -218,7 +234,7 @@ export const useButtonEditor = (
         };
 
         if (btn.dragState) {
-            window.addEventListener('pointermove', handleMouseMove, { passive: true });
+            window.addEventListener('pointermove', handleMouseMove, { passive: false });
             window.addEventListener('pointerup', handleMouseUp, { capture: true });
             window.addEventListener('pointercancel', handleMouseUp, { capture: true });
         }

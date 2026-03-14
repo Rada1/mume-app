@@ -47,7 +47,7 @@ export const JoystickCluster: React.FC<JoystickClusterProps> = ({
                 transformOrigin: 'bottom left',
                 zIndex: 1500,
                 position: 'absolute',
-                pointerEvents: 'auto',
+                pointerEvents: isEditMode ? 'auto' : 'none',
                 cursor: isEditMode ? 'default' : undefined,
                 backgroundColor: isEditMode ? 'rgba(255,255,0,0.05)' : undefined,
                 border: isEditMode ? '1px dashed rgba(255,255,0,0.15)' : undefined,

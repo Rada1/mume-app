@@ -17,6 +17,7 @@ import { HUDClustersLayer } from './components/Layout/HUDClustersLayer';
 import { ModalsLayer } from './components/Layout/ModalsLayer';
 import { AtmosphericLayer } from './components/Layout/AtmosphericLayer';
 import { GameProvider, useGame, useUI, useVitals, useLog } from './context/GameContext';
+import { MapperProvider } from './context/MapperContext';
 import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
 
@@ -264,6 +265,8 @@ const MudClient = () => {
 const root = createRoot(document.getElementById('root')!);
 root.render(
     <GameProvider>
-        <MudClient />
+        <MapperProvider>
+            <MudClient />
+        </MapperProvider>
     </GameProvider>
 );

@@ -14,43 +14,50 @@ interface MapperToolbarProps {
     unveilMap?: boolean;
     setUnveilMap?: (unveil: boolean) => void;
     onResetSync?: () => void;
+    onUndock?: () => void;
     isDarkMode: boolean;
+    isMapFloating: boolean;
+    setIsMapFloating: (floating: boolean) => void;
 }
 
 export const MapperToolbar: React.FC<MapperToolbarProps> = ({
     mode, setMode, autoCenter, setAutoCenter, setIsMinimized, isMobile, isExpanded, onCenterClick, onAddRoom, setIsDropdownOpen,
-    unveilMap, setUnveilMap, onResetSync, isDarkMode
+    unveilMap, setUnveilMap, onResetSync, onUndock, isDarkMode, isMapFloating, setIsMapFloating
 }) => {
     if (isMobile && !isExpanded) return null;
 
     return (
-        <div style={{
-            position: 'absolute',
-            top: '8px',
-            left: '8px',
-            zIndex: 10,
-            backgroundColor: isDarkMode ? 'rgba(30, 30, 46, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-            padding: '4px',
-            borderRadius: '6px',
-            border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
-            display: 'flex',
-            gap: '4px',
-            alignItems: 'center',
-            backdropFilter: 'blur(8px)',
-            fontSize: '11px',
-            flexWrap: 'nowrap',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-        }}>
+        <div 
+            onPointerDown={(e) => e.stopPropagation()} // Shield buttons from map gestures
+            style={{
+                position: 'absolute',
+                top: '8px',
+                left: '8px',
+                zIndex: 3000,
+                backgroundColor: isDarkMode ? 'rgba(30, 30, 46, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                padding: '4px',
+                borderRadius: '6px',
+                border: isDarkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
+                display: 'flex',
+                gap: '4px',
+                alignItems: 'center',
+                backdropFilter: 'blur(8px)',
+                fontSize: '11px',
+                flexWrap: 'nowrap',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+                pointerEvents: 'auto'
+            }}
+        >
             <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
                 <button
                     style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal', transition: 'all 0.2s' }}
-                    onClick={() => setMode('edit')}
+                    onClick={(e) => { e.stopPropagation(); setMode('edit'); }}
                 >
                     {isExpanded ? 'Edit' : 'E'}
                 </button>
                 <button
                     style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal', transition: 'all 0.2s' }}
-                    onClick={() => setMode('play')}
+                    onClick={(e) => { e.stopPropagation(); setMode('play'); }}
                 >
                     {isExpanded ? 'Play' : 'P'}
                 </button>
@@ -59,7 +66,7 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
             <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
 
             <button
-                onClick={() => setUnveilMap?.(!unveilMap)}
+                onClick={(e) => { e.stopPropagation(); setUnveilMap?.(!unveilMap); }}
                 style={{
                     display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 6px', borderRadius: '4px',
                     backgroundColor: unveilMap ? '#89dceb' : 'transparent', color: unveilMap ? '#11111b' : '#cdd6f4',
@@ -73,7 +80,7 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
 
             {onResetSync && (
                 <button
-                    onClick={onResetSync}
+                    onClick={(e) => { e.stopPropagation(); onResetSync(); }}
                     style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#fab387', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}
                     title="Reset local map and Sync to MMapper"
                 >
@@ -90,11 +97,35 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                     backgroundColor: autoCenter ? '#f9e2af' : 'transparent', color: autoCenter ? '#11111b' : '#cdd6f4',
                     display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, transition: 'all 0.2s'
                 }}
-                onClick={onCenterClick}
+                onClick={(e) => { e.stopPropagation(); onCenterClick(); }}
                 title="Center on player"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
                 {isExpanded && "Center"}
+            </button>
+
+            <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+
+            <button
+                style={{
+                    padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px',
+                    backgroundColor: isMapFloating ? '#cba6f7' : 'transparent', color: isMapFloating ? '#11111b' : '#cdd6f4',
+                    display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, transition: 'all 0.2s'
+                }}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (typeof window !== 'undefined') {
+                        window.dispatchEvent(new CustomEvent(isMapFloating ? 'mume-mapper-dock' : 'mume-mapper-undock'));
+                    }
+                }}
+                title={isMapFloating ? "Dock to Drawer" : "Undock Map"}
+            >
+                {isMapFloating ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 12-3-3-3 3"></path><path d="M12 9v12"></path><path d="M20 4H4"></path></svg>
+                ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 15-3 3-3-3"></path><path d="M12 18V6"></path><path d="M20 20H4"></path></svg>
+                )}
+                {isExpanded && (isMapFloating ? "Dock" : "Undock")}
             </button>
 
 
@@ -104,7 +135,7 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                     backgroundColor: 'transparent', color: '#cdd6f4', display: 'flex',
                     alignItems: 'center', gap: '4px', transition: 'all 0.2s'
                 }}
-                onClick={() => setIsDropdownOpen(prev => !prev)}
+                onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(prev => !prev); }}
                 title="More Options"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -117,7 +148,7 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
 
             <button
                 style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#f38ba8', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }}
-                onClick={() => setIsMinimized(true)}
+                onClick={(e) => { e.stopPropagation(); setIsMinimized(true); }}
                 title="Minimize"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>

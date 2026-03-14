@@ -108,10 +108,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
+
+    const roomContext = useMemo(() => ({
+        players: s.roomPlayers,
+        npcs: s.roomNpcs,
+        items: s.roomItems,
+        roomName: s.roomName
+    }), [s.roomPlayers, s.roomNpcs, s.roomItems, s.roomName]);
+
     const { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine } = useMessageLog(
         inCombatHookRef,
         s.isMobileBrevityMode,
-        { players: s.roomPlayers, npcs: s.roomNpcs, items: s.roomItems, roomName: s.roomName }
+        roomContext
     );
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
 
@@ -477,7 +485,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const logValue = useMemo(() => ({
         messages,
         setMessages,
-        addMessage: (t: any, txt: string, cob?: boolean, mid?: string, rn?: boolean, pre?: any, shop?: any, skill?: any, hdr?: any, skip?: boolean) => addMessage(t, txt, cob, mid, rn, pre, shop, skill, hdr, skip),
+        addMessage,
         addSystemMessage,
         isCombatLine,
         isCommunicationLine,

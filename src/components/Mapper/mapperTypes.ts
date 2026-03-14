@@ -52,7 +52,8 @@ export interface MapperRef {
     handleAddRoom: (wx: number, wy: number, z: number) => string;
     handleDeleteRoom: (id: string) => void;
     pushPendingMove: (dir: string) => void;
-    pushPreMove: (dir: string, targetRoomId: string) => void;
+    pushPreMove: (dir: string, targetId: string) => void;
+    handleMoveConfirmed: (e?: any) => void;
     handleMoveFailure: () => void;
     handleCenterOnPlayer: () => void;
     stableRoomIdRef: React.MutableRefObject<string | null>;

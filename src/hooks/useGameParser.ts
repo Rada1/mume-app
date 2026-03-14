@@ -28,7 +28,7 @@ export interface UseGameParserDeps {
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
-    captureStage: React.MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'container' | 'none'>;
+    captureStage: React.MutableRefObject<CaptureStage>;
     practice: ReturnType<typeof usePracticeHandler>;
     isDrawerCapture: React.MutableRefObject<number>;
     isSilentCapture: React.MutableRefObject<number>;
@@ -221,7 +221,14 @@ export function useGameParser(deps: UseGameParserDeps) {
             lower.includes("in your condition?") ||
             lower.includes("you're too stunned") ||
             lower.includes("you are too stunned") ||
-            lower.includes("is blocking the way");
+            lower.includes("is closed") ||
+            lower.includes("is locked") ||
+            lower.includes("is blocking the way") ||
+            lower.includes("you are too tired") ||
+            lower.includes("you're too tired") ||
+            lower.includes("you can't go that way") ||
+            lower.includes("you are already there") ||
+            lower.includes("you stop following");
 
         if (stopMovementMsg) {
             setRumble(true);
@@ -517,7 +524,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         let isDrawerHiding = false;
         if (captureStage.current === 'inv' && deps.isItemsOpen) isDrawerHiding = true;
         else if ((captureStage.current === 'eq' || captureStage.current === 'stat') && deps.isCharacterOpen) isDrawerHiding = true;
-        else if (captureStage.current === 'container') isDrawerHiding = true; 
+        else if ((captureStage.current as any) === 'container') isDrawerHiding = true; 
         else if (captureStage.current === 'none') {
             // Heuristic for header lines that haven't set the stage yet
             if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;

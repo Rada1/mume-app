@@ -44,6 +44,40 @@ interface DrawerManagerProps {
 }
 
 import { useGame } from '../../context/GameContext';
+import { useMapper } from '../../context/MapperContext';
+
+const MapperDockedGate: React.FC<{ 
+    mapperRef: React.RefObject<any>, 
+    characterName: string | null, 
+    isMobile: boolean,
+    onUndock?: () => void 
+}> = ({ mapperRef, characterName, isMobile, onUndock }) => {
+    const { isMapFloating, setIsMapFloating } = useMapper();
+    
+    if (isMapFloating) {
+        return (
+            <div style={{ padding: '40px', textAlign: 'center', opacity: 0.6 }}>
+                <div style={{ marginBottom: '15px' }}>The map is currently undocked.</div>
+                <button 
+                    onClick={() => setIsMapFloating(false)}
+                    style={{ background: 'var(--accent)', border: 'none', color: '#111', padding: '8px 16px', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                    Dock Map Here
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <Mapper
+            ref={mapperRef}
+            characterName={characterName || ''}
+            isMobile={isMobile}
+            isExpanded={true}
+            onUndock={onUndock}
+        />
+    );
+};
 
 export const DrawerManager: React.FC<DrawerManagerProps> = ({
     ui, setUI,
@@ -55,8 +89,15 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     handleSoundUpload, setSoundTriggers
 }) => {
     const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories } = useGame();
+    const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
-    const anyOpen = ui.drawer !== 'none' || isMapDrawerOpen;
+    const showBackdrop = ui.drawer !== 'none' || (ui.mapExpanded && viewport.isMobile && !isMapFloating);
+
+    const handleUndock = () => {
+        triggerHaptic(40);
+        setIsMapFloating(true);
+        setUI(prev => ({ ...prev, mapExpanded: false }));
+    };
 
     const handleTabClick = (drawer: 'character' | 'items') => {
         triggerHaptic(30);
@@ -98,6 +139,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </div>
 
             <div
+                id="drawer-tab-map"
                 className={`desktop-edge-tab left ${ui.mapExpanded ? 'active' : ''}`}
                 style={{ top: '60%' }}
                 onClick={() => setUI(prev => ({ ...prev, mapExpanded: !prev.mapExpanded }))}
@@ -108,30 +150,30 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </div>
 
             <div
-                className={`drawer-backdrop ${anyOpen ? 'open' : ''}`}
-                onClick={() => setUI(prev => ({ ...prev, drawer: 'none', mapExpanded: false }))}
+                className={`drawer-backdrop ${showBackdrop ? 'open' : ''}`}
+                onClick={() => setUI(prev => ({ 
+                    ...prev, 
+                    drawer: 'none', 
+                    mapExpanded: viewport.isMobile ? false : prev.mapExpanded 
+                }))}
             />
 
-            {/* Map Drawer (Bottom Expanded View - Desktop Only) */}
+            {/* Map Drawer (Side View - Desktop Only) */}
             {!viewport.isMobile && (
                 <div
-                    className={`inventory-drawer ${ui.mapExpanded ? 'open' : ''}`}
-                    style={{ height: '80vh', zIndex: 3002, borderRadius: '30px 30px 0 0' }}
+                    className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}
                 >
                     <div className="drawer-header" style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}>
-                        <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
                         <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>World Map</span>
                         <button onClick={() => { triggerHaptic(20); setUI(prev => ({ ...prev, mapExpanded: false })); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
                     </div>
                     <div className="drawer-content" style={{ flex: 1, padding: 0, position: 'relative', overflow: 'hidden' }}>
-                        {ui.mapExpanded && (
-                            <Mapper
-                                ref={mapperRef}
-                                characterName={characterName || ''}
-                                isMobile={viewport.isMobile}
-                                isExpanded={true}
-                            />
-                        )}
+                        <MapperDockedGate
+                            mapperRef={mapperRef}
+                            characterName={characterName}
+                            isMobile={viewport.isMobile}
+                            onUndock={handleUndock}
+                        />
                     </div>
                 </div>
             )}

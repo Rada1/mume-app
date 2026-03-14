@@ -12,7 +12,7 @@ interface UseMapPersistenceProps {
     currentRoomId: string | null;
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
-    cameraRef: React.MutableRefObject<{ x: number; y: number; zoom: number }>;
+    cameraRef?: React.MutableRefObject<{ x: number; y: number; zoom: number }>;
     allowPersistence: boolean;
     unveilMap: boolean;
 }
@@ -44,27 +44,46 @@ export const useMapPersistence = ({
             try {
                 const { roomId, camX, camY, zoom } = JSON.parse(savedPos);
                 if (roomId) { setCurrentRoomId(roomId); currentRoomIdRef.current = roomId; }
-                if (camX !== undefined) cameraRef.current.x = camX;
-                if (camY !== undefined) cameraRef.current.y = camY;
-                if (zoom !== undefined) cameraRef.current.zoom = zoom;
+                if (cameraRef && cameraRef.current) {
+                    if (camX !== undefined) cameraRef.current.x = camX;
+                    if (camY !== undefined) cameraRef.current.y = camY;
+                    if (zoom !== undefined) cameraRef.current.zoom = zoom;
+                }
             } catch (e) { }
         }
     }, [storageKey, markerStorageKey, posStorageKey, setRooms, setMarkers, setCurrentRoomId, currentRoomIdRef, cameraRef]);
 
-    // Persistence Saving
+    // Persistence Saving - Debounced for performance and to prevent infinite loops
     useEffect(() => {
         if (!allowPersistence) return;
-        localStorage.setItem(storageKey, JSON.stringify(rooms));
-        localStorage.setItem(markerStorageKey, JSON.stringify(markers));
-        localStorage.setItem('mume_mapper_explored', JSON.stringify(Array.from(exploredVnums)));
-        localStorage.setItem(posStorageKey, JSON.stringify({
-            roomId: currentRoomId,
-            camX: cameraRef.current.x,
-            camY: cameraRef.current.y,
-            zoom: cameraRef.current.zoom
-        }));
-        localStorage.setItem('mume_mapper_unveil', String(unveilMap));
-    }, [rooms, markers, exploredVnums, currentRoomId, allowPersistence, storageKey, markerStorageKey, posStorageKey, unveilMap]);
+
+        const saveFullData = () => {
+            localStorage.setItem(storageKey, JSON.stringify(rooms));
+            localStorage.setItem(markerStorageKey, JSON.stringify(markers));
+            localStorage.setItem('mume_mapper_explored', JSON.stringify(Array.from(exploredVnums)));
+            localStorage.setItem('mume_mapper_unveil', String(unveilMap));
+        };
+
+        const savePosData = () => {
+            localStorage.setItem(posStorageKey, JSON.stringify({
+                roomId: currentRoomId,
+                camX: cameraRef?.current?.x,
+                camY: cameraRef?.current?.y,
+                zoom: cameraRef?.current?.zoom
+            }));
+        };
+
+        // Debounce full data save (2s) - this is the expensive one
+        const fullDataTimer = setTimeout(saveFullData, 2000);
+        
+        // Slightly faster save for position (500ms)
+        const posDataTimer = setTimeout(savePosData, 500);
+
+        return () => {
+            clearTimeout(fullDataTimer);
+            clearTimeout(posDataTimer);
+        };
+    }, [rooms, markers, exploredVnums, currentRoomId, allowPersistence, storageKey, markerStorageKey, posStorageKey, unveilMap, cameraRef]);
 
     return { storageKey };
 };

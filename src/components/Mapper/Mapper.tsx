@@ -1,6 +1,12 @@
-import { useState, useRef, useEffect, useCallback, forwardRef } from 'react';
-import { useGame, useLog, useVitals } from '../../context/GameContext';
-import { useMapperController } from './useMapperController';
+/**
+ * @file Mapper.tsx
+ * @description Renders the MUME Mapper.
+ * Consumes the shared MapperContext to ensure synchronization across instances.
+ */
+
+import React, { useRef, useMemo, useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import { useGame, useLog, useVitals, useUI } from '../../context/GameContext';
+import { useMapper } from '../../context/MapperContext';
 import { MapCanvas } from './MapCanvas';
 import { MapperToolbar } from './MapperToolbar';
 import { MapperDropdown } from './MapperDropdown';
@@ -8,7 +14,7 @@ import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
 import { useMapAnimation } from './useMapAnimation';
-
+import { useMapperController } from './useMapperController';
 import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
@@ -26,6 +32,7 @@ interface MapperProps {
     heldButton?: any;
     setHeldButton?: (val: any) => void;
     setCommandPreview?: (val: string | null) => void;
+    onUndock?: () => void;
 }
 
 export interface MapperHandle {
@@ -36,21 +43,15 @@ export interface MapperHandle {
 }
 
 export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
-    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, setHeldButton, setCommandPreview } = props;
+    const { isMinimized: isMinimizedProp, setIsMinimized, characterName, isMobile: isMobileProp, isExpanded, heldButton, setHeldButton, setCommandPreview, onUndock: onUndockProp } = props;
     const effectiveIsMinimized = isMinimizedProp ?? (isExpanded !== undefined ? !isExpanded : false);
     const [mode, setMode] = useState<'play' | 'edit'>('play');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
-    const [selectedRoomIds, setSelectedRoomIds] = useState<Set<string>>(new Set());
-    const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
-    const [contextMenu, setContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
-    const [infoRoomId, setInfoRoomId] = useState<string | null>(null);
-    const [renderVersion, setRenderVersion] = useState(0);
-    const [autoCenter, setAutoCenter] = useState(true);
     const [isMobile] = useState(() => isMobileProp ?? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
-    const [viewZ, setViewZ] = useState<number | null>(null);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
@@ -60,28 +61,32 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick } = useGame();
     const { target } = useVitals();
     const { addMessage } = useLog();
+    const { setUI } = useUI();
     const isDarkMode = theme === 'dark';
 
-    // Pass a dummy onRecenter first to controller
-    const controller = useMapperController(characterName ?? null, ref, {
-        onRecenter: () => { handleCenterOnPlayer() },
-        triggerRender: () => { setRenderVersion(v => v + 1); }
-    });
-
+    // Use shared state from MapperContext
+    const context = useMapper();
     const {
         rooms, setRooms, markers, setMarkers, currentRoomId,
-        allowPersistence, setAllowPersistence, cameraRef,
+        allowPersistence, setAllowPersistence,
         handleAddRoom, handleDeleteRoom, roomsRef,
         currentRoomIdRef, markersRef, preloadedCoordsRef,
-        unveilMap, setUnveilMap, handleResetAndSync, handleSyncLocation, handleClearMap
-    } = controller;
+        unveilMap, setUnveilMap, handleResetAndSync, handleSyncLocation, handleClearMap,
+        selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
+        autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
+        renderVersion, triggerRender, isMapFloating, setIsMapFloating
+    } = context;
 
-    const { isWalking, walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
-
-    const triggerRender = useCallback(() => setRenderVersion(v => v + 1), []);
-
-    const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, controller);
     const { handleCenterOnPlayer } = useMapperPlayerTracking(currentRoomId, rooms, autoCenter, setAutoCenter, cameraRef, canvasRef, playerPosRef, playerTrailRef, lastRoomIdRef, triggerRender, setViewZ, preloadedCoordsRef);
+    const { isWalking, walkTargetId, walkPath, startWalking, stopWalking } = useSmartWalk(currentRoomId, rooms, executeCommand, preloadedCoordsRef, addMessage);
+    const { handleExportMap, handleImportMap, handleImportMMapper } = useMapperExportImport(rooms, setRooms, markers, setMarkers, characterName, addMessage, context);
+
+    const controllerOptions = useMemo(() => ({
+        onRecenter: handleCenterOnPlayer,
+        triggerRender
+    }), [handleCenterOnPlayer, triggerRender]);
+
+    useMapperController(characterName ?? null, ref, controllerOptions);
 
     useEffect(() => {
         const onCenter = () => handleCenterOnPlayer();
@@ -96,38 +101,28 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         cameraRef, mode, currentRoomId,
         isDesignMode: props.isDesignMode || false,
         isMinimized: effectiveIsMinimized,
-        setAutoCenter, setContextMenu, setInfoRoomId,
+        setAutoCenter, setContextMenu: (menu: any) => { /* mapper doesn't need its own state for context menu if we want to share across instances we could... but let's keep context menu instance-specific for now */ },
+        setInfoRoomId,
         triggerHaptic: triggerHaptic ?? (() => { }),
         canvasRef, cardRef, setIsDragging, handleAddRoom,
         triggerRender, viewZ, setViewZ,
         preloadedCoordsRef,
-        spatialIndexRef: controller.spatialIndexRef,
+        spatialIndexRef: context.spatialIndexRef,
         startWalking, stopWalking,
         executeCommand, joystick, btn, heldButton, setHeldButton, target
     });
 
+    // We still keep the context menu local to the instance for better UX (each window has its own context menu)
+    const [localContextMenu, setLocalContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
 
-
-
-    // Trigger immediate render when unveilMap toggles
-    useEffect(() => {
-        triggerRender();
-    }, [unveilMap, triggerRender]);
+    // Re-bind setContextMenu to local for interactions
+    const setContextMenu = setLocalContextMenu;
 
     const handleAddMarker = useCallback((wx: number, wy: number, z: number) => {
         const id = Math.random().toString(36).substr(2, 9);
         setMarkers(prev => ({
             ...prev,
-            [id]: {
-                id,
-                x: wx,
-                y: wy,
-                z,
-                text: 'New Marker',
-                dotSize: 5,
-                fontSize: 12,
-                createdAt: Date.now()
-            }
+            [id]: { id, x: wx, y: wy, z, text: 'New Marker', dotSize: 5, fontSize: 12, createdAt: Date.now() }
         }));
     }, [setMarkers]);
 
@@ -155,26 +150,23 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 stableRoomIdRef={currentRoomIdRef}
                 stableMarkersRef={markersRef}
                 preloadedCoordsRef={preloadedCoordsRef}
-                spatialIndexRef={controller.spatialIndexRef}
-                exploredVnums={controller.exploredVnums}
-                exploredRef={controller.exploredRef}
+                spatialIndexRef={context.spatialIndexRef}
+                exploredVnums={context.exploredRef.current}
+                exploredRef={context.exploredRef}
                 triggerRender={triggerRender}
                 unveilMap={unveilMap}
                 viewZ={viewZ}
-                firstExploredAtRef={controller.firstExploredAtRef}
-                preMoveRef={controller.preMoveRef}
+                firstExploredAtRef={context.firstExploredAtRef}
+                preMoveRef={context.preMoveRef}
                 walkTargetId={walkTargetId}
                 walkPath={walkPath}
             />
             <div className="vignette-container" />
-            {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (() => {
-                return (
-                    <DpadCluster
-                        heldButton={heldButton}
-                        setHeldButton={setHeldButton}
-                    />
-                );
-            })()}
+            
+            {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (
+                <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />
+            )}
+
             <MapperToolbar
                 mode={mode}
                 setMode={setMode}
@@ -188,8 +180,16 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 unveilMap={unveilMap}
                 setUnveilMap={setUnveilMap}
                 onResetSync={handleResetAndSync}
+                onUndock={onUndockProp || (() => {
+                    triggerHaptic(40);
+                    setIsMapFloating(true);
+                    setUI(prev => ({ ...prev, mapExpanded: false }));
+                })}
                 isDarkMode={isDarkMode}
+                isMapFloating={isMapFloating}
+                setIsMapFloating={setIsMapFloating}
             />
+
             <MapperDropdown
                 isOpen={isDropdownOpen}
                 setIsOpen={setIsDropdownOpen}
@@ -200,49 +200,22 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 exportMap={handleExportMap}
                 importMap={handleImportMap}
                 importMMapper={handleImportMMapper}
-                clearMap={() => {
-                    handleClearMap();
-                    setIsDropdownOpen(false);
-                }}
+                clearMap={() => { handleClearMap(); setIsDropdownOpen(false); }}
             />
 
-            {contextMenu && (
+            {localContextMenu && (
                 <MapperContextMenu
-                    x={contextMenu.x}
-                    y={contextMenu.y}
-                    roomId={contextMenu.roomId}
-                    onClose={() => setContextMenu(null)}
-                    onDelete={() => {
-                        if (contextMenu.roomId) handleDeleteRoom(contextMenu.roomId);
-                        setContextMenu(null);
-                        triggerRender();
-                    }}
-                    onInfo={() => {
-                        setInfoRoomId(contextMenu.roomId);
-                        setContextMenu(null);
-                    }}
-                    onAddMarker={() => {
-                        handleAddMarker(contextMenu.wx, contextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0));
-                        setContextMenu(null);
-                        triggerRender();
-                    }}
-                    onAddRoom={() => {
-                        handleAddRoom(contextMenu.wx, contextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0));
-                        setContextMenu(null);
-                        triggerRender();
-                    }}
-                    onSyncLocation={() => {
-                        handleSyncLocation(contextMenu.wx, contextMenu.wy);
-                        setContextMenu(null);
-                        triggerRender();
-                    }}
-                    onWalkStart={(rid) => {
-                        startWalking(rid);
-                    }}
-                    onWalkEnd={() => {
-                        stopWalking();
-                        setContextMenu(null);
-                    }}
+                    x={localContextMenu.x}
+                    y={localContextMenu.y}
+                    roomId={localContextMenu.roomId}
+                    onClose={() => setLocalContextMenu(null)}
+                    onDelete={() => { if (localContextMenu.roomId) handleDeleteRoom(localContextMenu.roomId); setLocalContextMenu(null); triggerRender(); }}
+                    onInfo={() => { setInfoRoomId(localContextMenu.roomId); setLocalContextMenu(null); }}
+                    onAddMarker={() => { handleAddMarker(localContextMenu.wx, localContextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0)); setLocalContextMenu(null); triggerRender(); }}
+                    onAddRoom={() => { handleAddRoom(localContextMenu.wx, localContextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0)); setLocalContextMenu(null); triggerRender(); }}
+                    onSyncLocation={() => { handleSyncLocation(localContextMenu.wx, localContextMenu.wy); setLocalContextMenu(null); triggerRender(); }}
+                    onWalkStart={(rid) => { startWalking(rid); }}
+                    onWalkEnd={() => { stopWalking(); setLocalContextMenu(null); }}
                     mode={mode}
                     isDarkMode={isDarkMode}
                 />

@@ -11,6 +11,7 @@ import { JoystickCluster } from './HUD/JoystickCluster';
 import { XboxCluster } from './HUD/XboxCluster';
 import { LineCluster } from './HUD/LineCluster';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
+import { useMapper } from '../../context/MapperContext';
 
 interface HUDClustersLayerProps {
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
@@ -29,6 +30,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
     const { characterName, isMmapperMode, btn, joystick, mapperRef, triggerHaptic, executeCommand, handleButtonClick, viewport, showControls, showLegacyButtons } = useGame();
     const { target, stats, activePrompt } = useVitals();
     const { setPopoverState } = useUI();
+    const { isMapFloating } = useMapper();
     const { isMobile, isLandscape, logFontSize, resetLogFontSize, isKeyboardOpen } = viewport;
 
     const effectiveShowControls = showControls && (!isMobile || !isKeyboardOpen || btn.isEditMode);
@@ -50,21 +52,23 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
 
             <GridOverlay isEditMode={btn.isEditMode} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} />
 
-            <MapperCluster
-                uiPositions={btn.uiPositions}
-                isEditMode={btn.isEditMode}
-                handleDragStart={handleDragStart}
-                characterName={characterName || ''}
-                isMmapperMode={isMmapperMode}
-                isMobile={isMobile}
-                mapperRef={mapperRef}
-                dragState={btn.dragState}
-                isLandscape={isLandscape}
-                wasDraggingRef={wasDraggingRef}
-                heldButton={heldButton}
-                setHeldButton={setHeldButton}
-                setCommandPreview={setCommandPreview}
-            />
+            {(isMapFloating || isMobile) && (
+                <MapperCluster
+                    uiPositions={btn.uiPositions}
+                    isEditMode={btn.isEditMode}
+                    handleDragStart={handleDragStart}
+                    characterName={characterName || ''}
+                    isMmapperMode={isMmapperMode}
+                    isMobile={isMobile}
+                    mapperRef={mapperRef}
+                    dragState={btn.dragState}
+                    isLandscape={isLandscape}
+                    wasDraggingRef={wasDraggingRef}
+                    heldButton={heldButton}
+                    setHeldButton={setHeldButton}
+                    setCommandPreview={setCommandPreview}
+                />
+            )}
 
             <div className="hud-clusters-absolute-layer">
                 <StatsCluster
@@ -82,7 +86,7 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                             <XboxCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} handleDragStart={handleDragStart} buttons={btn.buttons} selectedButtonIds={btn.selectedButtonIds} dragState={btn.dragState} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditingButtonId={btn.setEditingButtonId} setSelectedIds={btn.setSelectedIds} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} heldButton={heldButton} setHeldButton={setHeldButton} joystick={joystick} target={target} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} isLandscape={isLandscape} stats={stats} />
                         )}
 
-                        {!showLegacyButtons && !btn.isEditMode && (!isMobile || isLandscape) && (
+                        {!showLegacyButtons && !btn.isEditMode && (!isMobile || isLandscape || isMapFloating) && (
                             <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) ? 'hud-hidden' : ''}`}>
                                 <LineCluster
                                     isEditMode={btn.isEditMode}

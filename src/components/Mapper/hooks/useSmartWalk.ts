@@ -58,48 +58,49 @@ export const useSmartWalk = (
         
         if (normStart === normEnd) return { dirs: [], ids: [startId] };
 
-        console.group(`[SmartWalk] BFS Trace: ${startId} -> ${endId}`);
-        console.log(`Normalized: ${normStart} -> ${normEnd}`);
+        console.log(`[SmartWalk] BFS start: ${startId} -> ${endId} (Total Rooms: ${Object.keys(rooms).length}, Preloaded: ${Object.keys(preloadedCoordsRef.current).length})`);
 
+        // BFS with larger limit for Arda
         const queue: [string, string[], string[]][] = [[startId, [], [startId]]];
         const visited = new Set<string>([normStart]);
 
         let iterations = 0;
-        while (queue.length > 0 && iterations < 3000) {
+        const MAX_ITERATIONS = 12000;
+
+        while (queue.length > 0 && iterations < MAX_ITERATIONS) {
             iterations++;
             const [curr, dirs, ids] = queue.shift()!;
             
             const exits = getExits(curr);
-            if (!exits) continue;
+            if (!exits) {
+                if (iterations < 10) console.log(`[SmartWalk] No exits found for ${curr}`);
+                continue;
+            }
 
             for (const [dir, exit] of Object.entries(exits)) {
                 if (!exit.target || exit.closed) continue;
 
-                let nextId = String(exit.target);
-                if (!nextId.startsWith('m_') && !nextId.startsWith('r_') && /^\d+$/.test(nextId)) {
-                    nextId = `m_${nextId}`;
-                }
-
-                const normNext = normalizeId(nextId);
+                const targetId = String(exit.target);
+                const normNext = normalizeId(targetId);
 
                 if (normNext === normEnd) {
                     const finalDirs = [...dirs, dir];
-                    const finalIds = [...ids, nextId];
-                    console.log(`[SmartWalk] Success! Found path in ${iterations} steps:`, finalDirs);
-                    console.groupEnd();
+                    const finalIds = [...ids, targetId];
+                    console.log(`[SmartWalk] Path found! ${finalDirs.length} steps, ${iterations} iterations.`);
                     return { dirs: finalDirs, ids: finalIds };
                 }
 
                 if (!visited.has(normNext)) {
                     visited.add(normNext);
-                    queue.push([nextId, [...dirs, dir], [...ids, nextId]]);
+                    // Standardize internal ID format to prevent drift
+                    const standardId = targetId.startsWith('m_') ? targetId : (preloadedCoordsRef.current[normNext] ? `m_${normNext}` : targetId);
+                    queue.push([standardId, [...dirs, dir], [...ids, targetId]]);
                 }
             }
         }
         console.warn(`[SmartWalk] BFS Failed after ${iterations} iterations.`);
-        console.groupEnd();
         return null;
-    }, [getExits]);
+    }, [getExits, preloadedCoordsRef]);
 
     const stopWalking = useCallback(() => {
         setIsWalking(false);

@@ -8,81 +8,76 @@
 @import './styles/layout.css';
 @import './styles/ui.css';
 
-/* Mobile Gutter and Controls logic */
+/* Mobile Bottom Gutter */
 .mobile-bottom-gutter {
-  display: flex;
-  width: 100%;
-  height: 320px;
-  background: var(--bg-app);
-  border-top: 1px solid var(--border-color);
-  position: relative;
-  flex-shrink: 0;
-  z-index: 60;
+    flex-shrink: 0;
+    height: 160px; /* Peek height */
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    border-top: 2px solid var(--accent);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-@media (max-width: 600px) {
-  .mobile-bottom-gutter {
-    flex-direction: column;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: visible;
-    touch-action: none;
-  }
+@media (max-width: 768px) {
+    .kb-open .mobile-bottom-gutter {
+        display: none !important;
+    }
 
-  .kb-open .mobile-bottom-gutter {
-    display: none !important;
-  }
+    .kb-open .hud-clusters-absolute-layer,
+    .kb-open .custom-buttons-layer,
+    .kb-open .joystick-cluster,
+    .kb-open .xbox-cluster,
+    .kb-open .reset-zoom-fab {
+        display: none !important;
+    }
 
-  .kb-open .hud-clusters-absolute-layer,
-  .kb-open .custom-buttons-layer,
-  .kb-open .joystick-cluster,
-  .kb-open .xbox-cluster,
-  .kb-open .reset-zoom-fab {
-    display: none !important;
-  }
+    .hud-clusters-absolute-layer {
+        display: block;
+        pointer-events: none;
+    }
 
-  .hud-clusters-absolute-layer {
-    display: block;
-    pointer-events: none;
-  }
+    .hud-clusters-absolute-layer > * {
+        pointer-events: auto;
+    }
 
-  .hud-clusters-absolute-layer>* {
-    pointer-events: auto;
-  }
-
-  .mobile-bottom-gutter.map-expanded {
-    height: 65vh;
-    /* Re-enable height transition only for map expansion */
-    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  }
+    .mobile-bottom-gutter.map-expanded {
+        height: 90vh;
+    }
 }
 
 .is-landscape .mobile-bottom-gutter {
-  width: 30vw !important;
-  min-width: 240px !important;
-  max-width: none !important;
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: row !important;
-  border-top: none !important;
-  border-right: 1px solid var(--border-color) !important;
-  position: relative !important;
-  overflow: hidden !important;
-  opacity: 1 !important;
-  transform: none !important;
-  background: var(--bg-app);
-  z-index: 100;
-  flex-shrink: 0;
-  pointer-events: auto !important;
-  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 30vw !important;
+    min-width: 240px !important;
+    max-width: none !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-direction: row !important;
+    border-top: none !important;
+    border-right: 1px solid var(--border-color) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    opacity: 1 !important;
+    transform: none !important;
+    background: var(--bg-app);
+    z-index: 2500;
+    flex-shrink: 0;
+    pointer-events: auto !important;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .is-landscape .mobile-bottom-gutter.map-expanded {
-  width: 65vw !important;
-  overflow: visible !important;
+    width: 65vw !important;
+    overflow: visible !important;
 }
+
 /* Hide interactive buttons in portrait mode when map is expanded to prevent toolbar overlap */
 .app-container.is-map-expanded:not(.is-landscape) .spat-container,
 .app-container.is-map-expanded:not(.is-landscape) .line-cluster-container {
-  display: none !important;
+    display: none !important;
 }

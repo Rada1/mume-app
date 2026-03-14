@@ -66,6 +66,10 @@ export const useRoomInfoHandler = ({
         const isLikelyMove = idChanged || (hasPendingMove && isVnumZero);
 
         if (isLikelyMove) {
+            // Early queue peek: what direction are we trying to move?
+            // We don't shift it yet, we just peek at it for Arda fallback.
+            const intentDir = pendingMovesRef.current.length > 0 ? pendingMovesRef.current[0].dir : null;
+
             // AUTHORITATIVE DIRECTION DETECTION
             const gmcpIdStr = String(gmcpId);
 
@@ -89,13 +93,14 @@ export const useRoomInfoHandler = ({
                     // In lit rooms, we match by gmcpId. In dark rooms, we trust the queue's direction.
                     if (!isVnumZero) {
                         authorityDir = Object.keys(ardaData[4]).find(d => String(ardaData[4][d]) === gmcpIdStr) || null;
-                    } else if (dirUsed) {
+                    } else if (intentDir) {
                         // We are in the dark, but ArdaMap knows what VNUM is in the direction we moved.
-                        const targetVnum = String(ardaData[4][dirUsed]);
+                        const targetVnum = String(ardaData[4][intentDir]);
                         if (targetVnum) {
                             matchedInternalId = targetVnum;
                             ghostData = preloadedCoordsRef.current[targetVnum];
                             discoverySource = 'ARDA_DARK_RECKONING';
+                            authorityDir = intentDir; // Confirm the intent as authoritative
                         }
                     }
                 }
@@ -107,13 +112,41 @@ export const useRoomInfoHandler = ({
                 // remove it and everything before it (which are now confirmed failed/skipped).
                 const matchIdx = pendingMovesRef.current.findIndex(m => m.dir === authorityDir);
                 if (matchIdx !== -1) {
+                    if (matchIdx > 0 && showDebugEchoes) {
+                        const skipped = pendingMovesRef.current.slice(0, matchIdx).map(m => m.dir).join(', ');
+                        const skippedIds = pendingMovesRef.current.slice(0, matchIdx).map(m => (m as any).id || '?').join(', ');
+                        addMessage?.('system', `[Mapper] Warning: Skipped ${matchIdx} pending moves: ${skipped} (IDs: ${skippedIds}) (Resync to ${authorityDir})`);
+                    }
                     pendingMovesRef.current.splice(0, matchIdx + 1);
                 }
             } else {
-                // 3. Last fallback: use the pending queue head if we still don't know the direction
-                const nextMove = pendingMovesRef.current.shift();
-                if (nextMove) {
-                    dirUsed = nextMove.dir;
+                // 3. Fallback to ArdaMap preloaded exits
+                if (currentActiveRoom && currentActiveRoom.id.startsWith('m_')) {
+                    const prevVnum = currentActiveRoom.id.substring(2);
+                    const ardaData = preloadedCoordsRef.current[prevVnum];
+                    if (ardaData && ardaData[4]) {
+                        // Match any pending move that has a valid Arda exit to this gmcpId
+                        const matchIdx = pendingMovesRef.current.findIndex(m => {
+                            const targetVnum = String(ardaData[4][m.dir]);
+                            return targetVnum === gmcpIdStr;
+                        });
+                        
+                        if (matchIdx !== -1) {
+                            dirUsed = pendingMovesRef.current[matchIdx].dir;
+                            if (matchIdx > 0 && showDebugEchoes) {
+                                addMessage?.('system', `[Mapper] Warning: Skipped ${matchIdx} moves via Arda match.`);
+                            }
+                            pendingMovesRef.current.splice(0, matchIdx + 1);
+                        }
+                    }
+                }
+
+                // 4. Last fallback: use the pending queue head if we still don't know the direction
+                if (!dirUsed) {
+                    const nextMove = pendingMovesRef.current.shift();
+                    if (nextMove) {
+                        dirUsed = nextMove.dir;
+                    }
                 }
             }
 
@@ -206,6 +239,22 @@ export const useRoomInfoHandler = ({
         }
         // If !isLikelyMove, this is a REFRESH (look, etc) - do NOT consume pending moves.
 
+        // Calculate predicted coordinates first to allow usage in exit/neighbor validation
+        let predX = currentActiveRoom ? Math.round(currentActiveRoom.x) : 0;
+        let predY = currentActiveRoom ? Math.round(currentActiveRoom.y) : 0;
+        let predZ = currentActiveRoom ? Math.round(currentActiveRoom.z || 0) : 0;
+
+        if (ghostData) {
+            predX = Math.round(ghostData[0]); predY = Math.round(ghostData[1]); predZ = Math.round(ghostData[2]);
+        } else if (currentActiveRoom && dirUsed) {
+            const d = DIRS[dirUsed];
+            if (d) { 
+                predX = Math.round(predX + (d.dx || 0)); 
+                predY = Math.round(predY + (d.dy || 0)); 
+                predZ = Math.round(predZ + (d.dz || 0)); 
+            }
+        }
+
         // Prioritize finding a room that's an existing exit from our current location
         if (currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
             const ex = currentActiveRoom.exits[dirUsed];
@@ -238,28 +287,34 @@ export const useRoomInfoHandler = ({
             }) || null;
         }
 
-        let predX = currentActiveRoom ? Math.round(currentActiveRoom.x) : 0;
-        let predY = currentActiveRoom ? Math.round(currentActiveRoom.y) : 0;
-        let predZ = currentActiveRoom ? Math.round(currentActiveRoom.z || 0) : 0;
 
-        if (ghostData) {
-            predX = Math.round(ghostData[0]); predY = Math.round(ghostData[1]); predZ = Math.round(ghostData[2]);
-        } else if (currentActiveRoom && dirUsed) {
-            const d = DIRS[dirUsed];
-            if (d) { 
-                predX = Math.round(predX + (d.dx || 0)); 
-                predY = Math.round(predY + (d.dy || 0)); 
-                predZ = Math.round(predZ + (d.dz || 0)); 
+        // Logic to finalize ghost/target resolution...
+        if (ghostData && matchedInternalId) {
+            targetId = `m_${matchedInternalId}`;
+            if (!exploredRef.current.has(matchedInternalId)) {
+                if (firstExploredAtRef.current[matchedInternalId] === undefined) {
+                    firstExploredAtRef.current[matchedInternalId] = now;
+                    firstExploredAtRef.current['_latest'] = now;
+                }
+                setExploredVnums(prev => {
+                    const next = new Set(prev);
+                    next.add(matchedInternalId!);
+                    exploredRef.current = next;
+                    return next;
+                });
+                triggerRender?.();
             }
         }
+        if (!targetId && isVnumZero) {
+            targetId = `ghost_${predX}_${predY}_${predZ}`;
+        }
+        if (!targetId) targetId = generateId();
 
-        discoverySourceRef.current = discoverySource;
-        if (dirUsed || discoverySource || isVnumZero) {
-            if (showDebugEchoes) {
-                const gmcpDisplay = isVnumZero ? 'DARK/0' : gmcpId;
-                const debugMsg = `[Mapper] Move: ${dirUsed || 'Snap'} -> Pred: ${predX},${predY},${predZ} | GMCP: ${gmcpDisplay}${discoverySource ? ` (Auto-Snap by ${discoverySource})` : ''} | Target: ${targetId ? 'MATCHED' : 'NEW'}`;
-                addMessage?.('system', debugMsg);
-            }
+        // --- Move Echo Logic (Always triggered if move was intended) ---
+        if (showDebugEchoes && (dirUsed || discoverySource || isLikelyMove)) {
+            const gmcpDisplay = isVnumZero ? 'DARK/0' : gmcpId;
+            const debugMsg = `[Mapper] Move: ${dirUsed || 'Snap'} -> Pred: ${predX},${predY},${predZ} | GMCP: ${gmcpDisplay}${discoverySource ? ` (By ${discoverySource})` : ''} | Target: ${targetId.includes('ghost') || targetId.includes('-') ? 'NEW' : 'MATCHED'}`;
+            addMessage?.('system', debugMsg);
         }
 
         const name = data.name || 'Unknown Room';
@@ -268,16 +323,7 @@ export const useRoomInfoHandler = ({
         const freshTerrain = normalizeTerrain(data.terrain || data.environment || null);
         const questFlags = data.room_quest_flags || [];
 
-        if (ghostData && matchedInternalId) {
-            targetId = `m_${matchedInternalId}`;
-            // ... (explored logic remains unchanged)
-        }
-
-        if (!targetId && isVnumZero) {
-            targetId = `ghost_${predX}_${predY}_${predZ}`;
-        }
-
-        if (!targetId) targetId = generateId();
+        discoverySourceRef.current = discoverySource;
 
         // Check for any changes without relying on React's functional updater closures,
         // which can lead to stale local variables in strict mode.

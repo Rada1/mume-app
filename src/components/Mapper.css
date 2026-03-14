@@ -53,6 +53,7 @@ canvas.map-canvas {
     position: relative;
     z-index: 2;
     opacity: 1;
+    touch-action: none !important;
 }
 
 .mapper-cluster,

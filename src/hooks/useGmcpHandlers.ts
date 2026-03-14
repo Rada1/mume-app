@@ -72,9 +72,8 @@ export const useGmcpHandlers = ({
         if (data.terrain) {
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
-                // Terrain change via GMCP is a strong signal of a successful move 
-                // if Room.Info was suppressed (e.g. in the dark).
-                window.dispatchEvent(new CustomEvent('mume-mapper-move-confirmed'));
+                // Terrain change via GMCP is a strong signal, but we rely on Room.Info or Parser 
+                // to avoid double-confirming moves.
             }
             setCurrentTerrain(data.terrain);
         }

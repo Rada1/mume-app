@@ -27,12 +27,14 @@ const Joystick: React.FC<JoystickProps> = ({
     isTargetModifierActive
 }) => {
     return (
-        <div className="cluster-row" onPointerDown={(e) => e.preventDefault()}>
+        <div className="cluster-row" onPointerDown={(e) => {
+            // No preventDefault here to allow gestures
+        }}>
             <div className="nav-buttons-col">
                 <div
                     className={`nav-btn ${btnGlow.up ? 'glow-active' : ''}`}
+                    style={{ pointerEvents: 'auto' }}
                     onPointerDown={(e) => {
-                        if (e.cancelable) e.preventDefault();
                         onNavStart('up', e);
                     }}
                     onPointerUp={() => onNavEnd('up')}
@@ -42,8 +44,8 @@ const Joystick: React.FC<JoystickProps> = ({
                 </div>
                 <div
                     className={`nav-btn ${btnGlow.down ? 'glow-active' : ''}`}
+                    style={{ pointerEvents: 'auto' }}
                     onPointerDown={(e) => {
-                        if (e.cancelable) e.preventDefault();
                         onNavStart('down', e);
                     }}
                     onPointerUp={() => onNavEnd('down')}
@@ -55,15 +57,14 @@ const Joystick: React.FC<JoystickProps> = ({
 
             <div
                 className="joystick-container"
+                style={{ pointerEvents: 'auto' }}
                 onPointerDown={(e) => {
                     e.stopPropagation();
-                    if (e.cancelable) e.preventDefault();
                     onJoystickStart(e);
                 }}
                 onPointerMove={onJoystickMove}
                 onPointerUp={(e) => {
                     e.stopPropagation();
-                    if (e.cancelable) e.preventDefault();
                     onJoystickEnd(e);
                 }}
                 onPointerCancel={onJoystickEnd}

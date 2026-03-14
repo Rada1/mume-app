@@ -57,10 +57,9 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                 setIsJoystickConsumed(true);
                 triggerHaptic(10);
                 
-                // Dispatch both events to ensure map follows and knows joystick is active
+                // Dispatch center event to ensure map follows joystick
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('mume-mapper-center-on-player'));
-                    window.dispatchEvent(new CustomEvent('mume-mapper-push-move', { detail: currentLockedDir }));
                 }
             }
         };
@@ -73,6 +72,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     }, [triggerHaptic]);
 
     const handleJoystickStart = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void) => {
+        if (!e.isPrimary) return;
         if (executeCommand) executeCommandRef.current = executeCommand;
         setJoystickActive(true);
         setIsJoystickConsumed(false);
@@ -98,6 +98,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     }, [startRepeatTimer]);
 
     const handleJoystickMove = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void, suppressMove?: boolean) => {
+        if (!e.isPrimary) return null;
         if (executeCommand) executeCommandRef.current = executeCommand;
         if (!joystickActive || !joystickStartPos.current) return null;
         const dx = e.clientX - joystickStartPos.current.x;
@@ -236,6 +237,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     }, [joystickActive, isJoystickConsumed, triggerHaptic, startRepeatTimer, stopRepeatTimer, availableExits]);
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
+        if (!e.isPrimary) return false;
         executeCommandRef.current = executeCommand;
         stopRepeatTimer();
 
