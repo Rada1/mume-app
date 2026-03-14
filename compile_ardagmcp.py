@@ -76,9 +76,12 @@ def compile_ardagmcp():
         mob_flags = [f.text.strip() for f in elem.findall('mobflag') if f.text]
         load_flags = [f.text.strip() for f in elem.findall('loadflag') if f.text]
         
+        terrain_elem = elem.find('terrain')
+        terrain = terrain_elem.text.strip() if terrain_elem is not None and terrain_elem.text else "0"
+
         rooms[room_id] = [
             x, -y, z * floor_height, 
-            0, exits, name, server_id,
+            terrain, exits, name, server_id,
             mob_flags, load_flags
         ]
         
