@@ -134,12 +134,25 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
 
     // FLOATING Mode (Mobile or Desktop)
     const pos = uiPositions.mapper || {};
+
+    // Safety clamp coordinates so it doesn't spawn off-screen (especially important when moving from desktop to mobile)
+    let safeLeft = pos.x !== undefined ? pos.x : (isMobile ? 10 : 50);
+    let safeTop = pos.y !== undefined ? pos.y : (isMobile ? 100 : 150);
+    if (typeof window !== 'undefined') {
+        const maxW = window.innerWidth - 50;
+        const maxH = window.innerHeight - 50;
+        if (safeLeft > maxW) safeLeft = Math.max(10, maxW - 200);
+        if (safeLeft < 0) safeLeft = 10;
+        if (safeTop > maxH) safeTop = Math.max(50, maxH - 200);
+        if (safeTop < 0) safeTop = 50;
+    }
+
     const style: React.CSSProperties = {
         position: 'absolute',
-        left: (pos.x !== undefined && pos.x < window.innerWidth - 100) ? pos.x : (isMobile ? '10px' : '50px'),
-        top: pos.y ?? (pos.x === undefined ? (isMobile ? '100px' : '150px') : undefined),
-        bottom: (pos.x !== undefined || pos.y !== undefined) ? 'auto' : undefined,
-        right: (pos.x !== undefined && pos.x < window.innerWidth - 100) ? 'auto' : undefined,
+        left: `${safeLeft}px`,
+        top: `${safeTop}px`,
+        bottom: 'auto',
+        right: 'auto',
         transform: pos.scale ? `scale(${pos.scale})` : undefined,
         transformOrigin: 'top left',
         width: pos.w ? `${pos.w}px` : (isMobile ? '300px' : '320px'),
@@ -181,7 +194,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab',
                         background: 'rgba(15, 23, 42, 0.8)', borderRadius: '0 0 12px 12px', 
                         border: '1px solid rgba(255,255,255,0.1)', borderTop: 'none',
-                        zIndex: 100
+                        zIndex: 100,
+                        touchAction: 'none'
                     }}
                     onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster', true); }}
                 >
