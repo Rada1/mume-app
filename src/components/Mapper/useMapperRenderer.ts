@@ -140,8 +140,9 @@ export const useMapperRenderer = ({
             const preloaded = preloadedCoordsRef.current;
             const floorIndex = spatialIndexRef.current[curZInt];
             
-            // Adjust bucket size based on zoom for spatial lookups
-            const lookSpan = camera.zoom < 0.05 ? 30 : (camera.zoom < 0.1 ? 15 : 8);
+            // Adjust bucket size based on zoom for spatial lookups. 
+            // If unveilMap is true, we want a slightly larger buffer to ensure no gaps.
+            const lookSpan = unveilMap ? 40 : (camera.zoom < 0.05 ? 30 : (camera.zoom < 0.1 ? 15 : 10));
             const bX1 = Math.floor(gX1 / 5) - lookSpan, bY1 = Math.floor(gY1 / 5) - lookSpan;
             const bX2 = Math.floor(gX2 / 5) + lookSpan, bY2 = Math.floor(gY2 / 5) + lookSpan;
 
@@ -152,11 +153,13 @@ export const useMapperRenderer = ({
                         if (bucket) {
                             for (let j = 0; j < bucket.length; j++) {
                                 const vnum = bucket[j];
+                                const isExplored = explored.has(vnum);
+                                if (!isExplored && !unveilMap) continue;
                                 const rData = preloaded[vnum];
                                 const irx = Math.round(rData[0]), iry = Math.round(rData[1]);
                                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
                                 roomAtCoord[`${irx},${iry}`] = normalizeTerrain(localRoom ? localRoom.terrain : rData[3]);
-                                if (explored.has(vnum) || unveilMap) visitedAtCoord[`${irx},${iry}`] = true;
+                                visitedAtCoord[`${irx},${iry}`] = true;
                             }
                         }
                     }

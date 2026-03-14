@@ -76,7 +76,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         handleButtonClick(button, e, popoverState.context);
                     }
                 }}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', overflow: 'hidden' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
             >
                 <span style={{ pointerEvents: 'none' }}>{button.label}</span>
                 <div 

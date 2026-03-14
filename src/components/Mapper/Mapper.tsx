@@ -7,7 +7,7 @@ import { MapperDropdown } from './MapperDropdown';
 import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
 import { useMapperInteractions } from './useMapperInteractions';
-import { PEAK_IMAGES, FOREST_IMAGES, HILL_IMAGES } from './mapperUtils';
+
 import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperExportImport } from './hooks/useMapperExportImport';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
@@ -99,17 +99,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         executeCommand, joystick, btn, heldButton, setHeldButton, target
     });
 
-    useEffect(() => {
-        const all = [...PEAK_IMAGES, ...FOREST_IMAGES, ...HILL_IMAGES];
-        all.forEach(src => {
-            if (!imagesRef.current[src]) {
-                const img = new Image();
-                img.src = src;
-                img.onload = () => triggerRender();
-                imagesRef.current[src] = img;
-            }
-        });
-    }, [triggerRender]);
+
 
 
     // Trigger immediate render when unveilMap toggles
@@ -170,14 +160,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 walkPath={walkPath}
             />
             <div className="vignette-container" />
-            {currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (() => {
-                const roomData = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
-                const vnum = String(currentRoomId).replace(/^m_/, '');
-                const preData = preloadedCoordsRef.current[vnum];
-                
-                // Construct a temporary exits object if room state isn't populated yet
-                const exits = roomData?.exits || (preData?.[4] || {});
-                
+            {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (() => {
                 return (
                     <DpadCluster
                         heldButton={heldButton}

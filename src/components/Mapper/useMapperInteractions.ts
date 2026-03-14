@@ -110,8 +110,8 @@ export const useMapperInteractions = ({
             const clickedMarkerId = getMarkerAt(world.x, world.y);
             const clickedRoomId = getRoomAt(world.x, world.y, true);
 
-            // Special case for joystick trackpad in play mode
-            const isJoystickMode = mode === 'play' && !isDesignMode;
+            // Special case for joystick trackpad in play mode on mobile/touch
+            const isJoystickMode = mode === 'play' && !isDesignMode && e.pointerType !== 'mouse';
 
             if (isDesignMode && !clickedMarkerId && !clickedRoomId && !e.altKey) return;
 

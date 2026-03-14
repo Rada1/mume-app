@@ -11,7 +11,8 @@ export const useMessageHighlighter = (
     characterName: string | null,
     roomItems: string[],
     inlineCategories: InlineCategoryConfig[] = [],
-    highlightVersion: number = 0
+    highlightVersion: number = 0,
+    discoveredItems: string[] = []
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
 
@@ -57,10 +58,11 @@ export const useMessageHighlighter = (
         const rp = roomPlayers.join('|');
         const rn = roomNpcs.join('|');
         const ri = roomItems.join('|');
+        const di = discoveredItems.join('|');
         // For inline categories, we only care if the configuration itself changed length/structure roughly
         const ic = inlineCategories.map(c => c.id).join('|');
-        return `${target || ''}:${rp}:${rn}:${ri}:${ic}:${highlightVersion}`;
-    }, [target, roomPlayers, roomNpcs, roomItems, inlineCategories, highlightVersion]);
+        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${highlightVersion}`;
+    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, highlightVersion]);
 
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType) => {
         // Use the fast hash instead of full JSON serialization
@@ -196,8 +198,9 @@ export const useMessageHighlighter = (
                 });
             });
 
-            // 5. Items
-            roomItems.forEach(name => {
+            // 5. Items (Room + Discovered)
+            const allItems = Array.from(new Set([...roomItems, ...discoveredItems]));
+            allItems.forEach(name => {
                 const category = getCategoryForName(name, inlineCategories) || 'inline-default';
                 const glowColor = getGlowColorForCategory(category, inlineCategories);
                 const command = category;

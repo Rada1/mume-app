@@ -164,6 +164,7 @@ export const useGameProviderState = () => {
     const [heldButton, setHeldButton] = useState<any>(null);
     const [isMendingMode, setIsMendingMode] = useState(false);
     const [mendingTarget, setMendingTarget] = useState<string | null>(null);
+    const [discoveredItems, setDiscoveredItems] = useState<string[]>([]);
 
     const vitals = useMemo(() => ({
         stats, setStats,
@@ -226,6 +227,7 @@ export const useGameProviderState = () => {
         activeDragData, setActiveDragData,
         heldButton, setHeldButton,
         popoverState, setPopoverState,
+        discoveredItems, setDiscoveredItems,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -235,7 +237,7 @@ export const useGameProviderState = () => {
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
         inlineCategories, favorites, activeDragData, heldButton,
-        parley, whoList, popoverState
+        parley, whoList, popoverState, discoveredItems
     ]);
 
     return { vitals, game };

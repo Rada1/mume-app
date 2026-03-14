@@ -39,10 +39,10 @@ const getTrailGlow = () => {
 };
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
-    const { ctx, isDarkMode, camera, visitedAtCoord } = rCtx;
+    const { ctx, isDarkMode, camera, visitedAtCoord, unveilMap } = rCtx;
     const s = GRID_SIZE;
 
-    if (camera.zoom < 0.15) return; // Slightly higher threshold for grid
+    if (camera.zoom < 0.15 || unveilMap) return; // Disable grid lines when map is revealed
 
     ctx.beginPath();
     ctx.strokeStyle = isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.12)';

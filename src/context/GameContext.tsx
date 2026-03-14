@@ -139,7 +139,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setPlayerPosition: s.setPlayerPosition,
         setRoomName: s.setRoomName,
         isMobileBrevityMode: s.isMobileBrevityMode,
-        setRoomExits: s.setRoomExits
+        setRoomExits: s.setRoomExits,
+        setDiscoveredItems: s.setDiscoveredItems
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
@@ -192,7 +193,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const [input, setInput] = useState("");
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, highlightVersion);
+    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, highlightVersion, s.discoveredItems);
 
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -244,7 +245,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addDiagnosticLog,
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
-        pendingDrawerContainerRef: s.pendingDrawerContainerRef
+        pendingDrawerContainerRef: s.pendingDrawerContainerRef,
+        setDiscoveredItems: s.setDiscoveredItems
     });
 
     const { processLine } = parser;

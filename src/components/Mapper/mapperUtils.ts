@@ -47,8 +47,7 @@ export const normalizeTerrain = (t: string | number | null): string => {
     if (low.includes('rapid')) return 'Rapids';
     if (low.includes('river')) return 'Water';
     if (low.includes('road') || low.includes('trail') || low.includes('path')) return 'Road';
-    if (low.includes('tunnel')) return 'Tunnel';
-    if (low.includes('cavern')) return 'Cavern';
+    if (low.includes('tunnel') || low.includes('cavern') || low.includes('inside')) return 'Cavern';
     if (low.includes('underwater')) return 'Underwater';
     if (low.includes('brush') || low.includes('swamp') || low.includes('shrub')) return 'Brush';
 
@@ -66,43 +65,28 @@ export const getTerrainName = (terrain: string | number | null): string => {
 export const DRAG_SENSITIVITY = 0.95;
 export const ZOOM_SENSITIVITY = 0.85;
 
-export const PEAK_IMAGES = [
-    '/assets/map/m_peaks/peak1.png',
-    '/assets/map/m_peaks/peak2.png',
-    '/assets/map/m_peaks/peak3.png',
-    '/assets/map/m_peaks/peak_tall.png'
-];
-
-export const FOREST_IMAGES = [
-    '/assets/map/forest/tree1.png'
-];
-
-export const HILL_IMAGES = [
-    '/assets/map/hills/hill.png'
-];
-
 export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): string => {
     let t = typeof terrain === 'number' ? TERRAIN_MAP[String(terrain)] : terrain;
     t = normalizeTerrain(t);
 
     if (isDarkMode) {
         switch (t) {
-            case 'City': return '#4b3621'; // Dark brown for city blobs in dark mode
-            case 'Building': return '#45475a';
-            case 'Forest': return '#1a2e1a';
+            case 'City': return '#6b4f35'; 
+            case 'Building': return '#585b70';
+            case 'Forest': return '#2d5a27';
             case 'Field':
-            case 'Grasslands': return '#2d3e2d';
-            case 'Hills': return '#3e2d1a';
-            case 'Mountains': return '#1e1e24';
+            case 'Grasslands': return '#415e34';
+            case 'Hills': return '#5a462d';
+            case 'Mountains': return '#313244';
             case 'Water':
             case 'Shallows':
-            case 'Rapids': return '#1e243e';
-            case 'Road': return '#243324'; // Grassy base color
+            case 'Rapids': return '#1e66f5';
+            case 'Road': return '#3b4b3b'; 
             case 'Tunnel':
-            case 'Cavern': return '#000000';
-            case 'Brush': return '#2d352d';
-            case 'Base': return '#243324'; // Grassy green base
-            default: return '#1e1e2e';
+            case 'Cavern': return '#1a1a24'; 
+            case 'Brush': return '#3a4a3a';
+            case 'Base': return '#243324'; 
+            default: return '#2a2a35'; 
         }
     } else {
         switch (t) {

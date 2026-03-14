@@ -102,7 +102,7 @@ export const drawFeatures = (
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
 
                 // 1. Roads and trails (Zoom >= 0.1)
-                if (ghostExits && camera.zoom >= 0.1) {
+                if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom >= 0.1) {
                     const currentRoomObj = localRoom || { terrain: tSector, exits: {} };
                     const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
                     for (const dir in ghostExits) {

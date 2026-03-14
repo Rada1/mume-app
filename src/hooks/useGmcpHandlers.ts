@@ -17,6 +17,7 @@ interface GmcpHandlersProps {
     setRoomPlayers: React.Dispatch<React.SetStateAction<string[]>>;
     setRoomNpcs: React.Dispatch<React.SetStateAction<string[]>>;
     setRoomItems: React.Dispatch<React.SetStateAction<string[]>>;
+    setDiscoveredItems: (items: string[]) => void;
     characterName: string | null;
     setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
     addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
@@ -34,6 +35,7 @@ export const useGmcpHandlers = ({
     setRoomPlayers,
     setRoomNpcs,
     setRoomItems,
+    setDiscoveredItems,
     characterName,
     setAbilities,
     addMessage,
@@ -55,7 +57,8 @@ export const useGmcpHandlers = ({
         if (data.exits) {
             setRoomExits(Object.keys(data.exits));
         }
-    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomExits]);
+        setDiscoveredItems([]);
+    }, [mapperRef, setCurrentTerrain, setRoomName, setRoomExits, setDiscoveredItems]);
 
     const onRoomUpdateExits = useCallback((data: GmcpUpdateExits) => {
         mapperRef.current?.handleUpdateExits(data);
