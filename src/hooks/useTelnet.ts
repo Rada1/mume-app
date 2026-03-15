@@ -30,6 +30,7 @@ export interface TelnetHandlers {
     onCharNameChange?: (name: string | null) => void;
     onCharInfo?: (data: import('../types').GmcpCharInfo) => void;
     onPositionChange?: (position: string) => void;
+    onComm?: (sender: string, chan: string, msg: string) => void;
     flushMessages?: () => void;
 }
 
@@ -85,7 +86,8 @@ export function useTelnet(options: TelnetOptions) {
         onRemoveNpc: (val) => handlersRef.current.onRemoveNpc?.(val),
         onCharNameChange: (val) => handlersRef.current.onCharNameChange?.(val),
         onCharInfo: (val) => handlersRef.current.onCharInfo?.(val),
-        onPositionChange: (val) => handlersRef.current.onPositionChange?.(val)
+        onPositionChange: (val) => handlersRef.current.onPositionChange?.(val),
+        onComm: (sender, chan, msg) => handlersRef.current.onComm?.(sender, chan, msg)
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
 

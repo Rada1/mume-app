@@ -425,6 +425,43 @@
     font-weight: 500;
 }
 
+.message {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.reply-btn {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-faded);
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 0;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.reply-btn:hover {
+    background: rgba(var(--accent-rgb), 0.2);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
+}
+
+.reply-btn active {
+    transform: scale(0.95);
+}
+
 /* Shop Item Cards (Interactive) */
 .shop-item-card.inline-btn {
     display: flex !important;

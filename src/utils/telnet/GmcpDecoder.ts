@@ -22,6 +22,7 @@ export interface GmcpHandlers {
     onCharNameChange?: (name: string | null) => void;
     onCharInfo?: (data: GmcpCharInfo) => void;
     onPositionChange?: (position: string) => void;
+    onComm?: (sender: string, chan: string, msg: string) => void;
 }
 
 export class GmcpDecoder {
@@ -64,6 +65,27 @@ export class GmcpDecoder {
             if (pkgLower === 'char.info' || pkgLower === 'char.statusvars') this.handleCharInfo(json);
         } else if (pkgLower === 'group' || pkgLower.startsWith('group.')) {
             this.handleGroup(json);
+        } else if (pkgLower === 'comm.channel') {
+            this.handleCommChannel(json);
+        }
+    }
+
+    private handleCommChannel(json: string) {
+        console.log('[GMCP] Received comm.channel:', json);
+        try {
+            const data = JSON.parse(json);
+            // Expected MUME format: { "chan": "tell", "msg": "hello", "player": "Someone" }
+            const chan = data.chan || data.channel;
+            const msg = data.msg || data.message;
+            const player = data.player || data.sender;
+
+            console.log('[GMCP] Parsed comm:', { chan, msg, player });
+
+            if (chan && player && this.handlers.onComm) {
+                this.handlers.onComm(player, chan, msg || "");
+            }
+        } catch (e) {
+            console.error('[GMCP] Parse error in Comm.Channel:', e, json);
         }
     }
 

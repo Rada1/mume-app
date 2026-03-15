@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
+import { Reply } from 'lucide-react';
 import { Message, MessageType } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -24,12 +25,14 @@ const MessageItem = React.memo(({
     inCombat,
     scrollToBottom,
     executeCommand,
+    setParley,
 }: {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string,
     inCombat: boolean,
     scrollToBottom: (force?: boolean, instant?: boolean, source?: string) => void;
     executeCommand: (cmd: string) => void;
+    setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
@@ -60,6 +63,23 @@ const MessageItem = React.memo(({
             ) : (
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
+            
+            {msg.commSender && (
+                <button 
+                    className="reply-btn"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setParley({
+                            active: true,
+                            command: msg.commChannel || 'tell',
+                            target: msg.commSender || null
+                        });
+                    }}
+                    title={`Reply to ${msg.commSender}`}
+                >
+                    <Reply size={14} />
+                </button>
+            )}
         </div>
     );
 });
@@ -72,7 +92,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, viewport, executeCommand, triggerHaptic } = useBaseGame();
+    const { inCombat, viewport, executeCommand, triggerHaptic, setParley } = useBaseGame();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
@@ -215,6 +235,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                 inCombat={inCombat}
                                 scrollToBottom={scrollToBottom}
                                 executeCommand={executeCommand}
+                                setParley={setParley}
                             />
                         </div>
                     );

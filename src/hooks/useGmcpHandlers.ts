@@ -22,7 +22,7 @@ interface GmcpHandlersProps {
     setDiscoveredItems: (items: string[]) => void;
     characterName: string | null;
     setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
-    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, commSender?: string, commChannel?: string) => void;
     setCharacterName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setRoomName: (name: string | null) => void;
@@ -309,6 +309,12 @@ export const useGmcpHandlers = ({
         setCharacterName(name);
     }, [characterName, setAbilities, addMessage, setCharacterName]);
     
+    const onComm = useCallback((sender: string, chan: string, msg: string) => {
+        console.log('[GMCP] onComm handler called:', { sender, chan, msg });
+        // Tag the message with sender and channel so the UI can show a reply button
+        addMessage('game', msg, false, undefined, false, undefined, undefined, undefined, undefined, true, sender, chan);
+    }, [addMessage]);
+
     return {
         onRoomInfo,
         onRoomUpdateExits,
@@ -323,6 +329,7 @@ export const useGmcpHandlers = ({
         onCharInfo,
         onBufferChange: (name: string | null) => setBufferName(name),
         onCharVitals,
+        onComm,
         onRoomCharsCombat,
         onPositionChange: (pos: string) => setPlayerPosition(pos)
     };

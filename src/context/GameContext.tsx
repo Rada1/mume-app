@@ -105,6 +105,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [removePlayerFn, setRemovePlayerFn] = useState<(data: any) => void>();
     const [removeNpcFn, setRemoveNpcFn] = useState<(data: any) => void>();
     const [opponentChangeFn, setOpponentChangeFn] = useState<(name: string | null) => void>();
+    const [commFn, setCommFn] = useState<(sender: string, chan: string, msg: string) => void>();
 
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
@@ -307,7 +308,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onCharNameChange: gmcpHandlers.onCharNameChange,
             onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
-            onOpponentChange: (name) => { opponentChangeFn?.(name); }
+            onOpponentChange: (name) => { opponentChangeFn?.(name); },
+            onComm: (sender, chan, msg) => { gmcpHandlers.onComm(sender, chan, msg); commFn?.(sender, chan, msg); }
         }
     });
 

@@ -32,6 +32,8 @@ export interface Message {
     shopItem?: ShopItem; // Optional structured shop item data
     practiceSkill?: PracticeSkill; // Optional structured practice skill data
     practiceHeader?: { sessionsLeft: number }; // Optional practice header data
+    commSender?: string; // Optonal sender name for communication messages
+    commChannel?: string; // Optional channel name for communication messages
 }
 
 export interface ShopItem {

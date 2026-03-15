@@ -41,8 +41,18 @@ export function useMessageLog(
     }, [inCombatRef]);
 
     const isCommunicationLine = useCallback((textLower: string): boolean => {
-        return textLower.includes(' says ') || textLower.includes(' tell ') || textLower.includes(' whisper ') || textLower.includes(' group-tell ') ||
-            /^you (tell|say|whisper|yell|narrate|state|gtell)\b/i.test(textLower);
+        // Broad check for characteristic communication markers
+        if (!textLower.includes("'") && !textLower.includes('"')) {
+             // MUME gtell doesn't always have quotes in some contexts? 
+             // Actually, usually it does. But let's check for "gtell" anyway.
+             if (!textLower.includes('gtell')) return false;
+        }
+
+        return textLower.includes(' says ') || textLower.includes(' tells you ') || 
+               textLower.includes(' whispers to you ') || textLower.includes(' yells ') || 
+               textLower.includes(' shouts ') || textLower.includes(' narrates ') || 
+               textLower.includes(' chats ') || textLower.includes(' states ') ||
+               /^you (tell|say|whisper|yell|shout|narrate|chat|gtell)\b/i.test(textLower);
     }, []);
 
     const flushMessages = useCallback(() => {
@@ -121,13 +131,45 @@ export function useMessageLog(
         shopItem?: any,
         practiceSkill?: any,
         practiceHeader?: any,
-        skipBrevity: boolean = false
+        skipBrevity: boolean = false,
+        commSender?: string,
+        commChannel?: string
     ) => {
         const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const textLower = precalculated?.lower || textOnly.toLowerCase();
 
         const isCombat = combatOverride ?? (type === 'game' ? isCombatLine(textLower) : false);
-        const isComm = type === 'game' && isCommunicationLine(textLower);
+        
+        // --- Communication Extraction Fallback ---
+        let finalCommSender = commSender;
+        let finalCommChannel = commChannel;
+
+        if (!finalCommSender && type === 'game' && isCommunicationLine(textLower)) {
+            // Regex to extract sender and verb/channel from MUME patterns
+            // Patterns: "Someone says, '...'", "A secretary says, '...'", "Rogoring tells you, '...'"
+            const commMatch = textOnly.match(/^((?:A|An|The|Some)?\s*([\w\s,-]+?))\s+(says|tells you|whispers to you|yells|shouts|narrates|chats|states|gtells)\b[,]?\s*['"](.*)['"]\.?$/i);
+            
+            if (commMatch) {
+                const noun = commMatch[2].trim();
+                const verb = commMatch[3].toLowerCase();
+                
+                if (noun.toLowerCase() !== 'you') {
+                    finalCommSender = noun;
+                    
+                    if (verb.includes('say') || verb.includes('state')) finalCommChannel = 'say'; 
+                    else if (verb.includes('tell') || verb.includes('whisper')) finalCommChannel = 'tell';
+                    else if (verb.includes('narrate')) finalCommChannel = 'narrate';
+                    else if (verb.includes('chat')) finalCommChannel = 'chat';
+                    else if (verb.includes('yell')) finalCommChannel = 'yell';
+                    else if (verb.includes('shout')) finalCommChannel = 'shout';
+                    else if (verb.includes('gtell')) finalCommChannel = 'gtell';
+
+                    console.log(`[MessageLog] Regex Match! Sender: ${finalCommSender}, Chan: ${finalCommChannel}, Msg: ${textOnly}`);
+                }
+            }
+        }
+
+        const isComm = type === 'game' && (isCommunicationLine(textLower) || !!finalCommSender);
 
         const robustRoomAnsi = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(text);
         const curRoom = roomContext.roomName;
@@ -206,7 +248,7 @@ export function useMessageLog(
         let html = ansiConvert.toHtml(text);
         if (textLower.includes('strange incantations') || textLower.includes('utters the words')) html = `<span class="spell-incant">${html}</span>`;
 
-        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
+        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader, commSender: finalCommSender, commChannel: finalCommChannel };
         
         if (isCombat) {
             // Haptic feedback for combat

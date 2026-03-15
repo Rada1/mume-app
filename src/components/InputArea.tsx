@@ -195,8 +195,13 @@ const InputArea: React.FC<InputAreaProps> = ({
             className={`input-area ${terrainClass} input-container`}
             onPointerDown={(e) => {
                 const targetElement = e.target as HTMLElement;
-                // Allow prompt and target badge to be clicked normally
-                if (targetElement.classList.contains('cmd-prompt') || targetElement.closest('.target-badge')) return;
+                // Allow prompt, target badge, and parley indicators to be clicked normally
+                if (
+                    targetElement.classList.contains('cmd-prompt') || 
+                    targetElement.closest('.target-badge') ||
+                    targetElement.closest('.parley-indicator') ||
+                    targetElement.closest('.parley-clear-btn')
+                ) return;
 
                 startPos.current = { x: e.clientX, y: e.clientY };
                 isSwiping.current = true;
@@ -280,9 +285,17 @@ const InputArea: React.FC<InputAreaProps> = ({
                             >
                                 {isTargetless ? '' : (parley.target ?? '')}
                             </div>
-                            <div className="parley-clear-btn" onClick={handleParleyClear}>
+                            <button 
+                                type="button"
+                                className="parley-clear-btn" 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    handleParleyClear();
+                                }}
+                            >
                                 ×
-                            </div>
+                            </button>
                         </div>
                     );
                 })()}
