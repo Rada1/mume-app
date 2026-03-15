@@ -36,6 +36,8 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
                 top: pos.y,
                 bottom: isDefault ? '10px' : (pos.y !== undefined ? 'auto' : undefined),
                 right: isDefault ? '10px' : (pos.x !== undefined ? 'auto' : undefined),
+                width: pos.w ? `${pos.w}px` : undefined,
+                height: pos.h ? `${pos.h}px` : undefined,
                 transform: pos.scale ? `scale(${pos.scale})` : undefined,
                 transformOrigin: 'top left',
                 cursor: isEditMode ? 'move' : undefined,

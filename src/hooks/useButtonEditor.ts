@@ -44,14 +44,17 @@ export const useButtonEditor = (
                     }));
                 }
             } else if (ds.type === 'cluster-resize') {
-                const newW = Math.max(100, ds.initialW + dx);
-                const newH = Math.max(100, ds.initialH + dy);
+                const newW = Math.max(50, ds.initialW + dx);
+                const scale = newW / ds.initialW;
+                const newScale = ds.initialScale * scale;
+                
                 ds.elements.forEach((item: any) => {
-                    item.el.style.width = `${newW}px`;
-                    item.el.style.height = `${newH}px`;
+                    item.el.style.transform = `scale(${newScale})`;
+                    item.el.style.transformOrigin = 'top left';
                 });
+                ds.finalScale = newScale;
                 ds.finalW = newW;
-                ds.finalH = newH;
+                ds.finalH = ds.initialH * scale;
             } else if (ds.type === 'move') {
                 if (!ds.finalPositions) ds.finalPositions = {};
                 const parentW = ds.parentRect.width;
@@ -215,7 +218,7 @@ export const useButtonEditor = (
                 } else if (dsType === 'cluster-resize' && ds.finalW !== undefined) {
                     btn.setUiPositions((prev: any) => ({
                         ...prev,
-                        [dsId]: { ...prev[dsId], w: ds.finalW, h: ds.finalH }
+                        [dsId]: { ...prev[dsId], w: ds.finalW, h: ds.finalH, scale: ds.finalScale || prev[dsId]?.scale || 1 }
                     }));
                 } else if (dsType === 'move' || dsType === 'resize') {
                     if (finalPos || finalSizes) {

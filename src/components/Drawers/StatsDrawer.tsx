@@ -44,10 +44,26 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
         return spells;
     }, [statsLines]);
 
-    const renderTicks = () => (
-        <div style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, display: 'flex', justifyContent: 'space-between', padding: '0 8px', pointerEvents: 'none', zIndex: 1, alignItems: 'center' }}>
-            {[0, 1, 2, 3, 4].map(tick => (
-                <div key={tick} style={{ width: '2px', height: '10px', background: 'rgba(255,255,255,0.25)', borderRadius: '1px' }} />
+    const renderTicks = (labels?: string[]) => (
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, display: 'flex', justifyContent: 'space-between', padding: '0 12px', pointerEvents: 'none', zIndex: 1, alignItems: 'center' }}>
+            {(labels || ['', '', '', '', '']).map((label, tick) => (
+                <div key={tick} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+                    <div style={{ width: '2px', height: '10px', background: 'rgba(255,255,255,0.4)', borderRadius: '1px' }} />
+                    {label && (
+                        <div style={{ 
+                            position: 'absolute', 
+                            top: '12px', 
+                            fontSize: '0.42rem', 
+                            color: 'rgba(255,255,255,0.4)', 
+                            textTransform: 'uppercase', 
+                            whiteSpace: 'nowrap',
+                            fontWeight: 800,
+                            letterSpacing: '0.5px'
+                        }}>
+                            {label}
+                        </div>
+                    )}
+                </div>
             ))}
         </div>
     );
@@ -229,7 +245,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <div style={{ position: 'relative', flex: 1, height: '32px', display: 'flex', alignItems: 'center' }}>
-                                        {renderTicks()}
+                                        {renderTicks(['wimpy', 'prudent', 'normal', 'brave', 'aggr'])}
                                         <input
                                             type="range"
                                             min="0"
@@ -278,7 +294,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                     <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{spellSpeed}</div>
                                 </div>
                                 <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
-                                    {renderTicks()}
+                                    {renderTicks(['quick', 'fast', 'normal', 'careful', 'thorough'])}
                                     <input
                                         type="range"
                                         min="0"
@@ -304,7 +320,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                     <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{alertness}</div>
                                 </div>
                                 <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
-                                    {renderTicks()}
+                                    {renderTicks(['norm', 'careful', 'attent', 'vigil', 'parano'])}
                                     <input
                                         type="range"
                                         min="0"

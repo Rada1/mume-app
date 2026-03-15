@@ -67,6 +67,8 @@ export const GroupDrawer: React.FC<GroupDrawerProps> = ({
                 position: 'absolute',
                 left: pos.x !== undefined ? pos.x : (isDefault ? '10px' : undefined),
                 top: pos.y !== undefined ? pos.y : (isDefault ? '10px' : undefined),
+                width: pos.w ? `${pos.w}px` : undefined,
+                height: pos.h ? `${pos.h}px` : undefined,
                 transform: pos.scale ? `scale(${pos.scale})` : undefined,
                 transformOrigin: 'top left',
                 cursor: isEditMode ? 'move' : undefined,
