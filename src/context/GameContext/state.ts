@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState } from '../../types';
+import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
@@ -65,7 +65,7 @@ export const useGameProviderState = () => {
 
     // UI state
     const [ui, setUI] = useState<{
-        drawer: 'none' | 'character' | 'items';
+        drawer: 'none' | 'stats' | 'items' | 'character';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -82,6 +82,7 @@ export const useGameProviderState = () => {
         menuView: 'main'
     });
 
+    const setIsStatsOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'stats' : 'none' })), []);
     const setIsCharacterOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'character' : 'none' })), []);
     const setIsItemsDrawerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'items' : 'none' })), []);
     const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => ({ ...prev, mapExpanded: open })), []);
@@ -165,6 +166,18 @@ export const useGameProviderState = () => {
     const [isMendingMode, setIsMendingMode] = useState(false);
     const [mendingTarget, setMendingTarget] = useState<string | null>(null);
     const [discoveredItems, setDiscoveredItems] = useState<string[]>([]);
+    
+    // Combat Overlay State
+    const [playerHealthStatus, setPlayerHealthStatus] = useState<CombatHealthStatus | null>(null);
+    const [opponentHealthStatus, setOpponentHealthStatus] = useState<CombatHealthStatus | null>(null);
+    const [opponentName, setOpponentName] = useState<string | null>(null);
+    const [bufferHealthStatus, setBufferHealthStatus] = useState<CombatHealthStatus | null>(null);
+    const [bufferName, setBufferName] = useState<string | null>(null);
+
+    const [characterInfo, setCharacterInfo] = useState<import('../../types').CharacterInfo>({
+        name: null, level: 0, xp: 0, xpMax: 0, tp: 0, tpMax: 0,
+        race: '', subrace: '', subclass: '', class: '', gold: 0
+    });
 
     const vitals = useMemo(() => ({
         stats, setStats,
@@ -175,8 +188,15 @@ export const useGameProviderState = () => {
         deathStage, setDeathStage,
         heldButton, setHeldButton,
         isMendingMode, setIsMendingMode,
-        mendingTarget, setMendingTarget
-    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton, isMendingMode, mendingTarget]);
+        mendingTarget, setMendingTarget,
+        playerHealthStatus, setPlayerHealthStatus,
+        opponentHealthStatus, setOpponentHealthStatus,
+        opponentName, setOpponentName,
+        bufferHealthStatus, setBufferHealthStatus,
+        bufferName, setBufferName,
+        characterInfo, setCharacterInfo
+    }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton, isMendingMode, mendingTarget,
+        playerHealthStatus, opponentHealthStatus, opponentName, bufferHealthStatus, bufferName, characterInfo]);
 
     const game = useMemo(() => ({
         inCombat, setInCombat,
@@ -197,7 +217,7 @@ export const useGameProviderState = () => {
         roomItems, setRoomItems,
         currentTerrain, setCurrentTerrain,
         ui, setUI,
-        setIsCharacterOpen, setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen,
+        setIsStatsOpen, setIsItemsDrawerOpen, setIsCharacterOpen, setIsMapExpanded, setIsSetManagerOpen,
         lighting, setLighting,
         lightningEnabled, setLightningEnabled,
         weather, setWeather,
@@ -228,6 +248,11 @@ export const useGameProviderState = () => {
         heldButton, setHeldButton,
         popoverState, setPopoverState,
         discoveredItems, setDiscoveredItems,
+        setPlayerHealthStatus: vitals.setPlayerHealthStatus,
+        setOpponentHealthStatus: vitals.setOpponentHealthStatus,
+        setBufferHealthStatus: vitals.setBufferHealthStatus,
+        setOpponentName: vitals.setOpponentName,
+        setBufferName: vitals.setBufferName,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,

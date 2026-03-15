@@ -4,6 +4,7 @@ import MessageLog from '../MessageLog';
 import InputArea from '../InputArea';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { getButtonCommand } from '../../utils/buttonUtils';
+import CombatOverlay from '../CombatOverlay';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -115,6 +116,7 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
 
     return (
         <div className="content-layer">
+            <CombatOverlay />
             {true && (
                 <Header
                     isLandscape={isLandscape}

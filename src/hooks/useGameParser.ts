@@ -1,14 +1,13 @@
 import { useState, useRef, useCallback } from 'react';
-import { GameStats, DrawerLine, GameAction, MessageType, PopoverState, CaptureStage } from '../types';
+import { GameStats, DrawerLine, GameAction, MessageType, PopoverState, CaptureStage, CombatHealthStatus } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import { extractNoun, isItemContainer } from '../utils/gameUtils';
-import { usePracticeParser } from './usePracticeParser';
 import { useTriggerProcessor } from './useTriggerProcessor';
 import { useShopHandler } from './useShopHandler';
 import { usePracticeHandler } from './usePracticeHandler';
 
 export interface UseGameParserDeps {
-    isItemsOpen: boolean; isCharacterOpen: boolean; mapperRef: React.RefObject<any>;
+    isItemsOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
     addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
@@ -18,13 +17,20 @@ export interface UseGameParserDeps {
     setCharacterClass: (val: any) => void; setRumble: (val: boolean) => void;
     setHitFlash: (val: boolean) => void; setDeathStage: (val: any) => void;
     setInCombat: (val: boolean, force?: boolean) => void;
+    inCombatRef: React.RefObject<boolean>;
     setLightningEnabled: (val: boolean) => void;
     setPlayerPosition: (val: string) => void; detectLighting: (light: string) => void;
     setCurrentTerrain?: (terrain: string) => void;
+    setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
+    setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
+    setOpponentName: (val: string | null) => void;
+    setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
+    setBufferName: (val: string | null) => void;
     isSoundEnabledRef: React.RefObject<boolean>; soundTriggersRef: React.RefObject<any[]>;
     actionsRef: React.RefObject<GameAction[]>;
     executeCommandRef: React.RefObject<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>;
-    setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
+    setCharacterInfo: (val: import('../types').CharacterInfo | ((prev: import('../types').CharacterInfo) => import('../types').CharacterInfo)) => void;
+    setInventoryLines: React.Dispatch<React.SetStateAction<import('../types').DrawerLine[]>>;
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
@@ -46,9 +52,12 @@ export interface UseGameParserDeps {
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState, setDiscoveredItems } = deps;
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState, setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus,    setOpponentName,
+    setBufferHealthStatus,
+    setBufferName,
+    setCharacterInfo,
+} = deps;
 
-    const { parsePracticeLine } = usePracticeParser(setAbilities, setCharacterClass);
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
     const { parseShopLine, isShopListingActive, setIsShopListingActive } = useShopHandler();
 
@@ -73,14 +82,16 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log(`[Parser] Finalizing ${currentStage} capture. Buffers: eq=${eqLen}, inv=${invLen}`);
             addDiagnosticLog?.(`Finalizing ${currentStage} capture. Eq: ${eqLen}, Inv: ${invLen}`);
             
-            if (currentStage === 'eq' && eqLen > 0) {
-                // Buffer is already pushed incrementally, so we just clear it here.
+            if (currentStage === 'practice') {
+                deps.practice.finalizePractice(addMessage);
+                deps.practice.setIsPracticeActive(false);
+                deps.practice.setIsUiRequested(false);
+            } else if (currentStage === 'shop') {
+                setIsShopListingActive(false);
+            } else if (currentStage === 'eq' && eqLen > 0) {
                 tempEqRef.current = []; 
             } else if (currentStage === 'inv' && invLen > 0) {
-                // Buffer is already pushed incrementally, so we just clear it here.
                 tempInvRef.current = []; 
-            } else if (currentStage === 'eq' || currentStage === 'inv') {
-                console.log(`[Parser] ${currentStage} finalized with 0 items. Keeping existing lines.`);
             }
             
             captureStage.current = 'none';
@@ -90,7 +101,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             return true;
         }
         return false;
-    }, [addDiagnosticLog, setEqLines, setInventoryLines, captureStage, isDrawerCapture, isSilentCapture]);
+    }, [addDiagnosticLog, setEqLines, setInventoryLines, captureStage, isDrawerCapture, isSilentCapture, deps.practice, addMessage, setIsShopListingActive]);
 
     const processLine = useCallback((line: string) => {
 
@@ -108,20 +119,75 @@ export function useGameParser(deps: UseGameParserDeps) {
         const textOnlyRaw = textOnly;
         const lowerRaw = lower;
 
-        let isRoomMatched = currentRoomName && (
-            textOnly === currentRoomName ||
-            lower === currentRoomName.toLowerCase() ||
-            textOnly === currentRoomName + '.' ||
-            lower === currentRoomName.toLowerCase() + '.' ||
-            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
-        );
-        let isRoomAnsiMatch = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
-        let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
-
-        // Use strictly > as terminator to avoid header colons
-        const promptRegex = /^((?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>]\s*/;
+        // Optimized Prompt and End Determination (Avoid nested quantifiers to prevent backtracking)
+        const promptRegex = /^([^\r\n>]{0,120}>)\s*/;
         const textPMatch = textOnly.match(promptRegex);
         let attachedText = '';
+        if (textPMatch) {
+            attachedText = textOnly.slice(textPMatch[0].length).trim();
+        }
+
+        const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where'].includes(captureStage.current as any)) || 
+            /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
+            (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
+
+        // --- STAGE INITIALIZATION (Consolidated) ---
+        // These check the fresh line to see if we should ENTER a new capture stage.
+        if (lower.includes('skill') && lower.includes('knowledge') && lower.includes('difficulty')) {
+            if (deps.practice.isUiRequested || lower.includes('class')) {
+                if (captureStage.current === 'practice') return;
+                if (captureStage.current !== 'none') finalizeCapture();
+                console.log('[Parser] Entering Stage: practice'); addDiagnosticLog?.('Entering Stage: practice');
+                (captureStage as any).current = 'practice';
+                if (deps.practice.isUiRequested) isSilentCapture.current = 1;
+            }
+        }
+        else if (textOnly === 'who:' || lower === 'allies' || lower === 'minions') {
+            if (captureStage.current === 'who') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: who'); addDiagnosticLog?.('Entering Stage: who');
+            (captureStage as any).current = 'who'; setWhoList([]);
+        }
+        else if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
+            if (captureStage.current === 'shop') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: shop'); addDiagnosticLog?.('Entering Stage: shop');
+            (captureStage as any).current = 'shop'; setIsShopListingActive(true);
+        }
+        else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
+            if (captureStage.current === 'where') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: where'); addDiagnosticLog?.('Entering Stage: where');
+            (captureStage as any).current = 'where';
+        }
+        else if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
+            if (captureStage.current === 'container') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: container'); addDiagnosticLog?.('Entering Stage: container');
+            (captureStage as any).current = 'container';
+            if (deps.pendingDrawerContainerRef?.current) isDrawerCapture.current = 1;
+        }
+        else if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
+            if (captureStage.current === 'stat') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: stat'); addDiagnosticLog?.('Entering Stage: stat');
+            isWaitingForStats.current = false; (captureStage as any).current = 'stat';
+            if (deps.isCharacterOpen) isDrawerCapture.current = 1;
+        }
+        else if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
+            if (captureStage.current === 'eq') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: eq'); addDiagnosticLog?.('Entering Stage: eq');
+            isWaitingForEq.current = false; (captureStage as any).current = 'eq';
+            tempEqRef.current = []; if (deps.isCharacterOpen) isDrawerCapture.current = 1;
+        }
+        else if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
+            if (captureStage.current === 'inv') return;
+            if (captureStage.current !== 'none') finalizeCapture();
+            console.log('[Parser] Entering Stage: inv'); addDiagnosticLog?.('Entering Stage: inv');
+            isWaitingForInv.current = false; (captureStage as any).current = 'inv';
+            tempInvRef.current = []; if (deps.isItemsOpen) isDrawerCapture.current = 1;
+        }
 
         if (textPMatch || captureStage.current === 'none') {
             nounCountsRef.current = {};
@@ -133,7 +199,6 @@ export function useGameParser(deps: UseGameParserDeps) {
 
             // Only finalize if this is a standalone prompt at the start of a line
             if (captureStage.current !== 'none' && !attachedText) {
-                console.log('[Parser] Standalone start-prompt detected, finalizing stage:', captureStage.current);
                 finalizeCapture();
             }
 
@@ -144,6 +209,64 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (deps.setCurrentTerrain && !['*', '!', ')', 'o', 'O', '?'].includes(symbol)) {
                     deps.setCurrentTerrain(symbol);
                 }
+            }
+
+
+        // --- Combat Health Extraction ---
+            // Example: [ cW HP:Fine *a Dwarf* (x):Hurt>
+            // Example with buffer: [ cW HP:Fine (Buff:Fine) *a Dwarf* (x):Hurt>
+            const healthMap: Record<string, CombatHealthStatus> = {
+                'fine': 'Fine',
+                'hurt': 'Hurt',
+                'wounded': 'Wounded',
+                'bad': 'Badly Wounded',
+                'awful': 'Awful',
+                'bleeding': 'Dying'
+            };
+
+            const findStatus = (str: string): CombatHealthStatus | null => {
+                const s = str.toLowerCase();
+                for (const [key, val] of Object.entries(healthMap)) {
+                    if (s.includes(key)) return val;
+                }
+                return null;
+            };
+
+            // 1. Player Health
+            const playerMatch = promptPart.match(/HP:(\w+)/i);
+            if (playerMatch) {
+                setPlayerHealthStatus(findStatus(playerMatch[1]));
+            } else {
+                setPlayerHealthStatus(null);
+            }
+
+            // 2. Buffer Health/Name
+            const bufferMatch = promptPart.match(/\(([^:]+):(\w+)\)/); // Heuristic for (Name:Status)
+            if (bufferMatch) {
+                setBufferName(bufferMatch[1]);
+                setBufferHealthStatus(findStatus(bufferMatch[2]));
+            } else if (!promptPart.includes('Buff:')) {
+                // We keep GMCP source for name if parser doesn't find it, but clear status if missing from prompt
+                setBufferHealthStatus(null);
+            }
+
+            // 3. Opponent Health/Name
+            // Pattern: *Name* (x):Status or Name :Status
+            // Examples: *a Dwarf*:Fine>, a bee :Hurt>, *a Dwarf* (x):Wounded>
+            const oppMatch = promptPart.match(/(?:\*([^*]+)\*|([^:*]+?))\s*(?:\(x\))?[:](\w+)\s*>/);
+            if (oppMatch) {
+                const name = (oppMatch[1] || oppMatch[2]).trim();
+                setOpponentName(name);
+                setOpponentHealthStatus(findStatus(oppMatch[3]));
+                setInCombat(true);
+            } else {
+                setOpponentHealthStatus(null);
+                setOpponentName(null);
+            }
+
+            // Also trigger combat if we have HP: status but no explicit opponent (sometimes happens briefly)
+            if (playerMatch && !inCombatRef.current && promptPart.includes(':')) {
+                setInCombat(true);
             }
 
             if (!attachedText) {
@@ -157,6 +280,49 @@ export function useGameParser(deps: UseGameParserDeps) {
             const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>])\s*)/ ;
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
         }
+
+        // --- NEW: Priority Capture Handling ---
+        if (captureStage.current !== 'none') {
+            const stage = captureStage.current;
+            if (stage === 'practice') {
+                const practiceResult = deps.practice.parsePracticeLine(textOnly);
+                if (practiceResult) {
+                    if (typeof practiceResult === 'object' && practiceResult !== null && isSilentCapture.current === 0) {
+                        if ('sessionsLeft' in (practiceResult as any)) deps.practice.addToLogBuffer('header', practiceResult, textOnly);
+                        else deps.practice.addToLogBuffer('skill', practiceResult, textOnly);
+                    }
+                    return;
+                }
+            } else if (stage === 'who') {
+                let cleanText = textOnly.trim();
+                if (cleanText && !cleanText.startsWith('---') && cleanText !== 'who:' && lower !== 'allies' && lower !== 'minions') {
+                    let lastLength = 0;
+                    while (cleanText.length !== lastLength) {
+                        lastLength = cleanText.length;
+                        cleanText = cleanText.replace(/^\[.*?\]\s*/, '').replace(/^<.*?>\s*/, '').replace(/^\(.*?\)\s*/, '').replace(/^\*+/, '');
+                    }
+                    const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
+                    if (nameCandidate && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) setWhoList(prev => prev.includes(nameCandidate) ? prev : [...prev, nameCandidate]);
+                }
+                if (isSilentCapture.current > 0) return;
+            } else if (stage === 'shop') {
+                const shopItem = parseShopLine(textOnly);
+                if (shopItem) {
+                    const stableId = `shop-${shopItem.id}-${Date.now()}-${counterRef.current++}`;
+                    addMessage('shop-item', textOnly, undefined, stableId, false, { textOnly, lower }, shopItem, undefined, undefined, true);
+                    return;
+                }
+            }
+        }
+
+        // --- ROOM DETECTION ---
+        let isRoomMatched = !isSilentCapture.current && currentRoomName && (
+            textOnly === currentRoomName || lower === currentRoomName.toLowerCase() ||
+            textOnly === currentRoomName + '.' || lower === currentRoomName.toLowerCase() + '.' ||
+            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
+        );
+        let isRoomAnsiMatch = !isSilentCapture.current && /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
+        let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
 
         // SPLIT logic
         if (currentRoomName && (textOnlyRaw.startsWith(currentRoomName) || lowerRaw.startsWith(currentRoomName.toLowerCase()))) {
@@ -237,89 +403,11 @@ export function useGameParser(deps: UseGameParserDeps) {
             setTimeout(() => setRumble(false), 300);
         }
 
-        if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
-            if (captureStage.current !== 'none') finalizeCapture();
-            console.log('[Parser] Entering Stage: stat');
-            addDiagnosticLog?.('Entering Stage: stat');
-            isWaitingForStats.current = false; (captureStage as any).current = 'stat'; containerStackRef.current = [];
-            if (deps.isCharacterOpen) isDrawerCapture.current = 1;
-        }
-        if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
-            if (captureStage.current !== 'none') finalizeCapture();
-            console.log('[Parser] Entering Stage: eq');
-            addDiagnosticLog?.('Entering Stage: eq');
-            isWaitingForEq.current = false; (captureStage as any).current = 'eq'; containerStackRef.current = [];
-            tempEqRef.current = [];
-            if (deps.isCharacterOpen) isDrawerCapture.current = 1;
-        }
-        if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains/i.test(lower)) {
-            if (captureStage.current !== 'none') finalizeCapture();
-            console.log('[Parser] Entering Stage: inv');
-            addDiagnosticLog?.('Entering Stage: inv');
-            isWaitingForInv.current = false; (captureStage as any).current = 'inv'; containerStackRef.current = [];
-            tempInvRef.current = [];
-            if (deps.isItemsOpen) isDrawerCapture.current = 1;
-        }
-        if (lower.includes('skill / spell') || lower.includes('knowledge') || (lower.includes('sessions') && lower.includes('practice'))) {
-            if (deps.practice.isUiRequested) {
-                if (captureStage.current !== 'none') finalizeCapture();
-                console.log('[Parser] Entering Stage: practice');
-                addDiagnosticLog?.('Entering Stage: practice');
-                (captureStage as any).current = 'practice';
-                isSilentCapture.current = 1;
-            }
-        }
 
-        if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
-            if (captureStage.current !== 'none') finalizeCapture();
-            console.log('[Parser] Entering Stage: shop');
-            addDiagnosticLog?.('Entering Stage: shop');
-            (captureStage as any).current = 'shop';
-            setIsShopListingActive(true);
-            addDiagnosticLog?.('Shop parsing activated');
-        }
-
-        if (textOnly === 'who:' || lower === 'allies' || lower === 'minions') {
-            if (captureStage.current !== 'none') finalizeCapture();
-            console.log('[Parser] Entering Stage: who');
-            addDiagnosticLog?.('Entering Stage: who');
-            (captureStage as any).current = 'who';
-            setWhoList([]); 
-        }
-
-        if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
-            if (captureStage.current !== 'none') finalizeCapture();
-            console.log('[Parser] Entering Stage: where');
-            addDiagnosticLog?.('Entering Stage: where');
-            (captureStage as any).current = 'where';
-        }
-
-        if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
-            console.log('[Parser] Detected container header, triggering container capture');
-            if (captureStage.current !== 'none') finalizeCapture();
-            addDiagnosticLog?.(`Entering Stage: container (${textOnly})`);
-            (captureStage as any).current = 'container';
-            if (deps.pendingDrawerContainerRef?.current) {
-                isDrawerCapture.current = 1;
-            }
-        }
-
-        // Refined isEndPrompt: A prompt only ends a stage if it's standalone or at the very end of the line.
-        const isEndPrompt = (!!textPMatch && !attachedText) || /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
-            (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
+        // Refined isEndPrompt was already handled at the top of processLine.
 
         if (isEndPrompt) {
             console.log('[Parser] End-prompt detected:', { textOnly, stage: captureStage.current });
-        }
-
-        if (isEndPrompt && (captureStage.current === 'shop' || isShopListingActive)) {
-            setIsShopListingActive(false);
-            addDiagnosticLog?.('Shop parsing terminated by prompt');
-        }
-
-        if (isEndPrompt && (captureStage.current === 'practice' || deps.practice.isPracticeActive)) {
-            deps.practice.setIsPracticeActive(false);
-            deps.practice.setIsUiRequested(false);
         }
 
         if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container') {
@@ -414,34 +502,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             } else {
                 setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             }
-        } else if (captureStage.current === 'shop') {
-            const shopItem = parseShopLine(textOnly);
-            if (shopItem) {
-                const stableId = `shop-${shopItem.id}-${Date.now()}-${counterRef.current++}`;
-                addMessage('shop-item', textOnly, undefined, stableId, false, { textOnly, lower }, shopItem, undefined, undefined, true);
-                return;
-            }
-        } else if (captureStage.current === 'who') {
-            let cleanText = textOnly.trim();
-            if (cleanText && !cleanText.startsWith('---') && cleanText !== 'who:' && lower !== 'allies' && lower !== 'minions') {
-                let lastLength = 0;
-                while (cleanText.length !== lastLength) {
-                    lastLength = cleanText.length;
-                    cleanText = cleanText.replace(/^\[.*?\]\s*/, '').replace(/^<.*?>\s*/, '').replace(/^\(.*?\)\s*/, '').replace(/^\*+/, '');
-                }
-                const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-                if (nameCandidate && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) setWhoList(prev => prev.includes(nameCandidate) ? prev : [...prev, nameCandidate]);
-            }
-        }
-
-        const practiceResult = deps.practice.parsePracticeLine(textOnly);
-        if (captureStage.current === 'practice') {
-            if (typeof practiceResult === 'object' && practiceResult !== null) {
-                if ('sessionsLeft' in practiceResult) addMessage('practice-header', textOnly, undefined, `prac-hdr-${Date.now()}`, false, { textOnly, lower }, undefined, undefined, practiceResult, true);
-                else addMessage('practice-skill', textOnly, undefined, `prac-${practiceResult.name}-${Date.now()}-${counterRef.current++}`, false, { textOnly, lower }, undefined, practiceResult);
-                return;
-            } else if (practiceResult === true) return;
-            parsePracticeLine(textOnly); return;
         }
 
         const trackAction = () => {
@@ -514,21 +574,32 @@ export function useGameParser(deps: UseGameParserDeps) {
                     });
                 } return;
             }
+            if (lower.includes('gold coins')) {
+                const goldMatch = textOnly.match(/(\d+) gold coins/i);
+                if (goldMatch) {
+                    const gold = parseInt(goldMatch[1]);
+                    setCharacterInfo(prev => ({ ...prev, gold }));
+                }
+            }
         };
 
         trackAction(); processTriggers(textOnly);
 
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following/i.test(lower);
         
-        // Drawer-aware hiding: Strictly hide if the relevant drawer is open
+        // Drawer-aware hiding: Strictly hide if the relevant drawer is open AND it was a system-triggered capture
         let isDrawerHiding = false;
-        if (captureStage.current === 'inv' && deps.isItemsOpen) isDrawerHiding = true;
-        else if ((captureStage.current === 'eq' || captureStage.current === 'stat') && deps.isCharacterOpen) isDrawerHiding = true;
-        else if ((captureStage.current as any) === 'container') isDrawerHiding = true; 
-        else if (captureStage.current === 'none') {
-            // Heuristic for header lines that haven't set the stage yet
-            if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
-            if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) && deps.isCharacterOpen) isDrawerHiding = true;
+        const isSystemTriggered = isSilentCapture.current > 0 || isDrawerCapture.current > 0;
+
+        if (isSystemTriggered) {
+            const currentStage = captureStage.current as any;
+            if (currentStage === 'inv' && deps.isItemsOpen) isDrawerHiding = true;
+            else if ((currentStage === 'eq' || currentStage === 'stat' || currentStage === 'practice') && deps.isCharacterOpen) isDrawerHiding = true;
+            else if (currentStage === 'container') isDrawerHiding = true; 
+            else if (currentStage === 'none') {
+                if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
+                if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && deps.isCharacterOpen) isDrawerHiding = true;
+            }
         }
 
         const shouldShow = (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage;
@@ -548,7 +619,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isEndPrompt) finalizeCapture();
-    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, triggerHaptic, mapperRef, deps, parsePracticeLine, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture]);
+    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, triggerHaptic, mapperRef, deps, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture]);
 
     return { processLine, finalizeCapture };
 }

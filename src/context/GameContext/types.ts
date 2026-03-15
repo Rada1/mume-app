@@ -2,7 +2,7 @@ import { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, Chang
 import {
     GameStats, PopoverState, Message, MessageType, WeatherType,
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
-    DrawerLine, DeathStage, GameAction, SpatButton
+    DrawerLine, DeathStage, GameAction, SpatButton, CombatHealthStatus
 } from '../../types';
 import { useButtons } from '../../hooks/useButtons';
 import { useJoystick } from '../../hooks/useJoystick';
@@ -21,7 +21,6 @@ export interface VitalsContextType {
     rumble: boolean;
     setRumble: (val: boolean) => void;
     hitFlash: boolean;
-    setHitFlash: (val: boolean) => void;
     deathStage: DeathStage;
     setDeathStage: (val: DeathStage) => void;
     heldButton: any;
@@ -30,6 +29,10 @@ export interface VitalsContextType {
     setIsMendingMode: (val: boolean) => void;
     mendingTarget: string | null;
     setMendingTarget: (val: string | null) => void;
+    bufferName: string | null;
+    setBufferName: (val: string | null) => void;
+    characterInfo: import('../../types').CharacterInfo;
+    setCharacterInfo: Dispatch<SetStateAction<import('../../types').CharacterInfo>>;
 }
 
 export interface LogContextType {
@@ -46,7 +49,7 @@ export interface LogContextType {
 
 export interface UIContextType {
     ui: {
-        drawer: 'none' | 'character' | 'items';
+        drawer: 'none' | 'stats' | 'items' | 'character';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -55,7 +58,7 @@ export interface UIContextType {
         menuView: 'main' | 'availableSets';
     };
     setUI: Dispatch<SetStateAction<{
-        drawer: 'none' | 'character' | 'items';
+        drawer: 'none' | 'stats' | 'items' | 'character';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -69,6 +72,7 @@ export interface UIContextType {
     setIsSettingsOpen: (val: boolean) => void;
     settingsTab: 'general' | 'sound' | 'actions' | 'help';
     setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'help') => void;
+    setIsStatsOpen: (open: boolean) => void;
     setIsCharacterOpen: (open: boolean) => void;
     setIsItemsDrawerOpen: (open: boolean) => void;
     setIsMapExpanded: (open: boolean) => void;
@@ -79,6 +83,7 @@ export interface GameContextType {
     // High-frequency but log-related
     inCombat: boolean;
     setInCombat: (val: boolean, force?: boolean) => void;
+    inCombatRef: RefObject<boolean>;
     status: 'connected' | 'disconnected' | 'connecting';
     setStatus: (val: 'connected' | 'disconnected' | 'connecting') => void;
     characterName: string | null;
@@ -127,6 +132,11 @@ export interface GameContextType {
     setAlertness: (val: string) => void;
     playerPosition: string;
     setPlayerPosition: (val: string) => void;
+    setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
+    setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
+    setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
+    setOpponentName: (val: string | null) => void;
+    setBufferName: (val: string | null) => void;
 
     // Environmental state
     lighting: LightingType;
@@ -237,7 +247,7 @@ export interface GameContextType {
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
 
-    captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'none'>;
+    captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'none'>;
     isDrawerCapture: MutableRefObject<number>;
     isSilentCapture: MutableRefObject<number>;
     isWaitingForStats: MutableRefObject<boolean>;
@@ -281,10 +291,4 @@ export interface GameContextType {
     addDiagnosticLog: (msg: string) => void;
     activeDragData: any;
     setActiveDragData: Dispatch<SetStateAction<any>>;
-    isMendingMode: boolean;
-    setIsMendingMode: (val: boolean) => void;
-    mendingTarget: string | null;
-    setMendingTarget: (val: string | null) => void;
-    heldButton: any;
-    setHeldButton: Dispatch<SetStateAction<any>>;
 }

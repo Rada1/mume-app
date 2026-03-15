@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, Dispatch, SetStateAction } from 'react';
 import {
     GmcpOccupant,
     GmcpCharVitals,
@@ -7,7 +7,9 @@ import {
     GmcpRoomPlayers,
     GmcpRoomNpcs,
     GmcpRoomItems,
-    MessageType
+    MessageType,
+    CombatHealthStatus,
+    GmcpCharInfo
 } from '../types';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
@@ -26,6 +28,17 @@ interface GmcpHandlersProps {
     setRoomName: (name: string | null) => void;
     isMobileBrevityMode: boolean;
     setRoomExits: (exits: string[]) => void;
+    setBufferName: (name: string | null) => void;
+    setPlayerHealthStatus: (status: CombatHealthStatus | null) => void;
+    setOpponentHealthStatus: (status: CombatHealthStatus | null) => void;
+    setBufferHealthStatus: (status: CombatHealthStatus | null) => void;
+    setOpponentName: (name: string | null) => void;
+    characterInfo: import('../types').CharacterInfo;
+    setCharacterInfo: React.Dispatch<React.SetStateAction<import('../types').CharacterInfo>>;
+    opponentName: string | null;
+    bufferName: string | null;
+    roomPlayers: string[];
+    roomNpcs: string[];
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
 }
 
@@ -43,7 +56,18 @@ export const useGmcpHandlers = ({
     setPlayerPosition,
     setRoomName,
     isMobileBrevityMode,
-    setRoomExits
+    setRoomExits,
+    setBufferName,
+    setPlayerHealthStatus,
+    setOpponentHealthStatus,
+    setBufferHealthStatus,
+    setOpponentName,
+    characterInfo,
+    setCharacterInfo,
+    opponentName,
+    bufferName,
+    roomPlayers,
+    roomNpcs
 }: GmcpHandlersProps) => {
 
     // --- Room Info & Exits ---
@@ -68,16 +92,102 @@ export const useGmcpHandlers = ({
 
     // --- Character Status ---
 
+    const findStatus = useCallback((str: string | undefined): CombatHealthStatus | null => {
+        if (!str) return null;
+        const s = str.toLowerCase();
+        if (s.includes('fine')) return 'Fine';
+        if (s.includes('hurt')) return 'Hurt';
+        if (s.includes('wounded')) return 'Wounded';
+        if (s.includes('bad')) return 'Badly Wounded';
+        if (s.includes('awful')) return 'Awful';
+        if (s.includes('stunned')) return 'Stunned';
+        if (s.includes('dying') || s.includes('bleeding')) return 'Dying';
+        return null;
+    }, []);
+
+    const getCharNameFromId = useCallback((id: string | null | undefined): string | null => {
+        if (!id) return null;
+        // Search in roomPlayers (which contains names) and roomNpcs (which contains names/keywords)
+        const match = [...roomPlayers, ...roomNpcs].find(name => 
+            name.toLowerCase() === id.toLowerCase() || 
+            id.toLowerCase().includes(name.toLowerCase()) ||
+            name.toLowerCase().includes(id.toLowerCase())
+        );
+        return match || id;
+    }, [roomPlayers, roomNpcs]);
+
     const onCharVitals = useCallback((data: GmcpCharVitals) => {
         if (data.terrain) {
             if (typeof window !== 'undefined') {
                 window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
-                // Terrain change via GMCP is a strong signal, but we rely on Room.Info or Parser 
-                // to avoid double-confirming moves.
             }
             setCurrentTerrain(data.terrain);
         }
-    }, [setCurrentTerrain]);
+
+        // --- Combat Info via Vitals ---
+        if (data.hp_status) {
+            setPlayerHealthStatus(findStatus(data.hp_status));
+        }
+
+        if (data.opponent !== undefined) {
+            const oppName = getCharNameFromId(data.opponent);
+            setOpponentName(oppName);
+            if (!oppName) setOpponentHealthStatus(null);
+        }
+
+        if (data.buff !== undefined) {
+            const buffName = getCharNameFromId(data.buff);
+            setBufferName(buffName);
+            if (!buffName) setBufferHealthStatus(null);
+        }
+    }, [setCurrentTerrain, setPlayerHealthStatus, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, roomPlayers, roomNpcs, findStatus, getCharNameFromId]);
+
+    const onCharInfo = useCallback((data: GmcpCharInfo) => {
+        setCharacterInfo(prev => ({
+            ...prev,
+            name: data.name ?? data.fullname ?? prev.name,
+            level: data.level !== undefined ? Number(data.level) : prev.level,
+            xp: data.xp !== undefined ? Number(data.xp) : prev.xp,
+            xpMax: data.xp_max !== undefined ? Number(data.xp_max) : (data['next-level-xp'] !== undefined ? Number(data['next-level-xp']) : prev.xpMax),
+            tp: data.tp !== undefined ? Number(data.tp) : prev.tp,
+            tpMax: data.tp_max !== undefined ? Number(data.tp_max) : (data['next-level-tp'] !== undefined ? Number(data['next-level-tp']) : prev.tpMax),
+            race: data.race ?? prev.race,
+            subrace: data.subrace ?? prev.subrace,
+            subclass: data.subclass ?? prev.subclass,
+            class: data.class ?? prev.class,
+            gold: data.gold !== undefined ? Number(data.gold) : prev.gold
+        }));
+    }, [setCharacterInfo]);
+
+    const onRoomCharsCombat = useCallback((data: any[]) => {
+        // Find opponent/buffer in room.chars to get their condition
+        // This is called when Room.Chars (NPCs/Mobs) updates
+        if (!Array.isArray(data)) return;
+
+        // We need to know who we are fighting (opponentName) and who is buffering (bufferName)
+        // These are set by onCharVitals (GMCP) or the parser.
+        // But GMCP Char.Vitals only gives us IDs/Keywords usually.
+        
+        // Let's check for matches in the room data
+        data.forEach(char => {
+            const name = char.name || char.short || char.keyword;
+            if (!name) return;
+
+            const status = findStatus(char.health || char.status);
+            if (!status) return;
+
+            // Update opponent health if it matches
+            // (Comparing names/keywords is a bit fuzzy but necessary if IDs aren't consistent)
+            // Ideally we'd match on ID, but GmcpDecoder.ts doesn't store the opponent ID yet.
+            if (opponentName && (name.toLowerCase() === opponentName.toLowerCase() || opponentName.toLowerCase().includes(name.toLowerCase()))) {
+                setOpponentHealthStatus(status);
+            }
+            // Update buffer health if it matches
+            if (bufferName && (name.toLowerCase() === bufferName.toLowerCase() || bufferName.toLowerCase().includes(name.toLowerCase()))) {
+                setBufferHealthStatus(status);
+            }
+        });
+    }, [findStatus, opponentName, bufferName, setOpponentHealthStatus, setBufferHealthStatus]);
 
     // --- Room Occupants & Items ---
 
@@ -195,11 +305,10 @@ export const useGmcpHandlers = ({
         }
         setCharacterName(name);
     }, [characterName, setAbilities, addMessage, setCharacterName]);
-
+    
     return {
         onRoomInfo,
         onRoomUpdateExits,
-        onCharVitals,
         onRoomPlayers,
         onRoomNpcs,
         onRoomItems,
@@ -208,6 +317,10 @@ export const useGmcpHandlers = ({
         onRemovePlayer,
         onRemoveNpc,
         onCharNameChange,
+        onCharInfo,
+        onBufferChange: (name: string | null) => setBufferName(name),
+        onCharVitals,
+        onRoomCharsCombat,
         onPositionChange: (pos: string) => setPlayerPosition(pos)
     };
 };

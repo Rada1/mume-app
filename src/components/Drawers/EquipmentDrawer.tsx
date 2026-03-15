@@ -382,40 +382,13 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const glowEffect = glowColor ? `0 0 12px rgba(${colorRgb}, 0.15)` : 'none';
 
             return (
-                <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
-                    <div 
-                        className={`drawer-checkbox ${isSelected ? 'selected' : ''}`}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            triggerHaptic(20);
-                            const newSelected = new Set(selectedItems);
-                            if (newSelected.has(line.id)) newSelected.delete(line.id);
-                            else newSelected.add(line.id);
-                            setSelectedItems(newSelected);
-                        }}
-                        style={{
-                            width: '18px',
-                            height: '18px',
-                            borderRadius: '4px',
-                            border: `2px solid ${isSelected ? 'var(--accent)' : 'rgba(255,255,255,0.1)'}`,
-                            marginRight: '10px',
-                            backgroundColor: isSelected ? 'var(--accent)' : 'transparent',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.2s ease',
-                            flexShrink: 0,
-                            cursor: 'pointer'
-                        }}
-                    >
-                        {isSelected && <span style={{ color: '#000', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
-                    </div>
+                <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
                     {line.prefixHtml && (
                         <div 
                             style={{ 
-                                padding: '0 8px 0 0', 
-                                opacity: 0.5, 
-                                fontSize: '0.75rem', 
+                                padding: '0 0 2px 28px', 
+                                opacity: 0.6, 
+                                fontSize: '0.7rem', 
                                 whiteSpace: 'nowrap',
                                 color: 'var(--accent)',
                                 fontStyle: 'italic',
@@ -424,74 +397,103 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
                         />
                     )}
-                    <div
-                        className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''} ${isSelected ? 'selected' : ''}`}
-                        data-item-name={line.context || line.id}
-                        onPointerDown={(e) => handlePointerDown(e, line, source)}
-                        onPointerUp={(e) => {
-                            if (isDraggingRef.current) return;
-                            cleanupDrag();
-                            if (!line.isItem) return;
-                            triggerHaptic(20);
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div 
+                            className={`drawer-checkbox ${isSelected ? 'selected' : ''}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                triggerHaptic(20);
+                                const newSelected = new Set(selectedItems);
+                                if (newSelected.has(line.id)) newSelected.delete(line.id);
+                                else newSelected.add(line.id);
+                                setSelectedItems(newSelected);
+                            }}
+                            style={{
+                                width: '18px',
+                                height: '18px',
+                                borderRadius: '4px',
+                                border: `2px solid ${isSelected ? 'var(--accent)' : 'rgba(255,255,255,0.1)'}`,
+                                marginRight: '10px',
+                                backgroundColor: isSelected ? 'var(--accent)' : 'transparent',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s ease',
+                                flexShrink: 0,
+                                cursor: 'pointer'
+                            }}
+                        >
+                            {isSelected && <span style={{ color: '#000', fontSize: '12px', fontWeight: 'bold' }}>✓</span>}
+                        </div>
+                        <div
+                            className={`inline-btn auto-item ${isPrimed ? 'primed' : ''} ${isTargeted ? 'drop-target' : ''} ${line.isContainer ? 'is-container' : ''} ${isSelected ? 'selected' : ''}`}
+                            data-item-name={line.context || line.id}
+                            onPointerDown={(e) => handlePointerDown(e, line, source)}
+                            onPointerUp={(e) => {
+                                if (isDraggingRef.current) return;
+                                cleanupDrag();
+                                if (!line.isItem) return;
+                                triggerHaptic(20);
 
-                            if (line.isContainer) {
-                                setExpandedContainers(prev => {
-                                    const next = new Set(prev);
-                                    if (next.has(line.id)) {
-                                        next.delete(line.id);
-                                    } else {
-                                        next.add(line.id);
-                                        pendingDrawerContainerRef.current = {
-                                            containerId: line.id,
-                                            cmd: listType,
-                                            afterId: line.id
-                                        };
-                                        executeCommand(`look in ${line.context || line.id}`, true, true);
-                                        const thisId = line.id;
-                                        setTimeout(() => { 
-                                            if (pendingDrawerContainerRef.current?.containerId === thisId) {
-                                                pendingDrawerContainerRef.current = null; 
-                                            }
-                                        }, 5000);
-                                    }
-                                    return next;
-                                });
-                                return;
-                            }
+                                if (line.isContainer) {
+                                    setExpandedContainers(prev => {
+                                        const next = new Set(prev);
+                                        if (next.has(line.id)) {
+                                            next.delete(line.id);
+                                        } else {
+                                            next.add(line.id);
+                                            pendingDrawerContainerRef.current = {
+                                                containerId: line.id,
+                                                cmd: listType,
+                                                afterId: line.id
+                                            };
+                                            executeCommand(`look in ${line.context || line.id}`, true, true);
+                                            const thisId = line.id;
+                                            setTimeout(() => { 
+                                                if (pendingDrawerContainerRef.current?.containerId === thisId) {
+                                                    pendingDrawerContainerRef.current = null; 
+                                                }
+                                            }, 5000);
+                                        }
+                                        return next;
+                                    });
+                                    return;
+                                }
 
-                            // Unified Button Click
-                            handleButtonClick({
-                                id: 'drawer-item-' + line.id,
-                                label: itemNoun,
-                                command: category,
-                                actionType: 'menu',
-                                setId: category,
-                                isVisible: true,
-                                style: { backgroundColor: glowColor || 'var(--accent)' }
-                            } as any, e as any, line.context || line.id);
-                        }}
-                        style={{
-                            flex: 1,
-                            padding: '8px 12px',
-                            background: line.isItem ? (isPrimed ? primedBackground : baseBackground) : 'transparent',
-                            borderRadius: '4px',
-                            borderLeft: line.isItem ? borderLeftStyle : 'none',
-                            boxShadow: line.isItem ? glowEffect : 'none',
-                            fontSize: '0.85rem',
-                            cursor: 'grab',
-                            fontWeight: line.isContainer ? 'bold' : 'normal',
-                            opacity: isBeingDragged ? 0.3 : 1,
-                            color: line.isContainer ? '#89b4fa' : 'inherit',
-                            transition: 'all 0.2s ease',
-                            touchAction: 'none',
-                            display: 'flex',
-                            alignItems: 'center'
-                        }}
-                    >
-                        <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
-                        {line.isContainer && (
-                            <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transition: 'transform 0.2s ease', transform: expandedContainers.has(line.id) ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
-                        )}
+                                // Unified Button Click
+                                handleButtonClick({
+                                    id: 'drawer-item-' + line.id,
+                                    label: itemNoun,
+                                    command: category,
+                                    actionType: 'menu',
+                                    setId: category,
+                                    isVisible: true,
+                                    style: { backgroundColor: glowColor || 'var(--accent)' }
+                                } as any, e as any, line.context || line.id);
+                            }}
+                            style={{
+                                flex: 1,
+                                padding: '4px 8px', // More compact padding
+                                background: line.isItem ? (isPrimed ? primedBackground : baseBackground) : 'transparent',
+                                borderRadius: '4px',
+                                borderLeft: line.isItem ? borderLeftStyle : 'none',
+                                boxShadow: line.isItem ? glowEffect : 'none',
+                                fontSize: '0.8rem', // Slightly smaller font
+                                cursor: 'grab',
+                                fontWeight: line.isContainer ? 'bold' : 'normal',
+                                opacity: isBeingDragged ? 0.3 : 1,
+                                color: line.isContainer ? '#89b4fa' : 'inherit',
+                                transition: 'all 0.2s ease',
+                                touchAction: 'none',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
+                            {line.isContainer && (
+                                <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transition: 'transform 0.2s ease', transform: expandedContainers.has(line.id) ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+                            )}
+                        </div>
                     </div>
                 </div>
             );

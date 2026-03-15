@@ -237,6 +237,8 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             isWaitingForStats.current = true; captureStage.current = 'none'; setStatsLines([]);
         } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
             isWaitingForEq.current = true; captureStage.current = 'none'; setEqLines([]);
+        } else if (lowerCmd === 'practice' || lowerCmd === 'prac') {
+            captureStage.current = 'practice';
         }
 
         if (lowerCmd === 'closeall') {

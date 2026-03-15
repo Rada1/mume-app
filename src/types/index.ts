@@ -9,6 +9,8 @@ export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fa
 export type TriggerAction = 'show' | 'switch_set';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
 export type CaptureStage = 'none' | 'stat' | 'inv' | 'eq' | 'practice' | 'container' | 'shop' | 'who' | 'where';
+export type CombatHealthStatus = 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
+
 export interface InlineCategoryConfig {
     id: string; // The base name of the category (e.g. 'lantern')
     keywords: string[];
@@ -49,6 +51,7 @@ export interface PracticeSkill {
     proficiency: number; // numeric percentage
     difficulty: string; // e.g., "Hard"
     advice: string;
+    skillClass?: string; // e.g., "Warrior", "Mage", "None"
 }
 
 export interface PracticeData {
@@ -346,6 +349,8 @@ export interface GmcpCharVitals {
     maxstamina?: number;
     position?: string;
     opponent?: string | null;
+    hp_status?: string;   // MUME health status via GMCP
+    buff?: string | null; // MUME buffer tracking
     weather?: string | null;
     fog?: string | null;
     light?: string | null;
@@ -393,3 +398,34 @@ export interface GmcpRoomPlayers extends Array<string | GmcpOccupant> { }
 export interface GmcpRoomNpcs extends Array<string | GmcpOccupant> { }
 
 export interface GmcpRoomItems extends Array<string | GmcpOccupant> { }
+
+export interface GmcpCharInfo {
+    name?: string;
+    fullname?: string;
+    level?: number;
+    xp?: number;
+    xp_max?: number;
+    'next-level-xp'?: number;
+    tp?: number;
+    tp_max?: number;
+    'next-level-tp'?: number;
+    race?: string;
+    subrace?: string;
+    subclass?: string;
+    class?: string;
+    gold?: number;
+}
+
+export interface CharacterInfo {
+    name: string | null;
+    level: number;
+    xp: number;
+    xpMax: number;
+    tp: number;
+    tpMax: number;
+    race: string;
+    subrace: string;
+    subclass: string;
+    class: string;
+    gold: number;
+}

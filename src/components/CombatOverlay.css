@@ -1,0 +1,107 @@
+.combat-overlay {
+    position: absolute;
+    top: 4.5rem; /* Just below header */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 500px;
+    z-index: 50;
+    pointer-events: none;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.combat-overlay.active {
+    opacity: 1;
+    top: 5rem;
+    pointer-events: auto;
+}
+
+.combat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    white-space: nowrap;
+}
+
+.combat-vs {
+    color: #ff4d4d;
+    font-style: italic;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.combat-body {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.combat-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.combat-side.player {
+    align-items: flex-start;
+}
+
+.combat-side.opponent {
+    align-items: flex-end;
+}
+
+.health-quads {
+    display: flex;
+    gap: 2px;
+}
+
+.health-quad {
+    width: 14px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    transform: skewX(-20deg);
+    border-radius: 2px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Health status coloring */
+.health-quad.fine { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.4); }
+.health-quad.hurt { background: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.4); }
+.health-quad.wounded { background: #fb923c; box-shadow: 0 0 8px rgba(251, 146, 60, 0.4); }
+.health-quad.badly-wounded { background: #f87171; box-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }
+.health-quad.awful { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+.health-quad.dying { background: #7f1d1d; box-shadow: 0 0 8px rgba(127, 29, 29, 0.4); }
+
+.buffer-indicator {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    opacity: 0.9;
+}
+
+.buffer-name {
+    color: #ffd700;
+    font-style: italic;
+}

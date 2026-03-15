@@ -1,5 +1,6 @@
 import React from 'react';
 import { InventoryDrawer } from './InventoryDrawer';
+import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
 import { EquipmentDrawer } from './EquipmentDrawer';
 import { Mapper } from '../Mapper/Mapper';
@@ -10,13 +11,13 @@ import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
 
 interface DrawerManagerProps {
     ui: {
-        drawer: 'none' | 'character' | 'items';
+        drawer: 'none' | 'stats' | 'items' | 'character';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
     };
     setUI: React.Dispatch<React.SetStateAction<{
-        drawer: 'none' | 'character' | 'items';
+        drawer: 'none' | 'stats' | 'items' | 'character';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -89,7 +90,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     handleSoundUpload, setSoundTriggers
 }) => {
     const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories } = useGame();
-    const { isMapFloating } = useMapper();
+    const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI
     const showBackdrop = ui.drawer !== 'none';
@@ -100,15 +101,17 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         setUI(prev => ({ ...prev, mapExpanded: false }));
     };
 
-    const handleTabClick = (drawer: 'character' | 'items') => {
+    const handleTabClick = (drawer: 'stats' | 'character' | 'items') => {
         triggerHaptic(30);
         if (ui.drawer === drawer) {
             setUI(prev => ({ ...prev, drawer: 'none' }));
         } else {
             setUI(prev => ({ ...prev, drawer }));
             // Fetch fresh data when opening
-            if (drawer === 'character') {
+            if (drawer === 'stats') {
                 executeCommand('stat', true, true, true, true);
+            } else if (drawer === 'character') {
+                executeCommand('score', true, true, true, true);
             } else if (drawer === 'items') {
                 executeCommand('inv', true, true, true, true);
                 setTimeout(() => executeCommand('eq', true, true, true, true), 150);
@@ -120,13 +123,23 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         <>
             {/* Desktop Edge Tabs */}
             <div
-                className={`desktop-edge-tab left ${ui.drawer === 'character' ? 'active' : ''}`}
+                className={`desktop-edge-tab left ${ui.drawer === 'stats' ? 'active' : ''}`}
                 style={{ top: '40%' }}
-                onClick={() => handleTabClick('character')}
-                title="Character Stats"
+                onClick={() => handleTabClick('stats')}
+                title="Combat Statistics"
             >
-                <User className="tab-icon" />
+                <Shield className="tab-icon" />
                 <span className="tab-text">Stats</span>
+            </div>
+
+            <div
+                className={`desktop-edge-tab top ${ui.drawer === 'character' ? 'active' : ''}`}
+                style={{ top: '0', left: '50%', transform: 'translateX(-50%)', width: '120px', height: '28px', borderRadius: '0 0 10px 10px', flexDirection: 'row', gap: '8px' }}
+                onClick={() => handleTabClick('character')}
+                title="Character Sheet"
+            >
+                <User className="tab-icon" style={{ width: '14px', height: '14px' }} />
+                <span className="tab-text" style={{ writingMode: 'horizontal-tb', fontSize: '0.7rem' }}>Character</span>
             </div>
 
             <div
@@ -151,7 +164,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </div>
 
             <div
-                className={`drawer-backdrop ${showBackdrop ? 'open' : ''}`}
+                className={`drawer-backdrop ${showBackdrop && ui.drawer !== 'character' ? 'open' : ''}`}
                 onClick={() => setUI(prev => ({ 
                     ...prev, 
                     drawer: 'none'
@@ -179,12 +192,18 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             )}
 
 
-            <CharacterDrawer
-                isOpen={ui.drawer === 'character'}
+            <StatsDrawer
+                isOpen={ui.drawer === 'stats'}
                 onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
                 statsLines={statsLines}
                 executeCommand={executeCommand}
                 isLandscape={viewport.isLandscape}
+            />
+
+            <CharacterDrawer
+                isOpen={ui.drawer === 'character'}
+                onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
+                executeCommand={executeCommand}
             />
 
             <EquipmentDrawer

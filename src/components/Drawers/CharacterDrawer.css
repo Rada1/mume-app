@@ -1,0 +1,343 @@
+.character-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.character-drawer-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.character-drawer-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 85vh;
+    background: var(--drawer-bg, #1a1a1a);
+    border-bottom: 2px solid var(--accent-color, #4a90e2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    transform: translateY(-100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
+}
+
+.character-drawer-content.open {
+    transform: translateY(0);
+}
+
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.drawer-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.drawer-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.drawer-tab.active {
+    background: rgba(var(--accent-rgb, 74, 144, 226), 0.2);
+    color: var(--accent-color, #4a90e2);
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.info-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.char-profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.char-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--accent-color, #4a90e2), #2c3e50);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.char-main-info h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.char-main-info p {
+    margin: 5px 0;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.level-badge {
+    display: inline-block;
+    background: var(--accent-color, #4a90e2);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.stat-card.gold {
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: gold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: white;
+}
+
+.stat-section {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.stat-section h3 {
+    margin: 0 0 10px 0;
+    font-size: 0.9rem;
+    color: #888;
+}
+
+.progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #aaa;
+}
+
+.progress-bar-bg {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.5s ease-out;
+}
+
+.progress-bar-fill.xp {
+    background: linear-gradient(90deg, #4a90e2, #3498db);
+}
+
+.progress-bar-fill.tp {
+    background: linear-gradient(90deg, #e67e22, #f39c12);
+}
+
+.needed-label {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Practice Tab */
+.practice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.sessions-badge {
+    background: rgba(74, 144, 226, 0.1);
+    color: #4a90e2;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.refresh-button {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.skills-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.skill-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skill-group-header {
+    font-size: 0.75rem;
+    font-weight: 900;
+    color: var(--accent-color, #4a90e2);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(var(--accent-rgb, 74, 144, 226), 0.1);
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.skill-name {
+    font-weight: bold;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.skill-advice {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.skill-stats {
+    text-align: right;
+}
+
+.skill-knowledge {
+    color: var(--accent-color, #4a90e2);
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.skill-difficulty {
+    font-size: 0.75rem;
+    color: #555;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    color: #444;
+    gap: 15px;
+}
+
+@media (min-width: 768px) {
+    .character-drawer-content {
+        width: 600px;
+        left: 50%;
+        transform: translate(-50%, -100%);
+    }
+    
+    .character-drawer-content.open {
+        transform: translate(-50%, 0);
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .stat-card.gold {
+        grid-column: span 2;
+    }
+}

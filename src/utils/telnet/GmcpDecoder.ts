@@ -1,4 +1,4 @@
-import { GameStats, WeatherType, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs } from '../../types';
+import { GameStats, WeatherType, DeathStage, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpRoomItems, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs, GmcpCharInfo } from '../../types';
 import { isGmcpCharVitals, isGmcpRoomInfo, isGmcpRoomPlayers, isGmcpRoomItems, isGmcpExitInfoMap } from '../../utils/gmcpValidation';
 
 export interface GmcpHandlers {
@@ -8,6 +8,7 @@ export interface GmcpHandlers {
     setInCombat: (inCombat: boolean) => void;
     detectLighting: (light: string) => void;
     onOpponentChange?: (opponent: string | null) => void;
+    onBufferChange?: (buffer: string | null) => void;
     onAddPlayer?: (data: string | GmcpOccupant) => void;
     onRemovePlayer?: (data: string | GmcpOccupant) => void;
     onRoomItems?: (data: GmcpRoomItems) => void;
@@ -19,11 +20,12 @@ export interface GmcpHandlers {
     onAddNpc?: (data: string | GmcpOccupant) => void;
     onRemoveNpc?: (data: string | GmcpOccupant) => void;
     onCharNameChange?: (name: string | null) => void;
+    onCharInfo?: (data: GmcpCharInfo) => void;
     onPositionChange?: (position: string) => void;
 }
 
 export class GmcpDecoder {
-    private charVitalsState: { position?: string, opponent?: string | null } = {};
+    private charVitalsState: { position?: string, opponent?: string | null, buff?: string | null } = {};
 
     constructor(private handlers: GmcpHandlers) { }
 
@@ -57,8 +59,9 @@ export class GmcpDecoder {
             this.handleRoomItems(json);
         } else if (pkgLower === 'char.name') {
             this.handleCharName(json);
-        } else if (pkgLower === 'char.status') {
+        } else if (pkgLower === 'char.status' || pkgLower === 'char.info' || pkgLower === 'char.statusvars') {
             this.handleCharStatus(json);
+            if (pkgLower === 'char.info' || pkgLower === 'char.statusvars') this.handleCharInfo(json);
         }
     }
 
@@ -105,6 +108,16 @@ export class GmcpDecoder {
             if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(this.charVitalsState.opponent);
         }
 
+        const buff = getField(['buff', 'b']);
+        if (buff !== undefined) {
+            this.charVitalsState.buff = buff === "" ? null : buff;
+            if (this.handlers.onBufferChange) this.handlers.onBufferChange(this.charVitalsState.buff);
+        }
+
+        if (this.handlers.onCharVitals) {
+            this.handlers.onCharVitals(data);
+        }
+
         const isFighting = this.charVitalsState.position?.includes('fighting') || (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
         if (isFighting) {
             this.handlers.setInCombat(true);
@@ -128,6 +141,16 @@ export class GmcpDecoder {
         const lightVal = getField(['light', 'l']);
         if (lightVal !== undefined) {
             this.handlers.detectLighting(String(lightVal));
+        }
+
+        // Pass xp/tp to charInfo if present in vitals (MUME style)
+        const xp = getField(['xp']);
+        const tp = getField(['tp']);
+        if ((xp !== undefined || tp !== undefined) && this.handlers.onCharInfo) {
+            this.handlers.onCharInfo({ 
+                xp: xp !== undefined ? Number(xp) : undefined, 
+                tp: tp !== undefined ? Number(tp) : undefined 
+            });
         }
     }
 
@@ -236,6 +259,13 @@ export class GmcpDecoder {
                 this.updateStatsFromVitals(data);
                 if (this.handlers.onCharVitals) this.handlers.onCharVitals(data);
             }
+        } catch (e) { }
+    }
+
+    private handleCharInfo(json: string) {
+        try {
+            const data = JSON.parse(json);
+            if (this.handlers.onCharInfo) this.handlers.onCharInfo(data);
         } catch (e) { }
     }
 }

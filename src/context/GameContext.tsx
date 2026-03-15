@@ -148,7 +148,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setRoomName: s.setRoomName,
         isMobileBrevityMode: s.isMobileBrevityMode,
         setRoomExits: s.setRoomExits,
-        setDiscoveredItems: s.setDiscoveredItems
+        setDiscoveredItems: s.setDiscoveredItems,
+        setBufferName: v.setBufferName,
+        setPlayerHealthStatus: v.setPlayerHealthStatus,
+        setOpponentHealthStatus: v.setOpponentHealthStatus,
+        setBufferHealthStatus: v.setBufferHealthStatus,
+        setOpponentName: v.setOpponentName,
+        setCharacterInfo: v.setCharacterInfo,
+        characterInfo: v.characterInfo,
+        opponentName: v.opponentName,
+        bufferName: v.bufferName,
+        roomPlayers: s.roomPlayers,
+        roomNpcs: s.roomNpcs
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
@@ -212,6 +223,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const parser = useGameParser({
         isItemsOpen: s.ui.drawer === 'items',
         isCharacterOpen: s.ui.drawer === 'character',
+        isStatsOpen: s.ui.drawer === 'stats',
         mapperRef,
         btn: {
             buttonsRef: btn.buttonsRef,
@@ -229,6 +241,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setHitFlash: v.setHitFlash,
         setDeathStage: v.setDeathStage,
         setInCombat: s.setInCombat,
+        inCombatRef: s.inCombatRef,
         setLightningEnabled: s.setLightningEnabled,
         setPlayerPosition: s.setPlayerPosition,
         detectLighting: env.detectLighting,
@@ -254,7 +267,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         popoverState: s.popoverState,
         setPopoverState: s.setPopoverState,
         pendingDrawerContainerRef: s.pendingDrawerContainerRef,
-        setDiscoveredItems: s.setDiscoveredItems
+        setDiscoveredItems: s.setDiscoveredItems,
+        setPlayerHealthStatus: v.setPlayerHealthStatus,
+        setOpponentHealthStatus: v.setOpponentHealthStatus,
+        setOpponentName: v.setOpponentName,
+        setBufferHealthStatus: v.setBufferHealthStatus,
+        setBufferName: v.setBufferName,
+        setCharacterInfo: v.setCharacterInfo
     });
 
     const { processLine } = parser;
@@ -281,6 +300,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onRemovePlayer: (data) => { gmcpHandlers.onRemovePlayer(data); removePlayerFn?.(data); },
             onRemoveNpc: (data) => { gmcpHandlers.onRemoveNpc(data); removeNpcFn?.(data); },
             onCharNameChange: gmcpHandlers.onCharNameChange,
+            onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
             onOpponentChange: (name) => { opponentChangeFn?.(name); }
         }
@@ -303,8 +323,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
         setIsMapExpanded: s.setIsMapExpanded,
         viewport,
-        ui: s.ui,
-        setUI: s.setUI,
+        ui: s.ui as any,
+        setUI: s.setUI as any,
         actions: s.actions,
         setActions: s.setActions,
         setActiveDragData: s.setActiveDragData,
@@ -427,6 +447,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         popoverState, setPopoverState,
         isSettingsOpen, setIsSettingsOpen,
         settingsTab, setSettingsTab,
+        setIsStatsOpen: s.setIsStatsOpen,
         setIsCharacterOpen: s.setIsCharacterOpen,
         setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
         setIsMapExpanded: s.setIsMapExpanded,

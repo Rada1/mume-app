@@ -16,6 +16,7 @@ export interface TelnetHandlers {
     setDeathStage: (stage: DeathStage) => void;
     detectLighting: (light: string) => void;
     onOpponentChange?: (opponent: string | null) => void;
+    onBufferChange?: (buffer: string | null) => void;
     onAddPlayer?: (data: string | GmcpOccupant) => void;
     onRemovePlayer?: (data: string | GmcpOccupant) => void;
     onRoomItems?: (data: GmcpRoomItems) => void;
@@ -27,6 +28,7 @@ export interface TelnetHandlers {
     onAddNpc?: (data: string | GmcpOccupant) => void;
     onRemoveNpc?: (data: string | GmcpOccupant) => void;
     onCharNameChange?: (name: string | null) => void;
+    onCharInfo?: (data: import('../types').GmcpCharInfo) => void;
     onPositionChange?: (position: string) => void;
     flushMessages?: () => void;
 }
@@ -70,6 +72,7 @@ export function useTelnet(options: TelnetOptions) {
         setInCombat: (val) => handlersRef.current.setInCombat(val),
         detectLighting: (val) => handlersRef.current.detectLighting(val),
         onOpponentChange: (val) => handlersRef.current.onOpponentChange?.(val),
+        onBufferChange: (val) => handlersRef.current.onBufferChange?.(val),
         onAddPlayer: (val) => handlersRef.current.onAddPlayer?.(val),
         onRemovePlayer: (val) => handlersRef.current.onRemovePlayer?.(val),
         onRoomItems: (val) => handlersRef.current.onRoomItems?.(val),
@@ -81,6 +84,7 @@ export function useTelnet(options: TelnetOptions) {
         onAddNpc: (val) => handlersRef.current.onAddNpc?.(val),
         onRemoveNpc: (val) => handlersRef.current.onRemoveNpc?.(val),
         onCharNameChange: (val) => handlersRef.current.onCharNameChange?.(val),
+        onCharInfo: (val) => handlersRef.current.onCharInfo?.(val),
         onPositionChange: (val) => handlersRef.current.onPositionChange?.(val)
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
