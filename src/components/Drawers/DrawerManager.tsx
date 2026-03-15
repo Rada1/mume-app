@@ -89,9 +89,10 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     handleSoundUpload, setSoundTriggers
 }) => {
     const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories } = useGame();
-    const { isMapFloating, setIsMapFloating } = useMapper();
+    const { isMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
-    const showBackdrop = ui.drawer !== 'none' || (ui.mapExpanded && viewport.isMobile && !isMapFloating);
+    // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI
+    const showBackdrop = ui.drawer !== 'none';
 
     const handleUndock = () => {
         triggerHaptic(40);
@@ -153,8 +154,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 className={`drawer-backdrop ${showBackdrop ? 'open' : ''}`}
                 onClick={() => setUI(prev => ({ 
                     ...prev, 
-                    drawer: 'none', 
-                    mapExpanded: viewport.isMobile ? false : prev.mapExpanded 
+                    drawer: 'none'
                 }))}
             />
 

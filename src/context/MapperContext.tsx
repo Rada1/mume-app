@@ -286,6 +286,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         const onDock = () => {
             setIsMapFloating(false);
+            setUI(prev => ({ ...prev, mapExpanded: true }));
         };
         const onUndock = () => {
             setIsMapFloating(true);

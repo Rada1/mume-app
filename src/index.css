@@ -11,12 +11,13 @@
 /* Mobile Bottom Gutter */
 .mobile-bottom-gutter {
     flex-shrink: 0;
-    height: 160px; /* Peek height */
+    height: 220px; /* Taller peek height */
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
     border-top: 2px solid var(--accent);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
-    z-index: 2000;
+    z-index: 3500;
+    touch-action: none; /* Block browser gestures */
     transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
     overflow: hidden;
@@ -25,8 +26,8 @@
 }
 
 @media (max-width: 768px) {
-    .kb-open .mobile-bottom-gutter {
-        display: none !important;
+    .mobile-bottom-gutter.map-expanded {
+        height: 75vh; /* Lowered expanded height */
     }
 
     .kb-open .hud-clusters-absolute-layer,
@@ -44,10 +45,6 @@
 
     .hud-clusters-absolute-layer > * {
         pointer-events: auto;
-    }
-
-    .mobile-bottom-gutter.map-expanded {
-        height: 90vh;
     }
 }
 
@@ -78,6 +75,8 @@
 
 /* Hide interactive buttons in portrait mode when map is expanded to prevent toolbar overlap */
 .app-container.is-map-expanded:not(.is-landscape) .spat-container,
-.app-container.is-map-expanded:not(.is-landscape) .line-cluster-container {
+.app-container.is-map-expanded:not(.is-landscape) .line-cluster-container,
+.app-container.is-map-expanded:not(.is-landscape) .hud-clusters-absolute-layer {
     display: none !important;
+    pointer-events: none !important;
 }

@@ -35,7 +35,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
         const dir = handleJoystickMove(e, executeCommand, !!heldButton);
 
         if (dir && heldButton && !heldButton.didFire && setHeldButton) {
-            const button = btn.buttons.find(b => b.id === heldButton.id);
+            const button = btn.buttons.find((b: any) => b.id === heldButton.id);
             if (button) {
                 const result = getButtonCommand(button, heldButton.dx || 0, heldButton.dy || 0, undefined, undefined, heldButton.modifiers, { currentDir: dir, isTargetModifierActive: !!joystick.isTargetModifierActive }, target, true);
                 if (result) {
@@ -56,7 +56,8 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
 
     return (
         <div 
-            className="dpad-container-with-sidebar" 
+            className="dpad-container-with-sidebar"
+            style={{ pointerEvents: 'auto' }}
             onPointerDown={onPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={onPointerUp}

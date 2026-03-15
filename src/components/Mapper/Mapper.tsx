@@ -126,8 +126,19 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         }));
     }, [setMarkers]);
 
+    const handleDockUndock = useCallback(() => {
+        triggerHaptic(40);
+        if (isMapFloating) {
+            setIsMapFloating(false);
+            setUI(prev => ({ ...prev, mapExpanded: true }));
+        } else {
+            setIsMapFloating(true);
+            setUI(prev => ({ ...prev, mapExpanded: false }));
+        }
+    }, [isMapFloating, setIsMapFloating, setUI, triggerHaptic]);
+
     return (
-        <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: isDarkMode ? '#11111b' : '#bababa' }}>
+        <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: isDarkMode ? '#11111b' : '#bababa', touchAction: 'none' }}>
             <MapCanvas
                 ref={canvasRef}
                 rooms={rooms}
@@ -180,11 +191,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 unveilMap={unveilMap}
                 setUnveilMap={setUnveilMap}
                 onResetSync={handleResetAndSync}
-                onUndock={onUndockProp || (() => {
-                    triggerHaptic(40);
-                    setIsMapFloating(true);
-                    setUI(prev => ({ ...prev, mapExpanded: false }));
-                })}
+                onUndock={handleDockUndock}
                 isDarkMode={isDarkMode}
                 isMapFloating={isMapFloating}
                 setIsMapFloating={setIsMapFloating}
@@ -196,11 +203,16 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 allowPersistence={allowPersistence}
                 setAllowPersistence={setAllowPersistence}
                 isDarkMode={isDarkMode}
-                setIsDarkMode={() => { }}
+                setIsDarkMode={(dark) => theme === 'dark' ? null : null} // Theme managed by GameContext
                 exportMap={handleExportMap}
                 importMap={handleImportMap}
                 importMMapper={handleImportMMapper}
                 clearMap={() => { handleClearMap(); setIsDropdownOpen(false); }}
+                unveilMap={unveilMap}
+                setUnveilMap={setUnveilMap}
+                onResetSync={handleResetAndSync}
+                isMapFloating={isMapFloating}
+                onUndock={handleDockUndock}
             />
 
             {localContextMenu && (

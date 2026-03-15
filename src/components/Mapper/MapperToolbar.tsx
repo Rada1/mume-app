@@ -26,6 +26,9 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
 }) => {
     if (isMobile && !isExpanded) return null;
 
+    // Use icon-only mode if floating or mobile tray is narrow
+    const showLabels = !isMapFloating && isExpanded;
+
     return (
         <div 
             onPointerDown={(e) => e.stopPropagation()} // Shield buttons from map gestures
@@ -50,44 +53,20 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
         >
             <div style={{ display: 'flex', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden', flexShrink: 0 }}>
                 <button
-                    style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'edit' ? 'bold' : 'normal', transition: 'all 0.2s' }}
+                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'edit' ? '#89b4fa' : 'transparent', color: mode === 'edit' ? '#11111b' : '#cdd6f4', fontWeight: 'bold', transition: 'all 0.2s' }}
                     onClick={(e) => { e.stopPropagation(); setMode('edit'); }}
+                    title="Edit Mode"
                 >
-                    {isExpanded ? 'Edit' : 'E'}
+                    {showLabels ? 'Edit' : 'E'}
                 </button>
                 <button
-                    style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: mode === 'play' ? 'bold' : 'normal', transition: 'all 0.2s' }}
+                    style={{ padding: '4px 8px', border: 'none', cursor: 'pointer', backgroundColor: mode === 'play' ? '#a6e3a1' : 'transparent', color: mode === 'play' ? '#11111b' : '#cdd6f4', fontWeight: 'bold', transition: 'all 0.2s' }}
                     onClick={(e) => { e.stopPropagation(); setMode('play'); }}
+                    title="Play Mode"
                 >
-                    {isExpanded ? 'Play' : 'P'}
+                    {showLabels ? 'Play' : 'P'}
                 </button>
             </div>
-
-            <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-
-            <button
-                onClick={(e) => { e.stopPropagation(); setUnveilMap?.(!unveilMap); }}
-                style={{
-                    display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 6px', borderRadius: '4px',
-                    backgroundColor: unveilMap ? '#89dceb' : 'transparent', color: unveilMap ? '#11111b' : '#cdd6f4',
-                    border: 'none', cursor: 'pointer', flexShrink: 0, transition: 'all 0.2s'
-                }}
-                title={unveilMap ? "Hide unexplored rooms" : "Show all unexplored rooms"}
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                {isExpanded && (unveilMap ? "REVEALED" : "FOG: ON")}
-            </button>
-
-            {onResetSync && (
-                <button
-                    onClick={(e) => { e.stopPropagation(); onResetSync(); }}
-                    style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#fab387', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}
-                    title="Reset local map and Sync to MMapper"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>
-                    {isExpanded && "Sync"}
-                </button>
-            )}
 
             <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
 
@@ -101,35 +80,10 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                 title="Center on player"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>
-                {isExpanded && "Center"}
+                {showLabels && "Center"}
             </button>
 
             <div style={{ width: '1px', height: '14px', backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-
-            <button
-                style={{
-                    padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px',
-                    backgroundColor: isMapFloating ? '#cba6f7' : 'transparent', color: isMapFloating ? '#11111b' : '#cdd6f4',
-                    display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0, transition: 'all 0.2s'
-                }}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (onUndock && !isMapFloating) {
-                        onUndock();
-                    } else if (typeof window !== 'undefined') {
-                        window.dispatchEvent(new CustomEvent(isMapFloating ? 'mume-mapper-dock' : 'mume-mapper-undock'));
-                    }
-                }}
-                title={isMapFloating ? "Dock to Drawer" : "Undock Map"}
-            >
-                {isMapFloating ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 12-3-3-3 3"></path><path d="M12 9v12"></path><path d="M20 4H4"></path></svg>
-                ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 15-3 3-3-3"></path><path d="M12 18V6"></path><path d="M20 20H4"></path></svg>
-                )}
-                {isExpanded && (isMapFloating ? "Dock" : "Undock")}
-            </button>
-
 
             <button
                 style={{
@@ -138,22 +92,14 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                     alignItems: 'center', gap: '4px', transition: 'all 0.2s'
                 }}
                 onClick={(e) => { e.stopPropagation(); setIsDropdownOpen(prev => !prev); }}
-                title="More Options"
+                title="Map Menu"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="2"></circle>
-                    <circle cx="12" cy="5" r="2"></circle>
-                    <circle cx="12" cy="19" r="2"></circle>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
                 </svg>
-                {isExpanded && "More"}
-            </button>
-
-            <button
-                style={{ padding: '4px 6px', border: 'none', cursor: 'pointer', borderRadius: '4px', backgroundColor: 'transparent', color: '#f38ba8', display: 'flex', alignItems: 'center', transition: 'all 0.2s' }}
-                onClick={(e) => { e.stopPropagation(); setIsMinimized(true); }}
-                title="Minimize"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                {showLabels && "Menu"}
             </button>
         </div>
     );

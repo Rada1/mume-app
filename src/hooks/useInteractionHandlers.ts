@@ -321,6 +321,9 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     }, [setTarget, addMessage, triggerHaptic]);
 
     const handleLogClick = useCallback((e: React.MouseEvent) => {
+        // IGNORE log clicks if the map is expanded on mobile to prevent accidental minimization
+        if (ui.mapExpanded && viewport.isMobile) return;
+
         const now = Date.now();
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
 
