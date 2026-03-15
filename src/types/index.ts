@@ -83,6 +83,10 @@ export interface GameStats {
     move: number;
     maxMove: number;
     wimpy?: number;
+    ob?: number;
+    db?: number;
+    pb?: number;
+    armour?: number;
 }
 
 export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign' | 'teleport-manage' | 'select-recipient' | 'preload';

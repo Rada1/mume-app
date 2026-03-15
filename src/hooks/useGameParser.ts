@@ -273,13 +273,32 @@ export function useGameParser(deps: UseGameParserDeps) {
                 return;
             }
 
-            textOnly = attachedText;
-            lower = textOnly.toLowerCase();
+            content = attachedText;
+            contentLower = content.toLowerCase();
 
             // Strip the actual prompt part from the cleanLine
             const ansiStripRegex = /^((?:\x1b\[[0-9;]*m)*?((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-])\s*)*[>])\s*)/ ;
             cleanLine = cleanLine.replace(ansiStripRegex, '').trim();
-        }
+            }
+
+            // Global Status Parser for MUME (updates OB/DB/PB/Armour in real-time)
+            // Ensure this runs BEFORE prompt stripping so we don't lose the context.
+            if (contentLower.startsWith('your ob ') || contentLower.startsWith('your mood ') || contentLower.startsWith('your armor ') || contentLower.startsWith('your armour ') || contentLower.includes('ob:') || contentLower.includes('db:') || contentLower.includes('pb:')) {
+            const obMatch = content.match(/Ob\s*(?::|is)?\s*(\d+)%/i);
+            const dbMatch = content.match(/Db\s*(?::|is)?\s*(\d+)%/i);
+            const pbMatch = content.match(/Pb\s*(?::|is)?\s*(\d+)%/i);
+            const armorMatch = content.match(/(?:Armo?ur|Armor)\s*(?::|is)?\s*(\d+)%/i);
+
+            if (obMatch || dbMatch || pbMatch || armorMatch) {
+                setStats(prev => ({
+                    ...prev,
+                    ...(obMatch && { ob: parseInt(obMatch[1]) }),
+                    ...(dbMatch && { db: parseInt(dbMatch[1]) }),
+                    ...(pbMatch && { pb: parseInt(pbMatch[1]) }),
+                    ...(armorMatch && { armour: parseInt(armorMatch[1]) }),
+                }));
+            }
+            }
 
         // --- NEW: Priority Capture Handling ---
         if (captureStage.current !== 'none') {

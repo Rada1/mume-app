@@ -109,7 +109,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             setUI(prev => ({ ...prev, drawer }));
             // Fetch fresh data when opening
             if (drawer === 'stats') {
-                executeCommand('stat', true, true, true, true);
+               executeCommand('stats', true, true, true, true);
+               setTimeout(() => executeCommand('status', true, true, true, true), 100);
             } else if (drawer === 'character') {
                 executeCommand('score', true, true, true, true);
             } else if (drawer === 'items') {
@@ -175,6 +176,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             {!viewport.isMobile && (
                 <div
                     className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}
+                    onClick={(e) => e.stopPropagation()}
                 >
                     <div className="drawer-header" style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}>
                         <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>World Map</span>

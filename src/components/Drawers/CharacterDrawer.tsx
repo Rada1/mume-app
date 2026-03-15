@@ -7,7 +7,7 @@ import './CharacterDrawer.css';
 interface CharacterDrawerProps {
     isOpen: boolean;
     onClose: () => void;
-    executeCommand: (cmd: string, silent?: boolean) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
 }
 
 export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({

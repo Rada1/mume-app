@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { DrawerLine } from '../../types';
 import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
-import { useGame } from '../../context/GameContext';
+import { useGame, useVitals, useUI } from '../../context/GameContext';
 
 interface EquipmentDrawerProps {
     isOpen: boolean;
@@ -38,7 +38,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-    const { activeDragData, isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useGame();
+    const { activeDragData } = useGame();
+    const { isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useVitals();
 
     const ghostRef = useRef<HTMLDivElement>(null);
     const longPressTimerRef = useRef<any>(null);
@@ -387,11 +388,11 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         <div 
                             style={{ 
                                 padding: '0 0 2px 28px', 
-                                opacity: 0.6, 
-                                fontSize: '0.7rem', 
+                                opacity: 0.9, 
+                                fontSize: '0.75rem', 
+                                fontWeight: 'bold',
                                 whiteSpace: 'nowrap',
                                 color: 'var(--accent)',
-                                fontStyle: 'italic',
                                 flexShrink: 0
                             }}
                             dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
@@ -501,14 +502,15 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
         return (
             <div key={line.id} style={{ 
-                padding: '4px 10px', 
-                fontSize: '0.8rem', 
-                opacity: 0.6, 
-                borderBottom: '1px solid rgba(255,255,255,0.03)',
+                padding: '8px 10px 4px', 
+                fontSize: '0.85rem', 
+                opacity: 0.95, 
+                fontWeight: 'bold',
+                borderBottom: '1px solid rgba(var(--accent-rgb), 0.3)',
                 color: 'var(--accent)',
-                letterSpacing: '0.5px',
+                letterSpacing: '1px',
                 textTransform: 'uppercase',
-                marginTop: '8px'
+                marginTop: '12px'
             }} dangerouslySetInnerHTML={{ __html: line.html }} />
         );
     };
@@ -544,21 +546,31 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             }}
             style={{ touchAction: 'pan-y' }}
         >
-            <div className="drawer-header" style={{ display: 'flex', alignItems: 'center', padding: '15px 20px', borderBottom: '1px solid rgba(255,255,255,0.1)', position: 'relative', background: 'rgba(255,255,255,0.03)' }}>
-                <div className="swipe-indicator" style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', width: '40px', height: '4px', background: 'rgba(255,255,255,0.2)', borderRadius: '2px' }} />
-                <span className="drawer-title" style={{ fontWeight: 'bold', fontSize: '1.1rem', letterSpacing: '1px', color: 'var(--accent)' }}>Equipment & Items</span>
-                <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '36px', height: '36px', borderRadius: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem', cursor: 'pointer' }}>✕</button>
+            <div className="drawer-header" style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                padding: '12px 20px', 
+                background: 'rgba(15, 23, 42, 0.7)', 
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '16px',
+                margin: '10px 15px',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                pointerEvents: 'auto'
+            }}>
+                <div className="swipe-indicator" style={{ position: 'absolute', top: '6px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '3px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
+                <span className="drawer-title" style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: 'var(--accent)' }}>Item Manager</span>
+                <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '30px', height: '30px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div className="drawer-content" onScroll={handleSectionScroll}>
                 <div className="drawer-section" data-drawer-section="equipmentlist">
-                    <div className="section-header">Equipment</div>
                     {eqLines.filter(l => isLineVisible(l, eqLines)).map(line => renderLine(line, 'equipmentlist'))}
                     {eqLines.length === 0 && <div className="empty-state">No equipment worn</div>}
                 </div>
 
                 <div className="drawer-section" data-drawer-section="inventorylist">
-                    <div className="section-header">Inventory</div>
                     {inventoryLines.filter(l => isLineVisible(l, inventoryLines)).map(line => renderLine(line, 'inventorylist'))}
                     {inventoryLines.length === 0 && <div className="empty-state">Inventory is empty</div>}
                 </div>
@@ -567,11 +579,16 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             {isMendingMode && (
                 <div className="drawer-footer mending-footer" style={{
                     padding: '12px',
-                    borderTop: '1px solid rgba(255,255,255,0.1)',
+                    margin: '10px 15px 20px',
+                    borderRadius: '16px',
+                    border: '1px solid rgba(255,255,255,0.1)',
                     display: 'flex',
                     gap: '10px',
-                    background: 'rgba(0,0,0,0.3)',
-                    backdropFilter: 'blur(10px)'
+                    background: 'rgba(15, 23, 42, 0.7)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                    pointerEvents: 'auto'
                 }}>
                     <button 
                         className="footer-btn mend-cancel-btn"

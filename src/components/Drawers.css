@@ -177,27 +177,23 @@
     top: 0;
     bottom: 0;
     right: 0;
-    width: 50vw; /* Only cover half screen */
-    max-width: 650px;
-    background: rgba(15, 23, 42, 0.15); /* High transparency */
-    backdrop-filter: blur(4px); /* Low blur so text is readable */
-    -webkit-backdrop-filter: blur(4px);
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    width: 95vw;
+    max-width: 750px;
+    background: transparent; /* Fully transparent container */
     z-index: 3001;
     transform: translateX(101%);
     visibility: hidden;
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
     display: flex;
     flex-direction: column;
-    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5);
-    pointer-events: none;
+    pointer-events: none; /* Allow clicking through to background if not on a section */
     touch-action: pan-y;
 }
 
 @media (min-width: 1024px) {
     .right-drawer {
-        width: 50vw; /* Match mobile */
-        max-width: 50%;
+        width: 45%; 
+        max-width: 700px;
     }
 }
 
@@ -262,6 +258,10 @@
     color: var(--text-primary);
 }
 
+.right-drawer .drawer-content {
+    padding: 10px 20px 30px;
+}
+
 .drawer-content pre {
     margin: 0;
     white-space: pre-wrap;
@@ -281,13 +281,17 @@
 
 .drawer-section {
     margin-bottom: 25px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
+    padding: 18px;
+    background: rgba(15, 23, 42, 0.6); /* Translucent background */
+    backdrop-filter: blur(12px); /* Strong blur for floating effect */
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
     gap: 8px;
+    pointer-events: auto; /* Re-enable events for the actual content */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
 .section-header {

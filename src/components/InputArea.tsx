@@ -79,9 +79,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                 // High sensitivity threshold (35px) for quick flicks
                 if (Math.max(absX, absY) > 35) {
                     if (absY > absX) {
-                        // If map is expanded, don't allow "down" swipe to minimize it via this handler
-                        // as it interferes with map panning.
-                        if (deltaY > 0 && ui.mapExpanded) return;
                         onSwipe?.(deltaY < 0 ? 'up' : 'down');
                     } else {
                         onSwipe?.(deltaX < 0 ? 'left' : 'right');

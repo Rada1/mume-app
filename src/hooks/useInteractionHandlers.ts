@@ -237,16 +237,20 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         triggerHaptic(20);
         if (dir === 'up') setIsMapExpanded(true);
         else if (dir === 'down') {
-            setIsCharacterOpen(true);
+            if (ui.mapExpanded) {
+                setIsMapExpanded(false);
+            } else {
+                setIsCharacterOpen(true);
+            }
         } else if (dir === 'right') {
-            executeCommand('stat', true, true, true, true); 
+            executeCommand('stats', true, true, true, true);
             setIsStatsOpen(true);
         } else if (dir === 'left') {
             executeCommand('inv', true, true, true, true);
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
             setIsItemsDrawerOpen(true);
         }
-    }, [triggerHaptic, setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsItemsDrawerOpen, executeCommand]);
+    }, [triggerHaptic, setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsItemsDrawerOpen, executeCommand, ui]);
 
     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
         let selection = window.getSelection()?.toString().trim();

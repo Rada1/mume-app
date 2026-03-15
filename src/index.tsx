@@ -42,12 +42,10 @@ const MudClient = () => {
         handleLogDoubleClick,
         handleLogPointerDown,
         handleLogPointerUp,
-        heldButton,
-        setHeldButton,
         env
     } = useGame();
 
-    const { rumble, setTarget } = useVitals();
+    const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
     const { setIsSetManagerOpen, popoverState, setUI, ui } = useUI();
     const { messages, addMessage } = useLog();
 
@@ -102,6 +100,13 @@ const MudClient = () => {
             setReturnToManager(false);
         }
     }, [btn.editingButtonId, returnToManager, setIsSetManagerOpen]);
+
+    // Minimize map in portrait when keyboard is open
+    useEffect(() => {
+        if (isKeyboardOpen && !isLandscape && ui.mapExpanded) {
+            setUI(prev => ({ ...prev, mapExpanded: false }));
+        }
+    }, [isKeyboardOpen, isLandscape, ui.mapExpanded, setUI]);
 
     const hasAutoConnected = useRef(false);
     useEffect(() => {

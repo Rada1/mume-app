@@ -34,7 +34,8 @@
     .kb-open .custom-buttons-layer,
     .kb-open .joystick-cluster,
     .kb-open .xbox-cluster,
-    .kb-open .reset-zoom-fab {
+    .kb-open .reset-zoom-fab,
+    .kb-open:not(.is-landscape) .mobile-bottom-gutter {
         display: none !important;
     }
 

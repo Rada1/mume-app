@@ -233,7 +233,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
         if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
             isWaitingForInv.current = true; captureStage.current = 'none'; setInventoryLines([]);
-        } else if (lowerCmd === 'stat' || lowerCmd === 'st') {
+        } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status') {
             isWaitingForStats.current = true; captureStage.current = 'none'; setStatsLines([]);
         } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
             isWaitingForEq.current = true; captureStage.current = 'none'; setEqLines([]);
