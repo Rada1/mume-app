@@ -58,7 +58,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { triggerHaptic, executeCommand, theme, showLegacyButtons, showOrganicTerrain, btn, joystick } = useGame();
+    const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick } = useGame();
     const { target } = useVitals();
     const { addMessage } = useLog();
     const { setUI } = useUI();

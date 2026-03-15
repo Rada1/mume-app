@@ -121,6 +121,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             scrollLockRef.current = false;
 
             // Prevent browser gestures (scrolling, etc) from stealing map input
+            if (e.pointerType === 'mouse' && e.button !== 0) return; // Only allow left-click for drag
             if (e.cancelable) e.preventDefault();
 
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -157,10 +158,28 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         setMarqueeEnd({ x: e.clientX, y: e.clientY });
                     }
                 } else {
-                    // In play mode, single touch/drag defaults to pan
-                    dragTypeRef.current = 'pan';
+                    // In play mode, single touch on mobile is a joystick swipe unless it's on a room?
+                    // Actually, if it's mobile and we want joystick swiping over the map...
+                    // Wait, the user wants single finger to trigger a swipe/direction command,
+                    // and two fingers to pan/zoom.
+                    const isMobileBrowser = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    if (isMobileBrowser) {
+                        dragTypeRef.current = 'joystick';
+                        if (depsRef.current.joystick?.handleJoystickStart) {
+                            depsRef.current.joystick.handleJoystickStart(e, depsRef.current.executeCommand);
+                        }
+                    } else {
+                        // Desktop
+                        dragTypeRef.current = 'pan';
+                    }
                 }
             } else if (activePointersRef.current.size === 2) {
+                // If we were joysticking, cancel it so we can pan
+                if (dragTypeRef.current === 'joystick') {
+                    if (depsRef.current.joystick?.handleJoystickCancel) {
+                        depsRef.current.joystick.handleJoystickCancel(e);
+                    }
+                }
                 dragTypeRef.current = 'pan';
             }
         };
@@ -194,7 +213,24 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 }
 
                 if (hasDraggedRef.current) {
-                    if (dragTypeRef.current === 'pan' || dragTypeRef.current === 'room') {
+                    if (dragTypeRef.current === 'joystick') {
+                        const { joystick, executeCommand, heldButton, setHeldButton, btn, target, triggerHaptic } = depsRef.current;
+                        if (joystick?.handleJoystickMove) {
+                            const dir = joystick.handleJoystickMove(e, executeCommand, !!heldButton);
+                            if (dir && heldButton && !heldButton.didFire && setHeldButton) {
+                                const button = btn?.buttons?.find((b: any) => b.id === heldButton.id);
+                                if (button) {
+                                    // Hacky import bypass by assuming executeCommand handles it or relying on external button logic
+                                    // Actually better to just pass dir and let it fire normally via context
+                                    // (DpadCluster had getButtonCommand, we should probably pull that in or simplify)
+                                    // For now, if holding button and dragging:
+                                    executeCommand(`direction ${dir}`);
+                                    setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                                    triggerHaptic(60);
+                                }
+                            }
+                        }
+                    } else if (dragTypeRef.current === 'pan' || dragTypeRef.current === 'room') {
                         const cam = cameraRef.current;
                         cam.x -= dx / cam.zoom;
                         cam.y -= dy / cam.zoom;
@@ -296,17 +332,35 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             }
         };
 
+        const onCancel = (e: PointerEvent) => {
+            const { setIsDragging, joystick } = depsRef.current;
+            activePointersRef.current.delete(e.pointerId);
+            try { cvs.releasePointerCapture(e.pointerId); } catch(err) {}
+
+            if (dragTypeRef.current === 'joystick' && joystick?.handleJoystickCancel) {
+                joystick.handleJoystickCancel(e);
+            }
+
+            if (activePointersRef.current.size === 0) {
+                isDraggingInternalRef.current = false;
+                dragTypeRef.current = null;
+                setIsDragging(false);
+                setMarqueeStart(null);
+                setMarqueeEnd(null);
+            }
+        };
+
         cvs.addEventListener('pointerdown', onDown, { passive: false });
         window.addEventListener('pointermove', onMove, { passive: false });
         window.addEventListener('pointerup', onUp, { passive: false });
-        window.addEventListener('pointercancel', onUp, { passive: false });
+        window.addEventListener('pointercancel', onCancel, { passive: false });
         cvs.addEventListener('wheel', onWheel, { passive: false });
 
         return () => {
             cvs.removeEventListener('pointerdown', onDown);
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onUp);
-            window.removeEventListener('pointercancel', onUp);
+            window.removeEventListener('pointercancel', onCancel);
             cvs.removeEventListener('wheel', onWheel);
             activePointersRef.current.clear();
             isDraggingInternalRef.current = false;
