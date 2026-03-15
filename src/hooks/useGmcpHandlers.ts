@@ -10,7 +10,8 @@ import {
     MessageType,
     CombatHealthStatus,
     GmcpCharInfo,
-    GroupMember
+    GroupMember,
+    GmcpMumeEdit
 } from '../types';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
@@ -42,6 +43,7 @@ interface GmcpHandlersProps {
     roomNpcs: string[];
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
     setGroupMembers: React.Dispatch<React.SetStateAction<GroupMember[]>>;
+    setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
 }
 
 export const useGmcpHandlers = ({
@@ -70,7 +72,8 @@ export const useGmcpHandlers = ({
     bufferName,
     roomPlayers,
     roomNpcs,
-    setGroupMembers
+    setGroupMembers,
+    setMumeEditState
 }: GmcpHandlersProps) => {
 
     // --- Room Info & Exits ---
@@ -359,6 +362,16 @@ export const useGmcpHandlers = ({
         onGroupAdd,
         onGroupUpdate,
         onGroupRemove,
-        onGroupSet
+        onGroupSet,
+        onMumeEdit: (data: GmcpMumeEdit) => {
+            if (data && data.key) {
+                setMumeEditState({
+                    isOpen: true,
+                    title: data.title || 'Mume Editor',
+                    text: data.text || '',
+                    key: data.key
+                });
+            }
+        }
     };
 };

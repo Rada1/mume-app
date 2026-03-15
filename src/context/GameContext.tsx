@@ -165,7 +165,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         bufferName: v.bufferName,
         roomPlayers: s.roomPlayers,
         roomNpcs: s.roomNpcs,
-        setGroupMembers: s.setGroupMembers
+        setGroupMembers: s.setGroupMembers,
+        setMumeEditState: s.setMumeEditState
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
@@ -284,7 +285,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setCharacterInfo: v.setCharacterInfo,
         characterInfo: v.characterInfo,
         setQuests: s.setQuests,
-        quests: s.quests
+        quests: s.quests,
+        mumeEditState: s.mumeEditState,
+        setMumeEditState: s.setMumeEditState
     });
 
     const { processLine } = parser;
@@ -353,6 +356,24 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = controller;
+
+    const handleSaveMumeEdit = useCallback((text: string) => {
+        if (s.mumeEditState.key === 'text-editor') {
+            const lines = text.split('\n');
+            lines.forEach(line => {
+                executeCommand(line, true, true);
+            });
+            executeCommand('%e', true, true);
+        } else {
+            if (typeof window !== 'undefined' && (window as any).mumeTelnet?.sendGmcp) {
+                (window as any).mumeTelnet.sendGmcp('Mume.Client.Edit', JSON.stringify({
+                    key: s.mumeEditState.key,
+                    text: text
+                }));
+            }
+        }
+        s.setMumeEditState(prev => ({ ...prev, isOpen: false }));
+    }, [s.mumeEditState.key, executeCommand, s.setMumeEditState]);
 
     // Update the ref so the parser components can call it
     useEffect(() => {
@@ -500,6 +521,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
         handleLogPointerDown, handleLogPointerUp,
         handleDragStart, handleDragEnd,
+        quests: s.quests, setQuests: s.setQuests,
+        groupMembers: s.groupMembers, setGroupMembers: s.setGroupMembers,
+        mumeEditState: s.mumeEditState, setMumeEditState: s.setMumeEditState,
+        handleSaveMumeEdit,
         hasSeenOnboarding: s.hasSeenOnboarding, setHasSeenOnboarding: s.setHasSeenOnboarding,
         mapperRef, ...settings, audioCtxRef,
         telnet, parser, practice,
@@ -521,7 +546,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         handleDragStart, handleDragEnd,
         settings, audioCtxRef, telnet, parser, spatButtons, diagnosticLogs, addDiagnosticLog,
         v.isMendingMode, v.setIsMendingMode, v.mendingTarget, v.setMendingTarget,
-        s.showLegacyButtons, v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp
+        s.showLegacyButtons, v.heldButton, v.setHeldButton, handleLogPointerDown, handleLogPointerUp,
+        handleSaveMumeEdit, s.setQuests
     ]);
 
     const logValue = useMemo(() => ({

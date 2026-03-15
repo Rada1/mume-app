@@ -27,6 +27,7 @@ export interface GmcpHandlers {
     onGroupUpdate?: (data: any) => void;
     onGroupRemove?: (data: any) => void;
     onGroupSet?: (data: any) => void;
+    onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
 }
 
 export class GmcpDecoder {
@@ -82,6 +83,8 @@ export class GmcpDecoder {
             this.handleGroup(json);
         } else if (pkgLower === 'comm.channel') {
             this.handleCommChannel(json);
+        } else if (pkgLower === 'mume.client.edit') {
+            this.handleSimpleJson(json, handlers.onMumeEdit);
         }
     }
 

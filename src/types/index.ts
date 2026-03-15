@@ -498,3 +498,9 @@ export interface GroupMember {
     'mana-string'?: string;
     'mp-string'?: string;
 }
+
+export interface GmcpMumeEdit {
+    title: string;
+    text: string;
+    key: string;
+}

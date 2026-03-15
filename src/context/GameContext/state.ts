@@ -203,10 +203,28 @@ export const useGameProviderState = () => {
     });
 
     const [quests, setQuests] = useState<QuestData>({
-        lastUpdated: 0
+        lastUpdated: 0,
+        activeQuests: []
     });
 
     const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
+
+    const [mumeEditState, setMumeEditState] = useState({
+        isOpen: false,
+        title: '',
+        text: '',
+        key: ''
+    });
+
+    const handleSaveMumeEdit = useCallback((text: string) => {
+        if (typeof window !== 'undefined' && (window as any).mumeTelnet?.sendGmcp) {
+            (window as any).mumeTelnet.sendGmcp('Mume.Client.Edit', JSON.stringify({
+                key: mumeEditState.key,
+                text: text
+            }));
+        }
+        setMumeEditState(prev => ({ ...prev, isOpen: false }));
+    }, [mumeEditState.key]);
 
     const vitals = useMemo(() => ({
         stats, setStats,
@@ -288,6 +306,9 @@ export const useGameProviderState = () => {
         quests,
         groupMembers,
         setGroupMembers,
+        mumeEditState,
+        setMumeEditState,
+        handleSaveMumeEdit,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -298,7 +319,7 @@ export const useGameProviderState = () => {
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
         inlineCategories, favorites, activeDragData, heldButton,
         parley, whoList, popoverState, discoveredItems,
-        quests, groupMembers
+        quests, groupMembers, mumeEditState, handleSaveMumeEdit
     ]);
 
     return { vitals, game };

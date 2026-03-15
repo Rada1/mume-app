@@ -35,6 +35,7 @@ export interface TelnetHandlers {
     onGroupUpdate?: (data: any) => void;
     onGroupRemove?: (data: any) => void;
     onGroupSet?: (data: any) => void;
+    onMumeEdit?: (data: import('../types').GmcpMumeEdit) => void;
     flushMessages?: () => void;
 }
 
@@ -95,7 +96,8 @@ export function useTelnet(options: TelnetOptions) {
         onGroupAdd: (val) => handlersRef.current.onGroupAdd?.(val),
         onGroupUpdate: (val) => handlersRef.current.onGroupUpdate?.(val),
         onGroupRemove: (val) => handlersRef.current.onGroupRemove?.(val),
-        onGroupSet: (val) => handlersRef.current.onGroupSet?.(val)
+        onGroupSet: (val) => handlersRef.current.onGroupSet?.(val),
+        onMumeEdit: (val) => handlersRef.current.onMumeEdit?.(val)
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
 

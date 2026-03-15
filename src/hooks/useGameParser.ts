@@ -54,6 +54,8 @@ export interface UseGameParserDeps {
     setDiscoveredItems: React.Dispatch<React.SetStateAction<string[]>>;
     setQuests: (val: QuestData | ((prev: QuestData) => QuestData)) => void;
     quests: QuestData;
+    mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
+    setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
@@ -63,6 +65,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     setCharacterInfo,
     setQuests,
     quests,
+    mumeEditState,
+    setMumeEditState,
 } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -240,6 +244,23 @@ export function useGameParser(deps: UseGameParserDeps) {
             setCharacterInfo(prev => ({ ...prev, description: '' }));
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
+        console.log(`[Parser] Processing: "${textOnly}" | lower: "${lower}"`);
+
+        if (lower.includes('type %e on an empty line to save') || 
+                 lower.includes('type %q to abandon') ||
+                 /^(enter new |editing )\w+/i.test(textOnly)) {
+            // MUME Standard Text Editor or prompt detected!
+            console.log('[Parser] POSSIBLE Editor trigger match:', { textOnly, isOpen: mumeEditState.isOpen });
+            if (!mumeEditState.isOpen) {
+                console.log('[Parser] TRIGGERING MUME Editor:', textOnly);
+                setMumeEditState({
+                    isOpen: true,
+                    title: textOnly.trim(),
+                    text: '', 
+                    key: 'text-editor'
+                });
+            }
+        }
 
         if (textPMatch || captureStage.current === 'none') {
             nounCountsRef.current = {};
@@ -352,8 +373,9 @@ export function useGameParser(deps: UseGameParserDeps) {
                 const pbMatch = content.match(/Pb\s*(?::|is)?\s*(\d+)%/i);
                 const armorMatch = content.match(/(?:Armo?ur|Armor)\s*(?::|is)?\s*(\d+)%/i);
                 const moodMatch = content.match(/your mood is (?:now )?(\w+)/i);
+                const wimpyMatch = content.match(/Wimpy(?:\s*set\s*to|:)?\s*(\d+)/i);
 
-                if (obMatch || dbMatch || pbMatch || armorMatch || moodMatch) {
+                if (obMatch || dbMatch || pbMatch || armorMatch || moodMatch || wimpyMatch) {
                     if (moodMatch) {
                         const newMood = moodMatch[1].toLowerCase();
                         deps.setMood(newMood);
@@ -369,6 +391,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                         ...(dbMatch && { db: parseInt(dbMatch[1]) }),
                         ...(pbMatch && { pb: parseInt(pbMatch[1]) }),
                         ...(armorMatch && { armour: parseInt(armorMatch[1]) }),
+                        ...(wimpyMatch && { wimpy: parseInt(wimpyMatch[1]) }),
                     }));
                 }
             }

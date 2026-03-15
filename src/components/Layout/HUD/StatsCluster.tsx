@@ -15,10 +15,13 @@ interface StatsClusterProps {
 export const StatsCluster: React.FC<StatsClusterProps> = ({
     uiPositions, isEditMode, dragState, handleDragStart, isLandscape, isMobile
 }) => {
-    const { stats } = useVitals();
+    const { stats, setStats } = useVitals();
     const { inCombat, executeCommand, mood } = useGame();
 
-    const handleWimpyChange = (val: number) => executeCommand(`change wimpy ${val}`);
+    const handleWimpyChange = (val: number) => {
+        setStats(prev => ({ ...prev, wimpy: val }));
+        executeCommand(`change wimpy ${val}`);
+    };
 
     const pos = uiPositions.stats || {};
     const isDefault = pos.x === undefined && pos.y === undefined;

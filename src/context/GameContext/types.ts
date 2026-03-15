@@ -145,6 +145,9 @@ export interface GameContextType {
     setBufferName: (val: string | null) => void;
     groupMembers: GroupMember[];
     setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
+    mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
+    setMumeEditState: Dispatch<SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    handleSaveMumeEdit: (text: string) => void;
 
     // Environmental state
     lighting: LightingType;
@@ -216,6 +219,8 @@ export interface GameContextType {
     setOnGroupRemove: (fn: (data: number) => void) => void;
     onGroupSet?: (data: GroupMember[]) => void;
     setOnGroupSet: (fn: (data: GroupMember[]) => void) => void;
+    onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
+    setOnMumeEdit: (fn: (data: import('../../types').GmcpMumeEdit) => void) => void;
 
     // Settings
     bgImage: string;

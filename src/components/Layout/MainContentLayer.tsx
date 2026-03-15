@@ -16,6 +16,8 @@ interface MainContentLayerProps {
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
     heldButton: any;
     setHeldButton: React.Dispatch<React.SetStateAction<any>>;
+    mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
+    setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
 }
 
 export const MainContentLayer: React.FC<MainContentLayerProps> = ({
@@ -27,7 +29,9 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
     commandPreview,
     setCommandPreview,
     heldButton,
-    setHeldButton
+    setHeldButton,
+    mumeEditState,
+    setMumeEditState
 }) => {
     const {
         env,

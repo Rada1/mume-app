@@ -45,7 +45,9 @@ const MudClient = () => {
         handleLogDoubleClick,
         handleLogPointerDown,
         handleLogPointerUp,
-        env
+        env,
+        mumeEditState,
+        setMumeEditState
     } = useGame();
 
     const { rumble, setTarget, heldButton, setHeldButton } = useVitals();
@@ -232,6 +234,8 @@ const MudClient = () => {
                     setCommandPreview={setCommandPreview}
                     heldButton={heldButton}
                     setHeldButton={setHeldButton}
+                    mumeEditState={mumeEditState}
+                    setMumeEditState={setMumeEditState}
                 />
 
                 <HUDClustersLayer
