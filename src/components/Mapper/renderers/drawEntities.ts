@@ -11,11 +11,11 @@ const getTrailGlow = () => {
     canvas.width = size; canvas.height = size;
     const ctx = canvas.getContext('2d')!;
     const center = size / 2;
-    const gradient = ctx.createRadialGradient(center, center, 0, center, center, size / 2);
-    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.8)');
-    gradient.addColorStop(1, 'rgba(239, 68, 68, 0)');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, size, size);
+    // Draw a sharp solid circle instead of a radial gradient blur
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(center, center, size / 3, 0, Math.PI * 2);
+    ctx.fill();
     trailGlowCanvas = canvas;
     return canvas;
 };
@@ -82,16 +82,7 @@ export const drawEntities = (
             }
         }
 
-        // Draw Layered Glowing Orb
-        const grad = ctx.createRadialGradient(px, py, 0, px, py, orbRadius * 2.5);
-        grad.addColorStop(0, '#ef4444'); // Solid red core
-        grad.addColorStop(0.4, 'rgba(239, 68, 68, 0.6)'); // Inner glow
-        grad.addColorStop(1, 'rgba(239, 68, 68, 0)'); // Outer fade
-        
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(px, py, orbRadius * 2.5, 0, Math.PI * 2);
-        ctx.fill();
+        // Removed Glowing Orb Layers - Only keep the solid core
         
         // Solid core for sharp focus
         ctx.fillStyle = '#ef4444';
@@ -125,8 +116,6 @@ export const drawEntities = (
                 ctx.setLineDash([]);
                 ctx.strokeRect(targetX - 2, targetY - 2, GRID_SIZE + 4, GRID_SIZE + 4);
                 
-                ctx.shadowColor = '#ffffff';
-                ctx.shadowBlur = 15;
                 ctx.strokeRect(targetX - 2, targetY - 2, GRID_SIZE + 4, GRID_SIZE + 4);
                 ctx.restore();
 

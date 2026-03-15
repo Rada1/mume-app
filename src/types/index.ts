@@ -310,6 +310,7 @@ export interface SavedSettings {
     isImmersionMode?: boolean;
     isMobileBrevityMode?: boolean;
     showLegacyButtons?: boolean;
+    showOrganicTerrain?: boolean;
     inlineCategories?: InlineCategoryConfig[];
     favorites?: string[];
 }

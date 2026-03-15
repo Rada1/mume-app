@@ -44,7 +44,6 @@ export const MapperToolbar: React.FC<MapperToolbarProps> = ({
                 display: 'flex',
                 gap: '4px',
                 alignItems: 'center',
-                backdropFilter: 'blur(8px)',
                 fontSize: '11px',
                 flexWrap: 'nowrap',
                 boxShadow: '0 4px 12px rgba(0,0,0,0.3)',

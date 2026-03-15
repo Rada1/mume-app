@@ -39,7 +39,7 @@ export const useMapPersistence = ({
         if (savedRooms) try { setRooms(JSON.parse(savedRooms)); } catch (e) { }
         const savedMarkers = localStorage.getItem(markerStorageKey);
         if (savedMarkers) try { setMarkers(JSON.parse(savedMarkers)); } catch (e) { }
-        const savedPos = localStorage.getItem(posStorageKey);
+        const savedPos = localStorage.getItem(posStorageKey) || localStorage.getItem('mume_mapper_last_pos_global');
         if (savedPos) {
             try {
                 const { roomId, camX, camY, zoom } = JSON.parse(savedPos);
@@ -50,6 +50,13 @@ export const useMapPersistence = ({
                     if (zoom !== undefined) cameraRef.current.zoom = zoom;
                 }
             } catch (e) { }
+        } else {
+            // Default to center of world (0,0) if never saved
+            if (cameraRef && cameraRef.current) {
+                cameraRef.current.x = -400; // Offset a bit to show Bree area usually
+                cameraRef.current.y = -400;
+                cameraRef.current.zoom = 1.0;
+            }
         }
     }, [storageKey, markerStorageKey, posStorageKey, setRooms, setMarkers, setCurrentRoomId, currentRoomIdRef, cameraRef]);
 
@@ -65,12 +72,15 @@ export const useMapPersistence = ({
         };
 
         const savePosData = () => {
-            localStorage.setItem(posStorageKey, JSON.stringify({
+            const posData = JSON.stringify({
                 roomId: currentRoomId,
                 camX: cameraRef?.current?.x,
                 camY: cameraRef?.current?.y,
                 zoom: cameraRef?.current?.zoom
-            }));
+            });
+            localStorage.setItem(posStorageKey, posData);
+            // Save to a global key for auto-loading before character login
+            localStorage.setItem('mume_mapper_last_pos_global', posData);
         };
 
         // Debounce full data save (2s) - this is the expensive one

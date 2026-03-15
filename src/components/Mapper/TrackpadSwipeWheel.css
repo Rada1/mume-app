@@ -44,15 +44,14 @@
 .direction-icon {
     position: absolute;
     color: var(--accent, #4a90e2);
-    /* Filter for glow instead of background slice */
-    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.8));
+    /* Filter for glow removed for sharper look */
     transition: all 0.2s ease;
 }
 
 .wheel-slice.selected .direction-icon {
     scale: 1.2;
     color: #fff;
-    filter: drop-shadow(0 0 12px var(--accent, #4a90e2));
+    filter: none;
 }
 
 /* 
@@ -90,7 +89,7 @@
     align-items: center;
     justify-content: center;
     color: var(--accent, #4a90e2);
-    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.8));
+    filter: none;
 }
 
 .wheel-center-dot {

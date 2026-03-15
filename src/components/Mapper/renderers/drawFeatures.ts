@@ -1,4 +1,4 @@
-import { RenderContext, drawLine } from './rendererUtils';
+import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
 import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR } from '../mapperUtils';
 
 // Pre-render common indicators for performance
@@ -135,9 +135,7 @@ export const drawFeatures = (
                         if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
 
                         if (!hasExit) {
-                            ctx.beginPath(); ctx.strokeStyle = WALL_COLOR;
-                            ctx.lineWidth = 2.5;
-                            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+                            drawInkyLine(ctx, x1, y1, x2, y2, WALL_COLOR, 3.0, dpr, invZoom);
                         } else if (hasDoor) {
                             const ddx = x2 - x1, ddy = y2 - y1;
                             ctx.strokeStyle = isDarkMode ? "#fab387" : "#e67e22";
@@ -198,13 +196,12 @@ export const drawFeatures = (
                         if (!exits || !exits[d]) {
                             let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                             if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
-                            ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+                            drawInkyLine(ctx, x1, y1, x2, y2, WALL_COLOR, 3.0, dpr, invZoom);
                         }
                     }
                 }
             }
         }
-        ctx.stroke();
     }
 };
 
@@ -279,9 +276,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
                 if (d === 'n') { x2 += s; } else if (d === 's') { y1 += s; x2 += s; y2 += s; } else if (d === 'e') { x1 += s; x2 += s; y2 += s; } else { y2 += s; }
                 if (!hasExit) {
-                    ctx.beginPath(); ctx.strokeStyle = WALL_COLOR;
-                    ctx.lineWidth = 2.5;
-                    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+                    drawInkyLine(ctx, x1, y1, x2, y2, WALL_COLOR, 3.0, dpr, invZoom);
                 } else if (hasDoor && camera.zoom >= 0.1) {
                     const ddx = x2 - x1, ddy = y2 - y1; ctx.strokeStyle = isDarkMode ? "#fab387" : "#e67e22"; ctx.lineWidth = 3.5;
                     ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x1 + ddx * 0.25, y1 + ddy * 0.25); ctx.stroke();

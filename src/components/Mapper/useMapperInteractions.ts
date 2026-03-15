@@ -147,6 +147,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         dragTypeRef.current = 'marker';
                         startMarkerPosRef.current = { x: roomsRef.current[markerId]?.x || 0, y: roomsRef.current[markerId]?.y || 0 };
                     } else if (roomId) {
+                        dragTypeRef.current = 'room'; // Specifically room dragging in edit mode
                         if (!selectedRoomIdsRef.current.has(roomId)) {
                             setSelectedRoomIds(new Set([roomId]));
                         }
@@ -155,6 +156,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         setMarqueeStart({ x: e.clientX, y: e.clientY });
                         setMarqueeEnd({ x: e.clientX, y: e.clientY });
                     }
+                } else {
+                    // In play mode, single touch/drag defaults to pan
+                    dragTypeRef.current = 'pan';
                 }
             } else if (activePointersRef.current.size === 2) {
                 dragTypeRef.current = 'pan';
@@ -195,10 +199,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         cam.x -= dx / cam.zoom;
                         cam.y -= dy / cam.zoom;
                         setAutoCenter(false);
-                        triggerRender();
+                        // triggerRender removed - useMapAnimation loop handles this via isDragging
                     } else if (dragTypeRef.current === 'marquee') {
                         setMarqueeEnd({ x: p.x, y: p.y });
-                        triggerRender();
+                        triggerRender(); // Still needed for marquee as it's not a camera change
                     }
                 }
                 lastMouseRef.current = { x: p.x, y: p.y };
@@ -236,7 +240,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     cam.y -= dy / cam.zoom;
 
                     setAutoCenter(false);
-                    triggerRender();
+                    // triggerRender removed - useMapAnimation handles this
                 }
             }
             lastPointersRef.current = pointers;

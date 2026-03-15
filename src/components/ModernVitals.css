@@ -42,7 +42,7 @@
     height: 32px;
     width: 240px;
     background: #000;
-    border-radius: 2px;
+    border-radius: 6px;
     transform: skewX(-15deg);
     margin-left: 8px;
     box-sizing: border-box;
@@ -64,6 +64,7 @@
     box-sizing: border-box;
     overflow: hidden;
     background: #000; /* Missing area is black */
+    border-radius: 4px; /* Soften internal segment corners */
 }
 
 /* 10-HP Blocks */
@@ -93,23 +94,32 @@
 }
 
 /* Specific Segment Colors when blocks are FILLED */
-.modern-vitals-row.hp .chunk-awful .vitals-block.filled { background: #110000; }
-.modern-vitals-row.hp .chunk-bad .vitals-block.filled { background: #440000; }
-.modern-vitals-row.hp .chunk-wounded .vitals-block.filled { background: #770000; }
-.modern-vitals-row.hp .chunk-hurt .vitals-block.filled { background: #aa0000; }
-.modern-vitals-row.hp .chunk-fine .vitals-block.filled { background: #ee2222; }
+/* Unified colors for all segments (HP) */
+.modern-vitals-row.hp .chunk-awful .vitals-block.filled,
+.modern-vitals-row.hp .chunk-bad .vitals-block.filled,
+.modern-vitals-row.hp .chunk-wounded .vitals-block.filled,
+.modern-vitals-row.hp .chunk-hurt .vitals-block.filled,
+.modern-vitals-row.hp .chunk-fine .vitals-block.filled { 
+    background: #ee2222; 
+}
 
-.modern-vitals-row.mana .chunk-awful .vitals-block.filled { background: #1a0033; }
-.modern-vitals-row.mana .chunk-bad .vitals-block.filled { background: #2d0055; }
-.modern-vitals-row.mana .chunk-wounded .vitals-block.filled { background: #3f0077; }
-.modern-vitals-row.mana .chunk-hurt .vitals-block.filled { background: #6600cc; }
-.modern-vitals-row.mana .chunk-fine .vitals-block.filled { background: #9933ff; }
+/* Unified colors for all segments (Mana) */
+.modern-vitals-row.mana .chunk-awful .vitals-block.filled,
+.modern-vitals-row.mana .chunk-bad .vitals-block.filled,
+.modern-vitals-row.mana .chunk-wounded .vitals-block.filled,
+.modern-vitals-row.mana .chunk-hurt .vitals-block.filled,
+.modern-vitals-row.mana .chunk-fine .vitals-block.filled { 
+    background: #9933ff; 
+}
 
-.modern-vitals-row.move .chunk-awful .vitals-block.filled { background: #010; }
-.modern-vitals-row.move .chunk-bad .vitals-block.filled { background: #030; }
-.modern-vitals-row.move .chunk-wounded .vitals-block.filled { background: #050; }
-.modern-vitals-row.move .chunk-hurt .vitals-block.filled { background: #0a0; }
-.modern-vitals-row.move .chunk-fine .vitals-block.filled { background: #22ff55; }
+/* Unified colors for all segments (Move/Stamina) */
+.modern-vitals-row.move .chunk-awful .vitals-block.filled,
+.modern-vitals-row.move .chunk-bad .vitals-block.filled,
+.modern-vitals-row.move .chunk-wounded .vitals-block.filled,
+.modern-vitals-row.move .chunk-hurt .vitals-block.filled,
+.modern-vitals-row.move .chunk-fine .vitals-block.filled { 
+    background: #22ff55; 
+}
 
 /* Landscape adjustments */
 .landscape .modern-vitals-track {

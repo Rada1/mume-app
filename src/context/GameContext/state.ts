@@ -25,6 +25,7 @@ export const useGameProviderState = () => {
     const [isImmersionMode, setIsImmersionMode] = usePersistentState('mud-immersion-mode', (MASTER_SETTINGS as any).isImmersionMode ?? true);
     const [isMobileBrevityMode, setIsMobileBrevityMode] = usePersistentState('mud-mobile-brevity', false);
     const [showLegacyButtons, setShowLegacyButtons] = usePersistentState('mud-show-legacy-buttons', false);
+    const [showOrganicTerrain, setShowOrganicTerrain] = usePersistentState('mud-show-organic-terrain', true);
     const [inlineCategories, setInlineCategories] = usePersistentState<import('../../types').InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
 
@@ -265,6 +266,7 @@ export const useGameProviderState = () => {
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
         showLegacyButtons, setShowLegacyButtons,
+        showOrganicTerrain, setShowOrganicTerrain,
         parley, setParley,
         whoList, setWhoList,
         roomName, setRoomName, roomNameRef,

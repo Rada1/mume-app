@@ -2,6 +2,7 @@ import { useCallback, useRef, MutableRefObject } from 'react';
 import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
+import { drawOrganicTerrains } from './renderers/drawOrganicTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
 import { drawGrid, drawEntities, drawMarkers, drawMarquee } from './renderers/drawEntities';
 
@@ -31,6 +32,7 @@ interface RendererProps {
     spatialIndexRef: MutableRefObject<Record<number, Record<string, string[]>>>;
     walkTargetId?: string | null;
     walkPath?: string[];
+    showOrganicTerrain?: boolean;
 }
 
 export const useMapperRenderer = ({
@@ -38,7 +40,8 @@ export const useMapperRenderer = ({
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
     preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
-    unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath
+    unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
+    showOrganicTerrain = true
 }: RendererProps) => {
 
     const offscreenCacheRef = useRef<{ canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, lastParams: string } | null>(null);
@@ -125,7 +128,7 @@ export const useMapperRenderer = ({
         // Cache rebuild threshold should scale with zoom.
         // At high zoom, we want tight bounds (GRID_SIZE * 5).
         // At low zoom, we can tolerate much more movement before rebuilding the expensive background.
-        const movementThreshold = Math.max(GRID_SIZE * 5, (GRID_SIZE * 20) / Math.max(0.1, camera.zoom));
+        const movementThreshold = Math.max(GRID_SIZE * 15, (GRID_SIZE * 30) / Math.max(0.1, camera.zoom));
         const lastCamX = (cache as any).lastCamX ?? 0;
         const lastCamY = (cache as any).lastCamY ?? 0;
         const cameraDist = Math.hypot(camera.x - lastCamX, camera.y - lastCamY);
@@ -206,39 +209,20 @@ export const useMapperRenderer = ({
 
             drawGrid(rCtx, gX1, gY1, gX2, gY2);
 
-            // 1. Draw Terrains with Soft Edges
+            // 1. Draw Terrains
             offCtx.save();
-            offCtx.filter = 'blur(4px)';
+            if (showOrganicTerrain && floorIndex) {
+                drawOrganicTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+            }
+            
+            // Draw regular terrains (always as base or fallback)
             if (floorIndex) {
                 drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
             }
             drawLocalTerrains(rCtx, vCache.localRooms);
             offCtx.restore();
 
-            // 2. Overlay Noise Texture
-            if (!imagesRef.current['parchment']) {
-                const img = new Image();
-                img.src = '/assets/parchment.png';
-                img.onload = () => {
-                    imagesRef.current['parchment'] = img;
-                };
-            }
-            const parchmentImg = imagesRef.current['parchment'];
-            if (parchmentImg && parchmentImg.complete) {
-                offCtx.save();
-                offCtx.globalAlpha = 0.25;
-                offCtx.globalCompositeOperation = 'overlay';
-                const pattern = offCtx.createPattern(parchmentImg, 'repeat');
-                if (pattern) {
-                    offCtx.fillStyle = pattern;
-                    const fillX = bX1 * 5 * GRID_SIZE;
-                    const fillY = bY1 * 5 * GRID_SIZE;
-                    const fillW = (bX2 - bX1 + 1) * 5 * GRID_SIZE;
-                    const fillH = (bY2 - bY1 + 1) * 5 * GRID_SIZE;
-                    offCtx.fillRect(fillX, fillY, fillW, fillH);
-                }
-                offCtx.restore();
-            }
+            // 2. Overlay Noise Texture (Removed for sharper look)
 
             // 3. Draw Crisp Features on Top
             if (camera.zoom > 0.05) {
@@ -257,13 +241,13 @@ export const useMapperRenderer = ({
         // 4. Main Rendering Pass
         // Wipe main canvas before drawing
         ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.imageSmoothingEnabled = false; // Disable smoothing for maximum sharpness
         ctx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
         // Draw the static cache with offset correction
-        // Use Math.round for pixel-perfect stability
-        const offsetX = Math.round(((cache as any).lastCamX - camera.x) * camera.zoom * dpr);
-        const offsetY = Math.round(((cache as any).lastCamY - camera.y) * camera.zoom * dpr);
+        const offsetX = ((cache as any).lastCamX - camera.x) * camera.zoom * dpr;
+        const offsetY = ((cache as any).lastCamY - camera.y) * camera.zoom * dpr;
         ctx.drawImage(cache.canvas, offsetX, offsetY);
 
         // Overlay Dynamic Entities (Player, Trails, Markers)

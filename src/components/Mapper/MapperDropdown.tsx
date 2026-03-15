@@ -36,8 +36,6 @@ export const MapperDropdown: React.FC<MapperDropdownProps> = ({
                     right: 0,
                     marginTop: '10px',
                     backgroundColor: isDarkMode ? 'rgba(30, 30, 46, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
                     border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.12)',
                     borderRadius: '12px',
                     padding: '12px',

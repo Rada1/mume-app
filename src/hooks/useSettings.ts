@@ -40,6 +40,8 @@ interface UseSettingsDeps {
     setIsMobileBrevityMode: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
+    showOrganicTerrain: boolean;
+    setShowOrganicTerrain: (val: boolean) => void;
     inlineCategories: import('../types').InlineCategoryConfig[];
     setInlineCategories: (val: import('../types').InlineCategoryConfig[]) => void;
 }

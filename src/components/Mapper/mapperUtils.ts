@@ -145,3 +145,67 @@ export const getGateState = (rA: any, wE: any, d: string, allRooms: Record<strin
 
     return { hasExit: true, hasDoor: hasD, isClosed: isC };
 };
+
+// --- Organic Map Utilities ---
+
+/**
+ * Generates seeded random values for a room based on its VNUM.
+ * Ensures the map looks "hand-drawn" but stays consistent on every render.
+ */
+export const getRoomDNA = (vnum: string | number) => {
+    const seed = typeof vnum === 'string' ? parseInt(vnum.replace(/\D/g, '')) || 0 : vnum;
+    
+    // Simple LCG-like seeded randoms
+    const rng = (s: number) => {
+        const x = Math.sin(s) * 10000;
+        return x - Math.floor(x);
+    };
+
+    return {
+        offsetX: (rng(seed * 1.1) - 0.5) * 12, // ±6px jitter
+        offsetY: (rng(seed * 2.2) - 0.5) * 12,
+        scale: 0.85 + rng(seed * 3.3) * 0.3,   // 0.85x to 1.15x
+        rotation: (rng(seed * 4.4) - 0.5) * 0.1, // ±0.05rad tilt
+        mutation: rng(seed * 5.5),             // 0.0 to 1.0 for "Lonely Peak" chance
+        flip: rng(seed * 6.6) > 0.5            // Mirroring
+    };
+};
+
+/**
+ * Calculates the "Clump Depth" of a room within its own terrain type.
+ * Used to make central mountains taller than outskirts.
+ */
+export const getTerrainDepth = (vnum: string, allRooms: Record<string, any>, preloaded: Record<string, any>) => {
+    const room = allRooms[vnum] || allRooms[`m_${vnum}`];
+    const rData = preloaded[vnum.startsWith('m_') ? vnum.substring(2) : vnum];
+    if (!rData) return 1;
+
+    const terrain = normalizeTerrain(room?.terrain || rData[3]);
+    const exits = room?.exits || rData[4] || {};
+    
+    let neighborCount = 0;
+    const dirs = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
+
+    for (const d of dirs) {
+        const ex = exits[d];
+        if (ex) {
+            const targetVnum = String(typeof ex === 'object' ? ex.target : ex);
+            const targetData = preloaded[targetVnum] || allRooms[targetVnum] || allRooms[`m_${targetVnum}`];
+            if (targetData) {
+                const targetTerrain = normalizeTerrain(targetData.terrain || (Array.isArray(targetData) ? targetData[3] : ''));
+                if (targetTerrain === terrain) {
+                    neighborCount++;
+                }
+            }
+        }
+    }
+
+    // Depth logic:
+    // 0-2 neighbors: Foothills (Depth 1)
+    // 3-5 neighbors: Range (Depth 2)
+    // 6-8 neighbors: High Peaks (Depth 3)
+    if (neighborCount <= 2) return 1;
+    if (neighborCount <= 5) return 2;
+    return 3;
+};
+

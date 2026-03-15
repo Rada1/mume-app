@@ -15,7 +15,6 @@
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
     pointer-events: auto !important;
 }
 
@@ -39,9 +38,9 @@
 .vignette-container::after {
     content: '' !important;
     position: absolute !important;
-    inset: -10% !important; /* Larger to ensure no sharp edges on scale */
-    background: radial-gradient(circle at center, transparent 35%, rgba(0, 0, 0, 0.5) 75%, rgba(0, 0, 0, 0.85) 100%) !important;
-    box-shadow: inset 0 0 180px 40px rgba(0, 0, 0, 0.8) !important;
+    inset: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     pointer-events: none !important;
     display: block !important;
 }
@@ -79,7 +78,6 @@ canvas.map-canvas {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    backdrop-filter: blur(2px);
     z-index: 20;
 }
 
@@ -91,7 +89,7 @@ canvas.map-canvas {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at center, transparent 20%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0.8) 100%);
+    background: transparent;
     pointer-events: none;
     transition: opacity 0.4s ease;
 }
@@ -110,7 +108,7 @@ canvas.map-canvas {
 }
 
 .is-landscape .mobile-mini-map::after {
-    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%) !important;
+    background: transparent !important;
     opacity: 1 !important;
 }
 
