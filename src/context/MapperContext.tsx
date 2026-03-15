@@ -128,8 +128,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             spatialIndexRef.current = index; nameIndexRef.current = nIndex; serverIdIndexRef.current = sIndex;
             if (showDebugEchoes) addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
             hasLoadedRef.current = true;
+            triggerRender();
         } catch (err) { console.warn("[Mapper] Could not load master map data:", err); }
-    }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
+    }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, triggerRender]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 

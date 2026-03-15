@@ -51,7 +51,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const [isMobile] = useState(() => isMobileProp ?? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const cameraRef = useRef({ x: 0, y: 0, zoom: 1 });
+    const cameraRef = useRef({ x: 300 * 50, y: 120 * 50, zoom: 0.2 });
     const cardRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<Record<string, HTMLImageElement>>({});
     const playerPosRef = useRef<{ x: number, y: number, z: number } | null>(null);
