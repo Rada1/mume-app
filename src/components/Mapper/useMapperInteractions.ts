@@ -27,6 +27,10 @@ export interface InteractionDeps {
     setSelectedMarkerId: (id: string | null) => void;
     triggerHaptic: (ms: number) => void;
     joystick: any;
+    btn?: any;
+    heldButton?: any;
+    setHeldButton?: (val: any) => void;
+    target?: string;
     executeCommand: (cmd: string) => void;
     startWalking: (targetId: string) => void;
     stopWalking: () => void;
@@ -35,6 +39,7 @@ export interface InteractionDeps {
     viewZ: number | null;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
+    cardRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
