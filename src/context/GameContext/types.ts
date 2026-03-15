@@ -120,6 +120,8 @@ export interface GameContextType {
     setIsMobileBrevityMode: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
+    showOrganicTerrain: boolean;
+    setShowOrganicTerrain: (val: boolean) => void;
     inlineCategories: import('../../types').InlineCategoryConfig[];
     setInlineCategories: Dispatch<SetStateAction<import('../../types').InlineCategoryConfig[]>>;
     favorites: string[];
