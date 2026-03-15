@@ -31,6 +31,10 @@ export interface TelnetHandlers {
     onCharInfo?: (data: import('../types').GmcpCharInfo) => void;
     onPositionChange?: (position: string) => void;
     onComm?: (sender: string, chan: string, msg: string) => void;
+    onGroupAdd?: (data: any) => void;
+    onGroupUpdate?: (data: any) => void;
+    onGroupRemove?: (data: any) => void;
+    onGroupSet?: (data: any) => void;
     flushMessages?: () => void;
 }
 
@@ -87,7 +91,11 @@ export function useTelnet(options: TelnetOptions) {
         onCharNameChange: (val) => handlersRef.current.onCharNameChange?.(val),
         onCharInfo: (val) => handlersRef.current.onCharInfo?.(val),
         onPositionChange: (val) => handlersRef.current.onPositionChange?.(val),
-        onComm: (sender, chan, msg) => handlersRef.current.onComm?.(sender, chan, msg)
+        onComm: (sender, chan, msg) => handlersRef.current.onComm?.(sender, chan, msg),
+        onGroupAdd: (val) => handlersRef.current.onGroupAdd?.(val),
+        onGroupUpdate: (val) => handlersRef.current.onGroupUpdate?.(val),
+        onGroupRemove: (val) => handlersRef.current.onGroupRemove?.(val),
+        onGroupSet: (val) => handlersRef.current.onGroupSet?.(val)
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
 

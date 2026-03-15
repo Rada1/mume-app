@@ -12,6 +12,7 @@ import { XboxCluster } from './HUD/XboxCluster';
 import { LineCluster } from './HUD/LineCluster';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
+import { GroupDrawer } from './HUD/GroupDrawer';
 
 interface HUDClustersLayerProps {
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
@@ -78,6 +79,13 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     handleDragStart={handleDragStart}
                     isLandscape={isLandscape}
                     isMobile={isMobile}
+                />
+
+                <GroupDrawer
+                    uiPositions={btn.uiPositions}
+                    isEditMode={btn.isEditMode}
+                    dragState={btn.dragState}
+                    handleDragStart={handleDragStart}
                 />
 
                 {(effectiveShowControls || btn.isEditMode) && (

@@ -23,6 +23,10 @@ export interface GmcpHandlers {
     onCharInfo?: (data: GmcpCharInfo) => void;
     onPositionChange?: (position: string) => void;
     onComm?: (sender: string, chan: string, msg: string) => void;
+    onGroupAdd?: (data: any) => void;
+    onGroupUpdate?: (data: any) => void;
+    onGroupRemove?: (data: any) => void;
+    onGroupSet?: (data: any) => void;
 }
 
 export class GmcpDecoder {
@@ -63,7 +67,18 @@ export class GmcpDecoder {
         } else if (pkgLower === 'char.status' || pkgLower === 'char.info' || pkgLower === 'char.statusvars') {
             this.handleCharStatus(json);
             if (pkgLower === 'char.info' || pkgLower === 'char.statusvars') this.handleCharInfo(json);
-        } else if (pkgLower === 'group' || pkgLower.startsWith('group.')) {
+        } else if (pkgLower === 'group' || pkgLower === 'group.add') {
+            this.handleSimpleJson(json, handlers.onGroupAdd);
+            this.handleGroup(json);
+        } else if (pkgLower === 'group.update') {
+            this.handleSimpleJson(json, handlers.onGroupUpdate);
+            this.handleGroup(json);
+        } else if (pkgLower === 'group.remove') {
+            this.handleSimpleJson(json, handlers.onGroupRemove);
+        } else if (pkgLower === 'group.set') {
+            this.handleSimpleJson(json, handlers.onGroupSet);
+            this.handleGroup(json);
+        } else if (pkgLower.startsWith('group.')) {
             this.handleGroup(json);
         } else if (pkgLower === 'comm.channel') {
             this.handleCommChannel(json);

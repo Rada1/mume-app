@@ -9,7 +9,8 @@ import {
     GmcpRoomItems,
     MessageType,
     CombatHealthStatus,
-    GmcpCharInfo
+    GmcpCharInfo,
+    GroupMember
 } from '../types';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 
@@ -40,6 +41,7 @@ interface GmcpHandlersProps {
     roomPlayers: string[];
     roomNpcs: string[];
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
+    setGroupMembers: React.Dispatch<React.SetStateAction<GroupMember[]>>;
 }
 
 export const useGmcpHandlers = ({
@@ -67,7 +69,8 @@ export const useGmcpHandlers = ({
     opponentName,
     bufferName,
     roomPlayers,
-    roomNpcs
+    roomNpcs,
+    setGroupMembers
 }: GmcpHandlersProps) => {
 
     // --- Room Info & Exits ---
@@ -314,6 +317,27 @@ export const useGmcpHandlers = ({
         // Tag the message with sender and channel so the UI can show a reply button
         addMessage('game', msg, false, undefined, false, undefined, undefined, undefined, undefined, true, sender, chan);
     }, [addMessage]);
+    
+    // --- Group Handlers ---
+
+    const onGroupAdd = useCallback((data: GroupMember) => {
+        setGroupMembers(prev => {
+            if (prev.find(m => m.id === data.id)) return prev;
+            return [...prev, data];
+        });
+    }, [setGroupMembers]);
+
+    const onGroupUpdate = useCallback((data: GroupMember) => {
+        setGroupMembers(prev => prev.map(m => m.id === data.id ? { ...m, ...data } : m));
+    }, [setGroupMembers]);
+
+    const onGroupRemove = useCallback((id: number) => {
+        setGroupMembers(prev => prev.filter(m => m.id !== id));
+    }, [setGroupMembers]);
+
+    const onGroupSet = useCallback((data: GroupMember[]) => {
+        setGroupMembers(data);
+    }, [setGroupMembers]);
 
     return {
         onRoomInfo,
@@ -331,6 +355,10 @@ export const useGmcpHandlers = ({
         onCharVitals,
         onComm,
         onRoomCharsCombat,
-        onPositionChange: (pos: string) => setPlayerPosition(pos)
+        onPositionChange: (pos: string) => setPlayerPosition(pos),
+        onGroupAdd,
+        onGroupUpdate,
+        onGroupRemove,
+        onGroupSet
     };
 };

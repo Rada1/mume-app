@@ -2,7 +2,7 @@ import { ReactNode, SetStateAction, Dispatch, RefObject, MutableRefObject, Chang
 import {
     GameStats, PopoverState, Message, MessageType, WeatherType,
     LightingType, SoundTrigger, TeleportTarget, CustomButton,
-    DrawerLine, DeathStage, GameAction, SpatButton, CombatHealthStatus
+    DrawerLine, DeathStage, GameAction, SpatButton, CombatHealthStatus, GroupMember
 } from '../../types';
 import { useButtons } from '../../hooks/useButtons';
 import { useJoystick } from '../../hooks/useJoystick';
@@ -143,6 +143,8 @@ export interface GameContextType {
     setBufferHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
     setBufferName: (val: string | null) => void;
+    groupMembers: GroupMember[];
+    setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
 
     // Environmental state
     lighting: LightingType;
@@ -206,6 +208,14 @@ export interface GameContextType {
     setOnRemoveNpc: (fn: (data: any) => void) => void;
     onOpponentChange?: (name: string | null) => void;
     setOnOpponentChange: (fn: (name: string | null) => void) => void;
+    onGroupAdd?: (data: GroupMember) => void;
+    setOnGroupAdd: (fn: (data: GroupMember) => void) => void;
+    onGroupUpdate?: (data: GroupMember) => void;
+    setOnGroupUpdate: (fn: (data: GroupMember) => void) => void;
+    onGroupRemove?: (data: number) => void;
+    setOnGroupRemove: (fn: (data: number) => void) => void;
+    onGroupSet?: (data: GroupMember[]) => void;
+    setOnGroupSet: (fn: (data: GroupMember[]) => void) => void;
 
     // Settings
     bgImage: string;

@@ -159,7 +159,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'practice';
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
-        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest:') || quests.activeQuests.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
+        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest:') || quests.activeQuests?.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: quest'); addDiagnosticLog?.('Entering Stage: quest');

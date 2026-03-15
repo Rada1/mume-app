@@ -106,6 +106,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [removeNpcFn, setRemoveNpcFn] = useState<(data: any) => void>();
     const [opponentChangeFn, setOpponentChangeFn] = useState<(name: string | null) => void>();
     const [commFn, setCommFn] = useState<(sender: string, chan: string, msg: string) => void>();
+    const [groupAddFn, setGroupAddFn] = useState<(data: any) => void>();
+    const [groupUpdateFn, setGroupUpdateFn] = useState<(data: any) => void>();
+    const [groupRemoveFn, setGroupRemoveFn] = useState<(id: number) => void>();
+    const [groupSetFn, setGroupSetFn] = useState<(data: any[]) => void>();
 
     const inCombatHookRef = useRef(false);
     useEffect(() => { inCombatHookRef.current = inCombat; }, [inCombat]);
@@ -160,7 +164,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         opponentName: v.opponentName,
         bufferName: v.bufferName,
         roomPlayers: s.roomPlayers,
-        roomNpcs: s.roomNpcs
+        roomNpcs: s.roomNpcs,
+        setGroupMembers: s.setGroupMembers
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
@@ -308,8 +313,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onCharNameChange: gmcpHandlers.onCharNameChange,
             onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
-            onOpponentChange: (name) => { opponentChangeFn?.(name); },
-            onComm: (sender, chan, msg) => { gmcpHandlers.onComm(sender, chan, msg); commFn?.(sender, chan, msg); }
+            onOpponentChange: (name) => { opponentChangeFn?.(name); v.setOpponentName(name); },
+            onComm: (sender, chan, msg) => { gmcpHandlers.onComm(sender, chan, msg); commFn?.(sender, chan, msg); },
+            onGroupAdd: (data) => { gmcpHandlers.onGroupAdd(data); groupAddFn?.(data); },
+            onGroupUpdate: (data) => { gmcpHandlers.onGroupUpdate(data); groupUpdateFn?.(data); },
+            onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },
+            onGroupSet: (data) => { gmcpHandlers.onGroupSet(data); groupSetFn?.(data); }
         }
     });
 
@@ -480,6 +489,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         onRemovePlayer: removePlayerFn, setOnRemovePlayer: setRemovePlayerFn,
         onRemoveNpc: removeNpcFn, setOnRemoveNpc: setRemoveNpcFn,
         onOpponentChange: opponentChangeFn, setOnOpponentChange: setOpponentChangeFn,
+        onGroupAdd: groupAddFn, setOnGroupAdd: setGroupAddFn,
+        onGroupUpdate: groupUpdateFn, setOnGroupUpdate: setGroupUpdateFn,
+        onGroupRemove: groupRemoveFn, setOnGroupRemove: setGroupRemoveFn,
+        onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
         playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
         btn, joystick, editor, containerRef, viewport, env,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,

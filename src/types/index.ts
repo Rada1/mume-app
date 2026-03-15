@@ -468,3 +468,33 @@ export interface CharacterInfo {
     };
     spells?: string[];
 }
+
+export interface GroupMember {
+    id: number;
+    name?: string;
+    label?: string;
+    type?: 'you' | 'npc' | 'ally' | 'enemy' | 'neutral';
+    position?: string;
+    room?: string;
+    mapid?: number;
+    ride?: boolean;
+    blind?: boolean;
+    bashed?: boolean;
+    waiting?: boolean;
+    poison?: boolean;
+    slept?: boolean;
+    wound?: boolean;
+    snared?: boolean;
+    hungry?: boolean;
+    thirsty?: boolean;
+    sanctuary?: boolean;
+    hp?: number;
+    maxhp?: number;
+    mana?: number;
+    maxmana?: number;
+    mp?: number;
+    maxmp?: number;
+    'hp-string'?: string;
+    'mana-string'?: string;
+    'mp-string'?: string;
+}

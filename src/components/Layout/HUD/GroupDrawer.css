@@ -1,0 +1,102 @@
+.group-drawer-cluster {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent);
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.group-members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.group-member-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.member-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.member-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.member-room {
+    font-size: 0.65rem;
+    opacity: 0.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-vitals {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.vitals-bar {
+    height: 3px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.vitals-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.member-conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 2px;
+}
+
+.cond-tag {
+    font-size: 0.55rem;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+.cond-tag.bad { background: #661111; color: #ffcccc; }
+.cond-tag.neut { background: #444444; color: #cccccc; }
+
+.edit-placeholder {
+    font-size: 0.8rem;
+    opacity: 0.3;
+    text-align: center;
+    padding: 20px 0;
+}

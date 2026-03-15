@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData } from '../../types';
+import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData, GroupMember } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
@@ -203,9 +203,10 @@ export const useGameProviderState = () => {
     });
 
     const [quests, setQuests] = useState<QuestData>({
-        activeQuests: [],
         lastUpdated: 0
     });
+
+    const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
 
     const vitals = useMemo(() => ({
         stats, setStats,
@@ -222,9 +223,10 @@ export const useGameProviderState = () => {
         opponentName, setOpponentName,
         bufferHealthStatus, setBufferHealthStatus,
         bufferName, setBufferName,
-        characterInfo, setCharacterInfo
+        characterInfo, setCharacterInfo,
+        groupMembers, setGroupMembers
     }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton, isMendingMode, mendingTarget,
-        playerHealthStatus, opponentHealthStatus, opponentName, bufferHealthStatus, bufferName, characterInfo]);
+        playerHealthStatus, opponentHealthStatus, opponentName, bufferHealthStatus, bufferName, characterInfo, groupMembers]);
 
     const game = useMemo(() => ({
         inCombat, setInCombat,
@@ -284,6 +286,8 @@ export const useGameProviderState = () => {
         setBufferName: vitals.setBufferName,
         setQuests,
         quests,
+        groupMembers,
+        setGroupMembers,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -294,7 +298,7 @@ export const useGameProviderState = () => {
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
         inlineCategories, favorites, activeDragData, heldButton,
         parley, whoList, popoverState, discoveredItems,
-        quests
+        quests, groupMembers
     ]);
 
     return { vitals, game };
