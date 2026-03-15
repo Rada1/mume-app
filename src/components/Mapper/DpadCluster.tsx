@@ -54,12 +54,16 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
     return (
         <div 
             className="dpad-container-with-sidebar"
-            style={{ pointerEvents: 'auto' }}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={joystick.handleJoystickCancel}
+            style={{ pointerEvents: 'none' }}
         >
+            {/* We attach the gesture events specifically to a transparent interaction overlay
+                that only consumes the first touch. However, the true fix here for a full
+                screen joystick vs map is that DpadCluster shouldn't catch pointer events
+                AT ALL initially. Instead, MapCanvas should receive the events, and if it's
+                a single touch swipe, it can trigger the joystick logic.
+                Wait, the DpadCluster is meant to be a full screen joystick. To let MapCanvas
+                receive multi-touch, we can just remove pointer events from this container entirely
+                and let useMapperInteractions handle joystick passing! */}
             <TrackpadSwipeWheel 
                 active={joystick.joystickActive} 
                 currentDir={currentDir || null} 

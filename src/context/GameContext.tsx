@@ -208,6 +208,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isImmersionMode: s.isImmersionMode, setIsImmersionMode: s.setIsImmersionMode,
         isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode,
         showLegacyButtons: s.showLegacyButtons, setShowLegacyButtons: s.setShowLegacyButtons,
+        showOrganicTerrain: s.showOrganicTerrain, setShowOrganicTerrain: s.setShowOrganicTerrain,
         inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories
     });
 
