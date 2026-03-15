@@ -212,7 +212,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
 
 
-        // --- Combat Health Extraction ---
+            // --- Combat Health Extraction ---
             // Example: [ cW HP:Fine *a Dwarf* (x):Hurt>
             // Example with buffer: [ cW HP:Fine (Buff:Fine) *a Dwarf* (x):Hurt>
             const healthMap: Record<string, CombatHealthStatus> = {
@@ -221,6 +221,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 'wounded': 'Wounded',
                 'bad': 'Badly Wounded',
                 'awful': 'Awful',
+                'dying': 'Dying',
                 'bleeding': 'Dying'
             };
 
@@ -253,19 +254,29 @@ export function useGameParser(deps: UseGameParserDeps) {
             // 3. Opponent Health/Name
             // Pattern: *Name* (x):Status or Name :Status
             // Examples: *a Dwarf*:Fine>, a bee :Hurt>, *a Dwarf* (x):Wounded>
-            const oppMatch = promptPart.match(/(?:\*([^*]+)\*|([^:*]+?))\s*(?:\(x\))?[:](\w+)\s*>/);
+            const oppMatch = promptPart.match(/(?:\*([^*]+)\*|(?:\s+|^)([^:* \t]+?))\s*(?:\(x\))?[:](\w+)\s*>/);
             if (oppMatch) {
-                const name = (oppMatch[1] || oppMatch[2]).trim();
-                setOpponentName(name);
-                setOpponentHealthStatus(findStatus(oppMatch[3]));
-                setInCombat(true);
+                const name = (oppMatch[1] || oppMatch[2] || "").trim();
+                const status = findStatus(oppMatch[3]);
+                const isVitalPrefix = /^(hp|m|v|t|e|w|move|mana|tired)$/i.test(name);
+                
+                if (status && !isVitalPrefix) {
+                    setOpponentName(name);
+                    setOpponentHealthStatus(status);
+                    setInCombat(true);
+                } else {
+                    setOpponentHealthStatus(null);
+                    setOpponentName(null);
+                }
             } else {
                 setOpponentHealthStatus(null);
                 setOpponentName(null);
             }
 
-            // Also trigger combat if we have HP: status but no explicit opponent (sometimes happens briefly)
-            if (playerMatch && !inCombatRef.current && promptPart.includes(':')) {
+            // Trigger combat only if we see a clear opponent pattern at the end
+            // Ignore if it's just HP:Fine or T:Tired
+            const hasExplicitOpponent = oppMatch && findStatus(oppMatch[3]) && !/^(hp|m|v|t|e|w|move|mana|tired)$/i.test((oppMatch[1] || oppMatch[2] || "").trim());
+            if (hasExplicitOpponent) {
                 setInCombat(true);
             }
 

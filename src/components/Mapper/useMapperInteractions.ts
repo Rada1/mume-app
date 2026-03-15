@@ -5,6 +5,7 @@ import { useMapHitTest } from './hooks/useMapHitTest';
 
 export interface InteractionDeps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
+    cardRef: React.RefObject<HTMLDivElement>;
     cameraRef: React.MutableRefObject<{ x: number, y: number, zoom: number }>;
     triggerRender: () => void;
     rooms: Record<string, MapperRoom>;
@@ -35,6 +36,10 @@ export interface InteractionDeps {
     viewZ: number | null;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
+    btn: any;
+    heldButton: any;
+    setHeldButton: (val: any) => void;
+    target: any;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
@@ -105,8 +110,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         if (!cvs) return;
 
         const onDown = (e: PointerEvent) => {
-            if (!e.isPrimary) return;
-            
             // IGNORE all internal map interactions if a window/cluster drag is in progress
             if (document.body.classList.contains('global-dragging')) return;
 
@@ -123,6 +126,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
             try { cvs.setPointerCapture(e.pointerId); } catch(err) {}
             
+            const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
+            lastPointersRef.current = pointers;
+
             if (activePointersRef.current.size === 1) {
                 const { mode, setSelectedRoomIds } = depsRef.current;
                 startMouseRef.current = { x: e.clientX, y: e.clientY };
@@ -149,9 +155,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         setMarqueeStart({ x: e.clientX, y: e.clientY });
                         setMarqueeEnd({ x: e.clientX, y: e.clientY });
                     }
-                } else {
-                    // Normal play mode - no auto-minimize on down
                 }
+            } else if (activePointersRef.current.size === 2) {
+                dragTypeRef.current = 'pan';
             }
         };
 
@@ -166,9 +172,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
             
-            const { setAutoCenter, setIsDragging, setRooms } = depsRef.current;
+            const { setAutoCenter, setIsDragging } = depsRef.current;
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
-            const mx = e.clientX, my = e.clientY;
 
             if (pointers.length === 1) {
                 const p = pointers[0];
@@ -196,6 +201,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         triggerRender();
                     }
                 }
+                lastMouseRef.current = { x: p.x, y: p.y };
             } else if (pointers.length === 2) {
                 const p1 = pointers[0], p2 = pointers[1];
                 const lastP1 = lastPointersRef.current.find(lp => lp.id === p1.id);
@@ -205,25 +211,38 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     const lastDist = Math.sqrt(Math.pow(lastP1.x - lastP2.x, 2) + Math.pow(lastP1.y - lastP2.y, 2));
                     const currentDist = Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
                     
+                    const lastMid = { x: (lastP1.x + lastP2.x) / 2, y: (lastP1.y + lastP2.y) / 2 };
+                    const currentMid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+
                     const cam = cameraRef.current;
                     const oldZoom = cam.zoom;
-                    const scaleFactor = currentDist / lastDist;
-                    const newZoom = Math.max(0.05, Math.min(5, cam.zoom * scaleFactor));
-                    
-                    const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
-                    cam.x += (mid.x / oldZoom) - (mid.x / newZoom);
-                    cam.y += (mid.y / oldZoom) - (mid.y / newZoom);
-                    cam.zoom = newZoom;
-                    
+
+                    if (lastDist > 10) {
+                        const scaleFactor = currentDist / lastDist;
+                        const newZoom = Math.max(0.05, Math.min(5, cam.zoom * scaleFactor));
+                        
+                        const rect = canvasRef.current!.getBoundingClientRect();
+                        const mx = currentMid.x - rect.left;
+                        const my = currentMid.y - rect.top;
+                        
+                        cam.x += (mx / oldZoom) - (mx / newZoom);
+                        cam.y += (my / oldZoom) - (my / newZoom);
+                        cam.zoom = newZoom;
+                    }
+
+                    const dx = currentMid.x - lastMid.x;
+                    const dy = currentMid.y - lastMid.y;
+                    cam.x -= dx / cam.zoom;
+                    cam.y -= dy / cam.zoom;
+
                     setAutoCenter(false);
                     triggerRender();
                 }
             }
-            lastPointersRef.current = pointers; lastMouseRef.current = { x: mx, y: my };
+            lastPointersRef.current = pointers;
         };
 
         const onUp = (e: PointerEvent) => {
-            if (!e.isPrimary) return;
             const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
             
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
@@ -253,7 +272,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     });
                     setSelectedRoomIds(newSelection);
                 } else if (!hasDraggedRef.current && dragTypeRef.current === 'room' && !contextMenuTriggeredRef.current) {
-                    const world = screenToWorld(startMouseRef.current.x, startMouseRef.current.y);
+                    const world = screenToWorld(e.clientX, e.clientY);
                     const clickedRoomId = getRoomAt(world.x, world.y);
                     if (clickedRoomId) setInfoRoomId(clickedRoomId);
                 }
@@ -267,9 +286,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 isDraggingInternalRef.current = false; dragTypeRef.current = null; setIsDragging(false);
                 setMarqueeStart(null); setMarqueeEnd(null);
             } else if (activePointersRef.current.size === 1) {
-                dragTypeRef.current = 'pan';
                 const pointer = remPointers[0];
-                startMouseRef.current = { x: pointer.x, y: pointer.y }; lastMouseRef.current = { x: pointer.x, y: pointer.y };
+                lastMouseRef.current = { x: pointer.x, y: pointer.y };
+                dragTypeRef.current = 'pan';
             }
         };
 

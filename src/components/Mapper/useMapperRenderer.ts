@@ -205,17 +205,49 @@ export const useMapperRenderer = ({
             };
 
             drawGrid(rCtx, gX1, gY1, gX2, gY2);
+
+            // 1. Draw Terrains with Soft Edges
+            offCtx.save();
+            offCtx.filter = 'blur(4px)';
             if (floorIndex) {
                 drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-                // LOD: Only draw features if zoomed in enough
-                if (camera.zoom > 0.05) {
-                    drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-                }
             }
             drawLocalTerrains(rCtx, vCache.localRooms);
+            offCtx.restore();
+
+            // 2. Overlay Noise Texture
+            if (!imagesRef.current['parchment']) {
+                const img = new Image();
+                img.src = '/assets/parchment.png';
+                img.onload = () => {
+                    imagesRef.current['parchment'] = img;
+                };
+            }
+            const parchmentImg = imagesRef.current['parchment'];
+            if (parchmentImg && parchmentImg.complete) {
+                offCtx.save();
+                offCtx.globalAlpha = 0.25;
+                offCtx.globalCompositeOperation = 'overlay';
+                const pattern = offCtx.createPattern(parchmentImg, 'repeat');
+                if (pattern) {
+                    offCtx.fillStyle = pattern;
+                    const fillX = bX1 * 5 * GRID_SIZE;
+                    const fillY = bY1 * 5 * GRID_SIZE;
+                    const fillW = (bX2 - bX1 + 1) * 5 * GRID_SIZE;
+                    const fillH = (bY2 - bY1 + 1) * 5 * GRID_SIZE;
+                    offCtx.fillRect(fillX, fillY, fillW, fillH);
+                }
+                offCtx.restore();
+            }
+
+            // 3. Draw Crisp Features on Top
             if (camera.zoom > 0.05) {
+                if (floorIndex) {
+                    drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+                }
                 drawLocalFeatures(rCtx, vCache.localRooms);
             }
+            
             offCtx.restore();
 
             cache.lastParams = cacheParams;

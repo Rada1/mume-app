@@ -56,8 +56,8 @@ export const drawTerrains = (
         const rooms = exploredBatches[color];
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
-            // Add 0.5px bleed to eliminate hairline gaps
-            ctx.fillRect(r.x - 0.5, r.y - 0.5, s + 1.0, s + 1.0);
+            // Increased bleed to 2px to eliminate hairline gaps and handle blur better
+            ctx.fillRect(r.x - 4.0, r.y - 4.0, s + 8.0, s + 8.0);
         }
     }
 
@@ -71,14 +71,14 @@ export const drawTerrains = (
             ctx.fillStyle = isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
             for (let i = 0; i < rooms.length; i++) {
                 const r = rooms[i];
-                ctx.fillRect(r.x - 0.5, r.y - 0.5, s + 1.0, s + 1.0);
+                ctx.fillRect(r.x - 4.0, r.y - 4.0, s + 8.0, s + 8.0);
             }
 
             // Draw terrain at FULL opacity
             ctx.fillStyle = color;
             for (let i = 0; i < rooms.length; i++) {
                 const r = rooms[i];
-                ctx.fillRect(r.x - 0.5, r.y - 0.5, s + 1.0, s + 1.0);
+                ctx.fillRect(r.x - 4.0, r.y - 4.0, s + 8.0, s + 8.0);
             }
         }
     }
@@ -98,7 +98,7 @@ export const drawLocalTerrains = (rCtx: RenderContext, localRooms: any[]) => {
         
         const rx = Math.round(room.x) * s, ry = Math.round(room.y) * s;
         ctx.fillStyle = getTerrainColor(room.terrain, isDarkMode);
-        // Add bleed to local terrain as well
-        ctx.fillRect(rx - 0.5, ry - 0.5, s + 1.0, s + 1.0);
+        // Add 4px bleed to local terrain to eliminate gaps
+        ctx.fillRect(rx - 4.0, ry - 4.0, s + 8.0, s + 8.0);
     }
 };
