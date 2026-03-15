@@ -28,6 +28,10 @@ export interface InteractionDeps {
     setSelectedMarkerId: (id: string | null) => void;
     triggerHaptic: (ms: number) => void;
     joystick: any;
+    btn?: any;
+    heldButton?: any;
+    setHeldButton?: (val: any) => void;
+    target?: string;
     executeCommand: (cmd: string) => void;
     startWalking: (targetId: string) => void;
     stopWalking: () => void;

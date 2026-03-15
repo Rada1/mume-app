@@ -25,12 +25,10 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
     } = joystick || {};
 
     const onPointerDown = useCallback((e: React.PointerEvent) => {
-        e.stopPropagation();
         if (handleJoystickStart) handleJoystickStart(e, executeCommand);
     }, [handleJoystickStart, executeCommand]);
 
     const onPointerMove = useCallback((e: React.PointerEvent) => {
-        e.stopPropagation();
         if (!handleJoystickMove) return;
         const dir = handleJoystickMove(e, executeCommand, !!heldButton);
 
@@ -48,7 +46,6 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
     }, [handleJoystickMove, executeCommand, heldButton, setHeldButton, btn.buttons, target, triggerHaptic, joystick.isTargetModifierActive]);
 
     const onPointerUp = useCallback((e: React.PointerEvent) => {
-        e.stopPropagation();
         if (handleJoystickEnd) {
             handleJoystickEnd(e, executeCommand, triggerHaptic);
         }

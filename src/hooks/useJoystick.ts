@@ -21,6 +21,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
     // Command Execution Ref
     const executeCommandRef = useRef<((cmd: string) => void) | null>(null);
+    const activePointersRef = useRef<Set<number>>(new Set());
 
     const dirMap: Record<string, string> = {
         n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down',
@@ -72,12 +73,20 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     }, [triggerHaptic]);
 
     const handleJoystickStart = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void) => {
+        activePointersRef.current.add(e.pointerId);
+
+        if (activePointersRef.current.size > 1) {
+            handleJoystickCancel();
+            return;
+        }
+
         if (!e.isPrimary) return;
         if (executeCommand) executeCommandRef.current = executeCommand;
         setJoystickActive(true);
         setIsJoystickConsumed(false);
         setIsTargetModifierActive(false);
-        e.currentTarget.setPointerCapture(e.pointerId);
+
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err) {}
 
         const startX = e.clientX;
         const startY = e.clientY;
@@ -98,6 +107,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     }, [startRepeatTimer]);
 
     const handleJoystickMove = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void, suppressMove?: boolean) => {
+        if (activePointersRef.current.size > 1) return null;
         if (!e.isPrimary) return null;
         if (executeCommand) executeCommandRef.current = executeCommand;
         if (!joystickActive || !joystickStartPos.current) return null;
@@ -237,6 +247,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     }, [joystickActive, isJoystickConsumed, triggerHaptic, startRepeatTimer, stopRepeatTimer, availableExits]);
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
+        activePointersRef.current.delete(e.pointerId);
+
         if (!e.isPrimary) return false;
         executeCommandRef.current = executeCommand;
         stopRepeatTimer();
@@ -324,7 +336,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         }
     }, [isJoystickConsumed]);
 
-    const handleJoystickCancel = useCallback(() => {
+    const handleJoystickCancel = useCallback((e?: React.PointerEvent) => {
+        if (e) activePointersRef.current.delete(e.pointerId);
         stopRepeatTimer();
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
