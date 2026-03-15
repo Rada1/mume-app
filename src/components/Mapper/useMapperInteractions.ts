@@ -40,6 +40,10 @@ export interface InteractionDeps {
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
     cardRef?: React.RefObject<HTMLDivElement>;
+    btn?: any;
+    heldButton?: any;
+    setHeldButton?: any;
+    target?: any;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
