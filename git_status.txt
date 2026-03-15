@@ -1,0 +1,16 @@
+M  dev-dist/sw.js
+M  src/components/Drawers/EquipmentDrawer.tsx
+A  src/components/Drawers/MendingFooter.tsx
+UU src/components/Mapper/useMapperInteractions.ts
+M  src/components/Modals.css
+A  src/components/css/HelpGuides.css
+A  src/components/css/Popovers.css
+A  src/components/css/PremiumSwitch.css
+M  src/context/GameContext/types.ts
+A  src/hooks/interactions/useButtonClicks.ts
+A  src/hooks/interactions/useGestures.ts
+A  src/hooks/interactions/useLogDragAndDrop.ts
+A  src/hooks/interactions/useLogTaps.ts
+M  src/hooks/useInteractionHandlers.ts
+M  src/index.tsx
+?? git_status.txt
