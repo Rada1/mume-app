@@ -31,6 +31,10 @@ export interface VitalsContextType {
     setMendingTarget: (val: string | null) => void;
     bufferName: string | null;
     setBufferName: (val: string | null) => void;
+    playerHealthStatus: CombatHealthStatus | null;
+    opponentName: string | null;
+    opponentHealthStatus: CombatHealthStatus | null;
+    bufferHealthStatus: CombatHealthStatus | null;
     characterInfo: import('../../types').CharacterInfo;
     setCharacterInfo: Dispatch<SetStateAction<import('../../types').CharacterInfo>>;
 }
