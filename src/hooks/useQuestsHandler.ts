@@ -74,7 +74,10 @@ export function useQuestsHandler(
         // Description follows...
         
         // If not already in a detail/list, check if this line is a quest name
-        const matchedQuest = !isQuestsActiveRef.current && activeQuests.find(q => q.name.toLowerCase() === lower);
+        // Use trim and replace any strange whitespace
+        const cleanLower = lower.trim().replace(/\s+/g, ' ');
+        const matchedQuest = !isQuestsActiveRef.current && activeQuests.find(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === cleanLower);
+
         if (matchedQuest) {
             isDetailActiveRef.current = true;
             currentQuestRef.current = { ...matchedQuest, fullText: '' };
@@ -84,7 +87,10 @@ export function useQuestsHandler(
         if (isDetailActiveRef.current && currentQuestRef.current) {
             // Description continues until prompt
             // We return true even for empty lines to allow multiline descriptions
-            currentQuestRef.current.fullText = (currentQuestRef.current.fullText ? currentQuestRef.current.fullText + '\n' : '') + textOnly;
+            // Skip repeating the title line in the full text
+            if (lower !== currentQuestRef.current.name?.toLowerCase()) {
+                currentQuestRef.current.fullText = (currentQuestRef.current.fullText ? currentQuestRef.current.fullText + '\n' : '') + textOnly;
+            }
             return true;
         }
         

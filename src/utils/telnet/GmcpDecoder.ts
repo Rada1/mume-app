@@ -252,26 +252,20 @@ export class GmcpDecoder {
             const data = JSON.parse(json);
             if (!Array.isArray(data)) return;
 
-            // Check if ANYONE in the room (NPC or Player) is in the "fighting" category
-            const someoneFighting = data.some((char: any) => {
-                if (!char || typeof char !== 'object') return false;
-                // MUME uses 'fighting' category in Room.Chars
-                return char.category === 'fighting' || char.fighting === true || char.status === 'fighting';
-            });
+            // We should rely primarily on our own Char.Vitals for combat state, not just ANY room activity.
+            // Room.Chars will list other players/NPCs fighting, which shouldn't force US into combat UI
+            // unless we actually have an opponent or our position is 'fighting'.
+            // Therefore, we do not set combat = true based purely on Room.Chars anymore,
+            // as it leads to "stuck" combat mode.
 
-            if (someoneFighting) {
-                this.handlers.setInCombat(true);
-            } else {
-                // If NO ONE is fighting in the room, and our own position isn't 'fighting'
-                // and we have no opponent, we can safely assume combat is over for us.
-                const weAreFighting = this.charVitalsState.position?.includes('fighting') || (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
-                if (!weAreFighting) {
-                    const isExplicitlyNotFighting = this.charVitalsState.position && !this.charVitalsState.position.includes('fighting');
-                    if (isExplicitlyNotFighting) {
-                        (this.handlers as any).setInCombat(false, true); // Force clear the latch
-                    } else {
-                        this.handlers.setInCombat(false); // Normal clear
-                    }
+            // However, we can use it to double-check if we are in combat if our opponent is in the list.
+            const weAreFighting = this.charVitalsState.position?.includes('fighting') || (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
+            if (!weAreFighting) {
+                const isExplicitlyNotFighting = this.charVitalsState.position && !this.charVitalsState.position.includes('fighting');
+                if (isExplicitlyNotFighting) {
+                    (this.handlers as any).setInCombat(false, true); // Force clear the latch
+                } else {
+                    this.handlers.setInCombat(false); // Normal clear
                 }
             }
         } catch (e) { }

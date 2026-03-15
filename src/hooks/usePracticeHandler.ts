@@ -25,7 +25,7 @@ export function usePracticeHandler(
         const lower = text.toLowerCase();
 
         // 1. Detect sessions left (Reset marker)
-        const sessionMatch = text.match(/You have (\d+) practice sessions? left\.?\s*$/i);
+        const sessionMatch = text.match(/You have (\d+) practice sessions? left/i);
         if (sessionMatch) {
             const count = parseInt(sessionMatch[1]);
             console.log('[PracticeHandler] Detected sessions left:', count);

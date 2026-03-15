@@ -159,7 +159,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'practice';
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
-        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest:') || quests.activeQuests.some(q => q.name.toLowerCase() === lower)) {
+        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest:') || quests.activeQuests.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: quest'); addDiagnosticLog?.('Entering Stage: quest');
@@ -376,6 +376,22 @@ export function useGameParser(deps: UseGameParserDeps) {
         // --- NEW: Priority Capture Handling ---
         if (captureStage.current !== 'none') {
             const stage = captureStage.current;
+            if (stage === 'stat' || stage === 'info') {
+                const statRegex = /(str|int|wis|dex|con|wil|per):\s*(\d+)/gi;
+                let match;
+                const stats: any = {};
+                let statFound = false;
+                while ((match = statRegex.exec(textOnly)) !== null) {
+                    stats[match[1].toLowerCase()] = parseInt(match[2]);
+                    statFound = true;
+                }
+                if (statFound) {
+                    setCharacterInfo(prev => ({
+                        ...prev,
+                        stats: { ...(prev.stats || {str:0, int:0, wis:0, dex:0, con:0, wil:0, per:0}), ...stats }
+                    }));
+                }
+            }
             if (stage === 'practice') {
                 const practiceResult = deps.practice.parsePracticeLine(textOnly);
                 if (practiceResult) {
@@ -459,20 +475,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                     }
                 }
 
-                // Parse Stats
-                const statRegex = /(str|int|wis|dex|con|wil|per):\s*(\d+)/gi;
-                let match;
-                const stats: any = {};
-                while ((match = statRegex.exec(textOnly)) !== null) {
-                    stats[match[1].toLowerCase()] = parseInt(match[2]);
-                }
-
-                if (Object.keys(stats).length > 0) {
-                    setCharacterInfo(prev => ({
-                        ...prev,
-                        stats: { ...(prev.stats || {str:0, int:0, wis:0, dex:0, con:0, wil:0, per:0}), ...stats }
-                    }));
-                }
                 return;
             }
         }
