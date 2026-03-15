@@ -12,6 +12,7 @@ import './CombatOverlay.css';
 
 const getQuadCount = (status: CombatHealthStatus | null): number => {
     switch (status) {
+        case 'Healthy': return 6;
         case 'Fine': return 6;
         case 'Hurt': return 5;
         case 'Wounded': return 4;

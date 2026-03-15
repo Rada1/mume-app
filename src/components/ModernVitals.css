@@ -1,0 +1,108 @@
+.modern-vitals-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(14px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    user-select: none;
+    pointer-events: auto;
+}
+
+.modern-vitals-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modern-vitals-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-faded, rgba(255, 255, 255, 0.6));
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding-left: 2px;
+}
+
+.modern-vitals-value {
+    color: var(--text-primary, #fff);
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.modern-vitals-track {
+    position: relative;
+    height: 32px;
+    width: 240px;
+    background: #000;
+    border-radius: 2px;
+    transform: skewX(-15deg);
+    margin-left: 8px;
+    box-sizing: border-box;
+}
+
+.modern-vitals-thresholds {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    gap: 4px; /* Empty space between segments */
+    padding: 0;
+    pointer-events: none;
+}
+
+.threshold-chunk {
+    height: 100%;
+    display: flex;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    box-sizing: border-box;
+    overflow: hidden;
+    background: #000; /* Missing area is black */
+}
+
+/* 10-HP Blocks */
+.vitals-block {
+    height: 100%;
+    background: #000; /* Unfilled area is solid black */
+    flex-shrink: 0;
+    transition: background 0.1s ease;
+    border-right: 1.5px solid #000; /* Block separator lines */
+    box-sizing: border-box;
+}
+
+/* Filled state inherits segment color via background on chunk */
+.threshold-chunk .vitals-block.filled {
+    background: var(--base-color, #fff);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Specific Segment Colors when blocks are FILLED */
+.modern-vitals-row.hp .chunk-awful .vitals-block.filled { background: #110000; }
+.modern-vitals-row.hp .chunk-bad .vitals-block.filled { background: #440000; }
+.modern-vitals-row.hp .chunk-wounded .vitals-block.filled { background: #770000; }
+.modern-vitals-row.hp .chunk-hurt .vitals-block.filled { background: #aa0000; }
+.modern-vitals-row.hp .chunk-fine .vitals-block.filled { background: #ee2222; }
+
+.modern-vitals-row.mana .chunk-awful .vitals-block.filled { background: #1a0033; }
+.modern-vitals-row.mana .chunk-bad .vitals-block.filled { background: #2d0055; }
+.modern-vitals-row.mana .chunk-wounded .vitals-block.filled { background: #3f0077; }
+.modern-vitals-row.mana .chunk-hurt .vitals-block.filled { background: #6600cc; }
+.modern-vitals-row.mana .chunk-fine .vitals-block.filled { background: #9933ff; }
+
+.modern-vitals-row.move .chunk-awful .vitals-block.filled { background: #010; }
+.modern-vitals-row.move .chunk-bad .vitals-block.filled { background: #030; }
+.modern-vitals-row.move .chunk-wounded .vitals-block.filled { background: #050; }
+.modern-vitals-row.move .chunk-hurt .vitals-block.filled { background: #0a0; }
+.modern-vitals-row.move .chunk-fine .vitals-block.filled { background: #22ff55; }
+
+/* Landscape adjustments */
+.landscape .modern-vitals-track {
+    height: 24px;
+    width: 210px;
+}

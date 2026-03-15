@@ -95,6 +95,7 @@ export const useGmcpHandlers = ({
     const findStatus = useCallback((str: string | undefined): CombatHealthStatus | null => {
         if (!str) return null;
         const s = str.toLowerCase();
+        if (s.includes('healthy')) return 'Fine';
         if (s.includes('fine')) return 'Fine';
         if (s.includes('hurt')) return 'Hurt';
         if (s.includes('wounded')) return 'Wounded';
@@ -155,7 +156,9 @@ export const useGmcpHandlers = ({
             subrace: data.subrace ?? prev.subrace,
             subclass: data.subclass ?? prev.subclass,
             class: data.class ?? prev.class,
-            gold: data.gold !== undefined ? Number(data.gold) : prev.gold
+            gold: data.gold !== undefined ? Number(data.gold) : prev.gold,
+            description: data.description ?? prev.description,
+            whois: data.whois ?? prev.whois
         }));
     }, [setCharacterInfo]);
 

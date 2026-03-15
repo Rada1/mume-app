@@ -8,8 +8,8 @@ export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 's
 export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
 export type TriggerAction = 'show' | 'switch_set';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
-export type CaptureStage = 'none' | 'stat' | 'inv' | 'eq' | 'practice' | 'container' | 'shop' | 'who' | 'where';
-export type CombatHealthStatus = 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
+export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'practice' | 'whois' | 'description' | 'info' | 'quest';
+export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
 
 export interface InlineCategoryConfig {
     id: string; // The base name of the category (e.g. 'lantern')
@@ -57,6 +57,20 @@ export interface PracticeSkill {
 export interface PracticeData {
     sessionsLeft: number;
     skills: PracticeSkill[];
+}
+
+export interface Quest {
+    id: string;
+    name: string;
+    description: string;
+    isUnfinished: boolean;
+    area: string;
+    fullText?: string;
+}
+
+export interface QuestData {
+    activeQuests: Quest[];
+    lastUpdated: number;
 }
 
 export interface DrawerLine {
@@ -418,6 +432,8 @@ export interface GmcpCharInfo {
     subclass?: string;
     class?: string;
     gold?: number;
+    description?: string;
+    whois?: string;
 }
 
 export interface CharacterInfo {
@@ -432,4 +448,18 @@ export interface CharacterInfo {
     subclass: string;
     class: string;
     gold: number;
+    description?: string;
+    whois?: string;
+    alignment?: string;
+    warPoints?: number;
+    actsForWar?: number;
+    stats?: {
+        str: number;
+        int: number;
+        wis: number;
+        dex: number;
+        con: number;
+        wil: number;
+        per: number;
+    };
 }

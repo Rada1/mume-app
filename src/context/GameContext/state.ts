@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
-import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus } from '../../types';
+import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData } from '../../types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
@@ -39,12 +39,32 @@ export const useGameProviderState = () => {
     });
     const [inCombat, _setInCombat] = useState(false);
     const inCombatRef = useRef(false);
+    const combatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const setInCombat = useCallback((val: boolean, force: boolean = false) => {
-        _setInCombat(val);
+        if (combatTimeoutRef.current) {
+            clearTimeout(combatTimeoutRef.current);
+            combatTimeoutRef.current = null;
+        }
+
+        if (val || force) {
+            _setInCombat(val);
+        } else {
+            // Latch combat for 5 seconds if not forced
+            combatTimeoutRef.current = setTimeout(() => {
+                _setInCombat(false);
+                combatTimeoutRef.current = null;
+            }, 5000);
+        }
     }, []);
 
     useEffect(() => { inCombatRef.current = inCombat; }, [inCombat]);
+
+    useEffect(() => {
+        return () => {
+            if (combatTimeoutRef.current) clearTimeout(combatTimeoutRef.current);
+        };
+    }, []);
 
     const [characterName, setCharacterName] = useState<string | null>(null);
     const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null });
@@ -153,7 +173,7 @@ export const useGameProviderState = () => {
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
-    const captureStage = useRef<'stat' | 'eq' | 'inv' | 'practice' | 'shop' | 'who' | 'where' | 'container' | 'none'>('none');
+    const captureStage = useRef<import('../../types').CaptureStage>('none');
     const isDrawerCapture = useRef<number>(0);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
@@ -176,7 +196,14 @@ export const useGameProviderState = () => {
 
     const [characterInfo, setCharacterInfo] = useState<import('../../types').CharacterInfo>({
         name: null, level: 0, xp: 0, xpMax: 0, tp: 0, tpMax: 0,
-        race: '', subrace: '', subclass: '', class: '', gold: 0
+        race: '', subrace: '', subclass: '', class: '', gold: 0,
+        alignment: '', warPoints: 0, actsForWar: 0,
+        stats: { str: 0, int: 0, wis: 0, dex: 0, con: 0, wil: 0, per: 0 }
+    });
+
+    const [quests, setQuests] = useState<QuestData>({
+        activeQuests: [],
+        lastUpdated: 0
     });
 
     const vitals = useMemo(() => ({
@@ -253,6 +280,8 @@ export const useGameProviderState = () => {
         setBufferHealthStatus: vitals.setBufferHealthStatus,
         setOpponentName: vitals.setOpponentName,
         setBufferName: vitals.setBufferName,
+        setQuests,
+        quests,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -262,7 +291,8 @@ export const useGameProviderState = () => {
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
         inlineCategories, favorites, activeDragData, heldButton,
-        parley, whoList, popoverState, discoveredItems
+        parley, whoList, popoverState, discoveredItems,
+        quests
     ]);
 
     return { vitals, game };

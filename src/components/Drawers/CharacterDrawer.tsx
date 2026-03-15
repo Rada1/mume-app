@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, User, Activity, BookOpen, Coins, ChevronRight, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, User, Activity, BookOpen, Coins, ChevronRight, RefreshCw, ScrollText, Edit3, HelpCircle, Save, RotateCcw } from 'lucide-react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { PracticeSkill } from '../../types';
 import './CharacterDrawer.css';
@@ -13,16 +13,60 @@ interface CharacterDrawerProps {
 export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     isOpen,
     onClose,
-    executeCommand
+    executeCommand: propsExecuteCommand
 }) => {
-    const [activeTab, setActiveTab] = useState<'info' | 'practice'>('info');
-    const { practice, characterClass } = useGame();
+    const [activeTab, setActiveTab] = useState<'info' | 'practice' | 'quests'>('info');
+    const { practice, quests, executeCommand: contextExecuteCommand } = useGame();
     const { characterInfo } = useVitals();
+    
+    // Prioritize context executeCommand if available, fallback to props
+    const executeCommand = contextExecuteCommand || propsExecuteCommand;
+    
     const practiceData = practice.practiceData;
+
+    // Inline editing states
+    const [isEditingDescription, setIsEditingDescription] = useState(false);
+    const [tempDescription, setTempDescription] = useState('');
+    
+    const [isEditingWhois, setIsEditingWhois] = useState(false);
+    const [tempWhois, setTempWhois] = useState('');
+    
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [tempTitle, setTempTitle] = useState('');
+
+    const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (isOpen && characterInfo) {
+            if (!isEditingDescription) setTempDescription(characterInfo.description || '');
+            if (!isEditingWhois) setTempWhois(characterInfo.whois || '');
+            if (!isEditingTitle) setTempTitle(characterInfo.name || '');
+        }
+    }, [isOpen, characterInfo, isEditingDescription, isEditingWhois, isEditingTitle]);
+
+    const [isSelectingClass, setIsSelectingClass] = useState(false);
+    const classes = ['Adventurer', 'Apprentice', 'Pilferer', 'Recruit', 'Sentry'];
+
+    const handleSaveDescription = () => {
+        executeCommand(`change description ${tempDescription}`);
+        setIsEditingDescription(false);
+    };
+
+    const handleSaveWhois = () => {
+        executeCommand(`change whois ${tempWhois}`);
+        setIsEditingWhois(false);
+    };
+
+    const handleSaveTitle = () => {
+        executeCommand(`change title ${tempTitle}`);
+        setIsEditingTitle(false);
+    };
 
     const info = characterInfo || {
         name: 'Unknown', level: 0, xp: 0, xpMax: 0, tp: 0, tpMax: 0,
-        race: 'Unknown', subclass: 'None', subrace: 'None', gold: 0
+        race: 'Unknown', subclass: 'None', subrace: 'None', gold: 0,
+        alignment: '', warPoints: 0, actsForWar: 0,
+        stats: { str: 0, int: 0, wis: 0, dex: 0, con: 0, wil: 0, per: 0 }
     };
 
     const handleBackdropClick = (e: React.MouseEvent) => {
@@ -30,6 +74,14 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     };
 
     const formatNumber = (num: number) => new Intl.NumberFormat().format(num);
+
+    const handleRefresh = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        executeCommand('info', true);
+        executeCommand('look self', true);
+        executeCommand('whois', true);
+        executeCommand('quest', true);
+    };
 
     return (
         <div 
@@ -56,6 +108,13 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             <BookOpen size={16} />
                             <span>Practice</span>
                         </button>
+                        <button 
+                            className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
+                            onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); }}
+                        >
+                            <ScrollText size={16} />
+                            <span>Quests</span>
+                        </button>
                     </div>
                     <button className="close-button" onClick={(e) => { e.stopPropagation(); onClose(); }}>
                         <X size={20} />
@@ -66,13 +125,72 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     {activeTab === 'info' ? (
                         <div className="info-tab">
                             <div className="char-profile">
-                                <div className="char-avatar">
-                                    <User size={40} />
-                                </div>
                                 <div className="char-main-info">
-                                    <h2>{info.name || 'Unknown'}</h2>
-                                    <p>{info.race} {info.subrace !== 'None' ? info.subrace : ''} {info.subclass !== 'None' ? info.subclass : ''} {characterClass !== 'none' ? characterClass : ''}</p>
-                                    <div className="level-badge">Level {info.level}</div>
+                                    <div className="char-name-row">
+                                        {isEditingTitle ? (
+                                            <div className="inline-title-editor">
+                                                <input 
+                                                    type="text" 
+                                                    value={tempTitle}
+                                                    onChange={(e) => setTempTitle(e.target.value)}
+                                                    autoFocus
+                                                />
+                                                <button className="save-icon-button" onClick={handleSaveTitle}><Save size={16} /></button>
+                                                <button className="cancel-icon-button" onClick={() => setIsEditingTitle(false)}><RotateCcw size={16} /></button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <h2>{info.name || 'Unknown Traveler'}</h2>
+                                                <div className="edit-title-container">
+                                                    {characterInfo.level >= 21 ? (
+                                                        <button className="edit-inline-button" onClick={() => setIsEditingTitle(true)}>
+                                                            <Edit3 size={16} />
+                                                        </button>
+                                                    ) : (
+                                                        <div className="edit-inline-button disabled" title="You can customize your title once you hit level 21!">
+                                                            <Edit3 size={16} />
+                                                            <HelpCircle size={12} className="help-icon" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
+                                    <p>{characterInfo.race} {characterInfo.subrace} {characterInfo.subclass || characterInfo.class}</p>
+                                    <div className="char-meta-row">
+                                        <span className="level-badge">Level {characterInfo.level}</span>
+                                        {characterInfo.level < 21 && (
+                                            <div className="class-selection-container">
+                                                <button 
+                                                    className={`change-class-button ${isSelectingClass ? 'active' : ''}`} 
+                                                    onClick={() => setIsSelectingClass(!isSelectingClass)}
+                                                >
+                                                    {isSelectingClass ? 'Cancel' : 'Change Class'}
+                                                </button>
+                                                {isSelectingClass && (
+                                                    <div className="class-menu">
+                                                        {classes.map(cls => (
+                                                            <button 
+                                                                key={cls} 
+                                                                onClick={() => {
+                                                                    executeCommand(`change class ${cls.toLowerCase()}`);
+                                                                    setIsSelectingClass(false);
+                                                                }}
+                                                            >
+                                                                {cls}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        <button className="refresh-info-button" onClick={handleRefresh} title="Refresh all character data">
+                                            <RefreshCw size={14} />
+                                        </button>
+                                    </div>
+                                    {characterInfo.alignment && (
+                                        <p className="alignment-text">{characterInfo.alignment}</p>
+                                    )}
                                 </div>
                             </div>
 
@@ -82,7 +200,30 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     <div className="stat-value">{formatNumber(info.gold)}</div>
                                 </div>
                                 
-                                <div className="stat-section">
+                                <div className="base-stats-section">
+                                    <h3>Base Stats</h3>
+                                    <div className="base-stats-grid">
+                                        <div className="base-stat-item"><span>Str:</span> {info.stats?.str || 0}</div>
+                                        <div className="base-stat-item"><span>Int:</span> {info.stats?.int || 0}</div>
+                                        <div className="base-stat-item"><span>Wis:</span> {info.stats?.wis || 0}</div>
+                                        <div className="base-stat-item"><span>Dex:</span> {info.stats?.dex || 0}</div>
+                                        <div className="base-stat-item"><span>Con:</span> {info.stats?.con || 0}</div>
+                                        <div className="base-stat-item"><span>Wil:</span> {info.stats?.wil || 0}</div>
+                                        <div className="base-stat-item"><span>Per:</span> {info.stats?.per || 0}</div>
+                                    </div>
+                                </div>
+
+                                <div className="war-info-section">
+                                    <h3>War Information</h3>
+                                    <div className="war-stats">
+                                        <div className="war-stat-item">
+                                            <span className="war-label">War points:</span>
+                                            <span className="war-value">{info.warPoints || 0}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="stat-section xp-section">
                                     <h3>Experience (XP)</h3>
                                     <div className="progress-container">
                                         <div className="progress-labels">
@@ -99,7 +240,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     </div>
                                 </div>
 
-                                <div className="stat-section">
+                                <div className="stat-section tp-section">
                                     <h3>Travel Points (TP)</h3>
                                     <div className="progress-container">
                                         <div className="progress-labels">
@@ -116,8 +257,80 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="details-section">
+                                <div className="section-header">
+                                    <h3>Description</h3>
+                                    {!isEditingDescription && (
+                                        <button className="edit-section-button" onClick={() => setIsEditingDescription(true)}>
+                                            <Edit3 size={14} />
+                                            Edit
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="description-box">
+                                    {isEditingDescription ? (
+                                        <div className="inline-editor-container">
+                                            <textarea 
+                                                value={tempDescription}
+                                                onChange={(e) => setTempDescription(e.target.value)}
+                                                autoFocus
+                                                rows={4}
+                                            />
+                                            <div className="editor-actions">
+                                                <button className="editor-save-button" onClick={handleSaveDescription}>
+                                                    <Save size={14} /> Save
+                                                </button>
+                                                <button className="editor-cancel-button" onClick={() => setIsEditingDescription(false)}>
+                                                    <RotateCcw size={14} /> Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        characterInfo.description || (
+                                            <span className="placeholder-text">No description set. Click Edit to change it.</span>
+                                        )
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="details-section">
+                                <div className="section-header">
+                                    <h3>Whois</h3>
+                                    {!isEditingWhois && (
+                                        <button className="edit-section-button" onClick={() => setIsEditingWhois(true)}>
+                                            <Edit3 size={14} />
+                                            Edit
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="whois-box">
+                                    {isEditingWhois ? (
+                                        <div className="inline-editor-container">
+                                            <textarea 
+                                                value={tempWhois}
+                                                onChange={(e) => setTempWhois(e.target.value)}
+                                                autoFocus
+                                                rows={2}
+                                            />
+                                            <div className="editor-actions">
+                                                <button className="editor-save-button" onClick={handleSaveWhois}>
+                                                    <Save size={14} /> Save
+                                                </button>
+                                                <button className="editor-cancel-button" onClick={() => setIsEditingWhois(false)}>
+                                                    <RotateCcw size={14} /> Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        characterInfo.whois || (
+                                            <span className="placeholder-text">No whois information. Click Edit to change it.</span>
+                                        )
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    ) : (
+                    ) : activeTab === 'practice' ? (
                         <div className="practice-tab">
                             <div className="practice-header">
                                 <div className="sessions-badge">
@@ -158,6 +371,55 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     <div className="empty-state">
                                         <BookOpen size={48} />
                                         <p>No skills or spells found. Try refreshing.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="quests-tab">
+                            <div className="quests-header">
+                                <div className="quests-badge">
+                                    {quests.activeQuests.length} Active Quests
+                                </div>
+                                <button className="refresh-button" onClick={() => executeCommand('quest')}>
+                                    <RefreshCw size={14} />
+                                    Refresh
+                                </button>
+                            </div>
+
+                            <div className="quests-list">
+                                {quests.activeQuests && quests.activeQuests.length > 0 ? (
+                                    quests.activeQuests.map((quest) => (
+                                        <div 
+                                            key={quest.id} 
+                                            className={`quest-item ${selectedQuestId === quest.id ? 'selected' : ''}`} 
+                                            onClick={() => {
+                                                setSelectedQuestId(quest.id === selectedQuestId ? null : quest.id);
+                                                executeCommand(`quest ${quest.name.split(' ')[0].toLowerCase()}`);
+                                            }}
+                                        >
+                                            <div className="quest-info">
+                                                <div className="quest-name">
+                                                    {quest.isUnfinished && <span className="unfinished-marker">*</span>}
+                                                    {quest.name}
+                                                </div>
+                                                <div className="quest-area">{quest.area}</div>
+                                                <div className="quest-description">{quest.description}</div>
+                                                {selectedQuestId === quest.id && quest.fullText && (
+                                                    <div className="quest-full-text">
+                                                        {quest.fullText.split('\n').map((line, i) => (
+                                                            <p key={i}>{line}</p>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <ChevronRight size={16} className={`quest-chevron ${selectedQuestId === quest.id ? 'expanded' : ''}`} />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="empty-state">
+                                        <ScrollText size={48} />
+                                        <p>No quests found. Try refreshing.</p>
                                     </div>
                                 )}
                             </div>

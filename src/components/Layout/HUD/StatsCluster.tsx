@@ -1,5 +1,5 @@
 import React from 'react';
-import VitalsDisplay from '../../VitalsDisplay';
+import ModernVitals from '../../ModernVitals';
 import { useVitals, useGame } from '../../../context/GameContext';
 
 interface StatsClusterProps {
@@ -17,14 +17,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
     const { stats } = useVitals();
     const { inCombat, executeCommand } = useGame();
 
-    // Always return null to hide regular stat bars, as requested.
-    return null;
-
     const handleWimpyChange = (val: number) => executeCommand(`wimpy ${val}`);
-
-    const hpRatio = stats.hp / (stats.maxHp || 1);
-    const manaRatio = stats.mana / (stats.maxMana || 1);
-    const moveRatio = stats.move / (stats.maxMove || 1);
 
     const pos = uiPositions.stats || {};
     const isDefault = pos.x === undefined && pos.y === undefined;
@@ -54,10 +47,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
             onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'stats', 'cluster'); }}
         >
             {isEditMode && <div className="resize-handle" style={{ zIndex: 1700 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'stats', 'cluster-resize'); }} />}
-            <VitalsDisplay
-                hpRatio={hpRatio}
-                manaRatio={manaRatio}
-                moveRatio={moveRatio}
+            <ModernVitals
                 stats={stats}
                 inCombat={inCombat}
                 onWimpyChange={handleWimpyChange}

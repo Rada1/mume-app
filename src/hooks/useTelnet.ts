@@ -69,7 +69,7 @@ export function useTelnet(options: TelnetOptions) {
         setStats: (val) => handlersRef.current.setStats(val),
         setWeather: (val) => handlersRef.current.setWeather(val),
         setIsFoggy: (val) => handlersRef.current.setIsFoggy(val),
-        setInCombat: (val) => handlersRef.current.setInCombat(val),
+        setInCombat: (val, force) => handlersRef.current.setInCombat(val, force),
         detectLighting: (val) => handlersRef.current.detectLighting(val),
         onOpponentChange: (val) => handlersRef.current.onOpponentChange?.(val),
         onBufferChange: (val) => handlersRef.current.onBufferChange?.(val),

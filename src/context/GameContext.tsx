@@ -273,7 +273,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setOpponentName: v.setOpponentName,
         setBufferHealthStatus: v.setBufferHealthStatus,
         setBufferName: v.setBufferName,
-        setCharacterInfo: v.setCharacterInfo
+        setCharacterInfo: v.setCharacterInfo,
+        characterInfo: v.characterInfo,
+        setQuests: s.setQuests,
+        quests: s.quests
     });
 
     const { processLine } = parser;

@@ -25,16 +25,16 @@ export function usePracticeHandler(
         const lower = text.toLowerCase();
 
         // 1. Detect sessions left (Reset marker)
-        const sessionMatch = text.match(/You have (\d+) practice sessions? left\./i);
+        const sessionMatch = text.match(/You have (\d+) practice sessions? left\.?\s*$/i);
         if (sessionMatch) {
-            console.log('[PracticeHandler] Detected sessions left:', sessionMatch[1]);
+            const count = parseInt(sessionMatch[1]);
+            console.log('[PracticeHandler] Detected sessions left:', count);
             setIsPracticeActive(true);
-            parsedSkillsRef.current = [];
-            setPracticeData({
-                sessionsLeft: parseInt(sessionMatch[1]),
-                skills: []
-            });
-            return { sessionsLeft: parseInt(sessionMatch[1]) };
+            setPracticeData(prev => ({
+                sessionsLeft: count,
+                skills: prev?.skills || []
+            }));
+            return { sessionsLeft: count };
         }
 
         if ((lower.includes('skill') && lower.includes('knowledge')) || lower.includes('can teach you') || text.startsWith('---')) {

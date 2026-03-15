@@ -250,6 +250,8 @@ export interface GameContextType {
     setInventoryLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
+    quests: import('../../types').QuestData;
+    setQuests: Dispatch<SetStateAction<import('../../types').QuestData>>;
 
     captureStage: MutableRefObject<'stat' | 'eq' | 'inv' | 'practice' | 'who' | 'where' | 'container' | 'none'>;
     isDrawerCapture: MutableRefObject<number>;
