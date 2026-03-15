@@ -76,6 +76,16 @@
     box-sizing: border-box;
 }
 
+.vitals-block.pulse-combat {
+    animation: combat-pulse 2s infinite ease-in-out;
+}
+
+@keyframes combat-pulse {
+    0% { filter: brightness(1); }
+    50% { filter: brightness(1.4); }
+    100% { filter: brightness(1); }
+}
+
 /* Filled state inherits segment color via background on chunk */
 .threshold-chunk .vitals-block.filled {
     background: var(--base-color, #fff);

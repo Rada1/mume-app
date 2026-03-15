@@ -1,5 +1,6 @@
 import React from 'react';
 import ModernVitals from '../../ModernVitals';
+import CombatVitals from '../../CombatVitals';
 import { useVitals, useGame } from '../../../context/GameContext';
 
 interface StatsClusterProps {
@@ -15,9 +16,9 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
     uiPositions, isEditMode, dragState, handleDragStart, isLandscape, isMobile
 }) => {
     const { stats } = useVitals();
-    const { inCombat, executeCommand } = useGame();
+    const { inCombat, executeCommand, mood } = useGame();
 
-    const handleWimpyChange = (val: number) => executeCommand(`wimpy ${val}`);
+    const handleWimpyChange = (val: number) => executeCommand(`change wimpy ${val}`);
 
     const pos = uiPositions.stats || {};
     const isDefault = pos.x === undefined && pos.y === undefined;
@@ -42,6 +43,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
                 opacity: 1,
                 zIndex: 1600,
                 display: 'flex',
+                flexDirection: 'column',
                 pointerEvents: 'auto'
             }}
             onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'stats', 'cluster'); }}
@@ -53,6 +55,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
                 onWimpyChange={handleWimpyChange}
                 isLandscape={isLandscape}
             />
+            {inCombat && <CombatVitals stats={stats} mood={mood} />}
         </div>
     );
 };

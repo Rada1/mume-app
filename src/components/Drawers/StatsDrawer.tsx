@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
-import VitalsDisplay from '../VitalsDisplay';
 
 interface CharacterDrawerProps {
     isOpen: boolean;
@@ -22,16 +21,28 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
         mood, setMood, spellSpeed, setSpellSpeed, alertness, setAlertness,
         playerPosition, setPlayerPosition, triggerHaptic, inCombat
     } = useGame();
-    const { stats, setStats } = useVitals();
+    const { stats, setStats, characterInfo } = useVitals();
 
-    const handleWimpyChange = (val: number) => {
-        setStats(prev => ({ ...prev, wimpy: val }));
-        executeCommand(`change wimpy ${val}`);
-    };
-
-    const hpRatio = stats.maxHp > 0 ? stats.hp / stats.maxHp : 0;
-    const manaRatio = stats.maxMana > 0 ? stats.mana / stats.maxMana : 0;
-    const moveRatio = stats.maxMove > 0 ? stats.move / stats.maxMove : 0;
+    const activeSpells = useMemo(() => {
+        const spells: string[] = [];
+        let inSpellsSection = false;
+        for (const line of statsLines) {
+            const text = line.text.trim();
+            if (text.startsWith('Affecting Spells:')) {
+                inSpellsSection = true;
+                continue;
+            }
+            if (inSpellsSection) {
+                if (text.startsWith('- ')) {
+                    spells.push(text.substring(2).trim());
+                } else if (text.length > 0) {
+                    // Reached end of spells section or another header
+                    inSpellsSection = false;
+                }
+            }
+        }
+        return spells;
+    }, [statsLines]);
 
     const renderTicks = () => (
         <div style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, display: 'flex', justifyContent: 'space-between', padding: '0 8px', pointerEvents: 'none', zIndex: 1, alignItems: 'center' }}>
@@ -40,6 +51,59 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
             ))}
         </div>
     );
+
+    const renderConditions = () => {
+        const conds = stats.conditions || {};
+        const activeConds = Object.keys(conds).filter(k => conds[k]);
+        
+        if (activeConds.length === 0) {
+            return <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active conditions</div>;
+        }
+
+        return (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {activeConds.map(c => (
+                    <div key={c} style={{
+                        padding: '4px 10px',
+                        background: 'rgba(239, 68, 68, 0.2)',
+                        border: '1px solid rgba(239, 68, 68, 0.5)',
+                        borderRadius: '12px',
+                        color: '#fca5a5',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase'
+                    }}>
+                        {c}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    const renderSpells = () => {
+        if (activeSpells.length === 0) {
+            return <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active spells</div>;
+        }
+
+        return (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {activeSpells.map((s, i) => (
+                    <div key={i} style={{
+                        padding: '4px 10px',
+                        background: 'rgba(59, 130, 246, 0.2)',
+                        border: '1px solid rgba(59, 130, 246, 0.5)',
+                        borderRadius: '12px',
+                        color: '#93c5fd',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        textTransform: 'capitalize'
+                    }}>
+                        {s}
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
     return (
         <div
@@ -110,34 +174,25 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     {/* LEFT COLUMN (or Top in Portrait) */}
                     <div className="drawer-col-left" style={{ flex: isLandscape ? 1.2 : 'none', display: 'flex', flexDirection: 'column' }}>
 
-                        <button
-                            className="stat-bars-btn"
-                            onClick={() => {
-                                triggerHaptic(20);
-                                executeCommand('score');
-                            }}
-                            style={{
+                        <div className="status-section" style={{
                                 width: '100%',
                                 background: 'rgba(255, 255, 255, 0.03)',
                                 padding: isLandscape ? '10px' : '15px',
                                 borderRadius: '12px',
                                 border: '1px solid rgba(255, 255, 255, 0.05)',
-                                cursor: 'pointer',
-                                textAlign: 'left',
-                                marginTop: '0'
-                            }}
-                        >
-                            <VitalsDisplay
-                                stats={stats}
-                                hpRatio={hpRatio}
-                                manaRatio={manaRatio}
-                                moveRatio={moveRatio}
-                                inCombat={inCombat}
-                                orientation="horizontal"
-                                onWimpyChange={handleWimpyChange}
-                                isLandscape={isLandscape}
-                            />
-                        </button>
+                                marginBottom: isLandscape ? '0' : '20px'
+                            }}>
+                            <div style={{ marginBottom: '15px' }}>
+                                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Conditions</div>
+                                {renderConditions()}
+                            </div>
+                            
+                            <div>
+                                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Active Spells</div>
+                                {renderSpells()}
+                            </div>
+                        </div>
+
                     </div>
 
                     {/* RIGHT COLUMN (or Bottom in Portrait) */}

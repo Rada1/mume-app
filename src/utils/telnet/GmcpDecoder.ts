@@ -62,6 +62,57 @@ export class GmcpDecoder {
         } else if (pkgLower === 'char.status' || pkgLower === 'char.info' || pkgLower === 'char.statusvars') {
             this.handleCharStatus(json);
             if (pkgLower === 'char.info' || pkgLower === 'char.statusvars') this.handleCharInfo(json);
+        } else if (pkgLower === 'group' || pkgLower.startsWith('group.')) {
+            this.handleGroup(json);
+        }
+    }
+
+    private handleGroup(json: string) {
+        try {
+            const data = JSON.parse(json);
+            
+            // Extract members array if available
+            let members = [];
+            if (Array.isArray(data)) {
+                members = data;
+            } else if (data && typeof data === 'object') {
+                if (Array.isArray(data.members)) {
+                    members = data.members;
+                } else {
+                    members = [data]; // Maybe a single update object
+                }
+            }
+
+            // MUME 'name' for self is often the character name or "You".
+            const playerNames = ['you', 'yourself', 'self'];
+            // We don't have the player's name here directly but if "You" is used, or we just look for any matching conditions
+            const playerMember = members.find(m => {
+                if (!m || typeof m !== 'object') return false;
+                if (!m.name) return true; // If no name, might be self update
+                return playerNames.includes(m.name.toLowerCase());
+            }) || members[0]; // Fallback to first if only one
+
+            if (playerMember && typeof playerMember === 'object') {
+                const conditionsToTrack = ['bashed', 'waiting', 'poison', 'slept', 'wound', 'snared', 'hungry', 'thirsty', 'sanctuary'];
+                const conditions: Record<string, boolean> = {};
+                let foundAny = false;
+
+                for (const cond of conditionsToTrack) {
+                    if (cond in playerMember) {
+                        conditions[cond] = !!playerMember[cond];
+                        foundAny = true;
+                    }
+                }
+
+                if (foundAny) {
+                    this.handlers.setStats((prev: GameStats) => ({
+                        ...prev,
+                        conditions: { ...prev.conditions, ...conditions }
+                    }));
+                }
+            }
+        } catch (e) {
+            console.error('[GMCP] Parse error in Group:', e, json);
         }
     }
 

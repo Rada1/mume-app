@@ -244,6 +244,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         inCombatRef: s.inCombatRef,
         setLightningEnabled: s.setLightningEnabled,
         setPlayerPosition: s.setPlayerPosition,
+        setMood: s.setMood,
         detectLighting: env.detectLighting,
         setCurrentTerrain: s.setCurrentTerrain,
         isSoundEnabledRef: settings.isSoundEnabledRef,

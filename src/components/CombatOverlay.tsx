@@ -12,14 +12,14 @@ import './CombatOverlay.css';
 
 const getQuadCount = (status: CombatHealthStatus | null): number => {
     switch (status) {
-        case 'Healthy': return 6;
-        case 'Fine': return 6;
-        case 'Hurt': return 5;
-        case 'Wounded': return 4;
-        case 'Badly Wounded': return 3;
-        case 'Awful': return 2;
-        case 'Stunned': return 1;
-        case 'Dying': return 1;
+        case 'Healthy': return 5;
+        case 'Fine': return 5;
+        case 'Hurt': return 4;
+        case 'Wounded': return 3;
+        case 'Badly Wounded': return 2;
+        case 'Awful': return 1;
+        case 'Stunned': return 0;
+        case 'Dying': return 0;
         default: return 0;
     }
 };
@@ -35,7 +35,7 @@ const HealthQuads: React.FC<{ status: CombatHealthStatus | null }> = ({ status }
     
     return (
         <div className="health-quads">
-            {[...Array(6)].map((_, i) => (
+            {[...Array(5)].map((_, i) => (
                 <div 
                     key={i} 
                     className={`health-quad ${i < count ? statusClass : ''}`}

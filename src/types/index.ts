@@ -101,6 +101,7 @@ export interface GameStats {
     db?: number;
     pb?: number;
     armour?: number;
+    conditions?: Record<string, boolean>;
 }
 
 export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign' | 'teleport-manage' | 'select-recipient' | 'preload';
@@ -462,4 +463,5 @@ export interface CharacterInfo {
         wil: number;
         per: number;
     };
+    spells?: string[];
 }

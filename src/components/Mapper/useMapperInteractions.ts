@@ -40,10 +40,6 @@ export interface InteractionDeps {
     viewZ: number | null;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
-    btn?: any;
-    heldButton?: any;
-    setHeldButton?: (val: any) => void;
-    target?: any;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {

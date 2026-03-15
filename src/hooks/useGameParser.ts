@@ -22,6 +22,7 @@ export interface UseGameParserDeps {
     setLightningEnabled: (val: boolean) => void;
     setPlayerPosition: (val: string) => void; detectLighting: (light: string) => void;
     setCurrentTerrain?: (terrain: string) => void;
+    setMood: (val: string) => void;
     setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentName: (val: string | null) => void;
@@ -346,20 +347,30 @@ export function useGameParser(deps: UseGameParserDeps) {
             // Global Status Parser for MUME (updates OB/DB/PB/Armour in real-time)
             // Ensure this runs BEFORE prompt stripping so we don't lose the context.
             if (contentLower.startsWith('your ob ') || contentLower.startsWith('your mood ') || contentLower.startsWith('your armor ') || contentLower.startsWith('your armour ') || contentLower.includes('ob:') || contentLower.includes('db:') || contentLower.includes('pb:')) {
-            const obMatch = content.match(/Ob\s*(?::|is)?\s*(\d+)%/i);
-            const dbMatch = content.match(/Db\s*(?::|is)?\s*(\d+)%/i);
-            const pbMatch = content.match(/Pb\s*(?::|is)?\s*(\d+)%/i);
-            const armorMatch = content.match(/(?:Armo?ur|Armor)\s*(?::|is)?\s*(\d+)%/i);
+                const obMatch = content.match(/Ob\s*(?::|is)?\s*(\d+)%/i);
+                const dbMatch = content.match(/Db\s*(?::|is)?\s*(\d+)%/i);
+                const pbMatch = content.match(/Pb\s*(?::|is)?\s*(\d+)%/i);
+                const armorMatch = content.match(/(?:Armo?ur|Armor)\s*(?::|is)?\s*(\d+)%/i);
+                const moodMatch = content.match(/your mood is (?:now )?(\w+)/i);
 
-            if (obMatch || dbMatch || pbMatch || armorMatch) {
-                setStats(prev => ({
-                    ...prev,
-                    ...(obMatch && { ob: parseInt(obMatch[1]) }),
-                    ...(dbMatch && { db: parseInt(dbMatch[1]) }),
-                    ...(pbMatch && { pb: parseInt(pbMatch[1]) }),
-                    ...(armorMatch && { armour: parseInt(armorMatch[1]) }),
-                }));
-            }
+                if (obMatch || dbMatch || pbMatch || armorMatch || moodMatch) {
+                    if (moodMatch) {
+                        const newMood = moodMatch[1].toLowerCase();
+                        deps.setMood(newMood);
+                        // If we are in combat, refresh stats to get updated OB/DB/PB
+                        if (deps.inCombatRef.current && deps.executeCommandRef.current) {
+                            setTimeout(() => deps.executeCommandRef.current?.('stat', true, true, true, true), 100);
+                        }
+                    }
+
+                    deps.setStats(prev => ({
+                        ...prev,
+                        ...(obMatch && { ob: parseInt(obMatch[1]) }),
+                        ...(dbMatch && { db: parseInt(dbMatch[1]) }),
+                        ...(pbMatch && { pb: parseInt(pbMatch[1]) }),
+                        ...(armorMatch && { armour: parseInt(armorMatch[1]) }),
+                    }));
+                }
             }
 
         // --- NEW: Priority Capture Handling ---
