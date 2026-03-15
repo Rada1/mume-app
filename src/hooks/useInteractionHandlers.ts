@@ -32,6 +32,7 @@ export interface InteractionDeps {
     setIsCharacterOpen: (val: boolean) => void;
     setIsItemsDrawerOpen: (val: boolean) => void;
     setIsSettingsOpen: (val: boolean) => void;
+    setIsStatsOpen: (val: boolean) => void;
     setSettingsTab: (val: any) => void;
     setInventoryLines: (val: any) => void;
     setEqLines: (val: any) => void;
@@ -58,7 +59,7 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
     const {
         executeCommand, input, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
-        setIsMapExpanded, setIsCharacterOpen, setIsItemsDrawerOpen,
+        setIsMapExpanded, setIsCharacterOpen, setIsItemsDrawerOpen, setIsStatsOpen,
         setInventoryLines, setEqLines, setStatsLines, isWaitingForStats, isWaitingForEq, isWaitingForInv,
         ui, setUI, setActiveDragData, heldButton, setHeldButton, parley, setParley
     } = deps;
@@ -236,19 +237,16 @@ export const useInteractionHandlers = (deps: InteractionDeps) => {
         triggerHaptic(20);
         if (dir === 'up') setIsMapExpanded(true);
         else if (dir === 'down') {
-            if (ui.mapExpanded) {
-                setIsMapExpanded(false);
-            } else if (isWaitingForStats.current || isWaitingForEq.current || isWaitingForInv.current) {
-                setIsItemsDrawerOpen(false); setIsCharacterOpen(false); setIsMapExpanded(false);
-            } else executeCommand('s');
+            setIsCharacterOpen(true);
         } else if (dir === 'right') {
-            executeCommand('stat', true, true, true, true); setIsCharacterOpen(true);
+            executeCommand('stat', true, true, true, true); 
+            setIsStatsOpen(true);
         } else if (dir === 'left') {
             executeCommand('inv', true, true, true, true);
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
             setIsItemsDrawerOpen(true);
         }
-    }, [viewport.isMobile, triggerHaptic, setIsMapExpanded, isWaitingForStats, isWaitingForEq, isWaitingForInv, setIsCharacterOpen, setIsItemsDrawerOpen, executeCommand, ui]);
+    }, [triggerHaptic, setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsItemsDrawerOpen, executeCommand]);
 
     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
         let selection = window.getSelection()?.toString().trim();

@@ -31,6 +31,7 @@ export interface CommandControllerDeps {
     popoverState: any;
     setPopoverState: (val: any) => void;
     setIsCharacterOpen: (open: boolean) => void;
+    setIsStatsOpen: (open: boolean) => void;
     setIsItemsDrawerOpen: (open: boolean) => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;

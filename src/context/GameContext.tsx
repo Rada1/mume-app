@@ -320,6 +320,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         input, isNoviceMode, status: s.status, target: v.target, setTarget: v.setTarget,
         popoverState, setPopoverState,
         setIsCharacterOpen: s.setIsCharacterOpen,
+        setIsStatsOpen: s.setIsStatsOpen,
         setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
         setIsMapExpanded: s.setIsMapExpanded,
         viewport,
