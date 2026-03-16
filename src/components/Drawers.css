@@ -33,9 +33,7 @@
     left: 0;
     right: 0;
     height: 60vh;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: rgba(15, 23, 42, 0.85);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px 20px 0 0;
     z-index: 3001;
@@ -63,9 +61,7 @@
     left: 0;
     width: calc((100vw - 900px) / 2);
     min-width: 300px;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(15, 23, 42, 0.85);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 3002;
     transform: translateX(-101%);
@@ -282,9 +278,7 @@
 .drawer-section {
     margin-bottom: 25px;
     padding: 18px;
-    background: rgba(15, 23, 42, 0.15); /* Translucent background */
-    backdrop-filter: blur(12px); /* Strong blur for floating effect */
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.85); /* Increased opacity since blur is gone */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     display: flex;
@@ -322,9 +316,7 @@
     transform: translateY(-50%);
     width: 28px;
     height: 140px;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.95);
     border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
     z-index: 2000;
     cursor: pointer;

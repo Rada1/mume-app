@@ -5,8 +5,6 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     z-index: 2000;
     opacity: 0;
     visibility: hidden;
@@ -40,9 +38,7 @@
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.9);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     margin: 10px 15px 5px 15px;
@@ -105,9 +101,7 @@
 
 /* Glass Section Container */
 .char-profile, .stats-grid > div, .details-section, .practice-tab > div, .quests-list > div, .skill-group, .info-section-glass {
-    background: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 15px;

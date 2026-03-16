@@ -164,13 +164,11 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     <div style={{ width: '6px', height: '80px', background: 'rgba(255,255,255,0.4)', borderRadius: '3px' }} />
                 </div>
                 
-                <div className="drawer-header" style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    padding: '12px 20px', 
-                    background: 'rgba(15, 23, 42, 0.7)', 
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
+                <div className="drawer-header" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '12px 20px',
+                    background: 'rgba(15, 23, 42, 0.95)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '16px',
                     margin: '10px 15px 5px 15px',
@@ -179,6 +177,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     position: 'relative',
                     zIndex: 10
                 }}>
+
                     <div className="swipe-indicator" style={{ position: 'absolute', top: '6px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '3px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
                     <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: 'var(--accent)' }}>Combat Stats</span>
                     <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ 
