@@ -281,6 +281,12 @@
     background: linear-gradient(135deg, rgba(45, 40, 20, 0.5), rgba(0, 0, 0, 0.5)) !important;
 }
 
+.input-area.terrain-building {
+    box-shadow: 0 0 20px rgba(148, 163, 184, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(148, 163, 184, 0.4) !important;
+    background: linear-gradient(135deg, rgba(40, 40, 45, 0.6), rgba(15, 15, 20, 0.7)) !important;
+}
+
 .input-form {
     display: flex;
     gap: 10px;

@@ -48,8 +48,8 @@ export const normalizeTerrain = (t: string | number | null): string => {
     const tStr = typeof t === 'number' ? TERRAIN_MAP[String(t)] || String(t) : t;
 
     const low = tStr.toLowerCase().trim();
-    if (low.includes('city') || low.includes('town')) return 'City';
-    if (low.includes('build')) return 'Building';
+    if (low.includes('city') || low.includes('town') || low.includes('street')) return 'City';
+    if (low.includes('build') || low.includes('room') || low.includes('inside') || low.includes('inn') || low.includes('shop') || low.includes('stable') || low.includes('tavern') || low.includes('basement') || low.includes('cellar')) return 'Building';
     if (low.includes('forest') || low.includes('thick')) return 'Forest';
     if (low.includes('field') || low.includes('plain') || low.includes('grass')) return 'Field';
     if (low.includes('hill')) return 'Hills';
@@ -60,7 +60,7 @@ export const normalizeTerrain = (t: string | number | null): string => {
     if (low.includes('water') || low.includes('sea') || low.includes('ocean') || low.includes('river')) return 'Water';
     if (low.includes('road') || low.includes('trail') || low.includes('path')) return 'Road';
     if (low.includes('tunnel')) return 'Tunnel';
-    if (low.includes('cavern') || low.includes('inside')) return 'Cavern';
+    if (low.includes('cavern')) return 'Cavern';
     if (low.includes('brush') || low.includes('swamp') || low.includes('shrub')) return 'Brush';
 
     // Match symbols

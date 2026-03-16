@@ -201,8 +201,32 @@ export const drawMarkers = (
         ctx.fill(); 
 
         if (marker.text) { 
-            ctx.font = `${marker.fontSize || 16}px Aniron`; 
-            ctx.fillStyle = '#8b0000'; 
+            const fontSize = marker.fontSize || 16;
+            ctx.font = `${fontSize}px Aniron`; 
+            
+            const metrics = ctx.measureText(marker.text);
+            const textWidth = metrics.width;
+            const textHeight = fontSize;
+            
+            // Define the center of the text area for the glow
+            const centerX = mx;
+            const centerY = my - dotSize - 4 - (textHeight / 2);
+            
+            // Draw diffuse background glow
+            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, textWidth * 0.5 + 15);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+            gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.45)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            ctx.save();
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            // Create a wide ellipse for the glow - compact
+            ctx.ellipse(centerX, centerY, textWidth / 2 + 15, textHeight + 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+
+            ctx.fillStyle = '#8b0000'; // Deep red
             ctx.textAlign = 'center'; 
             ctx.textBaseline = 'bottom'; 
             ctx.fillText(marker.text, mx, my - dotSize - 4); 
