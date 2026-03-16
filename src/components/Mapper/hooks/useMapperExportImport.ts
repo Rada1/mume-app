@@ -49,12 +49,16 @@ export const useMapperExportImport = (
         try {
             addMessage?.('system', '[Mapper] Reading MMapper file...');
             const data = await parseMM2(file, 1.0);
-            controller.loadImportedMapData(data);
+            controller.loadImportedMapData(data.rooms);
+            if (data.markers && Object.keys(data.markers).length > 0) {
+                setMarkers(data.markers);
+                addMessage?.('system', `[Mapper] Imported ${Object.keys(data.markers).length} markers.`);
+            }
         } catch (err) {
             console.error(err);
             addMessage?.('system', '[Mapper] Error parsing .mm2 file.');
         }
-    }, [addMessage, controller]);
+    }, [addMessage, controller, setMarkers]);
 
     return { handleExportMap, handleImportMap, handleImportMMapper };
 };

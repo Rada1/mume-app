@@ -1,4 +1,11 @@
-export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>> => {
+import { MapperMarker } from './mapperTypes';
+
+export type MapData = {
+    rooms: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>;
+    markers: Record<string, MapperMarker>;
+};
+
+export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> => {
     return new Promise((resolve, reject) => {
         const isXML = file.name.toLowerCase().endsWith('.xml');
 
@@ -6,6 +13,9 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
 
         reader.onload = async (e) => {
             try {
+                const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]> = {};
+                const markers: Record<string, MapperMarker> = {};
+
                 if (isXML) {
                     const text = e.target?.result as string;
                     if (!text) throw new Error("Could not read XML file");
@@ -16,17 +26,17 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
                     const rooms = xmlDoc.getElementsByTagName("room");
                     console.log(`[XML Parser] Found ${rooms.length} rooms to parse.`);
 
-                    const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]> = {};
+                    const idToServerId: Record<string, string> = {};
+                    const parsedRooms: any[] = [];
 
                     for (let i = 0; i < rooms.length; i++) {
                         const room = rooms[i];
-
                         const idAttr = room.getAttribute("id");
                         if (!idAttr) continue;
-
                         const serverIdAttr = room.getAttribute("server_id") || idAttr;
-                        const name = room.getAttribute("name") || "Unknown";
+                        idToServerId[idAttr] = serverIdAttr;
 
+                        const name = room.getAttribute("name") || "Unknown";
                         let x = 0, y = 0, z = 0;
                         const coordNode = room.getElementsByTagName("coord")[0];
                         if (coordNode) {
@@ -35,26 +45,33 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
                             z = parseInt(coordNode.getAttribute("z") || "0", 10);
                         }
 
-                        // Just map to integer 0 for fallback, or we could parse terrain text.
-                        // Usually terrain string is fine, but the old parser returns a number. We'll return 0 to default to 'Field' or let GMCP override it.
                         let terrain = 0;
-
-                        const exits: Record<string, { target: string, hasDoor: boolean }> = {};
+                        const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[] }> = {};
                         const exitNodes = room.getElementsByTagName("exit");
                         for (let j = 0; j < exitNodes.length; j++) {
                             const exitNode = exitNodes[j];
                             const dir = exitNode.getAttribute("dir");
                             const toNode = exitNode.getElementsByTagName("to")[0];
                             const doorAttr = exitNode.getAttribute("door");
+                            
+                            const flags: string[] = [];
+                            const flagNodes = exitNode.getElementsByTagName("exitflag");
+                            for (let k = 0; k < flagNodes.length; k++) {
+                                if (flagNodes[k].textContent) flags.push(flagNodes[k].textContent.trim());
+                            }
+                            const flagsAttr = exitNode.getAttribute("flags");
+                            if (flagsAttr) flagsAttr.split(',').forEach(f => flags.push(f.trim()));
+
                             if (dir && toNode && toNode.textContent) {
-                                // Mume dir map
                                 let d = dir.toLowerCase();
                                 if (d === 'up') d = 'u';
                                 else if (d === 'down') d = 'd';
                                 else d = d.charAt(0);
+                                
                                 exits[d] = {
-                                    target: toNode.textContent.trim(),
-                                    hasDoor: doorAttr === '1' || doorAttr === 'true'
+                                    target: toNode.textContent.trim(), // Sequential ID for now
+                                    hasDoor: doorAttr === '1' || doorAttr === 'true' || flags.includes('DOOR'),
+                                    flags: flags
                                 };
                             }
                         }
@@ -71,21 +88,79 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
                             if (loadNodes[j].textContent) loadFlags.push(loadNodes[j].textContent.trim());
                         }
 
-                        // Key by internal `idAttr`. Index 6 holds the gmcp `serverIdAttr`
-                        roomCoords[idAttr] = [
-                            x,
-                            -y, // Invert Y for MMapper logic
-                            z * floorHeight,
-                            terrain,
-                            exits,
-                            name,
-                            serverIdAttr,
-                            mobFlags,
-                            loadFlags
-                        ];
+                        parsedRooms.push({ idAttr, serverIdAttr, x, y, z, terrain, exits, name, mobFlags, loadFlags });
+
+                        // Room markers
+                        const roomMarkerNodes = room.getElementsByTagName("marker");
+                        for (let j = 0; j < roomMarkerNodes.length; j++) {
+                            const mNode = roomMarkerNodes[j];
+                            const mTextNode = mNode.getElementsByTagName("text")[0];
+                            const mText = mTextNode ? mTextNode.textContent : mNode.getAttribute("text");
+                            if (mText) {
+                                const mId = `mxml_${idAttr}_${j}`;
+                                markers[mId] = {
+                                    id: mId,
+                                    x: x,
+                                    y: -y,
+                                    z: z * floorHeight,
+                                    text: mText.trim(),
+                                    dotSize: 4,
+                                    fontSize: 12,
+                                    createdAt: Date.now()
+                                };
+                            }
+                        }
                     }
 
-                    resolve(roomCoords);
+                    // Second pass: Finalize rooms with server_id targets and store by server_id
+                    for (const pr of parsedRooms) {
+                        for (const dir in pr.exits) {
+                            const targetId = pr.exits[dir].target;
+                            if (idToServerId[targetId]) {
+                                pr.exits[dir].target = idToServerId[targetId];
+                            }
+                        }
+                        roomCoords[pr.serverIdAttr] = [pr.x, -pr.y, pr.z * floorHeight, pr.terrain, pr.exits, pr.name, pr.serverIdAttr, pr.mobFlags, pr.loadFlags];
+                    }
+
+                    // Parse standalone markers - Use scale 80.0
+                    const standaloneMarkers = xmlDoc.getElementsByTagName("marker");
+                    const SCALE = 80.0;
+                    for (let i = 0; i < standaloneMarkers.length; i++) {
+                        const mNode = standaloneMarkers[i];
+                        if (mNode.parentNode?.nodeName === 'room') continue;
+                        
+                        const mTextNode = mNode.getElementsByTagName("text")[0];
+                        const mText = mTextNode ? mTextNode.textContent : mNode.getAttribute("text");
+                        
+                        let mx = 0, my = 0, mz = 0;
+                        const pos1Node = mNode.getElementsByTagName("pos1")[0];
+                        if (pos1Node) {
+                            mx = parseInt(pos1Node.getAttribute("x") || "0", 10) / SCALE;
+                            my = parseInt(pos1Node.getAttribute("y") || "0", 10) / SCALE;
+                            mz = parseInt(pos1Node.getAttribute("z") || "0", 10);
+                        } else {
+                            mx = parseInt(mNode.getAttribute("x") || "0", 10) / SCALE;
+                            my = parseInt(mNode.getAttribute("y") || "0", 10) / SCALE;
+                            mz = parseInt(mNode.getAttribute("z") || "0", 10);
+                        }
+
+                        if (mText) {
+                            const mId = `mxml_s_${i}`;
+                            markers[mId] = {
+                                id: mId,
+                                x: mx,
+                                y: -my,
+                                z: mz * floorHeight,
+                                text: mText.trim(),
+                                dotSize: 4,
+                                fontSize: 13,
+                                createdAt: Date.now()
+                            };
+                        }
+                    }
+
+                    resolve({ rooms: roomCoords, markers });
                     return;
                 }
 
@@ -100,8 +175,6 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
                 if (magic !== 0xFFB2AF01) {
                     throw new Error(`Invalid magic: ${magic.toString(16)}`);
                 }
-
-                console.log(`[MM2 Parser] Version: ${version}`);
 
                 let compressedData: Uint8Array;
                 if (version >= 34) {
@@ -138,37 +211,24 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
 
                 const roomCount = ru32();
                 const markCount = ru32();
-                const currX = ri32();
-                const currY = ri32();
-                const currZ = ri32();
-
-                console.log(`[MM2 Parser] Found ${roomCount} rooms to parse.`);
-
-                const roomCoords: Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]> = {};
+                ri32(); ri32(); ri32(); // currX, currY, currZ
 
                 for (let i = 0; i < roomCount; i++) {
-                    const area = version >= 42 ? rstr() : '';
+                    if (version >= 42) rstr(); // area
                     const name = rstr();
-                    const desc = rstr();
-                    const contents = rstr();
+                    rstr(); rstr(); // desc, contents
                     const internalId = ru32();
                     const serverId = version >= 40 ? ru32() : undefined;
-                    const note = rstr();
+                    rstr(); // note
 
                     const terrain = ru8();
-                    const light = ru8();
-                    const align = ru8();
-                    const portable = ru8();
-                    const ridable = version >= 24 ? ru8() : 0;
-                    const sundeath = version >= 33 ? ru8() : 0;
+                    ru8(); ru8(); ru8(); // light, align, portable
+                    if (version >= 24) ru8(); // ridable
+                    if (version >= 33) ru8(); // sundeath
                     const mobFlagsVal = version >= 33 ? ru32() : ru16();
                     const loadFlagsVal = version >= 33 ? ru32() : ru16();
-                    const upToDate = version < 39 ? ru8() : 0;
+                    if (version < 39) ru8(); // upToDate
 
-                    // Note: Binary format stores flags as bits. 
-                    // For now we'll store them as string placeholders or numeric strings if we don't have a bitmask map yet.
-                    // But usually people want the text labels from XML. 
-                    // We'll store the raw numeric string for now to preserve the data.
                     const mobFlags: string[] = mobFlagsVal !== 0 ? [`BIN_MOB_${mobFlagsVal}`] : [];
                     const loadFlags: string[] = loadFlagsVal !== 0 ? [`BIN_LOAD_${loadFlagsVal}`] : [];
 
@@ -177,15 +237,15 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
                     const z = ri32();
 
                     const DIRS = ['n', 's', 'e', 'w', 'u', 'd', 'out'];
-                    const exits: Record<string, { target: string, hasDoor: boolean }> = {};
+                    const exits: Record<string, { target: string, hasDoor: boolean, flags?: string[] }> = {};
 
                     for (let e = 0; e < 7; e++) {
                         const exitFlags = version >= 33 ? ru16() : ru8();
                         const doorFlags = version >= 32 ? ru16() : ru8();
-                        const doorName = rstr();
+                        rstr(); // doorName
 
                         if (version < 38) {
-                            while (ru32() !== 0xFFFFFFFF) { } // inbound
+                            while (ru32() !== 0xFFFFFFFF) { }
                         }
 
                         let firstLink: string | null = null;
@@ -196,28 +256,43 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<Record<st
                         }
 
                         if (firstLink) {
+                            // Map binary flags to string if possible, or just numeric string
+                            const flags: string[] = exitFlags !== 0 ? [`BIN_EXIT_${exitFlags}`] : [];
                             exits[DIRS[e]] = {
                                 target: firstLink,
-                                hasDoor: doorFlags !== 0
+                                hasDoor: doorFlags !== 0,
+                                flags: flags
                             };
                         }
                     }
 
                     const key = String(internalId);
-                    roomCoords[key] = [
-                        x,
-                        -y,
-                        z * floorHeight,
-                        terrain,
-                        exits,
-                        name,
-                        String(serverId || key),
-                        mobFlags,
-                        loadFlags
-                    ];
+                    roomCoords[key] = [x, -y, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags];
                 }
 
-                resolve(roomCoords);
+                for (let i = 0; i < markCount; i++) {
+                    const mType = ru32();
+                    const mClass = rstr();
+                    const mText = rstr();
+                    const mx = ri32();
+                    const my = ri32();
+                    const mz = ri32();
+                    if (version >= 33) ru32(); // color
+                    
+                    const mId = `mbin_${i}`;
+                    markers[mId] = {
+                        id: mId,
+                        x: mx,
+                        y: -my,
+                        z: mz * floorHeight,
+                        text: mText,
+                        dotSize: 4,
+                        fontSize: 12,
+                        createdAt: Date.now()
+                    };
+                }
+
+                resolve({ rooms: roomCoords, markers });
 
             } catch (err) {
                 console.error("[Parser] Failed:", err);

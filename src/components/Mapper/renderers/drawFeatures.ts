@@ -56,15 +56,12 @@ const drawRoomFlagsOptimized = (
     const allFlagsStr = [...mobF, ...loadF].join('|').toUpperCase();
 
     const indicators = [
-        { regex: /WATER|POND|FOUNTAIN|WELL/i, sym: '~', color: '#89b4fa' },
-        { regex: /HERB/i, sym: '*', color: '#a6e3a1' },
-        { regex: /FOOD|BERRY|VEGETABLE/i, sym: 'f', color: '#f9e2af' },
-        { regex: /HORSE|STALLION|DONKEY/i, sym: 'h', color: '#cba6f7' },
-        { regex: /BOAT/i, sym: 'b', color: '#94e2d5' },
-        { regex: /STABLE/i, sym: 'S', color: '#fab387' },
+        { regex: /QUEST|MISSION/i, sym: '?', color: '#fab387' },
+        { regex: /SHOP|STORE/i, sym: '$', color: '#f9e2af' },
+        { regex: /GUILD|OFFICE/i, sym: 'G', color: '#cba6f7' },
+        { regex: /RENT|INN/i, sym: 'R', color: '#89b4fa' },
+        { regex: /AGGRESSIVE/i, sym: '!', color: '#f38ba8' },
         { regex: /DT|DEATHTRAP/i, sym: '☠', color: '#f38ba8' },
-        { regex: /FERRY/i, sym: 'F', color: '#74c7ec' },
-        { regex: /COACH/i, sym: 'C', color: '#b4befe' }
     ];
 
     for (const ind of indicators) {
@@ -82,7 +79,7 @@ export const drawFeatures = (
     bX1: number, bY1: number, bX2: number, bY2: number,
     floorIndex: Record<string, string[]>
 ) => {
-    const { ctx, dpr, isDarkMode, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, camera } = rCtx;
+    const { ctx, dpr, isDarkMode, invZoom, currentZ, explored, unveilMap, allRooms, preloaded, camera, baseMapExitsRef } = rCtx;
     const s = GRID_SIZE;
 
     // Fast return if no buckets
@@ -107,9 +104,16 @@ export const drawFeatures = (
                     const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
                     for (const dir in ghostExits) {
                         const exObj = ghostExits[dir]; if (!exObj) continue;
-                        const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
-                        if (targetData && (Math.abs(targetData[2] - currentZ) <= 0.5 || ((dir === 'u' || dir === 'd') && Math.abs(targetData[2] - currentZ) <= 1.5)) && (explored.has(targetVnum) || unveilMap)) {
-                            const combinedFlags = [...(exObj.flags || []), ...(currentRoomObj.exits?.[dir]?.flags || [])];
+                            const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
+                        if (targetData && (Math.abs(targetData[2] - currentZ) <= 0.5 || ((dir === 'u' || dir === 'd') && Math.abs(targetData[2] - currentZ) <= 1.5))) {
+                            const isTargetExplored = explored.has(targetVnum);
+                            if (!unveilMap && !isTargetExplored) continue;
+
+                            const ardaExit = baseMapExitsRef.current[vnum]?.[4]?.[dir];
+                            const combinedFlags = [
+                                ...(ardaExit?.flags || []),
+                                ...(currentRoomObj.exits?.[dir]?.flags || [])
+                            ];
                             const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
                             const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
                             if (hasRoadFlag) {
@@ -206,7 +210,7 @@ export const drawFeatures = (
 };
 
 export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
-    const { ctx, isDarkMode, currentZ, preloaded, camera, allRooms, dpr, invZoom } = rCtx;
+    const { ctx, isDarkMode, currentZ, preloaded, camera, allRooms, dpr, invZoom, baseMapExitsRef } = rCtx;
     const s = GRID_SIZE;
 
     for (const room of localRooms) {

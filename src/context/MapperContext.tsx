@@ -24,6 +24,7 @@ interface MapperContextType {
     currentRoomIdRef: React.MutableRefObject<string | null>;
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
+    baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     unveilMap: boolean;
     setUnveilMap: React.Dispatch<React.SetStateAction<boolean>>;
     allowPersistence: boolean;
@@ -78,7 +79,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         markers, setMarkers, markersRef,
         exploredVnums, setExploredVnums, exploredRef,
         currentRoomId, setCurrentRoomId, currentRoomIdRef,
-        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef
+        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef, baseMapExitsRef
     } = useMapData();
 
     // Unified UI State
@@ -107,8 +108,9 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const hasLoadedRef = useRef(false);
     const loadMasterMap = useCallback(async (force = false) => {
         if (hasLoadedRef.current && !force) return;
-        hasLoadedRef.current = true; // Set immediately to prevent multiple fetches
+        hasLoadedRef.current = true;
         try {
+            // 1. Load basic room coordinates (JSON)
             const res = await fetch('/mume_map_data.json?v=' + Date.now());
             if (!res.ok) throw new Error('No preloaded map data');
             const data = await res.json();
@@ -127,9 +129,30 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             }
             spatialIndexRef.current = index; nameIndexRef.current = nIndex; serverIdIndexRef.current = sIndex;
             if (showDebugEchoes) addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
-            hasLoadedRef.current = true;
+
+            // 2. Automatically load Markers from ardagmcp.xml if it exists
+            try {
+                const xmlRes = await fetch('/ardagmcp.xml?v=' + Date.now());
+                if (xmlRes.ok) {
+                    const blob = await xmlRes.blob();
+                    const file = new File([blob], 'ardagmcp.xml');
+                    const { parseMM2 } = await import('../components/Mapper/mm2Parser');
+                    const importedData = await parseMM2(file, 1.0);
+                    
+                    if (importedData.markers && Object.keys(importedData.markers).length > 0) {
+                        setMarkers(prev => ({ ...prev, ...importedData.markers }));
+                    }
+                    if (importedData.rooms && Object.keys(importedData.rooms).length > 0) {
+                        baseMapExitsRef.current = importedData.rooms;
+                        if (showDebugEchoes) addMessage?.('system', `[Mapper] Automatically imported ${Object.keys(importedData.markers).length} markers and ${Object.keys(importedData.rooms).length} base map room details.`);
+                    }
+                }
+            } catch (xmlErr) {
+                console.warn("[Mapper] Could not autoload ardagmcp.xml data:", xmlErr);
+            }
+
         } catch (err) { console.warn("[Mapper] Could not load master map data:", err); }
-    }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef]);
+    }, [addMessage, showDebugEchoes, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, setMarkers]);
 
     useEffect(() => { loadMasterMap(); }, [loadMasterMap]);
 
@@ -142,7 +165,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Actions
     const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation } = useMapActions({
         rooms, setRooms, roomsRef, markers, setMarkers, setExploredVnums, setCurrentRoomId, currentRoomIdRef,
-        preloadedCoordsRef, spatialIndexRef, addMessage, lastDetectedTerrainRef, loadMasterMap
+        preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
 
     const handleResetAndSync = useCallback(() => {
@@ -321,7 +344,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const value = useMemo(() => ({
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,
-        currentRoomIdRef, roomsRef, preloadedCoordsRef,
+        currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef,
         unveilMap, setUnveilMap, allowPersistence, setAllowPersistence,
         handleResetAndSync, handleClearMap, handleSyncLocation,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
@@ -335,7 +358,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         rooms, markers, currentRoomId, unveilMap, allowPersistence, handleResetAndSync,
         handleClearMap, handleSyncLocation, handleAddRoom, handleDeleteRoom,
         pushPendingMove, handleMoveConfirmed, handleMoveFailure, renderVersion,
-        currentRoomIdRef, roomsRef, preloadedCoordsRef, preMoveRef,
+        currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef, preMoveRef,
         spatialIndexRef, firstExploredAtRef, triggerRender, setCurrentRoomId,
         selectedRoomIds, selectedMarkerId, autoCenter, viewZ, infoRoomId,
         markersRef, exploredRef, exploredVnums, isMapFloating

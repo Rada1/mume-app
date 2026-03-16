@@ -178,6 +178,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 preMoveRef={context.preMoveRef}
                 walkTargetId={walkTargetId}
                 walkPath={walkPath}
+                baseMapExitsRef={context.baseMapExitsRef}
             />
             <div className="vignette-container" />
             

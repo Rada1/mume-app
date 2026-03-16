@@ -2,7 +2,6 @@ import { useCallback, useRef, MutableRefObject } from 'react';
 import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
-import { drawOrganicTerrains } from './renderers/drawOrganicTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
 import { drawGrid, drawEntities, drawMarkers, drawMarquee } from './renderers/drawEntities';
 
@@ -30,6 +29,7 @@ interface RendererProps {
     firstExploredAtRef: MutableRefObject<Record<string, number>>;
     preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>>;
     spatialIndexRef: MutableRefObject<Record<number, Record<string, string[]>>>;
+    baseMapExitsRef: MutableRefObject<Record<string, any>>;
     walkTargetId?: string | null;
     walkPath?: string[];
     showOrganicTerrain?: boolean;
@@ -39,7 +39,7 @@ export const useMapperRenderer = ({
     rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
-    preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
+    preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, renderVersion,
     unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     showOrganicTerrain = true
 }: RendererProps) => {
@@ -101,15 +101,9 @@ export const useMapperRenderer = ({
             localSpatialIndexRef.current = newIndex;
         }
 
-        // 2. Viewport & Bounds
-        const vX1 = camera.x, vY1 = camera.y;
-        const vX2 = camera.x + (canvasWidth / camera.zoom), vY2 = camera.y + (canvasHeight / camera.zoom);
-        const gX1 = Math.floor(vX1 / GRID_SIZE) - 1, gY1 = Math.floor(vY1 / GRID_SIZE) - 1;
-        const gX2 = Math.ceil(vX2 / GRID_SIZE) + 1, gY2 = Math.ceil(vY2 / GRID_SIZE) + 1;
         const curZInt = Math.round(currentZ);
 
-        // 3. Static Cache Management
-        // We cache a slightly larger area than visible to allow for smooth panning without rebuild
+        // 2. Static Cache Management (Oversized 2x Buffer)
         if (!offscreenCacheRef.current) {
             const canvas = document.createElement('canvas');
             const offCtx = canvas.getContext('2d', { alpha: false, desynchronized: true })!;
@@ -117,47 +111,67 @@ export const useMapperRenderer = ({
         }
 
         const cache = offscreenCacheRef.current;
-        const w = ctx.canvas.width, h = ctx.canvas.height;
-        if (cache.canvas.width !== w || cache.canvas.height !== h) {
-            cache.canvas.width = w; cache.canvas.height = h;
+        const baseW = ctx.canvas.width, baseH = ctx.canvas.height;
+        // We make the cache 2x larger than the screen to allow for smooth panning
+        const cacheW = baseW * 2, cacheH = baseH * 2;
+        
+        if (cache.canvas.width !== cacheW || cache.canvas.height !== cacheH) {
+            cache.canvas.width = cacheW; 
+            cache.canvas.height = cacheH;
             cache.lastParams = ""; // Force rebuild
         }
 
-        const cacheParams = `${curZInt}_${camera.zoom}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}`;
+        // Cache rebuilding logic:
+        // We only rebuild if:
+        // 1. Core params changed (Dark Mode, Rooms, Explored set)
+        // 2. Zoom changed significantly (> 20%)
+        // 3. Viewport moved too close to the buffer edges
+        const lastBuildZoom = (cache as any).lastBuildZoom ?? 0;
+        const zoomDiff = Math.abs(Math.log2(camera.zoom / lastBuildZoom));
+        const lastBuildX = (cache as any).lastBuildX ?? 0;
+        const lastBuildY = (cache as any).lastBuildY ?? 0;
         
-        // Cache rebuild threshold should scale with zoom.
-        // At high zoom, we want tight bounds (GRID_SIZE * 5).
-        // At low zoom, we can tolerate much more movement before rebuilding the expensive background.
-        const movementThreshold = Math.max(GRID_SIZE * 15, (GRID_SIZE * 30) / Math.max(0.1, camera.zoom));
-        const lastCamX = (cache as any).lastCamX ?? 0;
-        const lastCamY = (cache as any).lastCamY ?? 0;
-        const cameraDist = Math.hypot(camera.x - lastCamX, camera.y - lastCamY);
-        
-        const needsRebuild = cache.lastParams !== cacheParams || cameraDist > movementThreshold;
+        // Distance from center of cache in world units
+        const moveDist = Math.hypot(camera.x - lastBuildX, camera.y - lastBuildY) * camera.zoom * dpr;
+        // Rebuild if we moved more than 30% of the screen width from the cached center
+        const moveThreshold = baseW * 0.4;
+
+        const baseParams = `${curZInt}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}`;
+        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
             offCtx.setTransform(1, 0, 0, 1, 0, 0);
             offCtx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
-            offCtx.fillRect(0, 0, w, h);
+            offCtx.fillRect(0, 0, cacheW, cacheH);
             
             offCtx.save();
             offCtx.imageSmoothingEnabled = false; 
             offCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
-            offCtx.translate(-camera.x, -camera.y);
+            
+            // Center the cache on the camera
+            // Current viewport in world units: [camera.x, camera.y] to [camera.x + baseW/zoom, camera.y + baseH/zoom]
+            // We want the cache to cover [camera.x - baseW/zoom/2, camera.y - baseH/zoom/2] to [camera.x + 3/2*baseW/zoom, ...]
+            const buildCamX = camera.x - (baseW / camera.zoom) * 0.5;
+            const buildCamY = camera.y - (baseH / camera.zoom) * 0.5;
+            
+            offCtx.translate(-buildCamX, -buildCamY);
 
-            const vCache = visibleCacheRef.current;
+            const vX1 = buildCamX, vY1 = buildCamY;
+            const vX2 = buildCamX + (cacheW / (camera.zoom * dpr)), vY2 = buildCamY + (cacheH / (camera.zoom * dpr));
+            const gX1 = Math.floor(vX1 / GRID_SIZE) - 1, gY1 = Math.floor(vY1 / GRID_SIZE) - 1;
+            const gX2 = Math.ceil(vX2 / GRID_SIZE) + 1, gY2 = Math.ceil(vY2 / GRID_SIZE) + 1;
+
             const roomAtCoord: Record<string, any> = {};
             const visitedAtCoord: Record<string, boolean> = {};
             const localVisible: any[] = [];
             const preloaded = preloadedCoordsRef.current;
             const floorIndex = spatialIndexRef.current[curZInt];
             
-            // Adjust bucket size based on zoom for spatial lookups. 
-            // If unveilMap is true, we want a slightly larger buffer to ensure no gaps.
-            const lookSpan = unveilMap ? 40 : (camera.zoom < 0.05 ? 30 : (camera.zoom < 0.1 ? 15 : 10));
-            const bX1 = Math.floor(gX1 / 5) - lookSpan, bY1 = Math.floor(gY1 / 5) - lookSpan;
-            const bX2 = Math.floor(gX2 / 5) + lookSpan, bY2 = Math.floor(gY2 / 5) + lookSpan;
+            // Spatially gather visible elements for the enlarged buffer
+            const lookSpan = 15; // Increased buffer
+            const bX1 = Math.floor(gX1 / 5) - 2, bY1 = Math.floor(gY1 / 5) - 2;
+            const bX2 = Math.floor(gX2 / 5) + 2, bY2 = Math.floor(gY2 / 5) + 2;
 
             if (floorIndex) {
                 for (let bx = bX1; bx <= bX2; bx++) {
@@ -166,8 +180,7 @@ export const useMapperRenderer = ({
                         if (bucket) {
                             for (let j = 0; j < bucket.length; j++) {
                                 const vnum = bucket[j];
-                                const isExplored = explored.has(vnum);
-                                if (!isExplored && !unveilMap) continue;
+                                if (!explored.has(vnum) && !unveilMap) continue;
                                 const rData = preloaded[vnum];
                                 const irx = Math.round(rData[0]), iry = Math.round(rData[1]);
                                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
@@ -198,77 +211,73 @@ export const useMapperRenderer = ({
                 }
             }
 
-            vCache.roomAtCoord = roomAtCoord; vCache.visitedAtCoord = visitedAtCoord; vCache.localRooms = localVisible;
-            vCache.viewBounds = { x1: gX1, y1: gY1, x2: gX2, y2: gY2, z: curZInt };
-
             const rCtx: RenderContext = {
-                ctx: offCtx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
+                ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
-                allRooms, roomAtCoord: vCache.roomAtCoord, visitedAtCoord: vCache.visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath
+                allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef
             };
 
             drawGrid(rCtx, gX1, gY1, gX2, gY2);
+            if (floorIndex) drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+            drawLocalTerrains(rCtx, localVisible);
 
-            // 1. Draw Terrains
-            offCtx.save();
-            if (showOrganicTerrain && floorIndex) {
-                drawOrganicTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-            }
-            
-            // Draw regular terrains (always as base or fallback)
-            if (floorIndex) {
-                drawTerrains(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-            }
-            drawLocalTerrains(rCtx, vCache.localRooms);
-            offCtx.restore();
-
-            // 2. Overlay Noise Texture (Removed for sharper look)
-
-            // 3. Draw Crisp Features on Top
             if (camera.zoom > 0.05) {
-                if (floorIndex) {
-                    drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
-                }
-                drawLocalFeatures(rCtx, vCache.localRooms);
+                if (floorIndex) drawFeatures(rCtx, bX1, bY1, bX2, bY2, floorIndex);
+                drawLocalFeatures(rCtx, localVisible);
             }
             
             offCtx.restore();
 
-            cache.lastParams = cacheParams;
-            (cache as any).lastCamX = camera.x; (cache as any).lastCamY = camera.y;
+            cache.lastParams = baseParams;
+            (cache as any).lastBuildZoom = camera.zoom;
+            (cache as any).lastBuildX = camera.x;
+            (cache as any).lastBuildY = camera.y;
+            (cache as any).buildCamX = buildCamX;
+            (cache as any).buildCamY = buildCamY;
+            (cache as any).roomAtCoord = roomAtCoord;
+            (cache as any).visitedAtCoord = visitedAtCoord;
         }
 
-        // 4. Main Rendering Pass
-        // Wipe main canvas before drawing
+        // 3. Main Rendering Pass (Draw the static cache with scaling/projection)
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.imageSmoothingEnabled = false; // Disable smoothing for maximum sharpness
+        ctx.imageSmoothingEnabled = camera.zoom < (cache as any).lastBuildZoom; // Smooth only when shrinking
         ctx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.fillRect(0, 0, baseW, baseH);
 
-        // Draw the static cache with offset correction
-        const offsetX = ((cache as any).lastCamX - camera.x) * camera.zoom * dpr;
-        const offsetY = ((cache as any).lastCamY - camera.y) * camera.zoom * dpr;
-        ctx.drawImage(cache.canvas, offsetX, offsetY);
+        // Project the cached canvas onto the screen
+        // Cache is centered at [buildCamX, buildCamY] with zoom [lastBuildZoom]
+        const bZoom = (cache as any).lastBuildZoom;
+        const bX = (cache as any).buildCamX;
+        const bY = (cache as any).buildCamY;
+        
+        // Calculate the rectangle of the cache that is visible on screen
+        const sX = (camera.x - bX) * bZoom * dpr;
+        const sY = (camera.y - bY) * bZoom * dpr;
+        const sW = baseW * (bZoom / camera.zoom);
+        const sH = baseH * (bZoom / camera.zoom);
+        
+        ctx.drawImage(cache.canvas, sX, sY, sW, sH, 0, 0, baseW, baseH);
 
-        // Overlay Dynamic Entities (Player, Trails, Markers)
+        // 4. Overlay Dynamic Entities (Player, Trails, Markers)
         ctx.save();
+        ctx.imageSmoothingEnabled = false;
         ctx.scale(dpr * camera.zoom, dpr * camera.zoom);
         ctx.translate(-camera.x, -camera.y);
 
         const rCtx: RenderContext = {
-            ctx, dpr, canvasWidth, canvasHeight, camera, isDarkMode, isMobile,
+            ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
-            allRooms, roomAtCoord: visibleCacheRef.current.roomAtCoord, visitedAtCoord: visibleCacheRef.current.visitedAtCoord, 
-            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath
+            allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
+            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef
         };
 
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
-        drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, vX1, vY1, vX2, vY2);
+        drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
 
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, exploredRef, renderVersion, firstExploredAtRef]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef]);
 
     return { drawMap };
 };

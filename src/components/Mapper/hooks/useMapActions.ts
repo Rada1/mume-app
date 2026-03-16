@@ -13,6 +13,7 @@ interface UseMapActionsProps {
     currentRoomIdRef: React.MutableRefObject<string | null>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
+    baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     addMessage?: (type: string, msg: string) => void;
     lastDetectedTerrainRef: React.MutableRefObject<string | null>;
     loadMasterMap: (force?: boolean) => void;
@@ -25,6 +26,7 @@ export const useMapActions = ({
     setCurrentRoomId, currentRoomIdRef,
     preloadedCoordsRef,
     spatialIndexRef,
+    baseMapExitsRef,
     addMessage,
     lastDetectedTerrainRef,
     loadMasterMap

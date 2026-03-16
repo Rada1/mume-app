@@ -22,13 +22,14 @@ export const useMapData = () => {
     const spatialIndexRef = useRef<Record<number, Record<string, string[]>>>({});
     const nameIndexRef = useRef<Record<string, string[]>>({});
     const serverIdIndexRef = useRef<Record<string, string>>({});
-    const preloadedCoordsRef = useRef<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>({});
+    const preloadedCoordsRef = useRef<Record<string, any>>({});
+    const baseMapExitsRef = useRef<Record<string, any>>({});
 
     return {
         rooms, setRooms, roomsRef,
         markers, setMarkers, markersRef,
         exploredVnums, setExploredVnums, exploredRef,
         currentRoomId, setCurrentRoomId, currentRoomIdRef,
-        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef
+        spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef, baseMapExitsRef
     };
 };
