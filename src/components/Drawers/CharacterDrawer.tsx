@@ -98,26 +98,26 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             className={`drawer-tab ${activeTab === 'info' ? 'active' : ''}`}
                             onClick={(e) => { e.stopPropagation(); setActiveTab('info'); }}
                         >
-                            <User size={16} />
+                            <User size={14} />
                             <span>Character</span>
                         </button>
                         <button 
                             className={`drawer-tab ${activeTab === 'practice' ? 'active' : ''}`}
                             onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); }}
                         >
-                            <BookOpen size={16} />
+                            <BookOpen size={14} />
                             <span>Practice</span>
                         </button>
                         <button 
                             className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
                             onClick={(e) => { e.stopPropagation(); setActiveTab('quests'); }}
                         >
-                            <ScrollText size={16} />
+                            <ScrollText size={14} />
                             <span>Quests</span>
                         </button>
                     </div>
                     <button className="close-button" onClick={(e) => { e.stopPropagation(); onClose(); }}>
-                        <X size={20} />
+                        <X size={18} />
                     </button>
                 </div>
 
@@ -139,30 +139,18 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                                 <button className="cancel-icon-button" onClick={() => setIsEditingTitle(false)}><RotateCcw size={16} /></button>
                                             </div>
                                         ) : (
-                                            <>
+                                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
                                                 <h2>{info.name || 'Unknown Traveler'}</h2>
-                                                <div className="edit-title-container">
-                                                    {characterInfo.level >= 21 ? (
-                                                        <button className="edit-inline-button" onClick={() => setIsEditingTitle(true)}>
-                                                            <Edit3 size={16} />
-                                                        </button>
-                                                    ) : (
-                                                        <div className="edit-inline-button disabled" title="You can customize your title once you hit level 21!">
-                                                            <Edit3 size={16} />
-                                                            <HelpCircle size={12} className="help-icon" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </>
+                                                <span className="level-badge">Lv {characterInfo.level}</span>
+                                            </div>
                                         )}
                                     </div>
-                                    <p>{characterInfo.race} {characterInfo.subrace} {characterInfo.subclass || characterInfo.class}</p>
+                                    <p style={{ marginTop: '2px' }}>{characterInfo.race} {characterInfo.subrace} {characterInfo.subclass || characterInfo.class}</p>
                                     <div className="char-meta-row">
-                                        <span className="level-badge">Level {characterInfo.level}</span>
-                                        {characterInfo.level < 21 && (
+                                        {characterInfo.level < 21 ? (
                                             <div className="class-selection-container">
                                                 <button 
-                                                    className={`change-class-button ${isSelectingClass ? 'active' : ''}`} 
+                                                    className="change-class-button"
                                                     onClick={() => setIsSelectingClass(!isSelectingClass)}
                                                 >
                                                     {isSelectingClass ? 'Cancel' : 'Change Class'}
@@ -183,77 +171,60 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                                     </div>
                                                 )}
                                             </div>
+                                        ) : (
+                                            <button className="edit-section-button" onClick={() => setIsEditingTitle(true)}>
+                                                <Edit3 size={12} /> Custom Title
+                                            </button>
                                         )}
-                                        <button className="refresh-info-button" onClick={handleRefresh} title="Refresh all character data">
+                                        <button className="refresh-info-button" onClick={handleRefresh} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: '4px' }}>
                                             <RefreshCw size={14} />
                                         </button>
                                     </div>
                                     {characterInfo.alignment && (
-                                        <p className="alignment-text">{characterInfo.alignment}</p>
+                                        <p style={{ color: 'var(--accent)', opacity: 0.8, fontSize: '0.75rem', marginTop: '4px', fontStyle: 'italic' }}>{characterInfo.alignment}</p>
                                     )}
                                 </div>
                             </div>
 
                             <div className="stats-grid">
-                                <div className="stat-card gold">
+                                <div className="stat-card gold info-section-glass">
                                     <div className="stat-label"><Coins size={14} /> Gold</div>
                                     <div className="stat-value">{formatNumber(info.gold)}</div>
                                 </div>
                                 
-                                <div className="base-stats-section">
+                                <div className="base-stats-section info-section-glass">
                                     <h3>Base Stats</h3>
                                     <div className="base-stats-grid">
-                                        <div className="base-stat-item"><span>Str:</span> {info.stats?.str || 0}</div>
-                                        <div className="base-stat-item"><span>Int:</span> {info.stats?.int || 0}</div>
-                                        <div className="base-stat-item"><span>Wis:</span> {info.stats?.wis || 0}</div>
-                                        <div className="base-stat-item"><span>Dex:</span> {info.stats?.dex || 0}</div>
-                                        <div className="base-stat-item"><span>Con:</span> {info.stats?.con || 0}</div>
-                                        <div className="base-stat-item"><span>Wil:</span> {info.stats?.wil || 0}</div>
-                                        <div className="base-stat-item"><span>Per:</span> {info.stats?.per || 0}</div>
+                                        <div className="base-stat-item"><span>Str</span> {info.stats?.str || 0}</div>
+                                        <div className="base-stat-item"><span>Int</span> {info.stats?.int || 0}</div>
+                                        <div className="base-stat-item"><span>Wis</span> {info.stats?.wis || 0}</div>
+                                        <div className="base-stat-item"><span>Dex</span> {info.stats?.dex || 0}</div>
+                                        <div className="base-stat-item"><span>Con</span> {info.stats?.con || 0}</div>
+                                        <div className="base-stat-item"><span>Wil</span> {info.stats?.wil || 0}</div>
+                                        <div className="base-stat-item"><span>Per</span> {info.stats?.per || 0}</div>
                                     </div>
                                 </div>
 
-                                <div className="war-info-section">
-                                    <h3>War Information</h3>
-                                    <div className="war-stats">
-                                        <div className="war-stat-item">
-                                            <span className="war-label">War points:</span>
-                                            <span className="war-value">{info.warPoints || 0}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="stat-section xp-section">
-                                    <h3>Experience (XP)</h3>
+                                <div className="stat-section info-section-glass" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                                     <div className="progress-container">
                                         <div className="progress-labels">
-                                            <span>Current: {formatNumber(info.xp)}</span>
-                                            <span>Next: {formatNumber(info.xpMax)}</span>
+                                            <span>XP</span>
+                                            <span>{Math.floor((info.xp / (info.xpMax || 1)) * 100)}%</span>
                                         </div>
                                         <div className="progress-bar-bg">
-                                            <div 
-                                                className="progress-bar-fill xp" 
-                                                style={{ width: `${Math.min(100, (info.xp / (info.xpMax || 1)) * 100)}%` }}
-                                            />
+                                            <div className="progress-bar-fill xp" style={{ width: `${Math.min(100, (info.xp / (info.xpMax || 1)) * 100)}%` }} />
                                         </div>
-                                        <div className="needed-label">Needed: {formatNumber(Math.max(0, info.xpMax - info.xp))}</div>
+                                        <div className="needed-label">+{formatNumber(Math.max(0, info.xpMax - info.xp))}</div>
                                     </div>
-                                </div>
-
-                                <div className="stat-section tp-section">
-                                    <h3>Travel Points (TP)</h3>
                                     <div className="progress-container">
                                         <div className="progress-labels">
-                                            <span>Current: {formatNumber(info.tp)}</span>
-                                            <span>Next: {formatNumber(info.tpMax)}</span>
+                                            <span>TP</span>
+                                            <span>{Math.floor((info.tp / (info.tpMax || 1)) * 100)}%</span>
                                         </div>
                                         <div className="progress-bar-bg">
-                                            <div 
-                                                className="progress-bar-fill tp" 
-                                                style={{ width: `${Math.min(100, (info.tp / (info.tpMax || 1)) * 100)}%` }}
-                                            />
+                                            <div className="progress-bar-fill tp" style={{ width: `${Math.min(100, (info.tp / (info.tpMax || 1)) * 100)}%` }} />
                                         </div>
-                                        <div className="needed-label">Needed: {formatNumber(Math.max(0, info.tpMax - info.tp))}</div>
+                                        <div className="needed-label">+{formatNumber(Math.max(0, info.tpMax - info.tp))}</div>
                                     </div>
                                 </div>
                             </div>
@@ -263,8 +234,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                     <h3>Description</h3>
                                     {!isEditingDescription && (
                                         <button className="edit-section-button" onClick={() => setIsEditingDescription(true)}>
-                                            <Edit3 size={14} />
-                                            Edit
+                                            <Edit3 size={12} />
                                         </button>
                                     )}
                                 </div>
@@ -279,28 +249,25 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             />
                                             <div className="editor-actions">
                                                 <button className="editor-save-button" onClick={handleSaveDescription}>
-                                                    <Save size={14} /> Save
+                                                    <Save size={14} />
                                                 </button>
                                                 <button className="editor-cancel-button" onClick={() => setIsEditingDescription(false)}>
-                                                    <RotateCcw size={14} /> Cancel
+                                                    <RotateCcw size={14} />
                                                 </button>
                                             </div>
                                         </div>
                                     ) : (
-                                        characterInfo.description || (
-                                            <span className="placeholder-text">No description set. Click Edit to change it.</span>
-                                        )
+                                        characterInfo.description || <span style={{ opacity: 0.3 }}>No description set...</span>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="details-section">
+                            <div className="details-section" style={{ marginBottom: '20px' }}>
                                 <div className="section-header">
                                     <h3>Whois</h3>
                                     {!isEditingWhois && (
                                         <button className="edit-section-button" onClick={() => setIsEditingWhois(true)}>
-                                            <Edit3 size={14} />
-                                            Edit
+                                            <Edit3 size={12} />
                                         </button>
                                     )}
                                 </div>
@@ -315,28 +282,26 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             />
                                             <div className="editor-actions">
                                                 <button className="editor-save-button" onClick={handleSaveWhois}>
-                                                    <Save size={14} /> Save
+                                                    <Save size={14} />
                                                 </button>
                                                 <button className="editor-cancel-button" onClick={() => setIsEditingWhois(false)}>
-                                                    <RotateCcw size={14} /> Cancel
+                                                    <RotateCcw size={14} />
                                                 </button>
                                             </div>
                                         </div>
                                     ) : (
-                                        characterInfo.whois || (
-                                            <span className="placeholder-text">No whois information. Click Edit to change it.</span>
-                                        )
+                                        characterInfo.whois || <span style={{ opacity: 0.3 }}>No whois set...</span>
                                     )}
                                 </div>
                             </div>
                         </div>
                     ) : activeTab === 'practice' ? (
                         <div className="practice-tab">
-                            <div className="practice-header">
-                                <div className="sessions-badge">
-                                    {practiceData?.sessionsLeft ?? 0} Practice Sessions Left
+                            <div className="practice-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', padding: '0 5px' }}>
+                                <div className="sessions-badge" style={{ background: 'rgba(74, 222, 128, 0.1)', color: 'var(--accent)', padding: '4px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800' }}>
+                                    {practiceData?.sessionsLeft ?? 0} Sessions
                                 </div>
-                                <button className="refresh-button" onClick={() => executeCommand('practice')}>
+                                <button className="refresh-button" onClick={() => executeCommand('practice')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: '700' }}>
                                     Refresh
                                 </button>
                             </div>
@@ -345,7 +310,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                 {practiceData?.skills && practiceData.skills.length > 0 ? (
                                     Object.entries(
                                         (practiceData.skills as PracticeSkill[]).reduce((acc, skill) => {
-                                            const category = skill.skillClass || 'Ranger';
+                                            const category = skill.skillClass || 'Known';
                                             if (!acc[category]) acc[category] = [];
                                             acc[category].push(skill);
                                             return acc;
@@ -355,34 +320,33 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             <div className="skill-group-header">{category}</div>
                                             {(skills as PracticeSkill[]).map((skill, idx) => (
                                                 <div key={idx} className="skill-item">
-                                                    <div className="skill-info">
-                                                        <div className="skill-name">{skill.name}</div>
-                                                        <div className="skill-advice">{skill.advice}</div>
+                                                    <div className="skill-info" style={{ flex: 1 }}>
+                                                        <div className="skill-name" style={{ fontSize: '0.85rem', fontWeight: '800', color: '#fff' }}>{skill.name}</div>
+                                                        <div className="skill-advice" style={{ fontSize: '0.7rem', opacity: 0.5 }}>{skill.advice}</div>
                                                     </div>
-                                                    <div className="skill-stats">
-                                                        <div className="skill-knowledge">{skill.knowledge}</div>
-                                                        <div className="skill-difficulty">{skill.difficulty}</div>
+                                                    <div className="skill-stats" style={{ textAlign: 'right' }}>
+                                                        <div className="skill-knowledge" style={{ fontSize: '0.9rem', fontWeight: '900', color: 'var(--accent)' }}>{skill.knowledge}%</div>
+                                                        <div className="skill-difficulty" style={{ fontSize: '0.6rem', opacity: 0.3 }}>Diff: {skill.difficulty}</div>
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="empty-state">
-                                        <BookOpen size={48} />
-                                        <p>No skills or spells found. Try refreshing.</p>
+                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                        <BookOpen size={32} style={{ marginBottom: '10px' }} />
+                                        <p style={{ fontSize: '0.8rem' }}>No practice data available.</p>
                                     </div>
                                 )}
                             </div>
                         </div>
                     ) : (
                         <div className="quests-tab">
-                            <div className="quests-header">
-                                <div className="quests-badge">
-                                    {quests.activeQuests.length} Active Quests
+                            <div className="quests-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', padding: '0 5px' }}>
+                                <div className="quests-badge" style={{ background: 'rgba(74, 222, 128, 0.1)', color: 'var(--accent)', padding: '4px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800' }}>
+                                    {quests.activeQuests.length} Active
                                 </div>
-                                <button className="refresh-button" onClick={() => executeCommand('quest')}>
-                                    <RefreshCw size={14} />
+                                <button className="refresh-button" onClick={() => executeCommand('quest')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: '700' }}>
                                     Refresh
                                 </button>
                             </div>
@@ -398,28 +362,29 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                                 executeCommand(`quest ${quest.name.split(' ')[0].toLowerCase()}`);
                                             }}
                                         >
-                                            <div className="quest-info">
-                                                <div className="quest-name">
-                                                    {quest.isUnfinished && <span className="unfinished-marker">*</span>}
+                                            <div className="quest-info" style={{ flex: 1 }}>
+                                                <div className="quest-area" style={{ fontSize: '0.65rem', color: 'var(--accent)', fontWeight: '800', marginBottom: '2px' }}>{quest.area}</div>
+                                                <div className="quest-name" style={{ fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                                    {quest.isUnfinished && <span style={{ color: '#fb923c' }}>*</span>}
                                                     {quest.name}
                                                 </div>
-                                                <div className="quest-area">{quest.area}</div>
-                                                <div className="quest-description">{quest.description}</div>
-                                                {selectedQuestId === quest.id && quest.fullText && (
-                                                    <div className="quest-full-text">
-                                                        {quest.fullText.split('\n').map((line, i) => (
-                                                            <p key={i}>{line}</p>
+                                                {selectedQuestId === quest.id ? (
+                                                    <div className="quest-full-text" style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', opacity: 0.8 }}>
+                                                        {quest.fullText?.split('\n').map((line, i) => (
+                                                            <p key={i} style={{ marginBottom: '5px' }}>{line}</p>
                                                         ))}
                                                     </div>
+                                                ) : (
+                                                    <div className="quest-description" style={{ fontSize: '0.7rem', opacity: 0.5, marginTop: '2px' }}>{quest.description}</div>
                                                 )}
                                             </div>
-                                            <ChevronRight size={16} className={`quest-chevron ${selectedQuestId === quest.id ? 'expanded' : ''}`} />
+                                            <ChevronRight size={14} style={{ opacity: 0.3, transform: selectedQuestId === quest.id ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="empty-state">
-                                        <ScrollText size={48} />
-                                        <p>No quests found. Try refreshing.</p>
+                                    <div className="empty-state" style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
+                                        <ScrollText size={32} style={{ marginBottom: '10px' }} />
+                                        <p style={{ fontSize: '0.8rem' }}>No active quests.</p>
                                     </div>
                                 )}
                             </div>
