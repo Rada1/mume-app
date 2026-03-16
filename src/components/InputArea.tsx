@@ -40,7 +40,7 @@ const normalizeTerrain = (t: string): string => {
     if (t === '(' || low.includes('hill')) return 'hills';
     if (t === '=' || t === '0' || low.includes('tunnel') || low.includes('cave') || low.includes('underground') || low.includes('mine') || low.includes('dark') || low.includes('crypt') || low.includes('cavern')) return 'underground';
     if (t === '#' || low.includes('city') || low.includes('town') || low.includes('street')) return 'city';
-    if (t === '[' || low.includes('shop') || low.includes('inside') || low.includes('inn') || low.includes('building') || low.includes('room') || low.includes('stable') || low.includes('tavern') || low.includes('basement') || low.includes('cellar')) return 'building';
+    if (t === '[' || low.includes('shop') || low.includes('inside') || low.includes('indoor') || low.includes('inn') || low.includes('building') || low.includes('room') || low.includes('stable') || low.includes('tavern') || low.includes('basement') || low.includes('cellar')) return 'building';
 
     return low.replace(/\s+/g, '-');
 };

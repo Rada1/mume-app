@@ -49,7 +49,7 @@ export const normalizeTerrain = (t: string | number | null): string => {
 
     const low = tStr.toLowerCase().trim();
     if (low.includes('city') || low.includes('town') || low.includes('street')) return 'City';
-    if (low.includes('build') || low.includes('room') || low.includes('inside') || low.includes('inn') || low.includes('shop') || low.includes('stable') || low.includes('tavern') || low.includes('basement') || low.includes('cellar')) return 'Building';
+    if (low.includes('build') || low.includes('room') || low.includes('inside') || low.includes('indoor') || low.includes('inn') || low.includes('shop') || low.includes('stable') || low.includes('tavern') || low.includes('basement') || low.includes('cellar')) return 'Building';
     if (low.includes('forest') || low.includes('thick')) return 'Forest';
     if (low.includes('field') || low.includes('plain') || low.includes('grass')) return 'Field';
     if (low.includes('hill')) return 'Hills';
