@@ -73,7 +73,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     const { parseShopLine, isShopListingActive, setIsShopListingActive } = useShopHandler();
     const { parseQuestLine, finalizeQuests, isQuestsActive, isDetailActive } = useQuestsHandler(setQuests, quests.activeQuests);
 
-    const containerStackRef = useRef<{ depth: number, noun: string, context: string }[]>([]);
+    const containerStackRef = useRef<{ depth: number, noun: string, context: string, stableId: string }[]>([]);
     const nounCountsRef = useRef<Record<string, number>>({});
     const counterRef = useRef(0);
     const tempEqRef = useRef<DrawerLine[]>([]);
@@ -597,14 +597,31 @@ export function useGameParser(deps: UseGameParserDeps) {
                 nounCountsRef.current[noun] = (nounCountsRef.current[noun] || 0) + 1;
                 const count = nounCountsRef.current[noun];
                 const stableId = count > 1 ? `${count}.${noun}` : noun;
-                while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) containerStackRef.current.pop();
+                
+                while (containerStackRef.current.length > 0 && containerStackRef.current[containerStackRef.current.length - 1].depth >= depth) {
+                    containerStackRef.current.pop();
+                }
+
                 let context = stableId;
-                if (depth > 0 && containerStackRef.current.length > 0) context = `${stableId}.${containerStackRef.current[containerStackRef.current.length - 1].context}`;
-                if (isContainer) containerStackRef.current.push({ depth, noun, context });
+                let parentItemId = undefined;
+                let parentItemNoun = undefined;
+
+                if (depth > 0 && containerStackRef.current.length > 0) {
+                    const parent = containerStackRef.current[containerStackRef.current.length - 1];
+                    context = `${stableId}.${parent.context}`;
+                    parentItemId = parent.context; // Using context as ID for stability
+                    parentItemNoun = parent.stableId; // The stable noun for MUME (e.g. 2.bag)
+                }
+
+                if (isContainer) {
+                    containerStackRef.current.push({ depth, noun, context, stableId });
+                }
+
                 return {
                     id: context || stableId || Math.random().toString(36).substring(7),
                     text: mainText, html: mainHtml, prefix, prefixHtml,
-                    isItem: !isHdr && !isNothing, isHeader: isHdr, isContainer, depth, cmd, context
+                    isItem: !isHdr && !isNothing, isHeader: isHdr, isContainer, depth, cmd, context,
+                    parentItemId, parentItemNoun
                 };
             };
 

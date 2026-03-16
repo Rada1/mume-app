@@ -72,7 +72,16 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const target = document.elementFromPoint(e.clientX, e.clientY);
             document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
 
-            const itemNoun = pendingDragRef.current?.context || pendingDragRef.current?.id || '';
+            const itemLine = pendingDragRef.current!;
+            const fullPath = itemLine.context || itemLine.id;
+            const parentPath = itemLine.parentItemId;
+            let itemStableId = fullPath;
+            if (parentPath && fullPath.endsWith('.' + parentPath)) {
+                itemStableId = fullPath.substring(0, fullPath.length - parentPath.length - 1);
+            }
+            
+            // For the label, use the item's stable ID (e.g. 2.sword)
+            const itemNounForLabel = itemStableId;
             let label = "";
 
             const logArea = target?.closest('.message-log-container');
@@ -84,7 +93,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 if (ctx) {
                     logRecipient.classList.add('drop-hover-active');
                     setActiveDropTarget({ type: 'log', id: ctx });
-                    label = `Give ${itemNoun.split('.')[0]} to ${ctx}`;
+                    label = `Give ${itemNounForLabel} to ${ctx}`;
                 }
             } else if (targetItem) {
                 const targetCmd = targetItem.getAttribute('data-cmd');
@@ -92,19 +101,19 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 const targetName = targetItem.getAttribute('data-item-name');
                 const isTargetContainer = targetItem.classList.contains('is-container');
 
-                if (targetCmd === 'inline-water' && isFluidContainer(pendingDragRef.current!.text)) {
+                if (targetCmd === 'inline-water' && isFluidContainer(itemLine.text)) {
                     targetItem.classList.add('drop-hover-active');
                     setActiveDropTarget({ type: 'log', id: targetContext || 'water' });
-                    label = `Fill ${itemNoun.split('.')[0]} from ${targetContext || 'water'}`;
-                } else if (isTargetContainer && targetName !== itemNoun) {
+                    label = `Fill ${itemNounForLabel} from ${targetContext || 'water'}`;
+                } else if (isTargetContainer && targetName !== itemNounForLabel) {
                     targetItem.classList.add('drop-hover-active');
                     setActiveDropTarget({ type: 'container', id: targetName || '' });
-                    label = `Put ${itemNoun.split('.')[0]} in ${targetName}`;
+                    label = `Put ${itemNounForLabel} in ${targetName}`;
                 }
             } else if (logArea) {
                 logArea.classList.add('drop-hover-active');
                 setActiveDropTarget({ type: 'log', id: 'ground' });
-                label = `Drop ${itemNoun.split('.')[0]} on ground`;
+                label = `Drop ${itemNounForLabel} on ground`;
             } else {
                 setActiveDropTarget(null);
             }
@@ -116,16 +125,24 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const handleGlobalPointerUp = (e: PointerEvent) => {
         if (isDraggingRef.current && pendingDragRef.current) {
             const target = document.elementFromPoint(e.clientX, e.clientY);
-            const fullItemNoun = pendingDragRef.current.context || pendingDragRef.current.id;
-            const itemNoun = fullItemNoun.split('.')[0];
+            const itemLine = pendingDragRef.current;
+            const fullPath = itemLine.context || itemLine.id;
+            const parentPath = itemLine.parentItemId;
+            let itemStableId = fullPath;
+            if (parentPath && fullPath.endsWith('.' + parentPath)) {
+                itemStableId = fullPath.substring(0, fullPath.length - parentPath.length - 1);
+            }
+
+            const itemNoun = itemStableId;
+            const parentNoun = itemLine.parentItemNoun;
 
             const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
             if (logRecipient) {
                  const recipientName = logRecipient.getAttribute('data-context');
                  if (recipientName) {
                      triggerHaptic(60);
-                     if (pendingDragRef.current.parentItemNoun) {
-                         executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                     if (parentNoun) {
+                         executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
                          setTimeout(() => executeCommand(`give ${itemNoun} ${recipientName}`), 120);
                      } else {
                          executeCommand(`give ${itemNoun} ${recipientName}`);
@@ -140,10 +157,10 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const targetContext = targetItem?.getAttribute('data-context');
             const targetName = targetItem?.getAttribute('data-item-name');
 
-            if (targetCmd === 'inline-water' && isFluidContainer(pendingDragRef.current.text)) {
+            if (targetCmd === 'inline-water' && isFluidContainer(itemLine.text)) {
                 triggerHaptic(60);
-                if (pendingDragRef.current.parentItemNoun) {
-                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                if (parentNoun) {
+                    executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
                     setTimeout(() => executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`), 120);
                 } else {
                     executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`);
@@ -154,8 +171,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
 
             if (targetItem?.classList.contains('is-container') && targetName && targetName !== itemNoun) {
                 triggerHaptic(60);
-                if (pendingDragRef.current.parentItemNoun) {
-                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                if (parentNoun) {
+                    executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
                     setTimeout(() => executeCommand(`put ${itemNoun} ${targetName}`), 120);
                 } else {
                     executeCommand(`put ${itemNoun} ${targetName}`);
@@ -167,8 +184,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const logArea = target?.closest('.message-log-container');
             if (logArea) {
                 triggerHaptic(60);
-                if (pendingDragRef.current.parentItemNoun) {
-                    executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                if (parentNoun) {
+                    executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
                     setTimeout(() => executeCommand(`drop ${itemNoun}`), 120);
                 } else {
                     executeCommand(`drop ${itemNoun}`);

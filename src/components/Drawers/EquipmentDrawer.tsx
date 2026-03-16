@@ -212,7 +212,17 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     if (!item) return;
                     const itm = item.line;
                     const src = item.source as 'inventory' | 'equipment';
-                    const noun = extractNoun(itm.text);
+                    
+                    // Improved stable ID extraction
+                    const fullPath = itm.context || itm.id;
+                    const parentPath = itm.parentItemId;
+                    let itemStableId = fullPath;
+                    if (parentPath && fullPath.endsWith('.' + parentPath)) {
+                        itemStableId = fullPath.substring(0, fullPath.length - parentPath.length - 1);
+                    }
+                    
+                    const noun = itemStableId;
+                    const parentNoun = itm.parentItemNoun;
                     const delay = index * 250;
 
                     setTimeout(() => {
@@ -222,8 +232,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 if (src === 'equipment') {
                                     executeCommand(`remove ${noun}`, true, true);
                                     setTimeout(() => executeCommand(`give ${noun} ${recipientName}`, false, false), 120);
-                                } else if (itm.parentItemNoun) {
-                                    executeCommand(`get ${noun} ${itm.parentItemNoun}`, true, true);
+                                } else if (parentNoun) {
+                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
                                     setTimeout(() => executeCommand(`give ${noun} ${recipientName}`, false, false), 120);
                                 } else {
                                     executeCommand(`give ${noun} ${recipientName}`, false, false);
@@ -240,8 +250,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 if (src === 'equipment') {
                                     executeCommand(`remove ${noun}`, true, true);
                                     setTimeout(() => executeCommand(`fill ${noun} ${targetContext || 'water'}`, false, false), 120);
-                                } else if (itm.parentItemNoun) {
-                                    executeCommand(`get ${noun} ${itm.parentItemNoun}`, true, true);
+                                } else if (parentNoun) {
+                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
                                     setTimeout(() => executeCommand(`fill ${noun} ${targetContext || 'water'}`, false, false), 120);
                                 } else {
                                     executeCommand(`fill ${noun} ${targetContext || 'water'}`, false, false);
@@ -250,8 +260,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 if (src === 'equipment') {
                                     executeCommand(`remove ${noun}`, true, true);
                                     setTimeout(() => executeCommand(`put ${noun} ${targetItemName}`, false, false), 120);
-                                } else if (itm.parentItemNoun) {
-                                    executeCommand(`get ${noun} ${itm.parentItemNoun}`, true, true);
+                                } else if (parentNoun) {
+                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
                                     setTimeout(() => executeCommand(`put ${noun} ${targetItemName}`, false, false), 120);
                                 } else {
                                     executeCommand(`put ${noun} ${targetItemName}`, false, false);
@@ -261,8 +271,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             if (src === 'equipment') {
                                 executeCommand(`remove ${noun}`, true, true);
                                 setTimeout(() => executeCommand(`drop ${noun}`, false, false), 120);
-                            } else if (itm.parentItemNoun) {
-                                executeCommand(`get ${noun} ${itm.parentItemNoun}`, true, true);
+                            } else if (parentNoun) {
+                                executeCommand(`get ${noun} ${parentNoun}`, true, true);
                                 setTimeout(() => executeCommand(`drop ${noun}`, false, false), 120);
                             } else {
                                 executeCommand(`drop ${noun}`, false, false);
@@ -270,23 +280,17 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         } else if (sectionWrapper) {
                             const section = sectionWrapper.getAttribute('data-drawer-section');
                             if (section && section !== src) {
-                                if (itm.parentItemNoun) {
-                                    executeCommand(`get ${noun} ${itm.parentItemNoun}`, true, true);
+                                if (parentNoun) {
+                                    executeCommand(`get ${noun} ${parentNoun}`, true, true);
                                     const c = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
                                     setTimeout(() => executeCommand(`${c} ${noun}`, false, false), 120);
                                 } else {
                                     const c = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
                                     executeCommand(`${c} ${noun}`, false, false);
                                 }
-                            } else if (section && itm.id.includes('.')) {
-                                const parts = itm.id.split('.');
-                                let handle = parts[0];
-                                let container = parts[1];
-                                if (!isNaN(parseInt(handle)) && parts.length >= 3) {
-                                    handle = `${parts[0]}.${parts[1]}`;
-                                    container = parts[2];
-                                }
-                                executeCommand(`get ${handle} ${container}`, false, false);
+                            } else if (section && parentNoun) {
+                                // Just a redundant check but ensures we use the best handle
+                                executeCommand(`get ${noun} ${parentNoun}`, false, false);
                             }
                         }
 
