@@ -58,7 +58,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const playerTrailRef = useRef<{ x: number, y: number, z: number, alpha: number }[]>([]);
     const lastRoomIdRef = useRef<string | null>(null);
 
-    const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick } = useGame();
+    const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick, setIsTrackpadModifierActive } = useGame();
     const { target } = useVitals();
     const { addMessage } = useLog();
     const { setUI } = useUI();
@@ -109,7 +109,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         preloadedCoordsRef,
         spatialIndexRef: context.spatialIndexRef,
         startWalking, stopWalking,
-        executeCommand, joystick, btn, heldButton, setHeldButton, target
+        executeCommand, joystick, btn, heldButton, setHeldButton, target,
+        setIsTrackpadModifierActive
     });
 
     // We still keep the context menu local to the instance for better UX (each window has its own context menu)

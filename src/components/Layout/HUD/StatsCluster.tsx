@@ -46,7 +46,7 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
                 borderRadius: '20px',
                 backgroundColor: isEditMode ? 'rgba(255,255,0,0.1)' : undefined,
                 opacity: 1,
-                zIndex: 1600,
+                zIndex: 4000,
                 display: 'flex',
                 flexDirection: 'column',
                 pointerEvents: 'auto'

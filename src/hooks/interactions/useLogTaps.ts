@@ -5,7 +5,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
     const {
         executeCommand, input, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
-        ui, setUI, setActiveDragData, heldButton, setHeldButton, parley, setParley
+        ui, setUI, setActiveDragData, heldButton, setHeldButton, parley, setParley,
+        isTrackpadModifierActive
     } = deps;
 
     const lastLogClickRef = useRef<number>(0);
@@ -125,11 +126,11 @@ export const useLogTaps = (deps: InteractionDeps) => {
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
 
         // BUTTON COMBO LOGIC: If a physical action GameButton is being held,
-        // and we tap an inline button, fire that action at this target.
-        // Note: 'log-inline-' ids are inline-log tracking, not GameButton holds.
+        // OR the joystick target modifier is active, apply that action to this target.
+        const isLong = joystick.isTargetModifierActive;
+        const contextStr = context || targetEl.innerText.trim();
+
         if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
-            const contextStr = context || targetEl.innerText.trim();
-            const isLong = joystick.isTargetModifierActive;
             let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
 
             if (finalCmd) {
@@ -140,6 +141,15 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
                 executeCommand(finalCmd);
                 setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                triggerHaptic(60);
+                return;
+            }
+        } else if (isLong || isTrackpadModifierActive) {
+            // JOYSTICK/TRACKPAD COMBO: Look at target if modified tap
+            if (contextStr) {
+                console.log(`[useLogTaps] Look Combo Triggered: target=${contextStr} (JoystickMod=${isLong}, TrackpadMod=${isTrackpadModifierActive})`);
+                executeCommand(`look ${contextStr}`);
+                joystick.setIsJoystickConsumed(true);
                 triggerHaptic(60);
                 return;
             }
@@ -195,15 +205,16 @@ export const useLogTaps = (deps: InteractionDeps) => {
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
 
         // --- Multi-touch Button Combo ---
+        const isLong = joystick.isTargetModifierActive;
+        const contextStr = targetEl ? (targetEl.getAttribute('data-context') || targetEl.innerText.trim()) : '';
+
         if (targetEl && heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
-            const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
-            const isLong = joystick.isTargetModifierActive;
             let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
 
             if (finalCmd) {
-                if (context) {
-                    if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, context);
-                    else finalCmd = `${finalCmd} ${context}`;
+                if (contextStr) {
+                    if (finalCmd.includes('%n')) finalCmd = finalCmd.replace(/%n/g, contextStr);
+                    else finalCmd = `${finalCmd} ${contextStr}`;
                 }
 
                 executeCommand(finalCmd);
@@ -211,6 +222,15 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 triggerHaptic(60);
                 return;
             }
+        } else if (targetEl && (isLong || isTrackpadModifierActive)) {
+             // JOYSTICK/TRACKPAD COMBO (Multi-touch down)
+             if (contextStr) {
+                 console.log(`[useLogTaps] Look Combo (Multi-touch) Triggered: target=${contextStr} (JoystickMod=${isLong}, TrackpadMod=${isTrackpadModifierActive})`);
+                 executeCommand(`look ${contextStr}`);
+                 joystick.setIsJoystickConsumed(true);
+                 triggerHaptic(60);
+                 return;
+             }
         }
 
         if (viewport.isMobile) {

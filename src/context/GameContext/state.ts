@@ -187,6 +187,7 @@ export const useGameProviderState = () => {
     const [isMendingMode, setIsMendingMode] = useState(false);
     const [mendingTarget, setMendingTarget] = useState<string | null>(null);
     const [discoveredItems, setDiscoveredItems] = useState<string[]>([]);
+    const [isTrackpadModifierActive, setIsTrackpadModifierActive] = useState(false);
     
     // Combat Overlay State
     const [playerHealthStatus, setPlayerHealthStatus] = useState<CombatHealthStatus | null>(null);
@@ -297,6 +298,7 @@ export const useGameProviderState = () => {
         heldButton, setHeldButton,
         popoverState, setPopoverState,
         discoveredItems, setDiscoveredItems,
+        isTrackpadModifierActive, setIsTrackpadModifierActive,
         setPlayerHealthStatus: vitals.setPlayerHealthStatus,
         setOpponentHealthStatus: vitals.setOpponentHealthStatus,
         setBufferHealthStatus: vitals.setBufferHealthStatus,

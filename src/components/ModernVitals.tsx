@@ -139,11 +139,11 @@ const StatRow: React.FC<{
                             style={{ 
                                 position: 'absolute',
                                 left: `${wimpyRatio * 100}%`,
-                                top: '-2px',
-                                bottom: '-2px',
-                                width: '3px',
+                                top: '0',
+                                bottom: '0',
+                                width: '1px',
                                 background: '#fff',
-                                boxShadow: '0 0 10px rgba(0,0,0,0.8), 0 0 4px var(--accent)',
+                                boxShadow: '0 0 4px rgba(0,0,0,0.8), 0 0 1px var(--accent)',
                                 zIndex: 30,
                                 pointerEvents: 'none',
                                 transform: 'translateX(-50%)'
@@ -154,19 +154,20 @@ const StatRow: React.FC<{
                             style={{
                                 position: 'absolute',
                                 left: `${wimpyRatio * 100}%`,
-                                bottom: 'calc(100% + 4px)',
+                                bottom: 'calc(100% + 0px)',
                                 transform: 'translateX(-50%)',
                                 background: isDragging ? 'var(--accent)' : 'rgba(0,0,0,0.8)',
                                 color: isDragging ? '#000' : '#fff',
-                                padding: '2px 6px',
-                                borderRadius: '4px',
-                                fontSize: '0.7rem',
+                                padding: '0px 2px',
+                                borderRadius: '1px',
+                                fontSize: '0.45rem',
                                 fontWeight: 'bold',
                                 whiteSpace: 'nowrap',
                                 zIndex: 40,
                                 border: '1px solid rgba(255,255,255,0.2)',
                                 pointerEvents: 'none',
-                                opacity: isDragging ? 1 : 0.8
+                                opacity: isDragging ? 1 : 0,
+                                transition: 'opacity 0.2s ease'
                             }}
                         >
                             {displayWimpy}
@@ -180,7 +181,10 @@ const StatRow: React.FC<{
 
 const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inCombat, onWimpyChange }) => {
     return (
-        <div className={`modern-vitals-container ${isLandscape ? 'landscape' : ''}`}>
+        <div 
+            className={`modern-vitals-container ${isLandscape ? 'landscape' : ''}`}
+            onPointerDown={(e) => e.stopPropagation()}
+        >
             <StatRow 
                 label="Health" 
                 value={stats.hp} 

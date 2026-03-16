@@ -20,6 +20,7 @@ export interface InteractionDeps {
         isTargetModifierActive: boolean;
         setIsJoystickConsumed: (val: boolean) => void;
     };
+    isTrackpadModifierActive: boolean;
     target: string | null;
     popoverState: any;
     setPopoverState: (val: any) => void;

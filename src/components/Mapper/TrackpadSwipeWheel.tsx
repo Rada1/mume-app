@@ -20,6 +20,7 @@ const StairsDown = ({ size = 32 }: { size?: number }) => (
 interface TrackpadSwipeWheelProps {
     active: boolean;
     currentDir: Direction | null;
+    isModifierActive?: boolean;
 }
 
 const DIRECTIONS: { dir: Direction, icon: React.ReactNode }[] = [
@@ -33,11 +34,11 @@ const DIRECTIONS: { dir: Direction, icon: React.ReactNode }[] = [
     { dir: 'nw', icon: <StairsUp size={32} /> },
 ];
 
-export const TrackpadSwipeWheel: React.FC<TrackpadSwipeWheelProps> = ({ active, currentDir }) => {
+export const TrackpadSwipeWheel: React.FC<TrackpadSwipeWheelProps> = ({ active, currentDir, isModifierActive }) => {
     if (!active) return null;
 
     return (
-        <div className="trackpad-swipe-wheel">
+        <div className={`trackpad-swipe-wheel ${isModifierActive ? 'modifier-active' : ''}`}>
             <div className="wheel-inner">
                 {DIRECTIONS.map(({ dir, icon }) => (
                     <div 

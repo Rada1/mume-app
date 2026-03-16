@@ -13,7 +13,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
     heldButton, setHeldButton
 }) => {
     const {
-        executeCommand, triggerHaptic, joystick, btn
+        executeCommand, triggerHaptic, joystick, btn, isTrackpadModifierActive
     } = useGame();
     const { target } = useVitals();
     
@@ -67,6 +67,7 @@ export const DpadCluster: React.FC<DpadClusterProps> = ({
             <TrackpadSwipeWheel 
                 active={joystick.joystickActive} 
                 currentDir={currentDir || null} 
+                isModifierActive={isTrackpadModifierActive}
             />
         </div>
     );

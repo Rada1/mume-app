@@ -146,57 +146,47 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         const getMagneticDir = (intended: string): Direction | null => {
             const mapped = mapToGameExit(intended);
-            const isMutedDiag = ['ne', 'sw'].includes(intended);
             
-            // 1. Muted Zones (NE/SW) always try neighbors first to act as cardinal bridges.
-            if (isMutedDiag) {
-                const neighbors = REDIRECTION_MATRIX[intended] || [];
-                const availableNeighbors = neighbors.filter(n => availableExits.includes(n));
-                
-                if (availableNeighbors.length > 0) {
-                    if (availableNeighbors.length === 1) return availableNeighbors[0] as Direction;
-                    if (lastSentDirRef.current) {
-                        const change = availableNeighbors.find(n => n !== lastSentDirRef.current);
-                        if (change) return change as Direction;
-                    }
-                    return availableNeighbors[0] as Direction;
-                }
-            }
-
-            // 2. Exact match (Cardinals and unmuted NW/SE).
+            // 1. Exact match (Cardinals and unmuted NW/SE).
             if (availableExits.includes(mapped)) {
-                // If it's a corner swipe, check if we should "Favor Change" to a cardinal neighbor.
-                const isAnyDiag = ['ne', 'nw', 'se', 'sw'].includes(intended);
-                if (isAnyDiag) {
-                     const neighbors = REDIRECTION_MATRIX[intended] || [];
-                     const availableNeighbors = neighbors.filter(n => availableExits.includes(n));
-                     if (availableNeighbors.length >= 2 && lastSentDirRef.current) {
-                         const change = availableNeighbors.find(n => n !== lastSentDirRef.current);
-                         if (change) return change as Direction;
-                     }
-                }
                 return mapped as Direction;
             }
 
-            // 3. Magnetic Redirection (Dead-Zone Protection).
+            // 2. Magnetic Redirection (Dead-Zone Protection).
+            // If the intended direction is blocked, try redirecting to available neighbors.
             const neighbors = REDIRECTION_MATRIX[intended] || [];
             const candidates = neighbors.map(mapToGameExit).filter(n => availableExits.includes(n));
 
             if (candidates.length === 0) {
-                // Fallback: If neighbors are blocked, but the diagonal itself exists and isn't muted.
-                if (!isMutedDiag && availableExits.includes(mapped)) return mapped as Direction;
                 return null;
             }
-            if (candidates.length === 1) return candidates[0] as Direction;
-
-            // 4. Favor Change (Intelligent Redirection).
-            if (lastSentDirRef.current) {
-                const change = candidates.find(c => c !== lastSentDirRef.current);
-                if (change) return change as Direction;
-            }
-
+            
+            // Just take the first available neighbor. No more "Favor Change" bias.
             return candidates[0] as Direction;
         };
+
+        // --- Console Debugging ---
+        if (typeof window !== 'undefined') {
+            (window as any).__JOYSTICK_DEBUG__ = {
+                testSteering: (intended: string, exits: string[]) => {
+                    const mapped = mapToGameExit(intended);
+                    const isAvailable = exits.includes(mapped);
+                    const neighbors = REDIRECTION_MATRIX[intended] || [];
+                    const candidates = neighbors.map(mapToGameExit).filter(n => exits.includes(n));
+                    const steered = isAvailable ? mapped : (candidates[0] || null);
+                    
+                    console.table({
+                        intended,
+                        mapped,
+                        isAvailable,
+                        neighbors: neighbors.join(','),
+                        candidates: candidates.join(','),
+                        steered
+                    });
+                    return steered;
+                }
+            };
+        }
 
         const steeredDir = dir ? getMagneticDir(dir) : null;
         if (dir && steeredDir !== dir) {

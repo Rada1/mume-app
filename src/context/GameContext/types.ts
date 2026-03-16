@@ -138,6 +138,8 @@ export interface GameContextType {
     setAlertness: (val: string) => void;
     playerPosition: string;
     setPlayerPosition: (val: string) => void;
+    isTrackpadModifierActive: boolean;
+    setIsTrackpadModifierActive: Dispatch<SetStateAction<boolean>>;
     setPlayerHealthStatus: (val: CombatHealthStatus | null) => void;
     setOpponentHealthStatus: (val: CombatHealthStatus | null) => void;
     setBufferHealthStatus: (val: CombatHealthStatus | null) => void;

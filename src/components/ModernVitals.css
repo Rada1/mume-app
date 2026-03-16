@@ -1,13 +1,13 @@
 .modern-vitals-container {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 12px;
+    gap: 2px;
+    padding: 4px 6px;
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(14px);
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
     user-select: none;
     pointer-events: auto;
 }
@@ -15,37 +15,39 @@
 .modern-vitals-row {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 0px;
 }
 
 .modern-vitals-label {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     font-family: 'Inter', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.5rem;
+    font-weight: 800;
     color: var(--text-faded, rgba(255, 255, 255, 0.6));
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     padding-left: 2px;
+    line-height: 1;
 }
 
 .modern-vitals-value {
     color: var(--text-primary, #fff);
-    font-size: 0.9rem;
+    font-size: 0.65rem;
     font-variant-numeric: tabular-nums;
+    font-weight: 400;
 }
 
 .modern-vitals-track {
     position: relative;
-    height: 32px;
+    height: 8px;
     width: 100%;
-    max-width: 280px;
+    max-width: 240px;
     background: #000;
-    border-radius: 6px;
+    border-radius: 2px;
     transform: skewX(-15deg);
-    margin-left: 8px;
+    margin-left: 6px;
     box-sizing: border-box;
 }
 
@@ -61,11 +63,11 @@
 .threshold-chunk {
     height: 100%;
     display: flex;
-    border: 2px solid rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     box-sizing: border-box;
     overflow: hidden;
     background: #000; /* Missing area is black */
-    border-radius: 4px; /* Soften internal segment corners */
+    border-radius: 2px; /* Soften internal segment corners */
 }
 
 /* 10-HP Blocks */
@@ -124,6 +126,6 @@
 
 /* Landscape adjustments */
 .landscape .modern-vitals-track {
-    height: 24px;
-    width: 210px;
+    height: 7px;
+    width: 160px;
 }

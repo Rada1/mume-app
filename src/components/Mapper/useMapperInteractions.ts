@@ -40,6 +40,7 @@ export interface InteractionDeps {
     viewZ: number | null;
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
+    setIsTrackpadModifierActive?: (val: boolean) => void;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
@@ -204,6 +205,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         // Cancel joystick if it was active
                         if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
                             depsRef.current.joystick.handleJoystickCancel(e);
+                        }
+                        if (depsRef.current.setIsTrackpadModifierActive) {
+                            depsRef.current.setIsTrackpadModifierActive(true);
                         }
                     }, 600);
 
@@ -381,6 +385,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         return next;
                     });
                 }
+                if (depsRef.current.setIsTrackpadModifierActive) {
+                    depsRef.current.setIsTrackpadModifierActive(false);
+                }
                 isDraggingInternalRef.current = false; dragTypeRef.current = null; setIsDragging(false);
                 setMarqueeStart(null); setMarqueeEnd(null);
             } else if (activePointersRef.current.size === 1) {
@@ -400,6 +407,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             }
 
             if (activePointersRef.current.size === 0) {
+                if (depsRef.current.setIsTrackpadModifierActive) {
+                    depsRef.current.setIsTrackpadModifierActive(false);
+                }
                 isDraggingInternalRef.current = false;
                 dragTypeRef.current = null;
                 setIsDragging(false);

@@ -56,6 +56,7 @@ export interface CommandControllerDeps {
     setHeldButton: (val: any) => void;
     parley: import('../types').ParleyState;
     setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
+    isTrackpadModifierActive: boolean;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {
@@ -105,7 +106,8 @@ export function useCommandController(deps: CommandControllerDeps) {
     }, [executor, viewport.isMobile]);
 
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
-        ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley
+        ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
+        isTrackpadModifierActive: deps.isTrackpadModifierActive
     });
 
     const handleSend = useCallback((e?: React.FormEvent) => {
