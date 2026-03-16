@@ -139,7 +139,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             // IGNORE all internal map interactions if a window/cluster drag is in progress
             if (document.body.classList.contains('global-dragging')) return;
 
-            const { cardRef } = depsRef.current;
+            const { cardRef, setContextMenu, triggerHaptic } = depsRef.current;
             if (cardRef.current && cardRef.current.contains(e.target as Node)) {
                 scrollLockRef.current = true;
                 return;
@@ -186,29 +186,44 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         setMarqueeEnd({ x: e.clientX, y: e.clientY });
                     }
                 } else {
-                    // In play mode, single touch on mobile is a joystick swipe unless it's on a room?
-                    // Actually, if it's mobile and we want joystick swiping over the map...
-                    // Wait, the user wants single finger to trigger a swipe/direction command,
-                    // and two fingers to pan/zoom.
+                    // Play mode: Start long-press timer for context menu
+                    if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                    longPressTimerRef.current = setTimeout(() => {
+                        const { screenToWorld, getRoomAt } = hitTestRef.current;
+                        const world = screenToWorld(e.clientX, e.clientY);
+                        const rid = getRoomAt(world.x, world.y);
+                        
+                        triggerHaptic(60);
+                        contextMenuTriggeredRef.current = true;
+                        setContextMenu({ 
+                            x: e.clientX, y: e.clientY, 
+                            wx: world.x, wy: world.y, 
+                            roomId: rid 
+                        });
+                        
+                        // Cancel joystick if it was active
+                        if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
+                            depsRef.current.joystick.handleJoystickCancel(e);
+                        }
+                    }, 600);
+
                     const isMobileBrowser = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                    console.log(`[MapperInteractions] Down: isMobileBrowser=${isMobileBrowser} pointerType=${e.pointerType}`);
                     if (isMobileBrowser) {
                         dragTypeRef.current = 'joystick';
                         if (depsRef.current.joystick?.handleJoystickStart) {
                             depsRef.current.joystick.handleJoystickStart(e, depsRef.current.executeCommand);
                         }
                     } else {
-                        // Desktop
                         dragTypeRef.current = 'pan';
-                        // PRE-EMPTIVE suppression of auto-center for desktop panning
-                        // This prevents the "fighting" behavior where auto-center snaps back
-                        // before the 5px movement threshold is hit.
                         depsRef.current.setIsDragging(true);
                         isDraggingInternalRef.current = true;
-                        console.log('[MapperInteractions] Desktop Pan started (auto-center suppressed)');
                     }
                 }
             } else if (activePointersRef.current.size === 2) {
+                if (longPressTimerRef.current) {
+                    clearTimeout(longPressTimerRef.current);
+                    longPressTimerRef.current = null;
+                }
                 // If we were joysticking, cancel it so we can pan
                 if (dragTypeRef.current === 'joystick') {
                     if (depsRef.current.joystick?.handleJoystickCancel) {
@@ -244,6 +259,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     if (Math.sqrt(totalDx * totalDx + totalDy * totalDy) > 5) {
                         hasDraggedRef.current = true;
                         setIsDragging(true);
+                        if (longPressTimerRef.current) {
+                            clearTimeout(longPressTimerRef.current);
+                            longPressTimerRef.current = null;
+                        }
                     }
                 }
 
@@ -322,6 +341,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const { mode, joystick, executeCommand, triggerHaptic, stopWalking, setInfoRoomId, setSelectedRoomIds, setIsDragging, setRooms } = depsRef.current;
             
             if (longPressTimerRef.current) { clearTimeout(longPressTimerRef.current); longPressTimerRef.current = null; }
+            contextMenuTriggeredRef.current = false;
             comboFiredRef.current = false;
             scrollLockRef.current = false;
             activePointersRef.current.delete(e.pointerId);

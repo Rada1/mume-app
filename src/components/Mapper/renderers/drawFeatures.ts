@@ -82,12 +82,43 @@ export const drawFeatures = (
             if (!bucket) continue;
             for (let i = 0; i < bucket.length; i++) {
                 const vnum = bucket[i];
-                if (!explored.has(vnum) && !unveilMap) continue;
                 const rData = preloaded[vnum];
+                if (!rData) continue;
+
+                const isExplored = explored.has(vnum);
+                let isPeeked = false;
+                const peekDirs: string[] = [];
+
+                if (!isExplored && !unveilMap) {
+                    const ghostExits = rData[4];
+                    if (ghostExits) {
+                        for (const dir of ['n', 's', 'e', 'w']) {
+                            const exit = ghostExits[dir];
+                            if (exit && explored.has(String(exit.target))) {
+                                isPeeked = true;
+                                peekDirs.push(dir);
+                            }
+                        }
+                    }
+                }
+
+                if (!isExplored && !isPeeked && !unveilMap) continue;
+
                 const rx = rData[0], ry = rData[1], tSector = rData[3], ghostExits = rData[4];
                 const wx = Math.round(rx) * s, wy = Math.round(ry) * s;
                 const anchorX = rx * s + s / 2, anchorY = ry * s + s / 2;
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
+
+                // Calculate fade-in for newly explored rooms
+                let exploredAlphaMul = 1.0;
+                if (isExplored && rCtx.firstExploredAtRef.current[vnum]) {
+                    const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[vnum];
+                    const animDur = 800;
+                    if (elapsed < animDur) {
+                        exploredAlphaMul = elapsed / animDur;
+                        rCtx.triggerRender?.();
+                    }
+                }
 
                 // 1. Roads and trails (Zoom >= 0.1)
                 if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom >= 0.1) {
@@ -95,10 +126,12 @@ export const drawFeatures = (
                     const isCurrentRoad = normalizeTerrain(currentRoomObj.terrain) === 'Road';
                     for (const dir in ghostExits) {
                         const exObj = ghostExits[dir]; if (!exObj) continue;
-                            const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
+                        const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
                         if (targetData && (Math.abs(targetData[2] - currentZ) <= 0.5 || ((dir === 'u' || dir === 'd') && Math.abs(targetData[2] - currentZ) <= 1.5))) {
                             const isTargetExplored = explored.has(targetVnum);
-                            if (!unveilMap && !isTargetExplored) continue;
+                            
+                            // Only show exit if at least one side is explored (or both are peeked/unveiled)
+                            if (!unveilMap && !isExplored && !isTargetExplored) continue;
 
                             const ardaMapping = preloaded[vnum];
                             const sId = ardaMapping ? String(ardaMapping[6]) : vnum;
@@ -113,7 +146,9 @@ export const drawFeatures = (
                             
                             const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
                             ctx.save();
-                            if (!explored.has(vnum)) ctx.globalAlpha = 0.4;
+                            if (!isExplored) ctx.globalAlpha = 0.4;
+                            else ctx.globalAlpha = exploredAlphaMul;
+
                             if (hasRoadFlag) {
                                 const roadWidth = 12;
                                 const pathWidth = 6;
@@ -132,6 +167,10 @@ export const drawFeatures = (
 
                 // 2. High-Detail Walls and Doors (Zoom > 0.15)
                 if (camera.zoom > 0.15) {
+                    ctx.save();
+                    if (isPeeked) ctx.globalAlpha = 0.4;
+                    else if (isExplored) ctx.globalAlpha = exploredAlphaMul;
+
                     for (const d of ['n', 's', 'e', 'w']) {
                         const { hasExit, hasDoor, isClosed } = getGateState(localRoom, ghostExits, d, allRooms, preloaded);
                         let x1 = wx, y1 = wy, x2 = wx, y2 = wy;
@@ -152,27 +191,42 @@ export const drawFeatures = (
                             }
                         }
                     }
+                    ctx.restore();
                 }
 
                 // 3. Indicators and Flags (Zoom > 0.2)
                 if (camera.zoom > 0.2) {
                     const mobF = localRoom?.mobFlags || rData[7] || [], loadF = localRoom?.loadFlags || rData[8] || [], questF = localRoom?.roomQuestFlags || [];
                     if (mobF.length > 0 || loadF.length > 0 || questF.length > 0) {
+                        ctx.save();
+                        if (isPeeked) {
+                            ctx.globalAlpha = 0.4;
+                        } else if (isExplored) {
+                            ctx.globalAlpha = exploredAlphaMul;
+                        }
                         drawRoomFlagsOptimized(ctx, anchorX, anchorY, camera.zoom, mobF, loadF, questF);
+                        ctx.restore();
                     }
 
                     if (ghostExits && (ghostExits.u || ghostExits.d)) {
-                        ctx.fillStyle = isDarkMode ? '#fab387' : '#e67e22';
+                        const iconColor = isDarkMode ? '#fab387' : '#e67e22';
                         const vOff = 10;
                         const arrowSize = 18;
+                        
+                        ctx.save();
+                        if (isPeeked) ctx.globalAlpha = 0.35;
+                        else if (isExplored) ctx.globalAlpha = exploredAlphaMul;
+                        
                         if (ghostExits.u) {
-                            const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
+                            const icon = getIndicatorIcon('▲', iconColor);
                             ctx.drawImage(icon, anchorX - arrowSize/2, anchorY - vOff - arrowSize/2, arrowSize, arrowSize);
                         }
                         if (ghostExits.d) {
-                            const icon = getIndicatorIcon('▼', isDarkMode ? '#fab387' : '#e67e22');
+                            const icon = getIndicatorIcon('▼', iconColor);
                             ctx.drawImage(icon, anchorX - arrowSize/2, anchorY + vOff - arrowSize/2, arrowSize, arrowSize);
                         }
+                        
+                        ctx.restore();
                     }
                 }
             }

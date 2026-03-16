@@ -203,8 +203,9 @@ export const drawTerrains = (
     const { ctx, isDarkMode, explored, unveilMap, allRooms, preloaded, imagesRef } = rCtx;
     const s = GRID_SIZE;
 
-    const exploredBatches: Record<string, { x: number, y: number, terrain: string }[]> = {};
-    const revealedBatches: Record<string, { x: number, y: number, terrain: string }[]> = {};
+    const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string }[]> = {};
+    const revealedBatches: Record<string, { x: number, y: number, terrain: string, vnum: string }[]> = {};
+    const peekBatches: Record<string, { x: number, y: number, terrain: string, peekDirs: string[] }[]> = {};
 
     if (!floorIndex) return;
 
@@ -216,51 +217,111 @@ export const drawTerrains = (
             for (let i = 0; i < bucket.length; i++) {
                 const vnum = bucket[i];
                 const isExplored = explored.has(vnum);
-                if (!isExplored && !unveilMap) continue;
-
                 const rData = preloaded[vnum];
                 if (!rData) continue;
                 
                 const rx = rData[0], ry = rData[1], tSector = rData[3];
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
                 const terrain = localRoom ? localRoom.terrain : tSector;
-                
                 const color = getTerrainColor(terrain, isDarkMode);
                 const tx = Math.round(rx) * s;
                 const ty = Math.round(ry) * s;
 
                 if (isExplored) {
                     if (!exploredBatches[color]) exploredBatches[color] = [];
-                    exploredBatches[color].push({ x: tx, y: ty, terrain });
-                } else {
+                    exploredBatches[color].push({ x: tx, y: ty, terrain, vnum });
+                } else if (unveilMap) {
                     if (!revealedBatches[color]) revealedBatches[color] = [];
-                    revealedBatches[color].push({ x: tx, y: ty, terrain });
+                    revealedBatches[color].push({ x: tx, y: ty, terrain, vnum });
+                } else {
+                    // Peek Logic: Check neighbors
+                    const ghostExits = rData[4];
+                    if (ghostExits) {
+                        const peekDirs: string[] = [];
+                        for (const dir of ['n', 's', 'e', 'w']) {
+                            const exit = ghostExits[dir];
+                            if (exit && explored.has(String(exit.target))) {
+                                peekDirs.push(dir);
+                            }
+                        }
+                        if (peekDirs.length > 0) {
+                            if (!peekBatches[color]) peekBatches[color] = [];
+                            peekBatches[color].push({ x: tx, y: ty, terrain, peekDirs });
+                        }
+                    }
                 }
             }
         }
     }
 
+    // 1. Draw Explored Rooms
     ctx.save();
-    ctx.globalAlpha = 0.5;
     for (const color in exploredBatches) {
         ctx.fillStyle = color;
         const rooms = exploredBatches[color];
         for (let i = 0; i < rooms.length; i++) {
-            ctx.fillRect(rooms[i].x, rooms[i].y, s, s);
+            const r = rooms[i];
+            let alphaMul = 1.0;
+            if (r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
+                const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[r.vnum];
+                const animDur = 800;
+                if (elapsed < animDur) {
+                    alphaMul = elapsed / animDur;
+                    rCtx.triggerRender?.(); // Keep animating
+                }
+            }
+            ctx.globalAlpha = 0.5 * alphaMul;
+            ctx.fillRect(r.x, r.y, s, s);
         }
     }
-    ctx.restore();
 
+    // 2. Draw Peek Gradients (Gradual fade)
+    for (const color in peekBatches) {
+        const rooms = peekBatches[color];
+        for (const r of rooms) {
+            for (const dir of r.peekDirs) {
+                let grad;
+                if (dir === 'n') grad = ctx.createLinearGradient(r.x, r.y, r.x, r.y + s * 0.7);
+                else if (dir === 's') grad = ctx.createLinearGradient(r.x, r.y + s, r.x, r.y + s * 0.3);
+                else if (dir === 'e') grad = ctx.createLinearGradient(r.x + s, r.y, r.x + s * 0.3, r.y);
+                else if (dir === 'w') grad = ctx.createLinearGradient(r.x, r.y, r.x + s * 0.7, r.y);
+
+                if (grad) {
+                    ctx.save();
+                    grad.addColorStop(0, color);
+                    grad.addColorStop(1, 'rgba(0,0,0,0)');
+                    ctx.fillStyle = grad;
+                    ctx.globalAlpha = 0.45; // Start just below explored (0.5)
+                    ctx.fillRect(r.x, r.y, s, s);
+                    ctx.restore();
+                }
+            }
+        }
+    }
+
+    // 3. Draw Icons for fully explored rooms
     for (const color in exploredBatches) {
         const rooms = exploredBatches[color];
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
             const gridX = Math.round(r.x / s), gridY = Math.round(r.y / s);
             const variant = Math.floor((Math.abs(Math.sin(gridX * 12.9898 + gridY * 78.233) * 43758.5453) % 1) * 6);
+            
+            ctx.save();
+            if (r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
+                const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[r.vnum];
+                const animDur = 800;
+                if (elapsed < animDur) {
+                    ctx.globalAlpha = elapsed / animDur;
+                    rCtx.triggerRender?.();
+                }
+            }
             drawTerrainIcon(ctx, r.x, r.y, s, r.terrain, isDarkMode, rCtx.processedIconsRef, imagesRef, variant);
+            ctx.restore();
         }
     }
 
+    // 4. Handle unveilMap (GM mode / Debug)
     if (unveilMap) {
         ctx.save();
         ctx.globalAlpha = 0.25;

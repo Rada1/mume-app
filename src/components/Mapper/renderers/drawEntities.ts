@@ -161,12 +161,18 @@ export const drawMarkers = (
     selectedMarkerId: string | null,
     vX1: number, vY1: number, vX2: number, vY2: number
 ) => {
-    const { ctx, now, ANIM_DUR, currentZ } = rCtx;
+    const { ctx, now, ANIM_DUR, currentZ, unveilMap, visitedAtCoord } = rCtx;
 
     Object.values(stableMarkersRef.current).forEach((marker: any) => {
         const mx = marker.x * GRID_SIZE, my = marker.y * GRID_SIZE; 
         if (mx < vX1 - GRID_SIZE || mx > vX2 + GRID_SIZE || my < vY1 - GRID_SIZE || my > vY2 + GRID_SIZE || (marker.z || 0) !== currentZ) return;
         
+        // FOW Check: Hide markers unless unveiled or the tile is visited
+        if (!unveilMap) {
+            const gx = Math.round(marker.x), gy = Math.round(marker.y);
+            if (!visitedAtCoord[`${gx},${gy},${currentZ}`]) return;
+        }
+
         const isSelected = selectedMarkerId === marker.id;
         const dotSize = marker.dotSize || 8;
         const mSeed = marker.x * 1.5 + marker.y * 2.5;

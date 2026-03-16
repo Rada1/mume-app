@@ -256,7 +256,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
         activePointersRef.current.delete(e.pointerId);
-
         if (!e.isPrimary) return false;
         console.log(`[Joystick] End: x=${e.clientX} y=${e.clientY} (Consumed: ${isJoystickConsumed || isTargetModifierActive})`);
         executeCommandRef.current = executeCommand;
@@ -347,6 +346,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
     const handleJoystickCancel = useCallback((e?: React.PointerEvent) => {
         if (e) activePointersRef.current.delete(e.pointerId);
+        else activePointersRef.current.clear();
+        
         stopRepeatTimer();
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
@@ -364,7 +365,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (joystickKnobRef.current) {
             joystickKnobRef.current.style.transform = '';
         }
-    }, []);
+    }, [stopRepeatTimer]);
 
     return {
         joystickActive,
