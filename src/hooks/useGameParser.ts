@@ -147,6 +147,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         // --- STAGE INITIALIZATION (Consolidated) ---
         // These check the fresh line to see if we should ENTER a new capture stage.
+        const strippedLower = (attachedText || textOnly).toLowerCase();
         if (lower.includes('skill') && lower.includes('knowledge') && lower.includes('difficulty')) {
             if (deps.practice.isUiRequested || lower.includes('class')) {
                 if (captureStage.current === 'practice') return;
@@ -170,7 +171,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'quest';
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
-        else if (lower === 'who:' || lower === 'allies' || lower === 'minions' || lower.startsWith("who's online") || lower.startsWith("allies online") || lower.startsWith("minions online")) {
+        else if (strippedLower === 'who' || strippedLower === 'who:' || strippedLower === 'players' || strippedLower === 'allies' || strippedLower === 'minions' || strippedLower.startsWith("who's online") || strippedLower.startsWith("allies online") || strippedLower.startsWith("minions online")) {
             if (captureStage.current === 'who') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: who'); addDiagnosticLog?.('Entering Stage: who');
@@ -621,11 +622,12 @@ export function useGameParser(deps: UseGameParserDeps) {
                     id: context || stableId || Math.random().toString(36).substring(7),
                     text: mainText, html: mainHtml, prefix, prefixHtml,
                     isItem: !isHdr && !isNothing, isHeader: isHdr, isContainer, depth, cmd, context,
+                    stableId,
                     parentItemId, parentItemNoun
                 };
 
                 if (line.parentItemNoun) {
-                    console.log(`[Parser] createLine:`, { text: line.text, parent: line.parentItemNoun, depth: line.depth });
+                    console.log(`[Parser] createLine:`, { text: line.text, parent: line.parentItemNoun, depth: line.depth, isItem: line.isItem });
                 }
 
                 return line;

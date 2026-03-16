@@ -96,7 +96,8 @@ export const useMessageHighlighter = (
                 cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
                 cleanText = cleanText.replace(/^<.*?>\s*/, '');
                 cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
-                cleanText = cleanText.replace(/^\*+/, '');
+                cleanText = cleanText.replace(/^\*.*?\*\s*/, ''); // Improved: handles *Wanted*
+                cleanText = cleanText.replace(/^\*+\s*/, '');    // Fallback for leading asterisks
             }
 
             // Extract the first word as the player name
