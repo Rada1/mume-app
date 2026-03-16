@@ -88,8 +88,31 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         // IGNORE zoom if a window drag is in progress
         if (document.body.classList.contains('global-dragging')) return;
 
-        console.log(`[MapperInteractions] Wheel: deltaX=${e.deltaX} deltaY=${e.deltaY}`);
         e.preventDefault();
+        
+        // --- Z-Axis Scrolling (Ctrl + Scroll) ---
+        if (e.ctrlKey) {
+            const dir = e.deltaY > 0 ? -1 : 1;
+            const { setViewZ, setAutoCenter, rooms, currentRoomId, viewZ } = depsRef.current;
+            
+            // Get effective current Z to start from if viewZ is null
+            let startZ = 0;
+            if (viewZ !== null) {
+                startZ = viewZ;
+            } else if (currentRoomId) {
+                const room = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
+                startZ = room?.z || 0;
+            }
+
+            const newZ = Math.round(startZ + dir);
+            setViewZ(newZ);
+            setAutoCenter(false);
+            triggerRender();
+            return;
+        }
+
+        // --- Standard Zooming ---
+        console.log(`[MapperInteractions] Wheel: deltaX=${e.deltaX} deltaY=${e.deltaY}`);
         const cam = cameraRef.current;
         const oldZoom = cam.zoom;
         const delta = -e.deltaY;
