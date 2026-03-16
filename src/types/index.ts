@@ -203,6 +203,7 @@ export interface PopoverState {
     teleportId?: string; // For saving
     spellCommand?: string; // e.g. "cast 'teleport'"
     isContainer?: boolean;
+    parentNoun?: string;
 }
 
 export interface PopoverManagerProps {
@@ -217,7 +218,7 @@ export interface PopoverManagerProps {
     setTarget: (target: string | null) => void;
     teleportTargets: TeleportTarget[];
     setTeleportTargets: React.Dispatch<React.SetStateAction<TeleportTarget[]>>;
-    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
+    handleButtonClick: (button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     triggerHaptic: (ms: number) => void;
     roomPlayers: string[];
     setSettings: Record<string, ButtonSetSettings>;

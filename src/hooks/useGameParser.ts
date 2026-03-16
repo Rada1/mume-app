@@ -309,7 +309,9 @@ export function useGameParser(deps: UseGameParserDeps) {
             // 1. Player Health
             const playerMatch = promptPart.match(/HP:(\w+)/i);
             if (playerMatch) {
-                setPlayerHealthStatus(findStatus(playerMatch[1]));
+                const status = findStatus(playerMatch[1]);
+                console.log('[Parser] Player Health Status:', status);
+                setPlayerHealthStatus(status);
             } else {
                 setPlayerHealthStatus(null);
             }
@@ -400,6 +402,28 @@ export function useGameParser(deps: UseGameParserDeps) {
         if (captureStage.current !== 'none') {
             const stage = captureStage.current;
             if (stage === 'stat' || stage === 'info') {
+                // Parse Gold, XP, TP, Level from score/info command
+                // MUME Specific: gold/money/copper/lauren/celeb/busc/pennies/coins
+                const moneyRegex = /(?:gold|money|copper|lauren|celeb|busc|silver|gold):\s*([\d,]+)|([\d,]+)\s*(?:gold|silver|copper|lauren|celeb|busc|pennies|coins)/gi;
+                let moneyMatch;
+                let totalGoldOnLine = undefined;
+                
+                while ((moneyMatch = moneyRegex.exec(textOnly)) !== null) {
+                    const val = parseInt((moneyMatch[1] || moneyMatch[2]).replace(/,/g, ''));
+                    if (totalGoldOnLine === undefined) totalGoldOnLine = 0;
+                    
+                    const lowMatch = moneyMatch[0].toLowerCase();
+                    if (lowMatch.includes('gold') || lowMatch.includes('lauren')) totalGoldOnLine += val;
+                    else if (lowMatch.includes('silver') || lowMatch.includes('celeb') || lowMatch.includes('pennies')) totalGoldOnLine += val / 10;
+                    else if (lowMatch.includes('copper') || lowMatch.includes('busc')) totalGoldOnLine += val / 100;
+                    else totalGoldOnLine += val; 
+                }
+                
+                if (totalGoldOnLine !== undefined) {
+                    console.log('[Parser] Gold Found on line:', { totalGoldOnLine, text: textOnly });
+                    setCharacterInfo(prev => ({ ...prev, gold: Math.floor(totalGoldOnLine!) }));
+                }
+
                 const statRegex = /(str|int|wis|dex|con|wil|per):\s*(\d+)/gi;
                 let match;
                 const stats: any = {};
@@ -409,79 +433,31 @@ export function useGameParser(deps: UseGameParserDeps) {
                     statFound = true;
                 }
                 if (statFound) {
+                    console.log('[Parser] Captured Stats:', stats);
                     setCharacterInfo(prev => ({
                         ...prev,
                         stats: { ...(prev.stats || {str:0, int:0, wis:0, dex:0, con:0, wil:0, per:0}), ...stats }
                     }));
                 }
             }
-            if (stage === 'practice') {
-                const practiceResult = deps.practice.parsePracticeLine(textOnly);
-                if (practiceResult) {
-                    if (typeof practiceResult === 'object' && practiceResult !== null && isSilentCapture.current === 0) {
-                        if ('sessionsLeft' in (practiceResult as any)) deps.practice.addToLogBuffer('header', practiceResult, textOnly);
-                        else deps.practice.addToLogBuffer('skill', practiceResult, textOnly);
-                    }
-                    return;
-                }
-            } else if (stage === 'description') {
-                if (!lower.includes('described as:') && !lower.startsWith('description:') && 
-                    !(deps.characterInfo.name && lower.includes(deps.characterInfo.name.toLowerCase()) && lower.includes(' is a '))) {
-                    if (/is carrying:|is using:|you are (carrying|using|equipped with)/i.test(lower)) {
-                        finalizeCapture(); return;
-                    }
-                    setCharacterInfo(prev => ({ ...prev, description: (prev.description ? prev.description + '\n' : '') + textOnly }));
-                    return;
-                }
-            } else if (stage === 'whois') {
-                if (!lower.includes('whois information for') && !lower.startsWith('whois:') && !lower.startsWith('whois status:')) {
-                    if (lower.startsWith('---') || lower.startsWith('...')) {
-                        finalizeCapture(); return;
-                    }
-                    setCharacterInfo(prev => ({ ...prev, whois: (prev.whois ? prev.whois + '\n' : '') + textOnly }));
-                    return;
-                }
-            } else if (stage === 'quest') {
-                if (parseQuestLine(textOnly)) return;
-            } else if (stage === 'who') {
-                let cleanText = textOnly.trim();
-                if (cleanText && !cleanText.startsWith('---') && cleanText !== 'who:' && lower !== 'allies' && lower !== 'minions') {
-                    let lastLength = 0;
-                    while (cleanText.length !== lastLength) {
-                        lastLength = cleanText.length;
-                        cleanText = cleanText.replace(/^\[.*?\]\s*/, '').replace(/^<.*?>\s*/, '').replace(/^\(.*?\)\s*/, '').replace(/^\*+/, '');
-                    }
-                    const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-                    if (nameCandidate && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) setWhoList(prev => prev.includes(nameCandidate) ? prev : [...prev, nameCandidate]);
-                }
-                if (isSilentCapture.current > 0) return;
-            } else if (stage === 'shop') {
-                const shopItem = parseShopLine(textOnly);
-                if (shopItem) {
-                    const stableId = `shop-${shopItem.id}-${Date.now()}-${counterRef.current++}`;
-                    addMessage('shop-item', textOnly, undefined, stableId, false, { textOnly, lower }, shopItem, undefined, undefined, true);
-                    return;
-                }
-            } else if (stage === 'info') {
-                // Parse alignment line
-                if (lower.startsWith('you are a ') && (lower.includes('person') || lower.includes('being'))) {
-                    setCharacterInfo(prev => ({ ...prev, alignment: textOnly.trim() }));
-                }
-                
-                // Parse Gold, XP, TP, Level from info command
-                const goldMatch = textOnly.match(/(?:gold|money):\s*([\d,]+)/i);
+
+            if (stage === 'info') {
                 const levelMatch = textOnly.match(/level:\s*(\d+)/i);
+                const xpMatch = textOnly.match(/exp(?:erience)?:\s*([\d,]+)/i);
+                const tnlMatch = textOnly.match(/tnl:\s*([\d,]+)/i);
                 
-                // Note: XP and TP are handled via GMCP as per user request, 
-                // but we extract Level and Gold here as they are reliable in text.
-                if (goldMatch || levelMatch) {
-                    const goldVal = goldMatch ? parseInt(goldMatch[1].replace(/,/g, '')) : undefined;
+                if (levelMatch || xpMatch || tnlMatch) {
                     const levelVal = levelMatch ? parseInt(levelMatch[1]) : undefined;
+                    const xpVal = xpMatch ? parseInt(xpMatch[1].replace(/,/g, '')) : undefined;
+                    const xpMaxVal = (xpVal !== undefined && tnlMatch) ? (xpVal + parseInt(tnlMatch[1].replace(/,/g, ''))) : undefined;
+
+                    console.log('[Parser] Info Captured:', { levelVal, xpVal, xpMaxVal, text: textOnly });
 
                     setCharacterInfo(prev => ({
                         ...prev,
-                        ...(goldVal !== undefined && { gold: goldVal }),
-                        ...(levelVal !== undefined && { level: levelVal })
+                        ...(levelVal !== undefined && { level: levelVal }),
+                        ...(xpVal !== undefined && { xp: xpVal }),
+                        ...(xpMaxVal !== undefined && { xpMax: xpMaxVal })
                     }));
                 }
 
@@ -761,11 +737,16 @@ export function useGameParser(deps: UseGameParserDeps) {
                     });
                 } return;
             }
-            if (lower.includes('gold coins')) {
-                const goldMatch = textOnly.match(/(\d+) gold coins/i);
-                if (goldMatch) {
-                    const gold = parseInt(goldMatch[1]);
-                    setCharacterInfo(prev => ({ ...prev, gold }));
+            if (lower.includes('gold coins') || lower.includes('lauren') || lower.includes('celeb') || lower.includes('busc')) {
+                const moneyMatch = textOnly.match(/(\d+)\s*(gold coins|silver coins|copper coins|lauren|celeb|busc)/i);
+                if (moneyMatch && (lower.includes('get') || lower.includes('take') || lower.includes('gives you'))) {
+                    const amount = parseInt(moneyMatch[1]);
+                    console.log('[Parser] Money Gained:', amount, moneyMatch[2]);
+                    setCharacterInfo(prev => ({ ...prev, gold: (prev.gold || 0) + amount }));
+                } else if (moneyMatch && (lower.includes('drop') || lower.includes('give') || lower.includes('junk'))) {
+                    const amount = parseInt(moneyMatch[1]);
+                    console.log('[Parser] Money Lost:', amount, moneyMatch[2]);
+                    setCharacterInfo(prev => ({ ...prev, gold: Math.max(0, (prev.gold || 0) - amount) }));
                 }
             }
         };

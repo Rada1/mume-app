@@ -61,6 +61,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 executeAndAssign: popoverState?.executeAndAssign,
                 menuDisplay: popoverState?.menuDisplay,
                 isContainer,
+                parentNoun,
                 type: undefined
             });
 
@@ -84,6 +85,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 assignSourceId: (button.actionType === 'assign' || button.actionType === 'select-assign') ? button.id : undefined,
                 executeAndAssign: button.actionType === 'select-assign', menuDisplay: button.menuDisplay,
                 isContainer,
+                parentNoun,
                 type: button.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
             });
 

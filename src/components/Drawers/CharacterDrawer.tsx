@@ -78,6 +78,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const handleRefresh = (e: React.MouseEvent) => {
         e.stopPropagation();
         executeCommand('info', true);
+        executeCommand('score', true);
+        executeCommand('at', true);
         executeCommand('look self', true);
         executeCommand('whois', true);
         executeCommand('quest', true);

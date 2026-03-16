@@ -11,7 +11,7 @@ interface EquipmentDrawerProps {
     onClose: () => void;
     eqLines: DrawerLine[];
     inventoryLines: DrawerLine[];
-    handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
+    handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     triggerHaptic: (ms: number) => void;
     isLandscape?: boolean;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
@@ -471,7 +471,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                     setId: category,
                                     isVisible: true,
                                     style: { backgroundColor: glowColor || 'var(--accent)' }
-                                } as any, e as any, line.context || line.id);
+                                } as any, e as any, line.context || line.id, false, line.parentItemNoun);
                             }}
                             style={{
                                 flex: 1,

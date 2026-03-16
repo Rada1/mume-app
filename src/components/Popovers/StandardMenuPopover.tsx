@@ -9,7 +9,7 @@ interface StandardMenuProps {
     availableSets: string[];
     setPopoverState: (val: PopoverState | null) => void;
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
-    handleButtonClick: (b: CustomButton, e: any, context?: string) => void;
+    handleButtonClick: (button: CustomButton, e: any, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     setTarget: (target: string | null) => void;
     addMessage: (type: MessageType, content: string) => void;
     themeColor?: string;
@@ -63,7 +63,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         const isExecute = popoverState.executeAndAssign;
                         const dir = popoverState.assignSwipeDir;
                         setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: button.command }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: button.actionType || 'command' } } : { ...b, command: button.command, label: button.label, actionType: button.actionType || 'command' }) : b));
-                        if (isExecute) handleButtonClick(button, e, popoverState.context);
+                        if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun);
                         setPopoverState(null);
                         addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
                     } else if (button.command === 'shop-mend') {
@@ -73,7 +73,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         setPopoverState(null);
                         addMessage('system', 'Selection Mode: Select items to mend, then tap Mend Selected.');
                     } else {
-                        handleButtonClick(button, e, popoverState.context);
+                        handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun);
                     }
                 }}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}

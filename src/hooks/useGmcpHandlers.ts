@@ -147,9 +147,11 @@ export const useGmcpHandlers = ({
             setBufferName(buffName);
             if (!buffName) setBufferHealthStatus(null);
         }
+        console.log('[GMCP] CharVitals:', data);
     }, [setCurrentTerrain, setPlayerHealthStatus, setOpponentName, setOpponentHealthStatus, setBufferName, setBufferHealthStatus, roomPlayers, roomNpcs, findStatus, getCharNameFromId]);
 
     const onCharInfo = useCallback((data: GmcpCharInfo) => {
+        console.log('[GMCP] CharInfo:', data);
         setCharacterInfo(prev => ({
             ...prev,
             name: data.name ?? data.fullname ?? prev.name,

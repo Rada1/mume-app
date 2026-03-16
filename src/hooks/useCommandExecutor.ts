@@ -233,8 +233,11 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
         if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
             isWaitingForInv.current = true; captureStage.current = 'none'; setInventoryLines([]);
-        } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status') {
+        } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status' || lowerCmd === 'score' || lowerCmd === 'sc' || lowerCmd === 'at') {
             isWaitingForStats.current = true; captureStage.current = 'none'; setStatsLines([]);
+        } else if (lowerCmd === 'info' || lowerCmd === 'i') {
+            // Also reset CharacterInfo implicitly if needed or just let parser handle it
+            // No specific flag for info as parser looks for "You are a..."
         } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
             isWaitingForEq.current = true; captureStage.current = 'none'; setEqLines([]);
         } else if (lowerCmd === 'practice' || lowerCmd === 'prac') {

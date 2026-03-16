@@ -8,7 +8,7 @@ interface InventoryDrawerProps {
     onClose: () => void;
     triggerHaptic: (ms: number) => void;
     inventoryLines: DrawerLine[];
-    handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean) => void;
+    handleButtonClick: (button: any, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
     pendingDrawerContainerRef: React.MutableRefObject<{ containerId: string; cmd: 'inventorylist' | 'equipmentlist'; afterId: string } | null>;
     inlineCategories?: import('../../types').InlineCategoryConfig[];
@@ -126,8 +126,10 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                      triggerHaptic(60);
                      if (pendingDragRef.current.parentItemNoun) {
                          executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                         setTimeout(() => executeCommand(`give ${itemNoun} ${recipientName}`), 120);
+                     } else {
+                         executeCommand(`give ${itemNoun} ${recipientName}`);
                      }
-                     executeCommand(`give ${itemNoun} ${recipientName}`);
                      cleanupDrag();
                      return;
                  }
@@ -142,8 +144,10 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 triggerHaptic(60);
                 if (pendingDragRef.current.parentItemNoun) {
                     executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                    setTimeout(() => executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`), 120);
+                } else {
+                    executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`);
                 }
-                executeCommand(`fill ${itemNoun} ${targetContext || 'water'}`);
                 cleanupDrag();
                 return;
             }
@@ -152,8 +156,10 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 triggerHaptic(60);
                 if (pendingDragRef.current.parentItemNoun) {
                     executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                    setTimeout(() => executeCommand(`put ${itemNoun} ${targetName}`), 120);
+                } else {
+                    executeCommand(`put ${itemNoun} ${targetName}`);
                 }
-                executeCommand(`put ${itemNoun} ${targetName}`);
                 cleanupDrag();
                 return;
             }
@@ -163,8 +169,10 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 triggerHaptic(60);
                 if (pendingDragRef.current.parentItemNoun) {
                     executeCommand(`get ${itemNoun} ${pendingDragRef.current.parentItemNoun}`, true, true);
+                    setTimeout(() => executeCommand(`drop ${itemNoun}`), 120);
+                } else {
+                    executeCommand(`drop ${itemNoun}`);
                 }
-                executeCommand(`drop ${itemNoun}`);
                 setTimeout(() => {
                     executeCommand('inv', false, true, true, true);
                     executeCommand('eq', false, true, true, true);
@@ -302,6 +310,20 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                                          executeCommand(`look in ${line.context || line.id}`, true, true);
                                                      }
                                                      setExpandedContainers(newExpanded);
+                                                 } else {
+                                                     const itemNoun = extractNoun(line.text);
+                                                     const category = getCategoryForName(line.text, categories) || 'inline-default';
+                                                     const glowColor = getGlowColorForCategory(category, categories);
+                                                     
+                                                     handleButtonClick({
+                                                         id: 'drawer-item-' + line.id,
+                                                         label: itemNoun,
+                                                         command: category,
+                                                         actionType: 'menu',
+                                                         setId: category,
+                                                         isVisible: true,
+                                                         style: { backgroundColor: glowColor || 'var(--accent)' }
+                                                     } as any, e as any, line.context || line.id, false, line.parentItemNoun);
                                                  }
                                              }}
                                              style={{
