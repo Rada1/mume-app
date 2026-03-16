@@ -57,17 +57,18 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
         if (silent && isSystem) {
             isSilentCapture.current++;
-            // Safety timeout: if a prompt isn't detected within 3s, assume the command finished
-            // This prevents a "stuck" silent counter from hiding all game text.
+            // Safety timeout: if a prompt isn't detected, assume the command finished
+            // Practice commands need more time for long lists.
+            const timeoutMs = (cmd.toLowerCase().startsWith('prac')) ? 15000 : 8000;
             setTimeout(() => {
                 if (isSilentCapture.current > 0) {
-                    console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current})`);
+                    console.log(`[Executor] Silent capture safety reset (Count: ${isSilentCapture.current}, Cmd: ${cmd})`);
                     isSilentCapture.current = 0;
                     if (captureStage.current !== 'container') {
                         deps.finalizeCapture();
                     }
                 }
-            }, 8000);
+            }, timeoutMs);
         }
 
         // Target Setting

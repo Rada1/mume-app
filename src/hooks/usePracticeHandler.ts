@@ -30,48 +30,51 @@ export function usePracticeHandler(
             const count = parseInt(sessionMatch[1]);
             console.log('[PracticeHandler] Detected sessions left:', count);
             setIsPracticeActive(true);
+            parsedSkillsRef.current = []; // Fresh start for this capture
             setPracticeData(prev => ({
                 sessionsLeft: count,
-                skills: prev?.skills || []
+                skills: prev?.skills || [] // Keep old skills until finalize
             }));
             return { sessionsLeft: count };
         }
 
         if ((lower.includes('skill') && lower.includes('knowledge')) || lower.includes('can teach you') || text.startsWith('---')) {
             console.log('[PracticeHandler] Detected header/separator:', text);
+            // Don't reset parsedSkillsRef here, as headers can appear mid-list
             setIsPracticeActive(true);
             return true;
         }
 
         if (isPracticeActiveRef.current) {
             // MUME output columns: [Skill Name]  [Knowledge]  [Difficulty]  [Class]
-            // We split by multiple spaces OR single tab
             const parts = text.trim().split(/\s{2,}/).filter(p => p.length > 0);
             
             if (parts.length >= 2) {
                 const name = parts[0].trim();
                 const knowledgeStr = parts[1].trim();
                 const difficulty = parts[2]?.trim() || '';
-                let skillClass = parts[3]?.trim() || 'Ranger';
-                if (skillClass.toLowerCase() === 'none') skillClass = 'Ranger';
-                const advice = ''; 
-
+                let skillClass = parts[3]?.trim() || 'General';
+                if (skillClass.toLowerCase() === 'none') skillClass = 'General';
+                
                 const knowledgeMap: Record<string, string> = {
-                    'bad': '25%', 'poor': '45%', 'average': '60%', 'fair': '75%', 'good': '85%', 'excellent': '95%', 'superb': '100%',
+                    'awful': '15%', 'bad': '30%', 'poor': '45%', 'average': '60%', 'fair': '70%', 'good': '80%', 'very good': '90%', 'excellent': '98%', 'superb': '100%',
                 };
 
-                const knowledge = knowledgeMap[knowledgeStr.toLowerCase()] || knowledgeStr;
+                const knowledge = knowledgeMap[knowledgeStr.toLowerCase()] || (knowledgeStr.includes('%') ? knowledgeStr : knowledgeStr + '%');
                 const proficiency = parseInt(knowledge) || 0;
 
-                const skill: PracticeSkill = {
-                    name, sessions: '0/0', knowledge, proficiency, difficulty, advice, skillClass
-                };
+                // Only add if it looks like a real skill (has a valid knowledge level)
+                if (proficiency > 0 || knowledgeStr.includes('%')) {
+                    const skill: PracticeSkill = {
+                        name, sessions: '0/0', knowledge: knowledge.replace('%',''), proficiency, difficulty, advice: '', skillClass
+                    };
 
-                console.log('[PracticeHandler] Parsed skill:', skill.name, skill.knowledge, skill.skillClass);
-                parsedSkillsRef.current.push(skill);
-                return skill;
-            } else if (text.trim().length > 0) {
-                 console.log('[PracticeHandler] Line too short for skill:', text);
+                    console.log(`[PracticeHandler] Parsed skill: "${skill.name}" | Knowledge: ${skill.knowledge}% | Class: ${skill.skillClass}`);
+                    parsedSkillsRef.current.push(skill);
+                    return skill;
+                } else {
+                    console.log(`[PracticeHandler] Skipping line (no proficiency): "${text}"`);
+                }
             }
         }
 
@@ -107,29 +110,32 @@ export function usePracticeHandler(
     }, [setIsPracticeActive, setAbilities]);
 
     const finalizePractice = useCallback((addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void) => {
-        console.log('[PracticeHandler] Finalizing practice capture. Parsed skills:', parsedSkillsRef.current.length);
-        if (parsedSkillsRef.current.length > 0) {
+        const skillsToSet = [...parsedSkillsRef.current];
+        const logBuffer = [...practiceLogBufferRef.current];
+
+        console.log('[PracticeHandler] Finalizing practice capture. Parsed skills:', skillsToSet.length);
+        
+        if (skillsToSet.length > 0) {
             setPracticeData(prev => prev ? {
                 ...prev,
-                skills: [...parsedSkillsRef.current]
+                skills: skillsToSet
             } : {
                 sessionsLeft: 0,
-                skills: [...parsedSkillsRef.current]
+                skills: skillsToSet
             });
 
             setAbilities(prev => {
                 const next = { ...prev };
-                parsedSkillsRef.current.forEach(s => {
+                skillsToSet.forEach(s => {
                     next[s.name.toLowerCase()] = s.proficiency;
                 });
                 return next;
             });
 
-            if (addMessage && practiceLogBufferRef.current.length > 0) {
-                const buffer = [...practiceLogBufferRef.current];
+            if (addMessage && logBuffer.length > 0) {
                 practiceLogBufferRef.current = [];
                 setTimeout(() => {
-                    buffer.forEach((msg, idx) => {
+                    logBuffer.forEach((msg, idx) => {
                         if (msg.type === 'header') {
                             addMessage('practice-header', msg.text, undefined, `prac-hdr-${Date.now()}`, false, undefined, undefined, undefined, msg.data, true);
                         } else {
@@ -138,6 +144,9 @@ export function usePracticeHandler(
                     });
                 }, 10);
             }
+
+            // CRITICAL: Clear the buffer after we've processed it
+            parsedSkillsRef.current = [];
         }
     }, [setAbilities]);
 

@@ -49,7 +49,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     const xboxIds = ['xbox-b', 'xbox-x', 'xbox-z', 'xbox-door', 'xbox-a', 'xbox-y'];
 
     // Check if we should be hidden (redundant with Layer but safe)
-    if (isMobile && !isLandscape && viewport.isKeyboardOpen) return null;
+    if (isMobile && !isLandscape && viewport.isKeyboardOpen && !isEditMode) return null;
 
     return (
         <div className="line-cluster">

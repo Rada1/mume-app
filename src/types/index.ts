@@ -468,6 +468,7 @@ export interface CharacterInfo {
         wil: number;
         per: number;
     };
+    affectedBy?: string[];
     spells?: string[];
 }
 

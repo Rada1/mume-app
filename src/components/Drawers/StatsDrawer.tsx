@@ -26,9 +26,11 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
     const activeSpells = useMemo(() => {
         const spells: string[] = [];
         let inSpellsSection = false;
+        
+        // 1. Check legacy statsLines
         for (const line of statsLines) {
             const text = line.text.trim();
-            if (text.startsWith('Affecting Spells:')) {
+            if (text.startsWith('Affecting Spells:') || text.startsWith('Affected by:')) {
                 inSpellsSection = true;
                 continue;
             }
@@ -36,13 +38,20 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                 if (text.startsWith('- ')) {
                     spells.push(text.substring(2).trim());
                 } else if (text.length > 0) {
-                    // Reached end of spells section or another header
                     inSpellsSection = false;
                 }
             }
         }
+
+        // 2. Check modern characterInfo.affectedBy
+        if (characterInfo?.affectedBy) {
+            characterInfo.affectedBy.forEach(s => {
+                if (!spells.includes(s)) spells.push(s);
+            });
+        }
+
         return spells;
-    }, [statsLines]);
+    }, [statsLines, characterInfo?.affectedBy]);
 
     const renderTicks = (labels?: string[]) => (
         <div style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, display: 'flex', justifyContent: 'space-between', padding: '0 12px', pointerEvents: 'none', zIndex: 1, alignItems: 'center' }}>

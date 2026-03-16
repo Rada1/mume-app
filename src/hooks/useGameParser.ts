@@ -95,6 +95,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             addDiagnosticLog?.(`Finalizing ${currentStage} capture. Eq: ${eqLen}, Inv: ${invLen}`);
             
             if (currentStage === 'practice') {
+                console.log('[Parser] Practice capture complete. Finalizing...');
                 deps.practice.finalizePractice(addMessage);
                 deps.practice.setIsPracticeActive(false);
                 deps.practice.setIsUiRequested(false);
@@ -110,7 +111,8 @@ export function useGameParser(deps: UseGameParserDeps) {
             
             captureStage.current = 'none';
             isDrawerCapture.current = 0;
-            isSilentCapture.current = 0;
+            // Decrement silent capture instead of resetting to 0 to support multiple concurrent background commands
+            if (isSilentCapture.current > 0) isSilentCapture.current--;
             containerStackRef.current = [];
             return true;
         }
@@ -141,7 +143,8 @@ export function useGameParser(deps: UseGameParserDeps) {
             attachedText = textOnly.slice(textPMatch[0].length).trim();
         }
 
-        const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where', 'quest'].includes(captureStage.current as any)) || 
+        const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(captureStage.current as any)) || 
+
             /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
@@ -164,7 +167,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'practice';
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
-        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest:') || lower.includes('not found any new quests') || quests.activeQuests?.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
+        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest') || lower.includes('not found any new quests') || lower.includes('no unfinished quests') || quests.activeQuests?.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: quest'); addDiagnosticLog?.('Entering Stage: quest');
@@ -404,8 +407,9 @@ export function useGameParser(deps: UseGameParserDeps) {
             const stage = captureStage.current;
             
             if (stage === 'quest') {
-                if (textOnly.length > 0) {
-                    deps.quests.parseQuestLine(textOnly);
+                const textToParse = attachedText || textOnly;
+                if (textToParse.length > 0) {
+                    parseQuestLine(textToParse);
                 }
                 // If it's a standalone prompt and we're in quest stage, we can usually finalize
                 if (isEndPrompt && !attachedText) {
@@ -415,6 +419,23 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
 
             if (stage === 'stat' || stage === 'info') {
+                // Parse affected by list
+                if (lower.startsWith('affected by:')) {
+                    setCharacterInfo(prev => ({ ...prev, affectedBy: [] }));
+                    return;
+                }
+                
+                if (lower.startsWith('- ')) {
+                    const spell = textOnly.substring(2).trim();
+                    if (spell) {
+                        setCharacterInfo(prev => ({
+                            ...prev,
+                            affectedBy: [...(prev.affectedBy || []), spell]
+                        }));
+                    }
+                    return;
+                }
+
                 // Parse Gold, XP, TP, Level from score/info command
                 // MUME Specific: gold/money/copper/lauren/celeb/busc/pennies/coins
                 const moneyRegex = /(?:gold|money|copper|lauren|celeb|busc|silver|gold):\s*([\d,]+)|([\d,]+)\s*(?:gold|silver|copper|lauren|celeb|busc|pennies|coins)/gi;

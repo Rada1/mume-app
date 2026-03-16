@@ -84,12 +84,12 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     gap: '10px'
                 }}
             >
-                {!showLegacyButtons && showControls && !isKeyboardOpen && !isLandscape && !isExpanded && (
+                {!showLegacyButtons && (isEditMode || (showControls && !isKeyboardOpen)) && !isLandscape && !isExpanded && (
                     <div className="line-cluster-container" style={{ pointerEvents: 'auto' }}>
                         <LineCluster
                             isEditMode={isEditMode}
                             handleDragStart={handleDragStart}
-                            buttons={btn.buttons.filter(b => !['Score', 'Inv', 'Look', 'Combat', 'Set'].includes(b.label || ''))}
+                            buttons={btn.buttons.filter(b => b.setId === 'Xbox')}
                             selectedButtonIds={btn.selectedButtonIds}
                             dragState={dragState}
                             handleButtonClick={handleButtonClick}

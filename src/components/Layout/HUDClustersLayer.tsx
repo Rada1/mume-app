@@ -95,8 +95,8 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                             <XboxCluster uiPositions={btn.uiPositions} isEditMode={btn.isEditMode} handleDragStart={handleDragStart} buttons={btn.buttons} selectedButtonIds={btn.selectedButtonIds} dragState={btn.dragState} handleButtonClick={handleButtonClick} wasDraggingRef={wasDraggingRef} triggerHaptic={triggerHaptic} setPopoverState={setPopoverState} setEditingButtonId={btn.setEditingButtonId} setSelectedIds={btn.setSelectedIds} activePrompt={activePrompt} executeCommand={executeCommand} setCommandPreview={setCommandPreview} heldButton={heldButton} setHeldButton={setHeldButton} joystick={joystick} target={target} isGridEnabled={btn.isGridEnabled} gridSize={btn.gridSize} setActiveSet={btn.setActiveSet} setButtons={btn.setButtons} isMobile={isMobile} isLandscape={isLandscape} stats={stats} />
                         )}
 
-                        {!showLegacyButtons && !btn.isEditMode && (!isMobile || isLandscape || isMapFloating) && (
-                            <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) ? 'hud-hidden' : ''}`}>
+                        {!showLegacyButtons && (btn.isEditMode || (!isMobile || isLandscape || isMapFloating)) && (
+                            <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) && !btn.isEditMode ? 'hud-hidden' : ''}`}>
                                 <LineCluster
                                     isEditMode={btn.isEditMode}
                                     handleDragStart={handleDragStart}

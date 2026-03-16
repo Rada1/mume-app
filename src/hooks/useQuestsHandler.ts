@@ -21,34 +21,44 @@ export function useQuestsHandler(
         const textOnly = text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const lower = textOnly.toLowerCase();
 
-        console.log(`[QuestsHandler] Parsing line: "${textOnly}"`, { 
-            isActive: isQuestsActiveRef.current, 
-            isAreaPending: isAreaPendingRef.current,
-            isDetail: isDetailActiveRef.current 
-        });
-
         // 1. Detect start of quest list
-        if (textOnly.includes('You have learnt of a quest in this area:')) {
+        if (textOnly.includes('You have learnt of a quest in this area:') || 
+            textOnly.includes('with the following unfinished quest')) {
+            
+            console.log(`[QuestsHandler] START Quest List detected: "${textOnly}"`);
             isQuestsActiveRef.current = true;
-            isAreaPendingRef.current = true; // The NEXT line should be the area
+            isAreaPendingRef.current = textOnly.includes('learnt of a quest');
             isDetailActiveRef.current = false;
             parsedQuestsRef.current = [];
             currentQuestRef.current = null;
+            
+            if (textOnly.includes('with the following unfinished quest')) {
+                const innerAreaMatch = textOnly.match(/You are in (.*?) with/);
+                if (innerAreaMatch) {
+                    areaRef.current = innerAreaMatch[1].trim();
+                    console.log(`[QuestsHandler] Area from 'unfinished' line: "${areaRef.current}"`);
+                } else {
+                    areaRef.current = '';
+                }
+            } else {
+                areaRef.current = '';
+            }
             return true;
         }
 
-        if (textOnly.includes('You have not found any new quests.')) {
-            console.log('[QuestsHandler] No quests found message detected.');
+        if (textOnly.includes('You have not found any new quests.') || textOnly.includes('You have no unfinished quests.')) {
+            console.log('[QuestsHandler] No quests found message detected:', textOnly);
             isQuestsActiveRef.current = true; // Still active to allow finalize to clear
             isAreaPendingRef.current = false;
+            parsedQuestsRef.current = [];
             return true;
         }
 
         if (isQuestsActiveRef.current) {
             // Detect area name (usually follows the "You have learnt..." line)
-            if (isAreaPendingRef.current) {
+            if (isAreaPendingRef.current && textOnly.length > 0) {
                 // Heuristic: Area names usually don't start with '*' or 'You'
-                if (!textOnly.startsWith('*') && !textOnly.startsWith('You')) {
+                if (!textOnly.startsWith('*') && !textOnly.startsWith('You') && textOnly.length < 50) {
                     const areaMatch = textOnly.match(/^([^*]+)\*?$/);
                     if (areaMatch) {
                         areaRef.current = areaMatch[1].trim();
@@ -61,25 +71,24 @@ export function useQuestsHandler(
                 isAreaPendingRef.current = false;
             }
 
-            // Detect "You are in Eriador with the following unfinished quest:"
-            if (textOnly.includes('with the following unfinished quest:')) {
-                const innerAreaMatch = textOnly.match(/You are in (.*?) with/);
-                if (innerAreaMatch) {
-                    areaRef.current = innerAreaMatch[1].trim();
-                    console.log(`[QuestsHandler] Area from 'unfinished' line: "${areaRef.current}"`);
-                }
-                return true;
-            }
-
             // Detect specific quest line: " * Araduin's request - Araduin will point me to quests around Bree-land"
             // Or " * Araduin's request : description"
-            const questMatch = textOnly.match(/^\s*\*\s*([^-:]+)\s*[-:]\s*(.*)$/);
+            // Or " * Araduin's request"
+            const questMatch = textOnly.match(/^\s*\*\s*(.*)$/);
             if (questMatch) {
-                const name = questMatch[1].trim();
-                const description = questMatch[2].trim();
+                const rawContent = questMatch[1].trim();
+                const sepIdx = rawContent.search(/\s*[-:]\s*/);
+                let name = rawContent;
+                let description = '';
+                
+                if (sepIdx > -1) {
+                    name = rawContent.substring(0, sepIdx).trim();
+                    description = rawContent.substring(sepIdx).replace(/^[-:\s]+/, '').trim();
+                }
+
                 const id = name.toLowerCase().replace(/['\s]+/g, '-');
                 
-                console.log(`[QuestsHandler] Quest found: "${name}" in "${areaRef.current}"`);
+                console.log(`[QuestsHandler] Quest found: "${name}" | Desc: "${description}" | Area: "${areaRef.current}"`);
 
                 parsedQuestsRef.current.push({
                     id,
@@ -102,11 +111,11 @@ export function useQuestsHandler(
         // Description follows...
         
         // If not already in a detail/list, check if this line is a quest name
-        // Use trim and replace any strange whitespace
         const cleanLower = lower.trim().replace(/\s+/g, ' ');
         const matchedQuest = !isQuestsActiveRef.current && activeQuests.find(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === cleanLower);
 
         if (matchedQuest) {
+            console.log(`[QuestsHandler] START Quest Detail detected for: "${matchedQuest.name}"`);
             isDetailActiveRef.current = true;
             currentQuestRef.current = { ...matchedQuest, fullText: '' };
             return true;
@@ -114,9 +123,8 @@ export function useQuestsHandler(
 
         if (isDetailActiveRef.current && currentQuestRef.current) {
             // Description continues until prompt
-            // We return true even for empty lines to allow multiline descriptions
             // Skip repeating the title line in the full text
-            if (lower !== currentQuestRef.current.name?.toLowerCase()) {
+            if (cleanLower !== currentQuestRef.current.name?.toLowerCase().trim().replace(/\s+/g, ' ')) {
                 currentQuestRef.current.fullText = (currentQuestRef.current.fullText ? currentQuestRef.current.fullText + '\n' : '') + textOnly;
             }
             return true;
@@ -126,29 +134,37 @@ export function useQuestsHandler(
     }, [activeQuests]);
 
     const finalizeQuests = useCallback(() => {
-        console.log(`[QuestsHandler] Finalizing quests. Parsed count: ${parsedQuestsRef.current.length}, Area: ${areaRef.current}`);
+        const isList = isQuestsActiveRef.current;
+        const isDetail = isDetailActiveRef.current;
+        const currentArea = areaRef.current;
+        const parsedQuests = [...parsedQuestsRef.current];
+        const detailQuest = currentQuestRef.current ? { ...currentQuestRef.current } : null;
+
+        console.log(`[QuestsHandler] Finalizing quests. isList: ${isList}, isDetail: ${isDetail}, count: ${parsedQuests.length}, area: "${currentArea}"`);
         
-        if (isQuestsActiveRef.current) {
+        if (isList) {
             setQuests(prev => {
-                const currentArea = areaRef.current;
-                // If we have a specific area, we only replace quests for THAT area
+                const currentQuests = prev.activeQuests || [];
+                let nextQuests: Quest[];
+
                 if (currentArea) {
-                    const otherAreaQuests = (prev.activeQuests || []).filter(q => q.area !== currentArea);
-                    return {
-                        activeQuests: [...otherAreaQuests, ...parsedQuestsRef.current],
-                        lastUpdated: Date.now()
-                    };
+                    // Filter out old quests for this SPECIFIC area and replace with new ones
+                    const otherAreaQuests = currentQuests.filter(q => q.area !== currentArea);
+                    nextQuests = [...otherAreaQuests, ...parsedQuests];
+                    console.log(`[QuestsHandler] Updating area "${currentArea}". New total: ${nextQuests.length}`);
                 } else {
-                    // Global quest list? Replace all
-                    return {
-                        activeQuests: [...parsedQuestsRef.current],
-                        lastUpdated: Date.now()
-                    };
+                    // Global list or no area detected - replace all
+                    nextQuests = [...parsedQuests];
+                    console.log(`[QuestsHandler] Global update. New total: ${nextQuests.length}`);
                 }
+
+                return {
+                    activeQuests: nextQuests,
+                    lastUpdated: Date.now()
+                };
             });
-        } else if (isDetailActiveRef.current && currentQuestRef.current) {
-            const detailQuest = currentQuestRef.current;
-            console.log(`[QuestsHandler] Finalizing quest detail: ${detailQuest.name}`);
+        } else if (isDetail && detailQuest) {
+            console.log(`[QuestsHandler] Updating detail for: "${detailQuest.name}"`);
             setQuests(prev => ({
                 ...prev,
                 activeQuests: (prev.activeQuests || []).map(q => 
@@ -158,11 +174,13 @@ export function useQuestsHandler(
             }));
         }
         
+        // Reset ALL capture state
         isQuestsActiveRef.current = false;
         isDetailActiveRef.current = false;
         isAreaPendingRef.current = false;
         parsedQuestsRef.current = [];
         currentQuestRef.current = null;
+        areaRef.current = '';
     }, [setQuests]);
 
     const setQuestDetails = useCallback((name: string, description: string) => {
