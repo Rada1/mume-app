@@ -126,16 +126,32 @@ export function useQuestsHandler(
     }, [activeQuests]);
 
     const finalizeQuests = useCallback(() => {
+        console.log(`[QuestsHandler] Finalizing quests. Parsed count: ${parsedQuestsRef.current.length}, Area: ${areaRef.current}`);
+        
         if (isQuestsActiveRef.current) {
-            setQuests({
-                activeQuests: [...parsedQuestsRef.current],
-                lastUpdated: Date.now()
+            setQuests(prev => {
+                const currentArea = areaRef.current;
+                // If we have a specific area, we only replace quests for THAT area
+                if (currentArea) {
+                    const otherAreaQuests = (prev.activeQuests || []).filter(q => q.area !== currentArea);
+                    return {
+                        activeQuests: [...otherAreaQuests, ...parsedQuestsRef.current],
+                        lastUpdated: Date.now()
+                    };
+                } else {
+                    // Global quest list? Replace all
+                    return {
+                        activeQuests: [...parsedQuestsRef.current],
+                        lastUpdated: Date.now()
+                    };
+                }
             });
         } else if (isDetailActiveRef.current && currentQuestRef.current) {
             const detailQuest = currentQuestRef.current;
+            console.log(`[QuestsHandler] Finalizing quest detail: ${detailQuest.name}`);
             setQuests(prev => ({
                 ...prev,
-                activeQuests: prev.activeQuests.map(q => 
+                activeQuests: (prev.activeQuests || []).map(q => 
                     q.id === detailQuest.id ? { ...q, fullText: detailQuest.fullText } : q
                 ),
                 lastUpdated: Date.now()
@@ -144,6 +160,8 @@ export function useQuestsHandler(
         
         isQuestsActiveRef.current = false;
         isDetailActiveRef.current = false;
+        isAreaPendingRef.current = false;
+        parsedQuestsRef.current = [];
         currentQuestRef.current = null;
     }, [setQuests]);
 

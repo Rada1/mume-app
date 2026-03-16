@@ -164,7 +164,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'practice';
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
-        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest:') || quests.activeQuests?.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
+        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest:') || lower.includes('not found any new quests') || quests.activeQuests?.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: quest'); addDiagnosticLog?.('Entering Stage: quest');
@@ -402,6 +402,18 @@ export function useGameParser(deps: UseGameParserDeps) {
         // --- NEW: Priority Capture Handling ---
         if (captureStage.current !== 'none') {
             const stage = captureStage.current;
+            
+            if (stage === 'quest') {
+                if (textOnly.length > 0) {
+                    deps.quests.parseQuestLine(textOnly);
+                }
+                // If it's a standalone prompt and we're in quest stage, we can usually finalize
+                if (isEndPrompt && !attachedText) {
+                    finalizeCapture();
+                }
+                return;
+            }
+
             if (stage === 'stat' || stage === 'info') {
                 // Parse Gold, XP, TP, Level from score/info command
                 // MUME Specific: gold/money/copper/lauren/celeb/busc/pennies/coins
@@ -475,11 +487,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                     }
                 }
             }
-        } else if (captureStage.current === 'quest') {
-            if (textOnly.length > 0) {
-                deps.quests.parseQuestLine(textOnly);
-            }
-            return;
         }
 
         // --- ROOM DETECTION ---
@@ -577,7 +584,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log('[Parser] End-prompt detected:', { textOnly, stage: captureStage.current });
         }
 
-        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container') {
+        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container' || captureStage.current === 'practice') {
             const createLine = (l: string, tOnly: string, lLower: string, cmd: string): DrawerLine => {
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
