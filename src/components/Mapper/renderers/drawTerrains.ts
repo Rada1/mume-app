@@ -107,32 +107,46 @@ const drawTerrainIcon = (ctx: CanvasRenderingContext2D, x: number, y: number, s:
             ictx.fillStyle = cityColors[variant % 2];
             ictx.fillText('#', cX, cY);
         } else if (tName === 'Building') {
-            ictx.font = `bold ${Math.round(s * 0.3)}px monospace`;
             const buildingColors = isDarkMode ? [
                 "rgba(180, 180, 180, 0.8)", "rgba(140, 140, 140, 0.8)", "rgba(100, 100, 100, 0.8)"
             ] : [
                 "rgba(100, 100, 100, 0.9)", "rgba(130, 130, 130, 0.9)", "rgba(160, 160, 160, 0.9)"
             ];
-            ictx.textAlign = 'center';
-            ictx.textBaseline = 'middle';
+            ictx.strokeStyle = buildingColors[variant % buildingColors.length];
+            ictx.lineWidth = Math.max(1, s * 0.05);
+            ictx.lineCap = 'round';
+            ictx.lineJoin = 'round';
             
-            // Corners facing center, tucked further in:
-            const corners = [
-                { x: 0.2, y: 0.2, rot: Math.PI * 1.25 },
-                { x: 0.8, y: 0.2, rot: Math.PI * 1.75 },
-                { x: 0.2, y: 0.8, rot: Math.PI * 0.75 },
-                { x: 0.8, y: 0.8, rot: Math.PI * 0.25 }
-            ];
+            const padding = s * 0.15;
+            const len = s * 0.2;
 
-            for (let i = 0; i < corners.length; i++) {
-                const c = corners[i];
-                ictx.save();
-                ictx.translate(c.x * s, c.y * s);
-                ictx.rotate(c.rot);
-                ictx.fillStyle = buildingColors[(variant + i) % buildingColors.length];
-                ictx.fillText(']', 0, 0);
-                ictx.restore();
-            }
+            // Top-Left
+            ictx.beginPath();
+            ictx.moveTo(padding + len, padding);
+            ictx.lineTo(padding, padding);
+            ictx.lineTo(padding, padding + len);
+            ictx.stroke();
+
+            // Top-Right
+            ictx.beginPath();
+            ictx.moveTo(s - padding - len, padding);
+            ictx.lineTo(s - padding, padding);
+            ictx.lineTo(s - padding, padding + len);
+            ictx.stroke();
+
+            // Bottom-Left
+            ictx.beginPath();
+            ictx.moveTo(padding + len, s - padding);
+            ictx.lineTo(padding, s - padding);
+            ictx.lineTo(padding, s - padding - len);
+            ictx.stroke();
+
+            // Bottom-Right
+            ictx.beginPath();
+            ictx.moveTo(s - padding - len, s - padding);
+            ictx.lineTo(s - padding, s - padding);
+            ictx.lineTo(s - padding, s - padding - len);
+            ictx.stroke();
         } else if (tName === 'Water' || tName === 'Shallows' || tName === 'Rapids' || tName === 'Underwater') {
             ictx.font = `${Math.round(s * 0.45)}px monospace`;
             
