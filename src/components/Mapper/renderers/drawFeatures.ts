@@ -1,5 +1,5 @@
 import { RenderContext, drawLine, drawInkyLine } from './rendererUtils';
-import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR } from '../mapperUtils';
+import { GRID_SIZE, DIRS, normalizeTerrain, ROAD_COLOR_DARK, ROAD_COLOR_LIGHT, PATH_COLOR_DARK, PATH_COLOR_LIGHT, getGateState, WALL_COLOR, LONG_CONNECTION_COLOR } from '../mapperUtils';
 
 // Pre-render common indicators for performance
 const indicatorIcons: Record<string, HTMLCanvasElement> = {};
@@ -27,48 +27,39 @@ const drawRoomFlagsOptimized = (
     questF: string[]
 ) => {
     let off = 0;
-    const spacing = 12 / zoom;
-    const iconSize = 16 / zoom;
-
-    // Standard Flags (Aggressive, Shop, Guild, Rent)
-    for (const f of mobF) {
-        const flag = String(f).toUpperCase();
-        let icon = null;
-        if (flag.includes('AGGRESSIVE')) icon = getIndicatorIcon('!', '#f38ba8');
-        else if (flag.includes('SHOP')) icon = getIndicatorIcon('$', '#f9e2af');
-        else if (flag.includes('GUILD')) icon = getIndicatorIcon('G', '#cba6f7');
-        else if (flag.includes('RENT')) icon = getIndicatorIcon('R', '#89b4fa');
-        
-        if (icon) {
-            ctx.drawImage(icon, anchorX + off - iconSize/2, anchorY - iconSize/2, iconSize, iconSize);
-            off += spacing;
-        }
-    }
-
-    // Quest Flags
-    for (const f of questF) {
-        const icon = getIndicatorIcon('?', '#fab387');
-        ctx.drawImage(icon, anchorX + off - iconSize/2, anchorY - iconSize/2, iconSize, iconSize);
-        off += spacing;
-    }
-
-    // Expanded Load/Room Flags
-    const allFlagsStr = [...mobF, ...loadF].join('|').toUpperCase();
+    const spacing = 12;
+    const iconSize = 16;
+    const drawnSymbols = new Set<string>();
 
     const indicators = [
         { regex: /QUEST|MISSION/i, sym: '?', color: '#fab387' },
         { regex: /SHOP|STORE/i, sym: '$', color: '#f9e2af' },
         { regex: /GUILD|OFFICE/i, sym: 'G', color: '#cba6f7' },
         { regex: /RENT|INN/i, sym: 'R', color: '#89b4fa' },
-        { regex: /AGGRESSIVE/i, sym: '!', color: '#f38ba8' },
+        { regex: /AGGRESSIVE/i, sym: '!', color: '#f38ba8', large: true },
+        { regex: /HERB/i, sym: '♣', color: '#a6e3a1', large: true },
+        { regex: /WATER|POND|WELL|FOUNTAIN/i, sym: '≈', color: '#89b4fa', large: true },
         { regex: /DT|DEATHTRAP/i, sym: '☠', color: '#f38ba8' },
     ];
 
+    // 1. Special case: Quest Flags (always prioritized)
+    if (questF.length > 0 || /QUEST|MISSION/i.test([...mobF, ...loadF].join('|'))) {
+        const icon = getIndicatorIcon('?', '#fab387');
+        ctx.drawImage(icon, anchorX + off - iconSize/2, anchorY - iconSize/2, iconSize, iconSize);
+        off += spacing;
+        drawnSymbols.add('?');
+    }
+
+    // 2. Process all other indicators
+    const allFlagsStr = [...mobF, ...loadF].join('|').toUpperCase();
     for (const ind of indicators) {
+        if (drawnSymbols.has(ind.sym)) continue;
         if (ind.regex.test(allFlagsStr)) {
+            const currentIconSize = (ind as any).large ? 20 : iconSize;
             const icon = getIndicatorIcon(ind.sym, ind.color);
-            ctx.drawImage(icon, anchorX + off - iconSize/2, anchorY - iconSize/2, iconSize, iconSize);
-            off += spacing;
+            ctx.drawImage(icon, anchorX + off - currentIconSize/2, anchorY - currentIconSize/2, currentIconSize, currentIconSize);
+            off += spacing + ((ind as any).large ? 4 : 0);
+            drawnSymbols.add(ind.sym);
         }
     }
 };
@@ -109,13 +100,20 @@ export const drawFeatures = (
                             const isTargetExplored = explored.has(targetVnum);
                             if (!unveilMap && !isTargetExplored) continue;
 
-                            const ardaExit = baseMapExitsRef.current[vnum]?.[4]?.[dir];
+                            const ardaMapping = preloaded[vnum];
+                            const sId = ardaMapping ? String(ardaMapping[6]) : vnum;
+                            const ardaExit = baseMapExitsRef.current[sId]?.[4]?.[dir];
+
                             const combinedFlags = [
                                 ...(ardaExit?.flags || []),
-                                ...(currentRoomObj.exits?.[dir]?.flags || [])
+                                ...(currentRoomObj.exits?.[dir]?.flags || []),
+                                ...(exObj.flags || [])
                             ];
                             const hasRoadFlag = combinedFlags.some((f: string) => /road|trail|path/i.test(String(f)));
+                            
                             const tpx = targetData[0] * s + s / 2, tpy = targetData[1] * s + s / 2;
+                            ctx.save();
+                            if (!explored.has(vnum)) ctx.globalAlpha = 0.4;
                             if (hasRoadFlag) {
                                 const roadWidth = 12;
                                 const pathWidth = 6;
@@ -124,9 +122,10 @@ export const drawFeatures = (
                             } else {
                                 const dx = Math.abs(rx - targetData[0]), dy = Math.abs(ry - targetData[1]);
                                 if (dx > 1.1 || dy > 1.1 || dir === 'u' || dir === 'd') {
-                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)', 2, dpr, invZoom);
+                                    drawLine(ctx, anchorX, anchorY, tpx, tpy, LONG_CONNECTION_COLOR, 2, dpr, invZoom);
                                 }
                             }
+                            ctx.restore();
                         }
                     }
                 }
@@ -164,8 +163,8 @@ export const drawFeatures = (
 
                     if (ghostExits && (ghostExits.u || ghostExits.d)) {
                         ctx.fillStyle = isDarkMode ? '#fab387' : '#e67e22';
-                        const vOff = 10 / camera.zoom; // Moved closer
-                        const arrowSize = 18 / camera.zoom; // Slightly larger for better clarity
+                        const vOff = 10;
+                        const arrowSize = 18;
                         if (ghostExits.u) {
                             const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
                             ctx.drawImage(icon, anchorX - arrowSize/2, anchorY - vOff - arrowSize/2, arrowSize, arrowSize);
@@ -231,7 +230,7 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     const dx = Math.abs(room.x - n.x), dy = Math.abs(room.y - n.y);
                     if (dx > 1.1 || dy > 1.1 || d === 'u' || d === 'd') {
                         const tpx = n.x * s + s / 2, tpy = n.y * s + s / 2;
-                        drawLine(ctx, cX, cY, tpx, tpy, isDarkMode ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.25)', 2, dpr, invZoom);
+                        drawLine(ctx, cX, cY, tpx, tpy, LONG_CONNECTION_COLOR, 2, dpr, invZoom);
                     }
                 }
             }
@@ -239,8 +238,8 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
 
         // Local Up/Down Indicators
         if (room.exits && (room.exits.u || room.exits.d) && camera.zoom > 0.2) {
-            const vOff = 10 / camera.zoom; // Moved closer
-            const arrowSize = 18 / camera.zoom; // Slightly larger
+            const vOff = 10;
+            const arrowSize = 18;
             if (room.exits.u) {
                 const icon = getIndicatorIcon('▲', isDarkMode ? '#fab387' : '#e67e22');
                 ctx.drawImage(icon, cX - arrowSize/2, cY - vOff - arrowSize/2, arrowSize, arrowSize);

@@ -31,7 +31,7 @@ export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 
 export const drawLine = (ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, color: string, thickness: number, dpr: number, invZoom: number, dashed = false) => {
     ctx.beginPath();
     ctx.strokeStyle = color;
-    ctx.lineWidth = thickness * invZoom;
+    ctx.lineWidth = thickness;
     if (dashed) ctx.setLineDash([5 * invZoom, 5 * invZoom]);
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
@@ -47,9 +47,9 @@ export const getRoomAnchor = (rx: number, ry: number) => {
 };
 
 export const drawCurvedPath = (ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, color: string, thickness: number, dpr: number, invZoom: number) => {
-    drawLine(ctx, x1, y1, x2, y2, color, thickness, dpr, invZoom);
+    drawLine(ctx, x1, y1, x2, y2, color, thickness, dpr, 1.0);
 };
 
 export const drawInkyLine = (ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number, color: string, thickness: number, dpr: number, invZoom: number) => {
-    drawLine(ctx, x1, y1, x2, y2, color, thickness, dpr, invZoom);
+    drawLine(ctx, x1, y1, x2, y2, color, thickness, dpr, 1.0);
 };

@@ -124,10 +124,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         padding: (isExpanded && !isLandscape) ? '10px' : '0',
                         margin: (isExpanded && !isLandscape) ? '5px 0' : '0',
                         height: '100%',
-                        background: (isExpanded || isLandscape) ? 'rgba(15, 23, 42, 0.7)' : 'transparent',
-                        backdropFilter: (isExpanded || isLandscape) ? 'blur(12px)' : 'none',
-                        WebkitBackdropFilter: (isExpanded || isLandscape) ? 'blur(12px)' : 'none',
-                        border: (isExpanded || isLandscape) ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                        background: (isExpanded || isLandscape) ? 'rgba(15, 23, 42, 0.3)' : 'transparent',
+                        border: (isExpanded || isLandscape) ? '1px solid rgba(255, 255, 255, 0.12)' : 'none',
                         borderRadius: (isExpanded || isLandscape) ? '16px' : '0',
                         boxShadow: (isExpanded || isLandscape) ? '0 8px 32px rgba(0, 0, 0, 0.4)' : 'none',
                         touchAction: 'none'
@@ -171,14 +169,16 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         height: pos.h ? `${pos.h}px` : (isMobile ? '300px' : '320px'),
         cursor: isEditMode ? 'move' : undefined,
         border: isOverDockZone ? '2px solid var(--accent)' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : (isMobile ? '1px solid rgba(255,255,255,0.1)' : undefined)),
-        borderRadius: '12px',
-        backgroundColor: 'transparent',
-        boxShadow: 'none',
+        borderRadius: '16px',
+        backgroundColor: isOverDockZone ? 'rgba(var(--accent-rgb), 0.3)' : (isEditMode ? 'rgba(255, 255, 0, 0.1)' : 'rgba(15, 23, 42, 0.4)'),
+        boxShadow: (isEditMode || isOverDockZone) ? 'none' : '0 10px 40px rgba(0, 0, 0, 0.4)',
         overflow: 'visible',
         opacity: 1,
         zIndex: 1600,
         transition: 'border 0.2s, background-color 0.2s, box-shadow 0.2s',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
     };
 
     return (
@@ -197,11 +197,8 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     padding: 0,
                     overflow: 'hidden',
                     pointerEvents: 'auto',
-                    background: isOverDockZone ? 'rgba(var(--accent-rgb), 0.3)' : (isEditMode ? 'rgba(255, 255, 0, 0.1)' : 'rgba(15, 23, 42, 0.7)'),
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
+                    background: 'transparent',
                     border: isOverDockZone ? '2px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.1)',
-                    boxShadow: isOverDockZone ? '0 0 30px var(--accent)' : '0 10px 40px rgba(0, 0, 0, 0.4)',
                 }}
             >
                 <Mapper 
@@ -213,7 +210,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     isExpanded={true} // Floating window is always "expanded" internally
                 />
             </div>
-            {isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
+            {isEditMode && <div className="resize-handle" style={{ zIndex: 101, touchAction: 'none' }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
             
             {/* Draggable Handle at bottom (available outside of design mode) */}
             {!isEditMode && isMapFloating && (
@@ -222,9 +219,9 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                     style={{ 
                         position: 'absolute', bottom: '-24px', left: '0', right: '0', height: '32px', 
                         display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'grab',
-                        background: 'rgba(15, 23, 42, 0.8)', borderRadius: '0 0 12px 12px', 
+                        background: 'transparent', borderRadius: '0 0 16px 16px', 
                         border: '1px solid rgba(255,255,255,0.1)', borderTop: 'none',
-                        zIndex: 100
+                        zIndex: 100, pointerEvents: 'auto', touchAction: 'none'
                     }}
                     onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster', true); }}
                 >

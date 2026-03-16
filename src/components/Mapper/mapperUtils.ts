@@ -4,6 +4,7 @@ export const ROAD_COLOR_LIGHT = '#d2b48c'; // Tan for roads in light mode
 export const PATH_COLOR_DARK = '#7c6f64'; // Slightly darker sand/path
 export const PATH_COLOR_LIGHT = '#c2b280'; // Sand color
 export const WALL_COLOR = '#3e2723'; // Much darker brown for walls
+export const LONG_CONNECTION_COLOR = 'rgba(120, 120, 120, 0.45)'; // Subtle gray for long exits/stairs
 
 export const DIRS: Record<string, { dx: number, dy: number, dz?: number, opp: string, name: string }> = {
     n: { dx: 0, dy: -1, opp: 's', name: 'North' },
@@ -53,13 +54,13 @@ export const normalizeTerrain = (t: string | number | null): string => {
     if (low.includes('field') || low.includes('plain') || low.includes('grass')) return 'Field';
     if (low.includes('hill')) return 'Hills';
     if (low.includes('mountain')) return 'Mountains';
-    if (low.includes('water') || low.includes('sea') || low.includes('ocean')) return 'Water';
+    if (low.includes('underwater')) return 'Underwater';
     if (low.includes('shallow')) return 'Shallows';
     if (low.includes('rapid')) return 'Rapids';
-    if (low.includes('river')) return 'Water';
+    if (low.includes('water') || low.includes('sea') || low.includes('ocean') || low.includes('river')) return 'Water';
     if (low.includes('road') || low.includes('trail') || low.includes('path')) return 'Road';
-    if (low.includes('tunnel') || low.includes('cavern') || low.includes('inside')) return 'Cavern';
-    if (low.includes('underwater')) return 'Underwater';
+    if (low.includes('tunnel')) return 'Tunnel';
+    if (low.includes('cavern') || low.includes('inside')) return 'Cavern';
     if (low.includes('brush') || low.includes('swamp') || low.includes('shrub')) return 'Brush';
 
     // Match symbols
@@ -89,11 +90,12 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
             case 'Grasslands': return '#415e34';
             case 'Hills': return '#5a462d';
             case 'Mountains': return '#313244';
-            case 'Water':
-            case 'Shallows':
-            case 'Rapids': return '#1e66f5';
+            case 'Water': return '#1e66f5';
+            case 'Shallows': return '#74c7ec';
+            case 'Rapids': return '#89dceb';
+            case 'Underwater': return '#112b4a'; 
             case 'Road': return '#3b4b3b'; 
-            case 'Tunnel':
+            case 'Tunnel': return '#4e342e'; 
             case 'Cavern': return '#1a1a24'; 
             case 'Brush': return '#3a4a3a';
             case 'Base': return '#243324'; 
@@ -108,11 +110,12 @@ export const getTerrainColor = (terrain: string | number, isDarkMode: boolean): 
             case 'Grasslands': return '#e9edc9';
             case 'Hills': return '#faedcd';
             case 'Mountains': return '#e5e5e5';
-            case 'Water':
-            case 'Shallows':
-            case 'Rapids': return '#d4e6f1';
+            case 'Water': return '#d4e6f1';
+            case 'Shallows': return '#e3f2fd';
+            case 'Rapids': return '#e0f7fa';
+            case 'Underwater': return '#a9cce3';
             case 'Road': return '#e1e9d5'; // Grassy base color
-            case 'Tunnel':
+            case 'Tunnel': return '#5d4037';
             case 'Cavern': return '#d0d0d0';
             case 'Base': return '#e1e9d5'; // Grassy green base
             default: return '#ffffff';

@@ -3,7 +3,7 @@
 .drawer-backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: transparent;
     z-index: 3000;
     opacity: 0;
     pointer-events: none;
@@ -12,7 +12,7 @@
 
 @media (max-width: 768px) {
     .drawer-backdrop {
-        background: rgba(0, 0, 0, 0.05);
+        background: transparent;
     }
 }
 
@@ -33,7 +33,7 @@
     left: 0;
     right: 0;
     height: 60vh;
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.4);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -63,7 +63,7 @@
     left: 0;
     width: calc((100vw - 900px) / 2);
     min-width: 300px;
-    background: rgba(15, 23, 42, 0.9);
+    background: rgba(15, 23, 42, 0.4);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -282,7 +282,7 @@
 .drawer-section {
     margin-bottom: 25px;
     padding: 18px;
-    background: rgba(15, 23, 42, 0.6); /* Translucent background */
+    background: rgba(15, 23, 42, 0.15); /* Translucent background */
     backdrop-filter: blur(12px); /* Strong blur for floating effect */
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);

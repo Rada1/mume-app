@@ -76,7 +76,7 @@ export const useMapAnimation = ({
         lastFrameTimeRef.current = now;
 
         if (!ctxRef.current) {
-            ctxRef.current = cvs.getContext('2d', { alpha: false, desynchronized: true });
+            ctxRef.current = cvs.getContext('2d', { alpha: true });
         }
         const ctx = ctxRef.current;
         if (!ctx) return false;

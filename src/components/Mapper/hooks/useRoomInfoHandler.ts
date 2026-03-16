@@ -346,8 +346,8 @@ export const useRoomInfoHandler = ({
                 x: nx, y: ny, z: nz,
                 zone, terrain: freshTerrain || lastDetectedTerrainRef.current || 'Unknown Terrain',
                 exits: {}, notes: "",
-                mobFlags: ghostData ? ghostData[7] : [],
-                loadFlags: ghostData ? ghostData[8] : [],
+                mobFlags: Array.from(new Set(ghostData ? ghostData[7] : [])),
+                loadFlags: Array.from(new Set(ghostData ? ghostData[8] : [])),
                 roomQuestFlags: questFlags,
                 createdAt: Date.now()
             };

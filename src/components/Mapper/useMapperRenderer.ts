@@ -106,7 +106,7 @@ export const useMapperRenderer = ({
         // 2. Static Cache Management (Oversized 2x Buffer)
         if (!offscreenCacheRef.current) {
             const canvas = document.createElement('canvas');
-            const offCtx = canvas.getContext('2d', { alpha: false, desynchronized: true })!;
+            const offCtx = canvas.getContext('2d', { alpha: true })!;
             offscreenCacheRef.current = { canvas, ctx: offCtx, lastParams: "" };
         }
 
@@ -142,8 +142,7 @@ export const useMapperRenderer = ({
         if (needsRebuild) {
             const offCtx = cache.ctx;
             offCtx.setTransform(1, 0, 0, 1, 0, 0);
-            offCtx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
-            offCtx.fillRect(0, 0, cacheW, cacheH);
+            offCtx.clearRect(0, 0, cacheW, cacheH);
             
             offCtx.save();
             offCtx.imageSmoothingEnabled = false; 
@@ -239,10 +238,7 @@ export const useMapperRenderer = ({
         }
 
         // 3. Main Rendering Pass (Draw the static cache with scaling/projection)
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.imageSmoothingEnabled = camera.zoom < (cache as any).lastBuildZoom; // Smooth only when shrinking
-        ctx.fillStyle = isDarkMode ? '#11111b' : '#bababa';
-        ctx.fillRect(0, 0, baseW, baseH);
+        ctx.clearRect(0, 0, baseW, baseH);
 
         // Project the cached canvas onto the screen
         // Cache is centered at [buildCamX, buildCamY] with zoom [lastBuildZoom]

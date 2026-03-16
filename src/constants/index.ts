@@ -35,7 +35,7 @@ export const ROOM_COLORS: Record<string, string> = {
     underwater: '#172554',
     brush: '#4d7c0f',
     underground: '#475569',
-    tunnel: '#334155',
+    tunnel: '#4e342e',
     cavern: '#1e293b',
     building: '#64748b',
     inside: '#475569',

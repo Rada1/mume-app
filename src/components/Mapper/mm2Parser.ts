@@ -101,7 +101,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                                 markers[mId] = {
                                     id: mId,
                                     x: x,
-                                    y: -y,
+                                    y: -y + -65, // Apply Y_OFFSET for alignment
                                     z: z * floorHeight,
                                     text: mText.trim(),
                                     dotSize: 4,
@@ -120,12 +120,13 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                                 pr.exits[dir].target = idToServerId[targetId];
                             }
                         }
-                        roomCoords[pr.serverIdAttr] = [pr.x, -pr.y, pr.z * floorHeight, pr.terrain, pr.exits, pr.name, pr.serverIdAttr, pr.mobFlags, pr.loadFlags];
+                        roomCoords[pr.serverIdAttr] = [pr.x, -pr.y + -65, pr.z * floorHeight, pr.terrain, pr.exits, pr.name, pr.serverIdAttr, pr.mobFlags, pr.loadFlags];
                     }
 
-                    // Parse standalone markers - Use scale 80.0
+                    // Parse standalone markers - Use scale 160.0 (Global Arda Alignment)
                     const standaloneMarkers = xmlDoc.getElementsByTagName("marker");
-                    const SCALE = 80.0;
+                    const SCALE = 160.0;
+                    const Y_OFFSET = -65;
                     for (let i = 0; i < standaloneMarkers.length; i++) {
                         const mNode = standaloneMarkers[i];
                         if (mNode.parentNode?.nodeName === 'room') continue;
@@ -150,7 +151,7 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                             markers[mId] = {
                                 id: mId,
                                 x: mx,
-                                y: -my,
+                                y: -my + Y_OFFSET,
                                 z: mz * floorHeight,
                                 text: mText.trim(),
                                 dotSize: 4,
@@ -267,7 +268,8 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     }
 
                     const key = String(internalId);
-                    roomCoords[key] = [x, -y, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags];
+                    const Y_OFFSET_BIN = -65;
+                    roomCoords[key] = [x, -y + Y_OFFSET_BIN, z * floorHeight, terrain, exits, name, String(serverId || key), mobFlags, loadFlags];
                 }
 
                 for (let i = 0; i < markCount; i++) {
@@ -280,10 +282,11 @@ export const parseMM2 = async (file: File, floorHeight = 1.0): Promise<MapData> 
                     if (version >= 33) ru32(); // color
                     
                     const mId = `mbin_${i}`;
+                    const Y_OFFSET_BIN = -65;
                     markers[mId] = {
                         id: mId,
                         x: mx,
-                        y: -my,
+                        y: -my + Y_OFFSET_BIN,
                         z: mz * floorHeight,
                         text: mText,
                         dotSize: 4,

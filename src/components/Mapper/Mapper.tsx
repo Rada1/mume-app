@@ -180,7 +180,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 walkPath={walkPath}
                 baseMapExitsRef={context.baseMapExitsRef}
             />
-            <div className="vignette-container" />
             
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (
                 <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />

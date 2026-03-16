@@ -12,37 +12,26 @@
     align-items: center;
     border-radius: 12px;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(17, 17, 27, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     pointer-events: auto !important;
 }
 
 .mapper-container {
-    background: #11111b;
+    background: rgba(15, 23, 42, 0.1) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .vignette-container {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    pointer-events: none !important;
-    z-index: 3 !important; /* Above canvas (z:2) but below UI (z:10+) */
-    overflow: hidden !important;
+    display: none !important;
 }
 
 .vignette-container::after {
-    content: '' !important;
-    position: absolute !important;
-    inset: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    pointer-events: none !important;
-    display: block !important;
+    display: none !important;
 }
 
 canvas.map-canvas {
@@ -53,13 +42,13 @@ canvas.map-canvas {
     z-index: 2;
     opacity: 1;
     touch-action: none !important;
+    background: transparent !important;
 }
 
 .mapper-cluster,
 .mobile-mini-map {
     border: none !important;
     outline: none !important;
-    background: transparent !important;
 }
 
 .map-room-label {

@@ -121,8 +121,9 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = ({
             ref={cardRef}
             style={{
                 position: 'absolute', top: '48px', bottom: '16px', left: '8px', right: '16px',
-                zIndex: 100, backgroundColor: isDarkMode ? '#18181b' : '#f5f5f7', padding: '16px', borderRadius: '12px',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.8)', border: isDarkMode ? '1px solid #27272a' : '1px solid #d1d1d6',
+                zIndex: 100, backgroundColor: isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)', padding: '16px', borderRadius: '12px',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.8)', border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+                backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)',
                 display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px',
                 overflowY: 'auto', pointerEvents: 'auto', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', touchAction: 'pan-y'
             }}
