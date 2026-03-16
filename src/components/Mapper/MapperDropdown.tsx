@@ -26,21 +26,22 @@ export const MapperDropdown: React.FC<MapperDropdownProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 100 }}>
+        <div style={{ position: 'absolute', top: '44px', left: '8px', zIndex: 4000 }}>
 
             <>
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: -1 }} onClick={() => setIsOpen(false)} />
                 <div style={{
                     position: 'absolute',
-                    top: '100%',
-                    right: 0,
-                    marginTop: '10px',
-                    backgroundColor: isDarkMode ? 'rgba(30, 30, 46, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.12)',
-                    borderRadius: '12px',
+                    top: 0,
+                    left: 0,
+                    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+                    backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '16px',
                     padding: '12px',
                     minWidth: '220px',
-                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '6px',

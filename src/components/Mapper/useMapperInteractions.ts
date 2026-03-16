@@ -44,13 +44,15 @@ export interface InteractionDeps {
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
     const { canvasRef, cameraRef, triggerRender, rooms, markers, setRooms, setMarkers, setViewZ, onRoomClick } = deps;
-    const { screenToWorld, getRoomAt, getMarkerAt } = useMapHitTest({
+    const hitTest = useMapHitTest({
         canvasRef, cameraRef, roomsRef: { current: rooms } as any, markersRef: { current: markers } as any,
         currentRoomIdRef: { current: deps.currentRoomId } as any,
         viewZ: deps.viewZ,
         spatialIndexRef: deps.spatialIndexRef,
         preloadedCoordsRef: deps.preloadedCoordsRef
     });
+    const hitTestRef = useRef(hitTest);
+    useEffect(() => { hitTestRef.current = hitTest; }, [hitTest]);
 
     const [marqueeStart, setMarqueeStart] = useState<{ x: number, y: number } | null>(null);
     const [marqueeEnd, setMarqueeEnd] = useState<{ x: number, y: number } | null>(null);
@@ -86,6 +88,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         // IGNORE zoom if a window drag is in progress
         if (document.body.classList.contains('global-dragging')) return;
 
+        console.log(`[MapperInteractions] Wheel: deltaX=${e.deltaX} deltaY=${e.deltaY}`);
         e.preventDefault();
         const cam = cameraRef.current;
         const oldZoom = cam.zoom;
@@ -138,7 +141,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 hasDraggedRef.current = false;
                 dragTypeRef.current = 'room';
                 contextMenuTriggeredRef.current = false;
+                console.log(`[MapperInteractions] PointerDown: ${e.pointerType} x=${e.clientX} y=${e.clientY}`);
 
+                const { screenToWorld, getRoomAt, getMarkerAt } = hitTestRef.current;
                 const world = screenToWorld(e.clientX, e.clientY);
                 const roomId = getRoomAt(world.x, world.y);
                 const markerId = getMarkerAt(world.x, world.y);
@@ -163,6 +168,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     // Wait, the user wants single finger to trigger a swipe/direction command,
                     // and two fingers to pan/zoom.
                     const isMobileBrowser = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                    console.log(`[MapperInteractions] Down: isMobileBrowser=${isMobileBrowser} pointerType=${e.pointerType}`);
                     if (isMobileBrowser) {
                         dragTypeRef.current = 'joystick';
                         if (depsRef.current.joystick?.handleJoystickStart) {
@@ -171,6 +177,12 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     } else {
                         // Desktop
                         dragTypeRef.current = 'pan';
+                        // PRE-EMPTIVE suppression of auto-center for desktop panning
+                        // This prevents the "fighting" behavior where auto-center snaps back
+                        // before the 5px movement threshold is hit.
+                        depsRef.current.setIsDragging(true);
+                        isDraggingInternalRef.current = true;
+                        console.log('[MapperInteractions] Desktop Pan started (auto-center suppressed)');
                     }
                 }
             } else if (activePointersRef.current.size === 2) {
@@ -217,6 +229,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         const { joystick, executeCommand, heldButton, setHeldButton, btn, target, triggerHaptic } = depsRef.current;
                         if (joystick?.handleJoystickMove) {
                             const dir = joystick.handleJoystickMove(e, executeCommand, !!heldButton);
+                            if (dir) console.log(`[MapperInteractions] Joystick Dir: ${dir}`);
                             if (dir && heldButton && !heldButton.didFire && setHeldButton) {
                                 const button = btn?.buttons?.find((b: any) => b.id === heldButton.id);
                                 if (button) {
@@ -302,6 +315,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 if (dragTypeRef.current === 'joystick') {
                     joystick.handleJoystickEnd(e as any, executeCommand, triggerHaptic);
                 } else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
+                    const { screenToWorld } = hitTestRef.current;
                     const w1 = screenToWorld(marqueeStart.x, marqueeStart.y), w2 = screenToWorld(marqueeEnd.x, marqueeEnd.y);
                     const x1 = Math.min(w1.x, w2.x), y1 = Math.min(w1.y, w2.y), x2 = Math.max(w1.x, w2.x), y2 = Math.max(w1.y, w2.y);
                     const currentZ = currentRoomIdRef.current ? (roomsRef.current[currentRoomIdRef.current]?.z || 0) : 0;
@@ -312,6 +326,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     });
                     setSelectedRoomIds(newSelection);
                 } else if (!hasDraggedRef.current && dragTypeRef.current === 'room' && !contextMenuTriggeredRef.current) {
+                    const { screenToWorld, getRoomAt } = hitTestRef.current;
                     const world = screenToWorld(e.clientX, e.clientY);
                     const clickedRoomId = getRoomAt(world.x, world.y);
                     if (clickedRoomId) setInfoRoomId(clickedRoomId);
@@ -362,10 +377,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', onCancel);
             cvs.removeEventListener('wheel', onWheel);
-            activePointersRef.current.clear();
-            isDraggingInternalRef.current = false;
+            // DO NOT clear activePointersRef or isDraggingInternal here if it's just a re-render
         };
-    }, [canvasRef, screenToWorld, getRoomAt, getMarkerAt, triggerRender, onWheel, marqueeStart, marqueeEnd]);
+    }, [canvasRef]); // Stable effect
 
     const outputMarquee = useMemo(() => ({ start: marqueeStart, end: marqueeEnd }), [marqueeStart, marqueeEnd]);
 

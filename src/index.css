@@ -12,17 +12,17 @@
 .mobile-bottom-gutter {
     flex-shrink: 0;
     height: 220px; /* Taller peek height */
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(8px);
-    border-top: 2px solid var(--accent);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    background: transparent;
+    border-top: none;
+    box-shadow: none;
     z-index: 3500;
     touch-action: none; /* Block browser gestures */
     transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Allow sections to float */
     display: flex;
     flex-direction: column;
+    pointer-events: none; /* Let clicks pass through empty space */
 }
 
 @media (max-width: 768px) {
@@ -57,15 +57,15 @@
     display: flex !important;
     flex-direction: row !important;
     border-top: none !important;
-    border-right: 1px solid var(--border-color) !important;
+    border-right: none !important;
     position: relative !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     opacity: 1 !important;
     transform: none !important;
-    background: var(--bg-app);
+    background: transparent;
     z-index: 2500;
     flex-shrink: 0;
-    pointer-events: auto !important;
+    pointer-events: none !important;
     transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

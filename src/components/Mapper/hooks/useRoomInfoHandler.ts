@@ -370,7 +370,8 @@ export const useRoomInfoHandler = ({
             // Check dynamic properties too
             const arraysDiffer = (a: any[], b: any[]) => a.length !== b.length || a.some((v, i) => v !== b[i]);
 
-            const needsUpdate =
+            const isDark = isVnumZero;
+            const needsUpdate = !isDark && (
                 existingRoom.terrain !== finalTerrain ||
                 existingRoom.name !== name ||
                 existingRoom.desc !== desc ||
@@ -378,14 +379,15 @@ export const useRoomInfoHandler = ({
                 arraysDiffer(existingRoom.loadFlags || [], newLoadFlags) ||
                 arraysDiffer(existingRoom.roomQuestFlags || [], newRoomQuestFlags) ||
                 (ghostData && (existingRoom.x !== ghostData[0] || existingRoom.y !== ghostData[1])) ||
-                (currentActiveRoom && dirUsed && activeRoomId !== targetId);
+                (currentActiveRoom && dirUsed && activeRoomId !== targetId)
+            );
 
             if (needsUpdate) {
                 topologyChanged = true;
                 newRooms = { ...prevRooms };
                 newRooms[targetId!] = {
                     ...existingRoom,
-                    gmcpId: Number(gmcpId) || 0,
+                    gmcpId: isDark ? (existingRoom.gmcpId || 0) : (Number(gmcpId) || 0),
                     name, desc, zone,
                     terrain: finalTerrain,
                     mobFlags: newMobFlags,
@@ -404,7 +406,7 @@ export const useRoomInfoHandler = ({
             }
         }
 
-        if (data.exits) {
+        if (data.exits && !isVnumZero) {
             const room = newRooms[targetId!];
             const updatedExits: Record<string, any> = {};
             let exitsChanged = false;

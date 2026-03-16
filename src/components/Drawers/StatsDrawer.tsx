@@ -164,228 +164,244 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     <div style={{ width: '6px', height: '80px', background: 'rgba(255,255,255,0.4)', borderRadius: '3px' }} />
                 </div>
                 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                <div className="drawer-header" style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    padding: '12px 20px', 
+                    background: 'rgba(15, 23, 42, 0.7)', 
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '16px',
+                    margin: '10px 15px 5px 15px',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+                    pointerEvents: 'auto',
+                    position: 'relative',
+                    zIndex: 10
+                }}>
+                    <div className="swipe-indicator" style={{ position: 'absolute', top: '6px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '3px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
+                    <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: 'var(--accent)' }}>Combat Stats</span>
                     <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ 
-                        background: 'rgba(255,255,255,0.1)', 
+                        marginLeft: 'auto',
+                        background: 'rgba(255,255,255,0.08)', 
                         border: 'none', 
                         color: '#fff', 
-                        width: '32px', 
-                        height: '32px', 
-                        borderRadius: '16px', 
+                        width: '30px', 
+                        height: '30px', 
+                        borderRadius: '15px', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'center', 
                         fontSize: '1rem', 
-                        cursor: 'pointer',
-                        zIndex: 10
+                        cursor: 'pointer'
                     }}>✕</button>
                 </div>
-
-                <div className="drawer-main-layout" style={{ 
-                    display: 'flex', 
-                    flexDirection: isLandscape ? 'row' : 'column', 
-                    gap: isLandscape ? '15px' : '0',
-                    flex: 1
+                
+                <div className="drawer-content" style={{ 
+                    flex: 1, 
+                    overflowY: 'auto', 
+                    padding: '10px 15px 40px 15px', 
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0'
                 }}>
-                    {/* LEFT COLUMN (or Top in Portrait) */}
-                    <div className="drawer-col-left" style={{ flex: isLandscape ? 1.2 : 'none', display: 'flex', flexDirection: 'column' }}>
+                    <div className="drawer-main-layout" style={{ 
+                        display: 'flex', 
+                        flexDirection: isLandscape ? 'row' : 'column', 
+                        gap: isLandscape ? '15px' : '0',
+                        flex: 1
+                    }}>
+                        {/* LEFT COLUMN (or Top in Portrait) */}
+                        <div className="drawer-col-left" style={{ flex: isLandscape ? 1.2 : 'none', display: 'flex', flexDirection: 'column' }}>
 
-                        <div className="status-section" style={{
-                                width: '100%',
-                                background: 'rgba(255, 255, 255, 0.03)',
-                                padding: isLandscape ? '10px' : '15px',
-                                borderRadius: '12px',
-                                border: '1px solid rgba(255, 255, 255, 0.05)',
-                                marginBottom: isLandscape ? '0' : '20px'
-                            }}>
-                            <div style={{ marginBottom: '15px' }}>
-                                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Conditions</div>
-                                {renderConditions()}
+                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '15px' }}>
+                                <div className="section-header">Status & Spells</div>
+                                <div style={{ marginBottom: '15px' }}>
+                                    <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800 }}>Conditions</div>
+                                    {renderConditions()}
+                                </div>
+                                
+                                <div>
+                                    <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800 }}>Active Spells</div>
+                                    {renderSpells()}
+                                </div>
                             </div>
-                            
-                            <div>
-                                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px' }}>Active Spells</div>
-                                {renderSpells()}
-                            </div>
+
                         </div>
 
-                    </div>
-
-                    {/* RIGHT COLUMN (or Bottom in Portrait) */}
-                    <div className="drawer-col-right" style={{ flex: 1, display: 'flex', flexDirection: 'column', marginTop: isLandscape ? '0' : '20px' }}>
-                        {/* Combat Percentages Section */}
-                        <div className="percentages-section" style={{ 
-                            marginBottom: isLandscape ? '10px' : '20px',
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(4, 1fr)',
-                            gap: '8px',
-                            padding: '12px',
-                            background: 'rgba(255, 255, 255, 0.03)',
-                            borderRadius: '12px',
-                            border: '1px solid rgba(255, 255, 255, 0.05)'
-                        }}>
-                            {[
-                                { label: 'OB', value: stats.ob },
-                                { label: 'DB', value: stats.db },
-                                { label: 'PB', value: stats.pb },
-                                { label: 'ARM', value: stats.armour }
-                            ].map(stat => (
-                                <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '2px' }}>{stat.label}</div>
-                                    <div style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{stat.value !== undefined ? `${stat.value}%` : '--'}</div>
+                        {/* RIGHT COLUMN (or Bottom in Portrait) */}
+                        <div className="drawer-col-right" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            {/* Combat Percentages Section */}
+                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '15px' }}>
+                                <div className="section-header">Combat Potential</div>
+                                <div style={{ 
+                                    display: 'grid',
+                                    gridTemplateColumns: 'repeat(4, 1fr)',
+                                    gap: '8px'
+                                }}>
+                                    {[
+                                        { label: 'OB', value: stats.ob },
+                                        { label: 'DB', value: stats.db },
+                                        { label: 'PB', value: stats.pb },
+                                        { label: 'ARM', value: stats.armour }
+                                    ].map(stat => (
+                                        <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                            <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '2px', fontWeight: 800 }}>{stat.label}</div>
+                                            <div style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{stat.value !== undefined ? `${stat.value}%` : '--'}</div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
 
-                        <div className="controls-section" style={{ marginBottom: isLandscape ? '12px' : '25px' }}>
-                            <div style={{ marginBottom: isLandscape ? '10px' : '20px' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
-                                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px' }}>MOOD</div>
-                                    <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{mood === 'berserk' ? 'Berserk' : mood}</div>
+                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '15px' }}>
+                                <div className="section-header">Combat Settings</div>
+                                <div style={{ marginBottom: '15px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px', fontWeight: 800 }}>MOOD</div>
+                                        <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{mood === 'berserk' ? 'Berserk' : mood}</div>
+                                    </div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <div style={{ position: 'relative', flex: 1, height: '32px', display: 'flex', alignItems: 'center' }}>
+                                            {renderTicks(['wimpy', 'prudent', 'normal', 'brave', 'aggr'])}
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="4"
+                                                step="1"
+                                                value={['wimpy', 'prudent', 'normal', 'brave', 'aggressive'].indexOf(mood === 'berserk' ? 'aggressive' : mood)}
+                                                onChange={(e) => {
+                                                    const options = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive'];
+                                                    const val = options[parseInt(e.target.value)];
+                                                    setMood(val);
+                                                    executeCommand(`change mood ${val} `);
+                                                    setTimeout(() => executeCommand('stat', true, true, true, true), 100);
+                                                    triggerHaptic(15);
+                                                }}
+                                                className="mobile-slider"
+                                                style={{ width: '100%', position: 'relative', zIndex: 2, background: 'transparent' }}
+                                            />
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                const newVal = mood === 'berserk' ? 'aggressive' : 'berserk';
+                                                setMood(newVal);
+                                                executeCommand(`change mood ${newVal} `);
+                                                setTimeout(() => executeCommand('stat', true, true, true, true), 100);
+                                                triggerHaptic(30);
+                                            }}
+                                            style={{
+                                                padding: '4px 8px',
+                                                borderRadius: '6px',
+                                                border: mood === 'berserk' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.2)',
+                                                background: mood === 'berserk' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
+                                                color: mood === 'berserk' ? 'var(--accent)' : '#fff',
+                                                fontSize: '0.55rem',
+                                                fontWeight: 'bold',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            BERSERK
+                                        </button>
+                                    </div>
                                 </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{ position: 'relative', flex: 1, height: '32px', display: 'flex', alignItems: 'center' }}>
-                                        {renderTicks(['wimpy', 'prudent', 'normal', 'brave', 'aggr'])}
+
+                                <div style={{ marginBottom: '15px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px', fontWeight: 800 }}>SPELL SPEED</div>
+                                        <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{spellSpeed}</div>
+                                    </div>
+                                    <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
+                                        {renderTicks(['quick', 'fast', 'normal', 'careful', 'thorough'])}
                                         <input
                                             type="range"
                                             min="0"
                                             max="4"
                                             step="1"
-                                            value={['wimpy', 'prudent', 'normal', 'brave', 'aggressive'].indexOf(mood === 'berserk' ? 'aggressive' : mood)}
+                                            value={['quick', 'fast', 'normal', 'careful', 'thorough'].indexOf(spellSpeed)}
                                             onChange={(e) => {
-                                                const options = ['wimpy', 'prudent', 'normal', 'brave', 'aggressive'];
+                                                const options = ['quick', 'fast', 'normal', 'careful', 'thorough'];
                                                 const val = options[parseInt(e.target.value)];
-                                                setMood(val);
-                                                executeCommand(`change mood ${val} `);
-                                                setTimeout(() => executeCommand('stat', true, true, true, true), 100);
+                                                setSpellSpeed(val);
+                                                executeCommand(`change spell ${val} `);
                                                 triggerHaptic(15);
                                             }}
                                             className="mobile-slider"
                                             style={{ width: '100%', position: 'relative', zIndex: 2, background: 'transparent' }}
                                         />
                                     </div>
-                                    <button
-                                        onClick={() => {
-                                            const newVal = mood === 'berserk' ? 'aggressive' : 'berserk';
-                                            setMood(newVal);
-                                            executeCommand(`change mood ${newVal} `);
-                                            setTimeout(() => executeCommand('stat', true, true, true, true), 100);
-                                            triggerHaptic(30);
-                                        }}
-                                        style={{
-                                            padding: isLandscape ? '4px 8px' : '6px 12px',
-                                            borderRadius: '6px',
-                                            border: mood === 'berserk' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.2)',
-                                            background: mood === 'berserk' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
-                                            color: mood === 'berserk' ? 'var(--accent)' : '#fff',
-                                            fontSize: '0.6rem',
-                                            fontWeight: 'bold',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        BERSERK
-                                    </button>
+                                </div>
+
+                                <div style={{ marginBottom: '5px' }}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
+                                        <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px', fontWeight: 800 }}>ALERTNESS</div>
+                                        <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{alertness}</div>
+                                    </div>
+                                    <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
+                                        {renderTicks(['norm', 'careful', 'attent', 'vigil', 'parano'])}
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="4"
+                                            step="1"
+                                            value={['normal', 'careful', 'attentive', 'vigilant', 'paranoid'].indexOf(alertness)}
+                                            onChange={(e) => {
+                                                const options = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
+                                                const val = options[parseInt(e.target.value)];
+                                                setAlertness(val);
+                                                executeCommand(`change alert ${val} `);
+                                                triggerHaptic(15);
+                                            }}
+                                            className="mobile-slider"
+                                            style={{ width: '100%', position: 'relative', zIndex: 2, background: 'transparent' }}
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <div style={{ marginBottom: isLandscape ? '10px' : '20px' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
-                                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px' }}>SPELL SPEED</div>
-                                    <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{spellSpeed}</div>
+                            <div className="drawer-section" style={{ pointerEvents: 'auto' }}>
+                                <div className="section-header">Player Position</div>
+                                <div style={{ display: 'flex', gap: '4px', justifyContent: 'space-between', width: '100%', flexWrap: 'nowrap' }}>
+                                    {[
+                                        { label: 'sleep', cmd: 'sleep', isHighlighted: playerPosition === 'sleeping' },
+                                        { label: 'wake', cmd: 'wake', isHighlighted: playerPosition !== 'sleeping' },
+                                        { label: 'rest', cmd: 'rest', isHighlighted: playerPosition === 'resting' },
+                                        { label: 'sit', cmd: 'sit', isHighlighted: playerPosition === 'sitting' },
+                                        { label: 'stand', cmd: 'stand', isHighlighted: playerPosition === 'standing' },
+                                    ].map(item => (
+                                        <button
+                                            key={item.label}
+                                            onClick={() => {
+                                                triggerHaptic(20);
+                                                executeCommand(item.cmd);
+                                                if (item.cmd === 'sleep') setPlayerPosition('sleeping');
+                                                else if (item.cmd === 'wake' && playerPosition === 'sleeping') setPlayerPosition('resting');
+                                                else if (['rest', 'sit', 'stand'].includes(item.cmd)) {
+                                                    const posMap: Record<string, string> = { 'rest': 'resting', 'sit': 'sitting', 'stand': 'standing' };
+                                                    setPlayerPosition(posMap[item.cmd]);
+                                                }
+                                            }}
+                                            style={{
+                                                height: '32px',
+                                                padding: '0 2px',
+                                                borderRadius: '6px',
+                                                border: item.isHighlighted ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
+                                                background: item.isHighlighted ? 'rgba(74, 222, 128, 0.2)' : 'rgba(255,255,255,0.05)',
+                                                color: item.isHighlighted ? 'var(--accent)' : '#fff',
+                                                fontSize: '0.55rem',
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                flex: 1,
+                                                minWidth: '0'
+                                            }}
+                                        >
+                                            {item.label}
+                                        </button>
+                                    ))}
                                 </div>
-                                <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
-                                    {renderTicks(['quick', 'fast', 'normal', 'careful', 'thorough'])}
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="4"
-                                        step="1"
-                                        value={['quick', 'fast', 'normal', 'careful', 'thorough'].indexOf(spellSpeed)}
-                                        onChange={(e) => {
-                                            const options = ['quick', 'fast', 'normal', 'careful', 'thorough'];
-                                            const val = options[parseInt(e.target.value)];
-                                            setSpellSpeed(val);
-                                            executeCommand(`change spell ${val} `);
-                                            triggerHaptic(15);
-                                        }}
-                                        className="mobile-slider"
-                                        style={{ width: '100%', position: 'relative', zIndex: 2, background: 'transparent' }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div style={{ marginBottom: isLandscape ? '10px' : '10px' }}>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
-                                    <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px' }}>ALERTNESS</div>
-                                    <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{alertness}</div>
-                                </div>
-                                <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
-                                    {renderTicks(['norm', 'careful', 'attent', 'vigil', 'parano'])}
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="4"
-                                        step="1"
-                                        value={['normal', 'careful', 'attentive', 'vigilant', 'paranoid'].indexOf(alertness)}
-                                        onChange={(e) => {
-                                            const options = ['normal', 'careful', 'attentive', 'vigilant', 'paranoid'];
-                                            const val = options[parseInt(e.target.value)];
-                                            setAlertness(val);
-                                            executeCommand(`change alert ${val} `);
-                                            triggerHaptic(15);
-                                        }}
-                                        className="mobile-slider"
-                                        style={{ width: '100%', position: 'relative', zIndex: 2, background: 'transparent' }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="position-section" style={{ marginBottom: '10px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '6px' }}>
-                                <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px' }}>PLAYER POSITION</div>
-                            </div>
-                            <div style={{ display: 'flex', gap: '4px', justifyContent: 'space-between', width: '100%', flexWrap: 'nowrap' }}>
-                                {[
-                                    { label: 'sleep', cmd: 'sleep', isHighlighted: playerPosition === 'sleeping' },
-                                    { label: 'wake', cmd: 'wake', isHighlighted: playerPosition !== 'sleeping' },
-                                    { label: 'rest', cmd: 'rest', isHighlighted: playerPosition === 'resting' },
-                                    { label: 'sit', cmd: 'sit', isHighlighted: playerPosition === 'sitting' },
-                                    { label: 'stand', cmd: 'stand', isHighlighted: playerPosition === 'standing' },
-                                ].map(item => (
-                                    <button
-                                        key={item.label}
-                                        onClick={() => {
-                                            triggerHaptic(20);
-                                            executeCommand(item.cmd);
-                                            if (item.cmd === 'sleep') setPlayerPosition('sleeping');
-                                            else if (item.cmd === 'wake' && playerPosition === 'sleeping') setPlayerPosition('resting');
-                                            else if (['rest', 'sit', 'stand'].includes(item.cmd)) {
-                                                const posMap: Record<string, string> = { 'rest': 'resting', 'sit': 'sitting', 'stand': 'standing' };
-                                                setPlayerPosition(posMap[item.cmd]);
-                                            }
-                                        }}
-                                        style={{
-                                            height: isLandscape ? '28px' : '34px',
-                                            padding: '0 2px',
-                                            borderRadius: '6px',
-                                            border: item.isHighlighted ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                                            background: item.isHighlighted ? 'rgba(74, 222, 128, 0.2)' : 'rgba(255,255,255,0.05)',
-                                            color: item.isHighlighted ? 'var(--accent)' : '#fff',
-                                            fontSize: '0.6rem',
-                                            fontWeight: 'bold',
-                                            textTransform: 'uppercase',
-                                            cursor: 'pointer',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            flex: 1,
-                                            minWidth: '0'
-                                        }}
-                                    >
-                                        {item.label}
-                                    </button>
-                                ))}
                             </div>
                         </div>
                     </div>

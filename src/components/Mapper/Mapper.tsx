@@ -138,7 +138,14 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [isMapFloating, setIsMapFloating, setUI, triggerHaptic]);
 
     return (
-        <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', backgroundColor: isDarkMode ? '#11111b' : '#bababa', touchAction: 'none' }}>
+        <div className={`mapper-container ${effectiveIsMinimized ? 'minimized' : ''} ${isMobile ? 'mobile' : ''} ${!effectiveIsMinimized ? 'full-view' : ''}`} style={{ 
+            position: 'relative', 
+            width: '100%', 
+            height: '100%', 
+            overflow: 'hidden', 
+            backgroundColor: 'transparent', 
+            touchAction: 'none' 
+        }}>
             <MapCanvas
                 ref={canvasRef}
                 rooms={rooms}

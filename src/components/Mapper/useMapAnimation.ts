@@ -219,6 +219,11 @@ export const useMapAnimation = ({
 
         // Camera Centering logic (Allow auto-center even if dragging IF it's a joystick pulse)
         if ((autoCenter || walkTargetId) && playerPosRef.current && (!isDragging || isJoystickActiveRef.current)) {
+            // Log once when auto-centering is active if it wasn't before
+            if (!(tickRef as any)._autoCenterActive) {
+                console.log('[MapAnimation] Auto-centering ACTIVE');
+                (tickRef as any)._autoCenterActive = true;
+            }
             const zoom = camera.current.zoom || 1;
             const targetCamX = (playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2) - (w / (2 * zoom));
             const targetCamY = (playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2) - (h / (2 * zoom));
@@ -233,6 +238,11 @@ export const useMapAnimation = ({
             } else {
                 camera.current.x = targetCamX;
                 camera.current.y = targetCamY;
+            }
+        } else {
+            if ((tickRef as any)._autoCenterActive) {
+                console.log('[MapAnimation] Auto-centering SUPPRESSED (isDragging:', isDragging, 'isJoystickActive:', isJoystickActiveRef.current, ')');
+                (tickRef as any)._autoCenterActive = false;
             }
         }
 

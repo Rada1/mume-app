@@ -90,6 +90,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
         const startX = e.clientX;
         const startY = e.clientY;
+        console.log(`[Joystick] Start: x=${startX} y=${startY} (Pointer: ${e.pointerId})`);
         
         joystickStartPos.current = { x: startX, y: startY };
         touchStartPos.current = { x: startX, y: startY };
@@ -118,6 +119,10 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         const angleRad = Math.atan2(dy, dx);
         let angleDeg = angleRad * (180 / Math.PI);
         if (angleDeg < 0) angleDeg += 360;
+
+        if (dist > 5) {
+            console.log(`[Joystick] Move: dx=${dx.toFixed(1)} dy=${dy.toFixed(1)} dist=${dist.toFixed(1)} angle=${angleDeg.toFixed(1)}`);
+        }
 
         const lastDir = lockedDirRef.current;
         let dir: Direction | null = null;
@@ -194,6 +199,9 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         };
 
         const steeredDir = dir ? getMagneticDir(dir) : null;
+        if (dir && steeredDir !== dir) {
+            console.log(`[Joystick] Magnetic Steering: ${dir} -> ${steeredDir} (Available: ${availableExits.join(',')})`);
+        }
         dir = steeredDir;
 
         let threshold = 25;
@@ -250,6 +258,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         activePointersRef.current.delete(e.pointerId);
 
         if (!e.isPrimary) return false;
+        console.log(`[Joystick] End: x=${e.clientX} y=${e.clientY} (Consumed: ${isJoystickConsumed || isTargetModifierActive})`);
         executeCommandRef.current = executeCommand;
         stopRepeatTimer();
 

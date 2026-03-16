@@ -76,9 +76,16 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             <div 
                 className={`mobile-bottom-gutter ${isExpanded ? 'map-expanded' : ''}`}
                 onClick={(e) => e.stopPropagation()} // Prevent log interaction
+                style={{
+                    padding: isLandscape ? '10px' : (isExpanded ? '10px 15px 40px 15px' : '0'),
+                    overflow: isExpanded ? 'auto' : 'visible',
+                    display: 'flex',
+                    flexDirection: isLandscape ? 'row' : 'column',
+                    gap: '10px'
+                }}
             >
                 {!showLegacyButtons && showControls && !isKeyboardOpen && !isLandscape && !isExpanded && (
-                    <div className="line-cluster-container">
+                    <div className="line-cluster-container" style={{ pointerEvents: 'auto' }}>
                         <LineCluster
                             isEditMode={isEditMode}
                             handleDragStart={handleDragStart}
@@ -107,7 +114,25 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                         />
                     </div>
                 )}
-                <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                <div 
+                    className={(isExpanded || isLandscape) ? "drawer-section" : ""} 
+                    style={{ 
+                        flex: 1, 
+                        position: 'relative', 
+                        overflow: 'hidden', 
+                        pointerEvents: 'auto',
+                        padding: (isExpanded && !isLandscape) ? '10px' : '0',
+                        margin: (isExpanded && !isLandscape) ? '5px 0' : '0',
+                        height: '100%',
+                        background: (isExpanded || isLandscape) ? 'rgba(15, 23, 42, 0.7)' : 'transparent',
+                        backdropFilter: (isExpanded || isLandscape) ? 'blur(12px)' : 'none',
+                        WebkitBackdropFilter: (isExpanded || isLandscape) ? 'blur(12px)' : 'none',
+                        border: (isExpanded || isLandscape) ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                        borderRadius: (isExpanded || isLandscape) ? '16px' : '0',
+                        boxShadow: (isExpanded || isLandscape) ? '0 8px 32px rgba(0, 0, 0, 0.4)' : 'none',
+                        touchAction: 'none'
+                    }}
+                >
                     <Mapper
                         ref={mapperRef}
                         isDesignMode={isEditMode}
@@ -147,12 +172,13 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         cursor: isEditMode ? 'move' : undefined,
         border: isOverDockZone ? '2px solid var(--accent)' : (isEditMode ? '1px dashed rgba(255,255,0,0.3)' : (isMobile ? '1px solid rgba(255,255,255,0.1)' : undefined)),
         borderRadius: '12px',
-        backgroundColor: isOverDockZone ? 'rgba(var(--accent-rgb), 0.2)' : (isEditMode ? 'rgba(255, yellow, 0, 0.1)' : 'rgba(15, 23, 42, 0.95)'),
-        boxShadow: isOverDockZone ? '0 0 30px var(--accent)' : '0 8px 32px rgba(0,0,0,0.5)',
+        backgroundColor: 'transparent',
+        boxShadow: 'none',
         overflow: 'visible',
         opacity: 1,
         zIndex: 1600,
-        transition: 'border 0.2s, background-color 0.2s, box-shadow 0.2s'
+        transition: 'border 0.2s, background-color 0.2s, box-shadow 0.2s',
+        pointerEvents: 'none'
     };
 
     return (
@@ -162,14 +188,31 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             style={style}
             onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'mapper', 'cluster'); }}
         >
-            <Mapper 
-                ref={mapperRef} 
-                isDesignMode={isEditMode} 
-                characterName={characterName} 
-                isMmapperMode={isMmapperMode} 
-                isMobile={isMobile}
-                isExpanded={true} // Floating window is always "expanded" internally
-            />
+            <div 
+                className="drawer-section"
+                style={{
+                    width: '100%',
+                    height: '100%',
+                    margin: 0,
+                    padding: 0,
+                    overflow: 'hidden',
+                    pointerEvents: 'auto',
+                    background: isOverDockZone ? 'rgba(var(--accent-rgb), 0.3)' : (isEditMode ? 'rgba(255, 255, 0, 0.1)' : 'rgba(15, 23, 42, 0.7)'),
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: isOverDockZone ? '2px solid var(--accent)' : '1px solid rgba(255, 255, 255, 0.1)',
+                    boxShadow: isOverDockZone ? '0 0 30px var(--accent)' : '0 10px 40px rgba(0, 0, 0, 0.4)',
+                }}
+            >
+                <Mapper 
+                    ref={mapperRef} 
+                    isDesignMode={isEditMode} 
+                    characterName={characterName} 
+                    isMmapperMode={isMmapperMode} 
+                    isMobile={isMobile}
+                    isExpanded={true} // Floating window is always "expanded" internally
+                />
+            </div>
             {isEditMode && <div className="resize-handle" style={{ zIndex: 101 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'mapper', 'cluster-resize'); }} />}
             
             {/* Draggable Handle at bottom (available outside of design mode) */}
