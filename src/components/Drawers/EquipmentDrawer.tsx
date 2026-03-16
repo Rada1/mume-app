@@ -225,6 +225,16 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     const parentNoun = itm.parentItemNoun;
                     const delay = index * 250;
 
+                    console.log(`[EquipmentDrawer] Drop detected:`, {
+                        text: itm.text,
+                        noun,
+                        parentNoun,
+                        src,
+                        fullPath,
+                        parentPath,
+                        target: target?.className
+                    });
+
                     setTimeout(() => {
                         if (logRecipient) {
                             const recipientName = logRecipient.getAttribute('data-context');

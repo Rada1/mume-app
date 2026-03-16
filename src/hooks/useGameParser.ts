@@ -170,7 +170,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'quest';
             if (deps.isCharacterOpen) isSilentCapture.current = 1;
         }
-        else if (textOnly === 'who:' || lower === 'allies' || lower === 'minions') {
+        else if (lower === 'who:' || lower === 'allies' || lower === 'minions' || lower.startsWith("who's online") || lower.startsWith("allies online") || lower.startsWith("minions online")) {
             if (captureStage.current === 'who') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: who'); addDiagnosticLog?.('Entering Stage: who');
@@ -617,12 +617,18 @@ export function useGameParser(deps: UseGameParserDeps) {
                     containerStackRef.current.push({ depth, noun, context, stableId });
                 }
 
-                return {
+                const line: DrawerLine = {
                     id: context || stableId || Math.random().toString(36).substring(7),
                     text: mainText, html: mainHtml, prefix, prefixHtml,
                     isItem: !isHdr && !isNothing, isHeader: isHdr, isContainer, depth, cmd, context,
                     parentItemId, parentItemNoun
                 };
+
+                if (line.parentItemNoun) {
+                    console.log(`[Parser] createLine:`, { text: line.text, parent: line.parentItemNoun, depth: line.depth });
+                }
+
+                return line;
             };
 
             if (captureStage.current === 'inv') {
@@ -649,9 +655,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                                 const injectedLine: DrawerLine = {
                                     ...containerLine, id: `${containerLine.id}.${containerId}`, cmd,
                                     depth: (parent.depth || 0) + Math.max(containerLine.depth, 1),
-                                    parentItemId: parent.id, parentItemNoun: parent.context || parent.id,
+                                    parentItemId: parent.id, parentItemNoun: parent.stableId,
                                     context: `${containerLine.context || containerLine.id}.${parent.context || parent.id}`
                                 };
+                                console.log(`[Parser] Injecting into ${cmd}:`, { text: injectedLine.text, parent: injectedLine.parentItemNoun });
                                 if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) return prev;
                                 const next = [...prev]; next.splice(parentIdx + 1, 0, injectedLine); return next;
                             });
@@ -663,9 +670,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                                 const injectedLine: DrawerLine = {
                                     ...containerLine, id: `${containerLine.id}.${containerId}`, cmd,
                                     depth: (parent.depth || 0) + Math.max(containerLine.depth, 1),
-                                    parentItemId: parent.id, parentItemNoun: parent.context || parent.id,
+                                    parentItemId: parent.id, parentItemNoun: parent.stableId,
                                     context: `${containerLine.context || containerLine.id}.${parent.context || parent.id}`
                                 };
+                                console.log(`[Parser] Injecting into ${cmd}:`, { text: injectedLine.text, parent: injectedLine.parentItemNoun });
                                 if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) return prev;
                                 const next = [...prev]; next.splice(parentIdx + 1, 0, injectedLine); return next;
                             });

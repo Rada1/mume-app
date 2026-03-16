@@ -84,6 +84,7 @@ export interface DrawerLine {
     isContainer?: boolean;
     cmd?: string;
     context?: string;
+    stableId?: string;
     depth?: number;
     prefix?: string;
     prefixHtml?: string;

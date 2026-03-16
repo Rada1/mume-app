@@ -136,6 +136,15 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const itemNoun = itemStableId;
             const parentNoun = itemLine.parentItemNoun;
 
+            console.log(`[InventoryDrawer] Drop detected:`, {
+                text: itemLine.text,
+                noun: itemNoun,
+                parentNoun,
+                fullPath,
+                parentPath,
+                target: target?.className
+            });
+
             const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
             if (logRecipient) {
                  const recipientName = logRecipient.getAttribute('data-context');
