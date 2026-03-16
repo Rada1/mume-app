@@ -12,6 +12,7 @@ export function useQuestsHandler(
 ) {
     const isQuestsActiveRef = useRef(false);
     const isDetailActiveRef = useRef(false);
+    const isAreaPendingRef = useRef(false);
     const areaRef = useRef<string>('');
     const parsedQuestsRef = useRef<Quest[]>([]);
     const currentQuestRef = useRef<Partial<Quest> | null>(null);
@@ -20,28 +21,53 @@ export function useQuestsHandler(
         const textOnly = text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const lower = textOnly.toLowerCase();
 
+        console.log(`[QuestsHandler] Parsing line: "${textOnly}"`, { 
+            isActive: isQuestsActiveRef.current, 
+            isAreaPending: isAreaPendingRef.current,
+            isDetail: isDetailActiveRef.current 
+        });
+
         // 1. Detect start of quest list
         if (textOnly.includes('You have learnt of a quest in this area:')) {
             isQuestsActiveRef.current = true;
+            isAreaPendingRef.current = true; // The NEXT line should be the area
             isDetailActiveRef.current = false;
             parsedQuestsRef.current = [];
             currentQuestRef.current = null;
             return true;
         }
 
+        if (textOnly.includes('You have not found any new quests.')) {
+            console.log('[QuestsHandler] No quests found message detected.');
+            isQuestsActiveRef.current = true; // Still active to allow finalize to clear
+            isAreaPendingRef.current = false;
+            return true;
+        }
+
         if (isQuestsActiveRef.current) {
             // Detect area name (usually follows the "You have learnt..." line)
-            // Eriador*
-            const areaMatch = textOnly.match(/^([^*]+)\*?$/);
-            if (areaMatch && !textOnly.includes('unfinished quest') && !textOnly.startsWith('*')) {
-                areaRef.current = areaMatch[1].trim();
-                return true;
+            if (isAreaPendingRef.current) {
+                // Heuristic: Area names usually don't start with '*' or 'You'
+                if (!textOnly.startsWith('*') && !textOnly.startsWith('You')) {
+                    const areaMatch = textOnly.match(/^([^*]+)\*?$/);
+                    if (areaMatch) {
+                        areaRef.current = areaMatch[1].trim();
+                        isAreaPendingRef.current = false;
+                        console.log(`[QuestsHandler] Area detected: "${areaRef.current}"`);
+                        return true;
+                    }
+                }
+                // If we didn't match, we still need to clear pending or we'll swallow quests
+                isAreaPendingRef.current = false;
             }
 
             // Detect "You are in Eriador with the following unfinished quest:"
             if (textOnly.includes('with the following unfinished quest:')) {
                 const innerAreaMatch = textOnly.match(/You are in (.*?) with/);
-                if (innerAreaMatch) areaRef.current = innerAreaMatch[1].trim();
+                if (innerAreaMatch) {
+                    areaRef.current = innerAreaMatch[1].trim();
+                    console.log(`[QuestsHandler] Area from 'unfinished' line: "${areaRef.current}"`);
+                }
                 return true;
             }
 
@@ -53,6 +79,8 @@ export function useQuestsHandler(
                 const description = questMatch[2].trim();
                 const id = name.toLowerCase().replace(/['\s]+/g, '-');
                 
+                console.log(`[QuestsHandler] Quest found: "${name}" in "${areaRef.current}"`);
+
                 parsedQuestsRef.current.push({
                     id,
                     name,

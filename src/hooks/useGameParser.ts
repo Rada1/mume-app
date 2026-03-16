@@ -474,9 +474,12 @@ export function useGameParser(deps: UseGameParserDeps) {
                         }));
                     }
                 }
-
-                return;
             }
+        } else if (captureStage.current === 'quest') {
+            if (textOnly.length > 0) {
+                deps.quests.parseQuestLine(textOnly);
+            }
+            return;
         }
 
         // --- ROOM DETECTION ---
@@ -642,6 +645,11 @@ export function useGameParser(deps: UseGameParserDeps) {
                     const line = createLine(cleanLine, textOnly, lower, 'equipmentlist');
                     tempEqRef.current.push(line);
                     setEqLines(prev => [...prev, line]);
+                }
+            } else if (captureStage.current === 'practice') {
+                if (textOnly.trim().length > 0) {
+                    const skill = deps.practice.parsePracticeLine(textOnly);
+                    deps.practice.addToLogBuffer(typeof skill === 'object' && 'name' in skill ? 'skill' : 'header', skill, cleanLine);
                 }
             } else if (captureStage.current === 'container') {
                 if (textOnly.length > 0 && !lower.includes('contains:')) {
