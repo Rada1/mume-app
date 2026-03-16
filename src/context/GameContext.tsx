@@ -225,9 +225,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Create a ref for executeCommand so the parser can use it before the controller is initialized
-    const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
-
     const parser = useGameParser({
         isItemsOpen: s.ui.drawer === 'items',
         isCharacterOpen: s.ui.drawer === 'character',
@@ -258,7 +255,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isSoundEnabledRef: settings.isSoundEnabledRef,
         soundTriggersRef: settings.soundTriggersRef,
         actionsRef: s.actionsRef,
-        executeCommandRef,
+        executeCommandRef: s.executeCommandRef,
         setInventoryLines: s.setInventoryLines,
         setStatsLines: s.setStatsLines,
         setEqLines: s.setEqLines,
@@ -375,10 +372,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         s.setMumeEditState(prev => ({ ...prev, isOpen: false }));
     }, [s.mumeEditState.key, executeCommand, s.setMumeEditState]);
 
-    // Update the ref so the parser components can call it
+    // Update the ref so the state and parser components can call it
     useEffect(() => {
-        executeCommandRef.current = executeCommand;
-    }, [executeCommand]);
+        if (s.executeCommandRef) s.executeCommandRef.current = executeCommand;
+    }, [executeCommand, s.executeCommandRef]);
 
     // Auto-login session tracking
     const autoLoginSessionRef = useRef({ nameSent: false, passwordSent: false, lastStatus: '' });

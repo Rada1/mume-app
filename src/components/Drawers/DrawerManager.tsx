@@ -109,10 +109,16 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             setUI(prev => ({ ...prev, drawer }));
             // Fetch fresh data when opening
             if (drawer === 'stats') {
-               executeCommand('stats', true, true, true, true);
-               setTimeout(() => executeCommand('status', true, true, true, true), 100);
+               executeCommand('stat', true, true, true, true);
+               setTimeout(() => executeCommand('at', true, true, true, true), 100);
             } else if (drawer === 'character') {
-                executeCommand('score', true, true, true, true);
+                executeCommand('info', true, true, true, true);
+                setTimeout(() => executeCommand('score', true, true, true, true), 100);
+                setTimeout(() => executeCommand('at', true, true, true, true), 200);
+                setTimeout(() => executeCommand('look self', true, true, true, true), 300);
+                setTimeout(() => executeCommand('whois', true, true, true, true), 400);
+                setTimeout(() => executeCommand('quest', true, true, true, true), 500);
+                setTimeout(() => executeCommand('practice', true, true, true, true), 600);
             } else if (drawer === 'items') {
                 executeCommand('inv', true, true, true, true);
                 setTimeout(() => executeCommand('eq', true, true, true, true), 150);

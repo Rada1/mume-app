@@ -13,10 +13,18 @@ export const useGestures = (deps: InteractionDeps) => {
             if (ui.mapExpanded) {
                 setIsMapExpanded(false);
             } else {
+                executeCommand('info', true, true, true, true);
+                setTimeout(() => executeCommand('score', true, true, true, true), 100);
+                setTimeout(() => executeCommand('at', true, true, true, true), 200);
+                setTimeout(() => executeCommand('look self', true, true, true, true), 300);
+                setTimeout(() => executeCommand('whois', true, true, true, true), 400);
+                setTimeout(() => executeCommand('quest', true, true, true, true), 500);
+                setTimeout(() => executeCommand('practice', true, true, true, true), 600);
                 setIsCharacterOpen(true);
             }
         } else if (dir === 'right') {
-            executeCommand('stats', true, true, true, true);
+            executeCommand('stat', true, true, true, true);
+            setTimeout(() => executeCommand('at', true, true, true, true), 100);
             setIsStatsOpen(true);
         } else if (dir === 'left') {
             executeCommand('inv', true, true, true, true);

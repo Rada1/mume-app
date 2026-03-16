@@ -103,9 +103,50 @@ export const useGameProviderState = () => {
         menuView: 'main'
     });
 
-    const setIsStatsOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'stats' : 'none' })), []);
-    const setIsCharacterOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'character' : 'none' })), []);
-    const setIsItemsDrawerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, drawer: open ? 'items' : 'none' })), []);
+    const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });
+
+    const setIsStatsOpen = useCallback((open: boolean) => {
+        setUI(prev => {
+            if (open && prev.drawer !== 'stats') {
+                // Fetch fresh data only when OPENING the drawer
+                // Use a short delay if needed to avoid blocking UI transition
+                setTimeout(() => {
+                    executeCommandRef.current?.('stat', true, true, true, true);
+                    setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 100);
+                }, 50);
+            }
+            return { ...prev, drawer: open ? 'stats' : 'none' };
+        });
+    }, []);
+
+    const setIsCharacterOpen = useCallback((open: boolean) => {
+        setUI(prev => {
+            if (open && prev.drawer !== 'character') {
+                setTimeout(() => {
+                    executeCommandRef.current?.('info', true, true, true, true);
+                    setTimeout(() => executeCommandRef.current?.('score', true, true, true, true), 100);
+                    setTimeout(() => executeCommandRef.current?.('at', true, true, true, true), 200);
+                    setTimeout(() => executeCommandRef.current?.('look self', true, true, true, true), 300);
+                    setTimeout(() => executeCommandRef.current?.('whois', true, true, true, true), 400);
+                    setTimeout(() => executeCommandRef.current?.('quest', true, true, true, true), 500);
+                    setTimeout(() => executeCommandRef.current?.('practice', true, true, true, true), 600);
+                }, 50);
+            }
+            return { ...prev, drawer: open ? 'character' : 'none' };
+        });
+    }, []);
+
+    const setIsItemsDrawerOpen = useCallback((open: boolean) => {
+        setUI(prev => {
+            if (open && prev.drawer !== 'items') {
+                setTimeout(() => {
+                    executeCommandRef.current?.('inv', true, true, true, true);
+                    setTimeout(() => executeCommandRef.current?.('eq', true, true, true, true), 150);
+                }, 50);
+            }
+            return { ...prev, drawer: open ? 'items' : 'none' };
+        });
+    }, []);
     const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => ({ ...prev, mapExpanded: open })), []);
     const setIsSetManagerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, setManagerOpen: open })), []);
 
@@ -311,6 +352,7 @@ export const useGameProviderState = () => {
         mumeEditState,
         setMumeEditState,
         handleSaveMumeEdit,
+        executeCommandRef,
     }), [
         inCombat, status, characterName, mood, spellSpeed, alertness, playerPosition,
         isNoviceMode, isSoundEnabled, isMmapperMode, theme, showControls,
@@ -321,7 +363,7 @@ export const useGameProviderState = () => {
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
         inlineCategories, favorites, activeDragData, heldButton,
         parley, whoList, popoverState, discoveredItems,
-        quests, groupMembers, mumeEditState, handleSaveMumeEdit
+        quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef
     ]);
 
     return { vitals, game };
