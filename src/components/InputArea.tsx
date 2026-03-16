@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { MessageCircle, Reply } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
 import { useUI, useBaseGame } from '../context/GameContext';
@@ -271,6 +272,20 @@ const InputArea: React.FC<InputAreaProps> = ({
             <form className="input-form" onSubmit={onSend} style={{ position: 'relative' }}>
                 <span className="cmd-prompt" onPointerDown={(e) => e.preventDefault()} style={{ pointerEvents: 'auto' }}>{'>'}</span>
                 
+                {isMobile && isKeyboardOpen && !parley.active && (
+                    <button
+                        type="button"
+                        className="mobile-parley-toggle"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setParley(prev => ({ ...prev, active: true }));
+                        }}
+                    >
+                        <MessageCircle size={18} />
+                    </button>
+                )}
+
                 {parley.active && (() => {
                     const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
                     return (
