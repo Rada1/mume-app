@@ -269,7 +269,21 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             )}
 
             {!effectiveIsMinimized && (
-                <div style={{ position: 'absolute', bottom: '10px', left: '10px', color: 'lime', background: 'rgba(0,0,0,0.85)', padding: '8px', zIndex: 9999, fontSize: '11px', pointerEvents: 'none', borderRadius: '4px', border: '1px solid #333', fontFamily: 'monospace' }}>
+                <div style={{ 
+                    position: 'absolute', 
+                    bottom: '10px', 
+                    left: '10px', 
+                    color: '#9ca3af', 
+                    background: 'rgba(0,0,0,0.4)', 
+                    padding: '4px 8px', 
+                    zIndex: 9999, 
+                    fontSize: '10px', 
+                    pointerEvents: 'none', 
+                    borderRadius: '4px', 
+                    border: '1px solid rgba(255,255,255,0.1)', 
+                    fontFamily: 'monospace',
+                    opacity: 0.8
+                }}>
                     Z: {viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? (rooms[currentRoomId].z || 0).toFixed(1) : '0.0')}
                 </div>
             )}

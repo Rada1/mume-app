@@ -164,8 +164,9 @@
 .message.prompt.msg-latest {
     color: var(--accent);
     opacity: 1;
-    text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
-    background: #0a0d15;
+    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.4);
+    background: rgba(10, 13, 21, 0.15);
+    backdrop-filter: blur(4px);
     border-left: 2px solid var(--accent);
     padding-left: 8px;
     margin-top: 8px;

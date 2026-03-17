@@ -106,7 +106,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 deps.practice.setIsPracticeActive(false);
                 deps.practice.setIsUiRequested(false);
             } else if (currentStage === 'shop') {
-                deps.shop.finalizeShop();
+                deps.shop.finalizeShop(addMessage);
             } else if (currentStage === 'quest') {
                 finalizeQuests();
             } else if (currentStage === 'eq' && eqLen > 0) {
@@ -885,7 +885,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             else if (['practice', 'info', 'quest', 'description', 'whois'].includes(currentStage) && deps.isCharacterOpen) isDrawerHiding = true;
             else if (currentStage === 'container') isDrawerHiding = true;
             else if (['who', 'where'].includes(currentStage) && isPlayersOpen) isDrawerHiding = true;
-            else if (currentStage === 'shop' && deps.shop.isUiRequested) isDrawerHiding = true;
+            else if (currentStage === 'shop') isDrawerHiding = true;
         } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
             // Stage already reset or prompt detected - hide any trailing matches or command echoes
             if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;

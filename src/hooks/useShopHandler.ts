@@ -68,16 +68,27 @@ export function useShopHandler() {
         return null;
     };
 
-    const finalizeShop = () => {
+    const finalizeShop = (addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any) => void) => {
         if (!isShopListingActive) return null;
-        
+
+        const items = [...currentItems.current];
         const result = {
-            items: [...currentItems.current],
+            items,
             raw: logBuffer.current.join('\n')
         };
 
         if (isUiRequested) {
-            setShopItems(currentItems.current);
+            setShopItems(items);
+        }
+
+        if (addMessage && items.length > 0) {
+            const header = logBuffer.current[0] ?? '';
+            setTimeout(() => {
+                if (header) addMessage('game', header, undefined, `shop-hdr-${Date.now()}`);
+                items.forEach((item, idx) => {
+                    addMessage('shop-item', item.description, undefined, `shop-${item.id}-${Date.now()}-${idx}`, false, undefined, item);
+                });
+            }, 10);
         }
 
         setIsShopListingActive(false);
