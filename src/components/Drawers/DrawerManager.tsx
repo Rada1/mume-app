@@ -92,15 +92,15 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 }) => {
     const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories } = useGame();
 
-    // On desktop, push the log left so the items drawer sits beside it instead of over it
+    // On desktop, push the log right so the map drawer sits beside it instead of over it
     React.useEffect(() => {
-        if (!viewport.isMobile && ui.drawer === 'items') {
-            document.body.classList.add('items-drawer-open');
+        if (!viewport.isMobile && ui.mapExpanded) {
+            document.body.classList.add('map-drawer-open');
         } else {
-            document.body.classList.remove('items-drawer-open');
+            document.body.classList.remove('map-drawer-open');
         }
-        return () => { document.body.classList.remove('items-drawer-open'); };
-    }, [ui.drawer, viewport.isMobile]);
+        return () => { document.body.classList.remove('map-drawer-open'); };
+    }, [ui.mapExpanded, viewport.isMobile]);
     const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI

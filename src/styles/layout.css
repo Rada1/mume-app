@@ -79,16 +79,20 @@
     max-width: none !important;
 }
 
-/* Desktop: items drawer pushes the log left instead of covering it */
+/* Desktop: map drawer pushes the log to make room */
 @media (min-width: 1024px) {
     .app-content-shaker {
         box-sizing: border-box;
-        transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
+}
 
-    body.items-drawer-open .app-content-shaker {
-        /* Match the drawer's own width: 45% of viewport, capped at 700px */
-        padding-right: calc(min(45%, 700px) + 12px); /* +12px gap between log and drawer */
+/* Map drawer push: only applies when the map sits flush-left (≤1800px).
+   At wider screens the map is already positioned clear of the log. */
+@media (min-width: 1024px) and (max-width: 1800px) {
+    body.map-drawer-open .app-content-shaker {
+        /* 420px drawer + 20px left offset + 12px gap */
+        padding-left: calc(420px + 20px + 12px);
     }
 }
 
