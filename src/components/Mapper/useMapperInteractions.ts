@@ -201,11 +201,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         }
                     }, 500);
 
-                    const isMobileBrowser = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                    const isComboMode = !!depsRef.current.heldButton;
-
-                    // Always allow joystick mode for single-finger play interactions (panning uses 2 fingers or specific drag)
-                    if (isMobileBrowser || isComboMode || mode === 'play') {
+                    // Only use joystick/trackpad mode on touch devices; mouse always pans
+                    if (e.pointerType === 'touch') {
                         dragTypeRef.current = 'joystick';
                         if (depsRef.current.joystick?.handleJoystickStart) {
                             depsRef.current.joystick.handleJoystickStart(e, depsRef.current.executeCommand);

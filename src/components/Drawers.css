@@ -196,7 +196,7 @@
 .right-drawer.open {
     transform: translateX(0);
     visibility: visible;
-    pointer-events: auto;
+    pointer-events: none; /* Transparent areas fall through to backdrop */
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
 }
 
@@ -286,6 +286,10 @@
     gap: 8px;
     pointer-events: auto; /* Re-enable events for the actual content */
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.drawer-footer {
+    pointer-events: auto;
 }
 
 .section-header {

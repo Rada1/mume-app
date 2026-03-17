@@ -1,7 +1,7 @@
 import React from 'react';
 import { Users } from 'lucide-react';
 import { useGame } from '../../../context/GameContext';
-import { GroupMember } from '../../../types';
+import { MemberRow } from '../../Drawers/MemberRow';
 import './GroupDrawer.css';
 
 interface GroupDrawerProps {
@@ -10,43 +10,6 @@ interface GroupDrawerProps {
     dragState: any;
     handleDragStart: (e: React.PointerEvent, id: string, type: string) => void;
 }
-
-const MemberRow: React.FC<{ member: GroupMember }> = ({ member }) => {
-    // Determine status color based on HP percentage
-    const hpPercent = member.hp || 0;
-    const hpColor = hpPercent > 70 ? 'var(--accent)' : hpPercent > 30 ? '#ffaa00' : '#ff4444';
-
-    return (
-        <div className="group-member-row">
-            <div className="member-info">
-                <span className="member-name">{member.name}</span>
-                <span className="member-room">{member.room || ''}</span>
-            </div>
-            <div className="member-vitals">
-                <div className="vitals-bar hp">
-                    <div 
-                        className="vitals-fill" 
-                        style={{ width: `${hpPercent}%`, backgroundColor: hpColor }}
-                    />
-                </div>
-                {member.mana !== undefined && (
-                    <div className="vitals-bar mana">
-                        <div 
-                            className="vitals-fill" 
-                            style={{ width: `${member.mana}%`, backgroundColor: '#4444ff' }}
-                        />
-                    </div>
-                )}
-            </div>
-            <div className="member-conditions">
-                {member.bashed && <span className="cond-tag bad">BASH</span>}
-                {member.waiting && <span className="cond-tag neut">WAIT</span>}
-                {member.poison && <span className="cond-tag bad">POIS</span>}
-                {member.blind && <span className="cond-tag bad">BLND</span>}
-            </div>
-        </div>
-    );
-};
 
 export const GroupDrawer: React.FC<GroupDrawerProps> = ({
     uiPositions, isEditMode, dragState, handleDragStart

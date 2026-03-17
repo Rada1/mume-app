@@ -37,6 +37,7 @@ export interface UseGameParserDeps {
     setStatsLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
+    setWhereList: React.Dispatch<React.SetStateAction<import('../types').WhereEntry[]>>;
     captureStage: React.MutableRefObject<CaptureStage>;
     practice: ReturnType<typeof usePracticeHandler>;
     isDrawerCapture: React.MutableRefObject<number>;
@@ -59,7 +60,7 @@ export interface UseGameParserDeps {
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
-    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState, setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus,    setOpponentName,
+    const { mapperRef, btn, addMessage, playSound, triggerHaptic, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, inCombatRef, detectLighting, isSoundEnabledRef, soundTriggersRef, actionsRef, executeCommandRef, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, roomNameRef, showDebugEchoes, addDiagnosticLog, popoverState, setPopoverState, setDiscoveredItems, setPlayerHealthStatus, setOpponentHealthStatus,    setOpponentName,
     setBufferHealthStatus,
     setBufferName,
     setCharacterInfo,
@@ -190,7 +191,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'where') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: where'); addDiagnosticLog?.('Entering Stage: where');
-            (captureStage as any).current = 'where';
+            (captureStage as any).current = 'where'; setWhereList([]);
         }
         else if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
             if (captureStage.current === 'container') return;
@@ -825,19 +826,20 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         const isImportantMessage = /hits you|receive your share|is dead|tells you|say,|group:|mood:|alertness:|spell speed:|following/i.test(lower);
         
-        // Drawer-aware hiding: Strictly hide if the relevant drawer is open AND it was a system-triggered capture
+        // Drawer-aware hiding: hide when the relevant drawer is open, regardless of how the command was triggered.
+        // This prevents double-showing data that's already displayed in the drawer UI.
         let isDrawerHiding = false;
-        const isSystemTriggered = isSilentCapture.current > 0 || isDrawerCapture.current > 0;
-
-        if (isSystemTriggered) {
-            const currentStage = captureStage.current as any;
+        const currentStage = captureStage.current as any;
+        if (currentStage !== 'none') {
             if (currentStage === 'inv' && deps.isItemsOpen) isDrawerHiding = true;
-            else if ((currentStage === 'eq' || currentStage === 'stat' || currentStage === 'practice' || currentStage === 'info' || currentStage === 'quest' || currentStage === 'description' || currentStage === 'whois') && deps.isCharacterOpen) isDrawerHiding = true;
-            else if (currentStage === 'container') isDrawerHiding = true; 
-            else if (currentStage === 'none') {
-                if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
-                if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && deps.isCharacterOpen) isDrawerHiding = true;
-            }
+            else if (currentStage === 'eq' && (deps.isItemsOpen || deps.isCharacterOpen)) isDrawerHiding = true;
+            else if (currentStage === 'stat' && (deps.isStatsOpen || deps.isCharacterOpen)) isDrawerHiding = true;
+            else if (['practice', 'info', 'quest', 'description', 'whois'].includes(currentStage) && deps.isCharacterOpen) isDrawerHiding = true;
+            else if (currentStage === 'container') isDrawerHiding = true;
+        } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
+            // Stage already reset but silent capture still active — hide any trailing lines
+            if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
+            if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && deps.isCharacterOpen) isDrawerHiding = true;
         }
 
         const shouldShow = (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage;
@@ -854,10 +856,35 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'who' && textOnly !== 'who:' && lower !== 'allies' && lower !== 'minions' && !textOnly.startsWith('---')) msgType = 'who-list';
             else if (captureStage.current === 'where' && !textOnly.startsWith('Player') && !textOnly.startsWith('Who') && !textOnly.startsWith('---')) msgType = 'where-list';
             addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false);
+
+            if (msgType === 'who-list') {
+                let clean = textOnly.trim();
+                let last = 0;
+                while (clean.length !== last) {
+                    last = clean.length;
+                    clean = clean.replace(/^\[.*?\]\s*/, '');
+                    clean = clean.replace(/^<.*?>\s*/, '');
+                    clean = clean.replace(/^\(.*?\)\s*/, '');
+                    clean = clean.replace(/^\*.*?\*\s*/, '');
+                    clean = clean.replace(/^\*+\s*/, '');
+                }
+                const candidate = clean.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
+                if (candidate && candidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(candidate)) {
+                    setWhoList(prev => [...prev, candidate]);
+                }
+            } else if (msgType === 'where-list') {
+                const clean = textOnly.trim();
+                const parts = clean.split(/\s{2,}/);
+                const name = parts[0]?.trim().replace(/^-\s*/, '');
+                const room = parts.slice(1).join(' ').replace(/^-\s*/, '').trim();
+                if (name && /^[A-Z\u00C0-\u00DE]/.test(name) && name.length > 1) {
+                    setWhereList(prev => [...prev, { name, room: room || '' }]);
+                }
+            }
         }
 
         if (isEndPrompt) finalizeCapture();
-    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, triggerHaptic, mapperRef, deps, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture]);
+    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, triggerHaptic, mapperRef, deps, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture]);
 
     return { processLine, finalizeCapture };
 }

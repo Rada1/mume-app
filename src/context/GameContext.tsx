@@ -260,6 +260,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setStatsLines: s.setStatsLines,
         setEqLines: s.setEqLines,
         setWhoList: s.setWhoList,
+        setWhereList: s.setWhereList,
         captureStage: s.captureStage,
         practice,
         isDrawerCapture: s.isDrawerCapture,
@@ -487,9 +488,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
         setIsMapExpanded: s.setIsMapExpanded,
         setIsSetManagerOpen: s.setIsSetManagerOpen,
+        setIsPlayersOpen: s.setIsPlayersOpen,
     }), [
         s.ui, popoverState, isSettingsOpen, settingsTab,
-        s.setIsCharacterOpen, s.setIsItemsDrawerOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI
+        s.setIsCharacterOpen, s.setIsItemsDrawerOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen
     ]);
 
     const gameValue = useMemo(() => ({

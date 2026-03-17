@@ -475,6 +475,8 @@ export interface CharacterInfo {
     spells?: string[];
 }
 
+export interface WhereEntry { name: string; room: string; }
+
 export interface GroupMember {
     id: number;
     name?: string;

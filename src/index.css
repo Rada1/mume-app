@@ -137,7 +137,7 @@
     flex-shrink: 0;
     width: auto; 
     height: 52px; 
-    padding: 2px 4px; /* Slightly more padding for the wider bars */
+    padding: 1px 4px; /* Reduced vertical padding */
     display: flex;
     align-items: center;
     background: rgba(15, 23, 42, 0.45);
@@ -165,17 +165,34 @@
     box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.2), 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
+/* Command preview wind-up glow — slow build to constant charge, color matches button set */
+@keyframes command-windup {
+    from {
+        border-color: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+    }
+    to {
+        border-color: var(--preview-glow-color, var(--accent));
+        box-shadow: 0 0 20px var(--preview-glow-color, var(--accent)), 0 0 45px var(--preview-glow-color, var(--accent)), 0 6px 24px rgba(0, 0, 0, 0.5);
+    }
+}
+
+/* Animation beats normal declarations in CSS cascade — covers terrain glow while active */
+.input-main-container.command-preview-active {
+    animation: command-windup 0.5s ease-out forwards;
+}
+
 /* Terrain Specific Glows Applied to Pods */
 .input-area.terrain-forest .input-main-container,
 .input-area.terrain-forest .input-vitals-dock {
-    border-color: rgba(34, 197, 94, 0.4) !important;
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.2), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(34, 197, 94, 0.4);
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.2), 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
 .input-area.terrain-water .input-main-container,
 .input-area.terrain-water .input-vitals-dock {
-    border-color: rgba(56, 189, 248, 0.4) !important;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2), 0 6px 24px rgba(0, 0, 0, 0.5) !important;
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2), 0 6px 24px rgba(0, 0, 0, 0.5);
 }
 
 /* Prompt and field styling */

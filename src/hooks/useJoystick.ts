@@ -52,8 +52,10 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
     const startRepeatTimer = useCallback((initialDir?: Direction) => {
         if (repeatMoveTimer.current) return;
-        
+
         const firePulse = () => {
+            // Read the direction at the END of each 750ms window so the user's
+            // last held direction is what actually fires — not a stale snapshot.
             const currentLockedDir = lockedDirRef.current;
             if (executeCommandRef.current && currentLockedDir) {
                 const cmd = dirMap[currentLockedDir] || currentLockedDir;
@@ -61,7 +63,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                 lastSentDirRef.current = currentLockedDir;
                 setIsJoystickConsumed(true);
                 triggerHaptic(10);
-                
+
                 // Dispatch center event to ensure map follows joystick
                 if (typeof window !== 'undefined') {
                     window.dispatchEvent(new CustomEvent('mume-mapper-center-on-player'));
@@ -69,10 +71,9 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             }
         };
 
-        // Fire first pulse at the 0.5s mark
-        firePulse();
-        
-        // Maintain strict 0.75s heartbeat
+        // Only use the interval — the first command fires after a full 0.75s window.
+        // This ensures the direction read is whatever the user is holding at the END
+        // of that window, not the direction at the instant the timer started.
         repeatMoveTimer.current = setInterval(firePulse, 750);
     }, [triggerHaptic]);
 

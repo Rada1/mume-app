@@ -283,6 +283,13 @@
     transition: all 0.2s ease;
 }
 
+.quest-item {
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
 .quest-item.selected {
     background: rgba(74, 222, 128, 0.1);
     border-color: rgba(74, 222, 128, 0.3);

@@ -70,6 +70,7 @@ export const useGameProviderState = () => {
     const [characterName, setCharacterName] = useState<string | null>(null);
     const [parley, setParley] = useState<ParleyState>({ active: false, command: 'tell', target: null });
     const [whoList, setWhoList] = useState<string[]>([]);
+    const [whereList, setWhereList] = useState<import('../../types').WhereEntry[]>([]);
     const [roomPlayers, setRoomPlayers] = useState<string[]>([]);
     const [roomNpcs, setRoomNpcs] = useState<string[]>([]);
     const [roomItems, setRoomItems] = useState<string[]>([]);
@@ -86,7 +87,7 @@ export const useGameProviderState = () => {
 
     // UI state
     const [ui, setUI] = useState<{
-        drawer: 'none' | 'stats' | 'items' | 'character';
+        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -147,6 +148,10 @@ export const useGameProviderState = () => {
             return { ...prev, drawer: open ? 'items' : 'none' };
         });
     }, []);
+    const setIsPlayersOpen = useCallback((open: boolean) => {
+        setUI(prev => ({ ...prev, drawer: open ? 'players' : 'none' }));
+    }, []);
+
     const setIsMapExpanded = useCallback((open: boolean) => setUI(prev => ({ ...prev, mapExpanded: open })), []);
     const setIsSetManagerOpen = useCallback((open: boolean) => setUI(prev => ({ ...prev, setManagerOpen: open })), []);
 
@@ -307,7 +312,7 @@ export const useGameProviderState = () => {
         roomItems, setRoomItems,
         currentTerrain, setCurrentTerrain,
         ui, setUI,
-        setIsStatsOpen, setIsItemsDrawerOpen, setIsCharacterOpen, setIsMapExpanded, setIsSetManagerOpen,
+        setIsStatsOpen, setIsItemsDrawerOpen, setIsCharacterOpen, setIsMapExpanded, setIsSetManagerOpen, setIsPlayersOpen,
         lighting, setLighting,
         lightningEnabled, setLightningEnabled,
         weather, setWeather,
@@ -331,6 +336,7 @@ export const useGameProviderState = () => {
         showOrganicTerrain, setShowOrganicTerrain,
         parley, setParley,
         whoList, setWhoList,
+        whereList, setWhereList,
         roomName, setRoomName, roomNameRef,
         roomExits, setRoomExits,
         inlineCategories, setInlineCategories,
@@ -362,7 +368,7 @@ export const useGameProviderState = () => {
         inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
         inlineCategories, favorites, activeDragData, heldButton,
-        parley, whoList, popoverState, discoveredItems,
+        parley, whoList, whereList, popoverState, discoveredItems,
         quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef
     ]);
 

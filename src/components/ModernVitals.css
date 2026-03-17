@@ -1,10 +1,10 @@
 .modern-vitals-container {
     display: flex;
     flex-direction: column;
-    gap: 0px; /* No gap to maximize segment space */
+    gap: 2px; /* Small gap between stat rows */
 
 
-    padding: 0;
+    padding: 0 4px 0 6px; /* Added left padding for skew breathing room */
     background: transparent;
     border: none;
     width: fit-content; /* Strictly fit the bars/numbers */
@@ -14,7 +14,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 2px; /* Minimal gap between bar and numbers */
+    gap: 4px; /* Slightly more gap between bar and numbers */
     width: fit-content;
 }
 
@@ -27,19 +27,17 @@
 
 .modern-vitals-value {
     color: var(--text-primary, #fff);
-    font-size: 0.7rem; /* Even tighter */
+    font-size: 0.7rem; /* Back to original or slightly smaller */
     font-variant-numeric: tabular-nums;
     font-weight: 800;
+    line-height: 1;
     white-space: nowrap;
 }
-
-
-
 
 .modern-vitals-value .max-value {
     opacity: 0.45;
     font-weight: 500;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     margin-left: 2px;
 }
 
@@ -47,16 +45,16 @@
 
 .modern-vitals-track {
     position: relative;
-    height: 8px; 
+    height: 10px; /* Reduced to 10px to match combat quads */
     width: 55px; /* Widened slightly from 45px */
     background: #000;
-    border-radius: 1px;
+    border-radius: 2px; /* Match combat quads */
 
 
 
 
 
-    transform: skewX(-15deg);
+    transform: skewX(-20deg); /* Match combat quads */
     box-sizing: border-box;
     overflow: visible; /* Let wimpy stuff peek out */
 }
@@ -71,7 +69,7 @@
     position: absolute;
     inset: 0;
     display: flex;
-    gap: 2px; /* Thinner gaps */
+    gap: 2px; /* Thick black line between segments */
     padding: 0;
     pointer-events: none;
 }
@@ -79,20 +77,16 @@
 .threshold-chunk {
     height: 100%;
     display: flex;
-    border: 0.5px solid rgba(255, 255, 255, 0.3); /* Subtler border */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Match combat overlay border */
     box-sizing: border-box;
     overflow: hidden;
-    background: #000;
-    border-radius: 1px;
+    background: rgba(255, 255, 255, 0.1); /* Match combat quad background */
+    border-radius: 2px;
 }
 
-/* 10-HP Blocks */
 .vitals-block {
     height: 100%;
-    background: #000;
-    flex-shrink: 0;
     transition: background 0.1s ease;
-    box-sizing: border-box;
 }
 
 .vitals-block.pulse-combat {
@@ -107,31 +101,24 @@
 
 .threshold-chunk .vitals-block.filled {
     background: var(--base-color, #fff);
-    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.3);
 }
 
-.modern-vitals-row.hp .chunk-awful .vitals-block.filled,
-.modern-vitals-row.hp .chunk-bad .vitals-block.filled,
-.modern-vitals-row.hp .chunk-wounded .vitals-block.filled,
-.modern-vitals-row.hp .chunk-hurt .vitals-block.filled,
-.modern-vitals-row.hp .chunk-fine .vitals-block.filled { 
+/* HP: Solid Red across all chunks */
+.modern-vitals-row.hp .vitals-block.filled { 
     background: #ee2222; 
+    box-shadow: 0 0 8px rgba(238, 34, 34, 0.4);
 }
 
-.modern-vitals-row.mana .chunk-awful .vitals-block.filled,
-.modern-vitals-row.mana .chunk-bad .vitals-block.filled,
-.modern-vitals-row.mana .chunk-wounded .vitals-block.filled,
-.modern-vitals-row.mana .chunk-hurt .vitals-block.filled,
-.modern-vitals-row.mana .chunk-fine .vitals-block.filled { 
+/* Mana: Solid Purple across all chunks */
+.modern-vitals-row.mana .vitals-block.filled { 
     background: #9933ff; 
+    box-shadow: 0 0 8px rgba(153, 51, 255, 0.4);
 }
 
-.modern-vitals-row.move .chunk-awful .vitals-block.filled,
-.modern-vitals-row.move .chunk-bad .vitals-block.filled,
-.modern-vitals-row.move .chunk-wounded .vitals-block.filled,
-.modern-vitals-row.move .chunk-hurt .vitals-block.filled,
-.modern-vitals-row.move .chunk-fine .vitals-block.filled { 
+/* Move: Solid Green across all chunks */
+.modern-vitals-row.move .vitals-block.filled { 
     background: #22ff55; 
+    box-shadow: 0 0 8px rgba(34, 255, 85, 0.4);
 }
 
 /* Override landscape width if needed when docked */

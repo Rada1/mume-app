@@ -22,19 +22,10 @@ const StatRow: React.FC<{
     const trackRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [dragVal, setDragVal] = useState<number | null>(null);
+    const dragValRef = useRef<number | null>(null);
 
     // Threshold percentages (total 100%)
     const chunks = useMemo(() => {
-        if (type === 'move') {
-            return [
-                { id: 'awful', width: 10 },    // fainting (smallest)
-                { id: 'bad', width: 10 },      // weak
-                { id: 'wounded', width: 15 },   // slow
-                { id: 'hurt', width: 15 },      // tired
-                { id: 'fine', width: 50 }       // rested (biggest)
-            ];
-        }
-
         return [
             { id: 'awful', width: 10 },
             { id: 'bad', width: 15 },
@@ -42,7 +33,7 @@ const StatRow: React.FC<{
             { id: 'hurt', width: 25 },
             { id: 'fine', width: 30 }
         ];
-    }, [type]);
+    }, []);
 
 
     const updateDrag = useCallback((e: PointerEvent | React.PointerEvent) => {
@@ -51,6 +42,7 @@ const StatRow: React.FC<{
         let ratio = (e.clientX - rect.left) / rect.width;
         ratio = Math.max(0, Math.min(1, ratio));
         const val = Math.round(ratio * max);
+        dragValRef.current = val;
         setDragVal(val);
     }, [max]);
 
@@ -64,11 +56,12 @@ const StatRow: React.FC<{
     useEffect(() => {
         if (!isDragging) return;
         const handlePointerMove = (e: PointerEvent) => updateDrag(e);
-        const handlePointerUp = (e: PointerEvent) => {
+        const handlePointerUp = () => {
             setIsDragging(false);
-            if (dragVal !== null && onWimpyChange) {
-                onWimpyChange(dragVal);
+            if (dragValRef.current !== null && onWimpyChange) {
+                onWimpyChange(dragValRef.current);
             }
+            dragValRef.current = null;
             setDragVal(null);
         };
         window.addEventListener('pointermove', handlePointerMove);
@@ -77,82 +70,50 @@ const StatRow: React.FC<{
             window.removeEventListener('pointermove', handlePointerMove);
             window.removeEventListener('pointerup', handlePointerUp);
         };
-    }, [isDragging, dragVal, onWimpyChange, updateDrag]);
+    }, [isDragging, onWimpyChange, updateDrag]);
 
     const displayWimpy = dragVal !== null ? dragVal : (wimpy ?? 0);
     const wimpyRatio = max > 0 ? displayWimpy / max : 0;
 
-    // Segment logic: each chunk is a "window" into the block sequence.
+    // Segment logic: each chunk is a solid filled region.
     const renderChunk = (chunk: { id: string, width: number }, chunkIdx: number) => {
         const startWeight = chunks.slice(0, chunkIdx).reduce((acc, c) => acc + c.width, 0);
         const endWeight = startWeight + chunk.width;
-        
+
         const segmentHpStart = (startWeight / 100) * max;
         const segmentHpEnd = (endWeight / 100) * max;
+        const chunkHp = segmentHpEnd - segmentHpStart;
 
-        const segmentBlocks = [];
-        const effectiveMax = max > 0 ? max : 100; // Prevent collapse if max is 0
-        const startBlockIdx = Math.floor(segmentHpStart / 10);
-        const endBlockIdx = Math.ceil(segmentHpEnd / 10);
-
-
-        for (let j = startBlockIdx; j < endBlockIdx; j++) {
-            const blockHpStart = j * 10;
-            const blockHpEnd = (j + 1) * 10;
-
-            const overlapStart = Math.max(segmentHpStart, blockHpStart);
-            const overlapEnd = Math.min(segmentHpEnd, blockHpEnd);
-
-            if (overlapEnd > overlapStart) {
-                let isFilled = blockHpStart < value;
-                
-                // MUME move status segment mapping
-                if (type === 'move' && staminaStatus) {
-                    const status = staminaStatus.toLowerCase();
-                    const statusWeight: Record<string, number> = {
-                        'steadfast': 5,
-                        'rested': 5,
-                        'fine': 5,
-                        'tired': 4,
-                        'slow': 3,
-                        'weak': 2,
-                        'fainting': 1
-                    };
-                    
-                    const chunkWeight: Record<string, number> = {
-                        'fine': 5,
-                        'hurt': 4,
-                        'wounded': 3,
-                        'bad': 2,
-                        'awful': 1
-                    };
-                    
-                    const sWeight = statusWeight[status];
-                    const cWeight = chunkWeight[chunk.id];
-                    
-                    if (sWeight !== undefined && cWeight !== undefined) {
-                        isFilled = sWeight >= cWeight;
-                    }
-                }
-
-                const hpWidth = overlapEnd - overlapStart;
-                segmentBlocks.push(
-                    <div 
-                        key={j}
-                        className={`vitals-block ${isFilled ? 'filled' : ''} ${inCombat && type === 'hp' ? 'pulse-combat' : ''}`}
-                        style={{ flex: `${hpWidth} 0 0` }}
-                    />
-                );
+        let fillPercent = 0;
+        if (type === 'move' && staminaStatus) {
+            const status = staminaStatus.toLowerCase();
+            const statusWeight: Record<string, number> = {
+                'steadfast': 5, 'rested': 5, 'fine': 5,
+                'tired': 4, 'slow': 3, 'weak': 2, 'fainting': 1
+            };
+            const chunkWeight: Record<string, number> = {
+                'fine': 5, 'hurt': 4, 'wounded': 3, 'bad': 2, 'awful': 1
+            };
+            const sWeight = statusWeight[status];
+            const cWeight = chunkWeight[chunk.id];
+            if (sWeight !== undefined && cWeight !== undefined) {
+                fillPercent = sWeight >= cWeight ? 100 : 0;
             }
+        } else if (chunkHp > 0) {
+            const filledHp = Math.max(0, Math.min(value, segmentHpEnd) - segmentHpStart);
+            fillPercent = (filledHp / chunkHp) * 100;
         }
 
         return (
-            <div 
-                key={chunk.id} 
+            <div
+                key={chunk.id}
                 className={`threshold-chunk chunk-${chunk.id}`}
                 style={{ flex: chunk.width }}
             >
-                {segmentBlocks}
+                <div
+                    className={`vitals-block filled${inCombat && type === 'hp' ? ' pulse-combat' : ''}`}
+                    style={{ width: `${fillPercent}%` }}
+                />
             </div>
         );
     };
@@ -172,6 +133,20 @@ const StatRow: React.FC<{
                 {/* Wimpy Slider Elements */}
                 {type === 'hp' && onWimpyChange && (
                     <>
+                        {/* Invisible larger hit area for dragging */}
+                        <div 
+                            style={{
+                                position: 'absolute',
+                                left: `${wimpyRatio * 100}%`,
+                                top: '-15px',
+                                bottom: '-15px',
+                                width: '40px',
+                                transform: 'translateX(-50%)',
+                                zIndex: 35,
+                                cursor: 'ew-resize',
+                                background: 'transparent'
+                            }}
+                        />
                         <div 
                             className="wimpy-tick"
                             style={{ 

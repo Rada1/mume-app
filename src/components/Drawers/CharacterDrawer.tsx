@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, User, Activity, BookOpen, Coins, ChevronRight, RefreshCw, ScrollText, Edit3, HelpCircle, Save, RotateCcw } from 'lucide-react';
 import { useGame, useVitals } from '../../context/GameContext';
 import { PracticeSkill } from '../../types';
@@ -35,6 +35,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
     const [tempTitle, setTempTitle] = useState('');
 
     const [selectedQuestId, setSelectedQuestId] = useState<string | null>(null);
+    const questPointerStartRef = useRef<{ x: number; y: number; id: string } | null>(null);
 
     useEffect(() => {
         if (isOpen && characterInfo) {
@@ -90,9 +91,9 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
             className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
             onClick={handleBackdropClick}
         >
-            <div 
+            <div
                 className={`character-drawer-content ${isOpen ? 'open' : ''}`}
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
             >
                 <div className="drawer-header" style={{ pointerEvents: 'auto' }}>
                     <div className="drawer-tabs">
@@ -123,7 +124,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     </button>
                 </div>
 
-                <div className="drawer-body" style={{ pointerEvents: 'auto' }}>
+                <div className="drawer-body" style={{ pointerEvents: 'auto' }} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
                     {activeTab === 'info' ? (
                         <div className="info-tab">
                             <div className="char-profile">
@@ -356,12 +357,23 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             <div className="quests-list">
                                 {quests.activeQuests && quests.activeQuests.length > 0 ? (
                                     quests.activeQuests.map((quest) => (
-                                        <div 
-                                            key={quest.id} 
-                                            className={`quest-item ${selectedQuestId === quest.id ? 'selected' : ''}`} 
-                                            onClick={() => {
-                                                setSelectedQuestId(quest.id === selectedQuestId ? null : quest.id);
-                                                executeCommand(`quest ${quest.name.split(' ')[0].toLowerCase()}`);
+                                        <div
+                                            key={quest.id}
+                                            className={`quest-item ${selectedQuestId === quest.id ? 'selected' : ''}`}
+                                            onPointerDown={(e) => {
+                                                questPointerStartRef.current = { x: e.clientX, y: e.clientY, id: quest.id };
+                                            }}
+                                            onPointerUp={(e) => {
+                                                const start = questPointerStartRef.current;
+                                                if (!start || start.id !== quest.id) return;
+                                                const dx = Math.abs(e.clientX - start.x);
+                                                const dy = Math.abs(e.clientY - start.y);
+                                                questPointerStartRef.current = null;
+                                                if (dx < 10 && dy < 10) {
+                                                    const isExpanding = quest.id !== selectedQuestId;
+                                                    setSelectedQuestId(isExpanding ? quest.id : null);
+                                                    if (isExpanding) executeCommand(`quest ${quest.name.split(' ')[0].toLowerCase()}`);
+                                                }
                                             }}
                                         >
                                             <div className="quest-info" style={{ flex: 1 }}>

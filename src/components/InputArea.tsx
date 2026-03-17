@@ -261,7 +261,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 transition: isSwiping.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
         >
-            <div className="input-main-container">
+            <div className={`input-main-container${commandPreview ? ' command-preview-active' : ''}`}>
                 <div className="swipe-handle" style={{
                     position: 'absolute',
                     top: '4px',

@@ -99,6 +99,7 @@ export const useButtonGestures = ({
         if (heldButton?.id === button.id && heldButton.didFire) {
             if (activeDir) setActiveDir(null);
             setCommandPreview(null);
+            document.documentElement.style.removeProperty('--preview-glow-color');
             el.style.setProperty('--ray-opacity', '0');
             el.style.setProperty('--cancel-opacity', '0');
             return;
@@ -122,6 +123,14 @@ export const useButtonGestures = ({
         const isLong = joystick.isTargetModifierActive;
         const preview = getButtonCommand(button, dx, dy, undefined, el._maxDist, (heldButton?.id === button.id ? heldButton.modifiers : []), joystick, target, isLong);
         setCommandPreview(preview?.cmd || null);
+        if (preview?.cmd) {
+            document.documentElement.style.setProperty(
+                '--preview-glow-color',
+                button.style.borderColor || button.style.backgroundColor || 'var(--accent)'
+            );
+        } else {
+            document.documentElement.style.removeProperty('--preview-glow-color');
+        }
 
         const angle = Math.atan2(dy, dx) * 180 / Math.PI;
         let snappedAngle = Math.round(angle / 45) * 45;
@@ -230,6 +239,7 @@ export const useButtonGestures = ({
 
         setHeldButton(null);
         setCommandPreview(null);
+        document.documentElement.style.removeProperty('--preview-glow-color');
         setActiveDir(null);
         const finalIsCancelling = isCancelling;
         setIsCancelling(false);
@@ -320,6 +330,7 @@ export const useButtonGestures = ({
         if (el._repeatInterval) { clearInterval(el._repeatInterval); el._repeatInterval = null; }
         setHeldButton(null);
         setCommandPreview(null);
+        document.documentElement.style.removeProperty('--preview-glow-color');
         setActiveDir(null);
         el._wasInCancelZone = false;
         el.style.setProperty('--ray-opacity', '0');

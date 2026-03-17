@@ -53,7 +53,7 @@ export interface LogContextType {
 
 export interface UIContextType {
     ui: {
-        drawer: 'none' | 'stats' | 'items' | 'character';
+        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -62,7 +62,7 @@ export interface UIContextType {
         menuView: 'main' | 'availableSets';
     };
     setUI: Dispatch<SetStateAction<{
-        drawer: 'none' | 'stats' | 'items' | 'character';
+        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -81,6 +81,7 @@ export interface UIContextType {
     setIsItemsDrawerOpen: (open: boolean) => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
+    setIsPlayersOpen: (open: boolean) => void;
 }
 
 export interface GameContextType {
@@ -129,6 +130,8 @@ export interface GameContextType {
     parley: import('../../types').ParleyState;
     setParley: Dispatch<SetStateAction<import('../../types').ParleyState>>;
     whoList: string[];
+    whereList: import('../../types').WhereEntry[];
+    setWhereList: Dispatch<SetStateAction<import('../../types').WhereEntry[]>>;
 
     mood: string;
     setMood: (val: string) => void;

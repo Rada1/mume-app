@@ -3,21 +3,22 @@ import { InventoryDrawer } from './InventoryDrawer';
 import { StatsDrawer } from './StatsDrawer';
 import { CharacterDrawer } from './CharacterDrawer';
 import { EquipmentDrawer } from './EquipmentDrawer';
+import { PlayersDrawer } from './PlayersDrawer';
 import { Mapper } from '../Mapper/Mapper';
-import { User, Shield, Package, Map as MapIcon } from 'lucide-react';
+import { User, Shield, Package, Map as MapIcon, Users } from 'lucide-react';
 
 
 import { DrawerLine, CustomButton, SoundTrigger } from '../../types';
 
 interface DrawerManagerProps {
     ui: {
-        drawer: 'none' | 'stats' | 'items' | 'character';
+        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
     };
     setUI: React.Dispatch<React.SetStateAction<{
-        drawer: 'none' | 'stats' | 'items' | 'character';
+        drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
         setManagerOpen: boolean;
         mapExpanded: boolean;
@@ -101,7 +102,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         setUI(prev => ({ ...prev, mapExpanded: false }));
     };
 
-    const handleTabClick = (drawer: 'stats' | 'character' | 'items') => {
+    const handleTabClick = (drawer: 'stats' | 'character' | 'items' | 'players') => {
         triggerHaptic(30);
         if (ui.drawer === drawer) {
             setUI(prev => ({ ...prev, drawer: 'none' }));
@@ -122,6 +123,9 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             } else if (drawer === 'items') {
                 executeCommand('inv', true, true, true, true);
                 setTimeout(() => executeCommand('eq', true, true, true, true), 150);
+            } else if (drawer === 'players') {
+                executeCommand('who', true, true, true, true);
+                setTimeout(() => executeCommand('where', true, true, true, true), 150);
             }
         }
     };
@@ -171,7 +175,17 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             </div>
 
             <div
-                className={`drawer-backdrop ${showBackdrop && ui.drawer !== 'character' ? 'open' : ''}`}
+                className={`desktop-edge-tab right ${ui.drawer === 'players' ? 'active' : ''}`}
+                style={{ top: '55%' }}
+                onClick={() => handleTabClick('players')}
+                title="Players"
+            >
+                <Users className="tab-icon" />
+                <span className="tab-text">Players</span>
+            </div>
+
+            <div
+                className={`drawer-backdrop ${showBackdrop && ui.drawer !== 'character' && ui.drawer !== 'players' ? 'open' : ''}`}
                 onClick={() => setUI(prev => ({ 
                     ...prev, 
                     drawer: 'none'
@@ -210,6 +224,12 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             <CharacterDrawer
                 isOpen={ui.drawer === 'character'}
+                onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
+                executeCommand={executeCommand}
+            />
+
+            <PlayersDrawer
+                isOpen={ui.drawer === 'players'}
                 onClose={() => setUI(prev => ({ ...prev, drawer: 'none' }))}
                 executeCommand={executeCommand}
             />
