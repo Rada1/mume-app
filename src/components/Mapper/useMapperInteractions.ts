@@ -272,18 +272,6 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                             }
                             const dir = joystick.handleJoystickMove(e, executeCommand, !!heldButton);
                             if (dir) console.log(`[MapperInteractions] Joystick Dir: ${dir}`);
-                            if (dir && heldButton && !heldButton.didFire && setHeldButton) {
-                                const button = btn?.buttons?.find((b: any) => b.id === heldButton.id);
-                                if (button) {
-                                    // Hacky import bypass by assuming executeCommand handles it or relying on external button logic
-                                    // Actually better to just pass dir and let it fire normally via context
-                                    // (DpadCluster had getButtonCommand, we should probably pull that in or simplify)
-                                    // For now, if holding button and dragging:
-                                    executeCommand(`direction ${dir}`);
-                                    setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
-                                    triggerHaptic(60);
-                                }
-                            }
                         }
                     } else if (dragTypeRef.current === 'pan' || dragTypeRef.current === 'room') {
                         const cam = cameraRef.current;
@@ -366,16 +354,17 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     if (depsRef.current.heldButton?.dx !== undefined && !comboFiredRef.current) {
                         const button = depsRef.current.btn?.buttons?.find((b: any) => b.id === depsRef.current.heldButton.id);
                         if (button) {
-                            // Re-calculate command using newest joystick state and isLong=true
+                            // Re-calculate command using the button's own swipe only (joystick=undefined to
+                            // prevent stale joystick.currentDir from doubling up the direction we append below)
                             const result = getButtonCommand(
-                                button, 
-                                depsRef.current.heldButton.dx, 
-                                depsRef.current.heldButton.dy, 
-                                undefined, 
-                                undefined, 
-                                depsRef.current.heldButton.modifiers, 
-                                depsRef.current.joystick, 
-                                depsRef.current.target, 
+                                button,
+                                depsRef.current.heldButton.dx,
+                                depsRef.current.heldButton.dy,
+                                undefined,
+                                undefined,
+                                depsRef.current.heldButton.modifiers,
+                                undefined,
+                                depsRef.current.target,
                                 true
                             );
                             
