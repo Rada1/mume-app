@@ -138,6 +138,7 @@
     .stats-drawer {
         width: 40%;
         max-width: 480px;
+        z-index: 10000;
     }
 
     .stats-drawer.landscape-mode {
