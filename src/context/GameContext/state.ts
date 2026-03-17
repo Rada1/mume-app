@@ -11,10 +11,11 @@ export const useGameProviderState = () => {
     const [isMmapperMode, setIsMmapperMode] = usePersistentState('mud-mmapper-mode', false);
     const [theme, setTheme] = usePersistentState<'light' | 'dark'>('mud-theme', 'dark');
     const [showControls, setShowControls] = usePersistentState<boolean>('mud-show-controls', (() => {
-        // If there's a stored preference, use it. Otherwise default to true.
+        // If there's a stored preference, use it. Otherwise default to false on desktop, true on mobile.
         const stored = localStorage.getItem('mud-show-controls');
         if (stored !== null) return JSON.parse(stored) as boolean;
-        return true;
+        const isMobile = window.matchMedia('(pointer: coarse)').matches;
+        return isMobile;
     })());
     const [autoConnect, setAutoConnect] = usePersistentState('mud-auto-connect', (MASTER_SETTINGS as any).autoConnect ?? true);
     const [hasSeenOnboarding, setHasSeenOnboarding] = usePersistentState('mud-has-seen-onboarding', false);

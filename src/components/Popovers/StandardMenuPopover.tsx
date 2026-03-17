@@ -36,8 +36,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
     const isSetManager = popoverState.setId === 'setmanager';
-    const NPC_SUBCATEGORIES = ['inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster', 'inline-corpses'];
-    const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', ...NPC_SUBCATEGORIES].includes(popoverState.setId);
+    const NPC_SUBCATEGORIES = ['inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster'];
+    const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', 'inline-corpses', ...NPC_SUBCATEGORIES].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
@@ -131,7 +131,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                 }}
                 onClick={() => { if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {isSetManager ? 'Select Button Set' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-?/, '').toUpperCase())}
+                    {isSetManager ? 'Main Menu' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-?/, '').toUpperCase())}
                 </span>
                 {!isSetManager && (popoverState.setId.startsWith('inline-') || ['inlinenpc', 'inlineplayer'].includes(popoverState.setId)) && (
                     <div 
