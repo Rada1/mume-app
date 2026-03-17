@@ -36,7 +36,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
     const isSetManager = popoverState.setId === 'setmanager';
-    const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', 'inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster'].includes(popoverState.setId);
+    const NPC_SUBCATEGORIES = ['inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster', 'inline-corpses'];
+    const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', ...NPC_SUBCATEGORIES].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
@@ -106,7 +107,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
 
     const sectionButtons = buttons.filter(b => {
         if (b.setId === popoverState.setId) return true;
-        if (['inline-shopkeeper', 'inline-innkeeper', 'inline-mounts', 'inline-guildmaster'].includes(popoverState.setId) && b.setId === 'inlinenpc') return true;
+        if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'inlinenpc') return true;
         return false;
     });
 

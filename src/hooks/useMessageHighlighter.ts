@@ -199,6 +199,17 @@ export const useMessageHighlighter = (
                 });
             });
 
+            // 4.5. Corpses — always highlighted like NPCs, no room tracking needed
+            const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(156, 163, 175, 0.9)';
+            ['corpse', 'corpses'].forEach(p => {
+                candidates.push({
+                    pattern: p,
+                    priority: 5,
+                    replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="corpse" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m}</span>`,
+                    length: p.length
+                });
+            });
+
             // 5. Items (Room + Discovered)
             const allItems = Array.from(new Set([...roomItems, ...discoveredItems]));
             allItems.forEach(name => {
