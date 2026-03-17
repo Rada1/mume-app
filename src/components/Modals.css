@@ -87,12 +87,16 @@
     cursor: pointer;
     color: var(--text-dim);
     border-bottom: 2px solid transparent;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.2s ease;
 }
 
 .modal-tab.active {
-    color: var(--accent);
-    border-bottom: 2px solid var(--accent);
+    background: #b8860b;
+    color: #ffffff;
+    border-bottom: 2px solid transparent;
     font-weight: bold;
+    box-shadow: 0 -4px 12px rgba(184, 134, 11, 0.2);
 }
 
 .setting-group {

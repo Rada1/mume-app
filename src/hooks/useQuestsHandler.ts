@@ -112,7 +112,11 @@ export function useQuestsHandler(
         
         // If not already in a detail/list, check if this line is a quest name
         const cleanLower = lower.trim().replace(/\s+/g, ' ');
-        const matchedQuest = !isQuestsActiveRef.current && activeQuests.find(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === cleanLower);
+        const matchCandidate = cleanLower.replace(/^\*\s*/, ''); // Strip leading * for detail match
+        const matchedQuest = !isQuestsActiveRef.current && activeQuests.find(q => {
+            const qName = q.name.toLowerCase().trim().replace(/\s+/g, ' ');
+            return qName === cleanLower || qName === matchCandidate;
+        });
 
         if (matchedQuest) {
             console.log(`[QuestsHandler] START Quest Detail detected for: "${matchedQuest.name}"`);

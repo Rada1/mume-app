@@ -297,8 +297,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                 visibleLines.push(line);
                                 if (line.isContainer && !expandedContainers.has(line.id)) collapsedDepths.add(depth);
                             }
-
-                            return visibleLines.map(line => {
+                             return visibleLines.map(line => {
                                  const isPrimed = primedItemId === line.id;
                                  const isBeingDragged = draggedItem?.line.id === line.id;
                                  const depth = line.depth || 0;
@@ -315,6 +314,23 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                  const borderLeftStyle = glowColor ? `4px solid rgba(${colorRgb}, 0.8)` : '4px solid transparent';
                                  const glowEffect = glowColor ? `0 0 12px rgba(${colorRgb}, 0.15)` : 'none';
  
+                                 if (!line.isItem && line.isHeader) {
+                                     return (
+                                         <div key={line.id} style={{ 
+                                             marginLeft: `${depth * 20}px`, 
+                                             padding: '12px 10px 4px', 
+                                             fontSize: depth > 0 ? '0.7rem' : '0.8rem', 
+                                             opacity: 0.6, 
+                                             fontWeight: '900',
+                                             color: depth > 0 ? '#89b4fa' : 'var(--accent)',
+                                             letterSpacing: '1.5px',
+                                             textTransform: 'uppercase',
+                                             marginTop: depth > 0 ? '4px' : '10px',
+                                             borderBottom: depth === 0 ? '1px solid rgba(255,255,255,0.1)' : 'none'
+                                         }} dangerouslySetInnerHTML={{ __html: line.html }} />
+                                     );
+                                 }
+
                                  return (
                                      <div key={line.id} style={{ display: 'flex', alignItems: 'center', marginLeft: `${depth * 20}px`, marginBottom: '4px', position: 'relative' }}>
                                          <div
@@ -366,7 +382,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                             )}
                                         </div>
                                     </div>
-                                );
+                                 );
                              });
                         })()}
                     </div>

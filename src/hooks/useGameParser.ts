@@ -181,6 +181,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: who'); addDiagnosticLog?.('Entering Stage: who');
             (captureStage as any).current = 'who'; setWhoList([]);
+            if (deps.isPlayersOpen) isSilentCapture.current = 1;
         }
         else if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
             if (captureStage.current === 'shop') return;
@@ -193,6 +194,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: where'); addDiagnosticLog?.('Entering Stage: where');
             (captureStage as any).current = 'where'; setWhereList([]);
+            if (deps.isPlayersOpen) isSilentCapture.current = 1;
         }
         else if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
             if (captureStage.current === 'container') return;
@@ -707,7 +709,17 @@ export function useGameParser(deps: UseGameParserDeps) {
                                 };
                                 console.log(`[Parser] Injecting into ${cmd}:`, { text: injectedLine.text, parent: injectedLine.parentItemNoun });
                                 if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) return prev;
-                                const next = [...prev]; next.splice(parentIdx + 1, 0, injectedLine); return next;
+                                const next = [...prev];
+                                let lastSiblingIdx = -1;
+                                for (let i = prev.length - 1; i > parentIdx; i--) {
+                                    if (prev[i].parentItemId === containerId) {
+                                        lastSiblingIdx = i;
+                                        break;
+                                    }
+                                }
+                                const insertIdx = lastSiblingIdx !== -1 ? lastSiblingIdx + 1 : parentIdx + 1;
+                                next.splice(insertIdx, 0, injectedLine);
+                                return next;
                             });
                         } else {
                             setEqLines(prev => {
@@ -722,7 +734,17 @@ export function useGameParser(deps: UseGameParserDeps) {
                                 };
                                 console.log(`[Parser] Injecting into ${cmd}:`, { text: injectedLine.text, parent: injectedLine.parentItemNoun });
                                 if (prev.some(l => l.id === injectedLine.id && l.depth === injectedLine.depth)) return prev;
-                                const next = [...prev]; next.splice(parentIdx + 1, 0, injectedLine); return next;
+                                const next = [...prev];
+                                let lastSiblingIdx = -1;
+                                for (let i = prev.length - 1; i > parentIdx; i--) {
+                                    if (prev[i].parentItemId === containerId) {
+                                        lastSiblingIdx = i;
+                                        break;
+                                    }
+                                }
+                                const insertIdx = lastSiblingIdx !== -1 ? lastSiblingIdx + 1 : parentIdx + 1;
+                                next.splice(insertIdx, 0, injectedLine);
+                                return next;
                             });
                         }
                     } else {
@@ -839,9 +861,18 @@ export function useGameParser(deps: UseGameParserDeps) {
             else if (currentStage === 'container') isDrawerHiding = true;
             else if (['who', 'where'].includes(currentStage) && isPlayersOpen) isDrawerHiding = true;
         } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
-            // Stage already reset but silent capture still active — hide any trailing lines
+            // Stage already reset or prompt detected - hide any trailing matches or command echoes
             if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
             if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && deps.isCharacterOpen) isDrawerHiding = true;
+            if ((lower === 'who' || lower === 'where') && isPlayersOpen) isDrawerHiding = true;
+            if (isEndPrompt) {
+                 if (deps.isItemsOpen && (isWaitingForInv.current || isWaitingForEq.current)) isDrawerHiding = true;
+                 if (deps.isCharacterOpen && (isWaitingForStats.current || isWaitingForEq.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest')) isDrawerHiding = true;
+                 if (isPlayersOpen && captureStage.current === 'none') {
+                     // Heuristic: If we just finished a who/where and the drawer is open, hide the final prompt
+                     isDrawerHiding = true;
+                 }
+            }
         }
 
         const shouldShow = (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage;
@@ -896,7 +927,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isEndPrompt) finalizeCapture();
-    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, triggerHaptic, mapperRef, deps, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture]);
+    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, triggerHaptic, mapperRef, deps, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture, parseQuestLine, finalizeQuests]);
 
     return { processLine, finalizeCapture };
 }

@@ -47,6 +47,7 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     position: relative;
     z-index: 10;
+    color: #ffffff;
 }
 
 .drawer-tabs {
@@ -62,7 +63,7 @@
     padding: 6px 14px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.8rem;
     cursor: pointer;
     border-radius: 10px;
@@ -71,9 +72,10 @@
 }
 
 .drawer-tab.active {
-    background: rgba(74, 222, 128, 0.2);
-    color: var(--accent);
-    border-color: rgba(74, 222, 128, 0.4);
+    background: #b8860b;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(184, 134, 11, 0.4);
 }
 
 .close-button {
@@ -102,7 +104,7 @@
 }
 
 /* Glass Section Container */
-.char-profile, .stats-grid > div, .details-section, .practice-tab > div, .quests-list > div, .skill-group, .info-section-glass {
+.char-profile, .stats-grid > div, .details-section, .skill-group, .info-section-glass {
     background: rgba(10, 13, 21, 0.92);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
@@ -122,7 +124,7 @@
 .char-main-info h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: var(--accent);
+    color: #ffffff;
     font-weight: 800;
     letter-spacing: -0.5px;
 }
@@ -184,10 +186,12 @@
 .base-stats-section h3, .war-info-section h3, .details-section h3, .stat-section h3 {
     margin: 0 0 10px 0;
     font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.4);
+    color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-weight: 800;
+    border-bottom: 1px solid #b8860b;
+    padding-bottom: 4px;
 }
 
 .base-stats-grid {
@@ -279,8 +283,10 @@
 }
 
 .skill-item, .quest-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(10, 13, 21, 0.92);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 10px 12px;
     margin-bottom: 8px;
@@ -295,8 +301,27 @@
 }
 
 .quest-item.selected {
-    background: rgba(74, 222, 128, 0.1);
-    border-color: rgba(74, 222, 128, 0.3);
+    background: rgba(184, 134, 11, 0.15);
+    border-color: rgba(184, 134, 11, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(184, 134, 11, 0.1);
+}
+
+.quest-full-text {
+    animation: quest-expand 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top;
+}
+
+@keyframes quest-expand {
+    from {
+        opacity: 0;
+        transform: scaleY(0.95);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: scaleY(1);
+        max-height: 500px;
+    }
 }
 
 .skill-group-header {

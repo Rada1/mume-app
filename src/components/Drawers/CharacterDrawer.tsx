@@ -346,7 +346,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                     ) : (
                         <div className="quests-tab">
                             <div className="quests-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px', padding: '0 5px' }}>
-                                <div className="quests-badge" style={{ background: 'rgba(74, 222, 128, 0.1)', color: 'var(--accent)', padding: '4px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800' }}>
+                                <div className="quests-badge" style={{ background: 'rgba(184, 134, 11, 0.1)', color: '#b8860b', border: '1px solid rgba(184, 134, 11, 0.3)', padding: '4px 12px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: '800' }}>
                                     {quests.activeQuests.length} Active
                                 </div>
                                 <button className="refresh-button" onClick={() => executeCommand('quest')} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#fff', padding: '4px 10px', borderRadius: '8px', fontSize: '0.7rem', fontWeight: '700' }}>
@@ -377,16 +377,18 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                             }}
                                         >
                                             <div className="quest-info" style={{ flex: 1 }}>
-                                                <div className="quest-area" style={{ fontSize: '0.65rem', color: 'var(--accent)', fontWeight: '800', marginBottom: '2px' }}>{quest.area}</div>
+                                                <div className="quest-area" style={{ fontSize: '0.65rem', color: '#b8860b', fontWeight: '800', marginBottom: '2px' }}>{quest.area}</div>
                                                 <div className="quest-name" style={{ fontSize: '0.85rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                                     {quest.isUnfinished && <span style={{ color: '#fb923c' }}>*</span>}
                                                     {quest.name}
                                                 </div>
                                                 {selectedQuestId === quest.id ? (
                                                     <div className="quest-full-text" style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', opacity: 0.8 }}>
-                                                        {quest.fullText?.split('\n').map((line, i) => (
+                                                        {quest.fullText ? quest.fullText.split('\n').map((line, i) => (
                                                             <p key={i} style={{ marginBottom: '5px' }}>{line}</p>
-                                                        ))}
+                                                        )) : (
+                                                            <p style={{ opacity: 0.5, fontStyle: 'italic' }}>Fetching details...</p>
+                                                        )}
                                                     </div>
                                                 ) : (
                                                     <div className="quest-description" style={{ fontSize: '0.7rem', opacity: 0.5, marginTop: '2px' }}>{quest.description}</div>

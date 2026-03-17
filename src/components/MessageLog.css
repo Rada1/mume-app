@@ -160,7 +160,7 @@
     color: var(--accent);
     opacity: 1;
     text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
-    background: rgba(74, 222, 128, 0.05);
+    background: #0a0d15;
     border-left: 2px solid var(--accent);
     padding-left: 8px;
     margin-top: 8px;
@@ -186,12 +186,7 @@
     box-shadow: none !important;
 }
 
-/* Terrain styles moved to modules */
-.input-area.terrain-forest .input-main-container,
-.input-area.terrain-forest .input-vitals-dock {
-    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2), 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-    border-color: rgba(34, 197, 94, 0.3) !important;
-}
+
 
 .mobile-parley-toggle {
     position: absolute;

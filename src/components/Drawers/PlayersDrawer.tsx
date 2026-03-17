@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Users, RefreshCw } from 'lucide-react';
+import { X, Users, RefreshCw, Star } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import { MemberRow } from './MemberRow';
 import './CharacterDrawer.css';
@@ -13,7 +13,7 @@ interface PlayersDrawerProps {
 
 export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, executeCommand: propsExecuteCommand }) => {
     const [activeTab, setActiveTab] = useState<'group' | 'online' | 'nearby'>('group');
-    const { whoList, whereList, groupMembers, triggerHaptic, executeCommand: contextExecuteCommand } = useGame();
+    const { whoList, whereList, groupMembers, triggerHaptic, favorites, setFavorites, executeCommand: contextExecuteCommand } = useGame();
     const { setPopoverState } = useUI();
 
     const executeCommand = contextExecuteCommand || propsExecuteCommand;
@@ -41,6 +41,38 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
             menuDisplay: 'list'
         });
     };
+
+    const toggleFavorite = (e: React.MouseEvent, name: string) => {
+        e.stopPropagation();
+        triggerHaptic(25);
+        const lowerName = name.toLowerCase();
+        setFavorites(prev => {
+            if (prev.includes(lowerName)) {
+                return prev.filter(f => f !== lowerName);
+            }
+            return [...prev, lowerName];
+        });
+    };
+
+    const isFav = (name: string) => favorites.includes(name.toLowerCase());
+
+    const PlayerRow = ({ name, isFavorite }: { name: string, isFavorite: boolean }) => (
+        <div className="player-row">
+            <button 
+                className="player-name-btn"
+                onClick={(e) => handlePlayerClick(e, name)}
+            >
+                {name}
+            </button>
+            <button 
+                className={`star-btn ${isFavorite ? 'active' : ''}`}
+                onClick={(e) => toggleFavorite(e, name)}
+                title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+                <Star size={14} fill={isFavorite ? "currentColor" : "none"} />
+            </button>
+        </div>
+    );
 
     return (
         <div
@@ -98,25 +130,32 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                             )}
                         </div>
                     ) : activeTab === 'online' ? (
-                        <div className="players-chip-grid">
-                            {whoList.length > 0 ? (
-                                whoList.map((name, i) => (
-                                    <span
-                                        key={i}
-                                        className="player-chip"
-                                        onClick={(e) => handlePlayerClick(e, name)}
-                                    >
-                                        {name}
-                                    </span>
-                                ))
-                            ) : (
-                                <div style={{ textAlign: 'center', padding: '40px', opacity: 0.3, width: '100%' }}>
-                                    <p style={{ fontSize: '0.8rem' }}>No data — tap refresh to load.</p>
+                        <div className="players-section">
+                            <div className="online-columns">
+                                <div className="online-column">
+                                    <div className="column-header">Favorites</div>
+                                    {whoList.filter(n => isFav(n)).length > 0 ? (
+                                        whoList.filter(n => isFav(n)).map((name, i) => (
+                                            <PlayerRow key={`fav-${i}`} name={name} isFavorite={true} />
+                                        ))
+                                    ) : (
+                                        <div className="column-empty">No favorites online</div>
+                                    )}
                                 </div>
-                            )}
+                                <div className="online-column">
+                                    <div className="column-header">All</div>
+                                    {whoList.length > 0 ? (
+                                        whoList.map((name, i) => (
+                                            <PlayerRow key={`all-${i}`} name={name} isFavorite={isFav(name)} />
+                                        ))
+                                    ) : (
+                                        <div className="column-empty">No data</div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     ) : (
-                        <div style={{ padding: '0 8px' }}>
+                        <div className="players-section">
                             {whereList.length > 0 ? (
                                 whereList.map((entry, i) => (
                                     <div key={i} className="where-entry">

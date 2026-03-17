@@ -177,7 +177,9 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     padding: '12px 20px',
-                    background: 'rgba(15, 23, 42, 0.95)',
+                    background: 'rgba(10, 13, 21, 0.92)',
+                    backdropFilter: 'blur(25px)',
+                    WebkitBackdropFilter: 'blur(25px)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '16px',
                     margin: '10px 15px 5px 15px',
@@ -188,7 +190,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                 }}>
 
                     <div className="swipe-indicator" style={{ position: 'absolute', top: '6px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '3px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
-                    <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: 'var(--accent)' }}>Combat Stats</span>
+                    <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: '#ffffff' }}>Combat Stats</span>
                     <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ 
                         marginLeft: 'auto',
                         background: 'rgba(255,255,255,0.08)', 
@@ -392,9 +394,9 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                                 height: '32px',
                                                 padding: '0 2px',
                                                 borderRadius: '6px',
-                                                border: item.isHighlighted ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.1)',
-                                                background: item.isHighlighted ? 'rgba(74, 222, 128, 0.2)' : 'rgba(255,255,255,0.05)',
-                                                color: item.isHighlighted ? 'var(--accent)' : '#fff',
+                                                border: item.isHighlighted ? '1px solid #b8860b' : '1px solid rgba(255,255,255,0.1)',
+                                                background: item.isHighlighted ? '#b8860b' : 'rgba(255,255,255,0.05)',
+                                                color: '#fff',
                                                 fontSize: '0.55rem',
                                                 fontWeight: 'bold',
                                                 textTransform: 'uppercase',
@@ -403,7 +405,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 flex: 1,
-                                                minWidth: '0'
+                                                minWidth: '0',
+                                                boxShadow: item.isHighlighted ? '0 0 10px rgba(184, 134, 11, 0.3)' : 'none'
                                             }}
                                         >
                                             {item.label}

@@ -517,15 +517,16 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
         return (
             <div key={line.id} style={{ 
-                padding: '8px 10px 4px', 
-                fontSize: '0.85rem', 
-                opacity: 0.95, 
-                fontWeight: 'bold',
-                borderBottom: '1px solid rgba(var(--accent-rgb), 0.3)',
-                color: 'var(--accent)',
-                letterSpacing: '1px',
+                marginLeft: `${depth * 20}px`,
+                padding: '12px 10px 4px', 
+                fontSize: depth > 0 ? '0.7rem' : '0.85rem', 
+                opacity: depth > 0 ? 0.6 : 0.95, 
+                fontWeight: '900',
+                borderBottom: depth === 0 ? '1px solid #b8860b' : 'none',
+                color: depth > 0 ? '#89b4fa' : 'var(--accent)',
+                letterSpacing: '1.5px',
                 textTransform: 'uppercase',
-                marginTop: '12px'
+                marginTop: depth > 0 ? '4px' : '12px'
             }} dangerouslySetInnerHTML={{ __html: line.html }} />
         );
     };
@@ -565,9 +566,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 display: 'flex', 
                 alignItems: 'center', 
                 padding: '12px 20px', 
-                background: 'rgba(15, 23, 42, 0.7)', 
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
+                background: 'rgba(10, 13, 21, 0.92)', 
+                backdropFilter: 'blur(25px)',
+                WebkitBackdropFilter: 'blur(25px)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '16px',
                 margin: '10px 15px',
@@ -575,7 +576,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 pointerEvents: 'auto'
             }}>
                 <div className="swipe-indicator" style={{ position: 'absolute', top: '6px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '3px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
-                <span className="drawer-title" style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: 'var(--accent)' }}>Item Manager</span>
+                <span className="drawer-title" style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: '#ffffff' }}>Item Manager</span>
                 <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '30px', height: '30px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
             </div>
 

@@ -23,12 +23,12 @@ export const MendingFooter: React.FC<MendingFooterProps> = ({
             padding: '12px',
             margin: '10px 15px 20px',
             borderRadius: '16px',
-            border: '1px solid rgba(255,255,255,0.1)',
+            border: '1px solid #b8860b',
             display: 'flex',
             gap: '10px',
-            background: 'rgba(15, 23, 42, 0.7)',
-            backdropFilter: 'blur(12px)',
-            WebkitBackdropFilter: 'blur(12px)',
+            background: 'rgba(10, 13, 21, 0.92)',
+            backdropFilter: 'blur(25px)',
+            WebkitBackdropFilter: 'blur(25px)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
             pointerEvents: 'auto'
         }}>
