@@ -41,14 +41,14 @@ export const ButtonSwipeOverlay: React.FC<ButtonSwipeOverlayProps> = ({ button, 
                             className={`swipe-slice ${isActive ? 'active' : ''}`}
                             style={{
                                 transform: `rotate(${angle}deg)`,
-                                opacity: (cmdVal || longCmdVal || isActive) ? 1 : 0,
+                                opacity: (cmdVal || isActive) ? 1 : 0,
                                 pointerEvents: 'auto',
                             } as any}
                         >
                             <div className="slice-separator" />
-                            {(cmdVal || longCmdVal) && (
+                            {cmdVal && (
                                 <span className={`swipe-slice-label ${shouldFlip ? 'flip' : ''}`}>
-                                    {cmdVal || longCmdVal}
+                                    {cmdVal}
                                 </span>
                             )}
                         </div>
