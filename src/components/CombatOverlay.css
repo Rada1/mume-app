@@ -85,7 +85,8 @@
 }
 
 /* Health status coloring */
-.health-quad.fine { background: #4ade80; box-shadow: 0 0 8px rgba(184, 134, 11, 0.6); }
+.health-quad.healthy { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.6); }
+.health-quad.fine { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.6); }
 .health-quad.hurt { background: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.4); }
 .health-quad.wounded { background: #fb923c; box-shadow: 0 0 8px rgba(251, 146, 60, 0.4); }
 .health-quad.badly-wounded { background: #f87171; box-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }

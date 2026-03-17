@@ -43,19 +43,20 @@ export const useGameProviderState = () => {
     const combatTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const setInCombat = useCallback((val: boolean, force: boolean = false) => {
-        if (combatTimeoutRef.current) {
-            clearTimeout(combatTimeoutRef.current);
-            combatTimeoutRef.current = null;
-        }
-
         if (val || force) {
+            // Resuming combat or forced clear — cancel any pending exit latch
+            if (combatTimeoutRef.current) {
+                clearTimeout(combatTimeoutRef.current);
+                combatTimeoutRef.current = null;
+            }
             _setInCombat(val);
-        } else {
-            // Latch combat for 5 seconds if not forced
+        } else if (!combatTimeoutRef.current) {
+            // Start the exit latch only if one isn't already running.
+            // This prevents repeated no-opponent prompt calls from resetting the clock.
             combatTimeoutRef.current = setTimeout(() => {
                 _setInCombat(false);
                 combatTimeoutRef.current = null;
-            }, 5000);
+            }, 3000);
         }
     }, []);
 

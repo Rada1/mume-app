@@ -419,6 +419,21 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
             }
 
+        // --- Combat Exit Detection (text-based) ---
+        // Force-clear combat on unambiguous end-of-combat messages so we don't rely
+        // solely on GMCP or the prompt opponent pattern disappearing.
+        if (inCombatRef.current) {
+            if (/you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) ||
+                /you receive \d+ experience/i.test(lower) ||
+                /\bis dead!\s*r\.?i\.?p/i.test(lower) ||
+                /^you flee\b/i.test(lower) ||
+                /you stop fighting/i.test(lower)) {
+                setInCombat(false, true);
+                setOpponentHealthStatus(null);
+                setOpponentName(null);
+            }
+        }
+
         // --- NEW: Priority Capture Handling ---
         if (captureStage.current !== 'none') {
             const stage = captureStage.current;
