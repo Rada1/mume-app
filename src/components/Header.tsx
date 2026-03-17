@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair } from 'lucide-react';
 import { EnvControls } from './Layout/EnvControls';
 import { LightingType, WeatherType } from '../types';
 import { useGame, useUI, useVitals } from '../context/GameContext';
@@ -73,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
         <header className={`header ${viewport.isMobile ? 'mobile-header' : ''}`} style={{ flexWrap: 'nowrap', gap: 6 }}>
             {/* Left: Brand/Logo (Hidden on Mobile Design Mode to save critical space) */}
             {!isLandscape && (!viewport.isMobile || !isEditMode) && (
-                <div className="title" style={{ flexShrink: 0, fontSize: viewport.isMobile ? '1.1rem' : '1.4rem' }}>
+                <div className="title" style={{ flexShrink: 0, fontSize: viewport.isMobile ? '1.1rem' : '1.4rem', color: '#d7a11e' }}>
                     MUME
                 </div>
             )}
@@ -82,7 +82,51 @@ const Header: React.FC<HeaderProps> = ({
             <EnvControls getLightingIcon={getLightingIcon} getWeatherIcon={getWeatherIcon} isLandscape={isLandscape} />
 
             {/* Right: Master Controls (Always Visible/Fixed) */}
-            <div className="controls" style={{ flexShrink: 0, marginLeft: 'auto' }}>
+            <div className="controls" style={{ flexShrink: 0, marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
+                <div
+                    className="status-indicator"
+                    style={{
+                        color: target ? 'var(--map-accent)' : 'var(--text-faded)',
+                        gap: 4, padding: '4px 6px',
+                        cursor: 'pointer',
+                        opacity: target ? 1 : 0.6,
+                        border: target ? '1px solid var(--map-accent)' : '1px solid var(--border-color)',
+                        maxWidth: viewport.isMobile ? '80px' : 'none',
+                        overflow: 'hidden',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}
+                    title={target ? "Current Target (Click to clear)" : "No Target"}
+                    onClick={() => target && onClearTarget && onClearTarget()}
+                >
+                    <Crosshair size={12} />
+                    <span style={{ fontWeight: 'bold', fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {target ? target.toUpperCase() : (viewport.isMobile ? '' : 'NO TARGET')}
+                    </span>
+                </div>
+
+                {teleportTargetsCount > 0 && (
+                    <div
+                        className="status-indicator"
+                        style={{
+                            color: 'var(--accent)',
+                            gap: 4, padding: '4px 6px',
+                            cursor: 'pointer',
+                            opacity: 1,
+                            border: '1px solid var(--accent)',
+                            height: '32px',
+                            display: 'flex',
+                            alignItems: 'center'
+                        }}
+                        title="Stored Teleport Rooms"
+                        onClick={() => onTeleportClick && onTeleportClick()}
+                    >
+                        <Crosshair size={12} style={{ transform: 'rotate(45deg)' }} />
+                        <span style={{ fontWeight: 'bold', fontSize: '0.75rem' }}>{teleportTargetsCount}</span>
+                    </div>
+                )}
+
                 {isEditMode && !isLandscape && (
                     <div className="action-menu-wrapper" ref={setMenuRef} style={{ flexShrink: 1, minWidth: 0 }}>
                         <div

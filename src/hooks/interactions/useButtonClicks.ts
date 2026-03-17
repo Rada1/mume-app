@@ -31,8 +31,25 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         }
 
+        let finalContext = context;
+        let detectedParent = parentNoun;
+
+        // If no explicit parentNoun, try to detect it from the context (e.g. loaf.backpack)
+        if (!detectedParent && finalContext && finalContext.includes('.')) {
+            const parts = finalContext.split('.');
+            const lastPart = parts[parts.length - 1];
+            // MUME indices are numeric (e.g. food.2). Only treat as parent container if it's a noun.
+            if (isNaN(parseInt(lastPart))) {
+                detectedParent = lastPart;
+            }
+        }
+
+        if (detectedParent && finalContext && finalContext.endsWith(`.${detectedParent}`)) {
+            finalContext = finalContext.slice(0, -(detectedParent.length + 1));
+        }
+
         let cmd = button.command;
-        if (context) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, context) : cmd; }
+        if (finalContext) { cmd = cmd.includes('%n') ? cmd.replace(/%n/g, finalContext) : cmd; }
         else if (cmd.includes('%n') && target) {
             cmd = cmd.replace(/%n/g, target);
         }
@@ -149,10 +166,11 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 }
             }, 10);
         } else {
-            // Prepend 'get' if item is in a container
-            if (parentNoun && context) {
-                const itemNoun = context.split('.')[0];
-                executeCommand(`get ${itemNoun} ${parentNoun}`, true, true, false, false, { fromUi: true });
+            // Prepend 'get' if item is in a container, unless the command is already a get/look/take
+            const isAlreadyGet = /^(get|look|take|buy|sell|mend)\b/i.test(finalCmd);
+            if (detectedParent && context && !isAlreadyGet) {
+                const itemNoun = finalContext || context.split('.')[0];
+                executeCommand(`get ${itemNoun} ${detectedParent}`, true, true, false, false, { fromUi: true });
             }
 
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile

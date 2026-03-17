@@ -132,7 +132,7 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                             onClick={(e) => { e.stopPropagation(); setActiveTab('practice'); }}
                         >
                             <BookOpen size={14} />
-                            <span>Practice</span>
+                            <span>Skills/Spells</span>
                         </button>
                         <button 
                             className={`drawer-tab ${activeTab === 'quests' ? 'active' : ''}`}
