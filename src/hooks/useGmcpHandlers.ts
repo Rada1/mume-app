@@ -197,7 +197,7 @@ export const useGmcpHandlers = ({
             const name = char.name || char.short || char.keyword;
             if (!name) return;
 
-            const status = findStatus(char.health || char.status);
+            const status = findStatus(char.health || char.condition || char.hp_status || char.status);
             if (!status) return;
 
             // Update opponent health if it matches

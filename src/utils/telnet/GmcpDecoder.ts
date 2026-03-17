@@ -28,6 +28,7 @@ export interface GmcpHandlers {
     onGroupRemove?: (data: any) => void;
     onGroupSet?: (data: any) => void;
     onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
+    onRoomCharsCombat?: (data: any[]) => void;
 }
 
 export class GmcpDecoder {
@@ -306,6 +307,9 @@ export class GmcpDecoder {
         try {
             const data = JSON.parse(json);
             if (!Array.isArray(data)) return;
+
+            // Pass char data to the combat handler so opponent/buffer health can be updated from Room.Chars
+            if (this.handlers.onRoomCharsCombat) this.handlers.onRoomCharsCombat(data);
 
             // We should rely primarily on our own Char.Vitals for combat state, not just ANY room activity.
             // Room.Chars will list other players/NPCs fighting, which shouldn't force US into combat UI

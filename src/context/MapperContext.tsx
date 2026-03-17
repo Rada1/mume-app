@@ -307,7 +307,13 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                             return next;
                         });
                         setCurrentRoomId(targetIdVal); currentRoomIdRef.current = targetIdVal; preMoveRef.current = null;
-                    } else { preMoveRef.current = { dir: move.dir, targetId: targetId, time: Date.now() }; }
+                    } else {
+                        // Update current room immediately for non-GMCP mode.
+                        // If GMCP arrives afterwards it will confirm (or correct) this.
+                        // Do NOT shift pendingMovesRef here — handleRoomInfo does that when GMCP arrives.
+                        setCurrentRoomId(targetId); currentRoomIdRef.current = targetId;
+                        preMoveRef.current = null;
+                    }
                     triggerRender();
                 }
             }

@@ -97,7 +97,8 @@ export function useTelnet(options: TelnetOptions) {
         onGroupUpdate: (val) => handlersRef.current.onGroupUpdate?.(val),
         onGroupRemove: (val) => handlersRef.current.onGroupRemove?.(val),
         onGroupSet: (val) => handlersRef.current.onGroupSet?.(val),
-        onMumeEdit: (val) => handlersRef.current.onMumeEdit?.(val)
+        onMumeEdit: (val) => handlersRef.current.onMumeEdit?.(val),
+        onRoomCharsCombat: (val) => handlersRef.current.onRoomCharsCombat?.(val)
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
 

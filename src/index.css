@@ -88,11 +88,12 @@
     border: none !important;
     box-shadow: none !important;
     padding: 0 12px 15px 12px !important; /* Tightened from 20px to 12px for a closer fit */
-    max-width: none !important; 
+    max-width: none !important;
+    position: relative; /* anchor for .mobile-parley-toggle */
     display: flex !important;
     flex-direction: row;
-    gap: 12px; 
-    align-items: flex-end; 
+    gap: 12px;
+    align-items: flex-end;
     pointer-events: none;
     box-sizing: border-box;
     width: 100%;

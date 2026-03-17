@@ -190,7 +190,7 @@
 
 .mobile-parley-toggle {
     position: absolute;
-    right: 8px;
+    right: 50px; /* center over stat bar cluster (anchored to .input-area, not just command field) */
     top: -50px;
     width: 32px;
     height: 32px;
