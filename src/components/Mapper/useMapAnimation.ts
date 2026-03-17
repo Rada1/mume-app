@@ -124,7 +124,7 @@ export const useMapAnimation = ({
         if (playerTrailRef.current.length > 0) {
             let trailChanged = false;
             // Use a more efficient decay constant
-            const decay = Math.pow(0.93, frameScale);
+            const decay = Math.pow(0.96, frameScale);
             playerTrailRef.current = playerTrailRef.current.filter(t => {
                 if (t.alpha > 0.05) {
                     t.alpha *= decay;

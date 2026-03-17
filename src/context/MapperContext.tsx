@@ -95,7 +95,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [allowPersistence, setAllowPersistence] = useState(() => localStorage.getItem('mume_mapper_persistence') !== 'false');
     const [unveilMap, setUnveilMap] = useState(() => {
         const saved = localStorage.getItem('mume_mapper_unveil');
-        return saved === null ? true : saved === 'true'; // Default to true
+        return saved === null ? false : saved === 'true'; // Default to false (hide unexplored)
     });
 
     // Refs

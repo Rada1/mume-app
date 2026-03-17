@@ -7,14 +7,18 @@ let trailGlowCanvas: HTMLCanvasElement | null = null;
 const getTrailGlow = () => {
     if (trailGlowCanvas) return trailGlowCanvas;
     const canvas = document.createElement('canvas');
-    const size = Math.round(GRID_SIZE * 1.5);
+    const size = Math.round(GRID_SIZE * 2.0);
     canvas.width = size; canvas.height = size;
     const ctx = canvas.getContext('2d')!;
     const center = size / 2;
-    // Draw a sharp solid circle instead of a radial gradient blur
-    ctx.fillStyle = '#ef4444';
+    const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
+    gradient.addColorStop(0,   'rgba(239, 68, 68, 0.95)');
+    gradient.addColorStop(0.3, 'rgba(239, 68, 68, 0.7)');
+    gradient.addColorStop(0.6, 'rgba(239, 68, 68, 0.3)');
+    gradient.addColorStop(1,   'rgba(239, 68, 68, 0)');
+    ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(center, center, size / 3, 0, Math.PI * 2);
+    ctx.arc(center, center, center, 0, Math.PI * 2);
     ctx.fill();
     trailGlowCanvas = canvas;
     return canvas;

@@ -32,7 +32,7 @@ const STEPS = [
     {
         id: 'tactical-buttons',
         title: 'Tactical Button Clusters',
-        description: 'Your tactical buttons are your go-to abilities. Tap the button or swipe in any direction on the button to start an action. If you hold the swipe you can see the swipe button options available to you.',
+        description: 'Your tactical buttons are your go-to abilities. Tap the button or swipe in any direction on the button to start an action. If you hold the swipe you can see the swipe button options available to you. Tactical buttons will become activatable when you learn an applicable skill.',
         spotlight: '.line-cluster',
     },
     {
