@@ -24,71 +24,77 @@
     background: rgba(15, 23, 42, 0.1) !important;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    transition: filter 1s ease-in-out;
 }
 
-/* Lighting States - Container Effects */
-.mapper-container.lighting-state-sun {
-    filter: brightness(1.2) contrast(1.15) saturate(1.4);
-}
-
-.mapper-container.lighting-state-dark {
-    filter: brightness(0.5) contrast(0.9);
-}
-
-.mapper-container.lighting-state-moon {
-    filter: brightness(0.65) contrast(1.1) saturate(0.8);
-}
-
-.mapper-container.lighting-state-artificial {
-    filter: brightness(0.9) contrast(1.2);
-}
-
-.mapper-lighting-overlay {
+.mapper-overlay {
     position: absolute;
     inset: 0;
-    z-index: 5;
     pointer-events: none;
-    transition: background 1s ease-in-out, opacity 1s ease-in-out;
-    mix-blend-mode: soft-light;
     opacity: 0;
+    transition: opacity 1s ease-in-out, backdrop-filter 1s ease-in-out;
 }
 
-/* Day/Sun: Warm, bright centered sun-blast - whiter tone */
-.lighting-state-sun .mapper-lighting-overlay {
-    opacity: 0.7;
+/* --- Sun --- */
+.mapper-sun-overlay {
+    z-index: 5;
     background: radial-gradient(circle at center, 
         rgba(255, 255, 230, 0.5) 0%, 
         rgba(255, 245, 180, 0.25) 45%, 
         transparent 90%
     );
     mix-blend-mode: overlay;
+    backdrop-filter: brightness(1.2) saturate(1.4);
+}
+.lighting-state-sun .mapper-sun-overlay {
+    opacity: 0.7;
 }
 
-/* Moon: Cool, blue/silver centered glow */
-.lighting-state-moon .mapper-lighting-overlay {
-    opacity: 0.6;
+/* --- Moon --- */
+.mapper-moon-overlay {
+    z-index: 5;
     background: radial-gradient(circle at center,
         rgba(150, 180, 255, 0.3) 0%,
         rgba(100, 130, 255, 0.1) 40%,
         rgba(0, 20, 50, 0.4) 95%
     );
     mix-blend-mode: screen;
+    backdrop-filter: brightness(0.85) saturate(0.8);
+}
+.lighting-state-moon .mapper-moon-overlay {
+    opacity: 0.6;
 }
 
-/* Dark: Deep shadows closing in on center */
-.lighting-state-dark .mapper-lighting-overlay {
-    opacity: 0.85;
-    background: radial-gradient(circle at center, transparent 15%, rgba(0, 0, 15, 0.95) 100%);
-    mix-blend-mode: multiply;
-}
-
-/* Artificial: Flickering lantern/torch effect centered on player */
-.lighting-state-artificial .mapper-lighting-overlay {
-    opacity: 0.7;
+/* --- Artificial --- */
+.mapper-artificial-overlay {
+    z-index: 5;
     background: radial-gradient(circle at center, rgba(255, 190, 80, 0.4) 0%, rgba(120, 60, 0, 0.3) 50%, rgba(0, 0, 0, 0.9) 100%);
     mix-blend-mode: color-dodge;
+}
+.lighting-state-artificial .mapper-artificial-overlay {
+    opacity: 0.7;
+    backdrop-filter: brightness(0.9) contrast(1.2);
     animation: mapper-lantern-flicker 4s infinite alternate;
+}
+
+/* --- Dark (Default State) --- */
+.mapper-dark-overlay {
+    z-index: 6;
+    background: radial-gradient(circle at center, transparent 15%, rgba(0, 0, 15, 0.95) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0.85; /* Active when state is 'dark' or 'none' */
+    transition: opacity 1s ease-in-out;
+}
+
+/* Darkness fades OUT when light is present */
+.lighting-state-sun .mapper-dark-overlay,
+.lighting-state-moon .mapper-dark-overlay,
+.lighting-state-artificial .mapper-dark-overlay {
+    opacity: 0;
+}
+
+/* Darkness stays ON when pitch black */
+.lighting-state-dark .mapper-dark-overlay {
+    opacity: 0.85;
 }
 
 @keyframes mapper-lantern-flicker {

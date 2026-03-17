@@ -416,6 +416,11 @@
     -webkit-user-drag: element;
     user-select: none;
     -webkit-user-select: none;
+    /* Prevent the browser from starting a scroll/pan gesture when holding an
+       inline button — without this, touch-action: pan-y on the message log
+       causes the browser to fire pointercancel as soon as the finger moves,
+       killing the long-press drag before it can deliver to the drawer. */
+    touch-action: none;
 }
 
 .inline-btn[draggable="true"]:hover {

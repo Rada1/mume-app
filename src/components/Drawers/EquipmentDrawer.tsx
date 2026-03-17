@@ -39,8 +39,36 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-    const { activeDragData } = useGame();
+    const { activeDragData, setUI } = useGame();
     const { isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useVitals();
+
+    // Enable pointer events on this drawer for ANY native HTML5 drag on the page, not just
+    // ones that set activeDragData via React state (which has async re-render timing issues).
+    // This also covers the target badge in InputArea which has its own onDragStart.
+    useEffect(() => {
+        const onDocDragOver = (e: DragEvent) => {
+            if (drawerRef.current) drawerRef.current.style.pointerEvents = 'auto';
+            // Auto-open the items drawer when dragging near the right edge
+            if (e.clientX > window.innerWidth - 150) {
+                setUI((prev: any) => prev.drawer === 'items' ? prev : { ...prev, drawer: 'items' });
+                drawerRef.current?.classList.add('native-drag-over');
+            } else {
+                drawerRef.current?.classList.remove('native-drag-over');
+            }
+        };
+        const onDocDragEnd = () => {
+            if (drawerRef.current) drawerRef.current.style.removeProperty('pointer-events');
+            drawerRef.current?.classList.remove('native-drag-over');
+        };
+        document.addEventListener('dragover', onDocDragOver);
+        document.addEventListener('dragend', onDocDragEnd);
+        document.addEventListener('drop', onDocDragEnd);
+        return () => {
+            document.removeEventListener('dragover', onDocDragOver);
+            document.removeEventListener('dragend', onDocDragEnd);
+            document.removeEventListener('drop', onDocDragEnd);
+        };
+    }, [setUI]);
 
     const ghostRef = useRef<HTMLDivElement>(null);
     const longPressTimerRef = useRef<any>(null);

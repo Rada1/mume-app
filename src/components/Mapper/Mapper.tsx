@@ -149,7 +149,10 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             backgroundColor: 'transparent', 
             touchAction: 'none' 
         }}>
-            <div className="mapper-lighting-overlay" />
+            <div className="mapper-overlay mapper-sun-overlay" />
+            <div className="mapper-overlay mapper-moon-overlay" />
+            <div className="mapper-overlay mapper-artificial-overlay" />
+            <div className="mapper-overlay mapper-dark-overlay" />
             <MapCanvas
                 ref={canvasRef}
                 rooms={rooms}

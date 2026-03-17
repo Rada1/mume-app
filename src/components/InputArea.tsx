@@ -54,7 +54,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui } = useUI();
     const { viewport } = useBaseGame();
     const { stats: vitalsStats, setStats: setVitalsStats } = useVitals();
-    const { inCombat } = useGame();
+    const { inCombat, setActiveDragData } = useGame();
     const handleWimpyChange = useCallback((val: number) => {
         setVitalsStats(prev => ({ ...prev, wimpy: val }));
         executeCommand(`change wimpy ${val}`);
@@ -387,16 +387,18 @@ const InputArea: React.FC<InputAreaProps> = ({
                             onDragStart={(e) => {
                                 const dragData = {
                                     type: 'inline-btn',
-                                    cmd: 'target',
-                                    context: 'target',
+                                    cmd: 'get',
+                                    context: target,
                                     id: 'meta-target'
                                 };
+                                setActiveDragData(dragData);
                                 e.dataTransfer.setData('application/json', JSON.stringify(dragData));
                                 e.dataTransfer.effectAllowed = 'move';
                                 (e.currentTarget as HTMLElement).classList.add('dragging');
                             }}
                             onDragEnd={(e) => {
                                 (e.currentTarget as HTMLElement).classList.remove('dragging');
+                                setActiveDragData(null);
                             }}
                             onPointerDown={(e) => {
                                 // Don't prevent default here or drag-and-drop won't start

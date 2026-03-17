@@ -429,7 +429,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 } else if (logDragStartPosRef.current) {
                     const dx = Math.abs(moveEvent.clientX - logDragStartPosRef.current.x);
                     const dy = Math.abs(moveEvent.clientY - logDragStartPosRef.current.y);
-                    if (Math.sqrt(dx * dx + dy * dy) > 5) { // Tighter threshold
+                    if (Math.sqrt(dx * dx + dy * dy) > 12) {
                         if (logLongPressTimerRef.current) {
                             clearTimeout(logLongPressTimerRef.current);
                             logLongPressTimerRef.current = null;
