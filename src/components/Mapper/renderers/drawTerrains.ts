@@ -219,7 +219,7 @@ export const drawTerrains = (
 
     const exploredBatches: Record<string, { x: number, y: number, terrain: string, vnum: string }[]> = {};
     const revealedBatches: Record<string, { x: number, y: number, terrain: string, vnum: string }[]> = {};
-    const peekBatches: Record<string, { x: number, y: number, terrain: string, peekDirs: string[] }[]> = {};
+    const peekBatches: Record<string, { x: number, y: number, terrain: string, vnum: string, peekDirs: string[] }[]> = {};
 
     if (!floorIndex) return;
 
@@ -260,7 +260,7 @@ export const drawTerrains = (
                         }
                         if (peekDirs.length > 0) {
                             if (!peekBatches[color]) peekBatches[color] = [];
-                            peekBatches[color].push({ x: tx, y: ty, terrain, peekDirs });
+                            peekBatches[color].push({ x: tx, y: ty, terrain, vnum, peekDirs });
                         }
                     }
                 }
@@ -276,12 +276,7 @@ export const drawTerrains = (
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
             let alphaMul = 1.0;
-            const isActive = r.vnum && rCtx.activeId && (
-                r.vnum === rCtx.activeId || 
-                `m_${r.vnum}` === rCtx.activeId || 
-                r.vnum === `m_${rCtx.activeId}`
-            );
-            if (!isActive && r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
+            if (r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
                 const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[r.vnum];
                 const animDur = 800;
                 if (elapsed < animDur) {
@@ -298,6 +293,10 @@ export const drawTerrains = (
     for (const color in peekBatches) {
         const rooms = peekBatches[color];
         for (const r of rooms) {
+            // Need rData to find neighbor vnums for peek animation
+            const rData = rCtx.preloaded[r.vnum];
+            const ghostExits = rData ? rData[4] : null;
+
             for (const dir of r.peekDirs) {
                 let grad;
                 if (dir === 'n') grad = ctx.createLinearGradient(r.x, r.y, r.x, r.y + s * 0.7);
@@ -306,11 +305,25 @@ export const drawTerrains = (
                 else if (dir === 'w') grad = ctx.createLinearGradient(r.x, r.y, r.x + s * 0.7, r.y);
 
                 if (grad) {
+                    let peekAlphaMul = 1.0;
+                    if (ghostExits && ghostExits[dir]) {
+                        const neighborVnum = String(ghostExits[dir].target);
+                        const exploredAt = rCtx.firstExploredAtRef.current[neighborVnum];
+                        if (exploredAt) {
+                            const elapsed = rCtx.now - exploredAt;
+                            const animDur = 800;
+                            if (elapsed < animDur) {
+                                peekAlphaMul = elapsed / animDur;
+                                rCtx.triggerRender?.();
+                            }
+                        }
+                    }
+
                     ctx.save();
                     grad.addColorStop(0, color);
                     grad.addColorStop(1, 'rgba(0,0,0,0)');
                     ctx.fillStyle = grad;
-                    ctx.globalAlpha = 0.45; // Start just below explored (0.5)
+                    ctx.globalAlpha = 0.45 * peekAlphaMul; // Start just below explored (0.5)
                     ctx.fillRect(r.x, r.y, s, s);
                     ctx.restore();
                 }

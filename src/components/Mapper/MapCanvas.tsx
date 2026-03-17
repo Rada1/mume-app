@@ -54,7 +54,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
-        baseMapExitsRef
+        baseMapExitsRef, triggerRender
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -63,7 +63,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
-        baseMapExitsRef
+        baseMapExitsRef, triggerRender
     });
 
     useMapAnimation({

@@ -190,7 +190,14 @@ export class GmcpDecoder {
 
         const pos = getField(['position', 'pos', 'p']);
         if (pos !== undefined) {
-            const p = pos.toLowerCase(); this.charVitalsState.position = p;
+            const p = pos.toLowerCase();
+            this.charVitalsState.position = p;
+            // If position explicitly becomes non-fighting, clear stale opponent cache so
+            // isFighting doesn't stay true due to a previously-seen opponent.
+            if (!p.includes('fighting')) {
+                this.charVitalsState.opponent = null;
+                if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(null);
+            }
             if (this.handlers.onPositionChange) this.handlers.onPositionChange(p);
         }
 
@@ -210,13 +217,20 @@ export class GmcpDecoder {
             this.handlers.onCharVitals(data);
         }
 
-        const isFighting = this.charVitalsState.position?.includes('fighting') || (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
-        if (isFighting) {
-            this.handlers.setInCombat(true);
-        } else {
-            // If we are explicitly NOT fighting and have NO opponent, we should clear combat immediately.
-            // We use force=true to bypass the 5s latch in state.ts.
-            (this.handlers as any).setInCombat(false, true);
+        // Only act on combat state if this update explicitly included position or opponent data.
+        // If neither field was present, we don't know current combat state from this update alone —
+        // let the prompt parser's latch handle the eventual disengage rather than keeping combat
+        // active via stale cached values.
+        const posUpdated = getField(['position', 'pos', 'p']) !== undefined;
+        const oppUpdated = getField(['opponent', 'opp', 'o']) !== undefined;
+        if (posUpdated || oppUpdated) {
+            const isFighting = this.charVitalsState.position?.includes('fighting') ||
+                (this.charVitalsState.opponent !== null && this.charVitalsState.opponent !== undefined);
+            if (isFighting) {
+                this.handlers.setInCombat(true);
+            } else {
+                (this.handlers as any).setInCombat(false, true);
+            }
         }
 
         const weatherVal = getField(['weather', 'w']);

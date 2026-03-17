@@ -603,7 +603,6 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
                 pointerEvents: 'auto'
             }}>
-                <div className="swipe-indicator" style={{ position: 'absolute', top: '6px', left: '50%', transform: 'translateX(-50%)', width: '30px', height: '3px', background: 'rgba(255,255,255,0.15)', borderRadius: '2px' }} />
                 <span className="drawer-title" style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px', color: '#ffffff' }}>Item Manager</span>
                 <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', width: '30px', height: '30px', borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', cursor: 'pointer' }}>✕</button>
             </div>

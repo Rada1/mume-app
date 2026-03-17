@@ -33,6 +33,7 @@ interface RendererProps {
     walkTargetId?: string | null;
     walkPath?: string[];
     showOrganicTerrain?: boolean;
+    triggerRender?: () => void;
 }
 
 export const useMapperRenderer = ({
@@ -41,6 +42,7 @@ export const useMapperRenderer = ({
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, renderVersion,
     unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
+    triggerRender,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -136,8 +138,11 @@ export const useMapperRenderer = ({
         // Rebuild if we moved more than 30% of the screen width from the cached center
         const moveThreshold = baseW * 0.4;
 
+        const lastExplored = firstExploredAtRef.current['_latest'] || 0;
+        const isExplorationAnimating = (now - lastExplored) < 1000;
+
         const baseParams = `${curZInt}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}_${activeId}`;
-        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold;
+        const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold || isExplorationAnimating;
 
         if (needsRebuild) {
             const offCtx = cache.ctx;
@@ -213,7 +218,8 @@ export const useMapperRenderer = ({
             const rCtx: RenderContext = {
                 ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
                 imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
-                allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef
+                allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
+                triggerRender
             };
 
             drawGrid(rCtx, gX1, gY1, gX2, gY2);

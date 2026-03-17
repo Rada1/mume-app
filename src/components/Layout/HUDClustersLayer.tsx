@@ -82,12 +82,6 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     isMobile={isMobile}
                 />
 
-                <GroupDrawer
-                    uiPositions={btn.uiPositions}
-                    isEditMode={btn.isEditMode}
-                    dragState={btn.dragState}
-                    handleDragStart={handleDragStart}
-                />
 
                 {(effectiveShowControls || btn.isEditMode) && (
                     <>

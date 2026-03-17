@@ -1,4 +1,5 @@
 import React from 'react';
+import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
@@ -24,6 +25,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     pendingDrawerContainerRef,
     inlineCategories = []
 }) => {
+    const { lighting } = useGame();
     const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number; commandLabel?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = React.useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = React.useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
@@ -296,7 +298,6 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 </div>
             )}
             <div className="drawer-header" style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}>
-                <div className="swipe-indicator" style={{ position: 'absolute', top: '12px', left: '50%', transform: 'translateX(-50%)', width: '60px', height: '6px', background: 'rgba(255,255,255,0.3)', borderRadius: '3px' }} />
                 <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory</span>
                 <button onClick={() => { triggerHaptic(20); onClose(); }} style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.1)', border: 'none', color: '#fff', width: '32px', height: '32px', borderRadius: '16px', fontSize: '1rem' }}>✕</button>
             </div>
