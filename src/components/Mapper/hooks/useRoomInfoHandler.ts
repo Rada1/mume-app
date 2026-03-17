@@ -20,12 +20,13 @@ interface RoomInfoProps {
     onRoomInfoProcessed?: () => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
+    preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
 }
 
 export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
-    firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes
+    firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef
 }: RoomInfoProps) => {
 
     const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
@@ -478,9 +479,43 @@ export const useRoomInfoHandler = ({
         if (topologyChanged || roomChanged) {
             triggerRender?.();
         }
-        
+
+        // Clear the pre-move that was set by handleMoveConfirmed
         onRoomInfoProcessed?.();
-    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes]);
+
+        // Look-ahead: if there are still pending moves after this confirmation, immediately
+        // predict the next room so the map never goes blank between rapid GMCP packets.
+        if (preMoveRef && isLikelyMove && pendingMovesRef.current.length > 0 && targetId) {
+            const nextDir = pendingMovesRef.current[0].dir;
+            const arrivedRoom = newRooms[targetId];
+            if (arrivedRoom) {
+                let nextTargetId: string | null = null;
+
+                // Check arrived room's known exits first
+                const nextExit = arrivedRoom.exits?.[nextDir];
+                if (nextExit?.target) {
+                    nextTargetId = nextExit.target;
+                } else if (nextExit?.gmcpDestId) {
+                    nextTargetId = `m_${nextExit.gmcpDestId}`;
+                }
+
+                // Fallback: consult preloaded ArdaMap exits
+                if (!nextTargetId && arrivedRoom.id.startsWith('m_')) {
+                    const vnum = arrivedRoom.id.substring(2);
+                    const ardaData = preloadedCoordsRef.current[vnum];
+                    if (ardaData?.[4]?.[nextDir]) {
+                        nextTargetId = `m_${ardaData[4][nextDir]}`;
+                    }
+                }
+
+                if (nextTargetId) {
+                    preMoveRef.current = { dir: nextDir, targetId: nextTargetId, time: Date.now() };
+                    // No triggerRender here — the animation loop is already running from the
+                    // currentRoomId state change above, and it reads preMoveRef directly as a ref.
+                }
+            }
+        }
+    }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, addMessage, showDebugEchoes, preMoveRef]);
 
     return { handleRoomInfo };
 };

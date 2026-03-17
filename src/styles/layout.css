@@ -88,7 +88,7 @@
 
     body.items-drawer-open .app-content-shaker {
         /* Match the drawer's own width: 45% of viewport, capped at 700px */
-        padding-right: min(45%, 700px);
+        padding-right: calc(min(45%, 700px) + 12px); /* +12px gap between log and drawer */
     }
 }
 
@@ -109,7 +109,7 @@
     display: flex !important;
     flex-direction: column !important;
     z-index: 60;
-    padding: 0 !important;
+    padding: 0 8px 0 0 !important; /* right padding so log doesn't flush to screen edge */
 }
 
 .dragging,

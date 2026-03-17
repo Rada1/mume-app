@@ -50,28 +50,37 @@ export function useEnvironment(deps: EnvironmentDeps) {
         const lower = s.toLowerCase();
         if (lower === 'dark' || lower === 'night') { setLighting('dark'); return; }
         if (lower === 'light' || lower === 'day' || lower === 'bright') { setLighting('sun'); return; }
+        if (lower === 'moon' || lower === 'moonlight') { setLighting('moon'); return; }
 
         // 3. MUME Standard Prompt Symbols
-        // We look for the FIRST character if it's a known symbol
-        const char = s.charAt(0);
-
-        if (char === '!') type = 'artificial';
-        else if (char === ')' || char === '(') type = 'moon';
-        else if (char.toLowerCase() === 'o') type = 'dark';
-        else if (char === '*') type = 'sun';
-        else if (char === '[' || char === '.' || char === '+') type = 'none';
-        else {
-            // Fallback: If no match at start, check for symbol anywhere but avoid descriptive labels
-            // (Only for very short strings or clear symbols)
-            if (s.length < 5) {
-                if (s.includes('!')) type = 'artificial';
-                else if (s.includes('*')) type = 'sun';
-                else if (s.includes(')') || s.includes('(')) type = 'moon';
-                else if (/^o$/i.test(s)) type = 'dark'; // Only if exactly 'o'
+        // If it's a single character, it's from the parser's focused detection
+        if (s.length === 1) {
+            if (s === '!') type = 'artificial';
+            else if (s === ')' || s === '(') type = 'moon';
+            else if (s.toLowerCase() === 'o') type = 'dark';
+            else if (s === '*') type = 'sun';
+            else if (['[', '.', '+', '{'].includes(s)) type = 'none';
+            
+            if (type !== 'none') {
+                setLighting(type);
+                return;
             }
         }
 
-        setLighting(type);
+        // 4. Full Prompt String Parsing
+        // We strip anything inside brackets [ ] because that's status info, not lighting
+        const cleanForSearch = s.replace(/\[.*?\]/g, '');
+        
+        // Priority Search:
+        if (cleanForSearch.includes('!')) type = 'artificial';
+        else if (cleanForSearch.includes('*')) type = 'sun';
+        else if (cleanForSearch.includes(')') || cleanForSearch.includes('(')) type = 'moon';
+        else if (/\bo\b/i.test(cleanForSearch) || cleanForSearch.includes(' o ') || cleanForSearch.endsWith(' o')) type = 'dark';
+        else if (cleanForSearch.toLowerCase().includes('pitch black')) type = 'dark';
+
+        if (type !== 'none') {
+            setLighting(type);
+        }
     }, [setLighting]);
 
     useEffect(() => {

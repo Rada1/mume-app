@@ -184,7 +184,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef,
         discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, addMessage,
         showDebugEchoes, nameIndexRef, serverIdIndexRef, firstExploredAtRef, triggerRender,
-        onRoomInfoProcessed
+        onRoomInfoProcessed, preMoveRef
     });
 
     const handleRoomInfo = masterHandlers.handleRoomInfo;

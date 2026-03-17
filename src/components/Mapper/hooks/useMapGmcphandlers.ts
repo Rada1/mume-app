@@ -21,6 +21,7 @@ interface UseMapGmcphandlersProps {
     onRoomInfoProcessed?: () => void;
     addMessage?: (type: string, msg: string) => void;
     showDebugEchoes?: boolean;
+    preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
 }
 
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
@@ -42,7 +43,8 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         triggerRender: props.triggerRender,
         onRoomInfoProcessed: props.onRoomInfoProcessed,
         addMessage: props.addMessage,
-        showDebugEchoes: props.showDebugEchoes
+        showDebugEchoes: props.showDebugEchoes,
+        preMoveRef: props.preMoveRef
     });
 
     const { handleUpdateExits } = useUpdateExitsHandler({

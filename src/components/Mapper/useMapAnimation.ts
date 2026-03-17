@@ -158,7 +158,9 @@ export const useMapAnimation = ({
                 animationQueueRef.current.shift();
                 needsNextFrame = true;
             } else if (distSq > 0.0000001) {
-                const lerpFactor = 1 - Math.pow(0.85, frameScale);
+                // Faster lerp while spamming moves so the dot keeps up with rapid movement
+                const base = isJoystickActiveRef.current ? 0.55 : 0.85;
+                const lerpFactor = 1 - Math.pow(base, frameScale);
                 playerPosRef.current.x += dx * lerpFactor;
                 playerPosRef.current.y += dy * lerpFactor;
                 playerPosRef.current.z = target.z; // Snap Z for clipping
@@ -209,7 +211,8 @@ export const useMapAnimation = ({
                     playerPosRef.current.z = target.z || 0;
                     needsNextFrame = true;
                 } else if (dsq > 0.001) {
-                    const lerpFactor = 1 - Math.pow(0.88, frameScale);
+                    const base = isJoystickActiveRef.current ? 0.55 : 0.88;
+                    const lerpFactor = 1 - Math.pow(base, frameScale);
                     playerPosRef.current.x += dx * lerpFactor;
                     playerPosRef.current.y += dy * lerpFactor;
                     needsNextFrame = true;
@@ -231,7 +234,9 @@ export const useMapAnimation = ({
             const cdx = targetCamX - camera.current.x;
             const cdy = targetCamY - camera.current.y;
             if (Math.abs(cdx) > 0.05 || Math.abs(cdy) > 0.05) {
-                const camLerp = 1 - Math.pow(0.9, frameScale);
+                // Camera tracks faster during joystick spam so the view never lags
+                const camBase = isJoystickActiveRef.current ? 0.65 : 0.9;
+                const camLerp = 1 - Math.pow(camBase, frameScale);
                 camera.current.x += cdx * camLerp;
                 camera.current.y += cdy * camLerp;
                 needsNextFrame = true;
