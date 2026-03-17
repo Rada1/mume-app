@@ -48,7 +48,7 @@ export function useViewport(
         const targetScroll = Math.max(0, container.scrollHeight - container.clientHeight);
 
         if (!force) {
-            const threshold = 15;
+            const threshold = 40; // Increased to match MessageLog.tsx lock detection
             const isNearBottom = targetScroll - currentScroll < threshold;
             if (!isNearBottom) return;
         }
@@ -118,6 +118,7 @@ export function useViewport(
             isAutoScrollingRef.current = false;
         }
 
+        console.log(`[useViewport] scrollToBottom source=${source} force=${force} target=${targetScroll} current=${currentScroll}`);
         if (autoScrollTimeoutRef.current) clearTimeout(autoScrollTimeoutRef.current);
         autoScrollTimeoutRef.current = setTimeout(() => {
             if (!scrollAnimationRef.current) {

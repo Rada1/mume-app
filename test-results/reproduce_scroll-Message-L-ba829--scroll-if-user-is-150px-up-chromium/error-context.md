@@ -1,0 +1,81 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic:
+      - banner [ref=e4]:
+        - generic [ref=e5]: MUME
+        - generic [ref=e6]:
+          - generic "No Target" [ref=e7] [cursor=pointer]:
+            - img [ref=e8]
+            - generic [ref=e10]: NO TARGET
+          - generic "Stored Teleport Rooms" [ref=e11] [cursor=pointer]:
+            - img [ref=e12]
+            - generic [ref=e18]: "0"
+        - button "More Actions" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - generic [ref=e30]:
+            - text: ">"
+            - generic [ref=e31]: prefill 14
+          - generic [ref=e34]: "*** MUME IX ***"
+          - generic [ref=e37]: In progress at FIRE
+          - generic [ref=e40]: (Free Internet Roleplay Experiences)
+          - generic [ref=e43]: Hosted at HEIG-VD (www.heig-vd.ch)
+          - generic [ref=e46]: Adapted from J.R.R. Tolkien's Middle-earth world and
+          - generic [ref=e49]: maintained by CryHavoc, Manwe, and Nada.
+          - generic [ref=e52]: "Original code DikuMUD I (help credits), created by:"
+          - generic [ref=e55]: S. Hammer, T. Madsen, K. Nyboe, M. Seifert, and H.H. Staerfeldt.
+          - generic [ref=e58]: If you have never played MUME before, type NEW to create a new character,
+          - generic [ref=e61]: or ? for help.
+          - generic [ref=e64]: By what name do you wish to be known? Illegal name, please try another.
+          - generic [ref=e67]: By what name do you wish to be known?
+          - generic [ref=e70]: Illegal name, please try another.
+          - generic [ref=e73]: By what name do you wish to be known?
+          - generic [ref=e76]: Illegal name, please try another.
+          - generic [ref=e79]: By what name do you wish to be known?
+          - generic [ref=e82]: Illegal name, please try another.
+          - generic [ref=e85]: By what name do you wish to be known?
+          - generic [ref=e88]: Illegal name, please try another.
+          - generic [ref=e91]: By what name do you wish to be known?
+          - generic [ref=e94]: Illegal name, please try another.
+          - generic [ref=e96]:
+            - text: ">"
+            - generic [ref=e97]: don't scroll me!
+          - generic [ref=e100]: By what name do you wish to be known? Illegal name, please try another.
+        - generic [ref=e102]: By what name do you wish to be known?
+      - generic:
+        - generic [ref=e105]:
+          - generic [ref=e106]: ">"
+          - textbox "Enter command..." [active] [ref=e108]
+        - generic [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic: "0"
+            - generic [ref=e114]:
+              - generic [ref=e115]: "0"
+              - generic [ref=e116]: "1"
+          - generic [ref=e119]:
+            - generic [ref=e120]: "0"
+            - generic [ref=e121]: "1"
+          - generic [ref=e124]:
+            - generic [ref=e125]: "0"
+            - generic [ref=e126]: "1"
+  - generic "Combat Statistics" [ref=e132] [cursor=pointer]:
+    - img [ref=e133]
+    - generic [ref=e135]: Stats
+  - generic "Character Sheet" [ref=e136] [cursor=pointer]:
+    - img [ref=e137]
+    - generic [ref=e140]: Character
+  - generic "Items & Equipment" [ref=e141] [cursor=pointer]:
+    - img [ref=e142]
+    - generic [ref=e146]: Items
+  - generic "Map View" [ref=e147] [cursor=pointer]:
+    - img [ref=e148]
+    - generic [ref=e150]: Map
+  - generic "Players" [ref=e151] [cursor=pointer]:
+    - img [ref=e152]
+    - generic [ref=e157]: Players
+```
