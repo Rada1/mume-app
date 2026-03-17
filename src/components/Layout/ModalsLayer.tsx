@@ -4,7 +4,7 @@ import EditButtonModal from '../EditButtonModal';
 import SetManagerModal from '../SetManagerModal';
 import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
-import { useGame, useUI } from '../../context/GameContext';
+import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { OnboardingOverlay } from '../OnboardingOverlay';
 
 interface ModalsLayerProps {
@@ -53,7 +53,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         executeCommand,
         handleButtonClick,
         teleportTargets,
-        setTarget,
         setTeleportTargets,
         roomPlayers,
         triggerHaptic,
@@ -84,6 +83,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         whoList,
         refreshLogHighlights
     } = useGame() as any;
+
+    const { setTarget } = useVitals();
 
     const {
         isSettingsOpen,
