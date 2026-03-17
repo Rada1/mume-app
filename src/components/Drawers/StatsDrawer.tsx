@@ -77,49 +77,38 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
         </div>
     );
 
-    const renderConditions = () => {
+    const renderAffectedBy = () => {
         const conds = stats.conditions || {};
         const activeConds = Object.keys(conds).filter(k => conds[k]);
         
-        if (activeConds.length === 0) {
-            return <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active conditions</div>;
+        if (activeConds.length === 0 && activeSpells.length === 0) {
+            return <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active effects</div>;
         }
 
         return (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 {activeConds.map(c => (
                     <div key={c} style={{
-                        padding: '4px 10px',
+                        padding: '3px 8px',
                         background: 'rgba(239, 68, 68, 0.2)',
-                        border: '1px solid rgba(239, 68, 68, 0.5)',
-                        borderRadius: '12px',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        borderRadius: '10px',
                         color: '#fca5a5',
-                        fontSize: '0.75rem',
+                        fontSize: '0.68rem',
                         fontWeight: 'bold',
                         textTransform: 'uppercase'
                     }}>
                         {c}
                     </div>
                 ))}
-            </div>
-        );
-    };
-
-    const renderSpells = () => {
-        if (activeSpells.length === 0) {
-            return <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', fontStyle: 'italic' }}>No active spells</div>;
-        }
-
-        return (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {activeSpells.map((s, i) => (
                     <div key={i} style={{
-                        padding: '4px 10px',
+                        padding: '3px 8px',
                         background: 'rgba(59, 130, 246, 0.2)',
-                        border: '1px solid rgba(59, 130, 246, 0.5)',
-                        borderRadius: '12px',
+                        border: '1px solid rgba(59, 130, 246, 0.4)',
+                        borderRadius: '10px',
                         color: '#93c5fd',
-                        fontSize: '0.75rem',
+                        fontSize: '0.68rem',
                         fontWeight: 'bold',
                         textTransform: 'capitalize'
                     }}>
@@ -221,16 +210,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         <div className="drawer-col-left" style={{ flex: isLandscape ? 1.2 : 'none', display: 'flex', flexDirection: 'column' }}>
 
                             <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '15px' }}>
-                                <div className="section-header">Status & Spells</div>
-                                <div style={{ marginBottom: '15px' }}>
-                                    <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800 }}>Conditions</div>
-                                    {renderConditions()}
-                                </div>
-                                
-                                <div>
-                                    <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 800 }}>Active Spells</div>
-                                    {renderSpells()}
-                                </div>
+                                <div className="section-header">Affected By</div>
+                                {renderAffectedBy()}
                             </div>
 
                         </div>
@@ -238,8 +219,8 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                         {/* RIGHT COLUMN (or Bottom in Portrait) */}
                         <div className="drawer-col-right" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                             {/* Combat Percentages Section */}
-                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '15px' }}>
-                                <div className="section-header">Combat Potential</div>
+                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '10px', padding: '10px 15px' }}>
+                                <div className="section-header" style={{ marginBottom: '6px', paddingBottom: '6px' }}>Combat Potential</div>
                                 <div style={{ 
                                     display: 'grid',
                                     gridTemplateColumns: 'repeat(4, 1fr)',
@@ -252,22 +233,22 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                         { label: 'ARM', value: stats.armour }
                                     ].map(stat => (
                                         <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '2px', fontWeight: 800 }}>{stat.label}</div>
-                                            <div style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{stat.value !== undefined ? `${stat.value}%` : '--'}</div>
+                                            <div style={{ fontSize: '0.45rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '0px', fontWeight: 800 }}>{stat.label}</div>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 'bold', marginTop: '-1px' }}>{stat.value !== undefined ? `${stat.value}%` : '--'}</div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '15px' }}>
+                            <div className="drawer-section" style={{ pointerEvents: 'auto', marginBottom: '10px', padding: '10px 15px' }}>
                                 <div className="section-header">Combat Settings</div>
-                                <div style={{ marginBottom: '15px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
-                                        <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px', fontWeight: 800 }}>MOOD</div>
-                                        <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{mood === 'berserk' ? 'Berserk' : mood}</div>
+                                <div style={{ marginBottom: '8px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1px' }}>
+                                        <div style={{ fontSize: isLandscape ? '0.65rem' : '0.75rem', color: '#ffffff', letterSpacing: '1px', fontWeight: 800 }}>MOOD</div>
+                                        <div style={{ fontSize: isLandscape ? '0.65rem' : '0.75rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>{mood === 'berserk' ? 'Berserk' : mood}</div>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        <div style={{ position: 'relative', flex: 1, height: '32px', display: 'flex', alignItems: 'center' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ position: 'relative', flex: 1, height: '22px', display: 'flex', alignItems: 'center' }}>
                                             {renderTicks(['wimpy', 'prudent', 'normal', 'brave', 'aggr'])}
                                             <input
                                                 type="range"
@@ -296,14 +277,15 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                                 triggerHaptic(30);
                                             }}
                                             style={{
-                                                padding: '4px 8px',
-                                                borderRadius: '6px',
-                                                border: mood === 'berserk' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.2)',
+                                                padding: '2px 6px',
+                                                borderRadius: '4px',
+                                                border: mood === 'berserk' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.15)',
                                                 background: mood === 'berserk' ? 'rgba(153, 27, 27, 0.4)' : 'transparent',
-                                                color: mood === 'berserk' ? '#fca5a5' : '#fff',
-                                                fontSize: '0.55rem',
+                                                color: mood === 'berserk' ? '#fca5a5' : 'rgba(255,255,255,0.7)',
+                                                fontSize: '0.52rem',
                                                 fontWeight: 'bold',
-                                                cursor: 'pointer'
+                                                cursor: 'pointer',
+                                                height: '20px'
                                             }}
                                         >
                                             BERSERK
@@ -311,12 +293,12 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                     </div>
                                 </div>
 
-                                <div style={{ marginBottom: '15px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
-                                        <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px', fontWeight: 800 }}>SPELL SPEED</div>
-                                        <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{spellSpeed}</div>
+                                <div style={{ marginBottom: '8px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1px' }}>
+                                        <div style={{ fontSize: isLandscape ? '0.65rem' : '0.75rem', color: '#ffffff', letterSpacing: '1px', fontWeight: 800 }}>SPELL SPEED</div>
+                                        <div style={{ fontSize: isLandscape ? '0.65rem' : '0.75rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>{spellSpeed}</div>
                                     </div>
-                                    <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
+                                    <div style={{ position: 'relative', width: '100%', height: '22px', display: 'flex', alignItems: 'center' }}>
                                         {renderTicks(['quick', 'fast', 'normal', 'careful', 'thorough'])}
                                         <input
                                             type="range"
@@ -337,12 +319,12 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                     </div>
                                 </div>
 
-                                <div style={{ marginBottom: '5px' }}>
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '4px' }}>
-                                        <div style={{ fontSize: '0.55rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '1px', fontWeight: 800 }}>ALERTNESS</div>
-                                        <div style={{ fontSize: isLandscape ? '0.75rem' : '0.9rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '2px' }}>{alertness}</div>
+                                <div style={{ marginBottom: '1px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1px' }}>
+                                        <div style={{ fontSize: isLandscape ? '0.65rem' : '0.75rem', color: '#ffffff', letterSpacing: '1px', fontWeight: 800 }}>ALERTNESS</div>
+                                        <div style={{ fontSize: isLandscape ? '0.65rem' : '0.75rem', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '1px' }}>{alertness}</div>
                                     </div>
-                                    <div style={{ position: 'relative', width: '100%', height: '32px', display: 'flex', alignItems: 'center' }}>
+                                    <div style={{ position: 'relative', width: '100%', height: '22px', display: 'flex', alignItems: 'center' }}>
                                         {renderTicks(['norm', 'careful', 'attent', 'vigil', 'parano'])}
                                         <input
                                             type="range"

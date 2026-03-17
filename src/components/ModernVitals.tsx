@@ -8,6 +8,7 @@ interface ModernVitalsProps {
     inCombat?: boolean;
     onWimpyChange?: (val: number) => void;
     onScoreRefresh?: () => void;
+    triggerHaptic?: (ms: number) => void;
 }
 
 const StatRow: React.FC<{
@@ -255,7 +256,7 @@ const StatRow: React.FC<{
 
 };
 
-const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inCombat, onWimpyChange, onScoreRefresh }) => {
+const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inCombat, onWimpyChange, onScoreRefresh, triggerHaptic }) => {
     return (
         <div
             className={`modern-vitals-container docked ${isLandscape ? 'landscape' : ''}`}
@@ -275,7 +276,12 @@ const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inComba
             <StatRow label="ST" value={stats.move} max={stats.maxMove} type="move" staminaStatus={stats.staminaStatus} />
             {onScoreRefresh && (
                 <button
-                    onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onScoreRefresh(); }}
+                    onPointerDown={(e) => { 
+                        e.stopPropagation(); 
+                        e.preventDefault(); 
+                        triggerHaptic?.(10);
+                        onScoreRefresh?.(); 
+                    }}
                     style={{
                         position: 'absolute',
                         right: 0,

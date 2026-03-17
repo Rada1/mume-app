@@ -54,11 +54,12 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats: vitalsStats, setStats: setVitalsStats } = useVitals();
-    const { inCombat, setActiveDragData } = useGame();
+    const { inCombat, setActiveDragData, triggerHaptic } = useGame();
     const handleWimpyChange = useCallback((val: number) => {
+        triggerHaptic(10);
         setVitalsStats(prev => ({ ...prev, wimpy: val }));
         executeCommand(`change wimpy ${val}`);
-    }, [setVitalsStats, executeCommand]);
+    }, [setVitalsStats, executeCommand, triggerHaptic]);
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
@@ -324,19 +325,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 <form className="input-form" onSubmit={onSend}>
                     <span className="cmd-prompt">{'>'}</span>
                     
-                    {isMobile && isKeyboardOpen && !parley.active && (
-                        <button
-                            type="button"
-                            className="mobile-parley-toggle"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                setParley(prev => ({ ...prev, active: true }));
-                            }}
-                        >
-                            <MessageCircle size={18} />
-                        </button>
-                    )}
+
 
                     {parley.active && (() => {
                         const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
@@ -473,11 +462,25 @@ const InputArea: React.FC<InputAreaProps> = ({
             </div>
 
             <div className="input-vitals-dock">
+                {isMobile && isKeyboardOpen && !parley.active && (
+                    <button
+                        type="button"
+                        className="mobile-parley-toggle"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setParley(prev => ({ ...prev, active: true }));
+                        }}
+                    >
+                        <MessageCircle size={18} />
+                    </button>
+                )}
                 <ModernVitals
                     stats={vitalsStats}
                     inCombat={inCombat}
                     onWimpyChange={handleWimpyChange}
                     onScoreRefresh={() => executeCommand('score')}
+                    triggerHaptic={triggerHaptic}
                 />
             </div>
         </div>

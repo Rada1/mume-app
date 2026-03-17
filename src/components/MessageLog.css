@@ -11,6 +11,11 @@
     transform-style: preserve-3d;
     background: transparent;
     border-radius: 8px;
+    transition: filter 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.has-drawer-open .message-log-container {
+    filter: blur(1.5px);
 }
 
 .no-3d-scroll .message-log-container {
@@ -190,7 +195,8 @@
 
 .mobile-parley-toggle {
     position: absolute;
-    right: 50px; /* center over stat bar cluster (anchored to .input-area, not just command field) */
+    left: 50%;
+    transform: translateX(-50%);
     top: -50px;
     width: 32px;
     height: 32px;
