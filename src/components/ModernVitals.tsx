@@ -17,19 +17,33 @@ const StatRow: React.FC<{
     wimpy?: number;
     onWimpyChange?: (val: number) => void;
     inCombat?: boolean;
-}> = ({ label, value, max, type, wimpy, onWimpyChange, inCombat }) => {
+    staminaStatus?: string;
+}> = ({ label, value, max, type, wimpy, onWimpyChange, inCombat, staminaStatus }) => {
     const trackRef = useRef<HTMLDivElement>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [dragVal, setDragVal] = useState<number | null>(null);
 
     // Threshold percentages (total 100%)
-    const chunks = useMemo(() => [
-        { id: 'awful', width: 10 },
-        { id: 'bad', width: 15 },
-        { id: 'wounded', width: 20 },
-        { id: 'hurt', width: 25 },
-        { id: 'fine', width: 30 } // Combined Fine (70-99%) and Healthy (100%)
-    ], []);
+    const chunks = useMemo(() => {
+        if (type === 'move') {
+            return [
+                { id: 'awful', width: 10 },    // fainting (smallest)
+                { id: 'bad', width: 10 },      // weak
+                { id: 'wounded', width: 15 },   // slow
+                { id: 'hurt', width: 15 },      // tired
+                { id: 'fine', width: 50 }       // rested (biggest)
+            ];
+        }
+
+        return [
+            { id: 'awful', width: 10 },
+            { id: 'bad', width: 15 },
+            { id: 'wounded', width: 20 },
+            { id: 'hurt', width: 25 },
+            { id: 'fine', width: 30 }
+        ];
+    }, [type]);
+
 
     const updateDrag = useCallback((e: PointerEvent | React.PointerEvent) => {
         if (!trackRef.current || max <= 0) return;
@@ -77,8 +91,10 @@ const StatRow: React.FC<{
         const segmentHpEnd = (endWeight / 100) * max;
 
         const segmentBlocks = [];
+        const effectiveMax = max > 0 ? max : 100; // Prevent collapse if max is 0
         const startBlockIdx = Math.floor(segmentHpStart / 10);
         const endBlockIdx = Math.ceil(segmentHpEnd / 10);
+
 
         for (let j = startBlockIdx; j < endBlockIdx; j++) {
             const blockHpStart = j * 10;
@@ -88,9 +104,38 @@ const StatRow: React.FC<{
             const overlapEnd = Math.min(segmentHpEnd, blockHpEnd);
 
             if (overlapEnd > overlapStart) {
-                const isFilled = blockHpStart < value;
-                const hpWidth = overlapEnd - overlapStart;
+                let isFilled = blockHpStart < value;
+                
+                // MUME move status segment mapping
+                if (type === 'move' && staminaStatus) {
+                    const status = staminaStatus.toLowerCase();
+                    const statusWeight: Record<string, number> = {
+                        'steadfast': 5,
+                        'rested': 5,
+                        'fine': 5,
+                        'tired': 4,
+                        'slow': 3,
+                        'weak': 2,
+                        'fainting': 1
+                    };
+                    
+                    const chunkWeight: Record<string, number> = {
+                        'fine': 5,
+                        'hurt': 4,
+                        'wounded': 3,
+                        'bad': 2,
+                        'awful': 1
+                    };
+                    
+                    const sWeight = statusWeight[status];
+                    const cWeight = chunkWeight[chunk.id];
+                    
+                    if (sWeight !== undefined && cWeight !== undefined) {
+                        isFilled = sWeight >= cWeight;
+                    }
+                }
 
+                const hpWidth = overlapEnd - overlapStart;
                 segmentBlocks.push(
                     <div 
                         key={j}
@@ -114,13 +159,6 @@ const StatRow: React.FC<{
 
     return (
         <div className={`modern-vitals-row ${type}`}>
-            <div className="modern-vitals-label">
-                <span>{label}</span>
-                <span className="modern-vitals-value">
-                    {value} <span style={{ opacity: 0.4, fontVariantNumeric: 'tabular-nums' }}>{max}</span>
-                </span>
-            </div>
-            
             <div 
                 ref={trackRef}
                 className="modern-vitals-track"
@@ -175,18 +213,25 @@ const StatRow: React.FC<{
                     </>
                 )}
             </div>
+
+            <div className="modern-vitals-value-column">
+                <span className="modern-vitals-value">
+                    {value} <span className="max-value">{max}</span>
+                </span>
+            </div>
         </div>
     );
+
 };
 
 const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inCombat, onWimpyChange }) => {
     return (
         <div 
-            className={`modern-vitals-container ${isLandscape ? 'landscape' : ''}`}
+            className={`modern-vitals-container docked ${isLandscape ? 'landscape' : ''}`}
             onPointerDown={(e) => e.stopPropagation()}
         >
             <StatRow 
-                label="Health" 
+                label="HP" 
                 value={stats.hp} 
                 max={stats.maxHp} 
                 type="hp" 
@@ -194,10 +239,11 @@ const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inComba
                 onWimpyChange={onWimpyChange}
                 inCombat={inCombat}
             />
-            <StatRow label="Mana" value={stats.mana} max={stats.maxMana} type="mana" />
-            <StatRow label="Stamina" value={stats.move} max={stats.maxMove} type="move" />
+            <StatRow label="MP" value={stats.mana} max={stats.maxMana} type="mana" />
+            <StatRow label="ST" value={stats.move} max={stats.maxMove} type="move" staminaStatus={stats.staminaStatus} />
         </div>
     );
 };
+
 
 export default React.memo(ModernVitals);

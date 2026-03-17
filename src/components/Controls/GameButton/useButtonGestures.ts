@@ -54,6 +54,7 @@ export const useButtonGestures = ({
         if (isEditMode) {
             if (button.setId === 'Xbox') {
                 // Xbox buttons are locked and cannot be moved
+                if (wasDraggingRef) wasDraggingRef.current = false;
                 return;
             } else {
                 handleDragStart(e, button.id, 'move');

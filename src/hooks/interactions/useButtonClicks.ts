@@ -38,7 +38,14 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         let finalCmd = cmd;
-        if (joystick.currentDir && !(button as any)._skipJoystick) {
+        if (deps.isTrackpadModifierActive && !(button as any)._skipJoystick) {
+            // Requirement 2: Trackpad Long-Press (Modifier) + Button Tap = Look <button>
+            // We use the button's base noun/command as the target for the look command
+            const lookTarget = button.command.trim();
+            if (lookTarget && lookTarget !== '__clear_target__') {
+                finalCmd = `look ${lookTarget}`;
+            }
+        } else if (joystick.currentDir && !(button as any)._skipJoystick) {
             const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
             finalCmd = `${finalCmd} ${dirMap[joystick.currentDir] || joystick.currentDir}`;
             joystick.setIsJoystickConsumed(true);

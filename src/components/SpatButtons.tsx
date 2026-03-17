@@ -27,8 +27,8 @@ const SpatButtonItem: React.FC<{
     useLayoutEffect(() => {
         if (elRef.current) {
             const rect = elRef.current.getBoundingClientRect();
-            const inputArea = document.querySelector('.input-area');
-            const inputRect = inputArea?.getBoundingClientRect();
+            const inputMain = document.querySelector('.input-main-container');
+            const inputRect = inputMain?.getBoundingClientRect();
             if (inputRect) {
                 setSpitDistance(inputRect.left - rect.left);
             }

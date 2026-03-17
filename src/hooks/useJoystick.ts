@@ -18,6 +18,10 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const repeatMoveTimer = useRef<NodeJS.Timeout | null>(null);
     const lastRepeatDirRef = useRef<string | null>(null);
     const lastSentDirRef = useRef<Direction | null>(null);
+    // Track which specific pointerId "owns" this joystick session.
+    // Replaces isPrimary checks so non-primary pointers (e.g. second finger on trackpad
+    // while an action button is held) work correctly for the button+trackpad combo.
+    const activeJoystickPointerRef = useRef<number | null>(null);
 
     // Command Execution Ref
     const executeCommandRef = useRef<((cmd: string) => void) | null>(null);
@@ -80,7 +84,9 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             return;
         }
 
-        if (!e.isPrimary) return;
+        // Use pointerId tracking instead of isPrimary so that a non-primary pointer
+        // (e.g. second finger tapping the trackpad while holding an action button) works.
+        activeJoystickPointerRef.current = e.pointerId;
         if (executeCommand) executeCommandRef.current = executeCommand;
         setJoystickActive(true);
         setIsJoystickConsumed(false);
@@ -109,7 +115,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
     const handleJoystickMove = useCallback((e: React.PointerEvent, executeCommand?: (cmd: string) => void, suppressMove?: boolean) => {
         if (activePointersRef.current.size > 1) return null;
-        if (!e.isPrimary) return null;
+        if (e.pointerId !== activeJoystickPointerRef.current) return null;
         if (executeCommand) executeCommandRef.current = executeCommand;
         if (!joystickActive || !joystickStartPos.current) return null;
         const dx = e.clientX - joystickStartPos.current.x;
@@ -246,7 +252,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
         activePointersRef.current.delete(e.pointerId);
-        if (!e.isPrimary) return false;
+        if (e.pointerId !== activeJoystickPointerRef.current) return false;
         console.log(`[Joystick] End: x=${e.clientX} y=${e.clientY} (Consumed: ${isJoystickConsumed || isTargetModifierActive})`);
         executeCommandRef.current = executeCommand;
         stopRepeatTimer();
@@ -268,6 +274,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         setSwipeRay({ active: false, angle: 0, dist: 0 });
         lastHapticDirRef.current = null;
         lockedDirRef.current = null;
+        activeJoystickPointerRef.current = null;
 
         const dxOriginal = e.clientX - joystickStartPos.current.x, dyOriginal = e.clientY - joystickStartPos.current.y;
         const dist = Math.sqrt(dxOriginal * dxOriginal + dyOriginal * dyOriginal);
@@ -337,7 +344,8 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     const handleJoystickCancel = useCallback((e?: React.PointerEvent) => {
         if (e) activePointersRef.current.delete(e.pointerId);
         else activePointersRef.current.clear();
-        
+
+        activeJoystickPointerRef.current = null;
         stopRepeatTimer();
         if (longPressTimer.current) {
             clearTimeout(longPressTimer.current);
@@ -374,6 +382,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         handleJoystickEnd,
         handleJoystickCancel,
         handleNavStart,
-        handleNavEnd
+        handleNavEnd,
+        stopRepeatTimer
     };
 };

@@ -288,17 +288,22 @@ export const useRoomInfoHandler = ({
         }
 
 
-        // Logic to finalize ghost/target resolution...
-        if (ghostData && matchedInternalId) {
+        if (matchedInternalId) {
             targetId = `m_${matchedInternalId}`;
-            if (!exploredRef.current.has(matchedInternalId)) {
-                if (firstExploredAtRef.current[matchedInternalId] === undefined) {
-                    firstExploredAtRef.current[matchedInternalId] = now;
+        }
+
+        // Logic to finalize ghost/target resolution...
+        // Ensure the room we are in is ALWAYS marked as explored if it's a static map room
+        if (targetId && targetId.startsWith('m_')) {
+            const vnum = targetId.substring(2);
+            if (!exploredRef.current.has(vnum)) {
+                if (firstExploredAtRef.current[vnum] === undefined) {
+                    firstExploredAtRef.current[vnum] = now;
                     firstExploredAtRef.current['_latest'] = now;
                 }
                 setExploredVnums(prev => {
                     const next = new Set(prev);
-                    next.add(matchedInternalId!);
+                    next.add(vnum);
                     exploredRef.current = next;
                     return next;
                 });

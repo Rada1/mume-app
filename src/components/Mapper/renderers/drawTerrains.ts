@@ -276,7 +276,12 @@ export const drawTerrains = (
         for (let i = 0; i < rooms.length; i++) {
             const r = rooms[i];
             let alphaMul = 1.0;
-            if (r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
+            const isActive = r.vnum && rCtx.activeId && (
+                r.vnum === rCtx.activeId || 
+                `m_${r.vnum}` === rCtx.activeId || 
+                r.vnum === `m_${rCtx.activeId}`
+            );
+            if (!isActive && r.vnum && rCtx.firstExploredAtRef.current[r.vnum]) {
                 const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[r.vnum];
                 const animDur = 800;
                 if (elapsed < animDur) {

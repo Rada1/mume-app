@@ -184,6 +184,7 @@ export class GmcpDecoder {
             const move = getField(['move', 'mv', 'mp', 'moves', 'stamina', 'st', 'v']); if (move !== undefined) next.move = Number(move);
             const maxmove = getField(['maxmove', 'maxmv', 'maxmp', 'maxmoves', 'maxstamina', 'maxst', 'V']); if (maxmove !== undefined) next.maxMove = Number(maxmove);
             const wimpy = getField(['wimpy', 'W']); if (wimpy !== undefined) next.wimpy = Number(wimpy);
+            const moveStatus = getField(['move_status', 'stamina_status', 'st_status']); if (moveStatus !== undefined) next.staminaStatus = String(moveStatus);
             return next;
         });
 

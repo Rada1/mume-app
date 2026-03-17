@@ -50,7 +50,6 @@ export const TrackpadSwipeWheel: React.FC<TrackpadSwipeWheelProps> = ({ active, 
                     </div>
                 ))}
             </div>
-            <div className="wheel-center-dot" />
         </div>
     );
 };

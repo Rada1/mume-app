@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 
 export const useLogTaps = (deps: InteractionDeps) => {
@@ -14,6 +14,16 @@ export const useLogTaps = (deps: InteractionDeps) => {
     const logDragStartPosRef = useRef<{ x: number; y: number } | null>(null);
     const isLogDraggingRef = useRef(false);
     const moveCountRef = useRef(0);
+
+    // Prevents handleLogPointerDown and handleLogClick from both firing the look command
+    // for the same touch when isTrackpadModifierActive / isJoystickTargetActive is true.
+    const lookModFiredRef = useRef(false);
+
+    // Stable refs for modifier states so callbacks don't go stale between renders.
+    const isTrackpadModifierActiveRef = useRef(isTrackpadModifierActive);
+    const isJoystickTargetActiveRef = useRef(joystick.isTargetModifierActive);
+    useEffect(() => { isTrackpadModifierActiveRef.current = isTrackpadModifierActive; }, [isTrackpadModifierActive]);
+    useEffect(() => { isJoystickTargetActiveRef.current = joystick.isTargetModifierActive; }, [joystick.isTargetModifierActive]);
 
     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
         let selection = window.getSelection()?.toString().trim();
@@ -127,7 +137,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
         // BUTTON COMBO LOGIC: If a physical action GameButton is being held,
         // OR the joystick target modifier is active, apply that action to this target.
-        const isLong = joystick.isTargetModifierActive;
+        const isLong = isJoystickTargetActiveRef.current;
         const contextStr = context || targetEl.innerText.trim();
 
         if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
@@ -144,10 +154,15 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 triggerHaptic(60);
                 return;
             }
-        } else if (isLong || isTrackpadModifierActive) {
-            // JOYSTICK/TRACKPAD COMBO: Look at target if modified tap
+        } else if (isLong || isTrackpadModifierActiveRef.current) {
+            // JOYSTICK/TRACKPAD COMBO: Look at target if modified tap.
+            // Guard: skip if handleLogPointerDown already fired the look command for this touch.
+            if (lookModFiredRef.current) {
+                lookModFiredRef.current = false;
+                return;
+            }
             if (contextStr) {
-                console.log(`[useLogTaps] Look Combo Triggered: target=${contextStr} (JoystickMod=${isLong}, TrackpadMod=${isTrackpadModifierActive})`);
+                console.log(`[useLogTaps] Look Combo Triggered: target=${contextStr} (JoystickMod=${isLong}, TrackpadMod=${isTrackpadModifierActiveRef.current})`);
                 executeCommand(`look ${contextStr}`);
                 joystick.setIsJoystickConsumed(true);
                 triggerHaptic(60);
@@ -205,7 +220,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
 
         // --- Multi-touch Button Combo ---
-        const isLong = joystick.isTargetModifierActive;
+        const isLong = isJoystickTargetActiveRef.current;
         const contextStr = targetEl ? (targetEl.getAttribute('data-context') || targetEl.innerText.trim()) : '';
 
         if (targetEl && heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
@@ -222,13 +237,16 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 triggerHaptic(60);
                 return;
             }
-        } else if (targetEl && (isLong || isTrackpadModifierActive)) {
+        } else if (targetEl && (isJoystickTargetActiveRef.current || isTrackpadModifierActiveRef.current)) {
              // JOYSTICK/TRACKPAD COMBO (Multi-touch down)
              if (contextStr) {
-                 console.log(`[useLogTaps] Look Combo (Multi-touch) Triggered: target=${contextStr} (JoystickMod=${isLong}, TrackpadMod=${isTrackpadModifierActive})`);
+                 console.log(`[useLogTaps] Look Combo (Multi-touch) Triggered: target=${contextStr} (JoystickMod=${isJoystickTargetActiveRef.current}, TrackpadMod=${isTrackpadModifierActiveRef.current})`);
                  executeCommand(`look ${contextStr}`);
                  joystick.setIsJoystickConsumed(true);
                  triggerHaptic(60);
+                 // Mark as handled so handleLogClick doesn't double-fire
+                 lookModFiredRef.current = true;
+                 setTimeout(() => { lookModFiredRef.current = false; }, 300);
                  return;
              }
         }

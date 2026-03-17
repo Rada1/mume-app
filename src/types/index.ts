@@ -105,6 +105,7 @@ export interface GameStats {
     pb?: number;
     armour?: number;
     conditions?: Record<string, boolean>;
+    staminaStatus?: string;
 }
 
 export type ActionType = 'command' | 'nav' | 'menu' | 'assign' | 'select-assign' | 'teleport-manage' | 'select-recipient' | 'preload';
@@ -379,6 +380,8 @@ export interface GmcpCharVitals {
     fog?: string | null;
     light?: string | null;
     terrain?: string | null;
+    move_status?: string;
+    stamina_status?: string;
 }
 
 export interface GmcpExitInfo {

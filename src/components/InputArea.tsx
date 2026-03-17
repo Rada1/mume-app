@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { MessageCircle, Reply } from 'lucide-react';
 import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
-import { useUI, useBaseGame } from '../context/GameContext';
+import { useUI, useBaseGame, useVitals, useGame } from '../context/GameContext';
+import ModernVitals from './ModernVitals';
+
 
 
 interface InputAreaProps {
@@ -259,201 +261,190 @@ const InputArea: React.FC<InputAreaProps> = ({
                 transition: isSwiping.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
             }}
         >
-            <div className="swipe-handle" style={{
-                position: 'absolute',
-                top: '4px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '40px',
-                height: '4px',
-                background: 'var(--text-faded, rgba(255, 255, 255, 0.2))',
-                borderRadius: '2px',
-                pointerEvents: 'none'
-            }} />
-            <form className="input-form" onSubmit={onSend} style={{ position: 'relative' }}>
-                <span className="cmd-prompt" onPointerDown={(e) => e.preventDefault()} style={{ pointerEvents: 'auto' }}>{'>'}</span>
-                
-                {isMobile && isKeyboardOpen && !parley.active && (
-                    <button
-                        type="button"
-                        className="mobile-parley-toggle"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setParley(prev => ({ ...prev, active: true }));
-                        }}
-                    >
-                        <MessageCircle size={18} />
-                    </button>
-                )}
+            <div className="input-main-container">
+                <div className="swipe-handle" style={{
+                    position: 'absolute',
+                    top: '4px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '40px',
+                    height: '4px',
+                    background: 'var(--text-faded, rgba(255, 255, 255, 0.2))',
+                    borderRadius: '2px',
+                    pointerEvents: 'none'
+                }} />
+                <form className="input-form" onSubmit={onSend} style={{ position: 'relative' }}>
+                    <span className="cmd-prompt" onPointerDown={(e) => e.preventDefault()} style={{ pointerEvents: 'auto' }}>{'>'}</span>
+                    
+                    {isMobile && isKeyboardOpen && !parley.active && (
+                        <button
+                            type="button"
+                            className="mobile-parley-toggle"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setParley(prev => ({ ...prev, active: true }));
+                            }}
+                        >
+                            <MessageCircle size={18} />
+                        </button>
+                    )}
 
-                {parley.active && (() => {
-                    const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
-                    return (
-                        <div className="parley-indicator-container">
-                            <div className="parley-indicator parley-command" onClick={handleParleyCommandClick}>
-                                {parley.command}
+                    {parley.active && (() => {
+                        const isTargetless = TARGETLESS_COMMANDS.includes(parley.command);
+                        return (
+                            <div className="parley-indicator-container">
+                                <div className="parley-indicator parley-command" onClick={handleParleyCommandClick}>
+                                    {parley.command}
+                                </div>
+                                <div
+                                    className="parley-indicator parley-target"
+                                    onClick={handleParleyTargetClick}
+                                    title={isTargetless ? 'This command has no target' : undefined}
+                                >
+                                    {isTargetless ? '' : (parley.target ?? '')}
+                                </div>
+                                <button 
+                                    type="button"
+                                    className="parley-clear-btn" 
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleParleyClear();
+                                    }}
+                                >
+                                    ×
+                                </button>
                             </div>
-                            <div
-                                className="parley-indicator parley-target"
-                                onClick={handleParleyTargetClick}
-                                title={isTargetless ? 'This command has no target' : undefined}
-                            >
-                                {isTargetless ? '' : (parley.target ?? '')}
+                        );
+                    })()}
+                    <div 
+                        onClick={() => inputRef.current?.focus()}
+                        style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
+                    >
+                        {commandPreview && !input && (
+                            <div style={{
+                                position: 'absolute',
+                                left: '0',
+                                color: 'var(--accent)',
+                                opacity: 0.9,
+                                fontWeight: '500',
+                                pointerEvents: 'none',
+                                fontFamily: 'inherit',
+                                fontSize: 'inherit',
+                                padding: '0',
+                                marginLeft: '0'
+                            }}>
+                                {commandPreview}
                             </div>
-                            <button 
-                                type="button"
-                                className="parley-clear-btn" 
-                                onClick={(e) => {
+                        )}
+                        <textarea
+                            ref={inputRef}
+                            className="input-field"
+                            value={input}
+                            rows={1}
+                            onChange={(e) => {
+                                setInput(e.target.value);
+                                // Auto-resize logic
+                                const target = e.target as HTMLTextAreaElement;
+                                target.style.height = 'auto';
+                                target.style.height = `${target.scrollHeight}px`;
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
-                                    e.stopPropagation();
-                                    handleParleyClear();
-                                }}
-                            >
-                                ×
-                            </button>
-                        </div>
-                    );
-                })()}
-                <div 
-                    onClick={() => inputRef.current?.focus()}
-                    style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center', cursor: 'text' }}
-                >
-                    {commandPreview && !input && (
-                        <div style={{
-                            position: 'absolute',
-                            left: '0',
-                            color: 'var(--accent)',
-                            opacity: 0.9,
-                            fontWeight: '500',
-                            pointerEvents: 'none',
-                            fontFamily: 'inherit',
-                            fontSize: 'inherit',
-                            padding: '0',
-                            marginLeft: '0'
-                        }}>
-                            {commandPreview}
+                                    onSend();
+                                }
+                            }}
+                            onFocus={(e) => {
+                                // Clear startPos on focus to prevent the 'keyboard pop-up' 
+                                // from being detected as a swipe-up.
+                                startPos.current = null;
+                                e.currentTarget.parentElement?.parentElement?.classList.add('focused');
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.parentElement?.parentElement?.classList.remove('focused');
+                            }}
+                            onClick={(e) => {
+                                if (isMobile && inputRef.current) {
+                                    inputRef.current.focus();
+                                }
+                            }}
+                            placeholder={commandPreview ? "" : "Enter command..."}
+                        />
+                    </div>
+
+                    {target && (
+                        <div
+                            className="target-badge"
+                            draggable="true"
+                            onDragStart={(e) => {
+                                const dragData = {
+                                    type: 'inline-btn',
+                                    cmd: 'target',
+                                    context: 'target',
+                                    id: 'meta-target'
+                                };
+                                e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+                                e.dataTransfer.effectAllowed = 'move';
+                                (e.currentTarget as HTMLElement).classList.add('dragging');
+                            }}
+                            onDragEnd={(e) => {
+                                (e.currentTarget as HTMLElement).classList.remove('dragging');
+                            }}
+                            onPointerDown={(e) => {
+                                // Don't prevent default here or drag-and-drop won't start
+                            }}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onTargetClick?.();
+                                if (!isMobile) inputRef.current?.focus();
+                            }}
+                            style={{
+                                marginLeft: '10px',
+                                padding: '2px 8px',
+                                background: 'var(--input-bg, rgba(var(--accent-rgb), 0.1))',
+                                border: '1px solid var(--border-color)',
+                                borderRadius: '4px',
+                                color: 'var(--ansi-yellow, #facc15)',
+                                fontSize: '0.8rem',
+                                fontWeight: 'bold',
+                                cursor: 'grab',
+                                whiteSpace: 'nowrap',
+                                pointerEvents: 'auto'
+                            }}
+                            title={`Current Target: ${target} (Click to insert, Drag to drawer to get)`}
+                        >
+                            @{target}
                         </div>
                     )}
-                    <textarea
-                        ref={inputRef}
-                        className="input-field"
-                        value={input}
-                        rows={1}
-                        onChange={(e) => {
-                            setInput(e.target.value);
-                            // Auto-resize logic
-                            const target = e.target as HTMLTextAreaElement;
-                            target.style.height = 'auto';
-                            target.style.height = `${target.scrollHeight}px`;
-                        }}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                onSend();
-                            }
-                        }}
-                        onFocus={(e) => {
-                            // Clear startPos on focus to prevent the 'keyboard pop-up' 
-                            // from being detected as a swipe-up.
-                            startPos.current = null;
-                            e.currentTarget.parentElement?.parentElement?.parentElement?.classList.add('focused');
-                        }}
-                        onBlur={(e) => {
-                            e.currentTarget.parentElement?.parentElement?.parentElement?.classList.remove('focused');
-                        }}
-                        onClick={(e) => {
-                            if (isMobile && inputRef.current) {
-                                inputRef.current.focus();
-                            }
-                        }}
-                        placeholder={commandPreview ? "" : "Enter command..."}
-                        style={{
-                            pointerEvents: 'auto',
-                            background: 'transparent',
-                            width: '100%',
-                            position: 'relative',
-                            zIndex: 1,
-                            resize: 'none',
-                            maxHeight: '150px',
-                            overflowY: 'auto',
-                            padding: '4px 0',
-                            border: 'none',
-                            outline: 'none',
-                            fontFamily: 'inherit',
-                            fontSize: 'inherit',
-                            color: 'inherit',
-                            lineHeight: '1.4',
-                            caretColor: '#ffffff',
-                            display: 'block',
-                            visibility: 'visible',
-                            opacity: 1,
-                            userSelect: 'text',
-                            WebkitUserSelect: 'text',
-                            touchAction: 'none'
-                        }}
+                    <button type="submit" style={{ display: 'none' }}>Send</button>
+                </form>
+
+                {shouldShowSpat && (
+                    <SpatButtons
+                        spatButtons={spatButtons}
+                        isMobile={!!isMobile}
+                        isKeyboardOpen={isKeyboardOpen}
+                        setActiveSet={setActiveSet}
+                        executeCommand={executeCommand}
+                        setSpatButtons={setSpatButtons}
+                        setPopoverState={setPopoverState}
                     />
-                </div>
-
-                {target && (
-                    <div
-                        className="target-badge"
-                        draggable="true"
-                        onDragStart={(e) => {
-                            const dragData = {
-                                type: 'inline-btn',
-                                cmd: 'target',
-                                context: 'target',
-                                id: 'meta-target'
-                            };
-                            e.dataTransfer.setData('application/json', JSON.stringify(dragData));
-                            e.dataTransfer.effectAllowed = 'move';
-                            (e.currentTarget as HTMLElement).classList.add('dragging');
-                        }}
-                        onDragEnd={(e) => {
-                            (e.currentTarget as HTMLElement).classList.remove('dragging');
-                        }}
-                        onPointerDown={(e) => {
-                            // Don't prevent default here or drag-and-drop won't start
-                        }}
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onTargetClick?.();
-                            if (!isMobile) inputRef.current?.focus();
-                        }}
-                        style={{
-                            marginLeft: '10px',
-                            padding: '2px 8px',
-                            background: 'var(--input-bg, rgba(var(--accent-rgb), 0.1))',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: '4px',
-                            color: 'var(--ansi-yellow, #facc15)',
-                            fontSize: '0.8rem',
-                            fontWeight: 'bold',
-                            cursor: 'grab',
-                            whiteSpace: 'nowrap',
-                            pointerEvents: 'auto'
-                        }}
-                        title={`Current Target: ${target} (Click to insert, Drag to drawer to get)`}
-                    >
-                        @{target}
-                    </div>
                 )}
-                <button type="submit" style={{ display: 'none' }}>Send</button>
-            </form>
+            </div>
 
-            {shouldShowSpat && (
-                <SpatButtons
-                    spatButtons={spatButtons}
-                    isMobile={!!isMobile}
-                    isKeyboardOpen={isKeyboardOpen}
-                    setActiveSet={setActiveSet}
-                    executeCommand={executeCommand}
-                    setSpatButtons={setSpatButtons}
-                    setPopoverState={setPopoverState}
+            <div className="input-vitals-dock">
+                <ModernVitals 
+                    stats={useVitals().stats} 
+                    inCombat={useGame().inCombat}
+                    onWimpyChange={(val) => {
+                        useVitals().setStats(prev => ({ ...prev, wimpy: val }));
+                        executeCommand(`change wimpy ${val}`);
+                    }}
                 />
-            )}
+            </div>
         </div>
     );
 };

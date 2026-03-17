@@ -136,7 +136,7 @@ export const useMapperRenderer = ({
         // Rebuild if we moved more than 30% of the screen width from the cached center
         const moveThreshold = baseW * 0.4;
 
-        const baseParams = `${curZInt}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}`;
+        const baseParams = `${curZInt}_${isDarkMode}_${allRooms === lastRoomsRef.current}_${explored.size}_${unveilMap}_${renderVersion}_${activeId}`;
         const needsRebuild = cache.lastParams !== baseParams || zoomDiff > 0.25 || moveDist > moveThreshold;
 
         if (needsRebuild) {

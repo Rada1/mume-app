@@ -40,5 +40,17 @@ export const WARRIOR_SKILLS: CustomButton[] = [
         "style": { "x": 65, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(185, 28, 28, 0.5)", "transparent": true, "shape": "pill" },
         "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
         "isVisible": true
+    },
+    {
+        "id": "war-flee",
+        "label": "Flee",
+        "command": "flee",
+        "setId": "warriorskilllist",
+        "actionType": "command",
+        "display": "floating",
+        "hideIfUnknown": false,
+        "style": { "x": 55, "y": 60, "w": 80, "h": 40, "backgroundColor": "rgba(185, 28, 28, 0.5)", "transparent": true, "shape": "pill" },
+        "trigger": { "enabled": false, "pattern": "", "isRegex": false, "autoHide": false, "duration": 0, "type": "show" },
+        "isVisible": true
     }
 ];

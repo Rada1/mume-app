@@ -10,7 +10,7 @@ export const ButtonLabel: React.FC<{ button: CustomButton }> = ({ button }) => {
                 alt=""
                 style={{ 
                     transform: `scale(${button.style.iconScale || 1})`,
-                    opacity: button.style.iconOpacity !== undefined ? button.style.iconOpacity : 0.8
+                    opacity: button.style.iconOpacity !== undefined ? button.style.iconOpacity : 1.0
                 }}
             />
         );

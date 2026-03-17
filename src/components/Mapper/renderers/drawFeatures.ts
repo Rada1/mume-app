@@ -109,9 +109,14 @@ export const drawFeatures = (
                 const anchorX = rx * s + s / 2, anchorY = ry * s + s / 2;
                 const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
 
-                // Calculate fade-in for newly explored rooms
+                // Calculate fade-in for newly explored rooms (skip for active room)
                 let exploredAlphaMul = 1.0;
-                if (isExplored && rCtx.firstExploredAtRef.current[vnum]) {
+                const isActive = vnum && rCtx.activeId && (
+                    vnum === rCtx.activeId || 
+                    `m_${vnum}` === rCtx.activeId || 
+                    vnum === `m_${rCtx.activeId}`
+                );
+                if (!isActive && isExplored && rCtx.firstExploredAtRef.current[vnum]) {
                     const elapsed = rCtx.now - rCtx.firstExploredAtRef.current[vnum];
                     const animDur = 800;
                     if (elapsed < animDur) {

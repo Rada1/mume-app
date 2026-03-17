@@ -2,6 +2,7 @@ import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { MapperRoom, MapperMarker } from './mapperTypes';
 import { GRID_SIZE, DRAG_SENSITIVITY, ZOOM_SENSITIVITY } from './mapperUtils';
 import { useMapHitTest } from './hooks/useMapHitTest';
+import { getButtonCommand } from '../../utils/buttonUtils';
 
 export interface InteractionDeps {
     canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -41,6 +42,8 @@ export interface InteractionDeps {
     preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
     spatialIndexRef: React.MutableRefObject<any>;
     setIsTrackpadModifierActive?: (val: boolean) => void;
+    setPopoverState: (val: any) => void;
+    setActiveSet: (setId: string) => void;
 }
 
 export const useMapperInteractions = (deps: InteractionDeps) => {
@@ -187,32 +190,22 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         setMarqueeEnd({ x: e.clientX, y: e.clientY });
                     }
                 } else {
-                    // Play mode: Start long-press timer for context menu
+                    // Play mode: Start long-press timer for "Look Modifier"
                     if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
                     longPressTimerRef.current = setTimeout(() => {
-                        const { screenToWorld, getRoomAt } = hitTestRef.current;
-                        const world = screenToWorld(e.clientX, e.clientY);
-                        const rid = getRoomAt(world.x, world.y);
-                        
-                        triggerHaptic(60);
+                        const { triggerHaptic, setIsTrackpadModifierActive } = depsRef.current;
+                        triggerHaptic(40);
                         contextMenuTriggeredRef.current = true;
-                        setContextMenu({ 
-                            x: e.clientX, y: e.clientY, 
-                            wx: world.x, wy: world.y, 
-                            roomId: rid 
-                        });
-                        
-                        // Cancel joystick if it was active
-                        if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
-                            depsRef.current.joystick.handleJoystickCancel(e);
+                        if (setIsTrackpadModifierActive) {
+                            setIsTrackpadModifierActive(true);
                         }
-                        if (depsRef.current.setIsTrackpadModifierActive) {
-                            depsRef.current.setIsTrackpadModifierActive(true);
-                        }
-                    }, 600);
+                    }, 500);
 
                     const isMobileBrowser = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-                    if (isMobileBrowser) {
+                    const isComboMode = !!depsRef.current.heldButton;
+
+                    // Always allow joystick mode for single-finger play interactions (panning uses 2 fingers or specific drag)
+                    if (isMobileBrowser || isComboMode || mode === 'play') {
                         dragTypeRef.current = 'joystick';
                         if (depsRef.current.joystick?.handleJoystickStart) {
                             depsRef.current.joystick.handleJoystickStart(e, depsRef.current.executeCommand);
@@ -274,6 +267,12 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     if (dragTypeRef.current === 'joystick') {
                         const { joystick, executeCommand, heldButton, setHeldButton, btn, target, triggerHaptic } = depsRef.current;
                         if (joystick?.handleJoystickMove) {
+                            // If the trackpad look-modifier fired (long press), we're in "look mode".
+                            // Stop any pending repeat-move timer so its haptic(10) doesn't double up
+                            // with the look-activation haptic(40) as the user moves toward an inline button.
+                            if (contextMenuTriggeredRef.current && joystick.stopRepeatTimer) {
+                                joystick.stopRepeatTimer();
+                            }
                             const dir = joystick.handleJoystickMove(e, executeCommand, !!heldButton);
                             if (dir) console.log(`[MapperInteractions] Joystick Dir: ${dir}`);
                             if (dir && heldButton && !heldButton.didFire && setHeldButton) {
@@ -360,8 +359,72 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 }
 
                 if (dragTypeRef.current === 'joystick') {
-                    joystick.handleJoystickEnd(e as any, executeCommand, triggerHaptic);
-                } else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
+                    // This handles Requirement 1 (Short Tap -> Look) and Requirement 6 (Flick -> Move)
+                    const resultData = joystick.handleJoystickEnd(e as any, executeCommand, triggerHaptic, !!depsRef.current.heldButton);
+                    
+                    const isTap = resultData === true || (typeof resultData === 'object' && resultData.isCenterTap);
+                    const comboDir = (typeof resultData === 'object') ? resultData.dir : null;
+
+                    // --- TRACKPAD COMBO LOGIC (Requirements 4 & 5) ---
+                    if (depsRef.current.heldButton?.dx !== undefined && !comboFiredRef.current) {
+                        const button = depsRef.current.btn?.buttons?.find((b: any) => b.id === depsRef.current.heldButton.id);
+                        if (button) {
+                            // Re-calculate command using newest joystick state and isLong=true
+                            const result = getButtonCommand(
+                                button, 
+                                depsRef.current.heldButton.dx, 
+                                depsRef.current.heldButton.dy, 
+                                undefined, 
+                                undefined, 
+                                depsRef.current.heldButton.modifiers, 
+                                depsRef.current.joystick, 
+                                depsRef.current.target, 
+                                true
+                            );
+                            
+                            if (result) {
+                                if (isTap) {
+                                    if (result.actionType === 'nav') {
+                                        depsRef.current.setActiveSet(result.cmd);
+                                    } else if (['assign', 'menu', 'select-assign', 'select-recipient'].includes(result.actionType || '')) {
+                                        const isDial = button.menuDisplay === 'dial';
+                                        const fingerX = (depsRef.current.heldButton.initialX || 0) + (depsRef.current.heldButton.dx || 0);
+                                        const fingerY = (depsRef.current.heldButton.initialY || 0) + (depsRef.current.heldButton.dy || 0);
+
+                                        let finalContext = result.modifiers || button.label;
+                                        if (result.actionType === 'select-assign' && !result.modifiers && result.dir) {
+                                            const swipeToDir: Record<string, string> = { up: 'north', down: 'south', left: 'west', right: 'east', ne: 'northeast', nw: 'northwest', se: 'southeast', sw: 'southwest' };
+                                            finalContext = swipeToDir[result.dir] || result.dir;
+                                        }
+
+                                        depsRef.current.setPopoverState({
+                                            x: isDial ? window.innerWidth / 2 : fingerX,
+                                            y: isDial ? window.innerHeight / 2 : fingerY,
+                                            setId: result.cmd,
+                                            context: finalContext,
+                                            assignSourceId: (result.actionType === 'assign' || result.actionType === 'select-assign') ? button.id : undefined,
+                                            assignSwipeDir: result.dir,
+                                            executeAndAssign: result.actionType === 'select-assign' || result.actionType === 'assign',
+                                            menuDisplay: button.menuDisplay,
+                                            type: result.actionType === 'select-recipient' ? 'give-recipient-select' : undefined
+                                        });
+                                    } else {
+                                        depsRef.current.executeCommand(result.cmd);
+                                    }
+                                } else if (comboDir) {
+                                    const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
+                                    const finalCmd = `${result.cmd} ${dirMap[comboDir] || comboDir}`;
+                                    depsRef.current.executeCommand(finalCmd);
+                                }
+                                
+                                depsRef.current.setHeldButton?.((prev: any) => prev ? { ...prev, didFire: true } : null);
+                                comboFiredRef.current = true;
+                                depsRef.current.triggerHaptic(60);
+                            }
+                        }
+                    }
+                }
+ else if (dragTypeRef.current === 'marquee' && marqueeStart && marqueeEnd) {
                     const { screenToWorld } = hitTestRef.current;
                     const w1 = screenToWorld(marqueeStart.x, marqueeStart.y), w2 = screenToWorld(marqueeEnd.x, marqueeEnd.y);
                     const x1 = Math.min(w1.x, w2.x), y1 = Math.min(w1.y, w2.y), x2 = Math.max(w1.x, w2.x), y2 = Math.max(w1.y, w2.y);

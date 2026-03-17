@@ -26,10 +26,14 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
     const pos = uiPositions.stats || {};
     const isDefault = pos.x === undefined && pos.y === undefined;
 
+    // Only show the floating stats cluster in edit mode now that we have the docked version
+    if (!isEditMode) return null;
+
     return (
         <div
             id="cluster-stats"
             className="stats-cluster"
+
             style={{
                 position: 'absolute',
                 left: pos.x,

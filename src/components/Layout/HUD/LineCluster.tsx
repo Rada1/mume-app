@@ -26,11 +26,6 @@ interface LineClusterProps {
     setActiveSet: (setId: string) => void;
     setButtons: (val: any) => void;
     isMobile?: boolean;
-    stats?: {
-        hp: number; maxHp: number;
-        mana: number; maxMana: number;
-        move: number; maxMove: number;
-    };
 }
 
 import { GameButton } from '../../Controls/GameButton/GameButton';
@@ -40,8 +35,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     handleButtonClick, wasDraggingRef, triggerHaptic, setPopoverState,
     setEditingButtonId, setSelectedIds, activePrompt, executeCommand,
     setCommandPreview, heldButton, setHeldButton, joystick, target,
-    isGridEnabled, gridSize, setActiveSet, setButtons, isMobile,
-    stats
+    isGridEnabled, gridSize, setActiveSet, setButtons, isMobile
 }) => {
     const { viewport } = useGame();
     const { isLandscape } = viewport;
@@ -57,10 +51,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                 const button = buttons.find(b => b.id === id);
                 if (!button) return null;
 
-                // HP/Mana/Move ratios — warrior (z), ranger (y), mage/cleric (b, x)
-                const hpRatio = id === 'xbox-z' ? (stats ? stats.hp / Math.max(1, stats.maxHp) : undefined) : undefined;
-                const moveRatio = id === 'xbox-y' ? (stats ? stats.move / Math.max(1, stats.maxMove) : undefined) : undefined;
-                const manaRatio = (id === 'xbox-b' || id === 'xbox-x') ? (stats ? stats.mana / Math.max(1, stats.maxMana) : undefined) : undefined;
+                // NO STAT BARS IN LINE CLUSTER
 
                 return (
                     <GameButton
@@ -90,9 +81,6 @@ export const LineCluster: React.FC<LineClusterProps> = ({
                         setActiveSet={setActiveSet}
                         setButtons={setButtons}
                         isMobile={isMobile}
-                        hpRatio={hpRatio}
-                        manaRatio={manaRatio}
-                        moveRatio={moveRatio}
                     />
                 );
             })}

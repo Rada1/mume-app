@@ -121,7 +121,6 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                                     setActiveSet={btn.setActiveSet}
                                     setButtons={btn.setButtons}
                                     isMobile={isMobile}
-                                    stats={stats}
                                 />
                             </div>
                         )}

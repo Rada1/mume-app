@@ -351,6 +351,13 @@ export function useGameParser(deps: UseGameParserDeps) {
                 setOpponentHealthStatus(null);
                 setOpponentName(null);
             }
+            
+            // 4. Move Status
+            const moveStatusMatch = promptPart.match(/(?:MV|T):(\w+)/i);
+            if (moveStatusMatch) {
+                const status = moveStatusMatch[1].toLowerCase();
+                setStats(p => ({ ...p, staminaStatus: status }));
+            }
 
             // Trigger combat only if we see a clear opponent pattern at the end
             // Ignore if it's just HP:Fine or T:Tired

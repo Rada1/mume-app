@@ -61,7 +61,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick, setIsTrackpadModifierActive } = useGame();
     const { target } = useVitals();
     const { addMessage } = useLog();
-    const { setUI } = useUI();
+    const { setUI, setPopoverState } = useUI();
     const isDarkMode = theme === 'dark';
 
     // Use shared state from MapperContext
@@ -110,7 +110,9 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         spatialIndexRef: context.spatialIndexRef,
         startWalking, stopWalking,
         executeCommand, joystick, btn, heldButton, setHeldButton, target,
-        setIsTrackpadModifierActive
+        setIsTrackpadModifierActive,
+        setPopoverState,
+        setActiveSet: btn.setActiveSet
     });
 
     // We still keep the context menu local to the instance for better UX (each window has its own context menu)
