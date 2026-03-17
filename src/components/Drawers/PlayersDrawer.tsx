@@ -140,13 +140,13 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                         </button>
                         <button
                             className={`drawer-tab ${activeTab === 'online' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('online'); }}
+                            onClick={(e) => { e.stopPropagation(); setActiveTab('online'); executeCommand('who', true, true, true, true); }}
                         >
                             <span>Online</span>
                         </button>
                         <button
                             className={`drawer-tab ${activeTab === 'nearby' ? 'active' : ''}`}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); }}
+                            onClick={(e) => { e.stopPropagation(); setActiveTab('nearby'); executeCommand('where', true, true, true, true); }}
                         >
                             <span>Nearby</span>
                         </button>

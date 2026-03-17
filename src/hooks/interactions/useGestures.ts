@@ -31,6 +31,8 @@ export const useGestures = (deps: InteractionDeps) => {
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
             setIsItemsDrawerOpen(true);
         } else if (dir === 'sw') {
+            executeCommand('who', true, true, true, true);
+            setTimeout(() => executeCommand('where', true, true, true, true), 150);
             setIsPlayersOpen(true);
         }
     };

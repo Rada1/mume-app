@@ -2,7 +2,12 @@ import { useState, useRef } from 'react';
 import { ShopItem } from '../types';
 
 export function useShopHandler() {
-    const [isShopListingActive, setIsShopListingActive] = useState(false);
+    const [isShopListingActive, _setIsShopListingActive] = useState(false);
+    const isShopListingActiveRef = useRef(false);
+    const setIsShopListingActive = (val: boolean) => {
+        isShopListingActiveRef.current = val;
+        _setIsShopListingActive(val);
+    };
     const [isUiRequested, setIsUiRequested] = useState(false);
     const [shopItems, setShopItems] = useState<ShopItem[]>([]);
     const logBuffer = useRef<string[]>([]);
@@ -19,7 +24,7 @@ export function useShopHandler() {
             return null;
         }
 
-        if (!isShopListingActive) return null;
+        if (!isShopListingActiveRef.current) return null;
 
         logBuffer.current.push(text);
 
@@ -69,7 +74,7 @@ export function useShopHandler() {
     };
 
     const finalizeShop = (addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any) => void) => {
-        if (!isShopListingActive) return null;
+        if (!isShopListingActiveRef.current) return null;
 
         const items = [...currentItems.current];
         const result = {

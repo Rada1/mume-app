@@ -1,28 +1,6 @@
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
 
-// Pre-render glows for optimization
-let trailGlowCanvas: HTMLCanvasElement | null = null;
-
-const getTrailGlow = () => {
-    if (trailGlowCanvas) return trailGlowCanvas;
-    const canvas = document.createElement('canvas');
-    const size = Math.round(GRID_SIZE * 2.0);
-    canvas.width = size; canvas.height = size;
-    const ctx = canvas.getContext('2d')!;
-    const center = size / 2;
-    const gradient = ctx.createRadialGradient(center, center, 0, center, center, center);
-    gradient.addColorStop(0,   'rgba(239, 68, 68, 0.95)');
-    gradient.addColorStop(0.3, 'rgba(239, 68, 68, 0.7)');
-    gradient.addColorStop(0.6, 'rgba(239, 68, 68, 0.3)');
-    gradient.addColorStop(1,   'rgba(239, 68, 68, 0)');
-    ctx.fillStyle = gradient;
-    ctx.beginPath();
-    ctx.arc(center, center, center, 0, Math.PI * 2);
-    ctx.fill();
-    trailGlowCanvas = canvas;
-    return canvas;
-};
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
     return; // Gridlines disabled for a cleaner look
@@ -36,21 +14,50 @@ export const drawEntities = (
 ) => {
     const { ctx, currentZ, activeId, allRooms, preloaded } = rCtx;
     const trail = playerTrailRef.current;
-    const tGlow = getTrailGlow();
 
-    // 1. Optimized Player Trail
-    if (trail.length > 0) {
+    // 1. Player Trail — teardrop streak that retracts tail-first toward the player
+    const TRAIL_DURATION = 450; // ms, must match useMapAnimation
+    const wallNow = rCtx.now;
+    if (trail.length > 0 && playerPosRef.current && Math.abs(playerPosRef.current.z - currentZ) < 1.0) {
+        const px = playerPosRef.current.x * GRID_SIZE + GRID_SIZE / 2;
+        const py = playerPosRef.current.y * GRID_SIZE + GRID_SIZE / 2;
+
         for (let i = 0; i < trail.length; i++) {
-            const t = trail[i];
-            const zDist = Math.abs(t.z - currentZ);
-            if (zDist < 1.0) {
-                const alpha = Math.max(0, t.alpha * (1 - zDist));
-                ctx.globalAlpha = alpha;
-                const size = (2.5 + (t.alpha * 4)) * 3;
-                ctx.drawImage(tGlow, t.x * GRID_SIZE + GRID_SIZE / 2 - size, t.y * GRID_SIZE + GRID_SIZE / 2 - size, size * 2, size * 2);
-            }
+            const t = trail[i] as any;
+            if (Math.abs(t.z - currentZ) >= 1.0) continue;
+
+            const elapsed = wallNow - (t.startTime ?? 0);
+            const progress = Math.min(1, elapsed / TRAIL_DURATION);
+            if (progress >= 1) continue;
+
+            const originX = t.x * GRID_SIZE + GRID_SIZE / 2;
+            const originY = t.y * GRID_SIZE + GRID_SIZE / 2;
+
+            // Tail point slides from old room toward player over time (shrinks tail-first)
+            const tailX = originX + (px - originX) * progress;
+            const tailY = originY + (py - originY) * progress;
+
+            const dx = px - tailX;
+            const dy = py - tailY;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            if (len < 1) continue;
+
+            const nx = -dy / len;
+            const ny =  dx / len;
+            const halfW = 4 / rCtx.camera.zoom;
+
+            ctx.save();
+            ctx.globalAlpha = 0.65;
+            ctx.fillStyle = '#ef4444';
+
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(px + nx * halfW, py + ny * halfW);
+            ctx.lineTo(px - nx * halfW, py - ny * halfW);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
         }
-        ctx.globalAlpha = 1.0;
     }
 
     // 2. Pulsing Player Orb (Authoritative Source)
@@ -86,12 +93,23 @@ export const drawEntities = (
             }
         }
 
-        // Removed Glowing Orb Layers - Only keep the solid core
-        
-        // Solid core for sharp focus
+        // Solid core for better visibility
         ctx.fillStyle = '#ef4444';
+        ctx.globalAlpha = alpha * 0.9;
         ctx.beginPath();
-        ctx.arc(px, py, orbRadius, 0, Math.PI * 2);
+        ctx.arc(px, py, orbRadius * 0.8, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Glowing transparent orb: radial gradient
+        const orbGradient = ctx.createRadialGradient(px, py, 0, px, py, orbRadius * 1.3);
+        orbGradient.addColorStop(0,   `rgba(239, 68, 68, ${0.7 + pulse * 0.25})`);
+        orbGradient.addColorStop(0.35, `rgba(239, 68, 68, ${0.45 + pulse * 0.15})`);
+        orbGradient.addColorStop(0.7,  `rgba(239, 68, 68, ${0.2 + pulse * 0.1})`);
+        orbGradient.addColorStop(1,    'rgba(239, 68, 68, 0)');
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = orbGradient;
+        ctx.beginPath();
+        ctx.arc(px, py, orbRadius * 1.3, 0, Math.PI * 2);
         ctx.fill();
         
         ctx.restore();

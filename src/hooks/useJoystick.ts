@@ -32,6 +32,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         ne: 'northeast', nw: 'northwest', se: 'southeast', sw: 'southwest'
     };
 
+
     const REDIRECTION_MATRIX: Record<string, string[]> = {
         n: ['nw', 'ne'],
         s: ['sw', 'se'],
@@ -69,6 +70,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                     window.dispatchEvent(new CustomEvent('mume-mapper-center-on-player'));
                 }
             }
+
         };
 
         // Only use the interval — the first command fires after a full 0.75s window.
@@ -226,7 +228,6 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (dist < threshold) {
             setCurrentDir(null);
             lockedDirRef.current = null;
-            stopRepeatTimer();
             if (lastHapticDirRef.current !== null) {
                 lastHapticDirRef.current = null;
             }
@@ -249,7 +250,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             }
         }
         return dir;
-    }, [joystickActive, isJoystickConsumed, triggerHaptic, startRepeatTimer, stopRepeatTimer, availableExits]);
+    }, [joystickActive, isJoystickConsumed, triggerHaptic, startRepeatTimer, availableExits]);
 
     const handleJoystickEnd = useCallback((e: React.PointerEvent, executeCommand: (cmd: string) => void, triggerHaptic: (duration?: number) => void, suppressDefault?: boolean) => {
         activePointersRef.current.delete(e.pointerId);

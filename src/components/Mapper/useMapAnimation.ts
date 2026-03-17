@@ -121,20 +121,18 @@ export const useMapAnimation = ({
             }
         }
 
+        // Trail: remove entries that have faded out (> 450ms old)
+        const TRAIL_DURATION = 450;
         if (playerTrailRef.current.length > 0) {
-            let trailChanged = false;
-            // Use a more efficient decay constant
-            const decay = Math.pow(0.96, frameScale);
-            playerTrailRef.current = playerTrailRef.current.filter(t => {
-                if (t.alpha > 0.05) {
-                    t.alpha *= decay;
-                    trailChanged = true;
-                    return true;
-                }
-                return false;
-            });
-            if (trailChanged) needsNextFrame = true;
+            const wallNow = Date.now();
+            playerTrailRef.current = playerTrailRef.current.filter(
+                (t: any) => wallNow - (t.startTime ?? 0) < TRAIL_DURATION
+            );
+            if (playerTrailRef.current.length > 0) needsNextFrame = true;
         }
+
+        // Keep the animation loop alive whenever the player is on the map (for the pulsing orb)
+        if (playerPosRef.current) needsNextFrame = true;
 
         const wallTime = Date.now();
         const latestExplored = firstExploredAtRef.current['_latest'] || 0;
