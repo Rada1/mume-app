@@ -139,8 +139,8 @@ export const DialMenu: React.FC<DialMenuProps> = ({
         >
             <div className="dial-menu-center" style={{
                 position: 'fixed',
-                top: 'var(--wheel-center-y, 50%)',
-                left: 'var(--wheel-center-x, 50%)',
+                top: (initialY !== undefined && !isNaN(initialY)) ? `${initialY}px` : '50%',
+                left: (initialX !== undefined && !isNaN(initialX)) ? `${initialX}px` : '50%',
                 transform: 'translate(-50%, -50%)'
             } as any}>
                 <div className="dial-selection-center" style={{
