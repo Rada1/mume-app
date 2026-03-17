@@ -90,7 +90,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     soundTriggers, newSoundPattern, setNewSoundPattern, newSoundRegex, setNewSoundRegex,
     handleSoundUpload, setSoundTriggers
 }) => {
-    const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories } = useGame();
+    const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories, lighting } = useGame();
     const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI
@@ -195,7 +195,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             {/* Map Drawer (Side View - Desktop Only) */}
             {!viewport.isMobile && (
                 <div
-                    className={`map-drawer-desktop ${ui.mapExpanded ? 'open' : ''}`}
+                    className={`map-drawer-desktop lighting-state-${lighting} ${ui.mapExpanded ? 'open' : ''}`}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="drawer-header" style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}>

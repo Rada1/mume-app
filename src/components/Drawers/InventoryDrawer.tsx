@@ -109,13 +109,13 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                     targetItem.classList.add('drop-hover-active');
                     setActiveDropTarget({ type: 'container', id: targetName || '' });
                     label = `Put ${itemNounForLabel} in ${targetName}`;
+                } else {
+                    label = `Dragging ${itemNounForLabel}`;
                 }
-            } else if (logArea) {
-                logArea.classList.add('drop-hover-active');
+            } else {
+                // Default to ground drop if it hits log OR background
                 setActiveDropTarget({ type: 'log', id: 'ground' });
                 label = `Drop ${itemNounForLabel} on ground`;
-            } else {
-                setActiveDropTarget(null);
             }
 
             setDraggedItem(prev => prev ? { ...prev, x: e.clientX, y: e.clientY, commandLabel: label } : null);
@@ -247,32 +247,20 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             {draggedItem && (
                 <div 
                     ref={ghostRef}
+                    className="drag-ghost"
                     style={{
                         position: 'fixed',
                         left: 0, top: 0,
-                        pointerEvents: 'none',
-                        zIndex: 99999,
                         transform: `translate3d(${draggedItem.x}px, ${draggedItem.y}px, 0) translate(-50%, -50%) scale(1.05)`,
-                        background: 'rgba(30, 40, 60, 0.7)',
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        border: '2px solid var(--accent)',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-                        opacity: 0.8,
-                        whiteSpace: 'nowrap',
-                        color: '#fff'
+                        pointerEvents: 'none'
                     }}
                 >
-                    <div dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '-2px' }}>
+                        Dragging Item
+                    </div>
+                    <div className="ghost-content" dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
                     {draggedItem.commandLabel && (
-                        <div style={{
-                            marginTop: '4px',
-                            fontSize: '0.7rem',
-                            background: 'var(--accent)',
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            textAlign: 'center'
-                        }}>{draggedItem.commandLabel}</div>
+                        <div className="ghost-label">{draggedItem.commandLabel}</div>
                     )}
                 </div>
             )}

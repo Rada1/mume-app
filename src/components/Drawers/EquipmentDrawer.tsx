@@ -164,9 +164,6 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             } else if (inputArea) {
                 setActiveDropTarget({ type: 'log', id: 'input' });
                 commandLabel = `Paste ${dragLabel} in Command Bar`;
-            } else if (mainLog && !target?.closest('.right-drawer')) {
-                setActiveDropTarget({ type: 'log', id: 'ground' });
-                commandLabel = `Drop ${dragLabel} on ground`;
             } else if (sectionTarget) {
                 const section = sectionTarget.getAttribute('data-drawer-section');
                 if (section && section !== currentDragged?.source) {
@@ -178,9 +175,12 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     commandLabel = `Get ${dragLabel} from ${currentDragged.line.parentItemNoun}`;
                 } else {
                     setActiveDropTarget(null);
+                    commandLabel = isMultiDrag ? `Moving ${dragCount} items` : `Dragging ${dragLabel}`;
                 }
             } else {
-                setActiveDropTarget(null);
+                // Default action for anywhere else (ground/log)
+                setActiveDropTarget({ type: 'log', id: 'ground' });
+                commandLabel = `Drop ${dragLabel} on ground`;
             }
 
             setDraggedItem(prev => prev ? { ...prev, x: e.clientX, y: e.clientY, commandLabel } : null);
@@ -616,6 +616,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         pointerEvents: 'none'
                     }}
                 >
+                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '-2px' }}>
+                        {selectedItems.size > 1 ? 'Moving Multi' : 'Dragging Item'}
+                    </div>
                     <div className="ghost-content" dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
                     {selectedItems.size > 1 && selectedItems.has(draggedItem.line.id) && (
                         <div className="ghost-badge" style={{
