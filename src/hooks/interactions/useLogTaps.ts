@@ -251,22 +251,70 @@ export const useLogTaps = (deps: InteractionDeps) => {
              }
         }
 
-        if (viewport.isMobile) {
-            // Cleanup any existing timer
-            if (logLongPressTimerRef.current) clearTimeout(logLongPressTimerRef.current);
-            logDragStartPosRef.current = { x: e.clientX, y: e.clientY };
-            isLogDraggingRef.current = false;
+        // --- Pointer-based drag system (desktop + mobile) ---
+        // Cleanup any existing timer
+        if (logLongPressTimerRef.current) clearTimeout(logLongPressTimerRef.current);
+        logDragStartPosRef.current = { x: e.clientX, y: e.clientY };
+        isLogDraggingRef.current = false;
 
-            const pointerId = e.pointerId;
-            const x = e.clientX;
-            const y = e.clientY;
+        const pointerId = e.pointerId;
+        const x = e.clientX;
+        const y = e.clientY;
+        const isMobile = viewport.isMobile;
 
-            // Setup the long press timer for both dragging (items) and target selection (text)
+        // Helper: start the drag (shared between mobile long-press and desktop movement threshold)
+        const startDrag = () => {
+            if (!logDragStartPosRef.current) return;
+            if (!targetEl) return;
+
+            isLogDraggingRef.current = true;
+
+            const cmd = targetEl.getAttribute('data-cmd') || '';
+            const context = targetEl.getAttribute('data-context') || '';
+            const idValue = targetEl.getAttribute('data-id') || '';
+            const label = targetEl.innerText.trim();
+
+            const dragData = { type: 'inline-btn', cmd, context, id: idValue };
+            setActiveDragData(dragData);
+            targetEl.classList.add('dragging');
+
+            if (isMobile) {
+                // LOCK SCROLL (mobile only — desktop doesn't need it)
+                const logEl = document.querySelector('.message-log') as HTMLElement;
+                if (logEl) {
+                    logEl.style.overflow = 'hidden';
+                    logEl.style.touchAction = 'none';
+                }
+
+                // CAPTURE POINTER (mobile only — desktop doesn't need it)
+                if (targetEl.isConnected) {
+                    try {
+                        targetEl.setPointerCapture(pointerId);
+                    } catch (err) {
+                        if (!(err instanceof Error && err.name === 'InvalidStateError')) {
+                            console.warn('[Interaction] Pointer capture failed:', err);
+                        }
+                    }
+                }
+            }
+
+            setHeldButton((prev: any) => ({
+                ...prev,
+                isLogDragging: true,
+                x: logDragStartPosRef.current?.x || 0,
+                y: logDragStartPosRef.current?.y || 0,
+                label: label,
+                originalLabel: label
+            }));
+        };
+
+        // Mobile: long-press timer (350ms) for both drag initiation and target selection
+        if (isMobile) {
             logLongPressTimerRef.current = setTimeout(() => {
                 if (logDragStartPosRef.current) {
                     triggerHaptic(60);
 
-                    // --- TARGET SELECTION (NEW) ---
+                    // --- TARGET SELECTION ---
                     let selection = "";
                     if (targetEl) {
                         selection = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
@@ -305,241 +353,209 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
                     if (!targetEl) return; // Exit if just text selection, no drag
 
-                    isLogDraggingRef.current = true;
-
-                    const cmd = targetEl.getAttribute('data-cmd') || '';
-                    const context = targetEl.getAttribute('data-context') || '';
-                    const idValue = targetEl.getAttribute('data-id') || '';
-                    const label = targetEl.innerText.trim();
-
-                    const dragData = { type: 'inline-btn', cmd, context, id: idValue };
-                    setActiveDragData(dragData);
-                    targetEl.classList.add('dragging');
-
-                    // LOCK SCROLL
-                    const logEl = document.querySelector('.message-log') as HTMLElement;
-                    if (logEl) {
-                        logEl.style.overflow = 'hidden';
-                        logEl.style.touchAction = 'none';
-                    }
-
-                    // CAPTURE POINTER - Only if still connected
-                    if (targetEl.isConnected) {
-                        try {
-                            targetEl.setPointerCapture(pointerId);
-                        } catch (err) {
-                            if (!(err instanceof Error && err.name === 'InvalidStateError')) {
-                                console.warn('[Interaction] Pointer capture failed:', err);
-                            }
-                        }
-                    }
-
-                    setHeldButton((prev: any) => ({
-                        ...prev,
-                        isLogDragging: true,
-                        x: logDragStartPosRef.current?.x || 0,
-                        y: logDragStartPosRef.current?.y || 0,
-                        label: label,
-                        originalLabel: label
-                    }));
-
+                    startDrag();
                 }
             }, 350);
+        }
 
-            // Add global listeners to handle move (cancel if moved too far) and up (clear timer)
-            const handleGlobalMove = (moveEvent: PointerEvent) => {
-                if (isLogDraggingRef.current) {
-                    // Update ghost position
-                    setHeldButton((prev: any) => prev ? { ...prev, x: moveEvent.clientX, y: moveEvent.clientY } : null);
+        // Add global listeners to handle move and up
+        const handleGlobalMove = (moveEvent: PointerEvent) => {
+            if (isLogDraggingRef.current) {
+                // Update ghost position
+                setHeldButton((prev: any) => prev ? { ...prev, x: moveEvent.clientX, y: moveEvent.clientY } : null);
 
-                    // --- Drawer Peeking Logic ---
-                    // Use bounding rect of the drawer to detect hover (works even with pointer-events: none)
-                    const drawerElMove = document.querySelector('.right-drawer') as HTMLElement | null;
-                    const drawerRectMove = drawerElMove?.getBoundingClientRect();
-                    const isOverDrawerMove = !!(drawerRectMove &&
-                        moveEvent.clientX >= drawerRectMove.left && moveEvent.clientX <= drawerRectMove.right &&
-                        moveEvent.clientY >= drawerRectMove.top && moveEvent.clientY <= drawerRectMove.bottom);
+                // --- Drawer Peeking Logic ---
+                const drawerElMove = document.querySelector('.right-drawer') as HTMLElement | null;
+                const drawerRectMove = drawerElMove?.getBoundingClientRect();
+                const isOverDrawerMove = !!(drawerRectMove &&
+                    moveEvent.clientX >= drawerRectMove.left && moveEvent.clientX <= drawerRectMove.right &&
+                    moveEvent.clientY >= drawerRectMove.top && moveEvent.clientY <= drawerRectMove.bottom);
 
-                    if (isOverDrawerMove || moveEvent.clientX > window.innerWidth - 80) {
-                        setUI((prev: any) => prev.isDrawerPeeking ? prev : { ...prev, isDrawerPeeking: true });
-                    } else if (moveEvent.clientX < window.innerWidth - 150) {
-                        setUI((prev: any) => !prev.isDrawerPeeking ? prev : { ...prev, isDrawerPeeking: false });
-                    }
+                if (isOverDrawerMove || moveEvent.clientX > window.innerWidth - 80) {
+                    setUI((prev: any) => prev.isDrawerPeeking ? prev : { ...prev, isDrawerPeeking: true });
+                } else if (moveEvent.clientX < window.innerWidth - 150) {
+                    setUI((prev: any) => !prev.isDrawerPeeking ? prev : { ...prev, isDrawerPeeking: false });
+                }
 
-                    // --- Label & Preview Logic ---
-                    moveCountRef.current++;
-                    if (moveCountRef.current % 2 === 0) {
-                        const isNearEdge = isOverDrawerMove || moveEvent.clientX > window.innerWidth - 80;
+                // --- Label & Preview Logic ---
+                moveCountRef.current++;
+                if (moveCountRef.current % 2 === 0) {
+                    const isNearEdge = isOverDrawerMove || moveEvent.clientX > window.innerWidth - 80;
 
-                        if (isNearEdge) {
-                             // "Get" takes priority at the edge for drawers
-                             setHeldButton((prev: any) => {
+                    if (isNearEdge) {
+                         setHeldButton((prev: any) => {
+                            if (!prev) return null;
+                            const original = prev.originalLabel || prev.label;
+                            const newLabel = `get ${original}`;
+                            if (prev.label === newLabel) return prev;
+                            setCommandPreview(newLabel);
+                            return { ...prev, label: newLabel };
+                         });
+                         document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+                    } else {
+                        const targetUnderPointer = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+                        const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter');
+                        const isOverInput = targetUnderPointer?.closest('.input-area');
+
+                        document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+
+                        if (isOverInput) {
+                            isOverInput.classList.add('drop-hover-active');
+                            setHeldButton((prev: any) => {
                                 if (!prev) return null;
                                 const original = prev.originalLabel || prev.label;
-                                const newLabel = `get ${original}`;
+                                const newLabel = `append: ${original}`;
                                 if (prev.label === newLabel) return prev;
-                                setCommandPreview(newLabel);
+                                setCommandPreview(original);
                                 return { ...prev, label: newLabel };
-                             });
-                             // Cleanup log targeting highlights
-                             document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
-                        } else {
-                            const targetUnderPointer = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
-                            const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter');
-                            const isOverInput = targetUnderPointer?.closest('.input-area');
-
-                            // Cleanup previous highlights
-                            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
-
-                            if (isOverInput) {
-                                isOverInput.classList.add('drop-hover-active');
+                            });
+                        } else if (recipient && !recipient.classList.contains('dragging')) {
+                            recipient.classList.add('drop-hover-active');
+                            const recipientName = recipient.getAttribute('data-context');
+                            if (recipientName) {
                                 setHeldButton((prev: any) => {
                                     if (!prev) return null;
                                     const original = prev.originalLabel || prev.label;
-                                    const newLabel = `append: ${original}`;
+                                    const newLabel = `give ${original} ${recipientName}`;
                                     if (prev.label === newLabel) return prev;
-                                    setCommandPreview(original);
+                                    setCommandPreview(newLabel);
                                     return { ...prev, label: newLabel };
                                 });
-                            } else if (recipient && !recipient.classList.contains('dragging')) {
-                                recipient.classList.add('drop-hover-active');
-                                const recipientName = recipient.getAttribute('data-context');
-                                if (recipientName) {
-                                    setHeldButton((prev: any) => {
-                                        if (!prev) return null;
-                                        const original = prev.originalLabel || prev.label;
-                                        const newLabel = `give ${original} ${recipientName}`;
-                                        if (prev.label === newLabel) return prev;
-                                        setCommandPreview(newLabel);
-                                        return { ...prev, label: newLabel };
-                                    });
-                                }
-                            } else {
-                                // Revert to original label if not hovering anything special
-                                setHeldButton((prev: any) => {
-                                    if (!prev) return null;
-                                    const original = prev.originalLabel || prev.label;
-                                    if (prev.label === original) return prev;
-                                    setCommandPreview('');
-                                    return { ...prev, label: original };
-                                });
                             }
-                        }
-                    }
-                } else if (logDragStartPosRef.current) {
-                    const dx = Math.abs(moveEvent.clientX - logDragStartPosRef.current.x);
-                    const dy = Math.abs(moveEvent.clientY - logDragStartPosRef.current.y);
-                    if (Math.sqrt(dx * dx + dy * dy) > 12) {
-                        if (logLongPressTimerRef.current) {
-                            clearTimeout(logLongPressTimerRef.current);
-                            logLongPressTimerRef.current = null;
+                        } else {
+                            setHeldButton((prev: any) => {
+                                if (!prev) return null;
+                                const original = prev.originalLabel || prev.label;
+                                if (prev.label === original) return prev;
+                                setCommandPreview('');
+                                return { ...prev, label: original };
+                            });
                         }
                     }
                 }
-            };
+            } else if (logDragStartPosRef.current) {
+                const dx = Math.abs(moveEvent.clientX - logDragStartPosRef.current.x);
+                const dy = Math.abs(moveEvent.clientY - logDragStartPosRef.current.y);
+                const dist = Math.sqrt(dx * dx + dy * dy);
 
-            const handleGlobalUp = (upEvent: PointerEvent) => {
-                if (logLongPressTimerRef.current) {
-                    clearTimeout(logLongPressTimerRef.current);
-                    logLongPressTimerRef.current = null;
+                if (!isMobile && dist > 8 && targetEl) {
+                    // Desktop: movement threshold triggers drag immediately
+                    if (logLongPressTimerRef.current) {
+                        clearTimeout(logLongPressTimerRef.current);
+                        logLongPressTimerRef.current = null;
+                    }
+                    startDrag();
+                } else if (isMobile && dist > 12) {
+                    // Mobile: movement cancels the long-press timer
+                    if (logLongPressTimerRef.current) {
+                        clearTimeout(logLongPressTimerRef.current);
+                        logLongPressTimerRef.current = null;
+                    }
                 }
+            }
+        };
 
-                if (isLogDraggingRef.current) {
-                    const targetUnderPointer = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
-                    const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter, [data-player-name]');
-                        
-                    if (recipient && !recipient.classList.contains('dragging')) {
-                        const recipientName = recipient.getAttribute('data-context') || recipient.getAttribute('data-player-name');
-                        const draggedContext = targetEl?.getAttribute('data-context');
-                        if (draggedContext && recipientName) {
+        const handleGlobalUp = (upEvent: PointerEvent) => {
+            if (logLongPressTimerRef.current) {
+                clearTimeout(logLongPressTimerRef.current);
+                logLongPressTimerRef.current = null;
+            }
+
+            if (isLogDraggingRef.current) {
+                const targetUnderPointer = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
+                const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter, [data-player-name]');
+
+                if (recipient && !recipient.classList.contains('dragging')) {
+                    const recipientName = recipient.getAttribute('data-context') || recipient.getAttribute('data-player-name');
+                    const draggedContext = targetEl?.getAttribute('data-context');
+                    if (draggedContext && recipientName) {
+                        triggerHaptic(60);
+                        executeCommand(`give ${draggedContext} ${recipientName}`);
+                    }
+                } else {
+                    const drawerContainer = targetUnderPointer?.closest('.is-container');
+                    const draggedContext = targetEl?.getAttribute('data-context');
+
+                    const drawerElUp = document.querySelector('.right-drawer') as HTMLElement | null;
+                    const drawerRectUp = drawerElUp?.getBoundingClientRect();
+                    const isOverDrawerUp = !!(drawerRectUp &&
+                        upEvent.clientX >= drawerRectUp.left && upEvent.clientX <= drawerRectUp.right &&
+                        upEvent.clientY >= drawerRectUp.top && upEvent.clientY <= drawerRectUp.bottom);
+
+                    if (drawerContainer && draggedContext) {
+                        const containerName = drawerContainer.getAttribute('data-item-name');
+                        if (containerName) {
                             triggerHaptic(60);
-                            executeCommand(`give ${draggedContext} ${recipientName}`);
+                            executeCommand(`get ${draggedContext}`, true, true);
+                            setTimeout(() => executeCommand(`put ${draggedContext} ${containerName}`), 125);
                         }
-                    } else {
-                        const drawerContainer = targetUnderPointer?.closest('.is-container');
-                        const draggedContext = targetEl?.getAttribute('data-context');
-
-                        // Use bounding rect to detect drops on the drawer — elementFromPoint misses
-                        // the .right-drawer container when it has pointer-events: none (open state)
-                        const drawerElUp = document.querySelector('.right-drawer') as HTMLElement | null;
-                        const drawerRectUp = drawerElUp?.getBoundingClientRect();
-                        const isOverDrawerUp = !!(drawerRectUp &&
-                            upEvent.clientX >= drawerRectUp.left && upEvent.clientX <= drawerRectUp.right &&
-                            upEvent.clientY >= drawerRectUp.top && upEvent.clientY <= drawerRectUp.bottom);
-
-                        if (drawerContainer && draggedContext) {
-                            const containerName = drawerContainer.getAttribute('data-item-name');
-                            if (containerName) {
-                                triggerHaptic(60);
-                                executeCommand(`get ${draggedContext}`, true, true);
-                                setTimeout(() => executeCommand(`put ${draggedContext} ${containerName}`), 125);
-                            }
-                        } else if (draggedContext && (isOverDrawerUp || upEvent.clientX > window.innerWidth - 80)) {
-                            triggerHaptic(40);
-                            executeCommand(`get ${draggedContext}`);
-                        } else if (targetUnderPointer?.closest('.input-area')) {
-                            if (draggedContext) {
-                                triggerHaptic(30);
-                                const trimmed = input.trim();
-                                setInput(trimmed ? `${trimmed} ${draggedContext} ` : `${draggedContext} `);
-                            }
+                    } else if (draggedContext && (isOverDrawerUp || upEvent.clientX > window.innerWidth - 80)) {
+                        triggerHaptic(40);
+                        executeCommand(`get ${draggedContext}`);
+                    } else if (targetUnderPointer?.closest('.input-area')) {
+                        if (draggedContext) {
+                            triggerHaptic(30);
+                            const trimmed = input.trim();
+                            setInput(trimmed ? `${trimmed} ${draggedContext} ` : `${draggedContext} `);
                         }
                     }
+                }
 
-                    // RESTORE SCROLL
+                // RESTORE SCROLL (mobile only)
+                if (isMobile) {
                     const logEl = document.querySelector('.message-log') as HTMLElement;
                     if (logEl) {
                         logEl.style.overflow = 'auto';
                         logEl.style.touchAction = 'pan-y';
                     }
-
-                    // RESTORE PEEK
-                    setUI((prev: any) => ({ ...prev, isDrawerPeeking: false }));
                 }
 
-                // Global Cleanup
-                document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
-                logDragStartPosRef.current = null;
-                isLogDraggingRef.current = false;
-                setHeldButton(null);
-                setActiveDragData(null);
-                setCommandPreview('');
+                // RESTORE PEEK
+                setUI((prev: any) => ({ ...prev, isDrawerPeeking: false }));
+            }
 
-                document.querySelectorAll('.inline-btn.dragging').forEach(el => el.classList.remove('dragging'));
-                window.removeEventListener('pointermove', handleGlobalMove);
-                window.removeEventListener('pointerup', handleGlobalUp as any);
-                window.removeEventListener('pointercancel', handleGlobalUp as any);
-            };
+            // Global Cleanup
+            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+            logDragStartPosRef.current = null;
+            isLogDraggingRef.current = false;
+            setHeldButton(null);
+            setActiveDragData(null);
+            setCommandPreview('');
 
-            // Cleanup previous listeners if any (guard against rapid restarts)
+            document.querySelectorAll('.inline-btn.dragging').forEach(el => el.classList.remove('dragging'));
             window.removeEventListener('pointermove', handleGlobalMove);
             window.removeEventListener('pointerup', handleGlobalUp as any);
             window.removeEventListener('pointercancel', handleGlobalUp as any);
+        };
 
-            window.addEventListener('pointermove', handleGlobalMove);
-            window.addEventListener('pointerup', handleGlobalUp);
-            window.addEventListener('pointercancel', handleGlobalUp);
+        // Cleanup previous listeners if any (guard against rapid restarts)
+        window.removeEventListener('pointermove', handleGlobalMove);
+        window.removeEventListener('pointerup', handleGlobalUp as any);
+        window.removeEventListener('pointercancel', handleGlobalUp as any);
 
-            // Original heldButton logic for backwards compatibility (only if targetEl exists)
-            if (targetEl) {
-                const id = 'log-inline-' + (targetEl.getAttribute('data-id') || Math.random());
-                const cmd = targetEl.getAttribute('data-cmd') || '';
-                const context = targetEl.getAttribute('data-context') || '';
-                const rect = targetEl.getBoundingClientRect();
-                const baseCommand = cmd.includes('%n') ? cmd.replace(/%n/g, context) : (cmd ? `${cmd} ${context}` : context);
+        window.addEventListener('pointermove', handleGlobalMove);
+        window.addEventListener('pointerup', handleGlobalUp);
+        window.addEventListener('pointercancel', handleGlobalUp);
 
-                setHeldButton({
-                    id,
-                    baseCommand,
-                    modifiers: [],
-                    dx: 0,
-                    dy: 0,
-                    didFire: false,
-                    isLogDragging: false,
-                    initialX: rect.left + rect.width / 2,
-                    initialY: rect.top + rect.height / 2
-                });
-            }
+        // Original heldButton logic for backwards compatibility (only if targetEl exists)
+        if (targetEl) {
+            const id = 'log-inline-' + (targetEl.getAttribute('data-id') || Math.random());
+            const cmd = targetEl.getAttribute('data-cmd') || '';
+            const context = targetEl.getAttribute('data-context') || '';
+            const rect = targetEl.getBoundingClientRect();
+            const baseCommand = cmd.includes('%n') ? cmd.replace(/%n/g, context) : (cmd ? `${cmd} ${context}` : context);
+
+            setHeldButton({
+                id,
+                baseCommand,
+                modifiers: [],
+                dx: 0,
+                dy: 0,
+                didFire: false,
+                isLogDragging: false,
+                initialX: rect.left + rect.width / 2,
+                initialY: rect.top + rect.height / 2
+            });
         }
     }, [setHeldButton, triggerHaptic, heldButton, executeCommand, viewport, setActiveDragData, setTarget, addMessage, input, setInput, setUI, setCommandPreview, joystick]);
 
