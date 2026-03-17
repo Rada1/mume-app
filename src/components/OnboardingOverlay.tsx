@@ -51,7 +51,7 @@ const STEPS = [
     {
         id: 'drawers',
         title: 'Side Drawers',
-        description: 'Swipe west (left) on your command bar to open your drawers: Inventory/Equipment, Stats, Character, and Players. On desktop, you can also use the edge tabs.',
+        description: 'Swipe your command bar to open your drawers: Inventory/Equipment, Stats, Character, and Players. On desktop, you can also use the edge tabs.',
         spotlight: '.input-area',
         position: 'top'
     },
