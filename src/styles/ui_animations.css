@@ -323,3 +323,14 @@
     animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
     transform: translate3d(0, 0, 0);
 }
+
+@keyframes reconnect-pulse {
+    0%, 100% {
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+        background: rgba(239, 68, 68, 0.15);
+    }
+    50% {
+        box-shadow: 0 0 16px rgba(239, 68, 68, 0.4);
+        background: rgba(239, 68, 68, 0.25);
+    }
+}

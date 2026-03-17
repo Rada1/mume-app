@@ -7,103 +7,64 @@ const STEPS = [
     {
         id: 'welcome',
         title: 'Middle-earth Awaits',
-        description: 'Welcome to MUME! This walkthrough covers every feature of the interface—tap Next to explore, or skip if you\'ve done this before.',
+        description: 'Welcome to MUME! This walkthrough covers some of the important features of this client.',
         spotlight: null,
-    },
-    {
-        id: 'mapper',
-        title: 'The Automated Mapper',
-        description: 'Your position is tracked in real-time via GMCP. The map reveals the world as you explore with animated fog of war. Tap the trackpad area to look at your current room.',
-        spotlight: '.mapper-cluster',
     },
     {
         id: 'map-look',
         title: 'Looking Around',
-        description: 'Long-press the trackpad to activate Look Mode (you\'ll feel it lock), then tap any name in the message log to examine it. Tap the map directly to look at your surroundings.',
-        spotlight: '.mapper-cluster',
+        description: '(Mobile) Tap anywhere on the map to look at your surroundings. Hold the tap and then tap with your other finger on a highlighted thing to look at it.',
+        spotlight: '.mapper-cluster, .mobile-mapper-touch-surface',
     },
     {
         id: 'movement',
         title: 'Moving & Navigating',
-        description: 'Swipe the trackpad to step one room. Hold your swipe past the threshold to move continuously—a haptic confirms the lock-in. While holding, redirect your swipe to turn without lifting your finger.',
-        spotlight: '.mapper-cluster',
+        description: '(Mobile) Swipe anywhere on the map in the direction you want to move to move one room. Hold your swipe past the threshold to move at a steady pace. You can steer by sliding your finger around the map.',
+        spotlight: '.mapper-cluster, .mobile-mapper-touch-surface',
     },
     {
         id: 'targeting',
         title: 'Targeting System',
-        description: 'Double-tap or double-click any name in the message log to lock it as your @Target. Your target appears in the command bar. Most combat actions will automatically fire at it.',
-        spotlight: null,
-    },
-    {
-        id: 'inline-buttons',
-        title: 'Inline Log Buttons',
-        description: 'Items, NPCs, and exits appear as tappable buttons inline in the log. Tap to open a context menu with relevant actions. Drag a button onto an NPC to give them the item, onto the drawer to stow it, or onto the command bar to insert its name.',
-        spotlight: null,
-    },
-    {
-        id: 'combat',
-        title: 'Combat Mode',
-        description: 'When you engage in combat, a VS overlay shows tiered health bars for you and your enemy. Each segment represents a status tier—Awful through Fine. Watch them deplete in real time.',
-        spotlight: '.hud-clusters-absolute-layer',
+        description: 'Double-tap or double-click any text in the log to "point at it" and set it as your @Target. Setting something as your @target primes most of your combat abilities to point at it if they are fired, and creates a clickable/draggable button you can interact with for that string of text.',
+        spotlight: '.message-log',
+        position: 'bottom'
     },
     {
         id: 'tactical-buttons',
         title: 'Tactical Button Clusters',
-        description: 'The HUD clusters handle complex actions. Each button supports four swipe directions (for variants), a tap, and a long-press hold. That\'s up to six actions per button.',
-        spotlight: '.hud-clusters-absolute-layer',
+        description: 'Your tactical buttons are your go-to abilities. Tap the button or swipe in any direction on the button to start an action. If you hold the swipe you can see the swipe button options available to you.',
+        spotlight: '.line-cluster',
     },
     {
         id: 'combos',
         title: 'Button Combos',
-        description: 'Hold any tactical button, then swipe the trackpad to fire that action in a direction. Or hold the button and tap the trackpad for its special combo—like casting a spell at your locked target or triggering a stance ability.',
-        spotlight: '.hud-clusters-absolute-layer',
+        description: 'Hold any tactical button, then swipe the trackpad to fire that action in a direction. You can also tap on a highlighted string in the log to fire the action at it',
+        spotlight: '.line-cluster, .mobile-mapper-touch-surface, .message-log',
+        position: 'top'
     },
     {
         id: 'hotswap',
         title: 'Hot-Swapping Button Sets',
-        description: 'Long-swipe past the haptic threshold on any button, then tap the trackpad to cycle through alternate button sets. Switch between a combat layout and a utility layout on the fly.',
-        spotlight: '.hud-clusters-absolute-layer',
-    },
-    {
-        id: 'vitals',
-        title: 'Vitals Dock',
-        description: 'Tap the right side of the vitals dock (the numbers) to send a score command and refresh your stats. Drag the white tick on the HP bar left or right to set your wimpy threshold.',
-        spotlight: '.input-vitals-dock',
+        description: 'Long-swipe on any tactical button, then while holding the swipe, tap the map to fire a combo which will open a menu to hot swap a new action for that swipe.',
+        spotlight: '.line-cluster',
     },
     {
         id: 'drawers',
         title: 'Side Drawers',
-        description: 'Swipe from the right edge (or tap the edge tab) to open your drawers: Inventory, Equipment, Stats, and Quests. Each is live-synced with the game as it responds.',
-        spotlight: '.desktop-edge-tab',
-    },
-    {
-        id: 'inventory',
-        title: 'Inventory & Equipment',
-        description: 'In the Inventory and Equipment drawers, drag items between slots or drop zones. Tap a container to open it inline and browse its contents. Worn equipment can be managed directly without typing.',
-        spotlight: '.desktop-edge-tab',
-    },
-    {
-        id: 'stats-drawer',
-        title: 'Stats & Character Sheet',
-        description: 'The Stats drawer shows your full character sheet. Use the interactive menus there to change your combat mood, position (standing/sitting/resting), and other stances without typing commands.',
-        spotlight: '.desktop-edge-tab',
-    },
-    {
-        id: 'parley',
-        title: 'Parley & Communication',
-        description: 'Tap the chat icon (appears near the command bar) to open Parley. Choose your communication channel—say, tell, group, and more—and set a named target. Star your favourite contacts for one-tap access.',
+        description: 'Swipe west (left) on your command bar to open your drawers: Inventory/Equipment, Stats, Character, and Players. On desktop, you can also use the edge tabs.',
         spotlight: '.input-area',
+        position: 'top'
     },
     {
-        id: 'shopping',
-        title: 'Shopping & Browsing',
-        description: 'Approach a merchant and use the Browse action to see their stock as a visual shop interface—tap to buy. At a guild, the Practice panel shows your trainable skills with costs so you can improve them directly.',
+        id: 'interactions-inventory',
+        title: 'Interactions & Inventory',
+        description: 'In some drawers like your EQ/Inventory drawer you can manipulate items by dragging and dropping them. For example, drag an item onto an NPC to give it to them or tap a container to open it inline and browse its contents etc.',
         spotlight: null,
     },
     {
         id: 'finish',
         title: 'You\'re Ready!',
-        description: 'That covers the essentials. Every button, every gesture has depth—experiment freely. The interface is built around you. Good luck out there, adventurer.',
+        description: 'That covers the basics. Good luck out there, adventurer.',
         spotlight: null,
     },
 ];
@@ -113,11 +74,18 @@ export const OnboardingOverlay: React.FC = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [spotlightStyle, setSpotlightStyle] = useState<React.CSSProperties>({});
 
-    const step = STEPS[currentStep];
+    const step = STEPS[currentStep] as any;
 
     useEffect(() => {
-        if (step.spotlight) {
-            const el = document.querySelector(step.spotlight);
+        const spotlightSelector = step.spotlight;
+        if (spotlightSelector) {
+            const selectors = spotlightSelector.split(',').map((s: string) => s.trim());
+            let el = null;
+            for (const selector of selectors) {
+                el = document.querySelector(selector);
+                if (el) break;
+            }
+
             if (el) {
                 const rect = el.getBoundingClientRect();
                 setSpotlightStyle({
@@ -157,7 +125,7 @@ export const OnboardingOverlay: React.FC = () => {
     const hasSpotlight = !!step.spotlight;
 
     return (
-        <div className={`onboarding-overlay ${hasSpotlight ? 'has-spotlight' : ''}`}>
+        <div className={`onboarding-overlay ${hasSpotlight ? 'has-spotlight' : ''} ${step.position === 'bottom' ? 'pos-bottom' : 'pos-top'}`}>
             <div className="onboarding-spotlight" style={spotlightStyle} />
 
             <div className={`onboarding-card ${hasSpotlight ? 'with-spotlight' : 'center'}`}>

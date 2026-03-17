@@ -98,25 +98,6 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         }));
     };
 
-    const handleTargetClick = () => {
-        if (target) {
-            if (heldButton) {
-                const hbtn = btn.buttons.find(b => b.id === heldButton.id);
-                const newMods = [...heldButton.modifiers, target];
-                setHeldButton((prev: any) => prev ? { ...prev, modifiers: newMods } : null);
-                if (hbtn) {
-                    const result = getButtonCommand(hbtn, 0, 0, undefined, 0, newMods, joystick, target);
-                    setCommandPreview(result?.cmd || null);
-                }
-                triggerHaptic(20);
-            } else {
-                setInput(prev => {
-                    const trimmed = prev.trim();
-                    return trimmed ? `${trimmed} ${target} ` : `${target} `;
-                });
-            }
-        }
-    };
 
     return (
         <div className="content-layer">
@@ -149,8 +130,6 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
                 isMobile={isMobile}
                 isKeyboardOpen={viewport.isKeyboardOpen}
                 commandPreview={commandPreview}
-                target={target}
-                onTargetClick={handleTargetClick}
                 terrain={currentTerrain}
                 spatButtons={spatButtons}
                 setActiveSet={btn.setActiveSet}

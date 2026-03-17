@@ -110,12 +110,11 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
                             setActiveSet={btn.setActiveSet}
                             setButtons={btn.setButtons}
                             isMobile={isMobile}
-                            stats={stats}
                         />
                     </div>
                 )}
                 <div 
-                    className={(isExpanded || isLandscape) ? "drawer-section" : ""} 
+                    className={`mobile-mapper-touch-surface ${(isExpanded || isLandscape) ? "drawer-section" : ""}`} 
                     style={{ 
                         flex: 1, 
                         position: 'relative', 

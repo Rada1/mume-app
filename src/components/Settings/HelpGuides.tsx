@@ -66,7 +66,7 @@ const HelpGuides: React.FC = () => {
                     <button className="reset-defaults-btn" onClick={() => btn.resetToDefaults()}>
                         Reset UI to Defaults
                     </button>
-                    <p className="help-version">Version 1.0.0</p>
+                    <p className="help-version">Version 1.1.0 (March 2026 Refresh)</p>
                 </div>
             </div>
 

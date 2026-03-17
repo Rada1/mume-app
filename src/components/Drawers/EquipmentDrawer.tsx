@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { DrawerLine } from '../../types';
 import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
@@ -36,6 +37,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
     const lastHoveredTargetRef = useRef<HTMLElement | null>(null);
+    const lastGlowTargetRef = useRef<HTMLElement | null>(null);
     const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
@@ -86,6 +88,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         setPrimedItemId(null);
         setActiveDropTarget(null);
         lastHoveredTargetRef.current = null;
+        lastGlowTargetRef.current = null;
         startPosRef.current = null;
         pendingDragRef.current = null;
         draggedRef.current = null;
@@ -163,10 +166,16 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const logicalTarget = logRecipient || targetItem || inputArea || (mainLog && !target?.closest('.right-drawer') ? mainLog : null) || sectionTarget;
 
             if (logicalTarget !== lastHoveredTargetRef.current) {
-                document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
                 lastHoveredTargetRef.current = logicalTarget;
-                if (logicalTarget && (!sectionTarget || logicalTarget !== sectionTarget)) {
-                    logicalTarget.classList.add('drop-hover-active');
+            }
+
+            // Glow target: only specific drop targets, never the broad mainLog container
+            const glowTarget = logRecipient || targetItem || inputArea || sectionTarget || null;
+            if (glowTarget !== lastGlowTargetRef.current) {
+                if (lastGlowTargetRef.current) lastGlowTargetRef.current.classList.remove('drop-hover-active');
+                lastGlowTargetRef.current = glowTarget;
+                if (glowTarget && (!sectionTarget || glowTarget !== sectionTarget)) {
+                    glowTarget.classList.add('drop-hover-active');
                 }
             }
 
@@ -174,7 +183,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 const ctx = logRecipient.getAttribute('data-context');
                 if (ctx) {
                     setActiveDropTarget({ type: 'log', id: ctx });
-                    commandLabel = `Give ${dragLabel} to ${ctx}`;
+                    commandLabel = `give ${dragLabel} ${ctx}`;
                 }
             } else if (targetItem) {
                 const targetCmd = targetItem.getAttribute('data-cmd');
@@ -182,34 +191,34 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 const targetText = targetItem.innerText || '';
                 const isTargetContainer = isItemContainer(targetText);
                 const targetItemName = targetItem?.getAttribute('data-item-name') || targetContext || extractNoun(targetText);
-                
+
                 if (targetCmd === 'inline-water' && isFluidContainer(currentDragged.line.text)) {
                     setActiveDropTarget({ type: 'log', id: targetContext || 'water' });
-                    commandLabel = `Fill ${dragLabel} from ${targetContext || 'water'}`;
+                    commandLabel = `fill ${dragLabel}`;
                 } else if (isTargetContainer && targetItemName !== (currentDragged?.line.context || currentDragged?.line.id)) {
                     setActiveDropTarget({ type: 'container', id: targetItemName! });
-                    commandLabel = `Put ${dragLabel} in ${targetItemName}`;
+                    commandLabel = `put ${dragLabel} in ${targetItemName}`;
                 }
             } else if (inputArea) {
                 setActiveDropTarget({ type: 'log', id: 'input' });
-                commandLabel = `Paste ${dragLabel} in Command Bar`;
+                commandLabel = `append: ${dragLabel}`;
             } else if (sectionTarget) {
                 const section = sectionTarget.getAttribute('data-drawer-section');
                 if (section && section !== currentDragged?.source) {
                     setActiveDropTarget({ type: 'section', id: section });
-                    const action = (section === 'equipment' || section === 'equipmentlist') ? 'Wear' : 'Remove';
+                    const action = (section === 'equipment' || section === 'equipmentlist') ? 'wear' : 'remove';
                     commandLabel = `${action} ${dragLabel}`;
                 } else if (section && currentDragged?.line.parentItemNoun) {
                     setActiveDropTarget({ type: 'section', id: section });
-                    commandLabel = `Get ${dragLabel} from ${currentDragged.line.parentItemNoun}`;
+                    commandLabel = `get ${dragLabel}`;
                 } else {
                     setActiveDropTarget(null);
-                    commandLabel = isMultiDrag ? `Moving ${dragCount} items` : `Dragging ${dragLabel}`;
+                    commandLabel = isMultiDrag ? `moving ${dragCount} items` : dragLabel;
                 }
             } else {
                 // Default action for anywhere else (ground/log)
                 setActiveDropTarget({ type: 'log', id: 'ground' });
-                commandLabel = `Drop ${dragLabel} on ground`;
+                commandLabel = `drop ${dragLabel}`;
             }
 
             setDraggedItem(prev => prev ? { ...prev, x: e.clientX, y: e.clientY, commandLabel } : null);
@@ -668,8 +677,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 onClose={onClose}
             />
 
-            {draggedItem && (
-                <div 
+            {draggedItem && ReactDOM.createPortal(
+                <div
                     ref={ghostRef}
                     className="drag-ghost"
                     style={{
@@ -701,7 +710,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         </div>
                     )}
                     {draggedItem.commandLabel && <div className="ghost-label">{draggedItem.commandLabel}</div>}
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     );

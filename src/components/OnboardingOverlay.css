@@ -12,10 +12,15 @@
     pointer-events: auto;
 }
 
-/* When a spotlight is active, shift the card to the bottom so it doesn't cover the highlighted element */
-.onboarding-overlay.has-spotlight {
+/* Support different card positions when spotlight is active */
+.onboarding-overlay.has-spotlight.pos-top {
+    align-items: flex-start;
+    padding-top: 80px;
+}
+
+.onboarding-overlay.has-spotlight.pos-bottom {
     align-items: flex-end;
-    padding-bottom: 24px;
+    padding-bottom: 80px; /* Above map/trackpad */
 }
 
 .onboarding-spotlight {

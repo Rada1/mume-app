@@ -3,19 +3,21 @@
 Customize your tactical interface by creating and editing action buttons.
 
 ## 🔧 Accessing the Editor
-- **Long-Press**: Press and hold any existing button to open its configuration.
-- **Design Mode**: Use the toolbar to toggle "Design Mode" and move buttons freely.
+- **Design Mode**: Open the main menu and select "Enter Design Mode". In this mode, UI elements will shimmer to indicate they are editable.
+- **Editing Buttons**: While in Design Mode, tap any button to open its configuration modal.
+- **Adding Buttons**: Click the **Plus (+)** floating button in Design Mode to create a new button.
 
 ## 📝 Configuring Actions
-- **Primary Click**: The main command sent when clicked.
-- **Swipes**: Configure up to 4 swipe directions for additional commands on the same button.
-- **Auto-Fill**: Toggle "Auto-Submit" off if you want a button to pre-fill the command bar without sending immediately.
+- **Primary Click**: The main command sent when the button is tapped.
+- **Swipe Actions**: Configure up to 4 swipe directions (North, South, East, West). Each direction can have its own command, icon, and label.
+- **Short vs Long Swipe**: Buttons support "Double Swipes" for even deeper command nesting.
+- **Auto-Submit**: Toggle this off if you want the button to pre-fill the command bar without sending, allowing you to append more text.
 
-## ✨ Adaptive Content
-Buttons can be made "Dynamic" by linking them to game events:
-- **Communication Captures**: If a button is set to capture "Tells", it will automatically update its label to the name of the last person who sent you a message. 
-- **Variable Substitution**: Use `%t` for your target, or use capture groups from Regex triggers to dynamically insert names into your commands.
+## ✨ Advanced Features
+- **Swipe Wheels**: Hold a button to see its "Swipe Wheel" — a visual guide to all configured swipe actions.
+- **Dynamic Variable (%t)**: Use `%t` in your commands to automatically insert your current target's name.
+- **State Triggers**: Set buttons to only appear when in specific states, such as "Combat Only".
 
-## 🔋 UI States
-- **Visibility**: Set buttons to only appear during specific states (Combat, Hidden, or Communication).
-- **Keyboard Hook**: Bind buttons to physical keys for a traditional desktop experience.
+## 🔋 Logic & Networking
+- **Silent Commands**: Toggle "Silent" to send commands without echoing them in the message log (useful for status checks).
+- **Haptic Feedback**: Each button and swipe can have custom haptic patterns for physical confirmation.

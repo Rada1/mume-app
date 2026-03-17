@@ -11,8 +11,6 @@ interface InputAreaProps {
     input: string;
     setInput: (val: string) => void;
     onSend: (e?: React.FormEvent) => void;
-    target?: string | null;
-    onTargetClick?: () => void;
     terrain?: string;
     onSwipe?: (dir: string) => void;
     isMobile?: boolean;
@@ -48,7 +46,7 @@ const normalizeTerrain = (t: string): string => {
 };
 
 const InputArea: React.FC<InputAreaProps> = ({
-    input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
+    input, setInput, onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList
 }) => {
     const { ui, setUI } = useUI();
@@ -227,7 +225,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                 // Allow prompt, target badge, and parley indicators to be clicked normally
                 if (
                     targetElement.classList.contains('cmd-prompt') || 
-                    targetElement.closest('.target-badge') ||
                     targetElement.closest('.parley-indicator') ||
                     targetElement.closest('.parley-clear-btn')
                 ) return;
@@ -411,40 +408,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                         />
                     </div>
 
-                    {target && (
-                        <div
-                            className="target-badge"
-                            draggable="true"
-                            onDragStart={(e) => {
-                                const dragData = {
-                                    type: 'inline-btn',
-                                    cmd: 'get',
-                                    context: target,
-                                    id: 'meta-target'
-                                };
-                                setActiveDragData(dragData);
-                                e.dataTransfer.setData('application/json', JSON.stringify(dragData));
-                                e.dataTransfer.effectAllowed = 'move';
-                                (e.currentTarget as HTMLElement).classList.add('dragging');
-                            }}
-                            onDragEnd={(e) => {
-                                (e.currentTarget as HTMLElement).classList.remove('dragging');
-                                setActiveDragData(null);
-                            }}
-                            onPointerDown={(e) => {
-                                // Don't prevent default here or drag-and-drop won't start
-                            }}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onTargetClick?.();
-                                if (!isMobile) inputRef.current?.focus();
-                            }}
-                            title={`Current Target: ${target} (Click to insert, Drag to drawer to get)`}
-                        >
-                            @{target}
-                        </div>
-                    )}
                     <button type="submit" style={{ display: 'none' }}>Send</button>
                 </form>
 

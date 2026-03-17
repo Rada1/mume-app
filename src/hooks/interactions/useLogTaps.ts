@@ -571,8 +571,11 @@ export const useLogTaps = (deps: InteractionDeps) => {
         window.addEventListener('pointerup', handleGlobalUp);
         window.addEventListener('pointercancel', handleGlobalUp);
 
-        // Original heldButton logic for backwards compatibility (only if targetEl exists)
-        if (targetEl) {
+        // Original heldButton logic for backwards compatibility (mobile only)
+        // On desktop, heldButton is only set when a drag actually starts (inside startDrag()),
+        // so we don't set it speculatively on every pointerdown — that causes re-renders that
+        // interfere with the click handler and produce a false "double glow" on desktop.
+        if (isMobile && targetEl) {
             const id = 'log-inline-' + (targetEl.getAttribute('data-id') || Math.random());
             const cmd = targetEl.getAttribute('data-cmd') || '';
             const context = targetEl.getAttribute('data-context') || '';
@@ -596,7 +599,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
     const handleLogPointerUp = useCallback((e: React.PointerEvent) => {
         // Only clear heldButton if it was set by the log's own pointerdown handler.
         // GameButton holds (no 'log-inline-' prefix) must be cleared by the GameButton's onPointerUp.
-        if (heldButton && heldButton.id.startsWith('log-inline-')) {
+        if (heldButton && heldButton.id?.startsWith('log-inline-')) {
             setHeldButton(null);
         }
     }, [heldButton, setHeldButton]);

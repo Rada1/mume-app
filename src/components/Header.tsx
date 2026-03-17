@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair } from 'lucide-react';
+import { Layers, Edit3, Settings, MoreVertical, FolderOpen, RotateCcw, ChevronDown, Check, ChevronLeft, Eye, EyeOff, Crosshair, WifiOff, RefreshCw } from 'lucide-react';
 import { EnvControls } from './Layout/EnvControls';
 import { LightingType, WeatherType } from '../types';
 import { useGame, useUI, useVitals } from '../context/GameContext';
@@ -27,6 +27,8 @@ const Header: React.FC<HeaderProps> = ({
         showControls,
         setShowControls,
         viewport,
+        status,
+        telnet
     } = useGame();
 
     const { target, setTarget } = useVitals();
@@ -83,6 +85,16 @@ const Header: React.FC<HeaderProps> = ({
 
             {/* Right: Master Controls (Always Visible/Fixed) */}
             <div className="controls" style={{ flexShrink: 0, marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
+                {status === 'disconnected' && (
+                    <button
+                        className="reconnect-btn"
+                        onClick={() => telnet.connect()}
+                        title="Disconnected from server. Click to reconnect."
+                    >
+                        <RefreshCw size={14} />
+                        {viewport.isMobile ? '' : 'RECONNECT'}
+                    </button>
+                )}
                 <div
                     className="status-indicator"
                     style={{

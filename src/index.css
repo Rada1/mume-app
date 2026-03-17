@@ -142,6 +142,11 @@
     pointer-events: auto;
 }
 
+/* Landscape: Move pods left to clear room for the right-side vertical button cluster */
+.is-landscape .input-area {
+    padding-right: 75px !important;
+}
+
 .input-main-container {
     flex: 1;
     min-height: 52px; /* Slightly shorter on mobile/standard */
@@ -198,33 +203,6 @@
     user-select: none;
 }
 
-.target-badge {
-    flex-shrink: 0;
-    max-width: 120px;
-    padding: 2px 8px;
-    background: rgba(var(--accent-rgb), 0.1);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    color: var(--ansi-yellow, #facc15);
-    font-size: 0.8rem;
-    font-weight: bold;
-    cursor: grab;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    pointer-events: auto;
-    transition: all 0.2s ease;
-}
-
-.target-badge:hover {
-    background: rgba(var(--accent-rgb), 0.2);
-    border-color: var(--accent);
-}
-
-.target-badge.dragging {
-    opacity: 0.5;
-    cursor: grabbing;
-}
 
 @media (min-width: 769px) {
     .input-vitals-dock {

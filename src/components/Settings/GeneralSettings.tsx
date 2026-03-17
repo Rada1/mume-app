@@ -208,7 +208,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                                 autoComplete="username"
                                 className="setting-input"
                                 value={loginName}
-                                placeholder="Rada"
+                                placeholder="Character"
                                 onChange={e => setLoginName(e.target.value)}
                             />
                         </div>
@@ -295,43 +295,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                     </div>
                 )}
             </div>
-            <div className="setting-group" style={{ border: '1px solid rgba(139, 92, 246, 0.3)', background: 'rgba(139, 92, 246, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <label className="setting-label" style={{ color: '#c4b5fd', fontWeight: 'bold', margin: 0 }}>Novice Mode</label>
-                            <span style={{ fontSize: '0.65rem', background: '#8b5cf6', color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', letterSpacing: '0.5px' }}>NEW</span>
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginTop: '4px' }}>Smart command parsing for easier inputs.</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '0.8rem', color: isNoviceMode ? '#c4b5fd' : '#64748b' }}>{isNoviceMode ? 'ACTIVE' : 'OFF'}</span>
-                        <div
-                            onClick={() => setIsNoviceMode(!isNoviceMode)}
-                            style={{
-                                width: '40px',
-                                height: '20px',
-                                background: isNoviceMode ? '#8b5cf6' : 'var(--input-bg, #334155)',
-                                borderRadius: '20px',
-                                position: 'relative',
-                                cursor: 'pointer',
-                                transition: 'all 0.3s'
-                            }}
-                        >
-                            <div style={{
-                                width: '16px',
-                                height: '16px',
-                                background: '#fff',
-                                borderRadius: '50%',
-                                position: 'absolute',
-                                top: '2px',
-                                left: isNoviceMode ? '22px' : '2px',
-                                transition: 'all 0.3s'
-                            }} />
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div className="setting-group" style={{ border: '1px solid rgba(245, 158, 11, 0.3)', background: 'rgba(245, 158, 11, 0.05)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -371,34 +334,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
-            <div className="setting-group" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div>
-                        <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between Light and Dark visual modes.</div>
-                    </div>
-                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-color)' }}>
-                        <button
-                            onClick={() => setTheme('dark')}
-                            style={{
-                                padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
-                                backgroundColor: theme === 'dark' ? 'var(--accent)' : 'transparent',
-                                color: theme === 'dark' ? '#000' : 'var(--text-primary)',
-                                fontSize: '0.8rem', fontWeight: 'bold'
-                            }}
-                        >Dark</button>
-                        <button
-                            onClick={() => setTheme('light')}
-                            style={{
-                                padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
-                                backgroundColor: theme === 'light' ? 'var(--accent)' : 'transparent',
-                                color: theme === 'light' ? '#fff' : 'var(--text-primary)',
-                                fontSize: '0.8rem', fontWeight: 'bold'
-                            }}
-                        >Light</button>
-                    </div>
-                </div>
-            </div>
 
             <div className="setting-group" style={{ border: '1px solid var(--border-color)', background: 'var(--bg-panel)', padding: '15px', borderRadius: '8px', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -491,15 +426,40 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>
                     <div style={{ flex: '1 1 200px' }}>
-                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Legacy Buttons</label>
-                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                            Show the old Joystick and Xbox-style clusters instead of the new Dpad and Line layouts.
-                        </div>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Client Theme</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Switch between Light and Dark visual modes.</div>
+                    </div>
+                    <div style={{ display: 'flex', backgroundColor: 'var(--input-bg)', borderRadius: '20px', padding: '2px', border: '1px solid var(--border-color)' }}>
+                        <button
+                            onClick={() => setTheme('dark')}
+                            style={{
+                                padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
+                                backgroundColor: theme === 'dark' ? '#ec4899' : 'transparent',
+                                color: theme === 'dark' ? '#fff' : 'var(--text-primary)',
+                                fontSize: '0.8rem', fontWeight: 'bold'
+                            }}
+                        >Dark</button>
+                        <button
+                            onClick={() => setTheme('light')}
+                            style={{
+                                padding: '4px 12px', borderRadius: '18px', border: 'none', cursor: 'pointer',
+                                backgroundColor: theme === 'light' ? '#ec4899' : 'transparent',
+                                color: theme === 'light' ? '#fff' : 'var(--text-primary)',
+                                fontSize: '0.8rem', fontWeight: 'bold'
+                            }}
+                        >Light</button>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Novice Mode</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Smart command parsing for easier inputs.</div>
                     </div>
                     <button
-                        className={`setting-toggle ${showLegacyButtons ? 'active' : ''}`}
-                        onClick={() => setShowLegacyButtons(!showLegacyButtons)}
-                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: showLegacyButtons ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                        className={`setting-toggle ${isNoviceMode ? 'active' : ''}`}
+                        onClick={() => setIsNoviceMode(!isNoviceMode)}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isNoviceMode ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
                     >
                         <div style={{
                             width: '20px',
@@ -508,7 +468,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             borderRadius: '50%',
                             position: 'absolute',
                             top: '2px',
-                            left: showLegacyButtons ? '22px' : '2px',
+                            left: isNoviceMode ? '22px' : '2px',
                             transition: 'all 0.3s'
                         }} />
                     </button>
