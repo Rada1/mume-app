@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Search, Sword, Shield, Apple, Zap, X } from 'lucide-react';
 
 interface ShopSearchPopoverProps {
-    executeCommand: (cmd: string) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     onClose: () => void;
 }
 
@@ -12,10 +12,10 @@ const ShopSearchPopover: React.FC<ShopSearchPopoverProps> = ({ executeCommand, o
     const handleSearch = (q: string) => {
         const finalQuery = q || query;
         if (finalQuery.trim()) {
-            executeCommand(`list ${finalQuery.trim()}`);
+            executeCommand(`list ${finalQuery.trim()}`, false, false, false, false, { fromUi: true });
             onClose();
         } else {
-            executeCommand('list');
+            executeCommand('list', false, false, false, false, { fromUi: true });
             onClose();
         }
     };

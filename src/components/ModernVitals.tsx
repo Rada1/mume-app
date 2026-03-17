@@ -129,17 +129,30 @@ const StatRow: React.FC<{
         let fillPercent = 0;
         if (type === 'move' && staminaStatus) {
             const status = staminaStatus.toLowerCase();
+            // MUME Status Mapping (Full words and common prompt abbreviations)
             const statusWeight: Record<string, number> = {
-                'steadfast': 6, 'rested': 5,
-                'tired': 0, 'slow': 0, 'weak': 0, 'fainting': 0
+                'steadfast': 6, 'fresh': 6, 'unwearied': 6, 'f': 6,
+                'rested': 5, 'r': 5,
+                'tired': 4, 't': 4,
+                'weary': 3, 'w': 3,
+                'slow': 2, 's': 2,
+                'weak': 1, 'W': 1, // 'W' often used for weak, 'w' for weary
+                'fainting': 0, 'exhausted': 0
             };
+            
             const chunkWeight: Record<string, number> = {
                 'fine': 5, 'hurt': 4, 'wounded': 3, 'bad': 2, 'awful': 1
             };
+            
             const sWeight = statusWeight[status];
             const cWeight = chunkWeight[chunk.id];
+            
             if (sWeight !== undefined && cWeight !== undefined) {
                 fillPercent = sWeight >= cWeight ? 100 : 0;
+            } else if (chunkHp > 0) {
+                // FALLBACK: Use numeric calculation if status string is unknown
+                const filledHp = Math.max(0, Math.min(value, segmentHpEnd) - segmentHpStart);
+                fillPercent = (filledHp / chunkHp) * 100;
             }
         } else if (chunkHp > 0) {
             const filledHp = Math.max(0, Math.min(value, segmentHpEnd) - segmentHpStart);

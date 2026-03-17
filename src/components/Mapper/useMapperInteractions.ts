@@ -211,6 +211,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         dragTypeRef.current = 'pan';
                         depsRef.current.setIsDragging(true);
                         isDraggingInternalRef.current = true;
+                        depsRef.current.triggerRender();
                     }
                 }
             } else if (activePointersRef.current.size === 2) {
@@ -225,6 +226,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     }
                 }
                 dragTypeRef.current = 'pan';
+                depsRef.current.setIsDragging(true);
+                isDraggingInternalRef.current = true;
+                hasDraggedRef.current = true;
+                depsRef.current.triggerRender();
             }
         };
 
@@ -253,6 +258,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     if (Math.sqrt(totalDx * totalDx + totalDy * totalDy) > 5) {
                         hasDraggedRef.current = true;
                         setIsDragging(true);
+                        depsRef.current.triggerRender();
                         if (longPressTimerRef.current) {
                             clearTimeout(longPressTimerRef.current);
                             longPressTimerRef.current = null;

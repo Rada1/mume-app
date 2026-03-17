@@ -48,6 +48,11 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const [mode, setMode] = useState<'play' | 'edit'>('play');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
+    const isDraggingRef = useRef(false);
+    const setIsDraggingWithRef = useCallback((val: boolean) => {
+        isDraggingRef.current = val;
+        setIsDragging(val);
+    }, []);
     const [isMobile] = useState(() => isMobileProp ?? /iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -104,7 +109,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         setAutoCenter, setContextMenu: (menu: any) => { /* mapper doesn't need its own state for context menu if we want to share across instances we could... but let's keep context menu instance-specific for now */ },
         setInfoRoomId,
         triggerHaptic: triggerHaptic ?? (() => { }),
-        canvasRef, cardRef, setIsDragging, handleAddRoom,
+        canvasRef, cardRef, setIsDragging: setIsDraggingWithRef, handleAddRoom,
         triggerRender, viewZ, setViewZ,
         preloadedCoordsRef,
         spatialIndexRef: context.spatialIndexRef,
@@ -169,6 +174,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 playerTrailRef={playerTrailRef}
                 renderVersion={renderVersion}
                 isDragging={isDragging}
+                isDraggingRef={isDraggingRef}
                 marquee={marquee}
                 autoCenter={autoCenter}
                 stableRoomsRef={roomsRef}

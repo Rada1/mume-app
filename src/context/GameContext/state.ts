@@ -96,15 +96,20 @@ export const useGameProviderState = () => {
         isMenuOpen: boolean;
         isSetMenuOpen: boolean;
         menuView: 'main' | 'availableSets';
-    }>({
-        drawer: 'none',
-        isDrawerPeeking: false,
-        peekingDrawer: 'none',
-        setManagerOpen: false,
-        mapExpanded: false,
-        isMenuOpen: false,
-        isSetMenuOpen: false,
-        menuView: 'main'
+    }>(() => {
+        const isMobileInitial = typeof window !== 'undefined' && 
+            (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768);
+            
+        return {
+            drawer: 'none',
+            isDrawerPeeking: false,
+            peekingDrawer: 'none',
+            setManagerOpen: false,
+            mapExpanded: !isMobileInitial, // Open by default on desktop
+            isMenuOpen: false,
+            isSetMenuOpen: false,
+            menuView: 'main'
+        };
     });
 
     const executeCommandRef = useRef<(cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void>(() => { });

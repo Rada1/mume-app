@@ -11,7 +11,7 @@
 /* Mobile Bottom Gutter */
 .mobile-bottom-gutter {
     flex-shrink: 0;
-    height: 220px; /* Taller peek height */
+    height: 280px; /* Taller peek height */
     background: transparent;
     border-top: none;
     box-shadow: none;
@@ -181,6 +181,47 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-sizing: border-box;
     overflow: visible; /* ALLOW WIMPY LABELS TO POP OUT */
+}
+
+.input-form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.cmd-prompt {
+    flex-shrink: 0;
+    color: var(--text-faded);
+    user-select: none;
+}
+
+.target-badge {
+    flex-shrink: 0;
+    max-width: 120px;
+    padding: 2px 8px;
+    background: rgba(var(--accent-rgb), 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--ansi-yellow, #facc15);
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: grab;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+}
+
+.target-badge:hover {
+    background: rgba(var(--accent-rgb), 0.2);
+    border-color: var(--accent);
+}
+
+.target-badge.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
 }
 
 @media (min-width: 769px) {

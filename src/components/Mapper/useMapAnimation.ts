@@ -7,6 +7,7 @@ interface AnimationProps {
     markers: Record<string, any>;
     currentRoomId: string | null;
     isDragging: boolean;
+    isDraggingRef?: React.RefObject<boolean>;
     renderVersion: number;
     canvasRef: React.RefObject<HTMLCanvasElement>;
     camera: React.MutableRefObject<{ x: number, y: number, zoom: number }>;
@@ -29,7 +30,7 @@ export const useMapAnimation = ({
     drawMap, rooms, markers, currentRoomId, isDragging, renderVersion,
     canvasRef, camera, playerPosRef, playerTrailRef, getDPR, marquee, autoCenter, 
     stableRoomsRef, stableRoomIdRef, stableMarkersRef, firstExploredAtRef, preloadedCoordsRef,
-    preMoveRef, walkTargetId, walkPath
+    preMoveRef, walkTargetId, walkPath, isDraggingRef
 }: AnimationProps) => {
     const requestRef = useRef<number | null>(null);
     const tickRef = useRef<(() => boolean) | null>(null);
@@ -83,13 +84,14 @@ export const useMapAnimation = ({
         const w = cvs.width / dpr;
         const h = cvs.height / dpr;
 
-        let needsNextFrame = isDragging;
+        const effectiveIsDragging = isDragging || isDraggingRef?.current;
+        let needsNextFrame = effectiveIsDragging;
 
         // Player position is snapped immediately in useMapperPlayerTracking — no queue/lerp needed here.
         // Camera centering still lerps smoothly toward playerPosRef.current.
 
         // Camera Centering logic (Allow auto-center even if dragging IF it's a joystick pulse)
-        if ((autoCenter || walkTargetId) && playerPosRef.current && (!isDragging || isJoystickActiveRef.current)) {
+        if ((autoCenter || walkTargetId) && playerPosRef.current && (!effectiveIsDragging || isJoystickActiveRef.current)) {
             // Log once when auto-centering is active if it wasn't before
             if (!(tickRef as any)._autoCenterActive) {
                 console.log('[MapAnimation] Auto-centering ACTIVE');
@@ -114,7 +116,7 @@ export const useMapAnimation = ({
             }
         } else {
             if ((tickRef as any)._autoCenterActive) {
-                console.log('[MapAnimation] Auto-centering SUPPRESSED (isDragging:', isDragging, 'isJoystickActive:', isJoystickActiveRef.current, ')');
+                console.log('[MapAnimation] Auto-centering SUPPRESSED (isDragging:', effectiveIsDragging, 'isJoystickActive:', isJoystickActiveRef.current, ')');
                 (tickRef as any)._autoCenterActive = false;
             }
         }
@@ -158,7 +160,8 @@ export const useMapAnimation = ({
         const animate = () => {
             if (!active) return;
             const needsNextFrame = tickRef.current?.() ?? false;
-            if (needsNextFrame || isDragging) {
+            const effectiveIsDragging = isDragging || isDraggingRef?.current;
+            if (needsNextFrame || effectiveIsDragging) {
                 requestRef.current = requestAnimationFrame(animate);
             } else {
                 requestRef.current = null;

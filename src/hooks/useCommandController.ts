@@ -58,6 +58,7 @@ export interface CommandControllerDeps {
     parley: import('../types').ParleyState;
     setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
     isTrackpadModifierActive: boolean;
+    shop: any;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {
@@ -104,6 +105,8 @@ export function useCommandController(deps: CommandControllerDeps) {
             // Silent system practice (e.g. initial connect sync) — flag it so the
             // response stays hidden even if a game prompt fires before it arrives.
             if (silent && isSystem) deps.practice.setSilentSyncPending(true);
+        } else if (cmd.toLowerCase().startsWith('list') || cmd.toLowerCase().startsWith('browse')) {
+            if (options?.fromUi) deps.shop.setIsUiRequested(true);
         }
 
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);

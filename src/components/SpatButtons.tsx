@@ -7,7 +7,7 @@ interface SpatButtonsProps {
     isMobile: boolean;
     isKeyboardOpen?: boolean;
     setActiveSet: (setId: string) => void;
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     setSpatButtons: React.Dispatch<React.SetStateAction<SpatButton[]>>;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
 }
@@ -215,7 +215,7 @@ export const SpatButtons: React.FC<SpatButtonsProps> = ({
                     menuDisplay: sb.menuDisplay || 'list'
                 });
             } else {
-                executeCommand(cmd, false, false, false, false, { shouldFocus: false });
+                executeCommand(cmd, false, false, false, false, { shouldFocus: false, fromUi: true });
             }
 
             if (sb.closeKeyboard) {

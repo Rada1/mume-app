@@ -3,31 +3,33 @@ import { ShopItem } from '../types';
 
 export function useShopHandler() {
     const [isShopListingActive, setIsShopListingActive] = useState(false);
-    const shopItemsRef = useRef<ShopItem[]>([]);
+    const [isUiRequested, setIsUiRequested] = useState(false);
+    const [shopItems, setShopItems] = useState<ShopItem[]>([]);
+    const logBuffer = useRef<string[]>([]);
+    const currentItems = useRef<ShopItem[]>([]);
 
     const parseShopLine = (text: string): ShopItem | null => {
         const lower = text.toLowerCase();
+        
         // Detect start of shop listing
         if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
             setIsShopListingActive(true);
-            shopItemsRef.current = [];
+            logBuffer.current = [text];
+            currentItems.current = [];
             return null;
         }
 
-        // Pattern: "270. fourteen rapiers (flawless, new) up to seventeen silver and five copper."
-        // ID: 270
-        // Label: fourteen rapiers (flawless, new)
-        // Price: seventeen silver and five copper.
-        // Making condition optional
-        const itemRegex = /^(\d+)\.\s+(.*?)(?:\s+\((.*?)\))?\s+up to\s+(.*)\.?$/i;
+        if (!isShopListingActive) return null;
+
+        logBuffer.current.push(text);
+
+        // Pattern examples:
+        // "270. fourteen rapiers (flawless, new) up to seventeen silver and five copper."
+        // "  1. a small glass vial (standard) for one silver and five copper."
+        const itemRegex = /^\s*(\d+)\.\s+(.*?)(?:\s+\((.*?)\))?\s+(?:up to|for)\s+(.*)\.?$/i;
         const match = text.match(itemRegex);
 
         if (match) {
-            // Auto-activate if we see a valid item line even if we missed the header
-            if (!isShopListingActive) {
-                setIsShopListingActive(true);
-            }
-
             const [_, id, fullName, condition, price] = match;
 
             const nameParts = fullName.trim().split(' ');
@@ -59,15 +61,41 @@ export function useShopHandler() {
                 condition: condition ? condition.trim() : 'standard',
                 price: price.trim().replace(/\.$/, '')
             };
+            currentItems.current.push(item);
             return item;
         }
 
         return null;
     };
 
+    const finalizeShop = () => {
+        if (!isShopListingActive) return null;
+        
+        const result = {
+            items: [...currentItems.current],
+            raw: logBuffer.current.join('\n')
+        };
+
+        if (isUiRequested) {
+            setShopItems(currentItems.current);
+        }
+
+        setIsShopListingActive(false);
+        setIsUiRequested(false);
+        currentItems.current = [];
+        logBuffer.current = [];
+
+        return result;
+    };
+
     return {
         isShopListingActive,
         setIsShopListingActive,
-        parseShopLine
+        isUiRequested,
+        setIsUiRequested,
+        shopItems,
+        setShopItems,
+        parseShopLine,
+        finalizeShop
     };
 }

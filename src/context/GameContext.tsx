@@ -21,6 +21,7 @@ import { MapperRef } from '../components/Mapper/mapperTypes';
 
 import { GameContextType, VitalsContextType, LogContextType, UIContextType } from './GameContext/types';
 import { useGmcpHandlers } from '../hooks/useGmcpHandlers';
+import { useShopHandler } from '../hooks/useShopHandler';
 import { useGameProviderState } from './GameContext/state';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -202,6 +203,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
 
     const practice = usePracticeHandler(s.setAbilities);
+    const shop = useShopHandler();
 
     const { audioCtxRef, initAudio, triggerHaptic: soundSystemHaptic } = useSoundSystem();
     // Wire the real haptic function into the ref immediately
@@ -272,6 +274,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setWhereList: s.setWhereList,
         captureStage: s.captureStage,
         practice,
+        shop,
         isDrawerCapture: s.isDrawerCapture,
         isSilentCapture: s.isSilentCapture,
         isWaitingForStats: s.isWaitingForStats,
@@ -357,6 +360,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setActions: s.setActions,
         setActiveDragData: s.setActiveDragData,
         practice,
+        shop,
         heldButton: v.heldButton,
         setHeldButton: v.setHeldButton,
         parley: s.parley,

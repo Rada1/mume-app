@@ -321,8 +321,8 @@ const InputArea: React.FC<InputAreaProps> = ({
                     borderRadius: '2px',
                     pointerEvents: 'none'
                 }} />
-                <form className="input-form" onSubmit={onSend} style={{ position: 'relative' }}>
-                    <span className="cmd-prompt" onPointerDown={(e) => e.preventDefault()} style={{ pointerEvents: 'auto' }}>{'>'}</span>
+                <form className="input-form" onSubmit={onSend}>
+                    <span className="cmd-prompt">{'>'}</span>
                     
                     {isMobile && isKeyboardOpen && !parley.active && (
                         <button
@@ -450,19 +450,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 e.stopPropagation();
                                 onTargetClick?.();
                                 if (!isMobile) inputRef.current?.focus();
-                            }}
-                            style={{
-                                marginLeft: '10px',
-                                padding: '2px 8px',
-                                background: 'var(--input-bg, rgba(var(--accent-rgb), 0.1))',
-                                border: '1px solid var(--border-color)',
-                                borderRadius: '4px',
-                                color: 'var(--ansi-yellow, #facc15)',
-                                fontSize: '0.8rem',
-                                fontWeight: 'bold',
-                                cursor: 'grab',
-                                whiteSpace: 'nowrap',
-                                pointerEvents: 'auto'
                             }}
                             title={`Current Target: ${target} (Click to insert, Drag to drawer to get)`}
                         >

@@ -256,17 +256,33 @@ export const drawMarkers = (
             const centerX = mx;
             const centerY = my - dotSize - 4 - (textHeight / 2);
             
-            // Draw diffuse background glow
-            const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, textWidth * 0.5 + 15);
-            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
-            gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.45)');
-            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            
+            // Draw diffuse background glow - Rectangular with soft edges
+            const paddingX = 16;
+            const paddingY = 6;
+            const rectW = textWidth + paddingX * 2;
+            const rectH = textHeight + paddingY * 2;
+            const rectX = mx - rectW / 2;
+            const rectY = my - dotSize - 4 - textHeight - paddingY;
+
             ctx.save();
-            ctx.fillStyle = gradient;
+            // Use shadowBlur for soft edges
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            
+            // Draw rounded rectangle
+            const r = 4; // subtle corner radius
             ctx.beginPath();
-            // Create a wide ellipse for the glow - compact
-            ctx.ellipse(centerX, centerY, textWidth / 2 + 15, textHeight + 6, 0, 0, Math.PI * 2);
+            ctx.moveTo(rectX + r, rectY);
+            ctx.lineTo(rectX + rectW - r, rectY);
+            ctx.quadraticCurveTo(rectX + rectW, rectY, rectX + rectW, rectY + r);
+            ctx.lineTo(rectX + rectW, rectY + rectH - r);
+            ctx.quadraticCurveTo(rectX + rectW, rectY + rectH, rectX + rectW - r, rectY + rectH);
+            ctx.lineTo(rectX + r, rectY + rectH);
+            ctx.quadraticCurveTo(rectX, rectY + rectH, rectX, rectY + rectH - r);
+            ctx.lineTo(rectX, rectY + r);
+            ctx.quadraticCurveTo(rectX, rectY, rectX + r, rectY);
+            ctx.closePath();
             ctx.fill();
             ctx.restore();
 

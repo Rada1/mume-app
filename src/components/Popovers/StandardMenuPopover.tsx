@@ -18,7 +18,7 @@ interface StandardMenuProps {
     parley: import('../../types').ParleyState;
     setParley: (val: import('../../types').ParleyState) => void;
     whoList: string[];
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     inlineCategories?: InlineCategoryConfig[];
     setInlineCategories?: React.Dispatch<React.SetStateAction<InlineCategoryConfig[]>>;
     isMendingMode?: boolean;
@@ -36,7 +36,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
     const isSetManager = popoverState.setId === 'setmanager';
-    const isTargetable = ['selection', 'inventorylist', 'equipmentlist'].includes(popoverState.setId);
+    const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer'].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
@@ -130,9 +130,9 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                 }}
                 onClick={() => { if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {isSetManager ? 'Select Button Set' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-/, '').toUpperCase())}
+                    {isSetManager ? 'Select Button Set' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-?/, '').toUpperCase())}
                 </span>
-                {!isSetManager && popoverState.setId.startsWith('inline-') && (
+                {!isSetManager && (popoverState.setId.startsWith('inline-') || ['inlinenpc', 'inlineplayer'].includes(popoverState.setId)) && (
                     <div 
                         onClick={(e) => { e.stopPropagation(); setIsChoosingCategory(!isChoosingCategory); }}
                         style={{ 

@@ -9,6 +9,17 @@ const getIndicatorIcon = (sym: string, color: string) => {
     const canvas = document.createElement('canvas');
     canvas.width = 24; canvas.height = 24;
     const ctx = canvas.getContext('2d')!;
+    
+    // Draw fading black background
+    const gradient = ctx.createRadialGradient(12, 12, 4, 12, 12, 12);
+    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
+    gradient.addColorStop(0.6, 'rgba(0, 0, 0, 0.4)');
+    gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(12, 12, 12, 0, Math.PI * 2);
+    ctx.fill();
+
     ctx.fillStyle = color;
     ctx.font = 'bold 20px "Inter", sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';

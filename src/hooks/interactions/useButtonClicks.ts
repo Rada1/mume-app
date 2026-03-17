@@ -152,11 +152,11 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             // Prepend 'get' if item is in a container
             if (parentNoun && context) {
                 const itemNoun = context.split('.')[0];
-                executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
+                executeCommand(`get ${itemNoun} ${parentNoun}`, true, true, false, false, { fromUi: true });
             }
 
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
-            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
+            setCommandPreview(finalCmd); executeCommand(finalCmd, false, false, false, false, { shouldFocus: false, fromUi: true });
 
             // Handle Close Keyboard feature
             if (button.trigger?.closeKeyboard) {
@@ -167,13 +167,13 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             setTimeout(() => setCommandPreview(null), 150);
             if (button.setId === 'inventorylist' || button.setId === 'equipmentlist') {
                 setTimeout(() => {
-                    if (button.setId === 'inventorylist' || button.command.includes('remove')) executeCommand('inv', false, true, true, true);
-                    if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold')) executeCommand('eq', false, true, true, true);
+                    if (button.setId === 'inventorylist' || button.command.includes('remove')) executeCommand('inv', false, true, true, true, { fromUi: true });
+                    if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold')) executeCommand('eq', false, true, true, true, { fromUi: true });
 
                     // Refresh parent container if it was extracted from
                     if (parentNoun) {
                         // We use the parentNoun (which is the context of the parent) to refresh it
-                        executeCommand(`look in ${parentNoun}`, true, true);
+                        executeCommand(`look in ${parentNoun}`, true, true, false, false, { fromUi: true });
                     }
                 }, 400);
             }

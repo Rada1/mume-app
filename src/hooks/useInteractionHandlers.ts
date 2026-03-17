@@ -1,7 +1,7 @@
 import { CaptureStage, CustomButton, MessageType } from '../types';
 
 export interface InteractionDeps {
-    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean }) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean, options?: { shouldFocus?: boolean, fromUi?: boolean }) => void;
     input: string;
     setInput: (val: string) => void;
     setTarget: (val: string | null) => void;

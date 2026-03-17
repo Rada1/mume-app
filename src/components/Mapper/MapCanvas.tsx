@@ -17,6 +17,7 @@ interface MapCanvasProps {
     playerTrailRef: React.MutableRefObject<{ x: number, y: number, z: number, alpha: number }[]>;
     renderVersion: number;
     isDragging: boolean;
+    isDraggingRef?: React.RefObject<boolean>;
     marquee: any;
     autoCenter?: boolean;
     stableRoomsRef: React.MutableRefObject<Record<string, any>>;
@@ -73,6 +74,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         markers: props.markers,
         currentRoomId: props.currentRoomId,
         isDragging: props.isDragging,
+        isDraggingRef: props.isDraggingRef,
         renderVersion: props.renderVersion,
         canvasRef,
         camera: props.camera,

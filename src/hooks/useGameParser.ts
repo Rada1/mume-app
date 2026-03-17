@@ -57,6 +57,7 @@ export interface UseGameParserDeps {
     quests: QuestData;
     mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    shop: ReturnType<typeof useShopHandler>;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
@@ -72,7 +73,7 @@ export function useGameParser(deps: UseGameParserDeps) {
 } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
-    const { parseShopLine, isShopListingActive, setIsShopListingActive } = useShopHandler();
+    const { parseShopLine, finalizeShop } = deps.shop;
     const { parseQuestLine, finalizeQuests, isQuestsActive, isDetailActive } = useQuestsHandler(setQuests, quests.activeQuests);
 
     const containerStackRef = useRef<{ depth: number, noun: string, context: string, stableId: string }[]>([]);
@@ -105,7 +106,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 deps.practice.setIsPracticeActive(false);
                 deps.practice.setIsUiRequested(false);
             } else if (currentStage === 'shop') {
-                setIsShopListingActive(false);
+                deps.shop.finalizeShop();
             } else if (currentStage === 'quest') {
                 finalizeQuests();
             } else if (currentStage === 'eq' && eqLen > 0) {
@@ -122,7 +123,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             return true;
         }
         return false;
-    }, [addDiagnosticLog, setEqLines, setInventoryLines, captureStage, isDrawerCapture, isSilentCapture, deps.practice, addMessage, setIsShopListingActive]);
+    }, [addDiagnosticLog, setEqLines, setInventoryLines, captureStage, isDrawerCapture, isSilentCapture, deps.practice, deps.shop, addMessage]);
 
     const processLine = useCallback((line: string) => {
 
@@ -194,7 +195,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'shop') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: shop'); addDiagnosticLog?.('Entering Stage: shop');
-            (captureStage as any).current = 'shop'; setIsShopListingActive(true);
+            (captureStage as any).current = 'shop'; deps.shop.setIsShopListingActive(true);
         }
         else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
             if (captureStage.current === 'where') return;
@@ -374,12 +375,6 @@ export function useGameParser(deps: UseGameParserDeps) {
                 setInCombat(false); // No opponent in prompt — start the 5s latch
             }
 
-            // 4. Move Status
-            const moveStatusMatch = promptPart.match(/(?:MV|T):(\w+)/i);
-            if (moveStatusMatch) {
-                const status = moveStatusMatch[1].toLowerCase();
-                setStats(p => ({ ...p, staminaStatus: status }));
-            }
 
             if (!attachedText) {
                 return;
@@ -642,7 +637,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log('[Parser] End-prompt detected:', { textOnly, stage: captureStage.current });
         }
 
-        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container' || captureStage.current === 'practice') {
+        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container' || captureStage.current === 'practice' || captureStage.current === 'shop') {
             const createLine = (l: string, tOnly: string, lLower: string, cmd: string): DrawerLine => {
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
@@ -715,6 +710,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (textOnly.trim().length > 0) {
                     const skill = deps.practice.parsePracticeLine(textOnly);
                     deps.practice.addToLogBuffer(typeof skill === 'object' && 'name' in skill ? 'skill' : 'header', skill, cleanLine);
+                }
+            } else if (captureStage.current === 'shop') {
+                if (textOnly.trim().length > 0) {
+                    parseShopLine(textOnly);
                 }
             } else if (captureStage.current === 'container') {
                 if (textOnly.length > 0 && !lower.includes('contains:')) {
@@ -886,6 +885,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             else if (['practice', 'info', 'quest', 'description', 'whois'].includes(currentStage) && deps.isCharacterOpen) isDrawerHiding = true;
             else if (currentStage === 'container') isDrawerHiding = true;
             else if (['who', 'where'].includes(currentStage) && isPlayersOpen) isDrawerHiding = true;
+            else if (currentStage === 'shop' && deps.shop.isUiRequested) isDrawerHiding = true;
         } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
             // Stage already reset or prompt detected - hide any trailing matches or command echoes
             if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
@@ -893,7 +893,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if ((lower === 'who' || lower === 'where') && isPlayersOpen) isDrawerHiding = true;
             if (isEndPrompt) {
                  if (deps.isItemsOpen && (isWaitingForInv.current || isWaitingForEq.current)) isDrawerHiding = true;
-                 if (deps.isCharacterOpen && (isWaitingForStats.current || isWaitingForEq.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest')) isDrawerHiding = true;
+                 if (deps.isCharacterOpen && (isWaitingForStats.current || isWaitingForEq.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest' || captureStage.current === 'shop')) isDrawerHiding = true;
                  if (isPlayersOpen && captureStage.current === 'none') {
                      // Heuristic: If we just finished a who/where and the drawer is open, hide the final prompt
                      isDrawerHiding = true;
@@ -953,7 +953,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         if (isEndPrompt) finalizeCapture();
-    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, triggerHaptic, mapperRef, deps, processTriggers, parseShopLine, isShopListingActive, setIsShopListingActive, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture, parseQuestLine, finalizeQuests]);
+    }, [addMessage, setStats, setWeather, setIsFoggy, setLightningEnabled, setAbilities, setCharacterClass, setRumble, setHitFlash, setDeathStage, setInCombat, detectLighting, setInventoryLines, setStatsLines, setEqLines, setWhoList, setWhereList, triggerHaptic, mapperRef, deps, processTriggers, parseShopLine, roomNameRef, addDiagnosticLog, setPopoverState, finalizeCapture, parseQuestLine, finalizeQuests]);
 
     return { processLine, finalizeCapture };
 }
