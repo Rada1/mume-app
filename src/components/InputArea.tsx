@@ -53,6 +53,12 @@ const InputArea: React.FC<InputAreaProps> = ({
 }) => {
     const { ui } = useUI();
     const { viewport } = useBaseGame();
+    const { stats: vitalsStats, setStats: setVitalsStats } = useVitals();
+    const { inCombat } = useGame();
+    const handleWimpyChange = useCallback((val: number) => {
+        setVitalsStats(prev => ({ ...prev, wimpy: val }));
+        executeCommand(`change wimpy ${val}`);
+    }, [setVitalsStats, executeCommand]);
     const terrainClass = terrain ? `terrain-${normalizeTerrain(terrain)}` : '';
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const startPos = useRef<{ x: number, y: number } | null>(null);
@@ -436,13 +442,10 @@ const InputArea: React.FC<InputAreaProps> = ({
             </div>
 
             <div className="input-vitals-dock">
-                <ModernVitals 
-                    stats={useVitals().stats} 
-                    inCombat={useGame().inCombat}
-                    onWimpyChange={(val) => {
-                        useVitals().setStats(prev => ({ ...prev, wimpy: val }));
-                        executeCommand(`change wimpy ${val}`);
-                    }}
+                <ModernVitals
+                    stats={vitalsStats}
+                    inCombat={inCombat}
+                    onWimpyChange={handleWimpyChange}
                 />
             </div>
         </div>

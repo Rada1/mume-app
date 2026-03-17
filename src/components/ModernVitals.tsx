@@ -36,39 +36,81 @@ const StatRow: React.FC<{
     }, []);
 
 
-    const updateDrag = useCallback((e: PointerEvent | React.PointerEvent) => {
+    const updateDrag = useCallback((e: PointerEvent | React.PointerEvent | TouchEvent | React.TouchEvent) => {
         if (!trackRef.current || max <= 0) return;
         const rect = trackRef.current.getBoundingClientRect();
-        let ratio = (e.clientX - rect.left) / rect.width;
+        
+        let clientX = 0;
+        if ('clientX' in e) {
+            clientX = e.clientX;
+        } else if ('touches' in e && e.touches[0]) {
+            clientX = e.touches[0].clientX;
+        } else if ('changedTouches' in e && e.changedTouches[0]) {
+            clientX = e.changedTouches[0].clientX;
+        }
+
+        let ratio = (clientX - rect.left) / rect.width;
         ratio = Math.max(0, Math.min(1, ratio));
         const val = Math.round(ratio * max);
         dragValRef.current = val;
         setDragVal(val);
     }, [max]);
 
-    const handlePointerDown = (e: React.PointerEvent) => {
+    const handlePointerDown = (e: React.PointerEvent | React.TouchEvent) => {
         if (!onWimpyChange || type !== 'hp') return;
         e.stopPropagation();
+        
+        // Initial calculation to set the drag value immediately
+        if (!trackRef.current || max <= 0) return;
+        const rect = trackRef.current.getBoundingClientRect();
+        let clientX = 0;
+        if ('clientX' in e) clientX = e.clientX;
+        else if ('touches' in e && e.touches[0]) clientX = e.touches[0].clientX;
+        
+        const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+        const val = Math.round(ratio * max);
+        dragValRef.current = val;
+        setDragVal(val);
+        
         setIsDragging(true);
-        updateDrag(e);
     };
 
     useEffect(() => {
         if (!isDragging) return;
-        const handlePointerMove = (e: PointerEvent) => updateDrag(e);
-        const handlePointerUp = () => {
+        
+        const handleMove = (e: PointerEvent | TouchEvent) => {
+            if (e instanceof TouchEvent) {
+                updateDrag(e);
+            } else {
+                updateDrag(e);
+            }
+        };
+
+        const handleUp = (e: PointerEvent | TouchEvent) => {
             setIsDragging(false);
+            
+            // Final update to catch the last position
+            if (e instanceof TouchEvent) {
+                updateDrag(e);
+            }
+            
             if (dragValRef.current !== null && onWimpyChange) {
                 onWimpyChange(dragValRef.current);
             }
             dragValRef.current = null;
             setDragVal(null);
         };
-        window.addEventListener('pointermove', handlePointerMove);
-        window.addEventListener('pointerup', handlePointerUp);
+
+        window.addEventListener('pointermove', handleMove);
+        window.addEventListener('pointerup', handleUp);
+        window.addEventListener('touchmove', handleMove, { passive: false, capture: true });
+        window.addEventListener('touchend', handleUp, { passive: false, capture: true });
+
         return () => {
-            window.removeEventListener('pointermove', handlePointerMove);
-            window.removeEventListener('pointerup', handlePointerUp);
+            window.removeEventListener('pointermove', handleMove);
+            window.removeEventListener('pointerup', handleUp);
+            window.removeEventListener('touchmove', handleMove, { capture: true } as any);
+            window.removeEventListener('touchend', handleUp, { capture: true } as any);
         };
     }, [isDragging, onWimpyChange, updateDrag]);
 
@@ -88,8 +130,8 @@ const StatRow: React.FC<{
         if (type === 'move' && staminaStatus) {
             const status = staminaStatus.toLowerCase();
             const statusWeight: Record<string, number> = {
-                'steadfast': 5, 'rested': 5, 'fine': 5,
-                'tired': 4, 'slow': 3, 'weak': 2, 'fainting': 1
+                'steadfast': 6, 'rested': 5,
+                'tired': 0, 'slow': 0, 'weak': 0, 'fainting': 0
             };
             const chunkWeight: Record<string, number> = {
                 'fine': 5, 'hurt': 4, 'wounded': 3, 'bad': 2, 'awful': 1
@@ -124,6 +166,7 @@ const StatRow: React.FC<{
                 ref={trackRef}
                 className="modern-vitals-track"
                 onPointerDown={handlePointerDown}
+                onTouchStart={handlePointerDown}
                 style={{ cursor: (onWimpyChange && type === 'hp') ? 'ew-resize' : 'default', position: 'relative' }}
             >
                 <div className="modern-vitals-thresholds">
@@ -190,9 +233,8 @@ const StatRow: React.FC<{
             </div>
 
             <div className="modern-vitals-value-column">
-                <span className="modern-vitals-value">
-                    {value} <span className="max-value">{max}</span>
-                </span>
+                <span className="current-value">{value}</span>
+                <span className="max-value">{max}</span>
             </div>
         </div>
     );

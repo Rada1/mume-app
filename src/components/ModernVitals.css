@@ -7,7 +7,8 @@
     padding: 0 4px 0 6px; /* Added left padding for skew breathing room */
     background: transparent;
     border: none;
-    width: fit-content; /* Strictly fit the bars/numbers */
+    width: 135px; /* Fixed width to allow right-anchoring of numbers */
+    box-sizing: border-box;
 }
 
 .modern-vitals-row {
@@ -15,30 +16,38 @@
     flex-direction: row;
     align-items: center;
     gap: 4px; /* Slightly more gap between bar and numbers */
-    width: fit-content;
+    width: 100%; /* Fill the container width */
+    flex: 1;
 }
 
 .modern-vitals-value-column {
     display: flex;
     align-items: center;
-    min-width: 0; /* Shrink to zero if needed */
-    justify-content: flex-end;
+    flex: 1;
+    justify-content: flex-end; /* Anchor whole block right */
+    min-width: 0;
+    gap: 4px; /* Gap between the two columns */
 }
 
-.modern-vitals-value {
+.current-value {
     color: var(--text-primary, #fff);
-    font-size: 0.7rem; /* Back to original or slightly smaller */
+    font-size: 0.7rem;
     font-variant-numeric: tabular-nums;
     font-weight: 800;
     line-height: 1;
-    white-space: nowrap;
+    text-align: right;
+    min-width: 24px; /* Optimized for 3 digits */
 }
 
-.modern-vitals-value .max-value {
+.max-value {
+    color: var(--text-primary, #fff);
     opacity: 0.45;
     font-weight: 500;
     font-size: 0.65rem;
-    margin-left: 2px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-align: right;
+    min-width: 24px; /* Optimized for 3 digits */
 }
 
 
@@ -69,7 +78,7 @@
     position: absolute;
     inset: 0;
     display: flex;
-    gap: 2px; /* Thick black line between segments */
+    gap: 0; /* Perfectly continuous */
     padding: 0;
     pointer-events: none;
 }

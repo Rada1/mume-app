@@ -8,7 +8,7 @@ import { usePracticeHandler } from './usePracticeHandler';
 import { useQuestsHandler } from './useQuestsHandler';
 
 export interface UseGameParserDeps {
-    isItemsOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; mapperRef: React.RefObject<any>;
+    isItemsOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; isPlayersOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
     addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
@@ -68,6 +68,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     quests,
     mumeEditState,
     setMumeEditState,
+    isPlayersOpen,
 } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -836,6 +837,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             else if (currentStage === 'stat' && (deps.isStatsOpen || deps.isCharacterOpen)) isDrawerHiding = true;
             else if (['practice', 'info', 'quest', 'description', 'whois'].includes(currentStage) && deps.isCharacterOpen) isDrawerHiding = true;
             else if (currentStage === 'container') isDrawerHiding = true;
+            else if (['who', 'where'].includes(currentStage) && isPlayersOpen) isDrawerHiding = true;
         } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
             // Stage already reset but silent capture still active — hide any trailing lines
             if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
@@ -849,38 +851,48 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log(`[Parser] Suppressing line: "${textOnly.substring(0, 30)}${textOnly.length > 30 ? '...' : ''}" | Reasons: isSilent=${isSilentCapture.current}, isDrawerHiding=${isDrawerHiding}, stage=${captureStage.current}`);
         }
 
+        // Always determine msgType for state-updating list entries, even if not showing in main log
+        let msgType: MessageType = 'game';
+        if (captureStage.current === 'who' && textOnly !== 'who:' && lower !== 'allies' && lower !== 'minions' && !textOnly.startsWith('---')) {
+            msgType = 'who-list';
+        } else if (captureStage.current === 'where' && !textOnly.startsWith('Player') && !textOnly.startsWith('Who') && !textOnly.startsWith('---')) {
+            msgType = 'where-list';
+        }
+
+        // State updates for Who/Where lists must happen regardless of shouldShow (silent background captures)
+        if (msgType === 'who-list') {
+            let clean = textOnly.trim();
+            let last = 0;
+            while (clean.length !== last) {
+                last = clean.length;
+                clean = clean.replace(/^\[.*?\]\s*/, '');
+                clean = clean.replace(/^<.*?>\s*/, '');
+                clean = clean.replace(/^\(.*?\)\s*/, '');
+                clean = clean.replace(/^\*.*?\*\s*/, '');
+                clean = clean.replace(/^\*+\s*/, '');
+            }
+            const candidate = clean.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
+            if (candidate && candidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(candidate)) {
+                setWhoList(prev => [...prev, candidate]);
+            }
+        } else if (msgType === 'where-list') {
+            const clean = textOnly.trim();
+            const parts = clean.split(/\s{2,}/);
+            const name = parts[0]?.trim().replace(/^-\s*/, '');
+            const room = parts.slice(1).join(' ').replace(/^-\s*/, '').trim();
+            if (name && /^[A-Z\u00C0-\u00DE]/.test(name) && name.length > 1) {
+                setWhereList(prev => [...prev, { name, room: room || '' }]);
+            }
+        } else if (captureStage.current === 'whois') {
+            setCharacterInfo(prev => ({ ...prev, whois: (prev.whois || '') + textOnly + '\n' }));
+        } else if (captureStage.current === 'description') {
+            setCharacterInfo(prev => ({ ...prev, description: (prev.description || '') + textOnly + '\n' }));
+        }
+
         if (shouldShow) {
             let finalRawText = cleanLine;
             if (isRoomName && !finalRawText.endsWith('\x1b[0m')) finalRawText += '\x1b[0m';
-            let msgType: MessageType = 'game';
-            if (captureStage.current === 'who' && textOnly !== 'who:' && lower !== 'allies' && lower !== 'minions' && !textOnly.startsWith('---')) msgType = 'who-list';
-            else if (captureStage.current === 'where' && !textOnly.startsWith('Player') && !textOnly.startsWith('Who') && !textOnly.startsWith('---')) msgType = 'where-list';
             addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false);
-
-            if (msgType === 'who-list') {
-                let clean = textOnly.trim();
-                let last = 0;
-                while (clean.length !== last) {
-                    last = clean.length;
-                    clean = clean.replace(/^\[.*?\]\s*/, '');
-                    clean = clean.replace(/^<.*?>\s*/, '');
-                    clean = clean.replace(/^\(.*?\)\s*/, '');
-                    clean = clean.replace(/^\*.*?\*\s*/, '');
-                    clean = clean.replace(/^\*+\s*/, '');
-                }
-                const candidate = clean.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-                if (candidate && candidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(candidate)) {
-                    setWhoList(prev => [...prev, candidate]);
-                }
-            } else if (msgType === 'where-list') {
-                const clean = textOnly.trim();
-                const parts = clean.split(/\s{2,}/);
-                const name = parts[0]?.trim().replace(/^-\s*/, '');
-                const room = parts.slice(1).join(' ').replace(/^-\s*/, '').trim();
-                if (name && /^[A-Z\u00C0-\u00DE]/.test(name) && name.length > 1) {
-                    setWhereList(prev => [...prev, { name, room: room || '' }]);
-                }
-            }
         }
 
         if (isEndPrompt) finalizeCapture();

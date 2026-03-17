@@ -229,6 +229,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isItemsOpen: s.ui.drawer === 'items',
         isCharacterOpen: s.ui.drawer === 'character',
         isStatsOpen: s.ui.drawer === 'stats',
+        isPlayersOpen: s.ui.drawer === 'players',
         mapperRef,
         btn: {
             buttonsRef: btn.buttonsRef,
@@ -350,7 +351,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         heldButton: v.heldButton,
         setHeldButton: v.setHeldButton,
         parley: s.parley,
-        setParley: s.setParley
+        setParley: s.setParley,
+        isTrackpadModifierActive: s.isTrackpadModifierActive
     });
 
     const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = controller;
