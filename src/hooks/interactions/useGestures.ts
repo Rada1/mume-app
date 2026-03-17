@@ -3,7 +3,7 @@ import { InteractionDeps } from '../useInteractionHandlers';
 export const useGestures = (deps: InteractionDeps) => {
     const {
         executeCommand, triggerHaptic, ui,
-        setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsItemsDrawerOpen
+        setIsMapExpanded, setIsCharacterOpen, setIsStatsOpen, setIsItemsDrawerOpen, setIsPlayersOpen
     } = deps;
 
     const handleInputSwipe = (dir: string) => {
@@ -30,6 +30,8 @@ export const useGestures = (deps: InteractionDeps) => {
             executeCommand('inv', true, true, true, true);
             setTimeout(() => executeCommand('eq', true, true, true, true), 150);
             setIsItemsDrawerOpen(true);
+        } else if (dir === 'sw') {
+            setIsPlayersOpen(true);
         }
     };
 

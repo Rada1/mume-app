@@ -92,7 +92,45 @@ export const drawEntities = (
         
         ctx.restore();
 
-        // 3. Walk Target & Path Highlighting
+        // 3. Client-side movement predictions (gray dots + tether lines)
+        const predictions = rCtx.clientPredictionsRef?.current;
+        if (predictions && predictions.length > 0) {
+            let fromX = px, fromY = py;
+            for (let i = 0; i < predictions.length; i++) {
+                const pred = predictions[i];
+                if (Math.abs(pred.toZ - currentZ) >= 1.0) { fromX = pred.toX * GRID_SIZE + GRID_SIZE / 2; fromY = pred.toY * GRID_SIZE + GRID_SIZE / 2; continue; }
+                const toX = pred.toX * GRID_SIZE + GRID_SIZE / 2;
+                const toY = pred.toY * GRID_SIZE + GRID_SIZE / 2;
+                const alpha = Math.max(0.25, 0.85 - i * 0.18);
+
+                // Dashed tether line
+                ctx.save();
+                ctx.globalAlpha = alpha * 0.7;
+                ctx.strokeStyle = '#aaaaaa';
+                ctx.lineWidth = 1.5 / rCtx.camera.zoom;
+                ctx.setLineDash([4 / rCtx.camera.zoom, 4 / rCtx.camera.zoom]);
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                ctx.lineTo(toX, toY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.restore();
+
+                // Gray prediction dot
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#aaaaaa';
+                ctx.beginPath();
+                ctx.arc(toX, toY, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                fromX = toX;
+                fromY = toY;
+            }
+        }
+
+        // 4. Walk Target & Path Highlighting
         const walkId = rCtx.walkTargetId;
         if (walkId) {
             const room = allRooms[walkId] || allRooms[`m_${walkId}`];

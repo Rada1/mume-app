@@ -39,7 +39,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-    const { activeDragData, setUI } = useGame();
+    const { activeDragData } = useGame();
+    const { setUI, ui } = useUI();
     const { isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useVitals();
 
     // Enable pointer events on this drawer for ANY native HTML5 drag on the page, not just

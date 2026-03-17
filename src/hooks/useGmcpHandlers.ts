@@ -44,6 +44,7 @@ interface GmcpHandlersProps {
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
     setGroupMembers: React.Dispatch<React.SetStateAction<GroupMember[]>>;
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    detectLighting?: (symbol: string | number) => void;
 }
 
 export const useGmcpHandlers = ({
@@ -73,7 +74,8 @@ export const useGmcpHandlers = ({
     roomPlayers,
     roomNpcs,
     setGroupMembers,
-    setMumeEditState
+    setMumeEditState,
+    detectLighting
 }: GmcpHandlersProps) => {
 
     // --- Room Info & Exits ---
@@ -83,6 +85,13 @@ export const useGmcpHandlers = ({
         const terrain = data.terrain || data.environment;
         if (terrain) setCurrentTerrain(terrain);
         if (data.name) setRoomName(data.name);
+        
+        // Drive lighting from GMCP Room Info
+        const light = data.light ?? data.l;
+        if (light !== undefined && light !== null && detectLighting) {
+            detectLighting(light);
+        }
+
         if (data.exits) {
             setRoomExits(Object.keys(data.exits));
         }
@@ -129,6 +138,10 @@ export const useGmcpHandlers = ({
                 window.dispatchEvent(new CustomEvent('mume-mapper-terrain', { detail: data.terrain }));
             }
             setCurrentTerrain(data.terrain);
+        }
+
+        if (data.light !== undefined && data.light !== null && detectLighting) {
+            detectLighting(data.light);
         }
 
         // --- Combat Info via Vitals ---

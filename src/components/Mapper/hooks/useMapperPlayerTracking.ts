@@ -37,11 +37,12 @@ export const useMapperPlayerTracking = (
                 if (playerTrailRef.current.length > 40) playerTrailRef.current.shift();
             }
 
-            // Initialize if null, otherwise let useMapAnimation glide X/Y
+            // Always snap to the confirmed room position immediately
             if (!playerPosRef.current) {
                 playerPosRef.current = { x: r.x, y: r.y, z: r.z || 0 };
             } else {
-                // Update Z immediately (for clipping logic) but preserve X/Y for gliding
+                playerPosRef.current.x = r.x;
+                playerPosRef.current.y = r.y;
                 playerPosRef.current.z = r.z || 0;
             }
 

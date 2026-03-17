@@ -51,7 +51,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     input, setInput, onSend, target, onTargetClick, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList
 }) => {
-    const { ui } = useUI();
+    const { ui, setUI } = useUI();
     const { viewport } = useBaseGame();
     const { stats: vitalsStats, setStats: setVitalsStats } = useVitals();
     const { inCombat, setActiveDragData } = useGame();
@@ -71,11 +71,26 @@ const InputArea: React.FC<InputAreaProps> = ({
             if (isSwiping.current && startPos.current) {
                 const dx = e.clientX - startPos.current.x;
                 const dy = e.clientY - startPos.current.y;
+                const absX = Math.abs(dx);
+                const absY = Math.abs(dy);
 
                 setOffset({
-                    x: Math.abs(dx) > Math.abs(dy) ? Math.max(-40, Math.min(40, dx)) : 0,
-                    y: Math.abs(dy) > Math.abs(dx) ? Math.max(-20, Math.min(20, dy)) : 0
+                    x: absX > absY ? Math.max(-40, Math.min(40, dx)) : 0,
+                    y: absY > absX ? Math.max(-20, Math.min(20, dy)) : 0
                 });
+
+                if (Math.max(absX, absY) > 20) {
+                    let peek: any = 'none';
+                    if (dx < -15 && dy > 15) peek = 'players';
+                    else if (absY > absX) peek = dy < 0 ? 'map' : 'character';
+                    else peek = dx < 0 ? 'items' : 'stats';
+                    
+                    if (ui.peekingDrawer !== peek) {
+                        setUI(prev => ({ ...prev, peekingDrawer: peek }));
+                    }
+                } else if (ui.peekingDrawer !== 'none') {
+                    setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
+                }
             }
         };
 
@@ -88,7 +103,10 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                 // High sensitivity threshold (35px) for quick flicks
                 if (Math.max(absX, absY) > 35) {
-                    if (absY > absX) {
+                    // Detect Southwest (Left and Down)
+                    if (deltaX < -25 && deltaY > 25) {
+                        onSwipe?.('sw');
+                    } else if (absY > absX) {
                         onSwipe?.(deltaY < 0 ? 'up' : 'down');
                     } else {
                         onSwipe?.(deltaX < 0 ? 'left' : 'right');
@@ -227,16 +245,34 @@ const InputArea: React.FC<InputAreaProps> = ({
                 if (isSwiping.current && startPos.current) {
                     const dx = e.clientX - startPos.current.x;
                     const dy = e.clientY - startPos.current.y;
+                    const absX = Math.abs(dx);
+                    const absY = Math.abs(dy);
 
                     // Limit the visual shift for subtle feedback
                     setOffset({
                         x: Math.abs(dx) > Math.abs(dy) ? Math.max(-40, Math.min(40, dx)) : 0,
                         y: Math.abs(dy) > Math.abs(dx) ? Math.max(-20, Math.min(20, dy)) : 0
                     });
+
+                    if (Math.max(absX, absY) > 20) {
+                        let peek: any = 'none';
+                        if (dx < -15 && dy > 15) peek = 'players';
+                        else if (absY > absX) peek = dy < 0 ? 'map' : 'character';
+                        else peek = dx < 0 ? 'items' : 'stats';
+                        
+                        if (ui.peekingDrawer !== peek) {
+                            setUI(prev => ({ ...prev, peekingDrawer: peek }));
+                        }
+                    } else if (ui.peekingDrawer !== 'none') {
+                        setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
+                    }
                 }
             }}
             onPointerUp={(e) => {
                 isSwiping.current = false;
+                if (ui.peekingDrawer !== 'none') {
+                    setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
+                }
                 if (startPos.current) {
                     const deltaX = e.clientX - startPos.current.x;
                     const deltaY = e.clientY - startPos.current.y;
@@ -245,7 +281,10 @@ const InputArea: React.FC<InputAreaProps> = ({
 
                     // High sensitivity threshold (35px) for quick flicks
                     if (Math.max(absX, absY) > 35) {
-                        if (absY > absX) {
+                        // Detect Southwest (Left and Down)
+                        if (deltaX < -25 && deltaY > 25) {
+                            onSwipe?.('sw');
+                        } else if (absY > absX) {
                             onSwipe?.(deltaY < 0 ? 'up' : 'down');
                         } else {
                             onSwipe?.(deltaX < 0 ? 'left' : 'right');
@@ -257,6 +296,9 @@ const InputArea: React.FC<InputAreaProps> = ({
             }}
             onPointerCancel={() => {
                 isSwiping.current = false;
+                if (ui.peekingDrawer !== 'none') {
+                    setUI(prev => ({ ...prev, peekingDrawer: 'none' }));
+                }
                 startPos.current = null;
                 setOffset({ x: 0, y: 0 });
             }}

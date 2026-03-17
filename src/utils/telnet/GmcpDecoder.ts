@@ -42,15 +42,15 @@ export class GmcpDecoder {
         // --- GMCP Debug Logging ---
         console.log('[GMCP] Received:', pkg, json ? json.substring(0, 200) : '(no body)');
 
-        if (pkgLower === 'char.vitals') {
+        if (pkgLower === 'char.vitals' || pkgLower === 'mume.client.vitals') {
             this.handleCharVitals(json);
-        } else if (pkgLower === 'room.info' || pkgLower === 'external.room.info' || pkgLower.endsWith('.room.info')) {
+        } else if (pkgLower === 'room.info' || pkgLower === 'external.room.info' || pkgLower === 'mume.client.room' || pkgLower.endsWith('.room.info')) {
             this.handleRoomInfo(json);
-        } else if (pkgLower === 'room.updateexits') {
+        } else if (pkgLower === 'room.updateexits' || pkgLower === 'mume.client.exits') {
             this.handleUpdateExits(json);
         } else if (pkgLower === 'room.players') {
             this.handleRoomPlayers(json);
-        } else if (pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list') {
+        } else if (pkgLower === 'room.chars' || pkgLower === 'room.chars.set' || pkgLower === 'room.chars.list' || pkgLower === 'mume.client.chars') {
             this.handleRoomNpcs(json);
             this.handleRoomCharsCombat(json);
         } else if (pkgLower === 'room.addplayer') {
@@ -61,7 +61,7 @@ export class GmcpDecoder {
             this.handleSimpleJson(json, handlers.onRemovePlayer);
         } else if (pkgLower === 'room.removechar' || pkgLower === 'room.chars.remove') {
             this.handleSimpleJson(json, handlers.onRemoveNpc);
-        } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set') {
+        } else if (pkgLower === 'room.items' || pkgLower === 'char.items' || pkgLower === 'char.inv' || pkgLower === 'room.objects' || pkgLower === 'room.items.list' || pkgLower === 'char.items.list' || pkgLower === 'room.items.set' || pkgLower === 'mume.client.inventory' || pkgLower === 'mume.client.equipment' || pkgLower === 'mume.client.roomitems') {
             this.handleRoomItems(json);
         } else if (pkgLower === 'char.name') {
             this.handleCharName(json);

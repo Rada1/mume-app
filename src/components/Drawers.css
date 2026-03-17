@@ -60,18 +60,20 @@
     position: absolute;
     top: 20px;
     bottom: 20px;
-    left: 20px;
-    width: calc((100vw - 900px) / 2);
-    min-width: 300px;
+    /* Position next to centered log (max-width 900px) */
+    /* 50vw - 450px (log half) - 420px (drawer width) - 12px (gap) */
+    left: calc(50vw - 450px - 420px - 12px);
+    width: 420px;
     background: rgba(10, 13, 21, 0.92);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     z-index: 3002;
-    transform: translateX(calc(-100% - 40px));
+    transform: translateX(-40px);
+    opacity: 0;
     visibility: hidden;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.4s;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0s 0.4s;
     display: flex;
     flex-direction: column;
     box-shadow: 10px 0 40px rgba(0, 0, 0, 0.5);
@@ -82,13 +84,26 @@
 
 .map-drawer-desktop.open {
     transform: translateX(0);
+    opacity: 1;
     visibility: visible;
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, visibility 0s 0s;
+}
+
+/* If screen is too small to fit the drawer next to log, make it flush left */
+@media (max-width: 1800px) {
+    .map-drawer-desktop {
+        left: 20px;
+        transform: translateX(calc(-100% - 40px));
+    }
+    
+    .map-drawer-desktop.open {
+        transform: translateX(0);
+    }
 }
 
 @media (max-width: 1024px) {
     .map-drawer-desktop {
-        width: 350px; /* Fallback for smaller "desktop" screens */
+        width: 380px;
     }
 }
 
@@ -109,7 +124,7 @@
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.3s;
     display: flex;
     flex-direction: column;
-    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.3);
+    box-shadow: none;
     pointer-events: none; /* Let clicks pass through empty space */
     touch-action: pan-y;
 }
@@ -401,11 +416,21 @@
     user-select: none;
 }
 
-@media (max-width: 768px) {
+/* Allow peeking on mobile */
+.desktop-edge-tab.peeking {
+    display: flex !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 20px var(--accent);
+    border-color: var(--accent);
+}
+
+.desktop-edge-tab.peeking.left { transform: translateY(-50%) translateX(0) !important; }
+.desktop-edge-tab.peeking.right { transform: translateY(-50%) translateX(0) !important; }
+.desktop-edge-tab.peeking.top { transform: translateX(-50%) translateY(0) !important; }
+
+@media (min-width: 1024px) {
     .desktop-edge-tab {
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        background: rgba(0, 0, 0, 0.8);
+        display: flex;
     }
 }
 

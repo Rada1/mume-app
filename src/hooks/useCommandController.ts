@@ -33,6 +33,7 @@ export interface CommandControllerDeps {
     setIsCharacterOpen: (open: boolean) => void;
     setIsStatsOpen: (open: boolean) => void;
     setIsItemsDrawerOpen: (open: boolean) => void;
+    setIsPlayersOpen: (open: boolean) => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'help') => void;
     setIsMapExpanded: (open: boolean) => void;
@@ -110,7 +111,8 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
         ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
-        isTrackpadModifierActive: deps.isTrackpadModifierActive
+        isTrackpadModifierActive: deps.isTrackpadModifierActive,
+        setIsPlayersOpen: deps.setIsPlayersOpen
     });
 
     const handleSend = useCallback((e?: React.FormEvent) => {

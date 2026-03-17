@@ -34,6 +34,7 @@ interface RendererProps {
     walkPath?: string[];
     showOrganicTerrain?: boolean;
     triggerRender?: () => void;
+    clientPredictionsRef?: MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
 }
 
 export const useMapperRenderer = ({
@@ -42,7 +43,7 @@ export const useMapperRenderer = ({
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, renderVersion,
     unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
-    triggerRender,
+    triggerRender, clientPredictionsRef,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -270,7 +271,7 @@ export const useMapperRenderer = ({
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
-            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef
+            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef
         };
 
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);

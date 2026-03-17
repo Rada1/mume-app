@@ -90,6 +90,7 @@ export const useGameProviderState = () => {
     const [ui, setUI] = useState<{
         drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
+        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -98,6 +99,7 @@ export const useGameProviderState = () => {
     }>({
         drawer: 'none',
         isDrawerPeeking: false,
+        peekingDrawer: 'none',
         setManagerOpen: false,
         mapExpanded: false,
         isMenuOpen: false,

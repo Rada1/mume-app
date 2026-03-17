@@ -32,6 +32,7 @@ export interface InteractionDeps {
     setIsItemsDrawerOpen: (val: boolean) => void;
     setIsSettingsOpen: (val: boolean) => void;
     setIsStatsOpen: (val: boolean) => void;
+    setIsPlayersOpen: (val: boolean) => void;
     setSettingsTab: (val: any) => void;
     setInventoryLines: (val: any) => void;
     setEqLines: (val: any) => void;

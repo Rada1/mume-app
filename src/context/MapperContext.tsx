@@ -38,6 +38,7 @@ interface MapperContextType {
     handleMoveConfirmed: (e?: any) => void;
     handleMoveFailure: () => void;
     preMoveRef: React.MutableRefObject<{ dir: string, targetId: string, time: number } | null>;
+    clientPredictionsRef: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
     spatialIndexRef: React.MutableRefObject<any>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
     triggerRender: () => void;
@@ -100,6 +101,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Refs
     const pendingMovesRef = useRef<{ dir: string, time: number, resolved?: boolean }[]>([]);
     const preMoveRef = useRef<{ dir: string, targetId: string, time: number } | null>(null);
+    const clientPredictionsRef = useRef<Array<{ toId: string, toX: number, toY: number, toZ: number }>>([]);
     const lastDetectedTerrainRef = useRef<string | null>(null);
     const discoverySourceRef = useRef<string | null>(null);
     const firstExploredAtRef = useRef<Record<string, number>>({});
@@ -177,7 +179,12 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const onRoomInfoProcessed = useCallback(() => {
         preMoveRef.current = null;
-    }, []);
+        // GMCP confirmed a move — consume the first prediction
+        if (clientPredictionsRef.current.length > 0) {
+            clientPredictionsRef.current = clientPredictionsRef.current.slice(1);
+            triggerRender();
+        }
+    }, [triggerRender]);
 
     // Stabilized GMCP Handlers to prevent listener churn
     const masterHandlers = useMapGmcphandlers({
@@ -196,11 +203,49 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         const moveId = Math.random().toString(36).substring(7);
         const move = { id: moveId, dir, time: now, resolved: false, seq: Math.floor(now % 10000) };
         pendingMovesRef.current.push(move);
-        
+
         if (showDebugEchoes) {
             addMessage?.('system', `[Mapper] Action: ${dir} (ID: ${moveId}, Queue: ${pendingMovesRef.current.length})`);
         }
-    }, [showDebugEchoes, addMessage]);
+
+        // Client-side prediction: chain off last prediction's room (or current confirmed room)
+        const predictions = clientPredictionsRef.current;
+        if (predictions.length < 8) { // Cap to prevent runaway spam chains
+            const fromId = predictions.length > 0
+                ? predictions[predictions.length - 1].toId
+                : currentRoomIdRef.current;
+
+            if (fromId) {
+                let toId: string | null = null;
+                let toX: number | undefined, toY: number | undefined, toZ: number | undefined;
+
+                const fromRoom = roomsRef.current[fromId];
+                if (fromRoom?.exits?.[dir]?.target) {
+                    toId = fromRoom.exits[dir].target;
+                }
+                if (!toId) {
+                    const rawFromId = fromId.startsWith('m_') ? fromId.substring(2) : fromId;
+                    const arda = preloadedCoordsRef.current[rawFromId];
+                    if (arda?.[4]?.[dir]) toId = `m_${String(arda[4][dir])}`;
+                }
+
+                if (toId) {
+                    const toRoom = roomsRef.current[toId];
+                    if (toRoom) {
+                        toX = toRoom.x; toY = toRoom.y; toZ = toRoom.z || 0;
+                    } else {
+                        const rawToId = toId.startsWith('m_') ? toId.substring(2) : toId;
+                        const p = preloadedCoordsRef.current[rawToId];
+                        if (p) { toX = p[0]; toY = p[1]; toZ = p[2] || 0; }
+                    }
+                    if (toX !== undefined) {
+                        clientPredictionsRef.current = [...predictions, { toId, toX, toY: toY!, toZ: toZ! }];
+                        triggerRender();
+                    }
+                }
+            }
+        }
+    }, [showDebugEchoes, addMessage, currentRoomIdRef, roomsRef, preloadedCoordsRef, triggerRender]);
 
     const handleMoveConfirmed = useCallback((e?: any) => {
         const isDark = e?.detail?.isDark || false;
@@ -270,7 +315,11 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [setCurrentRoomId, currentRoomIdRef, roomsRef, preloadedCoordsRef, setRooms, triggerRender]);
 
     const handleMoveFailure = useCallback(() => {
-        pendingMovesRef.current.shift(); preMoveRef.current = null; triggerRender();
+        pendingMovesRef.current.shift();
+        preMoveRef.current = null;
+        // Move failed — clear all predictions since the chain is now invalid
+        clientPredictionsRef.current = [];
+        triggerRender();
     }, [triggerRender]);
 
     // Global Event Listeners
@@ -348,7 +397,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         unveilMap, setUnveilMap, allowPersistence, setAllowPersistence,
         handleResetAndSync, handleClearMap, handleSyncLocation,
         handleAddRoom, handleDeleteRoom, pushPendingMove,
-        handleMoveConfirmed, handleMoveFailure, preMoveRef,
+        handleMoveConfirmed, handleMoveFailure, preMoveRef, clientPredictionsRef,
         triggerRender, renderVersion,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,

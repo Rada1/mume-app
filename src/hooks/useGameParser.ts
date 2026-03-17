@@ -293,6 +293,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 finalizeCapture();
             }
 
+            // Drive lighting and terrain from GMCP instead of prompt symbols
+            /*
             const symbolMatch = promptPart.match(/[\*\)\!oO\.\[f%\~+WU:=O\#\?\(]/);
             if (symbolMatch) {
                 const symbol = symbolMatch[0];
@@ -301,6 +303,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                     deps.setCurrentTerrain(symbol);
                 }
             }
+            */
 
 
             // --- Combat Health Extraction ---
@@ -313,6 +316,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 'wounded': 'Wounded',
                 'bad': 'Badly Wounded',
                 'awful': 'Awful',
+                'stunned': 'Stunned',
                 'dying': 'Dying',
                 'bleeding': 'Dying'
             };
@@ -326,13 +330,14 @@ export function useGameParser(deps: UseGameParserDeps) {
             };
 
             // 1. Player Health
+            // MUME omits HP token entirely when player is healthy — treat absence as Healthy (5 segments)
             const playerMatch = promptPart.match(/HP:(\w+)/i);
             if (playerMatch) {
                 const status = findStatus(playerMatch[1]);
                 console.log('[Parser] Player Health Status:', status);
-                setPlayerHealthStatus(status);
+                setPlayerHealthStatus(status ?? 'Healthy');
             } else {
-                setPlayerHealthStatus(null);
+                setPlayerHealthStatus('Healthy');
             }
 
             // 2. Buffer Health/Name

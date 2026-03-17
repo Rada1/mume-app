@@ -55,6 +55,7 @@ export interface UIContextType {
     ui: {
         drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
+        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;
@@ -64,6 +65,7 @@ export interface UIContextType {
     setUI: Dispatch<SetStateAction<{
         drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
+        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
         setManagerOpen: boolean;
         mapExpanded: boolean;
         isMenuOpen: boolean;

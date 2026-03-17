@@ -25,6 +25,7 @@ export interface RenderContext {
     walkPath?: string[];
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     triggerRender?: () => void;
+    clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

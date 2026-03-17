@@ -144,6 +144,24 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const containerRef = useRef<HTMLDivElement>(null);
     const mapperRef = useRef<MapperRef>(null);
+    
+    const env = useEnvironment({
+        lighting,
+        setLighting: s.setLighting,
+        lightningEnabled,
+        setLightningEnabled: s.setLightningEnabled,
+        weather,
+        setWeather: s.setWeather,
+        isFoggy,
+        setIsFoggy: s.setIsFoggy,
+        mood: s.mood,
+        setMood: s.setMood,
+        spellSpeed: s.spellSpeed,
+        setSpellSpeed: s.setSpellSpeed,
+        alertness: s.alertness,
+        setAlertness: s.setAlertness,
+        setDetectLighting: (fn) => { /* internal use */ }
+    });
 
     const gmcpHandlers = useGmcpHandlers({
         mapperRef,
@@ -172,7 +190,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomPlayers: s.roomPlayers,
         roomNpcs: s.roomNpcs,
         setGroupMembers: s.setGroupMembers,
-        setMumeEditState: s.setMumeEditState
+        setMumeEditState: s.setMumeEditState,
+        detectLighting: env.detectLighting
     });
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
@@ -181,23 +200,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);
-    const env = useEnvironment({
-        lighting,
-        setLighting: s.setLighting,
-        lightningEnabled,
-        setLightningEnabled: s.setLightningEnabled,
-        weather,
-        setWeather: s.setWeather,
-        isFoggy,
-        setIsFoggy: s.setIsFoggy,
-        mood: s.mood,
-        setMood: s.setMood,
-        spellSpeed: s.spellSpeed,
-        setSpellSpeed: s.setSpellSpeed,
-        alertness: s.alertness,
-        setAlertness: s.setAlertness,
-        setDetectLighting: (fn) => { /* internal use */ }
-    });
 
     const practice = usePracticeHandler(s.setAbilities);
 
@@ -347,6 +349,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsStatsOpen: s.setIsStatsOpen,
         setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
         setIsMapExpanded: s.setIsMapExpanded,
+        setIsPlayersOpen: s.setIsPlayersOpen,
         viewport,
         ui: s.ui as any,
         setUI: s.setUI as any,

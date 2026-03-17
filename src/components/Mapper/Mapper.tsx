@@ -183,6 +183,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 viewZ={viewZ}
                 firstExploredAtRef={context.firstExploredAtRef}
                 preMoveRef={context.preMoveRef}
+                clientPredictionsRef={context.clientPredictionsRef}
                 walkTargetId={walkTargetId}
                 walkPath={walkPath}
                 baseMapExitsRef={context.baseMapExitsRef}

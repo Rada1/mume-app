@@ -12,7 +12,6 @@ import { XboxCluster } from './HUD/XboxCluster';
 import { LineCluster } from './HUD/LineCluster';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
-import { GroupDrawer } from './HUD/GroupDrawer';
 import { MumeEditor } from '../MumeEditor';
 
 interface HUDClustersLayerProps {

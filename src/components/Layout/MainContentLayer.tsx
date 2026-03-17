@@ -11,7 +11,7 @@ interface MainContentLayerProps {
     handleLogPointerDown: (e: React.PointerEvent) => void;
     handleLogPointerUp: (e: React.PointerEvent) => void;
     handleSend: (e?: React.FormEvent) => void;
-    handleInputSwipe: (dir: 'up' | 'down' | 'left' | 'right') => void;
+    handleInputSwipe: (dir: 'up' | 'down' | 'left' | 'right' | 'sw') => void;
     commandPreview: string | null;
     setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
     heldButton: any;
