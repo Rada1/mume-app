@@ -243,7 +243,38 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     };
 
     return (
-        <div className={`inventory-drawer ${isOpen ? 'open' : ''}`} style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'none' }}>
+        <div 
+            className={`inventory-drawer lighting-state-${lighting} ${isOpen ? 'open' : ''}`} 
+            style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'none' }}
+            onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
+            onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
+                if (!dataStr) return;
+                
+                let data;
+                try { data = JSON.parse(dataStr); } catch (err) { return; }
+                
+                if (data && data.type === 'inline-btn' && data.context) {
+                    const target = document.elementFromPoint(e.clientX, e.clientY);
+                    const targetBtn = target?.closest('.inline-btn.auto-item');
+                    const isTargetContainer = targetBtn?.classList.contains('is-container');
+                    const targetName = targetBtn?.getAttribute('data-item-name');
+
+                    triggerHaptic(60);
+                    if (isTargetContainer && targetName) {
+                        executeCommand(`get ${data.context}`, true, true);
+                        setTimeout(() => executeCommand(`put ${data.context} ${targetName}`), 125);
+                    } else {
+                        executeCommand(`get ${data.context}`);
+                    }
+                }
+            }}
+        >
             {draggedItem && (
                 <div 
                     ref={ghostRef}

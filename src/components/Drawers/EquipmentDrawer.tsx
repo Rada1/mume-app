@@ -535,6 +535,34 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         <div 
             ref={drawerRef} 
             className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape' : ''}`}
+            onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }}
+            onDrop={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
+                if (!dataStr) return;
+                
+                let data;
+                try { data = JSON.parse(dataStr); } catch (err) { return; }
+                
+                if (data && data.type === 'inline-btn' && data.context) {
+                    const target = document.elementFromPoint(e.clientX, e.clientY);
+                    const targetBtn = target?.closest('.inline-btn.auto-item');
+                    const isTargetContainer = targetBtn?.classList.contains('is-container');
+                    const targetName = targetBtn?.getAttribute('data-item-name');
+
+                    triggerHaptic(60);
+                    if (isTargetContainer && targetName) {
+                        executeCommand(`get ${data.context}`, true, true);
+                        setTimeout(() => executeCommand(`put ${data.context} ${targetName}`), 125);
+                    } else {
+                        executeCommand(`get ${data.context}`);
+                    }
+                }
+            }}
             onPointerDown={(e) => {
                 const target = e.target as HTMLElement;
                 if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.closest('.drawer-checkbox') || target.tagName === 'INPUT') return;
@@ -560,7 +588,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             onPointerCancel={(e) => {
                 (e.currentTarget as any)._startX = null;
             }}
-            style={{ touchAction: 'pan-y' }}
+            style={{ touchAction: 'pan-y', ...(activeDragData ? { pointerEvents: 'auto' } : {}) }}
         >
             <div className="drawer-header" style={{ 
                 display: 'flex', 

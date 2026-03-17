@@ -98,7 +98,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             
             if (currentStage === 'practice') {
                 console.log('[Parser] Practice capture complete. Finalizing...');
-                deps.practice.finalizePractice(addMessage);
+                // Don't flush practice lines to the log if the character drawer is open
+                // (isDrawerCapture or isSilentCapture indicate drawer-triggered or character-open context)
+                const suppressPracticeLog = isDrawerCapture.current > 0 || isSilentCapture.current > 0 || deps.practice.silentSyncPendingRef.current;
+                deps.practice.finalizePractice(suppressPracticeLog ? undefined : addMessage);
                 deps.practice.setIsPracticeActive(false);
                 deps.practice.setIsUiRequested(false);
             } else if (currentStage === 'shop') {
@@ -154,12 +157,12 @@ export function useGameParser(deps: UseGameParserDeps) {
         // These check the fresh line to see if we should ENTER a new capture stage.
         const strippedLower = (attachedText || textOnly).toLowerCase();
         if (lower.includes('skill') && lower.includes('knowledge') && lower.includes('difficulty')) {
-            if (deps.practice.isUiRequested || lower.includes('class')) {
+            if (deps.practice.isUiRequested || lower.includes('class') || deps.practice.silentSyncPendingRef.current) {
                 if (captureStage.current === 'practice') return;
                 if (captureStage.current !== 'none') finalizeCapture();
                 console.log('[Parser] Entering Stage: practice'); addDiagnosticLog?.('Entering Stage: practice');
                 (captureStage as any).current = 'practice';
-                if (deps.practice.isUiRequested) isSilentCapture.current = 1;
+                if (deps.practice.isUiRequested || deps.practice.silentSyncPendingRef.current) isSilentCapture.current = 1;
             }
         }
         else if (lower.includes('practice sessions left')) {
@@ -167,9 +170,13 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: practice'); addDiagnosticLog?.('Entering Stage: practice');
             (captureStage as any).current = 'practice';
-            if (deps.isCharacterOpen) isSilentCapture.current = 1;
+            if (deps.isCharacterOpen || deps.practice.silentSyncPendingRef.current) isSilentCapture.current = 1;
         }
-        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest') || lower.includes('not found any new quests') || lower.includes('no unfinished quests') || quests.activeQuests?.some(q => q.name.toLowerCase().trim().replace(/\s+/g, ' ') === lower.trim().replace(/\s+/g, ' '))) {
+        else if (lower.includes('learnt of a quest') || lower.includes('unfinished quest') || lower.includes('not found any new quests') || lower.includes('no unfinished quests') || quests.activeQuests?.some(q => {
+            const qName = q.name.toLowerCase().trim().replace(/\s+/g, ' ');
+            const lName = lower.trim().replace(/\s+/g, ' ');
+            return qName === lName || lName.includes(qName) || qName.includes(lName);
+        })) {
             if (captureStage.current === 'quest') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: quest'); addDiagnosticLog?.('Entering Stage: quest');
@@ -208,6 +215,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: stat'); addDiagnosticLog?.('Entering Stage: stat');
             isWaitingForStats.current = false; (captureStage as any).current = 'stat';
+            setStatsLines([]);
             if (deps.isCharacterOpen) isDrawerCapture.current = 1;
         }
         else if ((isWaitingForEq.current || captureStage.current === 'none') && (/you are using|you are equipped with/i.test(lower) || (isWaitingForEq.current && lower.startsWith('<')))) {
@@ -215,6 +223,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: eq'); addDiagnosticLog?.('Entering Stage: eq');
             isWaitingForEq.current = false; (captureStage as any).current = 'eq';
+            setEqLines([]);
             tempEqRef.current = []; if (deps.isCharacterOpen) isDrawerCapture.current = 1;
         }
         else if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains|is carrying:|is using:/i.test(lower)) {
@@ -222,6 +231,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: inv'); addDiagnosticLog?.('Entering Stage: inv');
             isWaitingForInv.current = false; (captureStage as any).current = 'inv';
+            setInventoryLines([]);
             tempInvRef.current = []; if (deps.isItemsOpen) isDrawerCapture.current = 1;
         }
         else if ((lower.startsWith('you are a ') && (lower.includes('person') || lower.includes('being'))) || 
@@ -297,6 +307,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             // Example: [ cW HP:Fine *a Dwarf* (x):Hurt>
             // Example with buffer: [ cW HP:Fine (Buff:Fine) *a Dwarf* (x):Hurt>
             const healthMap: Record<string, CombatHealthStatus> = {
+                'healthy': 'Healthy',
                 'fine': 'Fine',
                 'hurt': 'Hurt',
                 'wounded': 'Wounded',
@@ -350,24 +361,19 @@ export function useGameParser(deps: UseGameParserDeps) {
                 } else {
                     setOpponentHealthStatus(null);
                     setOpponentName(null);
+                    setInCombat(false); // No valid opponent — start the 5s latch
                 }
             } else {
                 setOpponentHealthStatus(null);
                 setOpponentName(null);
+                setInCombat(false); // No opponent in prompt — start the 5s latch
             }
-            
+
             // 4. Move Status
             const moveStatusMatch = promptPart.match(/(?:MV|T):(\w+)/i);
             if (moveStatusMatch) {
                 const status = moveStatusMatch[1].toLowerCase();
                 setStats(p => ({ ...p, staminaStatus: status }));
-            }
-
-            // Trigger combat only if we see a clear opponent pattern at the end
-            // Ignore if it's just HP:Fine or T:Tired
-            const hasExplicitOpponent = oppMatch && findStatus(oppMatch[3]) && !/^(hp|m|v|t|e|w|move|mana|tired)$/i.test((oppMatch[1] || oppMatch[2] || "").trim());
-            if (hasExplicitOpponent) {
-                setInCombat(true);
             }
 
             if (!attachedText) {

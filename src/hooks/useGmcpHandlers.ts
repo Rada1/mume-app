@@ -101,7 +101,7 @@ export const useGmcpHandlers = ({
     const findStatus = useCallback((str: string | undefined): CombatHealthStatus | null => {
         if (!str) return null;
         const s = str.toLowerCase();
-        if (s.includes('healthy')) return 'Fine';
+        if (s.includes('healthy')) return 'Healthy';
         if (s.includes('fine')) return 'Fine';
         if (s.includes('hurt')) return 'Hurt';
         if (s.includes('wounded')) return 'Wounded';

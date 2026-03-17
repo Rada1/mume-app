@@ -100,8 +100,9 @@
 }
 
 .onboarding-dot.active {
-    background: #4a90e2;
-    transform: scale(1.2);
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    transform: scale(1.3);
 }
 
 .onboarding-actions {
@@ -114,29 +115,32 @@
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .onboarding-btn.primary {
-    background: #4a90e2;
-    color: white;
+    background: var(--accent);
+    color: #000;
     border: none;
 }
 
 .onboarding-btn.primary:hover {
-    background: #357abd;
+    filter: brightness(1.1);
+    transform: translateY(-1px);
 }
 
 .onboarding-btn.secondary {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .onboarding-btn.secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
 }

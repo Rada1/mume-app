@@ -302,9 +302,9 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                             style={{
                                                 padding: '4px 8px',
                                                 borderRadius: '6px',
-                                                border: mood === 'berserk' ? '1px solid var(--accent)' : '1px solid rgba(255,255,255,0.2)',
-                                                background: mood === 'berserk' ? 'rgba(74, 222, 128, 0.2)' : 'transparent',
-                                                color: mood === 'berserk' ? 'var(--accent)' : '#fff',
+                                                border: mood === 'berserk' ? '1px solid #ef4444' : '1px solid rgba(255,255,255,0.2)',
+                                                background: mood === 'berserk' ? 'rgba(153, 27, 27, 0.4)' : 'transparent',
+                                                color: mood === 'berserk' ? '#fca5a5' : '#fff',
                                                 fontSize: '0.55rem',
                                                 fontWeight: 'bold',
                                                 cursor: 'pointer'

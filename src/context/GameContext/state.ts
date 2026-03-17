@@ -216,6 +216,26 @@ export const useGameProviderState = () => {
     const [playerPosition, setPlayerPosition] = useState('standing');
     const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
 
+    // Global listener for replaying onboarding
+    useEffect(() => {
+        const handleReplay = () => {
+            console.log('[Onboarding] Triggering replay...');
+            setHasSeenOnboarding(false);
+            // Close other UI elements that might block it
+            setUI(prev => ({ 
+                ...prev, 
+                setManagerOpen: false, 
+                isMenuOpen: false, 
+                drawer: 'none' 
+            }));
+            // Settings modal is usually managed by useUI in context, 
+            // but we can broadcast another event for components to react
+            window.dispatchEvent(new CustomEvent('mume-close-settings'));
+        };
+        window.addEventListener('mume-replay-onboarding', handleReplay);
+        return () => window.removeEventListener('mume-replay-onboarding', handleReplay);
+    }, [setHasSeenOnboarding]);
+
     // Parser State
     const [inventoryLines, setInventoryLines] = useState<DrawerLine[]>([]);
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);

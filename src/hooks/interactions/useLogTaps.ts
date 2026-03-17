@@ -353,7 +353,14 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     setHeldButton((prev: any) => prev ? { ...prev, x: moveEvent.clientX, y: moveEvent.clientY } : null);
 
                     // --- Drawer Peeking Logic ---
-                    if (moveEvent.clientX > window.innerWidth - 80) {
+                    // Use bounding rect of the drawer to detect hover (works even with pointer-events: none)
+                    const drawerElMove = document.querySelector('.right-drawer') as HTMLElement | null;
+                    const drawerRectMove = drawerElMove?.getBoundingClientRect();
+                    const isOverDrawerMove = !!(drawerRectMove &&
+                        moveEvent.clientX >= drawerRectMove.left && moveEvent.clientX <= drawerRectMove.right &&
+                        moveEvent.clientY >= drawerRectMove.top && moveEvent.clientY <= drawerRectMove.bottom);
+
+                    if (isOverDrawerMove || moveEvent.clientX > window.innerWidth - 80) {
                         setUI((prev: any) => prev.isDrawerPeeking ? prev : { ...prev, isDrawerPeeking: true });
                     } else if (moveEvent.clientX < window.innerWidth - 150) {
                         setUI((prev: any) => !prev.isDrawerPeeking ? prev : { ...prev, isDrawerPeeking: false });
@@ -362,7 +369,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     // --- Label & Preview Logic ---
                     moveCountRef.current++;
                     if (moveCountRef.current % 2 === 0) {
-                        const isNearEdge = moveEvent.clientX > window.innerWidth - 80;
+                        const isNearEdge = isOverDrawerMove || moveEvent.clientX > window.innerWidth - 80;
 
                         if (isNearEdge) {
                              // "Get" takes priority at the edge for drawers
@@ -439,25 +446,38 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
                 if (isLogDraggingRef.current) {
                     const targetUnderPointer = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
-                    const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter');
-
+                    const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter, [data-player-name]');
+                        
                     if (recipient && !recipient.classList.contains('dragging')) {
-                        const recipientName = recipient.getAttribute('data-context');
+                        const recipientName = recipient.getAttribute('data-context') || recipient.getAttribute('data-player-name');
                         const draggedContext = targetEl?.getAttribute('data-context');
                         if (draggedContext && recipientName) {
                             triggerHaptic(60);
                             executeCommand(`give ${draggedContext} ${recipientName}`);
                         }
-                    } else if (upEvent.clientX > window.innerWidth - 80) {
+                    } else {
+                        const drawerContainer = targetUnderPointer?.closest('.is-container');
                         const draggedContext = targetEl?.getAttribute('data-context');
-                        if (draggedContext) {
+
+                        // Use bounding rect to detect drops on the drawer — elementFromPoint misses
+                        // the .right-drawer container when it has pointer-events: none (open state)
+                        const drawerElUp = document.querySelector('.right-drawer') as HTMLElement | null;
+                        const drawerRectUp = drawerElUp?.getBoundingClientRect();
+                        const isOverDrawerUp = !!(drawerRectUp &&
+                            upEvent.clientX >= drawerRectUp.left && upEvent.clientX <= drawerRectUp.right &&
+                            upEvent.clientY >= drawerRectUp.top && upEvent.clientY <= drawerRectUp.bottom);
+
+                        if (drawerContainer && draggedContext) {
+                            const containerName = drawerContainer.getAttribute('data-item-name');
+                            if (containerName) {
+                                triggerHaptic(60);
+                                executeCommand(`get ${draggedContext}`, true, true);
+                                setTimeout(() => executeCommand(`put ${draggedContext} ${containerName}`), 125);
+                            }
+                        } else if (draggedContext && (isOverDrawerUp || upEvent.clientX > window.innerWidth - 80)) {
                             triggerHaptic(40);
                             executeCommand(`get ${draggedContext}`);
-                        }
-                    } else {
-                        const targetUnderPointer = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
-                        if (targetUnderPointer?.closest('.input-area')) {
-                            const draggedContext = targetEl?.getAttribute('data-context');
+                        } else if (targetUnderPointer?.closest('.input-area')) {
                             if (draggedContext) {
                                 triggerHaptic(30);
                                 const trimmed = input.trim();

@@ -5,6 +5,9 @@ export function usePracticeHandler(
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void
 ) {
     const isPracticeActiveRef = useRef(false);
+    // Set when a silent/system practice command is issued (e.g. on initial connect).
+    // Survives intermediate prompt-triggered finalizations so the response is always suppressed.
+    const silentSyncPendingRef = useRef(false);
     const [isPracticeActive, setIsPracticeActiveState] = useState(false);
     const setIsPracticeActive = useCallback((val: boolean) => {
         isPracticeActiveRef.current = val;
@@ -115,7 +118,13 @@ export function usePracticeHandler(
 
         console.log('[PracticeHandler] Finalizing practice capture. Parsed skills:', skillsToSet.length);
         
+        // Always clear the log buffer so stale entries don't accumulate across captures
+        practiceLogBufferRef.current = [];
+
         if (skillsToSet.length > 0) {
+            // Real data received — clear the pending silent sync flag
+            silentSyncPendingRef.current = false;
+
             setPracticeData(prev => prev ? {
                 ...prev,
                 skills: skillsToSet
@@ -133,7 +142,6 @@ export function usePracticeHandler(
             });
 
             if (addMessage && logBuffer.length > 0) {
-                practiceLogBufferRef.current = [];
                 setTimeout(() => {
                     logBuffer.forEach((msg, idx) => {
                         if (msg.type === 'header') {
@@ -165,6 +173,8 @@ export function usePracticeHandler(
         isUiRequested,
         setIsUiRequested,
         finalizePractice,
-        addToLogBuffer
+        addToLogBuffer,
+        silentSyncPendingRef,
+        setSilentSyncPending: (val: boolean) => { silentSyncPendingRef.current = val; }
     };
 }

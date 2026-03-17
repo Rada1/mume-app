@@ -6,33 +6,39 @@ import './OnboardingOverlay.css';
 const STEPS = [
     {
         id: 'welcome',
-        title: 'Welcome to MUME!',
-        description: 'This interactive tutorial will quickly show you how to navigate the world of Middle-earth.',
+        title: 'Middle-earth Awaits',
+        description: 'Welcome to MUME! This interactive tutorial will guide you through our AI-powered interface designed for seamless play.',
         spotlight: null,
     },
     {
         id: 'mapper',
-        title: 'The Mapper',
-        description: 'At the top right, you have your automated map. It tracks your movement and reveals the world as you explore.',
-        spotlight: '.mapper-container',
+        title: 'The Automated Mapper',
+        description: 'Your location is tracked in real-time. The map reveals the world as you explore, featuring organic terrain animations and fog of war.',
+        spotlight: '.mapper-cluster',
     },
     {
         id: 'vitals',
-        title: 'Vitals & Status',
-        description: 'Your health, mana, and moves are displayed at the top. Keep a close eye on these during combat!',
-        spotlight: '.vitals-container',
+        title: 'Vitals & Environment',
+        description: 'Your HP, Mana, and Moves are pinned here. Look for environmental indicators—Weather and Lighting shift dynamically and affect the UI.',
+        spotlight: '.modern-vitals-container',
     },
     {
         id: 'hud',
-        title: 'Tactical Controls',
-        description: 'Default action sets are located here. You can swipe these buttons to perform different actions or click to execute.',
-        spotlight: '.hud-clusters',
+        title: 'Tactical Control Clusters',
+        description: 'These buttons handle complex actions. Swipe them for variants, or use the drag-and-drop system to manage items directly from the log.',
+        spotlight: '.hud-clusters-absolute-layer',
     },
     {
         id: 'input',
-        title: 'Command Input',
-        description: 'Type commands here. You can also swipe the input bar left or right to cycle through your history.',
+        title: 'Interactive Command Bar',
+        description: 'Type commands or use swipe gestures to cycle history. Tap the @Target badge to quickly insert your current focus into any command.',
         spotlight: '.input-container',
+    },
+    {
+        id: 'drawers',
+        title: 'Immersive Side Drawers',
+        description: 'Swipe from the right edge or tap vitals to access your Inventory, Stats, and Quests. Everything is context-aware and state-synced.',
+        spotlight: '.desktop-edge-tab',
     }
 ];
 
@@ -109,7 +115,7 @@ export const OnboardingOverlay: React.FC = () => {
 
                     <div className="onboarding-actions">
                         {currentStep > 0 && (
-                            <button className="onboarding-btn secondary" onClick={handlePrev}>
+                            <button className="onboarding-btn secondary" onClick={handlePrev} style={{ marginRight: '10px' }}>
                                 <ChevronLeft size={16} /> Back
                             </button>
                         )}

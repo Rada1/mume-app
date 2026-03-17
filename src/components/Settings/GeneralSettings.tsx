@@ -515,6 +515,29 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                 </div>
             </div>
 
+            <div className="setting-group" style={{ 
+                border: '1px solid var(--accent)', 
+                background: 'rgba(var(--accent-rgb), 0.05)', 
+                padding: '15px', 
+                borderRadius: '8px', 
+                marginBottom: '20px',
+                textAlign: 'center'
+            }}>
+                <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', display: 'block', marginBottom: '10px' }}>Tutorial & Onboarding</label>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginBottom: '15px' }}>
+                    Need a refresher on how to use the client? You can replay the initial walkthrough at any time.
+                </p>
+                <button 
+                    className="btn-primary" 
+                    onClick={() => {
+                        (window as any).dispatchEvent(new CustomEvent('mume-replay-onboarding'));
+                    }}
+                    style={{ background: 'var(--accent)', color: '#000', border: 'none', padding: '8px 20px', borderRadius: '20px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                    Replay Interactive Tutorial
+                </button>
+            </div>
+
             <div className="setting-group">
                 <label className="setting-label">Background Image</label>
                 <div style={{ display: 'flex', gap: '10px' }}>

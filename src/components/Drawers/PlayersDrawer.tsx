@@ -57,7 +57,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
     const isFav = (name: string) => favorites.includes(name.toLowerCase());
 
     const PlayerRow = ({ name, isFavorite }: { name: string, isFavorite: boolean }) => (
-        <div className="player-row">
+        <div className="player-row" data-player-name={name}>
             <button 
                 className="player-name-btn"
                 onClick={(e) => handlePlayerClick(e, name)}
@@ -82,6 +82,30 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
             <div
                 className={`character-drawer-content ${isOpen ? 'open' : ''}`}
                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
+                onDragOver={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }}
+                onDrop={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
+                    if (!dataStr) return;
+                    
+                    let data;
+                    try { data = JSON.parse(dataStr); } catch (err) { return; }
+                    
+                    if (data && data.type === 'inline-btn' && data.context) {
+                        const target = document.elementFromPoint(e.clientX, e.clientY);
+                        const playerEl = target?.closest('[data-player-name]');
+                        const playerName = playerEl?.getAttribute('data-player-name');
+                        
+                        if (playerName) {
+                            triggerHaptic(60);
+                            executeCommand(`give ${data.context} ${playerName}`);
+                        }
+                    }
+                }}
             >
                 <div className="drawer-header" style={{ pointerEvents: 'auto' }}>
                     <div className="drawer-tabs">

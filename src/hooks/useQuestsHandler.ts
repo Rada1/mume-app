@@ -115,7 +115,8 @@ export function useQuestsHandler(
         const matchCandidate = cleanLower.replace(/^\*\s*/, ''); // Strip leading * for detail match
         const matchedQuest = !isQuestsActiveRef.current && activeQuests.find(q => {
             const qName = q.name.toLowerCase().trim().replace(/\s+/g, ' ');
-            return qName === cleanLower || qName === matchCandidate;
+            return qName === cleanLower || qName === matchCandidate || 
+                   cleanLower.includes(qName) || qName.includes(cleanLower);
         });
 
         if (matchedQuest) {
@@ -128,7 +129,8 @@ export function useQuestsHandler(
         if (isDetailActiveRef.current && currentQuestRef.current) {
             // Description continues until prompt
             // Skip repeating the title line in the full text
-            if (cleanLower !== currentQuestRef.current.name?.toLowerCase().trim().replace(/\s+/g, ' ')) {
+            const qName = currentQuestRef.current.name?.toLowerCase().trim().replace(/\s+/g, ' ');
+            if (qName && cleanLower !== qName && !cleanLower.includes(qName) && !qName.includes(cleanLower)) {
                 currentQuestRef.current.fullText = (currentQuestRef.current.fullText ? currentQuestRef.current.fullText + '\n' : '') + textOnly;
             }
             return true;

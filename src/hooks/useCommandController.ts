@@ -98,8 +98,11 @@ export function useCommandController(deps: CommandControllerDeps) {
 
         if (cmd.toLowerCase().startsWith('practice ')) {
             deps.practice.setLastPracticedSkill(cmd.substring(9).trim());
-        } else if (cmd.toLowerCase() === 'practice' && options?.fromUi) {
-            deps.practice.setIsUiRequested(true);
+        } else if (cmd.toLowerCase() === 'practice') {
+            if (options?.fromUi) deps.practice.setIsUiRequested(true);
+            // Silent system practice (e.g. initial connect sync) — flag it so the
+            // response stays hidden even if a game prompt fires before it arrives.
+            if (silent && isSystem) deps.practice.setSilentSyncPending(true);
         }
 
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);

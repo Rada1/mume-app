@@ -383,11 +383,23 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
                                                     {quest.name}
                                                 </div>
                                                 {selectedQuestId === quest.id ? (
-                                                    <div className="quest-full-text" style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)', fontSize: '0.75rem', opacity: 0.8 }}>
+                                                    <div className="quest-full-text" style={{ 
+                                                        marginTop: '12px', 
+                                                        padding: '12px',
+                                                        background: 'rgba(0,0,0,0.2)',
+                                                        borderRadius: '8px',
+                                                        borderLeft: '2px solid var(--accent)',
+                                                        fontSize: '0.75rem', 
+                                                        lineHeight: '1.4',
+                                                        color: '#e2e8f0',
+                                                        boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+                                                    }}>
                                                         {quest.fullText ? quest.fullText.split('\n').map((line, i) => (
-                                                            <p key={i} style={{ marginBottom: '5px' }}>{line}</p>
+                                                            <p key={i} style={{ marginBottom: '8px' }}>{line}</p>
                                                         )) : (
-                                                            <p style={{ opacity: 0.5, fontStyle: 'italic' }}>Fetching details...</p>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.5, fontStyle: 'italic' }}>
+                                                                Fetching details...
+                                                            </div>
                                                         )}
                                                     </div>
                                                 ) : (

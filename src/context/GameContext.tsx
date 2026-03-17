@@ -89,6 +89,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [teleportTargets, setTeleportTargets] = usePersistentState<TeleportTarget[]>('mud-teleport-targets', []);
     const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
 
+    useEffect(() => {
+        const handleCloseSettings = () => setIsSettingsOpen(false);
+        window.addEventListener('mume-close-settings', handleCloseSettings);
+        return () => window.removeEventListener('mume-close-settings', handleCloseSettings);
+    }, []);
+
     const addDiagnosticLog = useCallback((msg: string) => {
         setDiagnosticLogs(prev => [msg, ...prev].slice(0, 50));
     }, []);

@@ -6,7 +6,7 @@ export const MemberRow: React.FC<{ member: GroupMember }> = ({ member }) => {
     const hpColor = hpPercent > 70 ? 'var(--accent)' : hpPercent > 30 ? '#ffaa00' : '#ff4444';
 
     return (
-        <div className="group-member-row">
+        <div className="group-member-row" data-player-name={member.name}>
             <div className="member-info">
                 <span className="member-name">{member.name}</span>
                 <span className="member-room">{member.room || ''}</span>
