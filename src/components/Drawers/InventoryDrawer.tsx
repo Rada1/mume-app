@@ -244,10 +244,32 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         }, 350);
     };
 
+    const swipePos = useRef<{ x: number, y: number } | null>(null);
+
     return (
         <div 
             className={`inventory-drawer lighting-state-${lighting} ${isOpen ? 'open' : ''}`} 
             style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'none' }}
+            onPointerDown={(e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
+                swipePos.current = { x: e.clientX, y: e.clientY };
+                e.currentTarget.setPointerCapture(e.pointerId);
+            }}
+            onPointerUp={(e) => {
+                if (swipePos.current) {
+                    const deltaY = e.clientY - swipePos.current.y;
+                    const deltaX = Math.abs(e.clientX - swipePos.current.x);
+                    // Swipe down to close (bottom drawer)
+                    if (deltaY > 30 && deltaY > deltaX) {
+                        onClose();
+                    }
+                }
+                swipePos.current = null;
+            }}
+            onPointerCancel={() => {
+                swipePos.current = null;
+            }}
             onDragOver={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, Users, RefreshCw, Star } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import { MemberRow } from './MemberRow';
@@ -74,14 +74,36 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
         </div>
     );
 
+    const swipePos = useRef<{ x: number, y: number } | null>(null);
+
     return (
-        <div
+        <div 
             className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
             onClick={handleBackdropClick}
         >
             <div
                 className={`character-drawer-content ${isOpen ? 'open' : ''}`}
                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
+                onPointerDown={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
+                    swipePos.current = { x: e.clientX, y: e.clientY };
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                }}
+                onPointerUp={(e) => {
+                    if (swipePos.current) {
+                        const deltaX = e.clientX - swipePos.current.x;
+                        const deltaY = Math.abs(e.clientY - swipePos.current.y);
+                        // Swipe right to close (side drawer)
+                        if (deltaX > 30 && deltaX > deltaY) {
+                            onClose();
+                        }
+                    }
+                    swipePos.current = null;
+                }}
+                onPointerCancel={() => {
+                    swipePos.current = null;
+                }}
                 onDragOver={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -91,23 +113,23 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     e.stopPropagation();
                     const dataStr = e.dataTransfer.getData('application/json') || e.dataTransfer.getData('text/plain');
                     if (!dataStr) return;
-                    
+
                     let data;
                     try { data = JSON.parse(dataStr); } catch (err) { return; }
-                    
+
                     if (data && data.type === 'inline-btn' && data.context) {
                         const target = document.elementFromPoint(e.clientX, e.clientY);
                         const playerEl = target?.closest('[data-player-name]');
                         const playerName = playerEl?.getAttribute('data-player-name');
-                        
+
                         if (playerName) {
                             triggerHaptic(60);
                             executeCommand(`give ${data.context} ${playerName}`);
                         }
                     }
                 }}
-            >
-                <div className="drawer-header" style={{ pointerEvents: 'auto' }}>
+                style={{ touchAction: 'pan-y' }}
+            >                <div className="drawer-header" style={{ pointerEvents: 'auto' }}>
                     <div className="drawer-tabs">
                         <button
                             className={`drawer-tab ${activeTab === 'group' ? 'active' : ''}`}

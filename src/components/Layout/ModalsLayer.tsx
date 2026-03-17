@@ -64,6 +64,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         showDebugEchoes,
         setShowDebugEchoes,
         hasSeenOnboarding,
+        status,
         uiMode,
         setUiMode,
         disable3dScroll,

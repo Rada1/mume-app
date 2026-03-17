@@ -86,6 +86,8 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
         executeCommand('quest', true);
     };
 
+    const swipePos = useRef<{ x: number, y: number } | null>(null);
+
     return (
         <div 
             className={`character-drawer-overlay ${isOpen ? 'open' : ''}`}
@@ -94,6 +96,27 @@ export const CharacterDrawer: React.FC<CharacterDrawerProps> = ({
             <div
                 className={`character-drawer-content ${isOpen ? 'open' : ''}`}
                 onClick={(e) => { if (e.target === e.currentTarget) onClose(); else e.stopPropagation(); }}
+                onPointerDown={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
+                    swipePos.current = { x: e.clientX, y: e.clientY };
+                    e.currentTarget.setPointerCapture(e.pointerId);
+                }}
+                onPointerUp={(e) => {
+                    if (swipePos.current) {
+                        const deltaY = e.clientY - swipePos.current.y;
+                        const deltaX = Math.abs(e.clientX - swipePos.current.x);
+                        // Swipe up to close (top drawer)
+                        if (deltaY < -30 && Math.abs(deltaY) > deltaX) {
+                            onClose();
+                        }
+                    }
+                    swipePos.current = null;
+                }}
+                onPointerCancel={() => {
+                    swipePos.current = null;
+                }}
+                style={{ touchAction: 'pan-y' }}
             >
                 <div className="drawer-header" style={{ pointerEvents: 'auto' }}>
                     <div className="drawer-tabs">
