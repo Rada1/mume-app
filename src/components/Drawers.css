@@ -222,6 +222,16 @@
     box-shadow: -10px 0 30px var(--accent);
 }
 
+/* Deep peek: shows ~70% of the drawer so both sections are visible during log drag */
+.right-drawer.deep-peeking {
+    transform: translateX(30%);
+    visibility: visible;
+    pointer-events: auto;
+    box-shadow: -10px 0 40px rgba(74, 222, 128, 0.35);
+    border-left: 2px solid var(--accent);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0s;
+}
+
 .peek-indicator {
     position: absolute;
     left: 10px;
@@ -298,6 +308,54 @@
 
 .drawer-footer {
     pointer-events: auto;
+}
+
+/* Drop zone headers inside each drawer section */
+.drawer-section-drop-zone {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px 10px;
+    margin: -8px -8px 10px;
+    border-radius: 10px 10px 0 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.7rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.65;
+    transition: all 0.2s ease;
+    user-select: none;
+    pointer-events: none; /* section div handles pointer events */
+}
+
+.drawer-section-drop-zone .drop-hint {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    font-weight: 600;
+    opacity: 0;
+    transform: translateX(6px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* When a log drag is active, reveal the drop hint */
+.right-drawer.deep-peeking .drawer-section-drop-zone .drop-hint {
+    opacity: 0.7;
+    transform: translateX(0);
+}
+
+.drawer-section-drop-zone.drop-hover-active {
+    background: rgba(74, 222, 128, 0.12) !important;
+    border-color: rgba(74, 222, 128, 0.5) !important;
+    opacity: 1 !important;
+    box-shadow: 0 0 18px rgba(74, 222, 128, 0.25) !important;
+    color: var(--accent) !important;
+    animation: target-pulse 1s infinite ease-in-out;
+    /* Override inline-btn scale — section headers should not scale */
+    transform: none !important;
+    outline: 1px solid var(--accent) !important;
+    filter: none !important;
 }
 
 .section-header {

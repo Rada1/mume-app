@@ -383,15 +383,42 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     const isNearEdge = isOverDrawerMove || moveEvent.clientX > window.innerWidth - 80;
 
                     if (isNearEdge) {
-                         setHeldButton((prev: any) => {
-                            if (!prev) return null;
-                            const original = prev.originalLabel || prev.label;
-                            const newLabel = `get ${original}`;
-                            if (prev.label === newLabel) return prev;
-                            setCommandPreview(newLabel);
-                            return { ...prev, label: newLabel };
-                         });
+                         // Check which section we're hovering over in the peeked drawer
+                         const elUnder = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+                         const overEquip = elUnder?.closest('[data-drawer-section="equipmentlist"]');
+                         const overInv = elUnder?.closest('[data-drawer-section="inventorylist"]');
                          document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+
+                         if (overEquip) {
+                             overEquip.querySelector('.drawer-section-drop-zone')?.classList.add('drop-hover-active');
+                             setHeldButton((prev: any) => {
+                                 if (!prev) return null;
+                                 const original = prev.originalLabel || prev.label;
+                                 const newLabel = `get + wear ${original}`;
+                                 if (prev.label === newLabel) return prev;
+                                 setCommandPreview(newLabel);
+                                 return { ...prev, label: newLabel };
+                             });
+                         } else if (overInv) {
+                             overInv.querySelector('.drawer-section-drop-zone')?.classList.add('drop-hover-active');
+                             setHeldButton((prev: any) => {
+                                 if (!prev) return null;
+                                 const original = prev.originalLabel || prev.label;
+                                 const newLabel = `get ${original}`;
+                                 if (prev.label === newLabel) return prev;
+                                 setCommandPreview(newLabel);
+                                 return { ...prev, label: newLabel };
+                             });
+                         } else {
+                             setHeldButton((prev: any) => {
+                                 if (!prev) return null;
+                                 const original = prev.originalLabel || prev.label;
+                                 const newLabel = `get ${original}`;
+                                 if (prev.label === newLabel) return prev;
+                                 setCommandPreview(newLabel);
+                                 return { ...prev, label: newLabel };
+                             });
+                         }
                     } else {
                         const targetUnderPointer = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
                         const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter');
@@ -491,7 +518,14 @@ export const useLogTaps = (deps: InteractionDeps) => {
                         }
                     } else if (draggedContext && (isOverDrawerUp || upEvent.clientX > window.innerWidth - 80)) {
                         triggerHaptic(40);
-                        executeCommand(`get ${draggedContext}`);
+                        // Check if dropped specifically on the equipment section → get + wear
+                        const overEquipDrop = targetUnderPointer?.closest('[data-drawer-section="equipmentlist"]');
+                        if (overEquipDrop) {
+                            executeCommand(`get ${draggedContext}`);
+                            setTimeout(() => executeCommand(`wear ${draggedContext}`), 125);
+                        } else {
+                            executeCommand(`get ${draggedContext}`);
+                        }
                     } else if (targetUnderPointer?.closest('.input-area')) {
                         if (draggedContext) {
                             triggerHaptic(30);

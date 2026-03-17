@@ -406,8 +406,8 @@
 .reply-btn {
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    color: var(--text-faded);
-    border-radius: 4px;
+    color: #ffffff;
+    border-radius: 50%;
     width: 24px;
     height: 24px;
     display: flex;
@@ -418,17 +418,19 @@
     padding: 0;
     margin-top: 2px;
     flex-shrink: 0;
+    opacity: 0.6;
 }
 
 .reply-btn:hover {
-    background: rgba(var(--accent-rgb), 0.2);
-    border-color: var(--accent);
-    color: var(--accent);
+    background: #b8860b;
+    border-color: #ffffff;
+    color: #ffffff;
     transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
+    box-shadow: 0 0 15px rgba(184, 134, 11, 0.5);
+    opacity: 1;
 }
 
-.reply-btn active {
+.reply-btn:active {
     transform: scale(0.95);
 }
 

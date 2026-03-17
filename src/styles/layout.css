@@ -79,6 +79,19 @@
     max-width: none !important;
 }
 
+/* Desktop: items drawer pushes the log left instead of covering it */
+@media (min-width: 1024px) {
+    .app-content-shaker {
+        box-sizing: border-box;
+        transition: padding-right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body.items-drawer-open .app-content-shaker {
+        /* Match the drawer's own width: 45% of viewport, capped at 700px */
+        padding-right: min(45%, 700px);
+    }
+}
+
 .is-landscape .app-content-shaker {
     display: flex !important;
     flex-direction: row-reverse !important;

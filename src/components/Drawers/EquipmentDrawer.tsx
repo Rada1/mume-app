@@ -560,9 +560,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     };
 
     return (
-        <div 
-            ref={drawerRef} 
-            className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking ? 'peeking' : ''} ${isLandscape ? 'landscape' : ''}`}
+        <div
+            ref={drawerRef}
+            className={`right-drawer ${isOpen ? 'open' : ''} ${isPeeking && activeDragData?.type === 'inline-btn' ? 'deep-peeking' : (isPeeking ? 'peeking' : '')} ${isLandscape ? 'landscape' : ''}`}
             onDragOver={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -637,11 +637,19 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
             <div className="drawer-content" onScroll={handleSectionScroll}>
                 <div className="drawer-section" data-drawer-section="equipmentlist">
+                    <div className="drawer-section-drop-zone">
+                        <span>⚔ Equipment</span>
+                        <span className="drop-hint">drop here → wear</span>
+                    </div>
                     {eqLines.filter(l => isLineVisible(l, eqLines)).map(line => renderLine(line, 'equipmentlist'))}
                     {eqLines.length === 0 && <div className="empty-state">No equipment worn</div>}
                 </div>
 
                 <div className="drawer-section" data-drawer-section="inventorylist">
+                    <div className="drawer-section-drop-zone">
+                        <span>⬡ Inventory</span>
+                        <span className="drop-hint">drop here → get</span>
+                    </div>
                     {inventoryLines.filter(l => isLineVisible(l, inventoryLines)).map(line => renderLine(line, 'inventorylist'))}
                     {inventoryLines.length === 0 && <div className="empty-state">Inventory is empty</div>}
                 </div>

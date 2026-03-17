@@ -91,6 +91,16 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     handleSoundUpload, setSoundTriggers
 }) => {
     const { triggerHaptic, characterName, viewport, mapperRef, pendingDrawerContainerRef, inlineCategories } = useGame();
+
+    // On desktop, push the log left so the items drawer sits beside it instead of over it
+    React.useEffect(() => {
+        if (!viewport.isMobile && ui.drawer === 'items') {
+            document.body.classList.add('items-drawer-open');
+        } else {
+            document.body.classList.remove('items-drawer-open');
+        }
+        return () => { document.body.classList.remove('items-drawer-open'); };
+    }, [ui.drawer, viewport.isMobile]);
     const { isMapFloating, setIsMapFloating } = useMapper();
     const isMapDrawerOpen = ui.mapExpanded && !viewport.isMobile;
     // Map Tray should not have a backdrop on mobile as it blocks the rest of the UI
