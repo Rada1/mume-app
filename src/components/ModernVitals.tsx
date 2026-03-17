@@ -7,6 +7,7 @@ interface ModernVitalsProps {
     isLandscape?: boolean;
     inCombat?: boolean;
     onWimpyChange?: (val: number) => void;
+    onScoreRefresh?: () => void;
 }
 
 const StatRow: React.FC<{
@@ -254,11 +255,12 @@ const StatRow: React.FC<{
 
 };
 
-const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inCombat, onWimpyChange }) => {
+const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inCombat, onWimpyChange, onScoreRefresh }) => {
     return (
-        <div 
+        <div
             className={`modern-vitals-container docked ${isLandscape ? 'landscape' : ''}`}
             onPointerDown={(e) => e.stopPropagation()}
+            style={{ position: 'relative' }}
         >
             <StatRow 
                 label="HP" 
@@ -271,6 +273,26 @@ const ModernVitals: React.FC<ModernVitalsProps> = ({ stats, isLandscape, inComba
             />
             <StatRow label="MP" value={stats.mana} max={stats.maxMana} type="mana" />
             <StatRow label="ST" value={stats.move} max={stats.maxMove} type="move" staminaStatus={stats.staminaStatus} />
+            {onScoreRefresh && (
+                <button
+                    onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); onScoreRefresh(); }}
+                    style={{
+                        position: 'absolute',
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: '40px',
+                        background: 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        zIndex: 5,
+                        padding: 0,
+                        margin: 0,
+                        WebkitTapHighlightColor: 'transparent',
+                    }}
+                    aria-label="Refresh score"
+                />
+            )}
         </div>
     );
 };

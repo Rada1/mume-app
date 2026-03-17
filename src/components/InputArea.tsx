@@ -477,6 +477,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                     stats={vitalsStats}
                     inCombat={inCombat}
                     onWimpyChange={handleWimpyChange}
+                    onScoreRefresh={() => executeCommand('score')}
                 />
             </div>
         </div>
