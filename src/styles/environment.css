@@ -157,7 +157,7 @@
 }
 
 .is-mobile.is-landscape .lighting-artificial .lighting-inner {
-    /* Shifted horizontally to align with the main content column in landscape (offset by 30vw mapper) */
+    /* Shifted horizontally to align with the main content column in landscape (offset by 25vw mapper) */
     --torch-y: 100%;
     /* Matching the softened red mobile hue */
     background: radial-gradient(ellipse 100% 60% at 65% var(--torch-y), rgba(255, 60, 10, 0.28) 0%, transparent 75%);
