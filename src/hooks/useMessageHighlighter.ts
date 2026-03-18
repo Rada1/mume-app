@@ -15,11 +15,13 @@ export const useMessageHighlighter = (
     discoveredItems: string[] = []
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
+    const regexCacheRef = useRef<Map<string, RegExp>>(new Map());
 
     // Clear cache when highlight version changes to force re-processing
     const lastVersionRef = useRef(highlightVersion);
     if (highlightVersion !== lastVersionRef.current) {
         cacheRef.current.clear();
+        regexCacheRef.current.clear();
         lastVersionRef.current = highlightVersion;
     }
 
@@ -30,7 +32,12 @@ export const useMessageHighlighter = (
         const parts = currentHtml.split(/(<[^>]+>)/g);
         let changed = false;
 
-        const regex = new RegExp(escaped, 'gi');
+        const regexKey = `${escaped}:${isRegex}`;
+        let regex = regexCacheRef.current.get(regexKey);
+        if (!regex) {
+            regex = new RegExp(escaped, 'gi');
+            regexCacheRef.current.set(regexKey, regex);
+        }
 
         for (let i = 0; i < parts.length; i++) {
             if (!parts[i].startsWith('<')) {

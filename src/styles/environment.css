@@ -113,19 +113,19 @@
 }
 
 .lighting-sun .lighting-inner {
-    /* Concentrated shaft from top right-ish - whiter and more natural */
-    background: radial-gradient(ellipse 45% 120% at 65% -10%,
-            rgba(255, 255, 230, 0.7) 0%,
-            rgba(255, 240, 180, 0.3) 35%,
-            transparent 85%);
+    /* Sun origin well off-screen top-right — only the soft falloff reaches the viewport */
+    background: radial-gradient(ellipse 90% 160% at 92% -35%,
+            rgba(255, 255, 220, 0.55) 0%,
+            rgba(255, 240, 175, 0.2) 45%,
+            transparent 80%);
 }
 
 .is-mobile .lighting-sun .lighting-inner {
-    /* Spans horizontally across the log, whiter tone, shifted slightly right */
-    background: radial-gradient(ellipse 100% 70% at 65% -10%,
-            rgba(255, 255, 230, 0.7) 0%,
-            rgba(255, 240, 180, 0.3) 30%,
-            transparent 75%);
+    /* Same off-screen origin for mobile — wider ellipse to cover the horizontal span */
+    background: radial-gradient(ellipse 160% 130% at 92% -35%,
+            rgba(255, 255, 220, 0.55) 0%,
+            rgba(255, 240, 175, 0.2) 40%,
+            transparent 78%);
 }
 
 .lighting-moon .lighting-inner {

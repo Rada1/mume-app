@@ -120,11 +120,14 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
     }, [viewport]);
 
+    const messagesRef = React.useRef(messages);
+    messagesRef.current = messages;
+
     const virtualizer = useVirtualizer({
         count: messages.length,
         getScrollElement: () => scrollContainerRef.current,
         estimateSize: useCallback((index: number) => {
-            const msg = messages[index];
+            const msg = messagesRef.current[index];
             if (!msg) return 24;
             if (msg.type === 'shop-item') return 120;
             if (msg.type === 'practice-skill') return 80;
@@ -132,7 +135,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (msg.textRaw.length > 200) return 60;
             if (msg.textRaw.length > 100) return 40;
             return 24;
-        }, [messages]),
+        }, []),
         overscan: 5,
     });
 

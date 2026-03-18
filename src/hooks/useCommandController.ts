@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { mudParser } from '../services/parser/services/mudParser';
 import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
+import { useNumpadControls } from './useNumpadControls';
 import { CaptureStage } from '../types';
 
 export interface CommandControllerDeps {
@@ -111,6 +112,8 @@ export function useCommandController(deps: CommandControllerDeps) {
 
         executor.executeCommand(cmd, silent, isSystem, isHistorical, fromDrawer);
     }, [executor, viewport.isMobile]);
+
+    useNumpadControls(executeCommand);
 
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
         ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
