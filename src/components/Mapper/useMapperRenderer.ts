@@ -157,10 +157,10 @@ export const useMapperRenderer = ({
             offCtx.scale(dpr * camera.zoom, dpr * camera.zoom);
             
             // Center the cache on the camera
-            // Current viewport in world units: [camera.x, camera.y] to [camera.x + baseW/zoom, camera.y + baseH/zoom]
-            // We want the cache to cover [camera.x - baseW/zoom/2, camera.y - baseH/zoom/2] to [camera.x + 3/2*baseW/zoom, ...]
-            const buildCamX = camera.x - (baseW / camera.zoom) * 0.5;
-            const buildCamY = camera.y - (baseH / camera.zoom) * 0.5;
+            // Visible world extent: baseW / (zoom * dpr) wide, baseH / (zoom * dpr) tall
+            // Cache is 2x screen → 0.5 screens of buffer on each side
+            const buildCamX = camera.x - (baseW / (camera.zoom * dpr)) * 0.5;
+            const buildCamY = camera.y - (baseH / (camera.zoom * dpr)) * 0.5;
             
             offCtx.translate(-buildCamX, -buildCamY);
 
