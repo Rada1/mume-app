@@ -27,6 +27,7 @@ interface MapCanvasProps {
     spatialIndexRef: React.MutableRefObject<Record<number, Record<string, string[]>>>;
     exploredVnums: Set<string>;
     exploredRef: React.MutableRefObject<Set<string>>;
+    exploredMarkers: Set<string>;
     onMouseDown?: (e: React.MouseEvent) => void;
     onMouseMove?: (e: React.MouseEvent) => void;
     onMouseUp?: (e: React.MouseEvent) => void;
@@ -56,7 +57,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
         camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
-        preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
+        preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef
     } = props;
@@ -65,7 +66,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
         cameraRef: camera, isDarkMode, isMobile, imagesRef, characterName,
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
-        preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
+        preloadedCoordsRef, spatialIndexRef, exploredRef, exploredMarkers, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
         baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef
     });

@@ -184,6 +184,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 spatialIndexRef={context.spatialIndexRef}
                 exploredVnums={context.exploredRef.current}
                 exploredRef={context.exploredRef}
+                exploredMarkers={context.exploredMarkers}
                 triggerRender={triggerRender}
                 unveilMap={unveilMap}
                 viewZ={viewZ}

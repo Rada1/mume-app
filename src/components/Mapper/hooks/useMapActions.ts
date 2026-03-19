@@ -9,6 +9,7 @@ interface UseMapActionsProps {
     markers: Record<string, MapperMarker>;
     setMarkers: React.Dispatch<React.SetStateAction<Record<string, MapperMarker>>>;
     setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
+    setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
     preloadedCoordsRef: React.MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean }>, string, string, string[], string[]]>>;
@@ -22,7 +23,7 @@ interface UseMapActionsProps {
 export const useMapActions = ({
     rooms, setRooms, roomsRef,
     markers, setMarkers,
-    setExploredVnums,
+    setExploredVnums, setExploredMarkers,
     setCurrentRoomId, currentRoomIdRef,
     preloadedCoordsRef,
     spatialIndexRef,
@@ -70,6 +71,7 @@ export const useMapActions = ({
         setRooms({});
         setMarkers({});
         setExploredVnums(new Set());
+        setExploredMarkers(new Set());
         setCurrentRoomId(null);
         currentRoomIdRef.current = null;
 

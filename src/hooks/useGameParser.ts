@@ -85,6 +85,7 @@ export function useGameParser(deps: UseGameParserDeps) {
     const counterRef = useRef(0);
     const tempEqRef = useRef<DrawerLine[]>([]);
     const tempInvRef = useRef<DrawerLine[]>([]);
+    const shopPagerSeenRef = useRef(false);
 
     const finalizeCapture = useCallback((targetStage?: CaptureStage) => {
         const currentStage = captureStage.current as CaptureStage;
@@ -202,6 +203,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'shop') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: shop'); addDiagnosticLog?.('Entering Stage: shop');
+            (captureStage as any).current = 'shop'; deps.shop.setIsShopListingActive(true);
+        }
+        else if (captureStage.current === 'none' && /^\s*(?:\*\*\*.*?\*\*\*\s*)?\d+\.\s+\S/.test(textOnly) && /\b(?:up to|for)\b/i.test(textOnly) && /\b(?:copper|silver|gold)\b/i.test(textOnly)) {
+            // Auto-detect shop item format for paginated 'list' output (handles all pages without needing header)
             (captureStage as any).current = 'shop'; deps.shop.setIsShopListingActive(true);
         }
         else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
@@ -746,6 +751,9 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
             } else if (captureStage.current === 'shop') {
                 if (textOnly.trim().length > 0) {
+                    if (textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return')) {
+                        shopPagerSeenRef.current = true;
+                    }
                     parseShopLine(textOnly);
                 }
             } else if (captureStage.current === 'container') {
@@ -919,6 +927,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         // Drawer-aware hiding: hide when the relevant drawer is open, regardless of how the command was triggered.
         // This prevents double-showing data that's already displayed in the drawer UI.
         let isDrawerHiding = false;
+        // Always suppress MUME pager navigation lines from the message log
+        if (textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]')) isDrawerHiding = true;
         const currentStage = captureStage.current as any;
         if (currentStage !== 'none') {
             if (currentStage === 'inv' && deps.isItemsOpen) isDrawerHiding = true;

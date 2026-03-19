@@ -25,6 +25,7 @@ interface RendererProps {
     viewZ?: number | null;
     stateExploredVnums?: Set<string>;
     exploredRef: MutableRefObject<Set<string>>;
+    exploredMarkers: Set<string>;
     renderVersion: number;
     firstExploredAtRef: MutableRefObject<Record<string, number>>;
     preloadedCoordsRef: MutableRefObject<Record<string, [number, number, number, number, Record<string, { target: string, hasDoor: boolean, flags?: string[] }>, string, string, string[], string[]]>>;
@@ -43,7 +44,7 @@ export const useMapperRenderer = ({
     rooms, markers, currentRoomId, selectedRoomIds, selectedMarkerId,
     cameraRef, isDarkMode, isMobile, imagesRef, characterName,
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
-    preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, renderVersion,
+    preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, exploredMarkers, renderVersion,
     unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
     triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
     showOrganicTerrain = true
@@ -220,7 +221,7 @@ export const useMapperRenderer = ({
 
             const rCtx: RenderContext = {
                 ctx: offCtx, dpr, canvasWidth: cacheW, canvasHeight: cacheH, camera: { ...camera, x: buildCamX, y: buildCamY }, isDarkMode, isMobile,
-                imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
+                imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers, unveilMap,
                 allRooms, roomAtCoord, visitedAtCoord, preloaded, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef,
                 triggerRender
             };
@@ -271,7 +272,7 @@ export const useMapperRenderer = ({
 
         const rCtx: RenderContext = {
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
-            imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
+            imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, exploredMarkers, unveilMap,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
             preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
             groupMembers, serverIdIndexRef

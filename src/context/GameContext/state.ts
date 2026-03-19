@@ -4,6 +4,7 @@ import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameActio
 import { OptimisticChange } from './types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
+import { sanitizeGameTarget } from '../../utils/gameUtils';
 
 export const useGameProviderState = () => {
     // Settings & Mode
@@ -34,7 +35,11 @@ export const useGameProviderState = () => {
 
     // Core Game State
     const [status, setStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected');
-    const [target, setTarget] = useState<string | null>(null);
+    const [target, _setTarget] = useState<string | null>(null);
+    const setTarget = useCallback((val: string | null) => {
+        _setTarget(sanitizeGameTarget(val));
+    }, []);
+
     const [stats, setStats] = useState<GameStats>({
         hp: 0, maxHp: 1,
         mana: 0, maxMana: 1,

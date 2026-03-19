@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
-import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
+import { extractNoun, isItemContainer, isFluidContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 interface InventoryDrawerProps {
@@ -33,6 +33,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const [expandedContainers, setExpandedContainers] = React.useState<Set<string>>(new Set());
 
     const ghostRef = React.useRef<HTMLDivElement>(null);
+    const drawerRef = React.useRef<HTMLDivElement>(null);
     const longPressTimerRef = React.useRef<any>(null);
     const startPosRef = React.useRef<{ x: number; y: number } | null>(null);
     const pendingDragRef = React.useRef<DrawerLine | null>(null);
@@ -77,6 +78,19 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             if (ghostRef.current) {
                 ghostRef.current.style.left = `${e.clientX}px`;
                 ghostRef.current.style.top = `${e.clientY}px`;
+            }
+
+            // Edge Scroll detection
+            const contentEl = drawerRef.current?.querySelector('.drawer-content');
+            if (contentEl) {
+                const rect = contentEl.getBoundingClientRect();
+                const threshold = 40;
+                const scrollSpeed = 0.25;
+                if (e.clientY < rect.top + threshold) {
+                    contentEl.scrollTop -= (rect.top + threshold - e.clientY) * scrollSpeed;
+                } else if (e.clientY > rect.bottom - threshold) {
+                    contentEl.scrollTop += (e.clientY - (rect.bottom - threshold)) * scrollSpeed;
+                }
             }
 
             moveCountRef.current++;
@@ -138,7 +152,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 itemStableId = fullPath.substring(0, fullPath.length - parentPath.length - 1);
             }
 
-            const itemNoun = itemStableId;
+            const itemNoun = sanitizeGameTarget(itemStableId) || itemStableId;
             const parentNoun = itemLine.parentItemNoun;
 
             console.log(`[InventoryDrawer] Drop detected:`, {
@@ -262,6 +276,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
 
     return (
         <div 
+            ref={drawerRef}
             className={`inventory-drawer lighting-state-${lighting} ${isOpen ? 'open' : ''}`} 
             style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'pan-y' }}
             onPointerDown={(e) => {
@@ -368,14 +383,17 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                  const categories = (inlineCategories && inlineCategories.length > 0) ? inlineCategories : undefined;
                                  const category = getCategoryForName(line.text, categories) || 'inline-default';
                                  const glowColor = getGlowColorForCategory(category, categories);
-                                 
+                                  const textColor = glowColor || 'rgba(180, 100, 50, 0.9)';
                                  const baseBackground = 'rgba(255, 255, 255, 0.03)';
                                  const primedBackground = 'rgba(255, 255, 255, 0.1)';
                                  const borderLeftStyle = '4px solid transparent';
                                  const glowEffect = 'none';
  
                                  if (!line.isItem && line.isHeader) {
-                                     return (
+                                     const category = getCategoryForName(line.text, categories) || 'inline-default';
+                                  const glowColor = getGlowColorForCategory(category, categories);
+                                  const textColor = glowColor || 'rgba(180, 100, 50, 0.9)';
+                                  return (
                                          <div key={line.id} style={{ 
                                              marginLeft: `${depth * 20}px`, 
                                              padding: '12px 10px 4px', 
@@ -414,15 +432,17 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                                      setExpandedContainers(newExpanded);
                                                  } else {
                                                      const itemNoun = extractNoun(line.text);
-                                                     const category = getCategoryForName(line.text, categories) || 'inline-default';
-                                                     const glowColor = getGlowColorForCategory(category, categories);
+                                                     // The following lines were moved up to the correct scope
+                                                     // const category = getCategoryForName(line.text, categories) || 'inline-default';
+                                                     // const glowColor = getGlowColorForCategory(category, categories);
+                                                     // const textColor = glowColor || 'var(--text)';
                                                      
                                                      handleButtonClick({
                                                          id: 'drawer-item-' + line.id,
                                                          label: itemNoun,
-                                                         command: category,
+                                                         command: 'inline-obj-char',
                                                          actionType: 'menu',
-                                                         setId: category,
+                                                         setId: 'inline-obj-char',
                                                          isVisible: true,
                                                          style: { backgroundColor: glowColor || 'var(--accent)' }
                                                      } as any, e as any, line.context || line.id, false, line.parentItemNoun);
@@ -436,7 +456,23 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                                  opacity: isBeingDragged ? 0.3 : 1, transition: 'all 0.2s ease', touchAction: 'pan-y', display: 'flex', alignItems: 'center'
                                              }}
                                          >
-                                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1, fontWeight: 'bold' }} />
+                                             <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', flexWrap: 'nowrap', overflow: 'hidden' }}>
+                                                <span style={{ fontWeight: '900', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                    {line.text.includes(' (') ? line.text.split(' (')[0] : line.text}
+                                                </span>
+                                                {line.text.includes(' (') && (
+                                                    <span style={{ 
+                                                        fontWeight: 'normal', 
+                                                        opacity: 0.5, 
+                                                        marginLeft: '6px', 
+                                                        fontSize: '0.9em', 
+                                                        color: 'var(--text-dim, #aaa)',
+                                                        whiteSpace: 'nowrap'
+                                                    }}>
+                                                        ({line.text.split(' (')[1]}
+                                                    </span>
+                                                )}
+                                             </div>
                                             {line.isContainer && (
                                                 <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▶</span>
                                             )}

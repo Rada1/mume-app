@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { DrawerLine } from '../../types';
-import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
+import { extractNoun, isItemContainer, isFluidContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 import { useGame, useVitals, useUI } from '../../context/GameContext';
 import { MendingFooter } from './MendingFooter';
@@ -154,6 +154,22 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 }
             }
 
+            // Scroll auto edge detection
+            const contentEl = drawerRef.current?.querySelector('.drawer-content');
+            if (contentEl) {
+                const rect = contentEl.getBoundingClientRect();
+                const threshold = 50; 
+                const speedScale = 0.2;
+                
+                if (e.clientY < rect.top + threshold) {
+                    const dist = (rect.top + threshold) - e.clientY;
+                    contentEl.scrollTop -= dist * speedScale;
+                } else if (e.clientY > rect.bottom - threshold) {
+                    const dist = e.clientY - (rect.bottom - threshold);
+                    contentEl.scrollTop += dist * speedScale;
+                }
+            }
+
             moveCountRef.current++;
             if (moveCountRef.current % 2 !== 0) return;
 
@@ -293,7 +309,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         itemStableId = fullPath.substring(0, fullPath.length - parentPath.length - 1);
                     }
                     
-                    const noun = itemStableId;
+                    const noun = sanitizeGameTarget(itemStableId) || itemStableId;
                     const parentNoun = itm.parentItemNoun;
                     const delay = index * 250;
 
@@ -477,7 +493,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const categories = (inlineCategories && inlineCategories.length > 0) ? inlineCategories : undefined;
             const category = getCategoryForName(line.text, categories) || 'inline-default';
             const glowColor = getGlowColorForCategory(category, categories);
-            
+            const textColor = glowColor || (line.isContainer ? '#89b4fa' : 'rgba(180, 100, 50, 0.9)');
             // Stronger visual cues: background, border, and subtle glow
             const baseBackground = 'rgba(255, 255, 255, 0.03)';
             const primedBackground = 'rgba(255, 255, 255, 0.1)';
@@ -567,9 +583,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 handleButtonClick({
                                     id: 'drawer-item-' + line.id,
                                     label: itemNoun,
-                                    command: category,
+                                    command: listType === 'equipmentlist' ? 'inline-obj-worn' : 'inline-obj-char',
                                     actionType: 'menu',
-                                    setId: category,
+                                    setId: listType === 'equipmentlist' ? 'inline-obj-worn' : 'inline-obj-char',
                                     isVisible: true,
                                     style: { backgroundColor: glowColor || 'var(--accent)' }
                                 } as any, e as any, line.context || line.id, false, line.parentItemNoun);
@@ -585,14 +601,30 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 cursor: 'grab',
                                 fontWeight: 'bold',
                                 opacity: isBeingDragged ? 0.3 : 1,
-                                color: line.isContainer ? '#89b4fa' : 'inherit',
+                                 color: textColor,
                                 transition: 'all 0.2s ease',
                                 touchAction: 'pan-y',
                                 display: 'flex',
                                 alignItems: 'center'
                             }}
                         >
-                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1, fontWeight: 'bold' }} />
+                        <div style={{ flex: 1, display: 'flex', alignItems: 'baseline', flexWrap: 'nowrap', overflow: 'hidden' }}>
+                            <span style={{ fontWeight: '900', color: textColor, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {line.text.includes(' (') ? line.text.split(' (')[0] : line.text}
+                            </span>
+                            {line.text.includes(' (') && (
+                                <span style={{ 
+                                    fontWeight: 'normal', 
+                                    opacity: 0.5, 
+                                    marginLeft: '6px', 
+                                    fontSize: '0.9em', 
+                                    color: 'var(--text-dim, #aaa)',
+                                    whiteSpace: 'nowrap'
+                                }}>
+                                    ({line.text.split(' (')[1]}
+                                </span>
+                            )}
+                        </div>
                             {line.isContainer && (
                                 <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transition: 'transform 0.2s ease', transform: expandedContainers.has(line.id) ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
                             )}

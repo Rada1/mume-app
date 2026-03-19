@@ -1,7 +1,8 @@
 import React from 'react';
 import { CustomButton, MessageType, PopoverState, InlineCategoryConfig } from '../../types';
-import { isItemContainer } from '../../utils/gameUtils';
+import { isItemContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 import { DEFAULT_INLINE_CATEGORIES, getCategoryForName } from '../../utils/categorizationUtils';
+import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
 
 interface StandardMenuProps {
 // ... existing props
@@ -39,41 +40,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const isSetManager = popoverState.setId === 'setmanager';
     const NPC_SUBCATEGORIES = ['inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster'];
     
-    // Define Hierarchy for Objects
-    const OBJ_HIERARCHY: Record<string, string[]> = {
-        'inline-corpses': ['inline-containers', 'inline-object'],
-        'inline-containers': ['inline-object'],
-        'inline-weapon': ['inline-object'],
-        'inline-armour': ['inline-object'],
-        'inline-shield': ['inline-object'],
-        'inline-lantern': ['inline-lightsource', 'inline-object'],
-        'inline-lightsource': ['inline-object'],
-        'inline-food': ['inline-object'],
-        'inline-water': ['inline-object'],
-        'inline-default': ['inline-object'],
-        'inline-quiver': ['inline-containers', 'inline-object'],
-        'inline-obj-room': ['inline-object'],
-        'inline-obj-worn': ['inline-object'],
-        'inline-obj-char': ['inline-object'],
-        'inline-obj-shop': ['inline-object']
-    };
-
     // Detect if this specific item name belongs to a category
     const detectedCatId = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories) : null;
     
     // Build actual hierarchy chain
-    const baseHierarchy = OBJ_HIERARCHY[popoverState.setId] || [];
-    const fullSetChain = [popoverState.setId, ...baseHierarchy];
-    
-    // If tagged as a sub-type (like weapon), ensure those buttons are also included
-    if (detectedCatId && !fullSetChain.includes(detectedCatId)) {
-        fullSetChain.splice(1, 0, detectedCatId);
-        // Also include its parents
-        const catParents = OBJ_HIERARCHY[detectedCatId] || [];
-        catParents.forEach(p => {
-            if (!fullSetChain.includes(p)) fullSetChain.push(p);
-        });
-    }
+    const fullSetChain = getHierarchyChain(popoverState.setId, detectedCatId);
 
     const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', 'inline-corpses', ...NPC_SUBCATEGORIES, ...fullSetChain].includes(popoverState.setId);
 
@@ -107,7 +78,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         setPopoverState(null);
                         addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
                     } else if (button.label === 'Look In') {
-                        executeCommand(`look in ${popoverState.context}`, true, true);
+                        const target = sanitizeGameTarget(popoverState.context || '');
+                        executeCommand(`look in ${target}`, true, true);
                         setPopoverState((prev: any) => {
                             if (!prev) return null;
                             return { ...prev, type: 'container', containerItems: [] };
@@ -116,7 +88,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         setPopoverState({ ...popoverState, type: 'shop-search' });
                     } else if (button.command === 'shop-mend') {
                         setIsMendingMode?.(true);
-                        setMendingTarget?.(popoverState.context || null);
+                        setMendingTarget?.(sanitizeGameTarget(popoverState.context || ''));
                         setIsItemsDrawerOpen?.(true);
                         setPopoverState(null);
                         addMessage('system', 'Selection Mode: Select items to mend, then tap Mend Selected.');
@@ -166,7 +138,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         return false;
     });
 
-    const isObjectSet = popoverState.setId.startsWith('inline-') && popoverState.setId !== 'inlineplayer' && popoverState.setId !== 'inlinenpc';
+    const isInlineMenu = (popoverState.setId.startsWith('inline-') || popoverState.setId === 'inlinenpc') && popoverState.setId !== 'inlineplayer';
 
     return (
         <>
@@ -307,12 +279,17 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         </>
                     )}
 
-                    {isObjectSet ? (
-                        // Render hierarchical object menu
-                        [...fullSetChain].reverse().map((setId, chainIdx) => {
-                            const setIdButtons = buttons.filter(b => b.setId === setId && !favorites.includes(b.command));
+                    {isInlineMenu ? (() => {
+                        const seenCommands = new Set<string>();
+                        return [...fullSetChain].reverse().map((setId, chainIdx) => {
+                            const setIdButtons = buttons.filter(b => {
+                                if (b.setId !== setId || favorites.includes(b.command)) return false;
+                                if (seenCommands.has(b.command)) return false;
+                                seenCommands.add(b.command);
+                                return true;
+                            });
                             if (setIdButtons.length === 0) return null;
-                            const levelName = setId.replace(/^inline-?/, '').toUpperCase();
+                            const levelName = setId.replace(/^inline-?|npc/, '').toUpperCase();
                             const depth = chainIdx;
                             
                             return (
@@ -327,19 +304,15 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                         marginTop: chainIdx > 0 ? '8px' : '0',
                                         borderBottom: '1px solid rgba(255,255,255,0.05)'
                                     }}>
-                                        {levelName} Actions
+                                        {levelName} ACTIONS
                                     </div>
                                     {setIdButtons.map(b => renderButton(b, depth))}
                                 </React.Fragment>
                             );
-                        })
-                    ) : (
-                        // Render flat NPC/Main menu
-                        buttons.filter(b => {
-                            if (b.setId === popoverState.setId) return !favorites.includes(b.command);
-                            if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'inlinenpc') return !favorites.includes(b.command);
-                            return false;
-                        }).map(b => renderButton(b))
+                        });
+                    })() : (
+                        // Render flat Main/Custom menu
+                        buttons.filter(b => b.setId === popoverState.setId && !favorites.includes(b.command)).map(b => renderButton(b))
                     )}
 
                     {(() => {

@@ -6,7 +6,8 @@ import { RecipientSelectPopover } from './RecipientSelectPopover';
 import { TeleportSavePopover, TeleportSelectPopover, TeleportManagePopover } from './TeleportPopovers';
 import ShopSearchPopover from './ShopSearchPopover';
 import { ContainerPopover } from './ContainerPopover';
-import { getGlowColorForCategory } from '../../utils/categorizationUtils';
+import { getHierarchyChain } from '../../utils/buttonHierarchyUtils';
+import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
@@ -175,9 +176,12 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }
 
     if (popoverState.menuDisplay === 'dial') {
+        const detectedCatId = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories || []) : null;
+        const setIdsChain = getHierarchyChain(popoverState.setId, detectedCatId);
+        
         return (
             <DialMenu
-                setId={popoverState.setId}
+                setId={setIdsChain}
                 initialX={popoverState.initialPointerX ?? popoverState.x}
                 initialY={popoverState.initialPointerY ?? popoverState.y}
                 buttons={buttons}

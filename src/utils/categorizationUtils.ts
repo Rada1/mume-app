@@ -6,21 +6,21 @@
 import { InlineCategoryConfig } from '../types';
 
 // palette definitions for consistency
-const COLOR_NPC = 'rgba(215, 135, 0, 0.9)';   // NPC Golden Orange
-const COLOR_OBJ = 'rgba(75, 110, 239, 0.9)';   // Object Mume Blue
+const COLOR_NPC = 'rgba(124, 58, 237, 0.9)';   // NPC Lighter Purple
+const COLOR_OBJ = 'rgba(180, 100, 50, 0.9)';   // Object Brown
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     // --- LIGHT & OBJECTS (Parent: Object) ---
     { id: 'lightsource', keywords: ['hooded', 'lamp', 'torch', 'candle'], color: COLOR_OBJ },
     { id: 'lantern', keywords: ['lantern', 'light'], color: COLOR_OBJ },
-    { id: 'weapon', keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'stick'], color: COLOR_OBJ },
-    { id: 'armour', keywords: ['mail', 'breastplate', 'greaves', 'gauntlets', 'helmet', 'boots', 'leggings', 'sleeves', 'bracers', 'cloak', 'surcoat', 'jerkin', 'robe', 'tunic'], color: COLOR_OBJ },
+    { id: 'weapon', keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'stick', 'knife', 'fist', 'blowpipe'], color: COLOR_OBJ },
+    { id: 'armour', keywords: ['mail', 'breastplate', 'greaves', 'gauntlets', 'helmet', 'boots', 'leggings', 'sleeves', 'bracers', 'cloak', 'surcoat', 'jerkin', 'robe', 'tunic', 'trousers', 'belt', 'pants', 'breeches', 'shoes', 'sandals', 'cloak', 'scabbard'], color: COLOR_OBJ },
     { id: 'shield', keywords: ['shield', 'buckler', 'targe'], color: COLOR_OBJ },
     { id: 'containers', keywords: ['bag', 'pouch', 'sack', 'backpack', 'satchel', 'quiver', 'chest', 'box'], color: COLOR_OBJ },
     { id: 'food', keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer'], color: COLOR_OBJ },
     { id: 'water', keywords: ['water', 'fountain', 'pond', 'stream', 'cup', 'skin', 'flagon', 'flask', 'bottle', 'jug', 'vial'], color: COLOR_OBJ },
     { id: 'corpses', keywords: ['corpse'], color: COLOR_OBJ },
-    { id: 'object', keywords: [], color: COLOR_OBJ },
+    { id: 'object-room', keywords: [], color: COLOR_OBJ },
 
     // --- NPCS & SERVICES (Parent: NPC) ---
     { id: 'innkeeper', keywords: ['innkeeper'], color: COLOR_NPC },
@@ -28,7 +28,8 @@ export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: COLOR_NPC },
     { id: 'guildmaster', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: COLOR_NPC },
 
-    { id: 'default', keywords: [], color: 'rgba(148, 163, 184, 0.9)' }
+    { id: 'exit', keywords: ['north', 'south', 'east', 'west', 'up', 'down'], color: 'rgba(255, 255, 255, 0.9)' },
+    { id: 'default', keywords: [], color: COLOR_OBJ }
 ];
 
 /**
@@ -67,15 +68,15 @@ export function getGlowColorForCategory(category: string | null, customCategorie
     // Resolve the parent colors first from the current configuration
     const categories = customCategories || DEFAULT_INLINE_CATEGORIES;
     const npcParentColor = categories.find(c => c.id === 'default' && c.keywords.includes('npc_forced'))?.color || COLOR_NPC;
-    const objParentColor = categories.find(c => c.id === 'object')?.color || COLOR_OBJ;
+    const objParentColor = categories.find(c => c.id === 'object-room')?.color || COLOR_OBJ;
 
     // Hierarchy Definitions
     const NPC_FAMILY = ['innkeeper', 'shopkeeper', 'mounts', 'guildmaster', 'huor', 'inlinenpc', 'inline-npc'];
-    const OBJ_FAMILY = ['lightsource', 'lantern', 'weapon', 'armour', 'shield', 'containers', 'food', 'water', 'corpses', 'object', 'quiver', 'obj-room', 'obj-char', 'obj-worn', 'obj-shop'];
+    const OBJ_FAMILY = ['lightsource', 'lantern', 'weapon', 'armour', 'shield', 'containers', 'food', 'water', 'corpses', 'object', 'object-room', 'quiver', 'obj-room', 'obj-char', 'obj-worn', 'obj-shop'];
 
     if (NPC_FAMILY.includes(baseId)) return npcParentColor;
     if (OBJ_FAMILY.includes(baseId)) return objParentColor;
-    if (baseId === 'inline-player' || baseId === 'inlineplayer') return 'rgba(64, 255, 64, 0.9)';
+    if (baseId === 'inline-player' || baseId === 'inlineplayer') return 'rgba(37, 99, 235, 0.9)';
 
     const config = categories.find(c => c.id === baseId) || categories.find(c => c.id === 'default');
     return config?.color || COLOR_OBJ;

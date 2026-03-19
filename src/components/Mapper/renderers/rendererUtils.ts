@@ -13,6 +13,7 @@ export interface RenderContext {
     invZoom: number;
     currentZ: number;
     explored: Set<string>;
+    exploredMarkers: Set<string>;
     unveilMap?: boolean;
     allRooms: Record<string, any>;
     roomAtCoord: Record<string, any>;

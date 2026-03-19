@@ -61,6 +61,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
             <button 
                 className="player-name-btn"
                 onClick={(e) => handlePlayerClick(e, name)}
+                style={{ color: 'rgba(37, 99, 235, 0.9)', fontWeight: 'bold' }}
             >
                 {name}
             </button>
@@ -208,6 +209,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                                         <span
                                             className="player-chip"
                                             onClick={(e) => handlePlayerClick(e, entry.name)}
+                                            style={{ color: 'rgba(37, 99, 235, 0.9)', fontWeight: 'bold' }}
                                         >
                                             {entry.name}
                                         </span>

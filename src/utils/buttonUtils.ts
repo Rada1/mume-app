@@ -1,4 +1,5 @@
 import { CustomButton, SwipeDirection } from '../types';
+import { sanitizeGameTarget } from './gameUtils';
 
 /**
  * Calculates the command to execute based on swipe delta and modifiers.
@@ -50,8 +51,9 @@ export const getButtonCommand = (
     }
 
     if (context) {
-        if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, context);
-        else cmd = cmd ? `${cmd} ${context}` : context;
+        const cleanContext = sanitizeGameTarget(context) || context;
+        if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, cleanContext);
+        else cmd = cmd ? `${cmd} ${cleanContext}` : cleanContext;
     }
 
     if (!cmd && (!joystickState || !joystickState.currentDir) && !isSwiped) {

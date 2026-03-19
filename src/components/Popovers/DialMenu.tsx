@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { CustomButton } from '../../types';
 
 interface DialMenuProps {
-    setId: string;
+    setId: string | string[];
     initialX: number;
     initialY: number;
     buttons: CustomButton[];
@@ -22,7 +22,23 @@ export const DialMenu: React.FC<DialMenuProps> = ({
     triggerHaptic,
     themeColor
 }) => {
-    const menuButtons = useMemo(() => buttons.filter(b => b.setId === setId && b.isVisible !== false), [buttons, setId]);
+    const menuButtons = useMemo(() => {
+        const ids = Array.isArray(setId) ? setId : [setId];
+        const seenCommands = new Set<string>();
+        const result: CustomButton[] = [];
+
+        // Distribute buttons into buckets by setId to preserve chain order
+        ids.forEach(id => {
+            const setButtons = buttons.filter(b => b.setId === id && b.isVisible !== false);
+            setButtons.forEach(b => {
+                if (!seenCommands.has(b.command)) {
+                    seenCommands.add(b.command);
+                    result.push(b);
+                }
+            });
+        });
+        return result;
+    }, [buttons, setId]);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const activeIndexRef = useRef<number | null>(null);
     const lastHapticIndex = useRef<number | null>(null);

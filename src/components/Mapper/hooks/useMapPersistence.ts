@@ -9,6 +9,8 @@ interface UseMapPersistenceProps {
     setMarkers: React.Dispatch<React.SetStateAction<Record<string, MapperMarker>>>;
     exploredVnums: Set<string>;
     setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
+    exploredMarkers: Set<string>;
+    setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
     currentRoomId: string | null;
     setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
     currentRoomIdRef: React.MutableRefObject<string | null>;
@@ -22,6 +24,7 @@ export const useMapPersistence = ({
     rooms, setRooms,
     markers, setMarkers,
     exploredVnums, setExploredVnums,
+    exploredMarkers, setExploredMarkers,
     currentRoomId, setCurrentRoomId,
     currentRoomIdRef,
     cameraRef,
@@ -68,6 +71,7 @@ export const useMapPersistence = ({
             localStorage.setItem(storageKey, JSON.stringify(rooms));
             localStorage.setItem(markerStorageKey, JSON.stringify(markers));
             localStorage.setItem('mume_mapper_explored', JSON.stringify(Array.from(exploredVnums)));
+            localStorage.setItem('mume_mapper_explored_markers', JSON.stringify(Array.from(exploredMarkers)));
             localStorage.setItem('mume_mapper_unveil', String(unveilMap));
         };
 

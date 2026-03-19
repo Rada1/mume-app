@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { getButtonCommand } from '../../utils/buttonUtils';
-import { isItemContainer } from '../../utils/gameUtils';
+import { isItemContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 
 export const useLogTaps = (deps: InteractionDeps) => {
     const {
@@ -65,27 +65,28 @@ export const useLogTaps = (deps: InteractionDeps) => {
                         }
                     }
 
-                    if (range) {
-                        const node = range.startContainer;
-                        const offset = range.startOffset;
-                        if (node.nodeType === Node.TEXT_NODE) {
-                            const text = node.textContent || "";
-                            // Improved word boundary detection: find nearest non-whitespace/non-punctuation cluster
-                            const beforeStr = text.slice(0, offset);
-                            const afterStr = text.slice(offset);
+                        if (range) {
+                            const node = range.startContainer;
+                            const offset = range.startOffset;
+                            if (node.nodeType === Node.TEXT_NODE) {
+                                const text = node.textContent || "";
+                                // Improved word boundary detection: find nearest non-whitespace/non-punctuation cluster
+                                const beforeStr = text.slice(0, offset);
+                                const afterStr = text.slice(offset);
 
-                            const beforeWord = beforeStr.match(/(\w+)$/)?.[1] || "";
-                            const afterWord = afterStr.match(/^(\w+)/)?.[1] || "";
+                                const beforeWord = beforeStr.match(/(\w+)$/)?.[1] || "";
+                                const afterWord = afterStr.match(/^(\w+)/)?.[1] || "";
 
-                            selection = (beforeWord + afterWord).trim();
+                                selection = (beforeWord + afterWord).trim();
+                            }
                         }
                     }
                 }
             }
-        }
 
         if (selection) {
-            setTarget(selection);
+            const cleanSelection = sanitizeGameTarget(selection) || selection;
+            setTarget(cleanSelection);
             triggerHaptic(30);
 
             try {
@@ -138,7 +139,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
         // BUTTON COMBO LOGIC: If a physical action GameButton is being held,
         // OR the joystick target modifier is active, apply that action to this target.
         const isLong = isJoystickTargetActiveRef.current;
-        const contextStr = context || targetEl.innerText.trim();
+        const rawContextStr = context || targetEl.innerText.trim();
+        const contextStr = sanitizeGameTarget(rawContextStr) || rawContextStr;
 
         if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
             const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
@@ -234,7 +236,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
         // --- Multi-touch Button Combo ---
         const isLong = isJoystickTargetActiveRef.current;
-        const contextStr = targetEl ? (targetEl.getAttribute('data-context') || targetEl.innerText.trim()) : '';
+        const rawContextStrDown = targetEl ? (targetEl.getAttribute('data-context') || targetEl.innerText.trim()) : '';
+        const contextStr = sanitizeGameTarget(rawContextStrDown) || rawContextStrDown;
 
         if (targetEl && heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
             const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
@@ -379,7 +382,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     }
 
                     if (selection) {
-                        setTarget(selection);
+                        const cleanSelection = sanitizeGameTarget(selection) || selection;
+                        setTarget(cleanSelection);
                     }
 
                     if (!targetEl) return; // Exit if just text selection, no drag
@@ -540,7 +544,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
                 if (recipient && !recipient.classList.contains('dragging')) {
                     const recipientName = recipient.getAttribute('data-context') || recipient.getAttribute('data-player-name');
-                    const draggedContext = targetEl?.getAttribute('data-context');
+                    const rawDraggedContext = targetEl?.getAttribute('data-context');
+                    const draggedContext = sanitizeGameTarget(rawDraggedContext) || rawDraggedContext;
                     if (draggedContext && recipientName) {
                         triggerHaptic(60);
                         if (isShopItem) {
@@ -553,7 +558,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 } else {
                     const roomContainer = targetUnderPointer?.closest('.inline-btn:not(.dragging)');
                     const roomContainerContext = roomContainer?.getAttribute('data-context') || roomContainer?.textContent?.trim();
-                    const draggedContext = targetEl?.getAttribute('data-context');
+                    const rawDraggedContext2 = targetEl?.getAttribute('data-context');
+                    const draggedContext = sanitizeGameTarget(rawDraggedContext2) || rawDraggedContext2;
 
                     if (roomContainer && roomContainerContext && isItemContainer(roomContainerContext) && draggedContext) {
                         triggerHaptic(60);

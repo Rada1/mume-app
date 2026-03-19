@@ -152,15 +152,15 @@
     font-weight: bold !important;
 }
 
-/* Pin inline player buttons to exactly the same purple used in the who-list
+/* Pin inline player buttons to the blue used in the who-list
    and the players drawer, bypassing the brightness filter. */
 .message-content .inline-btn.pc-highlighter {
-    color: rgb(150, 150, 255) !important;
+    color: rgb(37, 99, 235) !important;
     filter: none !important;
 }
 
 .pc-highlighter {
-    color: var(--glow-color, #60a5fa); /* Bright Electric Blue */
+    color: var(--glow-color, #2563eb); /* Blue */
 }
 
 .npc-highlighter {

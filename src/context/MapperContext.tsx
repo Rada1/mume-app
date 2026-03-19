@@ -59,6 +59,8 @@ interface MapperContextType {
     markersRef: React.MutableRefObject<Record<string, MapperMarker>>;
     exploredRef: React.MutableRefObject<Set<string>>;
     exploredVnums: Set<string>;
+    exploredMarkers: Set<string>;
+    setExploredMarkers: React.Dispatch<React.SetStateAction<Set<string>>>;
     isMapFloating: boolean;
     setIsMapFloating: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -79,6 +81,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         rooms, setRooms, roomsRef,
         markers, setMarkers, markersRef,
         exploredVnums, setExploredVnums, exploredRef,
+        exploredMarkers, setExploredMarkers,
         currentRoomId, setCurrentRoomId, currentRoomIdRef,
         spatialIndexRef, nameIndexRef, serverIdIndexRef, preloadedCoordsRef, baseMapExitsRef
     } = useMapData();
@@ -178,12 +181,51 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     // Persistence
     useMapPersistence({
         characterName, rooms, setRooms, markers, setMarkers, exploredVnums, setExploredVnums,
+        exploredMarkers, setExploredMarkers,
         currentRoomId, setCurrentRoomId, currentRoomIdRef, allowPersistence, unveilMap
     });
 
+    // --- Marker Discovery Logic ---
+    useEffect(() => {
+        if (!currentRoomId || unveilMap) return;
+        
+        // Find current room coordinates
+        let rx: number | undefined, ry: number | undefined, rz: number | undefined;
+        const room = rooms[currentRoomId] || rooms[`m_${currentRoomId}`];
+        if (room) {
+            rx = room.x; ry = room.y; rz = room.z || 0;
+        } else {
+            const rawId = currentRoomId.startsWith('m_') ? currentRoomId.substring(2) : currentRoomId;
+            const pData = preloadedCoordsRef.current[rawId];
+            if (pData) { rx = pData[0]; ry = pData[1]; rz = pData[2] || 0; }
+        }
+
+        if (rx === undefined || ry === undefined) return;
+
+        const DISCOVERY_RADIUS = 10;
+        let changed = false;
+        const nextExplored = new Set(exploredMarkers);
+
+        Object.values(markers).forEach(marker => {
+            if (nextExplored.has(marker.id)) return;
+            if (Math.round(marker.z || 0) !== Math.round(rz || 0)) return;
+            
+            const dist = Math.hypot(marker.x - rx!, marker.y - ry!);
+            if (dist <= DISCOVERY_RADIUS) {
+                nextExplored.add(marker.id);
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            setExploredMarkers(nextExplored);
+            triggerRender();
+        }
+    }, [currentRoomId, markers, exploredMarkers, unveilMap, rooms, preloadedCoordsRef, setExploredMarkers, triggerRender]);
+
     // Actions
     const { handleAddRoom, handleDeleteRoom, handleClearMap, handleSyncLocation } = useMapActions({
-        rooms, setRooms, roomsRef, markers, setMarkers, setExploredVnums, setCurrentRoomId, currentRoomIdRef,
+        rooms, setRooms, roomsRef, markers, setMarkers, setExploredVnums, setExploredMarkers, setCurrentRoomId, currentRoomIdRef,
         preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, addMessage, lastDetectedTerrainRef, loadMasterMap
     });
 
@@ -429,7 +471,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         triggerRender, renderVersion,
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
-        markersRef, exploredRef, exploredVnums, spatialIndexRef, firstExploredAtRef,
+        markersRef, exploredRef, exploredVnums, exploredMarkers, setExploredMarkers, spatialIndexRef, firstExploredAtRef,
         serverIdIndexRef, isMapFloating, setIsMapFloating
     }), [
         rooms, markers, currentRoomId, unveilMap, allowPersistence, handleResetAndSync,
@@ -438,7 +480,7 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef, preMoveRef,
         spatialIndexRef, firstExploredAtRef, serverIdIndexRef, triggerRender, setCurrentRoomId,
         selectedRoomIds, selectedMarkerId, autoCenter, viewZ, infoRoomId,
-        markersRef, exploredRef, exploredVnums, isMapFloating
+        markersRef, exploredRef, exploredVnums, exploredMarkers, isMapFloating
     ]);
 
     return <MapperContext.Provider value={value}>{children}</MapperContext.Provider>;

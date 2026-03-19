@@ -39,7 +39,7 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
             data-context={item.id}
             data-menu-display="list"
             style={{ 
-                '--glow-color': 'rgba(175, 255, 255, 0.4)',
+                '--glow-color': 'rgba(180, 100, 50, 0.4)',
                 display: 'inline-flex',
                 alignItems: 'baseline',
                 flexWrap: 'wrap',
@@ -52,7 +52,7 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({ item }) => {
             } as any}
         >
             <span className="shop-item-id" style={{ opacity: 0.4, fontSize: '0.85em', marginRight: '4px' }}>{item.id}. </span>
-            <span className="shop-item-name" style={{ color: 'rgb(175, 255, 255)', fontWeight: 'bold' }}>{item.name}</span>
+            <span className="shop-item-name" style={{ color: 'rgba(180, 100, 50, 0.9)', fontWeight: '900' }}>{item.name}</span>
             
             {(item.condition && item.condition !== 'standard' || item.age) && (
                 <span className="shop-item-status" style={{ fontSize: '0.85em', opacity: 0.6, fontStyle: 'italic', marginLeft: '6px' }}>

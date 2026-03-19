@@ -238,3 +238,18 @@ export const formatMumePrice = (priceStr: string): string => {
 
     return result.join(' ');
 };
+
+/**
+ * Sanitizes a target string for game commands.
+ * Rule: any corpse object should eliminate all the -s and just use corpse as the target.
+ * Example: "corpse-of-a-hobbit" -> "corpse"
+ */
+export const sanitizeGameTarget = (target: string | null | undefined): string | null => {
+    if (target === null || target === undefined) return null;
+    const clean = target.trim();
+    if (clean.toLowerCase().startsWith('corpse-')) {
+        return 'corpse';
+    }
+    return clean;
+};
+

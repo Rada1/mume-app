@@ -43,7 +43,7 @@ export const buildHighlighterCandidates = (
 
     // 1. Active Target
     if (target && type !== 'who-list' && type !== 'where-list') {
-        let category = getCategoryForName(target, inlineCategories) || 'inline-default';
+        let category = getCategoryForName(target, inlineCategories) || 'inline-obj-room';
         if (pcNamesSet.has(target)) category = 'inlineplayer';
         else if (npcNamesSet.has(target)) category = 'inlinenpc';
 
@@ -90,7 +90,7 @@ export const buildHighlighterCandidates = (
             candidates.push({
                 pattern: p,
                 priority: 5,
-                replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: rgb(150, 150, 255); color: rgb(180, 180, 255)">${m}</span>`,
+                replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(37, 99, 235, 0.9); color: var(--glow-color); font-weight: bold">${m}</span>`,
                 length: p.length
             });
         });
@@ -123,7 +123,7 @@ export const buildHighlighterCandidates = (
     });
 
     // 4.5. Corpses (Recategorized as Objects)
-    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(75, 110, 239, 0.9)';
+    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(180, 100, 50, 0.9)';
     ['corpse', 'corpses'].forEach(p => {
         candidates.push({
             pattern: p,
@@ -137,8 +137,8 @@ export const buildHighlighterCandidates = (
     const allItems = Array.from(new Set([...roomItems, ...discoveredItems]));
     allItems.forEach(name => {
         const category = getCategoryForName(name, inlineCategories);
-        const glowColor = getGlowColorForCategory(category || 'inline-object', inlineCategories);
-        const command = 'inline-object';
+        const glowColor = getGlowColorForCategory(category || 'inline-obj-room', inlineCategories);
+        const command = 'inline-obj-room';
 
         candidates.push({
             pattern: name,
@@ -197,13 +197,12 @@ export const buildHighlighterCandidates = (
                 else if (prefix === '[') bracketCmd = `open exit ${dir}`;
 
                 const bracketStyle = `color: var(--ansi-yellow); font-weight: bold;`;
-                
                 const openBracket = prefix ? 
                     `<span class="inline-btn exit-bracket" data-mid="${mid}" data-action="command" data-cmd="${esc(bracketCmd)}" data-context="${esc(prefix)}" style="${bracketStyle}">${prefix}</span>` : '';
                 const closeBracket = suffix ? 
                     `<span class="inline-btn exit-bracket" data-mid="${mid}" data-action="command" data-cmd="${esc(bracketCmd)}" data-context="${esc(suffix)}" style="${bracketStyle}">${suffix}</span>` : '';
-                
-                const dirBtn = `<span class="inline-btn exit-word" data-mid="${mid}" data-action="command" data-cmd="${esc(dir)}" data-context="${esc(dir)}">${dir}</span>`;
+                const glowColor = 'rgba(255, 255, 255, 0.9)';
+                const dirBtn = `<span class="inline-btn exit-word" data-mid="${mid}" data-action="menu" data-cmd="inline-exit" data-context="${esc(dir)}" style="--glow-color: ${glowColor}; color: ${glowColor}">${dir}</span>`;
 
                 return `${openBracket}${dirBtn}${closeBracket}`;
             },
@@ -256,7 +255,7 @@ export const applyColorTaggedObjects = (html: string, mid: string, inlineCategor
     if (type === 'equipment-list') cmd = 'inline-obj-worn';
     else if (type === 'shop-item') cmd = 'inline-obj-shop';
     else if (type === 'inventory-list') cmd = 'inline-obj-char';
-    else cmd = 'inline-object';
+    else cmd = 'inline-obj-room';
 
     return html.replace(OBJECT_COLOR_RE, (_match, _open, innerHtml: string, _close) => {
         const displayName = decodeHtmlEntities(innerHtml).toLowerCase();

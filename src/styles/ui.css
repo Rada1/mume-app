@@ -12,16 +12,18 @@
 }
 
 .mobile-header {
-    background: linear-gradient(to bottom, var(--header-bg, rgba(0, 0, 0, 0.6)) 0%, transparent 100%) !important;
-    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.08)) !important;
+    background: linear-gradient(to bottom, var(--header-bg, rgba(0, 0, 0, 0.7)) 0%, rgba(0,0,0,0.3) 60%, transparent 100%) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-color, rgba(255, 255, 255, 0.05)) !important;
     position: absolute !important;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 5001; /* Highest priority layer */
+    z-index: 5001; 
     pointer-events: none;
     margin-bottom: 0 !important;
-    padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 15px 12px !important;
+    padding: env(safe-area-inset-top, 0px) 12px 6px 12px !important;
 }
 
 .mobile-header>* {

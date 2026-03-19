@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
+import { sanitizeGameTarget } from '../../utils/gameUtils';
 
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
@@ -31,7 +32,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         }
 
-        let finalContext = context;
+        let finalContext = sanitizeGameTarget(context) || context;
         let detectedParent = parentNoun;
 
         // If no explicit parentNoun, try to detect it from the context (e.g. loaf.backpack)
