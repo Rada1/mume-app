@@ -21,7 +21,7 @@
     z-index: 5001; /* Highest priority layer */
     pointer-events: none;
     margin-bottom: 0 !important;
-    padding: 8px 12px 15px 12px !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 15px 12px !important;
 }
 
 .mobile-header>* {

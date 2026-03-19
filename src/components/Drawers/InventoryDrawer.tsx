@@ -37,16 +37,25 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     const startPosRef = React.useRef<{ x: number; y: number } | null>(null);
     const pendingDragRef = React.useRef<DrawerLine | null>(null);
     const isDraggingRef = React.useRef(false);
+    const pointerIdRef = React.useRef<number | null>(null);
+    const pointerTargetRef = React.useRef<HTMLElement | null>(null);
+    const touchMoveHandlerRef = React.useRef<((e: TouchEvent) => void) | null>(null);
 
     const cleanupDrag = () => {
         if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
         document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+        if (touchMoveHandlerRef.current) {
+            window.removeEventListener('touchmove', touchMoveHandlerRef.current);
+            touchMoveHandlerRef.current = null;
+        }
         setDraggedItem(null);
         setPrimedItemId(null);
         setActiveDropTarget(null);
         startPosRef.current = null;
         pendingDragRef.current = null;
         isDraggingRef.current = false;
+        pointerIdRef.current = null;
+        pointerTargetRef.current = null;
         window.removeEventListener('pointermove', handleGlobalPointerMove);
         window.removeEventListener('pointerup', handleGlobalPointerUp);
         window.removeEventListener('pointercancel', cleanupDrag);
@@ -212,27 +221,41 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             const line = pendingDragRef.current;
             setDraggedItem({ line, x, y, itemNoun: extractNoun(line.text) });
             setPrimedItemId(null);
-            window.addEventListener('pointercancel', cleanupDrag);
+
+            // Capture pointer now that drag is active
+            if (pointerTargetRef.current && pointerIdRef.current !== null) {
+                try { pointerTargetRef.current.setPointerCapture(pointerIdRef.current); } catch (_) {}
+            }
+
+            // Now add drag tracking listeners (deferred from pointerDown to avoid blocking scroll)
+            window.addEventListener('pointermove', handleGlobalPointerMove);
+            window.addEventListener('pointerup', handleGlobalPointerUp);
+
+            // Prevent browser scrolling while dragging
+            const preventScroll = (e: TouchEvent) => { e.preventDefault(); };
+            touchMoveHandlerRef.current = preventScroll;
+            window.addEventListener('touchmove', preventScroll, { passive: false });
         }
     };
 
     const handlePointerDownItem = (e: React.PointerEvent, line: DrawerLine) => {
         if (!line.isItem) return;
         cleanupDrag();
-        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        // Don't capture pointer yet — let browser handle scroll if user swipes
+        pointerIdRef.current = e.pointerId;
+        pointerTargetRef.current = e.currentTarget as HTMLElement;
         startPosRef.current = { x: e.clientX, y: e.clientY };
         pendingDragRef.current = line;
         setPrimedItemId(line.id);
 
-        window.addEventListener('pointermove', handleGlobalPointerMove);
-        window.addEventListener('pointerup', handleGlobalPointerUp);
+        // Only listen for pointercancel during hold (fires if browser starts scrolling)
         window.addEventListener('pointercancel', cleanupDrag);
 
         longPressTimerRef.current = setTimeout(() => {
             if (startPosRef.current) {
                 startActiveDrag(startPosRef.current.x, startPosRef.current.y);
             }
-        }, 350);
+        }, 800);
     };
 
     const swipePos = React.useRef<{ x: number, y: number } | null>(null);
@@ -240,7 +263,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     return (
         <div 
             className={`inventory-drawer lighting-state-${lighting} ${isOpen ? 'open' : ''}`} 
-            style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'none' }}
+            style={{ pointerEvents: isOpen ? 'auto' : 'none', touchAction: 'pan-y' }}
             onPointerDown={(e) => {
                 const target = e.target as HTMLElement;
                 if (target.closest('button') || target.closest('a') || target.closest('.inline-btn') || target.tagName === 'INPUT') return;
@@ -410,7 +433,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                                  background: line.isItem ? (isPrimed ? primedBackground : baseBackground) : 'transparent',
                                                  borderLeft: line.isItem ? borderLeftStyle : 'none',
                                                  boxShadow: line.isItem ? glowEffect : 'none',
-                                                 opacity: isBeingDragged ? 0.3 : 1, transition: 'all 0.2s ease', touchAction: 'none', display: 'flex', alignItems: 'center'
+                                                 opacity: isBeingDragged ? 0.3 : 1, transition: 'all 0.2s ease', touchAction: 'pan-y', display: 'flex', alignItems: 'center'
                                              }}
                                          >
                                             <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1, fontWeight: 'bold' }} />

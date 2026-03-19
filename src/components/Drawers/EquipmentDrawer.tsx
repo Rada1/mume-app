@@ -80,10 +80,17 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const draggedRef = useRef<{ line: DrawerLine; source: 'inventory' | 'equipment' } | null>(null);
     const isDraggingRef = useRef(false);
     const drawerRef = useRef<HTMLDivElement>(null);
+    const pointerIdRef = useRef<number | null>(null);
+    const pointerTargetRef = useRef<HTMLElement | null>(null);
+    const touchMoveHandlerRef = useRef<((e: TouchEvent) => void) | null>(null);
 
     const cleanupDrag = () => {
         if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
         document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+        if (touchMoveHandlerRef.current) {
+            window.removeEventListener('touchmove', touchMoveHandlerRef.current);
+            touchMoveHandlerRef.current = null;
+        }
         setDraggedItem(null);
         setPrimedItemId(null);
         setActiveDropTarget(null);
@@ -93,6 +100,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
         pendingDragRef.current = null;
         draggedRef.current = null;
         isDraggingRef.current = false;
+        pointerIdRef.current = null;
+        pointerTargetRef.current = null;
         window.removeEventListener('pointermove', handleGlobalPointerMove);
         window.removeEventListener('pointerup', handleGlobalPointerUp);
         window.removeEventListener('pointercancel', cleanupDrag);
@@ -123,11 +132,12 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const dx = Math.abs(e.clientX - startPosRef.current.x);
             const dy = Math.abs(e.clientY - startPosRef.current.y);
             const dist = Math.sqrt(dx * dx + dy * dy);
-            const threshold = e.pointerType === 'mouse' ? 10 : 15;
-            
+            const threshold = e.pointerType === 'mouse' ? 10 : 8;
+
             if (dist > threshold) {
-                // Instead of cleaning up, START the drag
-                startActiveDrag(e.clientX, e.clientY);
+                // User is scrolling — cancel drag setup and let browser handle it
+                cleanupDrag();
+                return;
             }
         }
 
@@ -405,7 +415,20 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             isDraggingRef.current = true;
             setPrimedItemId(null);
             if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-            window.addEventListener('pointercancel', cleanupDrag);
+
+            // Capture pointer now that drag is active
+            if (pointerTargetRef.current && pointerIdRef.current !== null) {
+                try { pointerTargetRef.current.setPointerCapture(pointerIdRef.current); } catch (_) {}
+            }
+
+            // Now add drag tracking listeners (deferred from pointerDown to avoid blocking scroll)
+            window.addEventListener('pointermove', handleGlobalPointerMove);
+            window.addEventListener('pointerup', handleGlobalPointerUp);
+
+            // Prevent browser scrolling while dragging
+            const preventScroll = (e: TouchEvent) => { e.preventDefault(); };
+            touchMoveHandlerRef.current = preventScroll;
+            window.addEventListener('touchmove', preventScroll, { passive: false });
         }
     };
 
@@ -423,20 +446,21 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             return;
         }
         cleanupDrag();
-        (e.target as HTMLElement).setPointerCapture(e.pointerId);
+        // Don't capture pointer yet — let browser handle scroll if user swipes
+        pointerIdRef.current = e.pointerId;
+        pointerTargetRef.current = e.target as HTMLElement;
         startPosRef.current = { x: e.clientX, y: e.clientY };
         pendingDragRef.current = { line, source };
         setPrimedItemId(line.id);
 
-        window.addEventListener('pointermove', handleGlobalPointerMove);
-        window.addEventListener('pointerup', handleGlobalPointerUp);
+        // Only listen for pointercancel during hold (fires if browser starts scrolling)
         window.addEventListener('pointercancel', cleanupDrag);
 
         longPressTimerRef.current = setTimeout(() => {
             if (startPosRef.current) {
                 startActiveDrag(startPosRef.current.x, startPosRef.current.y);
             }
-        }, 350);
+        }, 800);
     };
 
 
@@ -563,7 +587,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 opacity: isBeingDragged ? 0.3 : 1,
                                 color: line.isContainer ? '#89b4fa' : 'inherit',
                                 transition: 'all 0.2s ease',
-                                touchAction: 'none',
+                                touchAction: 'pan-y',
                                 display: 'flex',
                                 alignItems: 'center'
                             }}
