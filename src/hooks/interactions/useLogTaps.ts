@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
+import { getButtonCommand } from '../../utils/buttonUtils';
+import { isItemContainer } from '../../utils/gameUtils';
 
 export const useLogTaps = (deps: InteractionDeps) => {
     const {
@@ -84,7 +86,6 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
         if (selection) {
             setTarget(selection);
-            addMessage('system', `Target set to: ${selection}`);
             triggerHaptic(30);
 
             try {
@@ -113,7 +114,6 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
                 if (context) {
                     setTarget(context);
-                    addMessage('system', `Target set to: ${context}`);
                     triggerHaptic(30);
                     e.stopPropagation();
                 }
@@ -141,6 +141,18 @@ export const useLogTaps = (deps: InteractionDeps) => {
         const contextStr = context || targetEl.innerText.trim();
 
         if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
+            const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
+            if (sourceButton) {
+                const resolved = getButtonCommand(sourceButton, heldButton.dx || 0, heldButton.dy || 0, contextStr, undefined, heldButton.modifiers || [], joystick, target, isLong);
+                if (resolved?.cmd) {
+                    executeCommand(resolved.cmd);
+                    setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                    triggerHaptic(60);
+                    return;
+                }
+            }
+
+            // Fallback to legacy behavior
             let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
 
             if (finalCmd) {
@@ -211,19 +223,32 @@ export const useLogTaps = (deps: InteractionDeps) => {
             triggerHaptic(40);
         } else if (cmd === 'target' && context) {
             setTarget(context);
-            addMessage('system', `Target set to: ${context}`);
             triggerHaptic(30);
         }
     }, [handleLogDoubleClick, viewport.isMobile, heldButton, executeCommand, setHeldButton, triggerHaptic, setPopoverState, setInput, setTarget, addMessage, ui.mapExpanded]);
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
+        const isShopItem = targetEl?.getAttribute('data-cmd') === 'inline-shopitem';
+        const verb = isShopItem ? 'buy' : 'get';
 
         // --- Multi-touch Button Combo ---
         const isLong = isJoystickTargetActiveRef.current;
         const contextStr = targetEl ? (targetEl.getAttribute('data-context') || targetEl.innerText.trim()) : '';
 
         if (targetEl && heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
+            const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
+            if (sourceButton) {
+                const resolved = getButtonCommand(sourceButton, heldButton.dx || 0, heldButton.dy || 0, contextStr, undefined, heldButton.modifiers || [], joystick, target, isLong);
+                if (resolved?.cmd) {
+                    executeCommand(resolved.cmd);
+                    setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
+                    triggerHaptic(60);
+                    return;
+                }
+            }
+
+            // Fallback
             let finalCmd = isLong ? (heldButton.longCommand || heldButton.baseCommand) : heldButton.baseCommand;
 
             if (finalCmd) {
@@ -277,6 +302,13 @@ export const useLogTaps = (deps: InteractionDeps) => {
             const dragData = { type: 'inline-btn', cmd, context, id: idValue };
             setActiveDragData(dragData);
             targetEl.classList.add('dragging');
+
+            const logEl = document.querySelector('.message-log') as HTMLElement;
+            if (logEl) {
+                logEl.style.userSelect = 'none';
+                logEl.style.webkitUserSelect = 'none';
+                window.getSelection()?.removeAllRanges();
+            }
 
             if (isMobile) {
                 // LOCK SCROLL (mobile only — desktop doesn't need it)
@@ -348,7 +380,6 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
                     if (selection) {
                         setTarget(selection);
-                        addMessage('system', `Target set to: ${selection}`);
                     }
 
                     if (!targetEl) return; // Exit if just text selection, no drag
@@ -394,7 +425,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                              setHeldButton((prev: any) => {
                                  if (!prev) return null;
                                  const original = prev.originalLabel || prev.label;
-                                 const newLabel = `get + wear ${original}`;
+                                 const newLabel = `${verb} + wear ${original}`;
                                  if (prev.label === newLabel) return prev;
                                  setCommandPreview(newLabel);
                                  return { ...prev, label: newLabel };
@@ -404,16 +435,17 @@ export const useLogTaps = (deps: InteractionDeps) => {
                              setHeldButton((prev: any) => {
                                  if (!prev) return null;
                                  const original = prev.originalLabel || prev.label;
-                                 const newLabel = `get ${original}`;
+                                 const newLabel = `${verb} ${original}`;
                                  if (prev.label === newLabel) return prev;
                                  setCommandPreview(newLabel);
                                  return { ...prev, label: newLabel };
                              });
                          } else {
+                             overInv?.querySelector('.drawer-section-drop-zone')?.classList.add('drop-hover-active');
                              setHeldButton((prev: any) => {
                                  if (!prev) return null;
                                  const original = prev.originalLabel || prev.label;
-                                 const newLabel = `get ${original}`;
+                                 const newLabel = `${verb} ${original}`;
                                  if (prev.label === newLabel) return prev;
                                  setCommandPreview(newLabel);
                                  return { ...prev, label: newLabel };
@@ -443,20 +475,34 @@ export const useLogTaps = (deps: InteractionDeps) => {
                                 setHeldButton((prev: any) => {
                                     if (!prev) return null;
                                     const original = prev.originalLabel || prev.label;
-                                    const newLabel = `give ${original} ${recipientName}`;
+                                    const newLabel = isShopItem ? `buy + give ${original} ${recipientName}` : `give ${original} ${recipientName}`;
                                     if (prev.label === newLabel) return prev;
                                     setCommandPreview(newLabel);
                                     return { ...prev, label: newLabel };
                                 });
                             }
                         } else {
-                            setHeldButton((prev: any) => {
-                                if (!prev) return null;
-                                const original = prev.originalLabel || prev.label;
-                                if (prev.label === original) return prev;
-                                setCommandPreview('');
-                                return { ...prev, label: original };
-                            });
+                            const targetCandidate = targetUnderPointer?.closest('.inline-btn');
+                            const candidateContext = targetCandidate?.getAttribute('data-context') || targetCandidate?.textContent?.trim();
+                            if (targetCandidate && candidateContext && isItemContainer(candidateContext) && !targetCandidate.classList.contains('dragging')) {
+                                targetCandidate.classList.add('drop-hover-active');
+                                setHeldButton((prev: any) => {
+                                    if (!prev) return null;
+                                    const original = prev.originalLabel || prev.label;
+                                    const newLabel = `${verb} + put ${original} ${candidateContext}`;
+                                    if (prev.label === newLabel) return prev;
+                                    setCommandPreview(newLabel);
+                                    return { ...prev, label: newLabel };
+                                });
+                            } else {
+                                setHeldButton((prev: any) => {
+                                    if (!prev) return null;
+                                    const original = prev.originalLabel || prev.label;
+                                    if (prev.label === original) return prev;
+                                    setCommandPreview('');
+                                    return { ...prev, label: original };
+                                });
+                            }
                         }
                     }
                 }
@@ -497,48 +543,62 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     const draggedContext = targetEl?.getAttribute('data-context');
                     if (draggedContext && recipientName) {
                         triggerHaptic(60);
-                        executeCommand(`give ${draggedContext} ${recipientName}`);
+                        if (isShopItem) {
+                            executeCommand(`buy ${draggedContext}`);
+                            setTimeout(() => executeCommand(`give ${draggedContext} ${recipientName}`), 125);
+                        } else {
+                            executeCommand(`give ${draggedContext} ${recipientName}`);
+                        }
                     }
                 } else {
-                    const drawerContainer = targetUnderPointer?.closest('.is-container');
+                    const roomContainer = targetUnderPointer?.closest('.inline-btn:not(.dragging)');
+                    const roomContainerContext = roomContainer?.getAttribute('data-context') || roomContainer?.textContent?.trim();
                     const draggedContext = targetEl?.getAttribute('data-context');
 
-                    const drawerElUp = document.querySelector('.right-drawer') as HTMLElement | null;
-                    const drawerRectUp = drawerElUp?.getBoundingClientRect();
-                    const isOverDrawerUp = !!(drawerRectUp &&
-                        upEvent.clientX >= drawerRectUp.left && upEvent.clientX <= drawerRectUp.right &&
-                        upEvent.clientY >= drawerRectUp.top && upEvent.clientY <= drawerRectUp.bottom);
+                    if (roomContainer && roomContainerContext && isItemContainer(roomContainerContext) && draggedContext) {
+                        triggerHaptic(60);
+                        executeCommand(`${verb} ${draggedContext}`);
+                        setTimeout(() => executeCommand(`put ${draggedContext} ${roomContainerContext}`), 125);
+                    } else {
+                        const drawerContainer = targetUnderPointer?.closest('.is-container');
+                        const drawerElUp = document.querySelector('.right-drawer') as HTMLElement | null;
+                        const drawerRectUp = drawerElUp?.getBoundingClientRect();
+                        const isOverDrawerUp = !!(drawerRectUp &&
+                            upEvent.clientX >= drawerRectUp.left && upEvent.clientX <= drawerRectUp.right &&
+                            upEvent.clientY >= drawerRectUp.top && upEvent.clientY <= drawerRectUp.bottom);
 
-                    if (drawerContainer && draggedContext) {
-                        const containerName = drawerContainer.getAttribute('data-item-name');
-                        if (containerName) {
-                            triggerHaptic(60);
-                            executeCommand(`get ${draggedContext}`, true, true);
-                            setTimeout(() => executeCommand(`put ${draggedContext} ${containerName}`), 125);
-                        }
-                    } else if (draggedContext && (isOverDrawerUp || upEvent.clientX > window.innerWidth - 80)) {
-                        triggerHaptic(40);
-                        // Check if dropped specifically on the equipment section → get + wear
-                        const overEquipDrop = targetUnderPointer?.closest('[data-drawer-section="equipmentlist"]');
-                        if (overEquipDrop) {
-                            executeCommand(`get ${draggedContext}`);
-                            setTimeout(() => executeCommand(`wear ${draggedContext}`), 125);
-                        } else {
-                            executeCommand(`get ${draggedContext}`);
-                        }
-                    } else if (targetUnderPointer?.closest('.input-area')) {
-                        if (draggedContext) {
-                            triggerHaptic(30);
-                            const trimmed = input.trim();
-                            setInput(trimmed ? `${trimmed} ${draggedContext} ` : `${draggedContext} `);
+                        if (drawerContainer && draggedContext) {
+                            const containerName = drawerContainer.getAttribute('data-item-name');
+                            if (containerName) {
+                                triggerHaptic(60);
+                                executeCommand(`${verb} ${draggedContext}`, true, true);
+                                setTimeout(() => executeCommand(`put ${draggedContext} ${containerName}`), 125);
+                            }
+                        } else if (draggedContext && (isOverDrawerUp || upEvent.clientX > window.innerWidth - 80)) {
+                            triggerHaptic(40);
+                            const overEquipDrop = targetUnderPointer?.closest('[data-drawer-section="equipmentlist"]');
+                            if (overEquipDrop) {
+                                executeCommand(`${verb} ${draggedContext}`);
+                                setTimeout(() => executeCommand(`wear ${draggedContext}`), 125);
+                            } else {
+                                executeCommand(`${verb} ${draggedContext}`);
+                            }
+                        } else if (targetUnderPointer?.closest('.input-area')) {
+                            if (draggedContext) {
+                                triggerHaptic(30);
+                                const trimmed = input.trim();
+                                setInput(trimmed ? `${trimmed} ${draggedContext} ` : `${draggedContext} `);
+                            }
                         }
                     }
                 }
 
-                // RESTORE SCROLL (mobile only)
-                if (isMobile) {
-                    const logEl = document.querySelector('.message-log') as HTMLElement;
-                    if (logEl) {
+                // RESTORE SELECTION & SCROLL
+                const logEl = document.querySelector('.message-log') as HTMLElement;
+                if (logEl) {
+                    logEl.style.userSelect = 'auto';
+                    logEl.style.webkitUserSelect = 'auto';
+                    if (isMobile) {
                         logEl.style.overflow = 'auto';
                         logEl.style.touchAction = 'pan-y';
                     }

@@ -44,6 +44,8 @@ interface UseSettingsDeps {
     setShowOrganicTerrain: (val: boolean) => void;
     inlineCategories: import('../types').InlineCategoryConfig[];
     setInlineCategories: (val: import('../types').InlineCategoryConfig[]) => void;
+    isHighlighterEnabled: boolean;
+    setIsHighlighterEnabled: (val: boolean) => void;
 }
 
 export function useSettings(deps: UseSettingsDeps) {
@@ -61,7 +63,8 @@ export function useSettings(deps: UseSettingsDeps) {
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
         showLegacyButtons, setShowLegacyButtons,
-        inlineCategories, setInlineCategories
+        inlineCategories, setInlineCategories,
+        isHighlighterEnabled, setIsHighlighterEnabled
     } = deps;
     const [bgImage, setBgImage] = useState((MASTER_SETTINGS as any).bgImage || DEFAULT_BG);
     const [connectionUrl, setConnectionUrl] = useState((MASTER_SETTINGS as any).connectionUrl || DEFAULT_URL);
@@ -188,6 +191,7 @@ export function useSettings(deps: UseSettingsDeps) {
                     if (settings.isMobileBrevityMode !== undefined) setIsMobileBrevityMode(settings.isMobileBrevityMode);
                     if (settings.showLegacyButtons !== undefined) setShowLegacyButtons(settings.showLegacyButtons);
                     if (settings.inlineCategories) setInlineCategories(settings.inlineCategories);
+                    if (settings.isHighlighterEnabled !== undefined) setIsHighlighterEnabled(settings.isHighlighterEnabled);
                     if (settings.favorites) setFavorites(settings.favorites);
                     if (settings.buttons) setButtons(settings.buttons.map(b => ({ ...b, isVisible: !b.trigger?.enabled })));
                     if (settings.soundTriggers && audioCtxRef.current) {
@@ -268,6 +272,7 @@ export function useSettings(deps: UseSettingsDeps) {
         isImmersionMode, setIsImmersionMode,
         isMobileBrevityMode, setIsMobileBrevityMode,
         showLegacyButtons, setShowLegacyButtons,
+        isHighlighterEnabled, setIsHighlighterEnabled,
         favorites, setFavorites
     };
 }

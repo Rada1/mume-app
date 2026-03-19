@@ -64,7 +64,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const lastRoomIdRef = useRef<string | null>(null);
 
     const { triggerHaptic, executeCommand, theme, showLegacyButtons, btn, joystick, setIsTrackpadModifierActive, lighting } = useGame();
-    const { target } = useVitals();
+    const { target, groupMembers } = useVitals();
     const { addMessage } = useLog();
     const { setUI, setPopoverState } = useUI();
     const isDarkMode = theme === 'dark';
@@ -193,6 +193,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 walkTargetId={walkTargetId}
                 walkPath={walkPath}
                 baseMapExitsRef={context.baseMapExitsRef}
+                groupMembers={groupMembers}
+                serverIdIndexRef={context.serverIdIndexRef}
             />
             
             {isMobile && currentRoomId && (rooms[currentRoomId] || rooms[`m_${currentRoomId}`] || preloadedCoordsRef.current[String(currentRoomId).replace(/^m_/, '')]) && (

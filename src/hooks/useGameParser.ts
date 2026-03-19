@@ -10,7 +10,8 @@ import { useQuestsHandler } from './useQuestsHandler';
 export interface UseGameParserDeps {
     isItemsOpen: boolean; isCharacterOpen: boolean; isStatsOpen: boolean; isPlayersOpen: boolean; mapperRef: React.RefObject<any>;
     btn: { buttonsRef: React.RefObject<any[]>; setButtons: React.Dispatch<React.SetStateAction<any[]>>; buttonTimers: React.RefObject<Record<string, ReturnType<typeof setTimeout>>>; setActiveSet: (setId: string) => void; };
-    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
+    addMessage: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string) => void;
+    pendingGmcpCommRef?: React.MutableRefObject<{ sender: string; chan: string } | null>;
     playSound: (buffer: AudioBuffer) => void; triggerHaptic: (ms: number) => void;
     setWeather: (val: any) => void; setIsFoggy: (val: boolean) => void;
     setStats: (val: GameStats | ((prev: GameStats) => GameStats)) => void;
@@ -58,6 +59,7 @@ export interface UseGameParserDeps {
     mumeEditState: { isOpen: boolean; title: string; text: string; key: string };
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
     shop: ReturnType<typeof useShopHandler>;
+    triggerXpTicker?: () => void;
 }
 
 export function useGameParser(deps: UseGameParserDeps) {
@@ -70,6 +72,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     mumeEditState,
     setMumeEditState,
     isPlayersOpen,
+    triggerXpTicker,
+    pendingGmcpCommRef
 } = deps;
 
     const { processTriggers } = useTriggerProcessor({ ...deps, buttonsRef: btn.buttonsRef, setButtons: btn.setButtons, buttonTimers: btn.buttonTimers, setActiveSet: btn.setActiveSet, actionsRef, executeCommandRef });
@@ -109,10 +113,12 @@ export function useGameParser(deps: UseGameParserDeps) {
                 deps.shop.finalizeShop(addMessage);
             } else if (currentStage === 'quest') {
                 finalizeQuests();
-            } else if (currentStage === 'eq' && eqLen > 0) {
-                tempEqRef.current = []; 
-            } else if (currentStage === 'inv' && invLen > 0) {
-                tempInvRef.current = []; 
+            } else if (currentStage === 'eq') {
+                setEqLines([...tempEqRef.current]);
+                tempEqRef.current = [];
+            } else if (currentStage === 'inv') {
+                setInventoryLines([...tempInvRef.current]);
+                tempInvRef.current = [];
             }
             
             captureStage.current = 'none';
@@ -134,12 +140,14 @@ export function useGameParser(deps: UseGameParserDeps) {
         let textOnly = cleanLine.replace(/\x1b\[[0-9;]*m/g, '').trim();
         let lower = textOnly.toLowerCase();
         
-        let content = textOnly;
-        let contentLower = lower;
+        // Strip prompt prefix for detection
+        let content = textOnly.replace(/^([^\r\n>]{0,120}>)\s*/, '');
+        let contentLower = content.toLowerCase();
 
         const currentRoomName = roomNameRef.current;
         const textOnlyRaw = textOnly;
         const lowerRaw = lower;
+        
 
         // Optimized Prompt and End Determination (Avoid nested quantifiers to prevent backtracking)
         const promptRegex = /^([^\r\n>]{0,120}>)\s*/;
@@ -150,8 +158,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         const isEndPrompt = (!!textPMatch && !attachedText && !['practice', 'who', 'shop', 'where', 'quest', 'stat', 'info', 'whois', 'description'].includes(captureStage.current as any)) || 
-
-            /^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly) ||
+            (/^((?:(?:\[.*?\]|[\*\)\!oO\.\[f%\~+WU:=O\#\?\(\-]|\([^)]+\))\s*)*[>])\s*$/.test(textOnly)) ||
             (textOnly.includes('HP:') && textOnly.includes('MA:') && textOnly.includes('>'));
 
         // --- STAGE INITIALIZATION (Consolidated) ---
@@ -204,12 +211,17 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'where'; setWhereList([]);
             if (deps.isPlayersOpen) isSilentCapture.current = 1;
         }
-        else if (/^In (.*?):$/.test(textOnly) && !textOnly.includes('equipment')) {
+        else if ((contentLower.includes('in the ') || contentLower.includes('in your ') || contentLower.includes('in a ')) && contentLower.endsWith(':') && !contentLower.includes('equipped')) {
             if (captureStage.current === 'container') return;
             if (captureStage.current !== 'none') finalizeCapture();
-            console.log('[Parser] Entering Stage: container'); addDiagnosticLog?.('Entering Stage: container');
+            console.log('[Parser] ENTERING container stage via content:', content);
             (captureStage as any).current = 'container';
-            if (deps.pendingDrawerContainerRef?.current) isDrawerCapture.current = 1;
+            if (deps.pendingDrawerContainerRef?.current) {
+                isDrawerCapture.current = 1;
+            } else {
+                isDrawerCapture.current = 0;
+                setPopoverState(prev => prev ? { ...prev, type: 'container', containerItems: [] } : null);
+            }
         }
         else if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
             if (captureStage.current === 'stat') return;
@@ -224,7 +236,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: eq'); addDiagnosticLog?.('Entering Stage: eq');
             isWaitingForEq.current = false; (captureStage as any).current = 'eq';
-            setEqLines([]);
             tempEqRef.current = []; if (deps.isCharacterOpen) isDrawerCapture.current = 1;
         }
         else if ((isWaitingForInv.current || captureStage.current === 'none') && /you are carrying|your inventory contains|is carrying:|is using:/i.test(lower)) {
@@ -232,7 +243,6 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] Entering Stage: inv'); addDiagnosticLog?.('Entering Stage: inv');
             isWaitingForInv.current = false; (captureStage as any).current = 'inv';
-            setInventoryLines([]);
             tempInvRef.current = []; if (deps.isItemsOpen) isDrawerCapture.current = 1;
         }
         else if ((lower.startsWith('you are a ') && (lower.includes('person') || lower.includes('being'))) || 
@@ -289,8 +299,9 @@ export function useGameParser(deps: UseGameParserDeps) {
             const promptPart = textPMatch[0];
             attachedText = textOnly.slice(promptPart.length).trim();
 
-            // Only finalize if this is a standalone prompt at the start of a line
-            if (captureStage.current !== 'none' && !attachedText) {
+            // Only finalize if this is a standalone prompt at the start of a line and isn't a paging prompt
+            const isPager = textOnly.includes('*** Return:') || textOnly.includes('*** [Hit Return to continue]');
+            if (captureStage.current !== 'none' && !attachedText && !isPager) {
                 finalizeCapture();
             }
 
@@ -434,6 +445,19 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
         }
 
+        // --- Experience Ticker Trigger ---
+        const xpTextMatch = lower.match(/you receive (\d+) experience/i);
+        if (xpTextMatch) {
+            // Solo kill with explicit amount — advance xp immediately from text so the
+            // ticker fires once per kill rather than waiting for the next GMCP prompt.
+            const delta = parseInt(xpTextMatch[1], 10);
+            if (delta > 0) setCharacterInfo(prev => ({ ...prev, xp: prev.xp + delta }));
+            triggerXpTicker?.();
+        } else if (/you receive your share of experience/i.test(lower)) {
+            // Group kill — no amount in text, let GMCP drive the amount.
+            triggerXpTicker?.();
+        }
+
         // --- NEW: Priority Capture Handling ---
         if (captureStage.current !== 'none') {
             const stage = captureStage.current;
@@ -543,13 +567,16 @@ export function useGameParser(deps: UseGameParserDeps) {
         }
 
         // --- ROOM DETECTION ---
-        let isRoomMatched = !isSilentCapture.current && currentRoomName && (
-            textOnly === currentRoomName || lower === currentRoomName.toLowerCase() ||
-            textOnly === currentRoomName + '.' || lower === currentRoomName.toLowerCase() + '.' ||
-            (textOnly.length < currentRoomName.length + 8 && (textOnly.startsWith(currentRoomName) || lower.startsWith(currentRoomName.toLowerCase())))
+        const currentRoomRefValue = roomNameRef.current;
+        let isRoomMatched = currentRoomRefValue && (
+            textOnly === currentRoomRefValue || lower === currentRoomRefValue.toLowerCase() ||
+            textOnly === currentRoomRefValue + '.' || lower === currentRoomRefValue.toLowerCase() + '.' ||
+            (textOnly.startsWith(currentRoomRefValue) || lower.startsWith(currentRoomRefValue.toLowerCase()))
         );
-        let isRoomAnsiMatch = !isSilentCapture.current && /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(cleanLine);
-        let isRoomName = !!(isRoomMatched || (isRoomAnsiMatch && textOnly.length < 100 && !textOnly.includes(' - ') && !/carrying|using|following|contains/i.test(lower)));
+        let isRoomAnsiMatch = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[0-9;]*3[0-7]m/.test(cleanLine) &&
+            textOnly.length < 80 && !textOnly.includes(' - ') &&
+            !/carrying|using|following|contains|says|tells/i.test(lower);
+        let isRoomName = !!(isRoomAnsiMatch || (isRoomMatched && textOnly.length < (currentRoomRefValue?.length || 0) + 30 && !textOnly.includes(' - ') && !/carrying|using|following|contains|says|tells/i.test(lower)));
 
         // SPLIT logic
         if (currentRoomName && (textOnlyRaw.startsWith(currentRoomName) || lowerRaw.startsWith(currentRoomName.toLowerCase()))) {
@@ -568,6 +595,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                     return;
                 }
             }
+        }
+
+        if (isRoomName) {
+            console.log(`[Parser] Room Name Detected: "${textOnly}" | AnsiMatch: ${isRoomAnsiMatch} | TextMatch: ${isRoomMatched} | GMCP: ${currentRoomRefValue}`);
         }
 
         if (isRoomName && captureStage.current === 'none' && !isWaitingForStats.current && !isWaitingForEq.current && !isWaitingForInv.current) {
@@ -642,8 +673,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
                 const isContainer = isItemContainer(l);
-                const isHdr = /you are (carrying|using|equipped with)|contains|in your (.*?):/i.test(lLower);
-                const isNothing = /nothing/i.test(lLower).valueOf();
+                const isHdr = /you are (carrying|using|equipped with)|contains|in (?:the|your|a|his|her|its) (.*?):/i.test(lLower);
+                const isNothing = lLower.includes('nothing');
                 if (!isHdr && !isNothing && isContainer) addDiagnosticLog?.(`Detected container: ${textOnly}`);
 
                 let prefix = ''; let prefixHtml = ''; let mainText = tOnly; let mainHtml = ansiConvert.toHtml(l);
@@ -689,6 +720,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                     parentItemId, parentItemNoun
                 };
 
+                if (captureStage.current === 'container') {
+                    console.log(`[Parser] containerLine: ${line.text} | isItem: ${line.isItem} | isHdr: ${line.isHeader}`);
+                }
+
                 if (line.parentItemNoun) {
                     console.log(`[Parser] createLine:`, { text: line.text, parent: line.parentItemNoun, depth: line.depth, isItem: line.isItem });
                 }
@@ -699,12 +734,10 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (captureStage.current === 'inv') {
                 const line = createLine(cleanLine, textOnly, lower, 'inventorylist');
                 tempInvRef.current.push(line);
-                setInventoryLines(prev => [...prev, line]);
             } else if (captureStage.current === 'eq') {
                 if (textOnly.length > 0) {
                     const line = createLine(cleanLine, textOnly, lower, 'equipmentlist');
                     tempEqRef.current.push(line);
-                    setEqLines(prev => [...prev, line]);
                 }
             } else if (captureStage.current === 'practice') {
                 if (textOnly.trim().length > 0) {
@@ -719,7 +752,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 if (textOnly.length > 0 && !lower.includes('contains:')) {
                     const containerLine = createLine(cleanLine, textOnly, lower, 'lookin');
                     const drawerPending = deps.pendingDrawerContainerRef?.current;
-                    if (drawerPending) {
+                    if (isDrawerCapture.current === 1 && drawerPending) {
                         const { containerId, cmd } = drawerPending;
                         if (cmd === 'inventorylist') {
                             setInventoryLines(prev => {
@@ -772,15 +805,24 @@ export function useGameParser(deps: UseGameParserDeps) {
                                 return next;
                             });
                         }
-                    } else {
-                        setPopoverState((prev: any) => prev ? { ...prev, type: 'container', containerItems: [...(prev.containerItems || []), containerLine] } : prev);
+                    } else if (containerLine.isItem && !containerLine.isHeader) {
+                        // Only add real items (not 'Nothing', not headers) to the popover
+                        console.log('[Parser] Adding to popover containerItems:', containerLine.text);
+                        setPopoverState((prev: any) => {
+                            if (!prev) return null;
+                            return { 
+                                ...prev, 
+                                type: 'container', 
+                                containerItems: [...(prev.containerItems || []), containerLine] 
+                            };
+                        });
                     }
                     if (containerLine.isItem) {
                         const itmNoun = extractNoun(containerLine.text);
                         if (itmNoun) deps.setDiscoveredItems(prev => prev.includes(itmNoun) ? prev : [...prev, itmNoun]);
                     }
                 }
-                return;
+                if (isDrawerCapture.current || isSilentCapture.current) return;
             } else {
                 setStatsLines(p => [...p, { id: Math.random().toString(36).substring(7), text: textOnly, html: ansiConvert.toHtml(cleanLine) }]);
             }
@@ -883,7 +925,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             else if (currentStage === 'eq' && (deps.isItemsOpen || deps.isCharacterOpen)) isDrawerHiding = true;
             else if (currentStage === 'stat' && (deps.isStatsOpen || deps.isCharacterOpen)) isDrawerHiding = true;
             else if (['practice', 'info', 'quest', 'description', 'whois'].includes(currentStage) && deps.isCharacterOpen) isDrawerHiding = true;
-            else if (currentStage === 'container') isDrawerHiding = true;
+            else if (currentStage === 'container' && (isDrawerCapture.current > 0 || isSilentCapture.current > 0)) isDrawerHiding = true;
             else if (['who', 'where'].includes(currentStage) && isPlayersOpen) isDrawerHiding = true;
             else if (currentStage === 'shop') isDrawerHiding = true;
         } else if (isSilentCapture.current > 0 || isDrawerCapture.current > 0) {
@@ -901,7 +943,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             }
         }
 
-        const shouldShow = (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage;
+        const shouldShow = (isSilentCapture.current === 0 && !isDrawerHiding) || isImportantMessage || isRoomName;
 
         // Diagnostic Visibility Logger
         if (!shouldShow && showDebugEchoes) {
@@ -914,6 +956,14 @@ export function useGameParser(deps: UseGameParserDeps) {
             msgType = 'who-list';
         } else if (captureStage.current === 'where' && !textOnly.startsWith('Player') && !textOnly.startsWith('Who') && !textOnly.startsWith('---')) {
             msgType = 'where-list';
+        } else if (captureStage.current === 'description') {
+            msgType = 'room-description';
+        } else if (captureStage.current === 'eq') {
+            msgType = 'equipment-list';
+        } else if (captureStage.current === 'inv') {
+            msgType = 'inventory-list';
+        } else if (lower.startsWith('exits:')) {
+            msgType = 'room-exits';
         }
 
         // State updates for Who/Where lists must happen regardless of shouldShow (silent background captures)
@@ -946,10 +996,52 @@ export function useGameParser(deps: UseGameParserDeps) {
             setCharacterInfo(prev => ({ ...prev, description: (prev.description || '') + textOnly + '\n' }));
         }
 
+        // --- Text-based Item Detection ---
+        // If we see "is here" or "are here" in a line that isn't a known capture stage, 
+        // add it to discovered items for highlighting.
+        const itemMatch = textOnly.match(/^(?:A|An|The|Some)\s+(.*?)\s+(?:is|are)\s+here\s*[.!]?$/i);
+        if (itemMatch && captureStage.current === 'none' && !isDrawerHiding) {
+            const noun = extractNoun(itemMatch[1]);
+            if (noun && noun.length > 2) {
+                setDiscoveredItems(prev => Array.from(new Set([...prev, noun])));
+            }
+        }
+
+        // Consume pending GMCP comm metadata (set by onComm before this text line arrives)
+        const gmcpComm = pendingGmcpCommRef?.current ?? null;
+        if (gmcpComm) pendingGmcpCommRef!.current = null;
+
+        let replyTarget: string | undefined;
+        let replyCommand: string | undefined;
+        if (gmcpComm) {
+            replyTarget = gmcpComm.sender || undefined;
+            const chanMap: Record<string, string> = { tell: 'tell', say: 'say', narrate: 'narrate', shout: 'shout', exclaim: 'exclaim', sing: 'sing', whisper: 'whisper', pray: 'pray', ask: 'ask', yell: 'yell' };
+            replyCommand = chanMap[gmcpComm.chan.toLowerCase()] ?? gmcpComm.chan.toLowerCase();
+        } else {
+            // Text fallback (no GMCP): detect common comm patterns
+            const commPatterns: [RegExp, string, boolean][] = [
+                [/^(.+?)\s+tells? you /i, 'tell', true],
+                [/^(.+?)\s+says?(?:,)? /i, 'say', true],
+                [/^(.+?)\s+narrates?(?:,)? /i, 'narrate', true],
+                [/^(.+?)\s+yells?(?:,)? /i, 'yell', true],
+                [/^(.+?)\s+shouts?(?:,)? /i, 'shout', true],
+                [/^(.+?)\s+exclaims?(?:,)? /i, 'exclaim', true],
+                [/^(.+?)\s+sings?(?:,)? /i, 'sing', true],
+                [/^(.+?)\s+whispers?(?:,)? /i, 'whisper', true],
+                [/^(.+?)\s+prays?(?:,)? /i, 'pray', true],
+                [/^(.+?)\s+asks?(?: you)?(?:,)? /i, 'ask', true],
+            ];
+            for (const [re, cmd, hasSender] of commPatterns) {
+                const m = content.match(re);
+                if (m) { replyCommand = cmd; if (hasSender) replyTarget = m[1]; break; }
+            }
+        }
+        if (replyCommand) msgType = 'comm';
+
         if (shouldShow) {
             let finalRawText = cleanLine;
             if (isRoomName && !finalRawText.endsWith('\x1b[0m')) finalRawText += '\x1b[0m';
-            addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false);
+            addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, replyTarget, replyCommand);
         }
 
         if (isEndPrompt) finalizeCapture();

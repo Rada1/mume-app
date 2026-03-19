@@ -170,3 +170,71 @@ export const isFluidContainer = (text: string): boolean => {
     return fluidKeywords.test(cleanRaw);
 };
 
+
+/**
+ * Converts English number words (one, twenty-five, one hundred) to integers.
+ * Specifically handles MUME shop pricing text.
+ */
+export const parseEnglishNumber = (text: string): number => {
+    // If it's already a number in string form, just return it
+    if (/^\d+$/.test(text)) return parseInt(text, 10);
+
+    const units: Record<string, number> = {
+        "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+        "eleven": 11, "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19
+    };
+    const tens: Record<string, number> = {
+        "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90
+    };
+    const scales: Record<string, number> = { "hundred": 100, "thousand": 1000 };
+
+    const words = text.toLowerCase().replace(/-/g, ' ').split(/\s+/).filter(w => w !== 'and');
+    let total = 0;
+    let current = 0;
+
+    for (const word of words) {
+        if (units[word] !== undefined) {
+            current += units[word];
+        } else if (tens[word] !== undefined) {
+            current += tens[word];
+        } else if (scales[word] !== undefined) {
+            current *= scales[word];
+            if (current >= 100) {
+                total += current;
+                current = 0;
+            }
+        } else if (/^\d+$/.test(word)) { // handle mixed case like "2 hundred"
+            current += parseInt(word, 10);
+        }
+    }
+    return total + current;
+};
+
+/**
+ * Formats a MUME price string (e.g. "fourteen gold and seven silver") into 
+ * a shorthand numeric version (e.g. "14 gold 7 silver").
+ */
+export const formatMumePrice = (priceStr: string): string => {
+    if (!priceStr) return "";
+    
+    // Strip script-added tags like <o1234> or ANSI
+    const cleanPrice = priceStr.replace(/<[^>]+>/g, '').replace(/\x1b\[[0-9;]*m/g, '').trim();
+    
+    // Split by units: e.g. "fourteen gold", "seven silver", "five copper"
+    const parts = cleanPrice.toLowerCase().split(/ and |, /);
+    const result: string[] = [];
+    
+    parts.forEach(part => {
+        const match = part.trim().match(/^(.*?)\s+(gold|silver|copper|lauren|celeb|busc|pennies?|coins?)$/);
+        if (match) {
+            const numPart = match[1].trim();
+            const unit = match[2].trim();
+            const value = parseEnglishNumber(numPart);
+            if (value > 0 || (parts.length === 1 && value === 0)) {
+                result.push(`${value} ${unit}`);
+            }
+        }
+    });
+
+    return result.join(' ');
+};

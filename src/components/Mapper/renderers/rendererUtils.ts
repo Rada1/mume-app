@@ -26,6 +26,10 @@ export interface RenderContext {
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     triggerRender?: () => void;
     clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    /** Maps MUME internal server vnum -> local preloaded vnum string (for resolving group member mapid) */
+    serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
+    /** Group members received from GMCP — used to render green friend-orbs on the map */
+    groupMembers?: import('../../../types').GroupMember[];
 }
 
 export const getSeed = (x: number, y: number) => Math.abs((Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1);

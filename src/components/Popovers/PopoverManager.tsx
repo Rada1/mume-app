@@ -21,18 +21,12 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             let top = popoverState.y, left = popoverState.x;
 
             if (popoverState.initialPointerX !== undefined) {
-                // Dial/Remote Mode: Perfectly centered
                 top = (winH / 2) - (rect.height / 2);
                 left = (winW / 2) - (rect.width / 2);
             } else if (popoverState.menuDisplay !== 'dial') {
-                // Finger/Gesture Mode for list menus:
-                // Position the bottom of the menu above the finger (y coordinate is where finger is).
-                // The x and y coming in are the finger position, so we place the menu so its
-                // bottom edge is at finger Y, and it's horizontally centered on the finger.
                 top = popoverState.y - rect.height - 8;
                 left = popoverState.x - rect.width / 2;
             }
-            // Always clamp to screen bounds
             if (top < 10) top = 10;
             if (top + rect.height > winH - 10) top = Math.max(10, winH - rect.height - 10);
             if (left < 10) left = 10;
@@ -65,8 +59,6 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             // Precision bounding box check for every item
             for (let i = 0; i < items.length; i++) {
                 const rect = items[i].getBoundingClientRect();
-                // Check if pointer is within the vertical bounds of this item
-                // We allow a bit of horizontal "slop" so you don't lose highlight if you slide slightly left/right
                 if (e.clientY >= rect.top && e.clientY <= rect.bottom &&
                     e.clientX >= rect.left - 40 && e.clientX <= rect.right + 40) {
                     targetIndex = i;
@@ -176,7 +168,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     // Resolve theme color for this menu
     let themeColor = setSettings[popoverState.setId]?.themeColor;
     if (!themeColor) {
-        if (popoverState.setId === 'inlineplayer') themeColor = 'rgba(100, 100, 255, 0.9)';
+        if (popoverState.setId === 'inlineplayer') themeColor = 'rgb(150, 150, 255)';
         else if (popoverState.setId === 'inlinenpc') themeColor = 'rgba(255, 100, 100, 0.9)';
         else if (popoverState.setId === 'inline-guildmaster') themeColor = 'rgba(168, 85, 247, 0.9)';
         else if (popoverState.setId === 'inline-default') themeColor = 'rgba(255, 255, 0, 0.9)';

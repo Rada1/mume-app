@@ -1,29 +1,43 @@
 import Convert from 'ansi-to-html';
 
+const generatePalette = () => {
+    const names = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white'];
+    const palette: Record<number, string> = {};
+
+    // Standard 16 colors (using CSS variables for theme support)
+    for (let i = 0; i < 8; i++) {
+        palette[i] = `var(--ansi-${names[i]})`;
+        palette[i + 8] = `var(--ansi-bright-${names[i]})`;
+    }
+
+    // 6x6x6 color cube (indices 16-231)
+    for (let i = 16; i < 232; i++) {
+        const j = i - 16;
+        const r = Math.floor(j / 36);
+        const g = Math.floor((j % 36) / 6);
+        const b = j % 6;
+        const rv = r === 0 ? 0 : r * 40 + 55;
+        const gv = g === 0 ? 0 : g * 40 + 55;
+        const bv = b === 0 ? 0 : b * 40 + 55;
+        palette[i] = `rgb(${rv},${gv},${bv})`;
+    }
+
+    // Grayscale ramp (indices 232-255)
+    for (let i = 232; i < 256; i++) {
+        const gray = (i - 232) * 10 + 8;
+        palette[i] = `rgb(${gray},${gray},${gray})`;
+    }
+
+    return palette;
+};
+
 const converter = new Convert({
     fg: 'var(--text-primary)',
     bg: 'transparent',
     newline: false,
     escapeXML: true,
-    stream: true,
-    colors: {
-        0: 'var(--ansi-black)',
-        1: 'var(--ansi-red)',
-        2: 'var(--ansi-green)',
-        3: 'var(--ansi-yellow)',
-        4: 'var(--ansi-blue)',
-        5: 'var(--ansi-magenta)',
-        6: 'var(--ansi-cyan)',
-        7: 'var(--ansi-white)',
-        8: 'var(--ansi-bright-black)',
-        9: 'var(--ansi-bright-red)',
-        10: 'var(--ansi-bright-green)',
-        11: 'var(--ansi-bright-yellow)',
-        12: 'var(--ansi-bright-blue)',
-        13: 'var(--ansi-bright-magenta)',
-        14: 'var(--ansi-bright-cyan)',
-        15: 'var(--ansi-bright-white)'
-    }
+    stream: false, // Must be false when sharing the converter across independent strings
+    colors: generatePalette()
 });
 
 // A simple Map-based cache to avoid re-parsing identical ANSI strings (like prompts or common attacks)

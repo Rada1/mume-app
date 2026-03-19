@@ -3,7 +3,7 @@ import { GRID_SIZE, normalizeTerrain } from './mapperUtils';
 import { RenderContext } from './renderers/rendererUtils';
 import { drawTerrains, drawLocalTerrains } from './renderers/drawTerrains';
 import { drawFeatures, drawLocalFeatures } from './renderers/drawFeatures';
-import { drawGrid, drawEntities, drawMarkers, drawMarquee } from './renderers/drawEntities';
+import { drawGrid, drawEntities, drawGroupMembers, drawMarkers, drawMarquee } from './renderers/drawEntities';
 
 interface RendererProps {
     rooms: Record<string, any>;
@@ -35,6 +35,8 @@ interface RendererProps {
     showOrganicTerrain?: boolean;
     triggerRender?: () => void;
     clientPredictionsRef?: MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    groupMembers?: import('../../types').GroupMember[];
+    serverIdIndexRef?: MutableRefObject<Record<string, string>>;
 }
 
 export const useMapperRenderer = ({
@@ -43,7 +45,7 @@ export const useMapperRenderer = ({
     playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
     preloadedCoordsRef, spatialIndexRef, baseMapExitsRef, exploredRef, renderVersion,
     unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
-    triggerRender, clientPredictionsRef,
+    triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef,
     showOrganicTerrain = true
 }: RendererProps) => {
 
@@ -271,16 +273,18 @@ export const useMapperRenderer = ({
             ctx, dpr, canvasWidth: baseW, canvasHeight: baseH, camera, isDarkMode, isMobile,
             imagesRef, processedIconsRef, now, ANIM_DUR, invZoom, currentZ, explored, unveilMap,
             allRooms, roomAtCoord: (cache as any).roomAtCoord, visitedAtCoord: (cache as any).visitedAtCoord, 
-            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef
+            preloaded: preloadedCoordsRef.current, firstExploredAtRef, selectedRoomIds, activeId, walkTargetId, walkPath, baseMapExitsRef, clientPredictionsRef,
+            groupMembers, serverIdIndexRef
         };
 
+        drawGroupMembers(rCtx);
         drawEntities(rCtx, playerTrailRef, playerPosRef, characterName);
         drawMarkers(rCtx, stableMarkersRef, selectedMarkerId, camera.x, camera.y, camera.x + baseW/camera.zoom, camera.y + baseH/camera.zoom);
 
         ctx.restore();
         drawMarquee(rCtx, marquee);
 
-    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef]);
+    }, [selectedRoomIds, selectedMarkerId, cameraRef, isDarkMode, isMobile, characterName, imagesRef, stableRoomsRef, stableRoomIdRef, unveilMap, viewZ, spatialIndexRef, preloadedCoordsRef, baseMapExitsRef, exploredRef, renderVersion, firstExploredAtRef, groupMembers, serverIdIndexRef]);
 
     return { drawMap };
 };

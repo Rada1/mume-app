@@ -278,8 +278,8 @@
     flex: 1;
     padding: 15px;
     overflow-y: auto;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.85rem;
+    font-family: inherit;
+    font-size: var(--dynamic-log-size, 16px);
     line-height: 1.5;
     white-space: normal;
     overflow-x: hidden;
@@ -335,7 +335,7 @@
     margin: -8px -8px 10px;
     border-radius: 10px 10px 0 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.7rem;
+    font-size: calc(var(--dynamic-log-size, 16px) * 0.7);
     font-weight: 900;
     letter-spacing: 2px;
     text-transform: uppercase;

@@ -50,17 +50,6 @@ export const META_BUTTONS: CustomButton[] = [
         "isVisible": true
     },
     {
-        "id": "kb-reply",
-        "label": "Reply",
-        "command": "reply ",
-        "setId": "main",
-        "actionType": "preload",
-        "display": "floating",
-        "style": { "x": 50, "y": 80, "w": 100, "h": 40, "backgroundColor": "#8b5cf6", "shape": "pill" },
-        "trigger": { "enabled": true, "pattern": "says,|tells you", "isRegex": true, "autoHide": true, "duration": 10, "type": "show", "spit": true },
-        "isVisible": false
-    },
-    {
         "id": "kb-comm",
         "label": "Communicate",
         "command": "communicate",

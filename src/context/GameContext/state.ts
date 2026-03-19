@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { usePersistentState } from '../../hooks/usePersistentState';
 import { GameStats, LightingType, WeatherType, DeathStage, DrawerLine, GameAction, ParleyState, PopoverState, CombatHealthStatus, QuestData, GroupMember } from '../../types';
+import { OptimisticChange } from './types';
 import MASTER_SETTINGS from '../../constants/mastersettings.json';
 import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
 
@@ -28,6 +29,7 @@ export const useGameProviderState = () => {
     const [showLegacyButtons, setShowLegacyButtons] = usePersistentState('mud-show-legacy-buttons', false);
     const [showOrganicTerrain, setShowOrganicTerrain] = usePersistentState('mud-show-organic-terrain', true);
     const [inlineCategories, setInlineCategories] = usePersistentState<import('../../types').InlineCategoryConfig[]>('mud-inline-categories', (MASTER_SETTINGS as any).inlineCategories || DEFAULT_INLINE_CATEGORIES);
+    const [isHighlighterEnabled, setIsHighlighterEnabled] = usePersistentState('mud-highlighter-enabled', true);
     const [favorites, setFavorites] = usePersistentState<string[]>('mud-favorites', []);
 
     // Core Game State
@@ -250,6 +252,80 @@ export const useGameProviderState = () => {
     const [statsLines, setStatsLines] = useState<DrawerLine[]>([]);
     const [eqLines, setEqLines] = useState<DrawerLine[]>([]);
     const captureStage = useRef<import('../../types').CaptureStage>('none');
+
+    // Optimistic inventory/equipment overlay
+    const [optimisticInventoryLines, setOptimisticInventoryLines] = useState<DrawerLine[] | null>(null);
+    const [optimisticEqLines, setOptimisticEqLines] = useState<DrawerLine[] | null>(null);
+
+    // Stable refs so applyOptimisticChange never goes stale
+    const invLinesRef = useRef(inventoryLines);
+    const eqLinesRef = useRef(eqLines);
+    const optInvRef = useRef(optimisticInventoryLines);
+    const optEqRef = useRef(optimisticEqLines);
+    useEffect(() => { invLinesRef.current = inventoryLines; }, [inventoryLines]);
+    useEffect(() => { eqLinesRef.current = eqLines; }, [eqLines]);
+    useEffect(() => { optInvRef.current = optimisticInventoryLines; }, [optimisticInventoryLines]);
+    useEffect(() => { optEqRef.current = optimisticEqLines; }, [optimisticEqLines]);
+
+    // Auto-clear optimistic overlay when confirmed state arrives from game
+    useEffect(() => { setOptimisticInventoryLines(null); }, [inventoryLines]);
+    useEffect(() => { setOptimisticEqLines(null); }, [eqLines]);
+
+    const removeItemAndChildren = (lines: DrawerLine[], stableId: string): DrawerLine[] =>
+        lines.filter(l => l.stableId !== stableId && l.id !== stableId && l.parentItemNoun !== stableId);
+
+    const applyOptimisticChange = useCallback((change: OptimisticChange) => {
+        const currentInv = optInvRef.current ?? invLinesRef.current;
+        const currentEq = optEqRef.current ?? eqLinesRef.current;
+
+        switch (change.type) {
+            case 'wear': {
+                const sid = change.item.stableId || change.item.id;
+                setOptimisticInventoryLines(removeItemAndChildren(currentInv, sid));
+                break;
+            }
+            case 'remove': {
+                const newEq = currentEq.filter(l => l.id !== change.item.id);
+                const invItem: DrawerLine = { ...change.item, prefix: undefined, prefixHtml: undefined, depth: 0, parentItemId: undefined, parentItemNoun: undefined };
+                setOptimisticEqLines(newEq);
+                setOptimisticInventoryLines([...currentInv, invItem]);
+                break;
+            }
+            case 'drop':
+            case 'give': {
+                const sid = change.item.stableId || change.item.id;
+                if (change.from === 'inv') {
+                    setOptimisticInventoryLines(removeItemAndChildren(currentInv, sid));
+                } else {
+                    setOptimisticEqLines(currentEq.filter(l => l.id !== change.item.id));
+                }
+                break;
+            }
+            case 'get': {
+                const sid = change.item.stableId || change.item.id;
+                const withoutItem = removeItemAndChildren(currentInv, sid);
+                const unnested: DrawerLine = { ...change.item, depth: 0, parentItemId: undefined, parentItemNoun: undefined };
+                setOptimisticInventoryLines([...withoutItem, unnested]);
+                break;
+            }
+            case 'put': {
+                const sid = change.item.stableId || change.item.id;
+                const withoutItem = removeItemAndChildren(currentInv, sid);
+                const cSid = change.container.stableId || change.container.id;
+                const nested: DrawerLine = {
+                    ...change.item,
+                    depth: (change.container.depth ?? 0) + 1,
+                    parentItemId: change.container.context || cSid,
+                    parentItemNoun: cSid
+                };
+                const idx = withoutItem.findIndex(l => l.id === change.container.id);
+                const result = [...withoutItem];
+                result.splice(idx >= 0 ? idx + 1 : result.length, 0, nested);
+                setOptimisticInventoryLines(result);
+                break;
+            }
+        }
+    }, []);
     const isDrawerCapture = useRef<number>(0);
     const isSilentCapture = useRef<number>(0);
     const isWaitingForStats = useRef<boolean>(false);
@@ -285,6 +361,24 @@ export const useGameProviderState = () => {
 
     const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
 
+    const [xpHistory, setXpHistory] = useState<{ old: number; new: number }>({ old: 0, new: 0 });
+    const [xpEvent, setXpEvent] = useState(0);
+
+    const triggerXpTicker = useCallback(() => {
+        setXpEvent(Date.now());
+    }, []);
+
+    useEffect(() => {
+        setXpHistory(prev => {
+            if (prev.new !== characterInfo.xp) {
+                // If it's the first time we get XP, set both to the same value to avoid 0 -> XP jump
+                if (prev.new === 0) return { old: characterInfo.xp, new: characterInfo.xp };
+                return { old: prev.new, new: characterInfo.xp };
+            }
+            return prev;
+        });
+    }, [characterInfo.xp]);
+
     const [mumeEditState, setMumeEditState] = useState({
         isOpen: false,
         title: '',
@@ -318,9 +412,11 @@ export const useGameProviderState = () => {
         bufferHealthStatus, setBufferHealthStatus,
         bufferName, setBufferName,
         characterInfo, setCharacterInfo,
-        groupMembers, setGroupMembers
+        groupMembers, setGroupMembers,
+        xpHistory, xpEvent, triggerXpTicker
     }), [stats, target, activePrompt, rumble, hitFlash, deathStage, heldButton, isMendingMode, mendingTarget,
-        playerHealthStatus, opponentHealthStatus, opponentName, bufferHealthStatus, bufferName, characterInfo, groupMembers]);
+        playerHealthStatus, opponentHealthStatus, opponentName, bufferHealthStatus, bufferName, characterInfo, groupMembers,
+        xpHistory, xpEvent, triggerXpTicker]);
 
     const game = useMemo(() => ({
         inCombat, setInCombat,
@@ -352,6 +448,9 @@ export const useGameProviderState = () => {
         inventoryLines, setInventoryLines,
         statsLines, setStatsLines,
         eqLines, setEqLines,
+        displayInventoryLines: optimisticInventoryLines ?? inventoryLines,
+        displayEqLines: optimisticEqLines ?? eqLines,
+        applyOptimisticChange,
         captureStage, isDrawerCapture, isSilentCapture, isWaitingForStats, isWaitingForEq, isWaitingForInv, pendingDrawerContainerRef,
         autoConnect, setAutoConnect,
         hasSeenOnboarding, setHasSeenOnboarding,
@@ -369,6 +468,7 @@ export const useGameProviderState = () => {
         roomName, setRoomName, roomNameRef,
         roomExits, setRoomExits,
         inlineCategories, setInlineCategories,
+        isHighlighterEnabled, setIsHighlighterEnabled,
         favorites, setFavorites,
         activeDragData, setActiveDragData,
         heldButton, setHeldButton,
@@ -394,9 +494,9 @@ export const useGameProviderState = () => {
         roomPlayers, roomNpcs, roomItems, currentTerrain, ui, setIsCharacterOpen,
         setIsItemsDrawerOpen, setIsMapExpanded, setIsSetManagerOpen, lighting,
         lightningEnabled, weather, isFoggy, abilities, characterClass, actions,
-        inventoryLines, statsLines, eqLines, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
+        inventoryLines, statsLines, eqLines, optimisticInventoryLines, optimisticEqLines, applyOptimisticChange, autoConnect, hasSeenOnboarding, showDebugEchoes, uiMode,
         disable3dScroll, disableSmoothScroll, isImmersionMode, isMobileBrevityMode, showLegacyButtons, roomName, roomExits,
-        inlineCategories, favorites, activeDragData, heldButton,
+        inlineCategories, isHighlighterEnabled, favorites, activeDragData, heldButton,
         parley, whoList, whereList, popoverState, discoveredItems,
         quests, groupMembers, mumeEditState, handleSaveMumeEdit, executeCommandRef
     ]);

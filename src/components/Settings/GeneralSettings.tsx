@@ -36,6 +36,8 @@ interface GeneralSettingsProps {
     setIsMobileBrevityMode: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
+    isHighlighterEnabled: boolean;
+    setIsHighlighterEnabled: (val: boolean) => void;
 }
 
 const GeneralSettings: React.FC<GeneralSettingsProps> = ({
@@ -72,6 +74,8 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
     setIsMobileBrevityMode,
     showLegacyButtons,
     setShowLegacyButtons,
+    isHighlighterEnabled,
+    setIsHighlighterEnabled,
 }) => {
     let protocol = 'wss:';
     let host = '';
@@ -422,6 +426,29 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({
                             transition: 'all 0.3s'
                         }} />
                     </button>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>
+                    <div style={{ flex: '1 1 200px' }}>
+                        <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Object Highlighting</label>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Highlight weapons, armor, and interactable objects in text.</div>
+                    </div>
+                    <div
+                        className={`setting-toggle ${isHighlighterEnabled ? 'active' : ''}`}
+                        onClick={(e) => { e.stopPropagation(); setIsHighlighterEnabled(!isHighlighterEnabled); }}
+                        style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: isHighlighterEnabled ? '#ec4899' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
+                    >
+                        <div style={{
+                            width: '20px',
+                            height: '20px',
+                            background: '#fff',
+                            borderRadius: '50%',
+                            position: 'absolute',
+                            top: '2px',
+                            left: isHighlighterEnabled ? '22px' : '2px',
+                            transition: 'all 0.3s'
+                        }} />
+                    </div>
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(236, 72, 153, 0.2)' }}>

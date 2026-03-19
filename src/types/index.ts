@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'shop-item' | 'practice-skill' | 'practice-header' | 'who-list' | 'where-list';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'shop-item' | 'practice-skill' | 'practice-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
@@ -24,16 +24,17 @@ export interface Message {
     type: MessageType;
     timestamp: number;
     isCombat?: boolean; // True if this line is combat-related
+    combatSide?: 'player' | 'opponent'; // Who is acting in this combat line
     dimmedInCombat?: boolean; // True if this non-combat line arrived during a fight (permanently dim)
     stackCount?: number; // How many copies of this message are stacked
     stackId?: string; // Identifier for the type of stack (e.g. "arrival:a black wolf:south")
     isComm?: boolean; // True if this is a communication message (says, tells, etc.)
+    replyTarget?: string; // Sender name for comm messages — enables the inline reply button
+    replyCommand?: string; // Channel command for the reply button (e.g. 'tell', 'say', 'narrate')
     isRoomName?: boolean; // True if this line is a room title/name
     shopItem?: ShopItem; // Optional structured shop item data
     practiceSkill?: PracticeSkill; // Optional structured practice skill data
     practiceHeader?: { sessionsLeft: number }; // Optional practice header data
-    commSender?: string; // Optonal sender name for communication messages
-    commChannel?: string; // Optional channel name for communication messages
 }
 
 export interface ShopItem {
@@ -43,6 +44,7 @@ export interface ShopItem {
     description: string;
     price: string;
     condition?: string;
+    age?: string;
     count?: string;
 }
 
@@ -285,6 +287,8 @@ export interface SettingsModalProps {
     setIsMobileBrevityMode: (val: boolean) => void;
     showLegacyButtons: boolean;
     setShowLegacyButtons: (val: boolean) => void;
+    isHighlighterEnabled: boolean;
+    setIsHighlighterEnabled: (val: boolean) => void;
 }
 
 export interface ButtonSetSettings {
@@ -318,6 +322,7 @@ export interface SavedSettings {
     showOrganicTerrain?: boolean;
     inlineCategories?: InlineCategoryConfig[];
     favorites?: string[];
+    isHighlighterEnabled?: boolean;
 }
 
 export interface RoomNode {

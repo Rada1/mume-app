@@ -1,0 +1,11 @@
+--- inline-mounts ---
+ID: cat-mount-ride, Label: Ride, Color: #78350f
+ID: cat-mount-lead, Label: Lead, Color: #92400e
+ID: cat-mount-unsaddle-all, Label: Unsaddle All, Color: #451a03
+ID: cat-mount-unsaddle, Label: Unsaddle, Color: #451a03
+ID: cat-mount-abandon, Label: Abandon, Color: #ef4444
+ID: cat-mount-saddle, Label: Saddle, Color: #78350f
+--- inlinenpc ---
+ID: innpc-kill, Label: Kill, Color: #dc2626
+ID: innpc-ex, Label: Examine, Color: #2563eb
+ID: innpc-consider, Label: Consider, Color: #facc15

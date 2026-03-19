@@ -1,5 +1,6 @@
 import React from 'react';
 import ModernVitals from '../../ModernVitals';
+import XpTicker from '../../XpTicker';
 import CombatVitals from '../../CombatVitals';
 import { useVitals, useGame } from '../../../context/GameContext';
 
@@ -58,12 +59,15 @@ export const StatsCluster: React.FC<StatsClusterProps> = ({
             onPointerDown={(e) => { if (isEditMode) handleDragStart(e, 'stats', 'cluster'); }}
         >
             {isEditMode && <div className="resize-handle" style={{ zIndex: 1700 }} onPointerDown={(e) => { e.stopPropagation(); handleDragStart(e, 'stats', 'cluster-resize'); }} />}
-            <ModernVitals
-                stats={stats}
-                inCombat={inCombat}
-                onWimpyChange={handleWimpyChange}
-                isLandscape={isLandscape}
-            />
+            <div style={{ position: 'relative' }}>
+                <XpTicker isLandscape={isLandscape} />
+                <ModernVitals
+                    stats={stats}
+                    inCombat={inCombat}
+                    onWimpyChange={handleWimpyChange}
+                    isLandscape={isLandscape}
+                />
+            </div>
             {inCombat && <CombatVitals stats={stats} mood={mood} />}
         </div>
     );

@@ -1,7 +1,13 @@
+/**
+ * @file useMessageHighlighter.ts
+ * @description Hook for highlighting MUME game messages with interactive elements and keywords.
+ */
+
 import { useCallback, RefObject, useRef } from 'react';
 import { CustomButton, InlineCategoryConfig, MessageType } from '../types';
-import { pluralizeMumeSubject } from '../utils/gameUtils';
-import { getCategoryForName, getGlowColorForCategory } from '../utils/categorizationUtils';
+import { buildHighlighterCandidates, applyColorTaggedObjects } from '../utils/highlighterUtils';
+
+// --- Logic Section: Message Processing & Highlighting ---
 
 export const useMessageHighlighter = (
     target: string | null,
@@ -11,42 +17,57 @@ export const useMessageHighlighter = (
     characterName: string | null,
     roomItems: string[],
     inlineCategories: InlineCategoryConfig[] = [],
+    isHighlighterEnabled: boolean = true,
     highlightVersion: number = 0,
     discoveredItems: string[] = []
 ) => {
     const cacheRef = useRef<Map<string, { html: string, htmlRaw: string, deps: string }>>(new Map());
     const regexCacheRef = useRef<Map<string, RegExp>>(new Map());
 
-    // Clear cache when highlight version changes to force re-processing
+    // Clear cache when highlight version or toggle changes
     const lastVersionRef = useRef(highlightVersion);
-    if (highlightVersion !== lastVersionRef.current) {
+    const lastEnabledRef = useRef(isHighlighterEnabled);
+    if (highlightVersion !== lastVersionRef.current || isHighlighterEnabled !== lastEnabledRef.current) {
         cacheRef.current.clear();
         regexCacheRef.current.clear();
         lastVersionRef.current = highlightVersion;
+        lastEnabledRef.current = isHighlighterEnabled;
     }
 
+    /**
+     * Safely applies a highlight pattern to an HTML string, avoiding tags.
+     */
     const safeHighlight = (currentHtml: string, patternStr: string, isRegex: boolean, replacer: (match: string, matchObj: RegExpExecArray | null) => string) => {
         if (!patternStr) return currentHtml;
 
         const escaped = isRegex ? patternStr : patternStr.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const parts = currentHtml.split(/(<[^>]+>)/g);
         let changed = false;
+        let highlightDepth = 0;
 
         const regexKey = `${escaped}:${isRegex}`;
         let regex = regexCacheRef.current.get(regexKey);
         if (!regex) {
-            regex = new RegExp(escaped, 'gi');
+            // For plain strings, enforce word boundaries to avoid partial matching (e.g. "Sting" in "Resting").
+            // Use lookahead/lookbehind instead of \b so Unicode names like Éorenel are matched correctly
+            // (\b treats accented letters as non-word chars and fails on them).
+            const pattern = isRegex ? escaped : `(?<![A-Za-z\\u00C0-\\u024F])${escaped}(?![A-Za-z\\u00C0-\\u024F])`;
+            regex = new RegExp(pattern, 'gi');
             regexCacheRef.current.set(regexKey, regex);
         }
 
         for (let i = 0; i < parts.length; i++) {
-            if (!parts[i].startsWith('<')) {
+            const part = parts[i];
+            if (part.startsWith('<')) {
+                if (part === '</span>') {
+                    if (highlightDepth > 0) highlightDepth--;
+                } else if (!part.startsWith('</') && /class="[^"]*(?:inline-btn|keyword-highlight|comm-content)/.test(part)) {
+                    highlightDepth++;
+                }
+            } else if (highlightDepth === 0) {
                 const nodeText = parts[i];
                 const replaced = nodeText.replace(regex, (m, ...args) => {
-                    // Extract capture groups based on the regex structure
-                    // The args array is [match, p1, p2, ..., offset, string]
                     const groups = args.slice(0, -2);
-                    // For the replacer, we fake a match object if possible or just use the groups
                     return replacer(m, groups as any);
                 });
 
@@ -60,42 +81,62 @@ export const useMessageHighlighter = (
         return changed ? parts.join('') : currentHtml;
     };
 
-    // Create a fast hash string instead of using expensive JSON.stringify
+    /**
+     * Generates a hash of dependencies to determine when cache should be invalidated.
+     */
     const generateDepsHash = useCallback(() => {
         const rp = roomPlayers.join('|');
         const rn = roomNpcs.join('|');
         const ri = roomItems.join('|');
         const di = discoveredItems.join('|');
-        // For inline categories, we only care if the configuration itself changed length/structure roughly
-        const ic = inlineCategories.map(c => c.id).join('|');
-        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${highlightVersion}`;
-    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, highlightVersion]);
+        const ic = inlineCategories.map(c => `${c.id}:${c.keywords.join(',')}`).join('|');
+        return `${target || ''}:${rp}:${rn}:${ri}:${di}:${ic}:${isHighlighterEnabled}:${highlightVersion}`;
+    }, [target, roomPlayers, roomNpcs, roomItems, discoveredItems, inlineCategories, isHighlighterEnabled, highlightVersion]);
 
+    /**
+     * Main entry point for processing a message's HTML and applying highlights.
+     */
     const processMessageHtml = useCallback((originalHtml: string, mid: string, isRoomName: boolean, type?: MessageType) => {
-        // Use the fast hash instead of full JSON serialization
-        const depsHash = `${generateDepsHash()}:${type || ''}`;
+        // --- 1. Rule: No highlighted words in room names or room descriptions ---
+        if (isRoomName || type === 'room-description' || !isHighlighterEnabled) {
+            return originalHtml;
+        }
 
+        const depsHash = `${generateDepsHash()}:${type || ''}`;
         const cached = cacheRef.current.get(mid);
         if (cached && cached.htmlRaw === originalHtml && cached.deps === depsHash) {
             return cached.html;
         }
 
-        let newHtml = originalHtml;
+        let prefixHtml = '';
+        let targetHtml = originalHtml;
 
-        interface Candidate {
-            pattern: string;
-            isRegex?: boolean;
-            replacer: (m: string, match: RegExpExecArray | null) => string;
-            priority: number;
-            length: number;
+        // --- 2. Rule: In equipment lists, don't highlight the slot label ---
+        if (type === 'equipment-list') {
+            const eqSplitRegex = /^([^&]*&lt;[^&]+&gt;)(.*)/;
+            const match = originalHtml.match(eqSplitRegex);
+            if (match) {
+                prefixHtml = match[1];
+                targetHtml = match[2];
+            }
         }
-        const candidates: Candidate[] = [];
 
-        // 0. Specialized List Highlighting (WHO/WHERE)
+        let newHtml = targetHtml;
+        const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
+        newHtml = applyColorTaggedObjects(newHtml, mid, type);
+
+        // --- 3. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {
-            const textOnly = originalHtml.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').normalize('NFC');
-            
-            // Strip away MUME prefixes like [ 50 Ran], <AFK>, (PK), or *Wanted*
+            // ansi-to-html (escapeXML:true) encodes non-ASCII chars as &#xHH; — decode them so
+            // names like Éorenel (encoded as &#xC9;orenel) are correctly identified.
+            const textOnly = targetHtml
+                .replace(/<[^>]+>/g, '')
+                .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+                .replace(/&#x([0-9A-Fa-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+                .replace(/&#([0-9]+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+                .normalize('NFC');
             let cleanText = textOnly.trim();
             let lastLength = 0;
             while (cleanText.length !== lastLength) {
@@ -103,154 +144,52 @@ export const useMessageHighlighter = (
                 cleanText = cleanText.replace(/^\[.*?\]\s*/, '');
                 cleanText = cleanText.replace(/^<.*?>\s*/, '');
                 cleanText = cleanText.replace(/^\(.*?\)\s*/, '');
-                cleanText = cleanText.replace(/^\*.*?\*\s*/, ''); // Improved: handles *Wanted*
-                cleanText = cleanText.replace(/^\*+\s*/, '');    // Fallback for leading asterisks
+                cleanText = cleanText.replace(/^\*.*?\*\s*/, '');
+                cleanText = cleanText.replace(/^\*+\s*/, '');
             }
 
-            // Extract the first word as the player name
             const nameCandidate = cleanText.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-
-            if (nameCandidate && nameCandidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate)) {
-                const name = nameCandidate;
+            const commonHeaders = ['Players', 'Allies', 'Minions', 'Who', 'Where', 'Visible'];
+            if (nameCandidate && nameCandidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(nameCandidate) && !commonHeaders.includes(nameCandidate)) {
+                // Search newHtml using the entity-encoded form (how ansi-to-html wrote it)
+                const htmlNameCandidate = nameCandidate.replace(/[^\x00-\x7F]/g, c => `&#x${c.codePointAt(0)!.toString(16).toUpperCase()};`);
                 let highlighted = false;
-                newHtml = safeHighlight(newHtml, name, false, (m) => {
+                newHtml = safeHighlight(newHtml, htmlNameCandidate, false, (m) => {
                     if (highlighted) return m;
                     highlighted = true;
-                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 100, 255, 0.9)">${m}</span>`;
+                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: rgb(150, 150, 255)">${m}</span>`;
                 });
             }
         }
-
-        const pcNamesSet = new Set([...roomPlayers].filter(name => name !== characterName));
-        const npcNamesSet = new Set(roomNpcs);
 
         if (!isRoomName) {
-            // 1. Active Target
-            if (target && type !== 'who-list' && type !== 'where-list') {
-                let category = getCategoryForName(target, inlineCategories) || 'inline-default';
-                if (pcNamesSet.has(target)) category = 'inlineplayer';
-                else if (npcNamesSet.has(target)) category = 'inlinenpc';
+            // Build and sort candidates using utility
+            const candidates = buildHighlighterCandidates(
+                mid, target, buttonsRef, roomPlayers, roomNpcs, characterName, 
+                roomItems, discoveredItems, inlineCategories, type
+            );
 
-                const glowColor = getGlowColorForCategory(category, inlineCategories);
-                const command = category;
-
-                candidates.push({
-                    pattern: target,
-                    priority: 90,
-                    replacer: (m, _match) => `<span class="inline-btn auto-target active-target" draggable="true" data-id="auto-target-${target}" data-mid="${mid}" data-cmd="${command}" data-context="${m}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
-                    length: target.length
+            candidates
+                .sort((a, b) => {
+                    if (b.priority !== a.priority) return b.priority - a.priority;
+                    return b.length - a.length;
+                })
+                .forEach(c => {
+                    newHtml = safeHighlight(newHtml, c.pattern, !!c.isRegex, c.replacer);
                 });
-            }
-
-            // 2. Buttons
-            buttonsRef.current?.filter(b => (b.display === 'inline' || b.trigger?.spit) && b.trigger?.enabled && b.trigger.pattern).forEach(b => {
-                const pattern = b.trigger!.pattern!;
-                const isRegex = b.trigger!.isRegex;
-
-                candidates.push({
-                    pattern: pattern,
-                    isRegex: isRegex,
-                    priority: 100,
-                    replacer: (m, match) => {
-                        let finalLabel = b.label;
-                        let finalCommand = b.command;
-                        if (match) {
-                            for (let i = 1; i < match.length; i++) {
-                                const val = match[i] || '';
-                                finalLabel = finalLabel.replace(new RegExp(`\\$${i}`, 'g'), val);
-                                finalCommand = finalCommand.replace(new RegExp(`\\$${i}`, 'g'), val);
-                            }
-                        }
-                        return `<span class="inline-btn" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${finalCommand}" data-context="${m}" data-icon="${b.icon || ''}" data-label="${finalLabel}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" data-duration="${b.trigger?.duration || ''}" data-swipes='${b.swipeCommands ? JSON.stringify(b.swipeCommands).replace(/'/g, "&apos;") : ""}' data-swipe-actions='${b.swipeActionTypes ? JSON.stringify(b.swipeActionTypes).replace(/'/g, "&apos;") : ""}' style="--glow-color: ${b.style.backgroundColor.replace('0.3', '0.6').replace('0.2', '0.5')}">${m}</span>`;
-                    },
-                    length: pattern.length
-                });
-            });
-
-            // 3. PCs
-            pcNamesSet.forEach(name => {
-                const patterns = [name, pluralizeMumeSubject(name)].filter(Boolean);
-                patterns.forEach(p => {
-                    candidates.push({
-                        pattern: p,
-                        priority: 5,
-                        replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${name}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${name}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(100, 100, 255, 0.9)">${m}</span>`,
-                        length: p.length
-                    });
-                });
-            });
-
-            // 4. NPCs
-            const npcNames = new Set(roomNpcs);
-            const pSet = new Set(Array.from(pcNamesSet).map(p => (p as string).toLowerCase()));
-            if (characterName) pSet.add(characterName.toLowerCase());
-
-            npcNames.forEach(originalName => {
-                const lowerName = originalName.toLowerCase();
-                if (pSet.has(lowerName)) return;
-
-                const stripped = originalName.replace(/^(A|An|The)\s+/i, '');
-                const patterns = [originalName, stripped, pluralizeMumeSubject(originalName), pluralizeMumeSubject(stripped)].filter(Boolean);
-
-                patterns.forEach(p => {
-                    const category = getCategoryForName(originalName, inlineCategories);
-                    const glowColor = category ? getGlowColorForCategory(category, inlineCategories) : 'rgba(255, 100, 100, 0.9)';
-                    const command = category || 'inlinenpc';
-
-                    candidates.push({
-                        pattern: p,
-                        priority: 5,
-                        replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${originalName}" data-mid="${mid}" data-cmd="${command}" data-context="${originalName}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
-                        length: p.length
-                    });
-                });
-            });
-
-            // 4.5. Corpses — always highlighted like NPCs, no room tracking needed
-            const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(156, 163, 175, 0.9)';
-            ['corpse', 'corpses'].forEach(p => {
-                candidates.push({
-                    pattern: p,
-                    priority: 5,
-                    replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="corpse" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m}</span>`,
-                    length: p.length
-                });
-            });
-
-            // 5. Items (Room + Discovered)
-            const allItems = Array.from(new Set([...roomItems, ...discoveredItems]));
-            allItems.forEach(name => {
-                const category = getCategoryForName(name, inlineCategories) || 'inline-default';
-                const glowColor = getGlowColorForCategory(category, inlineCategories);
-                const command = category;
-
-                candidates.push({
-                    pattern: name,
-                    priority: 5,
-                    replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${name}" data-mid="${mid}" data-cmd="${command}" data-context="${m}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
-                    length: name.length
-                });
-            });
         }
 
-
-        candidates
-            .sort((a, b) => {
-                if (b.priority !== a.priority) return b.priority - a.priority;
-                return b.length - a.length;
-            })
-            .forEach(c => {
-                newHtml = safeHighlight(newHtml, c.pattern, !!c.isRegex, c.replacer);
-            });
-
-        cacheRef.current.set(mid, { html: newHtml, htmlRaw: originalHtml, deps: depsHash });
+        const finalHtml = prefixHtml + newHtml;
+        cacheRef.current.set(mid, { html: finalHtml, htmlRaw: originalHtml, deps: depsHash });
+        
+        // Cache management
         if (cacheRef.current.size > 1000) {
             const firstKey = cacheRef.current.keys().next().value;
             if (firstKey !== undefined) cacheRef.current.delete(firstKey);
         }
 
-        return newHtml;
-    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion]);
+        return finalHtml;
+    }, [target, buttonsRef, roomPlayers, roomNpcs, characterName, roomItems, inlineCategories, generateDepsHash, highlightVersion, discoveredItems]);
 
     return { processMessageHtml };
 };

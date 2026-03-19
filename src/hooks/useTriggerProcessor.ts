@@ -18,7 +18,7 @@ export const useTriggerProcessor = (deps: {
         // Sound Triggers
         soundTriggersRef.current?.forEach(trig => {
             if (!trig.pattern || !trig.buffer) return;
-            const match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.includes(trig.pattern);
+            const match = trig.isRegex ? new RegExp(trig.pattern, 'i').test(textOnly) : textOnly.toLowerCase().includes(trig.pattern.toLowerCase());
             if (match && isSoundEnabledRef.current) playSound(trig.buffer);
         });
 

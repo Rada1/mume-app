@@ -39,11 +39,14 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         const masterButtons = (MASTER_SETTINGS as any).buttons || [];
         const defaultButtons = [...masterButtons, ...DEFAULT_BUTTONS.filter(d => !masterButtons.some((m: any) => m.id === d.id))];
 
+        // IDs of buttons that have been permanently removed from defaults and should be purged
+        const REMOVED_BUTTON_IDS = new Set(['kb-reply']);
+
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
                 if (parsed && Array.isArray(parsed) && parsed.length > 0) {
-                    const loadedButtons = parsed.map((b: any) => {
+                    const loadedButtons = parsed.filter((b: any) => !REMOVED_BUTTON_IDS.has(b.id)).map((b: any) => {
                         const def = defaultButtons.find((d: any) => d.id === b.id);
                         return {
                             ...(def || {}),

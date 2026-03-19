@@ -33,7 +33,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     pendingDrawerContainerRef,
     inlineCategories = []
 }) => {
-    const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number; commandLabel?: string } | null>(null);
+    const [draggedItem, setDraggedItem] = useState<{ line: DrawerLine; source: 'inventory' | 'equipment'; x: number; y: number; commandLabel?: string; itemNoun?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
     const lastHoveredTargetRef = useRef<HTMLElement | null>(null);
@@ -41,7 +41,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-    const { activeDragData } = useGame();
+    const { activeDragData, applyOptimisticChange } = useGame() as any;
     const { setUI, ui } = useUI();
     const { isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useVitals();
 
@@ -133,7 +133,8 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
 
         if (isDraggingRef.current) {
             if (ghostRef.current) {
-                ghostRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(1.05)`;
+                ghostRef.current.style.left = `${e.clientX}px`;
+                ghostRef.current.style.top = `${e.clientY}px`;
             }
 
             if (isOpen && drawerRef.current) {
@@ -243,9 +244,32 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const mainLog = target?.closest('.message-log-container');
             const sectionWrapper = target?.closest('[data-drawer-section]');
 
+            const isLogDrop = !!(logRecipient || (mainLog && !target?.closest('.right-drawer')));
+
             if (logRecipient || targetBtn || (mainLog && !target?.closest('.right-drawer')) || sectionWrapper) {
                 triggerHaptic(60);
-                
+
+                // Apply all optimistic UI changes immediately before sending commands
+                itemsToProcess.forEach((item) => {
+                    if (!item) return;
+                    const itm = item.line;
+                    const src = item.source as 'inventory' | 'equipment';
+                    if (logRecipient) {
+                        applyOptimisticChange({ type: 'give', item: itm, from: src === 'equipment' ? 'eq' : 'inv' });
+                    } else if (mainLog && !target?.closest('.right-drawer')) {
+                        applyOptimisticChange({ type: 'drop', item: itm, from: src === 'equipment' ? 'eq' : 'inv' });
+                    } else if (sectionWrapper) {
+                        const section = sectionWrapper.getAttribute('data-drawer-section');
+                        if (section && section !== src) {
+                            if (section === 'equipment' || section === 'equipmentlist') {
+                                applyOptimisticChange({ type: 'wear', item: itm });
+                            } else {
+                                applyOptimisticChange({ type: 'remove', item: itm });
+                            }
+                        }
+                    }
+                });
+
                 itemsToProcess.forEach((item, index) => {
                     if (!item) return;
                     const itm = item.line;
@@ -342,12 +366,14 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                             }
                         }
 
-                        // Final item cleanup/refresh logic
+                        // Final item cleanup/refresh logic (skip if drawer closed via log drop)
                         if (index === itemsToProcess.length - 1) {
-                            setTimeout(() => {
-                                executeCommand('inv', false, true, true, true);
-                                executeCommand('eq', false, true, true, true);
-                            }, 500);
+                            if (!isLogDrop) {
+                                setTimeout(() => {
+                                    executeCommand('inv', false, true, true, true);
+                                    executeCommand('eq', false, true, true, true);
+                                }, 150);
+                            }
                             setSelectedItems(new Set());
                         }
                     }, delay);
@@ -375,7 +401,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const line = pendingDragRef.current.line;
             const source = pendingDragRef.current.source;
             draggedRef.current = { line, source };
-            setDraggedItem({ line, source, x, y });
+            setDraggedItem({ line, source, x, y, itemNoun: extractNoun(line.text) });
             isDraggingRef.current = true;
             setPrimedItemId(null);
             if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
@@ -429,23 +455,22 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const glowColor = getGlowColorForCategory(category, categories);
             
             // Stronger visual cues: background, border, and subtle glow
-            const colorRgb = glowColor ? (glowColor.match(/rgba?\((\d+, \d+, \d+)/)?.[1] || '100, 255, 100') : '100, 255, 100';
-            const baseBackground = line.isContainer ? 'rgba(137, 180, 250, 0.25)' : (glowColor ? `rgba(${colorRgb}, 0.25)` : 'rgba(255, 255, 255, 0.05)');
-            const primedBackground = glowColor ? `rgba(${colorRgb}, 0.4)` : 'rgba(255, 255, 255, 0.12)';
-            const borderLeftStyle = glowColor ? `4px solid rgba(${colorRgb}, 0.8)` : '4px solid transparent';
-            const glowEffect = glowColor ? `0 0 12px rgba(${colorRgb}, 0.15)` : 'none';
+            const baseBackground = 'rgba(255, 255, 255, 0.03)';
+            const primedBackground = 'rgba(255, 255, 255, 0.1)';
+            const borderLeftStyle = '4px solid transparent';
+            const glowEffect = 'none';
 
             return (
                 <div key={line.id} style={{ display: 'flex', flexDirection: 'column', marginLeft: `${depth * 20}px`, marginBottom: '4px' }}>
                     {line.prefixHtml && (
                         <div 
                             style={{ 
-                                padding: '0 0 2px 28px', 
-                                opacity: 0.9, 
-                                fontSize: '0.75rem', 
-                                fontWeight: 'bold',
+                                padding: '4px 0 2px 28px', 
+                                opacity: 0.7, 
+                                fontSize: 'var(--dynamic-log-size, 16px)', 
+                                fontWeight: 'normal',
                                 whiteSpace: 'nowrap',
-                                color: 'var(--accent)',
+                                color: 'var(--text-dim)',
                                 flexShrink: 0
                             }}
                             dangerouslySetInnerHTML={{ __html: line.prefixHtml }}
@@ -532,9 +557,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 borderRadius: '4px',
                                 borderLeft: line.isItem ? borderLeftStyle : 'none',
                                 boxShadow: line.isItem ? glowEffect : 'none',
-                                fontSize: '0.8rem', // Slightly smaller font
+                                fontSize: 'var(--dynamic-log-size, 16px)',
                                 cursor: 'grab',
-                                fontWeight: line.isContainer ? 'bold' : 'normal',
+                                fontWeight: 'bold',
                                 opacity: isBeingDragged ? 0.3 : 1,
                                 color: line.isContainer ? '#89b4fa' : 'inherit',
                                 transition: 'all 0.2s ease',
@@ -543,7 +568,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                                 alignItems: 'center'
                             }}
                         >
-                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
+                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1, fontWeight: 'bold' }} />
                             {line.isContainer && (
                                 <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transition: 'transform 0.2s ease', transform: expandedContainers.has(line.id) ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
                             )}
@@ -557,7 +582,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             <div key={line.id} style={{ 
                 marginLeft: `${depth * 20}px`,
                 padding: '12px 10px 4px', 
-                fontSize: depth > 0 ? '0.7rem' : '0.85rem', 
+                fontSize: depth > 0 ? 'calc(var(--dynamic-log-size, 16px) * 0.85)' : 'var(--dynamic-log-size, 16px)', 
                 opacity: depth > 0 ? 0.6 : 0.95, 
                 fontWeight: '900',
                 borderBottom: depth === 0 ? '1px solid #b8860b' : 'none',
@@ -682,34 +707,26 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                     ref={ghostRef}
                     className="drag-ghost"
                     style={{
-                        position: 'fixed',
-                        left: 0,
-                        top: 0,
-                        transform: `translate3d(${draggedItem.x}px, ${draggedItem.y}px, 0) translate(-50%, -50%) scale(1.05)`,
+                        left: draggedItem.x,
+                        top: draggedItem.y,
                         pointerEvents: 'none'
                     }}
                 >
-                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '-2px' }}>
-                        {selectedItems.size > 1 ? 'Moving Multi' : 'Dragging Item'}
-                    </div>
-                    <div className="ghost-content" dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
+                    {(() => {
+                        const label = draggedItem.commandLabel ?? draggedItem.line.text;
+                        const noun = draggedItem.itemNoun;
+                        if (!noun) return <>{label}</>;
+                        const idx = label.indexOf(noun);
+                        if (idx === -1) return <>{label}</>;
+                        return <>
+                            {label.slice(0, idx)}
+                            <span style={{ color: 'rgb(175,255,255)', fontWeight: 'bold' }}>{noun}</span>
+                            {label.slice(idx + noun.length)}
+                        </>;
+                    })()}
                     {selectedItems.size > 1 && selectedItems.has(draggedItem.line.id) && (
-                        <div className="ghost-badge" style={{
-                            position: 'absolute',
-                            top: '-10px',
-                            right: '-10px',
-                            background: 'var(--accent)',
-                            color: '#000',
-                            borderRadius: '12px',
-                            padding: '2px 8px',
-                            fontSize: '0.8rem',
-                            fontWeight: 'bold',
-                            boxShadow: '0 2px 5px rgba(0,0,0,0.3)'
-                        }}>
-                            {selectedItems.size}
-                        </div>
+                        <div className="ghost-badge">{selectedItems.size}</div>
                     )}
-                    {draggedItem.commandLabel && <div className="ghost-label">{draggedItem.commandLabel}</div>}
                 </div>,
                 document.body
             )}

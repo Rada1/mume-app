@@ -11,6 +11,14 @@ import { useViewport } from '../../hooks/useViewport';
 import { useEnvironment } from '../../hooks/useEnvironment';
 import { MapperRef } from '../../components/Mapper/mapperTypes';
 
+export type OptimisticChange =
+    | { type: 'wear'; item: DrawerLine }
+    | { type: 'remove'; item: DrawerLine }
+    | { type: 'drop'; item: DrawerLine; from: 'inv' | 'eq' }
+    | { type: 'give'; item: DrawerLine; from: 'inv' | 'eq' }
+    | { type: 'get'; item: DrawerLine }
+    | { type: 'put'; item: DrawerLine; container: DrawerLine };
+
 export interface VitalsContextType {
     stats: GameStats;
     setStats: Dispatch<SetStateAction<GameStats>>;
@@ -37,15 +45,19 @@ export interface VitalsContextType {
     bufferHealthStatus: CombatHealthStatus | null;
     characterInfo: import('../../types').CharacterInfo;
     setCharacterInfo: Dispatch<SetStateAction<import('../../types').CharacterInfo>>;
+    groupMembers: GroupMember[];
+    setGroupMembers: Dispatch<SetStateAction<GroupMember[]>>;
+    xpHistory: { old: number; new: number };
+    xpEvent: number;
+    triggerXpTicker: () => void;
 }
 
 export interface LogContextType {
     messages: Message[];
     setMessages: Dispatch<SetStateAction<Message[]>>;
-    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: import('../../types').ShopItem, practiceSkill?: import('../../types').PracticeSkill, practiceHeader?: { sessionsLeft: number }, skipBrevity?: boolean) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: import('../../types').ShopItem, practiceSkill?: import('../../types').PracticeSkill, practiceHeader?: { sessionsLeft: number }, skipBrevity?: boolean, replyTarget?: string, replyCommand?: string) => void;
     addSystemMessage: (text: string) => void;
     isCombatLine: (text: string) => boolean;
-    isCommunicationLine: (text: string) => boolean;
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string;
     handleLogPointerDown: (e: React.PointerEvent) => void;
     handleLogPointerUp: (e: React.PointerEvent) => void;
@@ -271,6 +283,9 @@ export interface GameContextType {
     inventoryLines: DrawerLine[];
     statsLines: DrawerLine[];
     eqLines: DrawerLine[];
+    displayInventoryLines: DrawerLine[];
+    displayEqLines: DrawerLine[];
+    applyOptimisticChange: (change: OptimisticChange) => void;
     setInventoryLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setStatsLines: Dispatch<SetStateAction<DrawerLine[]>>;
     setEqLines: Dispatch<SetStateAction<DrawerLine[]>>;
@@ -307,6 +322,7 @@ export interface GameContextType {
     viewport: ReturnType<typeof useViewport>;
     env: ReturnType<typeof useEnvironment>;
     audioCtxRef: MutableRefObject<AudioContext | null>;
+    initAudio: () => void;
     setSettings: Record<string, import('../../types').ButtonSetSettings>;
     setSetSettings: Dispatch<SetStateAction<Record<string, import('../../types').ButtonSetSettings>>>;
 

@@ -18,9 +18,13 @@ export function useShopHandler() {
         
         // Detect start of shop listing
         if (lower.includes('you can buy:') || lower.includes('items matching') || lower.includes('for sale:')) {
-            setIsShopListingActive(true);
-            logBuffer.current = [text];
-            currentItems.current = [];
+            if (!isShopListingActiveRef.current) {
+                setIsShopListingActive(true);
+                logBuffer.current = [text];
+                currentItems.current = [];
+            } else {
+                logBuffer.current.push(text);
+            }
             return null;
         }
 
@@ -31,11 +35,11 @@ export function useShopHandler() {
         // Pattern examples:
         // "270. fourteen rapiers (flawless, new) up to seventeen silver and five copper."
         // "  1. a small glass vial (standard) for one silver and five copper."
-        const itemRegex = /^\s*(\d+)\.\s+(.*?)(?:\s+\((.*?)\))?\s+(?:up to|for)\s+(.*)\.?$/i;
+        const itemRegex = /(?:\*\*\*.*?\*\*\* )?\s*(\d+)\.\s+(.*?)(?:\s+\((.*?)\))?\s+(?:up to|for)?\s+(.*)\.?$/i;
         const match = text.match(itemRegex);
 
         if (match) {
-            const [_, id, fullName, condition, price] = match;
+            const [_, id, fullName, rawCondition, price] = match;
 
             const nameParts = fullName.trim().split(' ');
             const numberWords = [
@@ -58,12 +62,21 @@ export function useShopHandler() {
                 ? nameParts.slice(-1)[0]
                 : sanitizedName;
 
+            let condition = undefined;
+            let age = undefined;
+            if (rawCondition) {
+                const parts = rawCondition.split(',').map(p => p.trim());
+                condition = parts[0];
+                if (parts.length > 1) age = parts[1];
+            }
+
             const item: ShopItem = {
                 id,
                 name: sanitizedName,
                 shortName: shortName,
-                description: condition ? `${sanitizedName} (${condition.trim()})` : sanitizedName,
-                condition: condition ? condition.trim() : 'standard',
+                description: rawCondition ? `${sanitizedName} (${rawCondition.trim()})` : sanitizedName,
+                condition,
+                age,
                 price: price.trim().replace(/\.$/, '')
             };
             currentItems.current.push(item);

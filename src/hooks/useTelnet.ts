@@ -36,6 +36,8 @@ export interface TelnetHandlers {
     onGroupRemove?: (data: any) => void;
     onGroupSet?: (data: any) => void;
     onMumeEdit?: (data: import('../types').GmcpMumeEdit) => void;
+    onRoomCharsCombat?: (data: any[]) => void;
+    onDisconnect?: () => void;
     flushMessages?: () => void;
 }
 
@@ -98,6 +100,7 @@ export function useTelnet(options: TelnetOptions) {
         onGroupRemove: (val) => handlersRef.current.onGroupRemove?.(val),
         onGroupSet: (val) => handlersRef.current.onGroupSet?.(val),
         onMumeEdit: (val) => handlersRef.current.onMumeEdit?.(val),
+        onDisconnect: () => handlersRef.current.onDisconnect?.(),
         onRoomCharsCombat: (val) => handlersRef.current.onRoomCharsCombat?.(val)
     }));
     const protocolHandler = useRef<ProtocolHandler | null>(null);
@@ -206,10 +209,15 @@ export function useTelnet(options: TelnetOptions) {
             ws.onmessage = (event) => { if (event.data instanceof ArrayBuffer) protocolHandler.current?.handleRawData(new Uint8Array(event.data)); };
             ws.onclose = () => {
                 handlers.setStatus('disconnected');
+                handlers.onDisconnect?.();
                 handlers.addMessage('error', 'Connection closed.', undefined, undefined, undefined, { textOnly: 'Connection closed.', lower: 'connection closed.' });
                 if ((ws as any)._pingInterval) clearInterval((ws as any)._pingInterval);
             };
-            ws.onerror = () => { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Connection error.', undefined, undefined, undefined, { textOnly: 'Connection error.', lower: 'connection error.' }); };
+            ws.onerror = () => { 
+                handlers.setStatus('disconnected'); 
+                handlers.onDisconnect?.();
+                handlers.addMessage('error', 'Connection error.', undefined, undefined, undefined, { textOnly: 'Connection error.', lower: 'connection error.' }); 
+            };
             socketRef.current = ws;
         } catch (e) { handlers.setStatus('disconnected'); handlers.addMessage('error', 'Invalid URL.', undefined, undefined, undefined, { textOnly: 'Invalid URL.', lower: 'invalid url.' }); }
     };

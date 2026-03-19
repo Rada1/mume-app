@@ -42,6 +42,8 @@ interface MapCanvasProps {
     walkPath?: string[];
     baseMapExitsRef: React.MutableRefObject<Record<string, any>>;
     clientPredictionsRef?: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
+    groupMembers?: import('../../types').GroupMember[];
+    serverIdIndexRef?: React.MutableRefObject<Record<string, string>>;
 }
 
 export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps>((props, ref) => {
@@ -56,7 +58,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, preMoveRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef
+        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef
     } = props;
 
     const { drawMap } = useMapperRenderer({
@@ -65,7 +67,7 @@ export const MapCanvas = React.memo(forwardRef<HTMLCanvasElement, MapCanvasProps
         playerPosRef, playerTrailRef, stableRoomsRef, stableRoomIdRef, stableMarkersRef,
         preloadedCoordsRef, spatialIndexRef, exploredRef, renderVersion,
         unveilMap, viewZ, firstExploredAtRef, walkTargetId, walkPath,
-        baseMapExitsRef, triggerRender, clientPredictionsRef
+        baseMapExitsRef, triggerRender, clientPredictionsRef, groupMembers, serverIdIndexRef
     });
 
     useMapAnimation({

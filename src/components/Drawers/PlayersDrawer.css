@@ -1,12 +1,12 @@
 .players-section {
-    background: rgba(10, 13, 21, 0.7);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(10, 13, 21, 0.92);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     padding: 12px;
     margin: 8px 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .players-chip-grid { 
@@ -23,7 +23,7 @@
     border: 1px solid rgba(137, 180, 250, 0.3); 
     border-radius: 12px; 
     color: #cdd6f4; 
-    font-size: 0.85rem; 
+    font-size: var(--dynamic-log-size, 16px); 
     font-weight: 700; 
     cursor: pointer; 
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -102,8 +102,8 @@
     flex: 1;
     background: transparent;
     border: none;
-    color: #cdd6f4;
-    font-size: 0.85rem;
+    color: rgb(150, 150, 255);
+    font-size: var(--dynamic-log-size, 16px);
     font-weight: 700;
     text-align: left;
     padding: 8px 0;
@@ -144,3 +144,148 @@
     color: rgba(255, 255, 255, 0.2);
     font-style: italic;
 }
+
+/* Group Member Styles */
+.group-member-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(10, 13, 21, 0.92);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    margin: 0 16px 8px 16px;
+}
+
+.member-status-icon {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    margin-top: 4px;
+    flex-shrink: 0;
+}
+
+.member-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.member-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.member-name {
+    font-size: var(--dynamic-log-size, 16px);
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-room {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.member-stat-track {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 2px;
+    transform: skewX(-20deg);
+    overflow: visible;
+    width: 100%;
+    max-width: 140px;
+}
+
+.member-stat-segments {
+    display: flex;
+    gap: 1.5px;
+    height: 100%;
+}
+
+.member-stat-segment {
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 1px;
+    overflow: hidden;
+}
+
+.member-stat-fill {
+    height: 100%;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Color logic matching ModernVitals */
+.member-stat-track.hp .member-stat-fill {
+    background: #ee2222;
+    box-shadow: 0 0 8px rgba(238, 34, 34, 0.3);
+}
+
+.member-stat-track.mana .member-stat-fill {
+    background: #9933ff;
+    box-shadow: 0 0 8px rgba(153, 51, 255, 0.3);
+}
+
+.member-stat-track.move .member-stat-fill {
+    background: #22ff55;
+    box-shadow: 0 0 8px rgba(34, 255, 85, 0.3);
+}
+
+.member-numeric-vitals {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.member-numeric-vitals .current {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: #fff;
+}
+
+.member-numeric-vitals .max {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.member-conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.cond-badge {
+    font-size: 0.55rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cond-badge.bad { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); }
+.cond-badge.neut { background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); }
+.cond-badge.good { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.2); }

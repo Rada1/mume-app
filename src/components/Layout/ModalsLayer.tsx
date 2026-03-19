@@ -47,9 +47,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setNewSoundRegex,
         handleSoundUpload,
         btn,
-        inventoryLines,
+        displayInventoryLines,
         statsLines,
-        eqLines,
+        displayEqLines,
         executeCommand,
         handleButtonClick,
         teleportTargets,
@@ -78,6 +78,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setShowLegacyButtons,
         favorites,
         setFavorites,
+        isHighlighterEnabled,
+        setIsHighlighterEnabled,
         parley,
         setParley,
         whoList,
@@ -179,6 +181,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                     setIsMobileBrevityMode={setIsMobileBrevityMode}
                     showLegacyButtons={showLegacyButtons}
                     setShowLegacyButtons={setShowLegacyButtons}
+                    isHighlighterEnabled={isHighlighterEnabled}
+                    setIsHighlighterEnabled={setIsHighlighterEnabled}
                 />
             )}
 
@@ -276,9 +280,9 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
             <DrawerManager
                 ui={ui}
                 setUI={setUI}
-                inventoryLines={inventoryLines}
+                inventoryLines={displayInventoryLines}
                 statsLines={statsLines}
-                eqLines={eqLines}
+                eqLines={displayEqLines}
                 executeCommand={executeCommand}
                 handleButtonClick={handleButtonClick}
                 loginName={loginName}

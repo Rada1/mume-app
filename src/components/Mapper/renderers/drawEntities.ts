@@ -1,5 +1,6 @@
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS } from '../mapperUtils';
+import { getMemberColor } from '../../../utils/groupUtils';
 
 
 export const drawGrid = (rCtx: RenderContext, gX1: number, gY1: number, gX2: number, gY2: number) => {
@@ -214,6 +215,148 @@ export const drawEntities = (
         }
     }
 };
+
+// --- Group Member Orbs ---
+
+/**
+ * Draws a green friend-orb for each group member that has a known map room (via mapid).
+ * Resolves mapid -> room coordinates using the preloaded base map and local rooms.
+ * Includes teardrop trail animation identical to the player orb (but green).
+ */
+export const drawGroupMembers = (rCtx: RenderContext) => {
+    const { ctx, currentZ, allRooms, preloaded, now, groupMembers, camera, serverIdIndexRef } = rCtx;
+    if (!groupMembers || groupMembers.length === 0) return;
+
+    // --- Persistent trail state per group member (same 450ms as player trail) ---
+    if (!(drawGroupMembers as any)._trails) (drawGroupMembers as any)._trails = new Map();
+    if (!(drawGroupMembers as any)._lastPos) (drawGroupMembers as any)._lastPos = new Map();
+    const trails = (drawGroupMembers as any)._trails as Map<string, any[]>;
+    const lastPos = (drawGroupMembers as any)._lastPos as Map<string, { x: number, y: number, z: number }>;
+    const TRAIL_DURATION = 450;
+
+    const pulse = (Math.sin(now / 350) + 1) / 2;
+    const ORB_RADIUS = 7;
+
+    // --- Resolve & Group positions for petal layout ---
+    const roomOccupancy = new Map<string, any[]>();
+    const resolvedMembers: any[] = [];
+
+    groupMembers.forEach(member => {
+        if (!member.mapid) return;
+        const memberKey = String(member.id ?? member.name ?? member.mapid);
+        const serverVnum = String(member.mapid);
+
+        let rx: number | undefined, ry: number | undefined, rz: number | undefined;
+
+        // Step 1: serverIdIndexRef lookup
+        let localVnum: string | undefined;
+        if (serverIdIndexRef?.current) localVnum = serverIdIndexRef.current[serverVnum];
+
+        // Step 2 & 3: preloaded base map
+        if (localVnum && preloaded[localVnum]) {
+            const p = preloaded[localVnum]; rx = p[0]; ry = p[1]; rz = p[2] || 0;
+        } else if (preloaded[serverVnum]) {
+            const p = preloaded[serverVnum]; rx = p[0]; ry = p[1]; rz = p[2] || 0;
+        }
+
+        // Step 4 & 5: local rooms
+        if (rx === undefined) {
+            const localRoom = allRooms[`m_${localVnum ?? serverVnum}`] || allRooms[localVnum ?? ''] || allRooms[serverVnum] || Object.values(allRooms).find(r => String(r.gmcpId) === serverVnum);
+            if (localRoom) { rx = localRoom.x; ry = localRoom.y; rz = localRoom.z || 0; }
+        }
+
+        if (rx === undefined || ry === undefined) return;
+        if (rz === undefined) rz = 0;
+        
+        const pos = { rx, ry, rz };
+        resolvedMembers.push({ member, memberKey, ...pos });
+
+        const roomKey = `${rx},${ry},${rz}`;
+        if (!roomOccupancy.has(roomKey)) roomOccupancy.set(roomKey, []);
+        roomOccupancy.get(roomKey)!.push(memberKey);
+    });
+
+    // We also need to know if the player is in the room for offset calculations
+    const playerRoomKey = (rCtx as any)._playerRoomKey; // We'll infer this or pass it in Rctx later if needed, for now use currentRoomId/ref
+
+    resolvedMembers.forEach(({ member, memberKey, rx, ry, rz }) => {
+        const roomKey = `${rx},${ry},${rz}`;
+        const occupants = roomOccupancy.get(roomKey) || [];
+        
+        // CONSISTENT COLOR FIX: Use the original index from the groupMembers list 
+        // to ensure it matches the group tab, regardless of map resolution order.
+        const originalIndex = groupMembers.findIndex(m => m.id === member.id);
+        const color = getMemberColor(originalIndex !== -1 ? originalIndex : 0);
+        
+        // Track trail
+        const prev = lastPos.get(memberKey);
+        if (prev && (prev.x !== rx || prev.y !== ry)) {
+            if (!trails.has(memberKey)) trails.set(memberKey, []);
+            trails.get(memberKey)!.push({ x: prev.x, y: prev.y, z: prev.z, startTime: now, color: color.core });
+        }
+        lastPos.set(memberKey, { x: rx, y: ry, z: rz });
+
+        if (trails.has(memberKey)) {
+            trails.set(memberKey, trails.get(memberKey)!.filter((t: any) => now - t.startTime < TRAIL_DURATION));
+        }
+
+        if (Math.abs(rz - currentZ) >= 1.0) return;
+
+        // --- Calculate Petal Offset ---
+        let offsetX = 0, offsetY = 0;
+        const index = occupants.indexOf(memberKey);
+        const count = occupants.length;
+        
+        const PETAL_RADIUS = 4.2 / (camera.zoom > 1.5 ? 1 : Math.sqrt(camera.zoom));
+        const angle = (index / count) * Math.PI * 2;
+        offsetX = Math.cos(angle) * PETAL_RADIUS;
+        offsetY = Math.sin(angle) * PETAL_RADIUS;
+
+        const px = rx * GRID_SIZE + GRID_SIZE / 2 + offsetX;
+        const py = ry * GRID_SIZE + GRID_SIZE / 2 + offsetY;
+        const alpha = Math.max(0, 1 - Math.abs(rz - currentZ));
+
+        // --- Trail (Draw toward the offset point using individual member color) ---
+        const memberTrail = trails.get(memberKey) ?? [];
+        memberTrail.forEach(t => {
+            if (Math.abs(t.z - currentZ) >= 1.0) return;
+            const elapsed = now - t.startTime;
+            const progress = Math.min(1, elapsed / TRAIL_DURATION);
+            if (progress >= 1) return;
+            const originX = t.x * GRID_SIZE + GRID_SIZE / 2;
+            const originY = t.y * GRID_SIZE + GRID_SIZE / 2;
+            const tailX = originX + (px - originX) * progress;
+            const tailY = originY + (py - originY) * progress;
+            const dx = px - tailX, dy = py - tailY;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            if (len < 1) return;
+            const nx = -dy / len, ny = dx / len;
+            const halfW = 4 / camera.zoom;
+            ctx.save();
+            ctx.globalAlpha = 0.65 * alpha;
+            ctx.fillStyle = t.color || color.core;
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(px + nx * halfW, py + ny * halfW);
+            ctx.lineTo(px - nx * halfW, py - ny * halfW);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        });
+
+        // --- Orb ---
+        const orbRadius = ORB_RADIUS;
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.92;
+        ctx.fillStyle = color.core;
+        ctx.beginPath();
+        ctx.arc(px, py, orbRadius * 0.75, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+    });
+};
+
 
 export const drawMarkers = (
     rCtx: RenderContext,

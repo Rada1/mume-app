@@ -4,6 +4,7 @@ import { SpatButtons } from './SpatButtons';
 import { SpatButton, PopoverState } from '../types';
 import { useUI, useBaseGame, useVitals, useGame } from '../context/GameContext';
 import ModernVitals from './ModernVitals';
+import XpTicker from './XpTicker';
 
 
 
@@ -424,7 +425,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 )}
             </div>
 
-            <div className="input-vitals-dock">
+            <div className="input-vitals-dock" style={{ position: 'relative' }}>
                 {isMobile && isKeyboardOpen && !parley.active && (
                     <button
                         type="button"
@@ -438,6 +439,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                         <MessageCircle size={18} />
                     </button>
                 )}
+                <XpTicker isLandscape={viewport.isLandscape} />
                 <ModernVitals
                     stats={vitalsStats}
                     inCombat={inCombat}

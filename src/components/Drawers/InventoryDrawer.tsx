@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { useGame, useVitals } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { extractNoun, isItemContainer, isFluidContainer } from '../../utils/gameUtils';
@@ -25,8 +26,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     pendingDrawerContainerRef,
     inlineCategories = []
 }) => {
-    const { lighting } = useGame();
-    const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number; commandLabel?: string } | null>(null);
+    const { lighting, applyOptimisticChange } = useGame() as any;
+    const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number; commandLabel?: string; itemNoun?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = React.useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = React.useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
     const [expandedContainers, setExpandedContainers] = React.useState<Set<string>>(new Set());
@@ -65,7 +66,8 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
 
         if (isDraggingRef.current) {
             if (ghostRef.current) {
-                ghostRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(1.05)`;
+                ghostRef.current.style.left = `${e.clientX}px`;
+                ghostRef.current.style.top = `${e.clientY}px`;
             }
 
             moveCountRef.current++;
@@ -75,15 +77,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
 
             const itemLine = pendingDragRef.current!;
-            const fullPath = itemLine.context || itemLine.id;
-            const parentPath = itemLine.parentItemId;
-            let itemStableId = fullPath;
-            if (parentPath && fullPath.endsWith('.' + parentPath)) {
-                itemStableId = fullPath.substring(0, fullPath.length - parentPath.length - 1);
-            }
-            
-            // For the label, use the item's stable ID (e.g. 2.sword)
-            const itemNounForLabel = itemStableId;
+            const itemNounForLabel = extractNoun(itemLine.text);
             let label = "";
 
             const logArea = target?.closest('.message-log-container');
@@ -152,6 +146,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                  const recipientName = logRecipient.getAttribute('data-context');
                  if (recipientName) {
                      triggerHaptic(60);
+                     applyOptimisticChange({ type: 'give', item: itemLine, from: 'inv' });
                      if (parentNoun) {
                          executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
                          setTimeout(() => executeCommand(`give ${itemNoun} ${recipientName}`), 120);
@@ -192,19 +187,15 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 return;
             }
 
-            const logArea = target?.closest('.message-log-container');
-            if (logArea) {
+            if (target?.closest('.message-log-container')) {
                 triggerHaptic(60);
+                applyOptimisticChange({ type: 'drop', item: itemLine, from: 'inv' });
                 if (parentNoun) {
                     executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
                     setTimeout(() => executeCommand(`drop ${itemNoun}`), 120);
                 } else {
                     executeCommand(`drop ${itemNoun}`);
                 }
-                setTimeout(() => {
-                    executeCommand('inv', false, true, true, true);
-                    executeCommand('eq', false, true, true, true);
-                }, 400);
             }
         }
         setTimeout(() => cleanupDrag(), 0);
@@ -219,7 +210,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             triggerHaptic(40);
             isDraggingRef.current = true;
             const line = pendingDragRef.current;
-            setDraggedItem({ line, x, y });
+            setDraggedItem({ line, x, y, itemNoun: extractNoun(line.text) });
             setPrimedItemId(null);
             window.addEventListener('pointercancel', cleanupDrag);
         }
@@ -244,7 +235,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
         }, 350);
     };
 
-    const swipePos = useRef<{ x: number, y: number } | null>(null);
+    const swipePos = React.useRef<{ x: number, y: number } | null>(null);
 
     return (
         <div 
@@ -299,25 +290,30 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 }
             }}
         >
-            {draggedItem && (
-                <div 
+            {draggedItem && ReactDOM.createPortal(
+                <div
                     ref={ghostRef}
                     className="drag-ghost"
                     style={{
-                        position: 'fixed',
-                        left: 0, top: 0,
-                        transform: `translate3d(${draggedItem.x}px, ${draggedItem.y}px, 0) translate(-50%, -50%) scale(1.05)`,
+                        left: draggedItem.x,
+                        top: draggedItem.y,
                         pointerEvents: 'none'
                     }}
                 >
-                    <div style={{ fontSize: '0.6rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '-2px' }}>
-                        Dragging Item
-                    </div>
-                    <div className="ghost-content" dangerouslySetInnerHTML={{ __html: draggedItem.line.html }} />
-                    {draggedItem.commandLabel && (
-                        <div className="ghost-label">{draggedItem.commandLabel}</div>
-                    )}
-                </div>
+                    {(() => {
+                        const label = draggedItem.commandLabel ?? draggedItem.line.text;
+                        const noun = draggedItem.itemNoun;
+                        if (!noun) return <>{label}</>;
+                        const idx = label.indexOf(noun);
+                        if (idx === -1) return <>{label}</>;
+                        return <>
+                            {label.slice(0, idx)}
+                            <span style={{ color: 'rgb(175,255,255)', fontWeight: 'bold' }}>{noun}</span>
+                            {label.slice(idx + noun.length)}
+                        </>;
+                    })()}
+                </div>,
+                document.body
             )}
             <div className="drawer-header" style={{ height: '60px', padding: '0 20px', display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.03)' }}>
                 <span style={{ fontWeight: 'bold', fontSize: '1rem', letterSpacing: '1px' }}>Inventory</span>
@@ -350,18 +346,17 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                  const category = getCategoryForName(line.text, categories) || 'inline-default';
                                  const glowColor = getGlowColorForCategory(category, categories);
                                  
-                                 const colorRgb = glowColor ? (glowColor.match(/rgba?\((\d+, \d+, \d+)/)?.[1] || '100, 255, 100') : '100, 255, 100';
-                                 const baseBackground = line.isContainer ? 'rgba(137, 180, 250, 0.25)' : (glowColor ? `rgba(${colorRgb}, 0.25)` : 'rgba(255, 255, 255, 0.05)');
-                                 const primedBackground = glowColor ? `rgba(${colorRgb}, 0.4)` : 'rgba(255, 255, 255, 0.12)';
-                                 const borderLeftStyle = glowColor ? `4px solid rgba(${colorRgb}, 0.8)` : '4px solid transparent';
-                                 const glowEffect = glowColor ? `0 0 12px rgba(${colorRgb}, 0.15)` : 'none';
+                                 const baseBackground = 'rgba(255, 255, 255, 0.03)';
+                                 const primedBackground = 'rgba(255, 255, 255, 0.1)';
+                                 const borderLeftStyle = '4px solid transparent';
+                                 const glowEffect = 'none';
  
                                  if (!line.isItem && line.isHeader) {
                                      return (
                                          <div key={line.id} style={{ 
                                              marginLeft: `${depth * 20}px`, 
                                              padding: '12px 10px 4px', 
-                                             fontSize: depth > 0 ? '0.7rem' : '0.8rem', 
+                                             fontSize: depth > 0 ? 'calc(var(--dynamic-log-size, 16px) * 0.85)' : 'var(--dynamic-log-size, 16px)', 
                                              opacity: 0.6, 
                                              fontWeight: '900',
                                              color: depth > 0 ? '#89b4fa' : 'var(--accent)',
@@ -418,7 +413,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                                  opacity: isBeingDragged ? 0.3 : 1, transition: 'all 0.2s ease', touchAction: 'none', display: 'flex', alignItems: 'center'
                                              }}
                                          >
-                                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1 }} />
+                                            <div dangerouslySetInnerHTML={{ __html: line.html }} style={{ flex: 1, fontWeight: 'bold' }} />
                                             {line.isContainer && (
                                                 <span style={{ fontSize: '0.7rem', opacity: 0.5, marginLeft: '8px', transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▶</span>
                                             )}

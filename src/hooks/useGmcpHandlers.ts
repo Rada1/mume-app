@@ -24,7 +24,7 @@ interface GmcpHandlersProps {
     setDiscoveredItems: (items: string[]) => void;
     characterName: string | null;
     setAbilities: React.Dispatch<React.SetStateAction<Record<string, number>>>;
-    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean, commSender?: string, commChannel?: string) => void;
+    addMessage: (type: MessageType, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any, practiceSkill?: any, practiceHeader?: any, skipBrevity?: boolean) => void;
     setCharacterName: (name: string | null) => void;
     setPlayerPosition: (pos: string) => void;
     setRoomName: (name: string | null) => void;
@@ -44,6 +44,8 @@ interface GmcpHandlersProps {
     suppressNextTextHeaderRef?: React.MutableRefObject<boolean>;
     setGroupMembers: React.Dispatch<React.SetStateAction<GroupMember[]>>;
     setMumeEditState: React.Dispatch<React.SetStateAction<{ isOpen: boolean; title: string; text: string; key: string }>>;
+    setWhoList: React.Dispatch<React.SetStateAction<string[]>>;
+    setWhereList: React.Dispatch<React.SetStateAction<import('../types').WhereEntry[]>>;
     detectLighting?: (symbol: string | number) => void;
 }
 
@@ -75,6 +77,8 @@ export const useGmcpHandlers = ({
     roomNpcs,
     setGroupMembers,
     setMumeEditState,
+    setWhoList,
+    setWhereList,
     detectLighting
 }: GmcpHandlersProps) => {
 
@@ -330,32 +334,68 @@ export const useGmcpHandlers = ({
         setCharacterName(name);
     }, [characterName, setAbilities, addMessage, setCharacterName]);
     
-    const onComm = useCallback((sender: string, chan: string, msg: string) => {
-        console.log('[GMCP] onComm handler called:', { sender, chan, msg });
-        // Tag the message with sender and channel so the UI can show a reply button
-        addMessage('game', msg, false, undefined, false, undefined, undefined, undefined, undefined, true, sender, chan);
-    }, [addMessage]);
+    const onComm = useCallback((_sender: string, _chan: string, _msg: string) => {
+        // Comm messages arrive via plain text through processLine; the GMCP metadata
+        // (sender, chan) is forwarded via pendingGmcpCommRef in GameContext before the
+        // text line is processed, so no addMessage call is needed here.
+    }, []);
     
     // --- Group Handlers ---
 
-    const onGroupAdd = useCallback((data: GroupMember) => {
-        setGroupMembers(prev => {
-            if (prev.find(m => m.id === data.id)) return prev;
-            return [...prev, data];
-        });
-    }, [setGroupMembers]);
+    /** Normalizes a raw group member: resolves room ID from whatever field MUME uses -> mapid */
+    const normalizeGroupMember = (raw: any): GroupMember => {
+        const mapid = raw.mapid ?? raw.room ?? raw.roomid ?? raw.room_id ?? raw.rid ?? raw.vnum ?? raw.map_id ?? undefined;
+        console.log('[Group Member] raw keys:', Object.keys(raw), '| resolved mapid:', mapid, '| raw:', JSON.stringify(raw));
+        return { ...raw, mapid: mapid !== undefined ? Number(mapid) : undefined };
+    };
 
-    const onGroupUpdate = useCallback((data: GroupMember) => {
-        setGroupMembers(prev => prev.map(m => m.id === data.id ? { ...m, ...data } : m));
+    const onGroupAdd = useCallback((data: GroupMember) => {
+        console.log('[GMCP] onGroupAdd raw:', JSON.stringify(data));
+        const member = normalizeGroupMember(data);
+        // MUME marks self with type:'you' — filter it out
+        if (member.type === 'you') return;
+        // Also fall back to name comparison in case type is missing
+        if (characterName && member.name && member.name.toLowerCase() === characterName.toLowerCase()) return;
+        setGroupMembers(prev => {
+            if (prev.find(m => m.id === member.id)) return prev;
+            return [...prev, member];
+        });
+    }, [setGroupMembers, characterName]);
+
+    const onGroupUpdate = useCallback((data: any) => {
+        console.log('[GMCP] onGroupUpdate raw:', JSON.stringify(data));
+        const updates = normalizeGroupMember(data);
+        setGroupMembers(prev => prev.map(m => {
+            if (m.id === updates.id) {
+                // Persistent Location Fix: If the update doesn't have a mapid/room but the existing state does, KEEP IT.
+                // MUME often omits location in health/status updates, which was causing dots to vanish.
+                const merged = { ...m, ...updates };
+                if (updates.mapid === undefined && m.mapid !== undefined) {
+                    merged.mapid = m.mapid;
+                }
+                return merged;
+            }
+            return m;
+        }));
     }, [setGroupMembers]);
 
     const onGroupRemove = useCallback((id: number) => {
+        console.log('[GMCP] onGroupRemove id:', id);
         setGroupMembers(prev => prev.filter(m => m.id !== id));
     }, [setGroupMembers]);
 
     const onGroupSet = useCallback((data: GroupMember[]) => {
-        setGroupMembers(data);
-    }, [setGroupMembers]);
+        console.log('[GMCP] onGroupSet raw:', JSON.stringify(data));
+        const members = Array.isArray(data) ? data.map(normalizeGroupMember) : [];
+        // Filter out self: MUME marks own character with type:'you'.
+        // Fall back to name comparison for servers that omit the type field.
+        const others = members.filter(m => {
+            if (m.type === 'you') return false;
+            if (characterName && m.name && m.name.toLowerCase() === characterName.toLowerCase()) return false;
+            return true;
+        });
+        setGroupMembers(others);
+    }, [setGroupMembers, characterName]);
 
     return {
         onRoomInfo,
@@ -387,6 +427,14 @@ export const useGmcpHandlers = ({
                     key: data.key
                 });
             }
+        },
+        onDisconnect: () => {
+            setGroupMembers([]);
+            setRoomPlayers([]);
+            setRoomNpcs([]);
+            setRoomItems([]);
+            setWhoList([]);
+            setWhereList([]);
         }
     };
 };

@@ -41,6 +41,7 @@ interface MapperContextType {
     clientPredictionsRef: React.MutableRefObject<Array<{ toId: string, toX: number, toY: number, toZ: number }>>;
     spatialIndexRef: React.MutableRefObject<any>;
     firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
+    serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
     triggerRender: () => void;
     renderVersion: number;
     
@@ -70,7 +71,6 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const [renderVersion, setRenderVersion] = useState(0);
     const triggerRender = useCallback(() => {
-        console.trace('[Mapper] triggerRender called');
         setRenderVersion(v => v + 1);
     }, []);
 
@@ -121,15 +121,32 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const nIndex: Record<string, string[]> = {};
             const sIndex: Record<string, string> = {};
             for (const vnum in data) {
-                const rData = data[vnum], [x, y, z] = rData, rName = rData[5], rServerId = rData[6], floor = Math.round(z);
+                const rData = data[vnum], [x, y, z] = rData;
+                // Format: [x, y, z, terrain, exits, name, serverId, mobFlags, loadFlags]
+                const rName = rData[5]; 
+                const rServerId = rData[6];
+                
+                const floor = Math.round(z);
                 if (!index[floor]) index[floor] = {};
                 const bucketX = Math.floor(x / 5), bucketY = Math.floor(y / 5), key = `${bucketX},${bucketY}`;
                 if (!index[floor][key]) index[floor][key] = [];
                 index[floor][key].push(vnum);
-                if (rName) { if (!nIndex[rName]) nIndex[rName] = []; nIndex[rName].push(vnum); }
-                if (rServerId) sIndex[String(rServerId)] = vnum;
+                
+                // Build name index for fingerprint matching
+                if (rName && typeof rName === 'string') { 
+                    if (!nIndex[rName]) nIndex[rName] = []; 
+                    nIndex[rName].push(vnum); 
+                }
+                
+                // Track Server ID (GMCP ID) if available
+                if (rServerId) {
+                    sIndex[String(rServerId)] = vnum;
+                }
+                // Also map vnum directly as fallback
+                sIndex[String(vnum)] = vnum;
             }
             spatialIndexRef.current = index; nameIndexRef.current = nIndex; serverIdIndexRef.current = sIndex;
+            console.log('[Mapper] Proactively built serverIdIndexRef with', Object.keys(sIndex).length, 'entries.');
             if (showDebugEchoes) addMessage?.('system', `[Mapper] Ardagmcp Base Map Loaded: ${Object.keys(data).length} rooms.`);
 
             // 2. Automatically load Markers from ardagmcp.xml if it exists
@@ -371,14 +388,18 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             setUI(prev => ({ ...prev, mapExpanded: false }));
         };
 
-        const onInfo = (e: any) => handleRoomInfo(e.detail);
-        const onExits = (e: any) => handleUpdateExits(e.detail);
-        const onTerrain = (e: any) => handleTerrain(e.detail);
-        const onPush = (e: any) => pushPendingMove(e.detail);
-        const onConfirm = (e: any) => handleMoveConfirmed(e);
-        const onFail = () => handleMoveFailure();
-        const onPre = (e: any) => { preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() }; triggerRender(); };
-        
+        // Stable handler refs so the event listener registrations never need to rerun
+        const handlersRef = { handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender };
+        const stableHandlers = Object.freeze(handlersRef);
+
+        const onInfo    = (e: any) => stableHandlers.handleRoomInfo(e.detail);
+        const onExits   = (e: any) => stableHandlers.handleUpdateExits(e.detail);
+        const onTerrain = (e: any) => stableHandlers.handleTerrain(e.detail);
+        const onPush    = (e: any) => stableHandlers.pushPendingMove(e.detail);
+        const onConfirm = (e: any) => stableHandlers.handleMoveConfirmed(e);
+        const onFail    = ()       => stableHandlers.handleMoveFailure();
+        const onPre     = (e: any) => { preMoveRef.current = { dir: e.detail.dir, targetId: e.detail.targetId, time: Date.now() }; stableHandlers.triggerRender(); };
+
         window.addEventListener('mume-mapper-undock', onUndock);
         window.addEventListener('mume-mapper-dock', onDock);
         window.addEventListener('mud-cluster-drag-end', onDragEnd);
@@ -395,7 +416,8 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             window.removeEventListener('mume-mapper-move-confirmed', onConfirm); window.removeEventListener('mume-mapper-move-fail', onFail);
             window.removeEventListener('mume-mapper-push-pre-move', onPre);
         };
-    }, [handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed, handleMoveFailure, triggerRender, setIsMapFloating, setUI]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setIsMapFloating, setUI]);
 
     const value = useMemo(() => ({
         rooms, setRooms, markers, setMarkers, currentRoomId, setCurrentRoomId,
@@ -408,13 +430,13 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         selectedRoomIds, setSelectedRoomIds, selectedMarkerId, setSelectedMarkerId,
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         markersRef, exploredRef, exploredVnums, spatialIndexRef, firstExploredAtRef,
-        isMapFloating, setIsMapFloating
+        serverIdIndexRef, isMapFloating, setIsMapFloating
     }), [
         rooms, markers, currentRoomId, unveilMap, allowPersistence, handleResetAndSync,
         handleClearMap, handleSyncLocation, handleAddRoom, handleDeleteRoom,
         pushPendingMove, handleMoveConfirmed, handleMoveFailure, renderVersion,
         currentRoomIdRef, roomsRef, preloadedCoordsRef, baseMapExitsRef, preMoveRef,
-        spatialIndexRef, firstExploredAtRef, triggerRender, setCurrentRoomId,
+        spatialIndexRef, firstExploredAtRef, serverIdIndexRef, triggerRender, setCurrentRoomId,
         selectedRoomIds, selectedMarkerId, autoCenter, viewZ, infoRoomId,
         markersRef, exploredRef, exploredVnums, isMapFloating
     ]);

@@ -90,6 +90,139 @@
     transition: transform 0.3s ease-out, opacity 0.3s ease-out;
 }
 
+/* Intelligent Dimming Base */
+.message-content {
+    opacity: 1; /* Container must be 1 to allow children to be 1 */
+    color: var(--text-dim); /* Dim raw text nodes by default */
+    transition: color 0.2s ease;
+}
+
+/* Inherit regular message styling for room names */
+.message.is-room-name {
+    display: block;
+    padding-top: 4px;
+    padding-bottom: 2px;
+}
+
+.message.is-room-name .message-content,
+.message.is-room-name .message-content span {
+    opacity: 1 !important;
+}
+
+
+
+/* Standard text occupies full brightness by default */
+.message-content span {
+    opacity: 1;
+}
+
+/* Pop keywords and interactive elements to full brightness */
+.message-content .inline-btn,
+.message-content b,
+.message-content strong,
+.message-content .keyword-highlight,
+.message-content .pc-highlighter,
+.message-content .npc-highlighter {
+    opacity: 1 !important;
+    filter: brightness(1.5) saturate(1.4) !important; /* Intensified pop */
+    color: var(--glow-color, var(--ansi-bright-white)) !important; /* Force category color or bright white */
+}
+
+/* Ensure nested spans in buttons don't inherit dimness */
+.message-content .inline-btn span,
+.message-content .keyword-highlight span {
+    opacity: 1 !important;
+    color: inherit !important;
+}
+
+/* If these are nested inside an ANSI span (or any other colored span), 
+   we force the bright color logic above. */
+.message-content span .inline-btn,
+.message-content span .keyword-highlight,
+.message-content span b,
+.message-content span strong {
+    color: var(--glow-color, inherit) !important;
+}
+
+.keyword-highlight,
+.inline-btn,
+.pc-highlighter,
+.npc-highlighter {
+    font-weight: bold !important;
+}
+
+.message-content .inline-btn {
+    color: var(--glow-color, var(--ansi-bright-white)) !important;
+}
+
+/* Color-tagged objects (&355 / rgb(175,255,255)) are already a light cyan —
+   the brightness(1.5) boost above would clamp all channels to 255 (white).
+   Override to preserve the original object color. */
+.message-content .inline-btn.color-tagged-obj {
+    filter: none !important;
+}
+
+/* Pin inline player buttons to exactly the same purple used in the who-list
+   and the players drawer, bypassing the brightness filter. */
+.message-content .inline-btn.pc-highlighter {
+    color: rgb(150, 150, 255) !important;
+    filter: none !important;
+}
+
+.pc-highlighter {
+    color: #60a5fa !important; /* Bright Electric Blue */
+}
+
+.npc-highlighter {
+    color: #facc15 !important; /* Bright Gold/Yellow */
+}
+
+.keyword-highlight.combat-verb {
+    color: #ff9d00 !important; /* Vivid Orange */
+    text-transform: uppercase;
+}
+
+.keyword-highlight.status-word {
+    color: #ff4d4d !important; /* Urgent Red */
+}
+
+.keyword-highlight.weapon-obj {
+    color: #a5b4fc !important; /* Indigo/Metallic */
+}
+
+.keyword-highlight.armour-obj {
+    color: #cbd5e1 !important; /* Steel/Silver */
+}
+
+.keyword-highlight.common-obj {
+    color: #94a3b8 !important; /* Slate */
+}
+
+.keyword-highlight.herb-obj {
+    color: #4ade80 !important; /* Nature Green */
+}
+
+.keyword-highlight.magic-word {
+    color: #c084fc !important; /* Soft Purple/Lavender */
+}
+
+.message.is-comm .message-content {
+    opacity: 1 !important;
+    filter: brightness(1.25) contrast(1.1);
+    font-weight: 500;
+}
+
+.message.is-comm .message-content span.comm-content {
+    color: #ffffff !important;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.keyword-highlight.exit-dir {
+    color: #22c55e !important; /* Success Green */
+    font-weight: bold;
+}
+
 .no-3d-scroll .message {
     animation: none !important;
     transform: none !important;
@@ -113,6 +246,42 @@
     }
 }
 
+/* Combat slide-in animations */
+@keyframes combat-slide-from-left {
+    from {
+        opacity: 0;
+        transform: translateX(-48px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes combat-slide-from-right {
+    from {
+        opacity: 0;
+        transform: translateX(48px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.message.combat-player.recent-entry {
+    animation: combat-slide-from-left 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.message.combat-opponent {
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.message.combat-opponent.recent-entry {
+    animation: combat-slide-from-left 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
 .message.combat-dim {
     opacity: 0.25 !important;
     filter: grayscale(0.5) blur(0.2px);
@@ -121,8 +290,7 @@
 
 .message-log.combat-mode .message:not(.combat-dim) {
     opacity: 1;
-    filter: saturate(1.4) brightness(1.1);
-    transition: opacity 1.2s ease-in-out, filter 1.2s ease-in-out;
+    transition: opacity 1.2s ease-in-out;
 }
 
 .message.user {
@@ -145,7 +313,6 @@
 .spell-incant {
     color: var(--ansi-bright-cyan);
     font-weight: bold;
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
 }
 
 .message.error {
@@ -164,7 +331,6 @@
 .message.prompt.msg-latest {
     color: var(--accent);
     opacity: 1;
-    text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.4);
     background: rgba(10, 13, 21, 0.15);
     backdrop-filter: blur(4px);
     border-left: 2px solid var(--accent);
@@ -281,28 +447,29 @@
 /* Inline buttons */
 .inline-btn {
     position: relative;
-    display: inline;
+    display: inline-block;
     cursor: pointer;
-    border-radius: 3px;
-    padding: 0 4px;
-    margin: 0 -2px;
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    border-bottom: 2px solid var(--glow-color, rgba(255, 255, 255, 0.3));
-    text-shadow: 0 0 10px var(--glow-color, transparent);
+    border-radius: 4px;
+    padding: 0 2px;
+    margin: 0;
+    background-color: transparent !important;
+    border: 1px solid transparent; /* No visible border in idle */
     transition: all 0.2s ease;
+}
+
+.inline-btn.active-target {
+    border: 1px solid var(--glow-color, var(--accent-bright, #facc15)) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 4px;
+    padding: 0 3px !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .inline-btn:hover,
 .inline-btn.drop-hover-active {
-    filter: brightness(1.4);
-    transform: scale(1.06);
-    background-color: rgba(255, 255, 255, 0.15) !important;
-    border-bottom: 2px solid var(--glow-color, #4ade80);
-    box-shadow: 0 0 25px var(--glow-color, rgba(74, 222, 128, 0.6)), 
-                inset 0 0 10px rgba(74, 222, 128, 0.2);
-    text-shadow: 0 0 15px var(--glow-color, rgba(255, 255, 255, 0.8));
-    z-index: 10;
-    transition: all 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: var(--glow-color, rgba(255, 255, 255, 0.3));
+    transform: translateY(-1px);
 }
 
 .inline-btn.drop-hover-active {
@@ -327,8 +494,8 @@
 }
 
 .inline-btn.exit-btn {
-    border-bottom: 2px solid rgba(0, 255, 100, 0.6);
-    background-color: rgba(0, 255, 100, 0.05) !important;
+    border: 1px solid rgba(0, 255, 100, 0.6);
+    background-color: transparent !important;
 }
 
 .inline-btn.exit-btn:hover {
@@ -455,15 +622,13 @@
 /* Shop Item Cards (Interactive) */
 .shop-item-card.inline-btn {
     display: flex !important;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(139, 92, 246, 0.2);
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: 4px;
-    padding: 1px 8px;
+    padding: 1px 4px;
     margin: 1px 0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-bottom: 2px solid #8b5cf6;
-    max-width: 500px;
+    max-width: 100%;
     cursor: pointer;
     overflow: hidden;
     text-shadow: none;
@@ -471,45 +636,25 @@
 }
 
 .shop-item-card:hover {
-    background: rgba(139, 92, 246, 0.1);
-    border-color: rgba(139, 92, 246, 0.6);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(100, 220, 255, 0.3);
+    transform: none;
 }
 
 .shop-item-card.recent-entry {
     animation: smooth-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
 }
 
-.shop-item-main {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    pointer-events: none;
-    width: 100%;
-}
-
-.shop-item-info {
-    flex: 1;
-}
-
-.shop-item-header {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    margin-bottom: 0;
-}
-
 .shop-item-id {
     font-size: 0.85em;
     font-weight: bold;
-    color: #8b5cf6;
-    opacity: 0.8;
+    color: var(--text-faded);
+    opacity: 0.6;
 }
 
 .shop-item-name {
     font-size: 1em;
-    font-weight: 600;
+    font-weight: bold;
     color: var(--text-primary);
 }
 
@@ -523,8 +668,6 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    color: var(--ansi-yellow);
-    font-weight: bold;
     font-size: 1em;
     white-space: nowrap;
 }
@@ -535,7 +678,7 @@
 
 .shop-item-tap-hint {
     font-size: 0.7rem;
-    color: #8b5cf6;
+    color: var(--text-faded);
     opacity: 0;
     text-align: right;
     margin-top: 0;

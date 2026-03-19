@@ -3,7 +3,7 @@ import { DrawerLine, PopoverState } from '../../types';
 
 interface ContainerPopoverProps {
     popoverState: PopoverState;
-    setPopoverState: (val: PopoverState | null) => void;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
     handleButtonClick: (b: any, e: any, context?: string) => void;
     addMessage: (type: any, content: string) => void;
     themeColor?: string;

@@ -14,14 +14,22 @@ interface DrawerManagerProps {
     ui: {
         drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
+        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
         setManagerOpen: boolean;
         mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: 'main' | 'availableSets';
     };
     setUI: React.Dispatch<React.SetStateAction<{
         drawer: 'none' | 'stats' | 'items' | 'character' | 'players';
         isDrawerPeeking: boolean;
+        peekingDrawer: 'none' | 'stats' | 'items' | 'character' | 'players' | 'map';
         setManagerOpen: boolean;
         mapExpanded: boolean;
+        isMenuOpen: boolean;
+        isSetMenuOpen: boolean;
+        menuView: 'main' | 'availableSets';
     }>>;
     inventoryLines: DrawerLine[];
     statsLines: DrawerLine[];

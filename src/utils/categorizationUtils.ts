@@ -14,10 +14,15 @@ export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     { id: 'water', keywords: ['water', 'fountain', 'cup', 'skin', 'flagon', 'flask', 'bottle', 'jug', 'vial'], color: 'rgba(52, 211, 153, 0.9)' },
     { id: 'innkeeper', keywords: ['innkeeper'], color: 'rgba(236, 72, 153, 0.9)' },
     { id: 'shopkeeper', keywords: ['barman', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer'], color: 'rgba(139, 92, 246, 0.9)' },
-    { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: 'rgba(139, 69, 19, 0.9)' },
+    { id: 'npc', keywords: [], color: 'rgba(255, 100, 100, 0.9)' },
+    { id: 'mounts', keywords: ['horse', 'pony', 'steed', 'donkey', 'mule', 'warg'], color: 'rgba(255, 100, 100, 0.9)' },
     { id: 'corpses', keywords: ['corpse'], color: 'rgba(156, 163, 175, 0.9)' },
     { id: 'guildmaster', keywords: ['guildmaster', 'teacher', 'master', 'trainer', 'huor'], color: 'rgba(168, 85, 247, 0.9)' },
     { id: 'bench', keywords: ['bench', 'stool', 'chair', 'bed'], color: 'rgba(100, 255, 100, 0.5)' },
+    { id: 'weapon', keywords: ['sword', 'blade', 'dagger', 'axe', 'mace', 'spear', 'staff', 'club', 'flail', 'scimitar', 'rapier', 'halberd', 'bow', 'sling', 'stick'], color: 'rgba(165, 180, 252, 0.9)' },
+    { id: 'armour', keywords: ['mail', 'breastplate', 'greaves', 'gauntlets', 'helmet', 'boots', 'leggings', 'sleeves', 'bracers', 'cloak', 'surcoat', 'jerkin', 'robe', 'tunic'], color: 'rgba(148, 163, 184, 0.9)' },
+    { id: 'shield', keywords: ['shield', 'buckler', 'targe'], color: 'rgba(251, 191, 36, 0.9)' },
+    { id: 'containers', keywords: ['bag', 'pouch', 'sack', 'backpack', 'satchel', 'quiver', 'chest', 'box'], color: 'rgba(209, 213, 219, 0.9)' },
     { id: 'default', keywords: [], color: 'rgba(255, 255, 0, 0.9)' }
 ];
 

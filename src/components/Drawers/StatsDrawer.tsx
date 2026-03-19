@@ -234,7 +234,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                     ].map(stat => (
                                         <div key={stat.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                             <div style={{ fontSize: '0.45rem', color: 'rgba(255,255,255,0.4)', letterSpacing: '1px', marginBottom: '0px', fontWeight: 800 }}>{stat.label}</div>
-                                            <div style={{ fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 'bold', marginTop: '-1px' }}>{stat.value !== undefined ? `${stat.value}%` : '--'}</div>
+                                            <div style={{ fontSize: 'var(--dynamic-log-size, 16px)', color: 'var(--accent)', fontWeight: 'bold', marginTop: '-1px' }}>{stat.value !== undefined ? `${stat.value}%` : '--'}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -375,7 +375,7 @@ export const StatsDrawer: React.FC<CharacterDrawerProps> = ({
                                                 border: item.isHighlighted ? '1px solid #b8860b' : '1px solid rgba(255,255,255,0.1)',
                                                 background: item.isHighlighted ? '#b8860b' : 'rgba(255,255,255,0.05)',
                                                 color: '#fff',
-                                                fontSize: '0.55rem',
+                                                fontSize: 'calc(var(--dynamic-log-size, 16px) * 0.7)',
                                                 fontWeight: 'bold',
                                                 textTransform: 'uppercase',
                                                 cursor: 'pointer',

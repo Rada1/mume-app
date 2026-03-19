@@ -83,7 +83,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { stats, rumble, hitFlash, deathStage, target, activePrompt } = v;
 
-    const [popoverState, setPopoverState] = useState<PopoverState | null>(null);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions' | 'help'>('general');
     const [accentColor, setAccentColor] = usePersistentState('mud-accent-color', '#4a90e2');
@@ -113,6 +112,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [removeNpcFn, setRemoveNpcFn] = useState<(data: any) => void>();
     const [opponentChangeFn, setOpponentChangeFn] = useState<(name: string | null) => void>();
     const [commFn, setCommFn] = useState<(sender: string, chan: string, msg: string) => void>();
+    const pendingGmcpCommRef = useRef<{ sender: string; chan: string } | null>(null);
     const [groupAddFn, setGroupAddFn] = useState<(data: any) => void>();
     const [groupUpdateFn, setGroupUpdateFn] = useState<(data: any) => void>();
     const [groupRemoveFn, setGroupRemoveFn] = useState<(id: number) => void>();
@@ -128,7 +128,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomName: s.roomName
     }), [s.roomPlayers, s.roomNpcs, s.roomItems, s.roomName]);
 
-    const { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine } = useMessageLog(
+    const { messages, setMessages, addMessage, flushMessages, isCombatLine } = useMessageLog(
         inCombatHookRef,
         s.isMobileBrevityMode,
         roomContext
@@ -192,6 +192,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomNpcs: s.roomNpcs,
         setGroupMembers: s.setGroupMembers,
         setMumeEditState: s.setMumeEditState,
+        setWhoList: s.setWhoList,
+        setWhereList: s.setWhereList,
         detectLighting: env.detectLighting
     });
 
@@ -226,11 +228,12 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isMobileBrevityMode: s.isMobileBrevityMode, setIsMobileBrevityMode: s.setIsMobileBrevityMode,
         showLegacyButtons: s.showLegacyButtons, setShowLegacyButtons: s.setShowLegacyButtons,
         showOrganicTerrain: s.showOrganicTerrain, setShowOrganicTerrain: s.setShowOrganicTerrain,
-        inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories
+        inlineCategories: s.inlineCategories, setInlineCategories: s.setInlineCategories,
+        isHighlighterEnabled: s.isHighlighterEnabled, setIsHighlighterEnabled: s.setIsHighlighterEnabled
     });
 
     const [input, setInput] = useState("");
-    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, highlightVersion, s.discoveredItems);
+    const { processMessageHtml } = useMessageHighlighter(v.target, btn.buttonsRef, roomPlayers, roomNpcs, s.characterName, roomItems, s.inlineCategories, s.isHighlighterEnabled, highlightVersion, s.discoveredItems);
 
 
     const navIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -297,7 +300,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setQuests: s.setQuests,
         quests: s.quests,
         mumeEditState: s.mumeEditState,
-        setMumeEditState: s.setMumeEditState
+        setMumeEditState: s.setMumeEditState,
+        triggerXpTicker: v.triggerXpTicker,
+        pendingGmcpCommRef
     });
 
     const { processLine } = parser;
@@ -327,7 +332,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             onCharInfo: gmcpHandlers.onCharInfo,
             onPositionChange: gmcpHandlers.onPositionChange,
             onOpponentChange: (name) => { opponentChangeFn?.(name); v.setOpponentName(name); },
-            onComm: (sender, chan, msg) => { gmcpHandlers.onComm(sender, chan, msg); commFn?.(sender, chan, msg); },
+            onComm: (sender, chan, msg) => { pendingGmcpCommRef.current = { sender, chan }; commFn?.(sender, chan, msg); },
             onGroupAdd: (data) => { gmcpHandlers.onGroupAdd(data); groupAddFn?.(data); },
             onGroupUpdate: (data) => { gmcpHandlers.onGroupUpdate(data); groupUpdateFn?.(data); },
             onGroupRemove: (id) => { gmcpHandlers.onGroupRemove(id); groupRemoveFn?.(id); },
@@ -337,7 +342,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
 
     const controller = useCommandController({
-        telnet, addMessage, initAudio: () => { },
+        telnet, addMessage, initAudio,
         navIntervalRef, mapperRef, teleportTargets,
         setCommandPreview: () => { }, setInput, triggerHaptic, btn, joystick,
         wasDraggingRef: editor.wasDraggingRef,
@@ -347,7 +352,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isWaitingForStats: s.isWaitingForStats, isWaitingForEq: s.isWaitingForEq, isWaitingForInv: s.isWaitingForInv,
         setInventoryLines: s.setInventoryLines, setStatsLines: s.setStatsLines, setEqLines: s.setEqLines,
         input, isNoviceMode, status: s.status, target: v.target, setTarget: v.setTarget,
-        popoverState, setPopoverState,
+        popoverState: s.popoverState, setPopoverState: s.setPopoverState,
         setIsCharacterOpen: s.setIsCharacterOpen,
         setIsStatsOpen: s.setIsStatsOpen,
         setIsItemsDrawerOpen: s.setIsItemsDrawerOpen,
@@ -495,7 +500,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const uiValue = useMemo(() => ({
         ui: s.ui, setUI: s.setUI,
-        popoverState, setPopoverState,
+        popoverState: s.popoverState, setPopoverState: s.setPopoverState,
         isSettingsOpen, setIsSettingsOpen,
         settingsTab, setSettingsTab,
         setIsStatsOpen: s.setIsStatsOpen,
@@ -505,7 +510,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setIsSetManagerOpen: s.setIsSetManagerOpen,
         setIsPlayersOpen: s.setIsPlayersOpen,
     }), [
-        s.ui, popoverState, isSettingsOpen, settingsTab,
+        s.ui, s.popoverState, s.setPopoverState, isSettingsOpen, settingsTab,
         s.setIsCharacterOpen, s.setIsItemsDrawerOpen, s.setIsMapExpanded, s.setIsSetManagerOpen, s.setUI, s.setIsPlayersOpen
     ]);
 
@@ -530,6 +535,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         onGroupSet: groupSetFn, setOnGroupSet: setGroupSetFn,
         playSound, setPlaySound, triggerHaptic, setTriggerHaptic,
         btn, joystick, editor, containerRef, viewport, env,
+        initAudio,
         setSettings: btn.setSettings, setSetSettings: btn.setSetSettings,
         input, setInput,
         handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick,
@@ -570,12 +576,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         addMessage,
         addSystemMessage,
         isCombatLine,
-        isCommunicationLine,
         processMessageHtml,
         refreshLogHighlights,
         handleLogPointerDown,
         handleLogPointerUp
-    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, isCommunicationLine, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp]);
+    }), [messages, setMessages, addMessage, addSystemMessage, isCombatLine, processMessageHtml, refreshLogHighlights, handleLogPointerDown, handleLogPointerUp]);
 
     // Reset mending mode when drawer closes
     useEffect(() => {

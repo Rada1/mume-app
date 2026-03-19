@@ -46,6 +46,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setIsMobileBrevityMode,
     showLegacyButtons,
     setShowLegacyButtons,
+    isHighlighterEnabled,
+    setIsHighlighterEnabled,
 }) => {
     const {
         isMmapperMode, setIsMmapperMode,
@@ -120,6 +122,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setIsMobileBrevityMode={setIsMobileBrevityMode}
                                 showLegacyButtons={showLegacyButtons}
                                 setShowLegacyButtons={setShowLegacyButtons}
+                                isHighlighterEnabled={isHighlighterEnabled}
+                                setIsHighlighterEnabled={setIsHighlighterEnabled}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}

@@ -1,9 +1,7 @@
 import React, { useCallback, useMemo, useState, useEffect, useRef } from 'react';
-import { Reply } from 'lucide-react';
 import { Message, MessageType } from '../types';
 import { ansiConvert } from '../utils/ansi';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import TypewriterText from './TypewriterText';
 import ShopItemCard from './ShopItemCard';
 import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
@@ -32,28 +30,19 @@ const MessageItem = React.memo(({
     inCombat: boolean,
     scrollToBottom: (force?: boolean, instant?: boolean, source?: string) => void;
     executeCommand: (cmd: string) => void;
-    setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
+    setParley: (p: import('../types').ParleyState) => void;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
 
     return (
         <div
-            className={`message ${msg.type}${inCombat && !msg.isCombat ? ' combat-dim' : ''}${isRecent && (msg.timestamp > Date.now() - 300) ? ' recent-entry' : ''}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isComm ? ' is-comm' : ''}${inCombat && !msg.isCombat && !msg.isRoomName ? ' combat-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 300) ? ' recent-entry' : ''}`}
         >
             {msg.type === 'user' ? (
                 <span>{msg.textRaw}</span>
             ) : msg.type === 'prompt' ? (
                 <span>{msg.textRaw}</span>
-            ) : msg.isComm ? (
-                isRecent ? (
-                    <TypewriterText
-                        html={content}
-                        speed={2}
-                    />
-                ) : (
-                    <div className="message-content comm-text" dangerouslySetInnerHTML={{ __html: content }} />
-                )
             ) : msg.type === 'shop-item' && msg.shopItem ? (
                 <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
             ) : msg.type === 'practice-skill' && msg.practiceSkill ? (
@@ -63,21 +52,16 @@ const MessageItem = React.memo(({
             ) : (
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
-            
-            {msg.commSender && (
-                <button 
+            {msg.replyCommand && (
+                <button
                     className="reply-btn"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setParley({
-                            active: true,
-                            command: msg.commChannel || 'tell',
-                            target: msg.commSender || null
-                        });
+                    title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
+                    onClick={() => {
+                        const directed = msg.replyCommand === 'tell' || msg.replyCommand === 'whisper';
+                        setParley({ active: true, command: msg.replyCommand!, target: directed ? (msg.replyTarget ?? null) : null });
                     }}
-                    title={`Reply to ${msg.commSender}`}
                 >
-                    <Reply size={14} />
+                    ↩
                 </button>
             )}
         </div>
@@ -92,7 +76,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, viewport, executeCommand, triggerHaptic, setParley } = useBaseGame();
+    const { inCombat, viewport, executeCommand, setParley } = useBaseGame();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;

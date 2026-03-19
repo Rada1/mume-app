@@ -167,7 +167,7 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
                     {activeTab === 'group' ? (
                         <div style={{ padding: '8px 0' }}>
                             {groupMembers.length > 0 ? (
-                                groupMembers.map(m => <MemberRow key={m.id} member={m} />)
+                                groupMembers.map((m, idx) => <MemberRow key={m.id} member={m} index={idx} />)
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '40px', opacity: 0.3 }}>
                                     <Users size={32} style={{ marginBottom: '10px' }} />

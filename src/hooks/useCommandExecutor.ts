@@ -77,7 +77,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             const rawTarget = setTargetMatch[3] || setTargetMatch[2] || setTargetMatch[1];
             if (rawTarget) {
                 const nounTarget = extractNoun(rawTarget.trim());
-                setTarget(nounTarget); addMessage('system', `Target set to: ${nounTarget}`);
+                setTarget(nounTarget);
                 return;
             }
         }
@@ -233,14 +233,14 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         }
 
         if (lowerCmd === 'inventory' || lowerCmd === 'inv' || lowerCmd === 'i') {
-            isWaitingForInv.current = true; captureStage.current = 'none'; setInventoryLines([]);
+            isWaitingForInv.current = true; captureStage.current = 'none';
         } else if (lowerCmd === 'stat' || lowerCmd === 'st' || lowerCmd === 'status' || lowerCmd === 'score' || lowerCmd === 'sc' || lowerCmd === 'at') {
             isWaitingForStats.current = true; captureStage.current = 'none'; setStatsLines([]);
         } else if (lowerCmd === 'info' || lowerCmd === 'i') {
             // Also reset CharacterInfo implicitly if needed or just let parser handle it
             // No specific flag for info as parser looks for "You are a..."
         } else if (lowerCmd === 'eq' || lowerCmd === 'equipment') {
-            isWaitingForEq.current = true; captureStage.current = 'none'; setEqLines([]);
+            isWaitingForEq.current = true; captureStage.current = 'none';
         } else if (lowerCmd === 'practice' || lowerCmd === 'prac') {
             captureStage.current = 'practice';
         }

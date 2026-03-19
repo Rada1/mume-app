@@ -29,6 +29,7 @@ export interface GmcpHandlers {
     onGroupSet?: (data: any) => void;
     onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
     onRoomCharsCombat?: (data: any[]) => void;
+    onDisconnect?: () => void;
 }
 
 export class GmcpDecoder {
@@ -70,14 +71,18 @@ export class GmcpDecoder {
             this.handleCharStatus(json);
             if (pkgLower === 'char.info' || pkgLower === 'char.statusvars') this.handleCharInfo(json);
         } else if (pkgLower === 'group' || pkgLower === 'group.add') {
-            this.handleSimpleJson(json, handlers.onGroupAdd);
+            // MUME sends 'Group' with either an array (full list) or single object (one member)
+            this.handleGroupPacket(pkgLower, json);
             this.handleGroup(json);
         } else if (pkgLower === 'group.update') {
+            console.log('[GMCP Group.Update RAW]', json);
             this.handleSimpleJson(json, handlers.onGroupUpdate);
             this.handleGroup(json);
         } else if (pkgLower === 'group.remove') {
+            console.log('[GMCP Group.Remove RAW]', json);
             this.handleSimpleJson(json, handlers.onGroupRemove);
         } else if (pkgLower === 'group.set') {
+            console.log('[GMCP Group.Set RAW]', json);
             this.handleSimpleJson(json, handlers.onGroupSet);
             this.handleGroup(json);
         } else if (pkgLower.startsWith('group.')) {
@@ -105,6 +110,44 @@ export class GmcpDecoder {
             }
         } catch (e) {
             console.error('[GMCP] Parse error in Comm.Channel:', e, json);
+        }
+    }
+
+    /**
+     * Routes Group / Group.Add packets correctly.
+     * MUME sends bare 'Group' with the FULL member array — not individual adds.
+     * If the payload is an array, treat it as a set (full player list).
+     * If it's a single object, treat it as an add.
+     */
+    private handleGroupPacket(pkgLower: string, json: string) {
+        try {
+            const data = JSON.parse(json);
+            console.log('[GMCP Group RAW]', pkgLower, JSON.stringify(data));
+
+            if (Array.isArray(data)) {
+                // Full group list — route to onGroupSet
+                if (this.handlers.onGroupSet) {
+                    console.log('[GMCP Group] Routing array as GroupSet, members:', data.length, 'fields:', data[0] ? Object.keys(data[0]) : []);
+                    this.handlers.onGroupSet(data);
+                }
+            } else if (data && typeof data === 'object') {
+                if (Array.isArray(data.members)) {
+                    // Wrapped { members: [...] } format
+                    console.log('[GMCP Group] Routing wrapped members array as GroupSet');
+                    if (this.handlers.onGroupSet) this.handlers.onGroupSet(data.members);
+                } else {
+                    // Single member object — add/update
+                    console.log('[GMCP Group] Routing object as GroupAdd, fields:', Object.keys(data));
+                    if (pkgLower === 'group.add') {
+                        if (this.handlers.onGroupAdd) this.handlers.onGroupAdd(data);
+                    } else {
+                        // Bare 'Group' with a single object — treat as set with one member
+                        if (this.handlers.onGroupSet) this.handlers.onGroupSet([data]);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('[GMCP] Parse error in handleGroupPacket:', e, json);
         }
     }
 

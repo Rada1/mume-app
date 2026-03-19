@@ -7,7 +7,7 @@ interface StandardMenuProps {
     popoverState: PopoverState;
     buttons: CustomButton[];
     availableSets: string[];
-    setPopoverState: (val: PopoverState | null) => void;
+    setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
     setButtons: React.Dispatch<React.SetStateAction<CustomButton[]>>;
     handleButtonClick: (button: CustomButton, e: any, context?: string, isContainer?: boolean, parentNoun?: string) => void;
     setTarget: (target: string | null) => void;
@@ -48,18 +48,20 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         }
     };
 
-    const renderButton = (button: CustomButton) => {
+    const renderButton = (button: CustomButton, forceIndent: boolean = false) => {
         const isFav = favorites.includes(button.command);
+        // Indent if it's a subcategory button (one of the specific NPC types) being mixed with main NPC actions
+        const isSubButton = forceIndent || (NPC_SUBCATEGORIES.includes(popoverState.setId) && button.setId === popoverState.setId);
+        
         return (
             <div
                 key={button.id}
-                className="popover-item"
+                className={`popover-item ${isSubButton ? 'is-sub-item' : ''}`}
                 data-menu-item="true"
                 data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' ? "true" : "false"}
                 onPointerDown={(e) => { e.stopPropagation(); }}
                 onClick={(e) => {
                     // Prevent button action if clicking the star
-                    const target = e.target as any;
                     if (popoverState.assignSourceId) {
                         const isExecute = popoverState.executeAndAssign;
                         const dir = popoverState.assignSwipeDir;
@@ -77,9 +79,17 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun);
                     }
                 }}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'space-between',
+                    paddingLeft: isSubButton ? '32px' : '16px' // Indent sub-actions
+                }}
             >
-                <span style={{ pointerEvents: 'none' }}>{button.label}</span>
+                <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
+                    {isSubButton && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
+                    {button.label}
+                </span>
                 <div 
                     className={`favorite-star ${isFav ? 'active' : ''}`}
                     onClick={(e) => toggleFavorite(e, button.command)}
@@ -206,7 +216,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
             {isTargetable && (
                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => {
                     setTarget(popoverState.context || null); setPopoverState(null);
-                    addMessage('system', `Target set to: ${popoverState.context}`);
                 }}>Set as Target</div>
             )}
 
@@ -245,26 +254,22 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     {favoritedButtons.length > 0 && (
                         <>
                             <div style={{ padding: '4px 8px', fontSize: '0.65rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'var(--accent)' }}>★ Favorites</div>
-                            {favoritedButtons.map(renderButton)}
+                            {favoritedButtons.map(b => renderButton(b))}
                             <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', margin: '4px 0' }} />
                         </>
                     )}
 
-                    {regularButtons.map(renderButton)}
+                    {regularButtons.map(b => renderButton(b))}
 
                     {(() => {
-                        const isInventoryOrEq = ['inventorylist', 'equipmentlist'].includes(popoverState.setId);
+                        const isContainerContext = ['inventorylist', 'equipmentlist'].includes(popoverState.setId) || popoverState.setId.startsWith('inline-');
                         const context = (popoverState.context || '');
-                        const isContainer = popoverState.isContainer || isItemContainer(context);
+                        const isContainer = popoverState.isContainer || isItemContainer(context) || popoverState.setId === 'inline-containers';
 
-                        if (isInventoryOrEq && isContainer) {
+                        if (isContainerContext && isContainer) {
                             const isQuiver = /quiver/i.test(context);
                             const containerActions = [
                                 { label: 'Look In', cmd: 'look in %n' },
-                                { label: 'Get Target', cmd: 'get target %n' },
-                                { label: 'Put Target', cmd: 'put target %n' },
-                                { label: 'Get All', cmd: 'get all %n' },
-                                { label: 'Put All', cmd: 'put all %n' },
                                 { label: 'Empty', cmd: 'empty %n' }
                             ];
                             if (isQuiver) containerActions.splice(1, 0, { label: 'Get Arrow', cmd: 'get arrow %n' });
@@ -276,20 +281,19 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                         <div
                                             key={act.label}
                                             className="popover-item"
+                                            data-menu-item="true"
+                                            data-is-menu={act.label === 'Look In' ? 'true' : undefined}
                                             style={{ color: 'var(--accent)' }}
                                             onPointerDown={(e) => { e.stopPropagation(); }}
                                             onClick={(e) => {
                                                 if (act.label === 'Look In') {
-                                                    // Specialized Container Submenu flow
-                                                    // @ts-ignore - captureStage added to deps, but we can access it via ref if we pass it, 
-                                                    // but here we just need to trigger the sequence.
-                                                    // Actually we need to set captureStage.current = 'container'
-                                                    // Since we don't have direct access to captureStage ref here, 
-                                                    // we'll rely on handleButtonClick or a specific pattern.
-                                                    // Let's pass a special command prefix or rely on executeCommand.
-                                                    executeCommand(`look in ${popoverState.context}`, true, true, true);
-                                                    // We'll need a way to set the capture stage. 
-                                                    // Let's use a convention: commands starting with 'look in ' trigger it.
+                                                    // Send command silently, parser will populate containerItems
+                                                    executeCommand(`look in ${popoverState.context}`, true, true);
+                                                    // Switch popover to container view
+                                                    setPopoverState((prev: any) => {
+                                                        if (!prev) return null;
+                                                        return { ...prev, type: 'container', containerItems: [] };
+                                                    });
                                                 } else {
                                                     handleButtonClick({
                                                         id: `dynamic-${act.label}`,
@@ -407,6 +411,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     </>
                 );
             })()}
+
+
         </>
     );
 };

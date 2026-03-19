@@ -40,20 +40,6 @@ export function useMessageLog(
             ((textLower.includes('dodge') || textLower.includes('parry') || textLower.includes('flee')) && inCombatRef.current);
     }, [inCombatRef]);
 
-    const isCommunicationLine = useCallback((textLower: string): boolean => {
-        // Broad check for characteristic communication markers
-        if (!textLower.includes("'") && !textLower.includes('"')) {
-             // MUME gtell doesn't always have quotes in some contexts? 
-             // Actually, usually it does. But let's check for "gtell" anyway.
-             if (!textLower.includes('gtell')) return false;
-        }
-
-        return textLower.includes(' says ') || textLower.includes(' tells you ') || 
-               textLower.includes(' whispers to you ') || textLower.includes(' yells ') || 
-               textLower.includes(' shouts ') || textLower.includes(' narrates ') || 
-               textLower.includes(' chats ') || textLower.includes(' states ') ||
-               /^you (tell|say|whisper|yell|shout|narrate|chat|gtell)\b/i.test(textLower);
-    }, []);
 
     const flushMessages = useCallback(() => {
         if (messageBufferRef.current.length === 0) return;
@@ -132,46 +118,21 @@ export function useMessageLog(
         practiceSkill?: any,
         practiceHeader?: any,
         skipBrevity: boolean = false,
-        commSender?: string,
-        commChannel?: string
+        replyTarget?: string,
+        replyCommand?: string
     ) => {
         const textOnly = precalculated?.textOnly || text.replace(/\x1b\[[0-9;]*m/g, '').trim();
         const textLower = precalculated?.lower || textOnly.toLowerCase();
 
         const isCombat = combatOverride ?? (type === 'game' ? isCombatLine(textLower) : false);
-        
-        // --- Communication Extraction Fallback ---
-        let finalCommSender = commSender;
-        let finalCommChannel = commChannel;
+        const combatSide = isCombat
+            ? ((textLower.startsWith('you ') || textLower.startsWith('your ')) ? 'player' : 'opponent')
+            : undefined;
 
-        if (!finalCommSender && type === 'game' && isCommunicationLine(textLower)) {
-            // Regex to extract sender and verb/channel from MUME patterns
-            // Patterns: "Someone says, '...'", "A secretary says, '...'", "Rogoring tells you, '...'"
-            const commMatch = textOnly.match(/^((?:A|An|The|Some)?\s*([\w\s,-]+?))\s+(says|tells you|whispers to you|yells|shouts|narrates|chats|states|gtells)\b[,]?\s*['"](.*)['"]\.?$/i);
-            
-            if (commMatch) {
-                const noun = commMatch[2].trim();
-                const verb = commMatch[3].toLowerCase();
-                
-                if (noun.toLowerCase() !== 'you') {
-                    finalCommSender = noun;
-                    
-                    if (verb.includes('say') || verb.includes('state')) finalCommChannel = 'say'; 
-                    else if (verb.includes('tell') || verb.includes('whisper')) finalCommChannel = 'tell';
-                    else if (verb.includes('narrate')) finalCommChannel = 'narrate';
-                    else if (verb.includes('chat')) finalCommChannel = 'chat';
-                    else if (verb.includes('yell')) finalCommChannel = 'yell';
-                    else if (verb.includes('shout')) finalCommChannel = 'shout';
-                    else if (verb.includes('gtell')) finalCommChannel = 'gtell';
+        const isComm = type === 'comm' || !!replyCommand;
 
-                    console.log(`[MessageLog] Regex Match! Sender: ${finalCommSender}, Chan: ${finalCommChannel}, Msg: ${textOnly}`);
-                }
-            }
-        }
-
-        const isComm = type === 'game' && (isCommunicationLine(textLower) || !!finalCommSender);
-
-        const robustRoomAnsi = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[01];3[26]m/.test(text);
+        const robustRoomAnsi = /^\s*(?:\x1b\[[0-9;]*m)*\x1b\[[0-9;]*3[0-7]m/.test(text) &&
+            textOnly.length < 80 && !textOnly.includes(' - ');
         const curRoom = roomContext.roomName;
         const isActuallyRoomName = isRoomName || robustRoomAnsi || (curRoom && (
             textOnly === curRoom ||
@@ -212,15 +173,17 @@ export function useMessageLog(
         let stackId = '';
         let subject = '', actionText = '', direction = '';
 
-        const arriveMatch = textOnly.match(ARRIVE_REGEX);
-        const leaveMatch = textOnly.match(LEAVE_REGEX);
-        const hereMatch = textOnly.match(HERE_REGEX);
-        const npcMatch = textOnly.match(NPC_LINE_REGEX);
+        if (isMobileBrevityMode) {
+            const arriveMatch = textOnly.match(ARRIVE_REGEX);
+            const leaveMatch = textOnly.match(LEAVE_REGEX);
+            const hereMatch = textOnly.match(HERE_REGEX);
+            const npcMatch = textOnly.match(NPC_LINE_REGEX);
 
-        if (arriveMatch) { subject = arriveMatch[1]; actionText = arriveMatch[2]; direction = arriveMatch[4]; stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
-        else if (leaveMatch) { subject = leaveMatch[1]; actionText = 'leaves'; direction = leaveMatch[3]; stackId = `leave:${subject.toLowerCase()}:${direction.toLowerCase()}`; }
-        else if (hereMatch) { subject = hereMatch[1]; actionText = hereMatch[2]; stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`; }
-        else if (npcMatch) { subject = npcMatch[1]; actionText = npcMatch[2]; direction = npcMatch[3]; stackId = `npc:${textOnly.toLowerCase()}`; }
+            if (arriveMatch) { subject = arriveMatch[1]; actionText = arriveMatch[2]; direction = arriveMatch[4]; stackId = `arrive:${subject.toLowerCase()}:${actionText.toLowerCase()}:${direction.toLowerCase()}`; }
+            else if (leaveMatch) { subject = leaveMatch[1]; actionText = 'leaves'; direction = leaveMatch[3]; stackId = `leave:${subject.toLowerCase()}:${direction.toLowerCase()}`; }
+            else if (hereMatch) { subject = hereMatch[1]; actionText = hereMatch[2]; stackId = `here:${subject.toLowerCase()}:${actionText.toLowerCase()}`; }
+            else if (npcMatch) { subject = npcMatch[1]; actionText = npcMatch[2]; direction = npcMatch[3]; stackId = `npc:${textOnly.toLowerCase()}`; }
+        }
 
         const lastMsg = lastMessageRef.current;
         if (stackId && lastMsg && lastMsg.stackId === stackId && lastMsg.type === type && !isActuallyRoomName) {
@@ -248,7 +211,7 @@ export function useMessageLog(
         let html = ansiConvert.toHtml(text);
         if (textLower.includes('strange incantations') || textLower.includes('utters the words')) html = `<span class="spell-incant">${html}</span>`;
 
-        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader, commSender: finalCommSender, commChannel: finalCommChannel };
+        const msg: Message = { id: mid || Math.random().toString(36).substring(7), html, textRaw: text, type, timestamp: Date.now(), isCombat, combatSide, dimmedInCombat, stackId: stackId || undefined, stackCount: 1, isComm, replyTarget, replyCommand, isRoomName: isActuallyRoomName, shopItem, practiceSkill, practiceHeader };
         
         if (isCombat) {
             // Haptic feedback for combat
@@ -271,7 +234,7 @@ export function useMessageLog(
             // Batch at ~20fps (50ms) to reduce React render thrashing on the main thread
             flushTimeoutRef.current = setTimeout(flushMessages, 50);
         }
-    }, [isCombatLine, isCommunicationLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
+    }, [isCombatLine, inCombatRef, setMessages, flushMessages, isMobileBrevityMode, roomContext, flushRoomBuffer]);
 
-    return { messages, setMessages, addMessage, flushMessages, isCombatLine, isCommunicationLine };
+    return { messages, setMessages, addMessage, flushMessages, isCombatLine };
 }

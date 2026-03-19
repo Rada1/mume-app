@@ -13,11 +13,18 @@ export const useSoundSystem = () => {
     }, []);
 
     const playSound = useCallback((buffer: AudioBuffer) => {
-        if (audioCtxRef.current) {
-            const source = audioCtxRef.current.createBufferSource();
+        if (!audioCtxRef.current) return;
+        const ctx = audioCtxRef.current;
+        const doPlay = () => {
+            const source = ctx.createBufferSource();
             source.buffer = buffer;
-            source.connect(audioCtxRef.current.destination);
+            source.connect(ctx.destination);
             source.start(0);
+        };
+        if (ctx.state === 'suspended') {
+            ctx.resume().then(doPlay).catch(() => {});
+        } else {
+            doPlay();
         }
     }, []);
 

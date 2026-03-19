@@ -45,7 +45,8 @@ export const MendingFooter: React.FC<MendingFooterProps> = ({
                     borderRadius: '8px',
                     background: 'rgba(255,255,255,0.05)',
                     border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#fff'
+                    color: '#fff',
+                    fontSize: 'var(--dynamic-log-size, 16px)'
                 }}
             >
                 Cancel
@@ -85,6 +86,7 @@ export const MendingFooter: React.FC<MendingFooterProps> = ({
                     border: 'none',
                     color: selectedItems.size > 0 ? '#000' : 'rgba(255,255,255,0.2)',
                     fontWeight: 'bold',
+                    fontSize: 'var(--dynamic-log-size, 16px)',
                     opacity: selectedItems.size > 0 ? 1 : 0.5
                 }}
             >
