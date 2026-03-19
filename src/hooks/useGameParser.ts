@@ -211,7 +211,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             (captureStage as any).current = 'where'; setWhereList([]);
             if (deps.isPlayersOpen) isSilentCapture.current = 1;
         }
-        else if ((contentLower.includes('in the ') || contentLower.includes('in your ') || contentLower.includes('in a ')) && contentLower.endsWith(':') && !contentLower.includes('equipped')) {
+        else if (((contentLower.includes('in the ') || contentLower.includes('in your ') || contentLower.includes('in a ')) && contentLower.endsWith(':') && !contentLower.includes('equipped')) || (contentLower.includes('corpse') && contentLower.includes('contains:'))) {
             if (captureStage.current === 'container') return;
             if (captureStage.current !== 'none') finalizeCapture();
             console.log('[Parser] ENTERING container stage via content:', content);
@@ -220,7 +220,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 isDrawerCapture.current = 1;
             } else {
                 isDrawerCapture.current = 0;
-                setPopoverState(prev => prev ? { ...prev, type: 'container', containerItems: [] } : null);
+                const containerName = content.replace(/^in (the|your|a)\s+/i, '').replace(/:$/, '').trim();
+                setPopoverState(prev => prev ? { ...prev, type: 'container', containerItems: [], context: containerName } : null);
             }
         }
         else if (isWaitingForStats.current && /ob:|armor:|mood:|str:|exp:|level:/i.test(lower)) {
@@ -435,7 +436,6 @@ export function useGameParser(deps: UseGameParserDeps) {
         // solely on GMCP or the prompt opponent pattern disappearing.
         if (inCombatRef.current) {
             if (/you (?:have )?sl(?:ay|ew|ain)\b/i.test(lower) ||
-                /you receive \d+ experience/i.test(lower) ||
                 /\bis dead!\s*r\.?i\.?p/i.test(lower) ||
                 /^you flee\b/i.test(lower) ||
                 /you stop fighting/i.test(lower)) {

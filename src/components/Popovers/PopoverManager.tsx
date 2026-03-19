@@ -169,10 +169,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     let themeColor = setSettings[popoverState.setId]?.themeColor;
     if (!themeColor) {
         if (popoverState.setId === 'inlineplayer') themeColor = 'rgb(150, 150, 255)';
-        else if (popoverState.setId === 'inlinenpc') themeColor = 'rgba(255, 100, 100, 0.9)';
-        else if (popoverState.setId === 'inline-guildmaster') themeColor = 'rgba(168, 85, 247, 0.9)';
-        else if (popoverState.setId === 'inline-default') themeColor = 'rgba(255, 255, 0, 0.9)';
-        else if (popoverState.setId?.startsWith('inline-')) themeColor = getGlowColorForCategory(popoverState.setId, inlineCategories || []) || undefined;
+        else if (popoverState.setId?.startsWith('inline-') || popoverState.setId === 'inlinenpc') {
+            themeColor = getGlowColorForCategory(popoverState.setId, inlineCategories || []) || undefined;
+        }
     }
 
     if (popoverState.menuDisplay === 'dial') {

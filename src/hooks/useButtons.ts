@@ -39,8 +39,8 @@ export const useButtons = (abilities: Record<string, number>, characterClass: st
         const masterButtons = (MASTER_SETTINGS as any).buttons || [];
         const defaultButtons = [...masterButtons, ...DEFAULT_BUTTONS.filter(d => !masterButtons.some((m: any) => m.id === d.id))];
 
-        // IDs of buttons that have been permanently removed from defaults and should be purged
-        const REMOVED_BUTTON_IDS = new Set(['kb-reply', 'trig-hungry', 'trig-thirsty']);
+        // IDs of buttons that have been permanently removed or replaced and should be purged
+        const REMOVED_BUTTON_IDS = new Set(['kb-reply', 'trig-hungry', 'trig-thirsty', 'cat-armour-wear', 'cat-armour-wield']);
 
         if (saved) {
             try {

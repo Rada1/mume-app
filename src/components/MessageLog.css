@@ -124,24 +124,20 @@
 .message-content .pc-highlighter,
 .message-content .npc-highlighter {
     opacity: 1 !important;
-    filter: brightness(1.5) saturate(1.4) !important; /* Intensified pop */
-    color: var(--glow-color, var(--ansi-bright-white)) !important; /* Force category color or bright white */
 }
 
 /* Ensure nested spans in buttons don't inherit dimness */
 .message-content .inline-btn span,
 .message-content .keyword-highlight span {
     opacity: 1 !important;
-    color: inherit !important;
 }
 
-/* If these are nested inside an ANSI span (or any other colored span), 
-   we force the bright color logic above. */
+/* Force category color or inheritance in nested contexts */
 .message-content span .inline-btn,
 .message-content span .keyword-highlight,
 .message-content span b,
 .message-content span strong {
-    color: var(--glow-color, inherit) !important;
+    color: var(--glow-color, inherit);
 }
 
 .keyword-highlight,
@@ -152,14 +148,8 @@
 }
 
 .message-content .inline-btn {
-    color: var(--glow-color, var(--ansi-bright-white)) !important;
-}
-
-/* Color-tagged objects (&355 / rgb(175,255,255)) are already a light cyan —
-   the brightness(1.5) boost above would clamp all channels to 255 (white).
-   Override to preserve the original object color. */
-.message-content .inline-btn.color-tagged-obj {
-    filter: none !important;
+    color: var(--glow-color, #4b6eef);
+    font-weight: bold !important;
 }
 
 /* Pin inline player buttons to exactly the same purple used in the who-list
@@ -170,11 +160,11 @@
 }
 
 .pc-highlighter {
-    color: #60a5fa !important; /* Bright Electric Blue */
+    color: var(--glow-color, #60a5fa); /* Bright Electric Blue */
 }
 
 .npc-highlighter {
-    color: #facc15 !important; /* Bright Gold/Yellow */
+    color: var(--glow-color, #ff87df); /* NPCs now use the specified pink */
 }
 
 .keyword-highlight.combat-verb {
@@ -187,19 +177,27 @@
 }
 
 .keyword-highlight.weapon-obj {
-    color: #a5b4fc !important; /* Indigo/Metallic */
+    color: #4b6eef !important;
+    font-weight: bold !important;
+    --glow-color: #4b6eef;
 }
 
 .keyword-highlight.armour-obj {
-    color: #cbd5e1 !important; /* Steel/Silver */
+    color: #4b6eef !important;
+    font-weight: bold !important;
+    --glow-color: #4b6eef;
 }
 
 .keyword-highlight.common-obj {
-    color: #94a3b8 !important; /* Slate */
+    color: #4b6eef !important;
+    font-weight: bold !important;
+    --glow-color: #4b6eef;
 }
 
 .keyword-highlight.herb-obj {
-    color: #4ade80 !important; /* Nature Green */
+    color: #4b6eef !important;
+    font-weight: bold !important;
+    --glow-color: #4b6eef;
 }
 
 .keyword-highlight.magic-word {
@@ -246,31 +244,42 @@
     }
 }
 
-/* Combat slide-in animations */
-@keyframes combat-slide-from-left {
-    from {
+/* Combat slide-in animations with slashing tilt */
+@keyframes combat-slash-from-left {
+    0% {
         opacity: 0;
-        transform: translateX(-48px);
+        transform: translateX(-80px) scale(1.05);
+        filter: blur(4px);
     }
-    to {
+    40% {
         opacity: 1;
-        transform: translateX(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
     }
 }
 
-@keyframes combat-slide-from-right {
-    from {
+@keyframes combat-slash-from-right {
+    0% {
         opacity: 0;
-        transform: translateX(48px);
+        transform: translateX(80px) scale(1.05);
+        filter: blur(4px);
     }
-    to {
+    40% {
         opacity: 1;
-        transform: translateX(0);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
     }
 }
+
 
 .message.combat-player.recent-entry {
-    animation: combat-slide-from-left 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: combat-slash-from-left 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .message.combat-opponent {
@@ -279,7 +288,14 @@
 }
 
 .message.combat-opponent.recent-entry {
-    animation: combat-slide-from-left 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    animation: combat-slash-from-right 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Basic grouping for combat message alignment if needed */
+.message.combat-player .message-content,
+.message.combat-opponent .message-content {
+    position: relative;
+    max-width: 100%;
 }
 
 .message.combat-dim {

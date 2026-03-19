@@ -37,7 +37,7 @@ const MessageItem = React.memo(({
 
     return (
         <div
-            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isComm ? ' is-comm' : ''}${inCombat && !msg.isCombat && !msg.isRoomName ? ' combat-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 300) ? ' recent-entry' : ''}`}
+            className={`message ${msg.type}${msg.isRoomName ? ' is-room-name' : ''}${msg.isComm ? ' is-comm' : ''}${inCombat && !msg.isCombat && !msg.isRoomName ? ' combat-dim' : ''}${msg.combatSide ? ` combat-${msg.combatSide}` : ''}${isRecent && (msg.timestamp > Date.now() - 600) ? ' recent-entry' : ''}`}
         >
             {msg.type === 'user' ? (
                 <span>{msg.textRaw}</span>

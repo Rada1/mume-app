@@ -1,9 +1,10 @@
 import React from 'react';
 import { CustomButton, MessageType, PopoverState, InlineCategoryConfig } from '../../types';
 import { isItemContainer } from '../../utils/gameUtils';
-import { DEFAULT_INLINE_CATEGORIES } from '../../utils/categorizationUtils';
+import { DEFAULT_INLINE_CATEGORIES, getCategoryForName } from '../../utils/categorizationUtils';
 
 interface StandardMenuProps {
+// ... existing props
     popoverState: PopoverState;
     buttons: CustomButton[];
     availableSets: string[];
@@ -37,7 +38,44 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
     const isSetManager = popoverState.setId === 'setmanager';
     const NPC_SUBCATEGORIES = ['inline-mounts', 'inline-shopkeeper', 'inline-innkeeper', 'inline-guildmaster'];
-    const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', 'inline-corpses', ...NPC_SUBCATEGORIES].includes(popoverState.setId);
+    
+    // Define Hierarchy for Objects
+    const OBJ_HIERARCHY: Record<string, string[]> = {
+        'inline-corpses': ['inline-containers', 'inline-object'],
+        'inline-containers': ['inline-object'],
+        'inline-weapon': ['inline-object'],
+        'inline-armour': ['inline-object'],
+        'inline-shield': ['inline-object'],
+        'inline-lantern': ['inline-lightsource', 'inline-object'],
+        'inline-lightsource': ['inline-object'],
+        'inline-food': ['inline-object'],
+        'inline-water': ['inline-object'],
+        'inline-default': ['inline-object'],
+        'inline-quiver': ['inline-containers', 'inline-object'],
+        'inline-obj-room': ['inline-object'],
+        'inline-obj-worn': ['inline-object'],
+        'inline-obj-char': ['inline-object'],
+        'inline-obj-shop': ['inline-object']
+    };
+
+    // Detect if this specific item name belongs to a category
+    const detectedCatId = popoverState.context ? getCategoryForName(popoverState.context, inlineCategories) : null;
+    
+    // Build actual hierarchy chain
+    const baseHierarchy = OBJ_HIERARCHY[popoverState.setId] || [];
+    const fullSetChain = [popoverState.setId, ...baseHierarchy];
+    
+    // If tagged as a sub-type (like weapon), ensure those buttons are also included
+    if (detectedCatId && !fullSetChain.includes(detectedCatId)) {
+        fullSetChain.splice(1, 0, detectedCatId);
+        // Also include its parents
+        const catParents = OBJ_HIERARCHY[detectedCatId] || [];
+        catParents.forEach(p => {
+            if (!fullSetChain.includes(p)) fullSetChain.push(p);
+        });
+    }
+
+    const isTargetable = ['selection', 'inventorylist', 'equipmentlist', 'inlinenpc', 'inlineplayer', 'inline-corpses', ...NPC_SUBCATEGORIES, ...fullSetChain].includes(popoverState.setId);
 
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
@@ -48,17 +86,16 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         }
     };
 
-    const renderButton = (button: CustomButton, forceIndent: boolean = false) => {
+    const renderButton = (button: CustomButton, depth: number = 0) => {
         const isFav = favorites.includes(button.command);
-        // Indent if it's a subcategory button (one of the specific NPC types) being mixed with main NPC actions
-        const isSubButton = forceIndent || (NPC_SUBCATEGORIES.includes(popoverState.setId) && button.setId === popoverState.setId);
+        const isSubButton = depth > 0 || (NPC_SUBCATEGORIES.includes(popoverState.setId) && button.setId === popoverState.setId);
         
         return (
             <div
                 key={button.id}
                 className={`popover-item ${isSubButton ? 'is-sub-item' : ''}`}
                 data-menu-item="true"
-                data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' ? "true" : "false"}
+                data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' || button.label === 'Look In' ? "true" : "false"}
                 onPointerDown={(e) => { e.stopPropagation(); }}
                 onClick={(e) => {
                     // Prevent button action if clicking the star
@@ -69,6 +106,14 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun);
                         setPopoverState(null);
                         addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
+                    } else if (button.label === 'Look In') {
+                        executeCommand(`look in ${popoverState.context}`, true, true);
+                        setPopoverState((prev: any) => {
+                            if (!prev) return null;
+                            return { ...prev, type: 'container', containerItems: [] };
+                        });
+                    } else if (button.label === 'Browse Shop...') {
+                        setPopoverState({ ...popoverState, type: 'shop-search' });
                     } else if (button.command === 'shop-mend') {
                         setIsMendingMode?.(true);
                         setMendingTarget?.(popoverState.context || null);
@@ -83,11 +128,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     display: 'flex', 
                     alignItems: 'center', 
                     justifyContent: 'space-between',
-                    paddingLeft: isSubButton ? '32px' : '16px' // Indent sub-actions
+                    paddingLeft: `${16 + (depth * 16)}px` // Dynamic indent
                 }}
             >
                 <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
-                    {isSubButton && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
+                    {depth > 0 && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
                     {button.label}
                 </span>
                 <div 
@@ -115,14 +160,13 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
         );
     };
 
-    const sectionButtons = buttons.filter(b => {
-        if (b.setId === popoverState.setId) return true;
-        if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'inlinenpc') return true;
+    const favoritedButtons = buttons.filter(b => {
+        if (fullSetChain.includes(b.setId)) return favorites.includes(b.command);
+        if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'inlinenpc') return favorites.includes(b.command);
         return false;
     });
 
-    const favoritedButtons = sectionButtons.filter(b => favorites.includes(b.command));
-    const regularButtons = sectionButtons.filter(b => !favorites.includes(b.command));
+    const isObjectSet = popoverState.setId.startsWith('inline-') && popoverState.setId !== 'inlineplayer' && popoverState.setId !== 'inlinenpc';
 
     return (
         <>
@@ -173,7 +217,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                     padding: '6px', 
                                     fontSize: '0.7rem', 
                                     textAlign: 'center',
-                                    background: selectedCatId === cat.id ? 'var(--accent)' : (popoverState.setId === `inline-${cat.id}` ? 'rgba(255,255,255,0.1)' : 'transparent'),
+                                    background: selectedCatId === cat.id ? 'var(--accent)' : (detectedCatId === `inline-${cat.id}` ? 'rgba(255,255,255,0.1)' : 'transparent'),
                                     border: `1px solid ${cat.color || 'rgba(255,255,255,0.2)'}`,
                                     color: selectedCatId === cat.id ? '#000' : (cat.color || '#fff'),
                                     transition: 'all 0.1s ease'
@@ -190,11 +234,15 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                                         // 1. Remove this keyword from all other categories
                                         const next = prev.map(c => ({
                                             ...c,
-                                            keywords: c.keywords.filter(k => k.toLowerCase() !== keyword)
+                                            keywords: (c.keywords || []).filter(k => k.toLowerCase() !== keyword)
                                         }));
                                         
-                                        // 2. Add it to the selected category
-                                        return next.map(c => c.id === cat.id ? { ...c, keywords: [...c.keywords, keyword] } : c);
+                                        // 2. Add it to the selected category (ensure it exists in state first)
+                                        const exists = next.some(c => c.id === cat.id);
+                                        if (!exists) {
+                                            return [...next, { ...cat, keywords: [keyword] }];
+                                        }
+                                        return next.map(c => c.id === cat.id ? { ...c, keywords: [...(c.keywords || []), keyword] } : c);
                                     });
                                     
                                     addMessage('system', `Categorized '${popoverState.context}' as ${cat.id.toUpperCase()}`);
@@ -259,77 +307,45 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         </>
                     )}
 
-                    {regularButtons.map(b => renderButton(b))}
+                    {isObjectSet ? (
+                        // Render hierarchical object menu
+                        [...fullSetChain].reverse().map((setId, chainIdx) => {
+                            const setIdButtons = buttons.filter(b => b.setId === setId && !favorites.includes(b.command));
+                            if (setIdButtons.length === 0) return null;
+                            const levelName = setId.replace(/^inline-?/, '').toUpperCase();
+                            const depth = chainIdx;
+                            
+                            return (
+                                <React.Fragment key={setId}>
+                                    <div style={{ 
+                                        padding: '4px 8px', 
+                                        paddingLeft: `${8 + (depth * 16)}px`,
+                                        fontSize: '0.65rem', 
+                                        opacity: 0.4, 
+                                        textTransform: 'uppercase', 
+                                        letterSpacing: '1px', 
+                                        marginTop: chainIdx > 0 ? '8px' : '0',
+                                        borderBottom: '1px solid rgba(255,255,255,0.05)'
+                                    }}>
+                                        {levelName} Actions
+                                    </div>
+                                    {setIdButtons.map(b => renderButton(b, depth))}
+                                </React.Fragment>
+                            );
+                        })
+                    ) : (
+                        // Render flat NPC/Main menu
+                        buttons.filter(b => {
+                            if (b.setId === popoverState.setId) return !favorites.includes(b.command);
+                            if (NPC_SUBCATEGORIES.includes(popoverState.setId) && b.setId === 'inlinenpc') return !favorites.includes(b.command);
+                            return false;
+                        }).map(b => renderButton(b))
+                    )}
 
                     {(() => {
-                        const isContainerContext = ['inventorylist', 'equipmentlist'].includes(popoverState.setId) || popoverState.setId.startsWith('inline-');
-                        const context = (popoverState.context || '');
-                        const isContainer = popoverState.isContainer || isItemContainer(context) || popoverState.setId === 'inline-containers';
-
-                        if (isContainerContext && isContainer) {
-                            const isQuiver = /quiver/i.test(context);
-                            const containerActions = [
-                                { label: 'Look In', cmd: 'look in %n' },
-                                { label: 'Empty', cmd: 'empty %n' }
-                            ];
-                            if (isQuiver) containerActions.splice(1, 0, { label: 'Get Arrow', cmd: 'get arrow %n' });
-
-                            return (
-                                <>
-                                    <div style={{ padding: '4px 8px', fontSize: '0.7rem', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px', borderTop: '1px solid var(--border-color, rgba(255,255,255,0.05))', marginTop: '4px' }}>Container</div>
-                                    {containerActions.map(act => (
-                                        <div
-                                            key={act.label}
-                                            className="popover-item"
-                                            data-menu-item="true"
-                                            data-is-menu={act.label === 'Look In' ? 'true' : undefined}
-                                            style={{ color: 'var(--accent)' }}
-                                            onPointerDown={(e) => { e.stopPropagation(); }}
-                                            onClick={(e) => {
-                                                if (act.label === 'Look In') {
-                                                    // Send command silently, parser will populate containerItems
-                                                    executeCommand(`look in ${popoverState.context}`, true, true);
-                                                    // Switch popover to container view
-                                                    setPopoverState((prev: any) => {
-                                                        if (!prev) return null;
-                                                        return { ...prev, type: 'container', containerItems: [] };
-                                                    });
-                                                } else {
-                                                    handleButtonClick({
-                                                        id: `dynamic-${act.label}`,
-                                                        command: act.cmd,
-                                                        label: act.label,
-                                                        actionType: 'command'
-                                                    } as any, e, popoverState.context);
-                                                }
-                                            }}
-                                        >
-                                            {act.label}
-                                        </div>
-                                    ))}
-                                </>
-                            );
-                        }
-
-                        const isShopkeeper = popoverState.setId === 'inline-shopkeeper';
-                        if (isShopkeeper) {
-                            return (
-                                <div
-                                    className="popover-item"
-                                    data-menu-item="true"
-                                    data-is-menu="true"
-                                    style={{ color: 'var(--accent)', borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '4px' }}
-                                    onPointerDown={(e) => { e.stopPropagation(); }}
-                                    onClick={() => setPopoverState({ ...popoverState, type: 'shop-search' })}
-                                >
-                                    Browse Shop...
-                                </div>
-                            );
-                        }
-
                         return null;
                     })()}
-                    {sectionButtons.length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
+                    {buttons.filter(b => fullSetChain.includes(b.setId)).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
                 </>
             )}
 

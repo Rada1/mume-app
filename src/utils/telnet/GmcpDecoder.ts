@@ -236,12 +236,6 @@ export class GmcpDecoder {
         if (pos !== undefined) {
             const p = pos.toLowerCase();
             this.charVitalsState.position = p;
-            // If position explicitly becomes non-fighting, clear stale opponent cache so
-            // isFighting doesn't stay true due to a previously-seen opponent.
-            if (!p.includes('fighting')) {
-                this.charVitalsState.opponent = null;
-                if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(null);
-            }
             if (this.handlers.onPositionChange) this.handlers.onPositionChange(p);
         }
 
@@ -273,7 +267,7 @@ export class GmcpDecoder {
             if (isFighting) {
                 this.handlers.setInCombat(true);
             } else {
-                (this.handlers as any).setInCombat(false, true);
+                (this.handlers as any).setInCombat(false);
             }
         }
 

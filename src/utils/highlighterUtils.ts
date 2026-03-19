@@ -90,7 +90,7 @@ export const buildHighlighterCandidates = (
             candidates.push({
                 pattern: p,
                 priority: 5,
-                replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: rgb(150, 150, 255)">${m}</span>`,
+                replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: rgb(150, 150, 255); color: rgb(180, 180, 255)">${m}</span>`,
                 length: p.length
             });
         });
@@ -110,25 +110,25 @@ export const buildHighlighterCandidates = (
 
         patterns.forEach(p => {
             const category = getCategoryForName(originalName, inlineCategories);
-            const glowColor = category ? getGlowColorForCategory(category, inlineCategories) : 'rgba(255, 100, 100, 0.9)';
-            const command = category || 'inlinenpc';
+            const glowColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories);
+            const command = 'inlinenpc';
 
             candidates.push({
                 pattern: p,
                 priority: 5,
-                replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(originalName)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
+                replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(originalName)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${m}</span>`,
                 length: p.length
             });
         });
     });
 
-    // 4.5. Corpses
-    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(156, 163, 175, 0.9)';
+    // 4.5. Corpses (Recategorized as Objects)
+    const corpseGlowColor = getGlowColorForCategory('inline-corpses', inlineCategories) || 'rgba(75, 110, 239, 0.9)';
     ['corpse', 'corpses'].forEach(p => {
         candidates.push({
             pattern: p,
             priority: 5,
-            replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="corpse" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m}</span>`,
+            replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-corpse" data-mid="${mid}" data-cmd="inline-corpses" data-context="corpse" data-action="menu" data-menu-display="list" style="--glow-color: ${corpseGlowColor}">${m}</span>`,
             length: p.length
         });
     });
@@ -136,14 +136,14 @@ export const buildHighlighterCandidates = (
     // 5. Items (Room + Discovered)
     const allItems = Array.from(new Set([...roomItems, ...discoveredItems]));
     allItems.forEach(name => {
-        const category = getCategoryForName(name, inlineCategories) || 'inline-default';
-        const glowColor = getGlowColorForCategory(category, inlineCategories);
-        const command = category;
+        const category = getCategoryForName(name, inlineCategories);
+        const glowColor = getGlowColorForCategory(category || 'inline-object', inlineCategories);
+        const command = 'inline-object';
 
         candidates.push({
             pattern: name,
             priority: 5,
-            replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${esc(name)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
+            replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${esc(name)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${m}</span>`,
             length: name.length
         });
     });
@@ -249,19 +249,28 @@ const decodeHtmlEntities = (s: string) =>
  * rewraps them as inline-btn elements with context-appropriate commands.
  * Must run before safeHighlight so highlightDepth protects these spans.
  */
-export const applyColorTaggedObjects = (html: string, mid: string, type?: MessageType): string => {
+export const applyColorTaggedObjects = (html: string, mid: string, inlineCategories: InlineCategoryConfig[], type?: MessageType): string => {
     if (!html.includes(OBJECT_SIGNAL_COLOR)) return html;
 
     let cmd: string;
     if (type === 'equipment-list') cmd = 'inline-obj-worn';
     else if (type === 'shop-item') cmd = 'inline-obj-shop';
     else if (type === 'inventory-list') cmd = 'inline-obj-char';
-    else cmd = 'inline-obj-room';
+    else cmd = 'inline-object';
 
     return html.replace(OBJECT_COLOR_RE, (_match, _open, innerHtml: string, _close) => {
-        const displayName = decodeHtmlEntities(innerHtml);
-        // Use hyphenated lowercase keywords for commands (e.g. "old black bottle" → "old-black-bottle")
-        const keyword = displayName.toLowerCase().replace(/\s+/g, '-');
-        return `<span class="inline-btn auto-obj color-tagged-obj" draggable="true" data-id="auto-obj-${esc(keyword)}" data-mid="${mid}" data-cmd="${cmd}" data-context="${esc(keyword)}" data-action="menu" data-menu-display="list" style="--glow-color: ${OBJECT_SIGNAL_COLOR}">${innerHtml}</span>`;
+        const displayName = decodeHtmlEntities(innerHtml).toLowerCase();
+        
+        const name = displayName.toLowerCase();
+        const keywordBase = name.replace(/^(a|an|some)\s+/, '').replace(/^pair\s+of\s+/, '');
+        const keyword = keywordBase.replace(/\s+/g, '-');
+        const finalContext = keyword;
+
+        // Maintain the physical context as the primary command set
+        const category = getCategoryForName(displayName, inlineCategories);
+        const finalCmd = cmd;
+        const glowColor = getGlowColorForCategory(category || finalCmd, inlineCategories);
+
+        return `<span class="inline-btn auto-obj color-tagged-obj" draggable="true" data-id="auto-obj-${esc(keyword)}" data-mid="${mid}" data-cmd="${finalCmd}" data-context="${esc(finalContext)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${innerHtml}</span>`;
     });
 };

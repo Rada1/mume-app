@@ -125,7 +125,7 @@ export const useMessageHighlighter = (
         const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
         // --- 0. Color-tagged object detection (runs first so highlightDepth protects these spans) ---
-        newHtml = applyColorTaggedObjects(newHtml, mid, type);
+        newHtml = applyColorTaggedObjects(newHtml, mid, inlineCategories, type);
 
         // --- 3. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {

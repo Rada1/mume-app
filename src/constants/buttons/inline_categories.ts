@@ -39,6 +39,28 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#3b82f6', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
+    {
+        id: 'cat-lightsource-cover',
+        label: 'Cover',
+        command: 'cover %n',
+        setId: 'inline-lightsource',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#475569', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-lightsource-uncover',
+        label: 'Uncover',
+        command: 'uncover %n',
+        setId: 'inline-lightsource',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#facc15', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
 
     // --- FOOD & WATER ---
     {
@@ -88,10 +110,32 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
     {
-        id: 'cat-corpse-examine',
-        label: 'Examine',
-        command: 'examine %n',
+        id: 'cat-corpse-butcher',
+        label: 'Butcher',
+        command: 'butcher %n',
         setId: 'inline-corpses',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#dc2626', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-corpse-scalp',
+        label: 'Scalp',
+        command: 'scalp %n',
+        setId: 'inline-corpses',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#991b1b', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-container-open',
+        label: 'Open',
+        command: 'open %n',
+        setId: 'inline-containers',
         actionType: 'command',
         display: 'floating',
         isVisible: true,
@@ -99,14 +143,36 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
     {
-        id: 'cat-corpse-gac',
-        label: 'GAC',
+        id: 'cat-container-close',
+        label: 'Close',
+        command: 'close %n',
+        setId: 'inline-containers',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#4b5563', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-container-get-all',
+        label: 'G/All',
         command: 'get all from %n',
-        setId: 'inline-corpses',
+        setId: 'inline-hidden', // Hide by default, or move to a specific set
         actionType: 'command',
         display: 'floating',
         isVisible: true,
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#f59e0b', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-container-look-in',
+        label: 'Look In',
+        command: 'look in %n',
+        setId: 'inline-containers',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#3b82f6', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
 
@@ -394,14 +460,14 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
 
     // --- ARMOUR & SHIELD ---
     {
-        id: 'cat-armour-wear',
-        label: 'Wear',
-        command: 'wear %n',
+        id: 'cat-armour-mend',
+        label: 'Mend',
+        command: 'remove %n; mend %n',
         setId: 'inline-armour',
         actionType: 'command',
         display: 'floating',
         isVisible: true,
-        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#64748b', shape: 'pill' },
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
     {
@@ -414,24 +480,48 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         isVisible: true,
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#f59e0b', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-obj-room-examine',
+        label: 'Examine',
+        command: 'examine %n',
+        setId: 'inline-object',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#3b82f6', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-obj-room-get',
+        label: 'Get',
+        command: 'get %n',
+        setId: 'inline-object',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#f59e0b', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     }
 ];
 
 export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
     'inline-lantern': ['cat-lantern-light', 'cat-lantern-snuff', 'cat-lantern-fill'],
+    'inline-lightsource': ['cat-lightsource-cover', 'cat-lightsource-uncover'],
     'inline-food': ['cat-food-eat', 'cat-food-get'],
     'inline-water': ['cat-water-drink'],
-    'inline-corpses': ['cat-corpse-examine', 'cat-corpse-gac', 'cat-corpse-drag'],
+    'inline-corpses': ['cat-corpse-butcher', 'cat-corpse-drag', 'cat-corpse-scalp'],
+    'inline-containers': ['cat-container-look-in', 'cat-container-open', 'cat-container-close'],
     'inline-shopkeeper': ['cat-shopkeeper-mend', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-innkeeper': ['cat-innkeeper-offer', 'cat-innkeeper-rent', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-mounts': ['cat-mount-ride', 'cat-mount-lead', 'cat-mount-saddle', 'cat-mount-unsaddle', 'cat-mount-unsaddle-all', 'innpc-consider', 'innpc-kill', 'innpc-ex', 'cat-mount-abandon'],
     'inline-shopitem': ['cat-shopitem-buy', 'cat-shopitem-show'],
     'inline-guildmaster': ['cat-guildmaster-practice', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-weapon': ['cat-weapon-wield', 'cat-item-get', 'cat-default-examine'],
-    'inline-armour': ['cat-armour-wear', 'cat-item-get', 'cat-default-examine'],
+    'inline-armour': ['cat-armour-mend'],
     'inline-shield': ['cat-shield-wear', 'cat-item-get', 'cat-default-examine'],
     'inline-default': ['cat-default-kill', 'cat-default-examine', 'innpc-consider'],
-    'inline-obj-room': ['cat-obj-room-get', 'cat-obj-room-examine'],
+    'inline-object': ['cat-obj-room-get', 'cat-obj-room-examine'],
     'inline-obj-char': ['cat-obj-char-drop', 'cat-obj-char-wear', 'cat-obj-char-wield', 'cat-obj-char-examine'],
     'inline-obj-worn': ['cat-obj-worn-remove', 'cat-obj-worn-examine'],
     'inline-obj-shop': ['cat-shopitem-buy', 'cat-shopitem-show']
