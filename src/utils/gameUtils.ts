@@ -253,6 +253,13 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
         return 'corpse';
     }
 
+    // Rule: specific container simplifications for easier interaction (e.g. leather-backpack -> backpack)
+    const containerTypes = ['backpack', 'bag', 'sack', 'pouch', 'satchel', 'quiver', 'chest', 'box', 'barrel', 'crate', 'keg', 'vial', 'flask', 'bottle', 'waterskin'];
+    const parts = clean.toLowerCase().split('-');
+    if (parts.length > 1 && containerTypes.includes(parts[parts.length - 1])) {
+        return parts[parts.length - 1];
+    }
+
     // Aggressively strip punctuation from entities (e.g. "Maelton, the village elder" -> "Maelton the village elder")
     clean = clean.replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ').replace(/\s+/g, ' ').trim();
     
