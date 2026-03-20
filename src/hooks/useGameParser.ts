@@ -1025,19 +1025,20 @@ export function useGameParser(deps: UseGameParserDeps) {
 
         // State updates for Who/Where lists must happen regardless of shouldShow (silent background captures)
         if (msgType === 'who-list') {
-            let clean = textOnly.trim();
-            let last = 0;
-            while (clean.length !== last) {
-                last = clean.length;
-                clean = clean.replace(/^\[.*?\]\s*/, '');
-                clean = clean.replace(/^<.*?>\s*/, '');
-                clean = clean.replace(/^\(.*?\)\s*/, '');
-                clean = clean.replace(/^\*.*?\*\s*/, '');
-                clean = clean.replace(/^\*+\s*/, '');
-            }
-            const candidate = clean.split(/\s+/)[0].replace(/[.,:;!]+$/, '');
-            if (candidate && candidate.length > 2 && /^[A-Z\u00C0-\u00DE]/.test(candidate)) {
-                setWhoList(prev => [...prev, candidate]);
+            const textToParse = textOnly.trim();
+            // Match name with potential leading prefixes like <C> or [A]
+            const nameMatch = textToParse.match(/((?:[<\[].*?[>\]]\s*)*)([A-Z\u00C0-\u00DE][a-zA-Z\u00C0-\u00FF]+)/);
+            if (nameMatch) {
+                const baseName = nameMatch[2];
+                // Convert the raw ANSI line to HTML; strip MUME XML markup tags (e.g. &lt;C&gt;, [AW])
+                const htmlDisplay = ansiConvert.toHtml(cleanLine).trim()
+                    .replace(/&lt;\/?[A-Za-z]+&gt;\s*/g, '')
+                    .replace(/\[[A-Za-z]+\]\s*/g, '');
+                const entry = `${htmlDisplay}|${baseName}`;
+                
+                if (baseName.length > 1) {
+                    setWhoList(prev => [...prev, entry]);
+                }
             }
         } else if (msgType === 'where-list') {
             const clean = textOnly.trim();

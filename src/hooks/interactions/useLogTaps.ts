@@ -8,7 +8,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
         executeCommand, input, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
         ui, setUI, setActiveDragData, activeDragData, heldButton, setHeldButton, parley, setParley,
-        isTrackpadModifierActive, setIsItemsDrawerOpen
+        isTrackpadModifierActive, setIsItemsDrawerOpen,
+        keywordOverrides, openKeywordEdit, lastCommandContextRef
     } = deps;
 
     const lastLogClickRef = useRef<number>(0);
@@ -25,9 +26,11 @@ export const useLogTaps = (deps: InteractionDeps) => {
     // Stable refs for modifier states so callbacks don't go stale between renders.
     const isTrackpadModifierActiveRef = useRef(isTrackpadModifierActive);
     const isJoystickTargetActiveRef = useRef(joystick.isTargetModifierActive);
+    const keywordOverridesRef = useRef(keywordOverrides);
 
     useEffect(() => { isTrackpadModifierActiveRef.current = isTrackpadModifierActive; }, [isTrackpadModifierActive]);
     useEffect(() => { isJoystickTargetActiveRef.current = joystick.isTargetModifierActive; }, [joystick.isTargetModifierActive]);
+    useEffect(() => { keywordOverridesRef.current = keywordOverrides; }, [keywordOverrides]);
 
     const handleLogDoubleClick = useCallback((e: React.MouseEvent) => {
         let selection = window.getSelection()?.toString().trim();
@@ -147,13 +150,15 @@ export const useLogTaps = (deps: InteractionDeps) => {
         // OR the joystick target modifier is active, apply that action to this target.
         const isLong = isJoystickTargetActiveRef.current;
         const rawContextStr = context || targetEl.innerText.trim();
-        const contextStr = sanitizeGameTarget(rawContextStr) || rawContextStr;
+        const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
+        const contextStr = sanitizeGameTarget(effectiveContextStr) || effectiveContextStr;
 
         if (heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
             const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
             if (sourceButton) {
                 const resolved = getButtonCommand(sourceButton, heldButton.dx || 0, heldButton.dy || 0, contextStr, undefined, heldButton.modifiers || [], joystick, target, isLong);
                 if (resolved?.cmd) {
+                    lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
                     executeCommand(resolved.cmd);
                     setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                     triggerHaptic(60);
@@ -170,6 +175,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     else finalCmd = `${finalCmd} ${contextStr}`;
                 }
 
+                lastCommandContextRef.current = { context: rawContextStr, displayText: targetEl.innerText.trim() };
                 executeCommand(finalCmd);
                 setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                 triggerHaptic(60);
@@ -229,6 +235,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     }, 10);
                 }
             } else {
+                if (context) lastCommandContextRef.current = { context, displayText: targetEl.innerText.trim() };
                 executeCommand(finalCmd, false, false, false, false, { shouldFocus: false });
             }
             triggerHaptic(40);
@@ -246,13 +253,15 @@ export const useLogTaps = (deps: InteractionDeps) => {
         // --- Multi-touch Button Combo ---
         const isLong = isJoystickTargetActiveRef.current;
         const rawContextStrDown = targetEl ? (targetEl.getAttribute('data-context') || targetEl.innerText.trim()) : '';
-        const contextStr = sanitizeGameTarget(rawContextStrDown) || rawContextStrDown;
+        const effectiveContextStrDown = rawContextStrDown && keywordOverridesRef.current[rawContextStrDown] ? keywordOverridesRef.current[rawContextStrDown] : rawContextStrDown;
+        const contextStr = sanitizeGameTarget(effectiveContextStrDown) || effectiveContextStrDown;
 
         if (targetEl && heldButton && !heldButton.didFire && !heldButton.id.startsWith('log-inline-')) {
             const sourceButton = btn.buttons.find(b => b.id === heldButton.id);
             if (sourceButton) {
                 const resolved = getButtonCommand(sourceButton, heldButton.dx || 0, heldButton.dy || 0, contextStr, undefined, heldButton.modifiers || [], joystick, target, isLong);
                 if (resolved?.cmd) {
+                    lastCommandContextRef.current = { context: rawContextStrDown, displayText: targetEl.innerText.trim() };
                     executeCommand(resolved.cmd);
                     setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                     triggerHaptic(60);
@@ -269,6 +278,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                     else finalCmd = `${finalCmd} ${contextStr}`;
                 }
 
+                lastCommandContextRef.current = { context: rawContextStrDown, displayText: targetEl.innerText.trim() };
                 executeCommand(finalCmd);
                 setHeldButton((prev: any) => prev ? { ...prev, didFire: true } : null);
                 triggerHaptic(60);

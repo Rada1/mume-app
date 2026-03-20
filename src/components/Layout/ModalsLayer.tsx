@@ -6,6 +6,7 @@ import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { OnboardingOverlay } from '../OnboardingOverlay';
+import { KeywordEditModal } from '../KeywordEditModal';
 
 interface ModalsLayerProps {
     isLoading: boolean;
@@ -85,7 +86,12 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         whoList,
         refreshLogHighlights,
         practice,
-        shop
+        shop,
+        openKeywordEdit,
+        keywordEditState, setKeywordEditState,
+        setKeywordOverride, removeKeywordOverride,
+        keywordOverrides,
+        keywordFailureBanner, setKeywordFailureBanner,
     } = useGame() as any;
 
     const { setTarget } = useVitals();
@@ -279,6 +285,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 refreshLogHighlights={refreshLogHighlights}
                 practice={practice}
                 shop={shop}
+                openKeywordEdit={openKeywordEdit}
             />
 
             <DrawerManager
@@ -306,6 +313,33 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
 
             {!hasSeenOnboarding && status === 'connected' && (
                 <OnboardingOverlay />
+            )}
+
+            {keywordEditState && (
+                <KeywordEditModal
+                    context={keywordEditState.context}
+                    displayText={keywordEditState.displayText}
+                    currentKeyword={keywordOverrides?.[keywordEditState.context] ?? keywordEditState.context}
+                    hasOverride={!!(keywordOverrides?.[keywordEditState.context])}
+                    onSave={(kw: string) => { setKeywordOverride(keywordEditState.context, kw); setKeywordEditState(null); }}
+                    onReset={() => { removeKeywordOverride(keywordEditState.context); setKeywordEditState(null); }}
+                    onClose={() => setKeywordEditState(null)}
+                />
+            )}
+
+            {keywordFailureBanner && (
+                <div
+                    style={{
+                        position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
+                        background: 'rgba(20,20,30,0.95)', border: '1px solid rgba(255,180,50,0.5)',
+                        color: 'rgba(255,200,80,1)', padding: '10px 18px', borderRadius: 10,
+                        fontSize: '0.85rem', zIndex: 50000, cursor: 'pointer', maxWidth: 320,
+                        textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.6)'
+                    }}
+                    onClick={() => { openKeywordEdit(keywordFailureBanner.context, keywordFailureBanner.displayText); setKeywordFailureBanner(null); }}
+                >
+                    ⚠ Keyword "{keywordFailureBanner.context}" not found — tap to fix
+                </div>
             )}
         </>
     );

@@ -1,6 +1,7 @@
 import React, { useCallback } from 'react';
 import { CustomButton, PopoverState, SwipeDirection } from '../../../types';
 import { getButtonCommand } from '../../../utils/buttonUtils';
+import { triggerSwipeFeedback } from '../../SwipeFeedbackOverlay';
 
 export interface UseButtonGesturesProps {
     button: CustomButton;
@@ -297,6 +298,13 @@ export const useButtonGestures = ({
                 executeCommand(previewCmd.cmd, false, false);
                 if (joystick.currentDir) joystick.setIsJoystickConsumed(true);
                 triggerHaptic(35);
+
+                if (previewCmd.isSwipe) {
+                    const angleRad = Math.atan2(dy, dx);
+                    const angleDeg = angleRad * (180 / Math.PI);
+                    triggerSwipeFeedback(e.clientX, e.clientY, angleDeg, button.style.borderColor || 'var(--accent)');
+                }
+
                 el.classList.remove('btn-glow-active'); void el.offsetWidth; el.classList.add('btn-glow-active');
             }
         } else {

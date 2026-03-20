@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Direction } from '../types';
+import { triggerSwipeFeedback } from '../components/SwipeFeedbackOverlay';
 
 export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits: string[] = []) => {
     const [joystickActive, setJoystickActive] = useState(false);
@@ -22,6 +23,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
     // Replaces isPrimary checks so non-primary pointers (e.g. second finger on trackpad
     // while an action button is held) work correctly for the button+trackpad combo.
     const activeJoystickPointerRef = useRef<number | null>(null);
+    const lastPointerPosRef = useRef<{ x: number, y: number } | null>(null);
 
     // Command Execution Ref
     const executeCommandRef = useRef<((cmd: string) => void) | null>(null);
@@ -64,6 +66,14 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
                 lastSentDirRef.current = currentLockedDir;
                 setIsJoystickConsumed(true);
                 triggerHaptic(10);
+
+                // --- Visual Feedback (Shower of Light) ---
+                if (lastPointerPosRef.current && joystickStartPos.current) {
+                    const dx = lastPointerPosRef.current.x - joystickStartPos.current.x;
+                    const dy = lastPointerPosRef.current.y - joystickStartPos.current.y;
+                    const angleDeg = Math.atan2(dy, dx) * (180 / Math.PI);
+                    triggerSwipeFeedback(lastPointerPosRef.current.x, lastPointerPosRef.current.y, angleDeg, 'var(--accent)');
+                }
 
                 // Dispatch center event to ensure map follows joystick
                 if (typeof window !== 'undefined') {
@@ -123,6 +133,7 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
         if (!joystickActive || !joystickStartPos.current) return null;
         const dx = e.clientX - joystickStartPos.current.x;
         const dy = e.clientY - joystickStartPos.current.y;
+        lastPointerPosRef.current = { x: e.clientX, y: e.clientY };
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         const angleRad = Math.atan2(dy, dx);
@@ -311,6 +322,11 @@ export const useJoystick = (triggerHaptic: (ms: number) => void, availableExits:
             if (dist >= threshold && initialDir) {
                 executeCommand(dirMap[initialDir] || initialDir);
                 lastSentDirRef.current = initialDir;
+                // Trigger feedback here
+                const angleRad = Math.atan2(dyOriginal, dxOriginal);
+                const angleDeg = angleRad * (180 / Math.PI);
+                triggerSwipeFeedback(e.clientX, e.clientY, angleDeg, 'var(--accent)');
+                
                 // Removed release haptic for move
                 setJoystickGlow(true);
                 setTimeout(() => setJoystickGlow(false), 300);

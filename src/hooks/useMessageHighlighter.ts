@@ -129,6 +129,11 @@ export const useMessageHighlighter = (
 
         // --- 3. Specialized List Highlighting (WHO/WHERE) ---
         if (type === 'who-list' || type === 'where-list') {
+            // Strip MUME XML-style markup tags that ansi-to-html encodes as HTML entities,
+            // causing them to render as visible literal text (e.g. &lt;C&gt; → "<C>").
+            // Also strip bracket-style markers like [AW] that appear as plain text.
+            newHtml = newHtml.replace(/&lt;\/?[A-Za-z]+&gt;\s*/g, '').replace(/\[[A-Za-z]+\]\s*/g, '');
+
             // ansi-to-html (escapeXML:true) encodes non-ASCII chars as &#xHH; — decode them so
             // names like Éorenel (encoded as &#xC9;orenel) are correctly identified.
             const textOnly = targetHtml

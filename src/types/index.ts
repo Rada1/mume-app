@@ -249,6 +249,7 @@ export interface PopoverManagerProps {
     refreshLogHighlights?: () => void;
     practice?: any;
     shop?: any;
+    openKeywordEdit?: (context: string, displayText: string) => void;
 }
 
 

@@ -404,18 +404,6 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
-    {
-        id: 'cat-npc-give',
-        label: 'Give %n to %p',
-        command: 'give %n %p',
-        setId: 'inlinenpc',
-        actionType: 'command',
-        display: 'floating',
-        isVisible: true,
-        style: { x: 0, y: 0, w: 100, h: 40, backgroundColor: '#4ade80', shape: 'pill' },
-        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
-    },
-
     // --- WEAPON ---
     {
         id: 'cat-weapon-wield',
@@ -560,7 +548,7 @@ export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
     'inline-shopkeeper': ['cat-shopkeeper-shop', 'cat-shopkeeper-mend', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-shopkeeper-drop': ['cat-shopkeeper-sell-drag', 'cat-shopkeeper-mend-drag'],
     'inline-innkeeper': ['cat-innkeeper-offer', 'cat-innkeeper-rent', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
-    'inlinenpc': ['cat-npc-give', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inlinenpc': ['innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-mounts': ['cat-mount-ride', 'cat-mount-lead', 'cat-mount-saddle', 'cat-mount-unsaddle', 'cat-mount-unsaddle-all', 'innpc-consider', 'innpc-kill', 'innpc-ex', 'cat-mount-abandon'],
     'inline-shopitem': ['cat-shopitem-buy', 'cat-shopitem-show'],
     'inline-guildmaster': ['cat-guildmaster-practice', 'innpc-consider', 'innpc-kill', 'innpc-ex'],

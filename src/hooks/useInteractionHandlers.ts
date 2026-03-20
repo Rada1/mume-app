@@ -54,6 +54,9 @@ export interface InteractionDeps {
     parley: import('../types').ParleyState;
     setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
     cardRef?: React.RefObject<HTMLDivElement>;
+    keywordOverrides: Record<string, string>;
+    openKeywordEdit: (context: string, displayText: string) => void;
+    lastCommandContextRef: React.MutableRefObject<{ context: string; displayText: string } | null>;
 }
 
 import { useButtonClicks } from './interactions/useButtonClicks';

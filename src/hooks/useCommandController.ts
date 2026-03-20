@@ -53,6 +53,7 @@ export interface CommandControllerDeps {
     actions: import('../types').GameAction[];
     setActions: (val: import('../types').GameAction[] | ((prev: import('../types').GameAction[]) => import('../types').GameAction[])) => void;
     setActiveDragData: (val: any) => void;
+    activeDragData: any;
     practice: any;
     heldButton: any;
     setHeldButton: (val: any) => void;
@@ -60,6 +61,9 @@ export interface CommandControllerDeps {
     setParley: React.Dispatch<React.SetStateAction<import('../types').ParleyState>>;
     isTrackpadModifierActive: boolean;
     shop: any;
+    keywordOverrides: Record<string, string>;
+    openKeywordEdit: (context: string, displayText: string) => void;
+    lastCommandContextRef: React.MutableRefObject<{ context: string; displayText: string } | null>;
 }
 
 export function useCommandController(deps: CommandControllerDeps) {
@@ -118,7 +122,10 @@ export function useCommandController(deps: CommandControllerDeps) {
     const { handleButtonClick, handleInputSwipe, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = useInteractionHandlers({
         ...deps, executeCommand, input, ui: deps.ui, parley: deps.parley, setParley: deps.setParley,
         isTrackpadModifierActive: deps.isTrackpadModifierActive,
-        setIsPlayersOpen: deps.setIsPlayersOpen
+        setIsPlayersOpen: deps.setIsPlayersOpen,
+        keywordOverrides: deps.keywordOverrides,
+        openKeywordEdit: deps.openKeywordEdit,
+        lastCommandContextRef: deps.lastCommandContextRef,
     });
 
     const handleSend = useCallback((e?: React.FormEvent) => {

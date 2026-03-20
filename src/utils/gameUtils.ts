@@ -11,26 +11,32 @@
  *   "a piece of bread"     → "bread"
  */
 export const extractMumeKeyword = (label: string): string => {
-    let name = label.replace(/\x1b\[[0-9;]*m/g, '').replace(/<[^>]*>/g, '').trim().toLowerCase();
+    // Strip ANSI, tags, parentheses, and brackets
+    let name = label.replace(/\x1b\[[0-9;]*m/g, '')
+                    .replace(/<[^>]*>/g, '')
+                    .replace(/\([^)]*\)/g, '')
+                    .replace(/\[[^\]]*\]/g, '')
+                    .trim().toLowerCase();
 
-    // Strip leading articles
-    name = name.replace(/^(a|an|the|some)\s+/, '');
+    // quantifiers that are never valid MUME keywords
+    const quantifiers = /^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion|of|a|an|the|some|several|many|various)$/i;
 
     // Handle "X of Y" patterns
     const ofMatch = name.match(/^(.+?)\s+of\s+(.+)$/);
     if (ofMatch) {
         const before = ofMatch[1].trim();
         const after  = ofMatch[2].trim();
+        
         // Compound quantifiers → keyword is what comes AFTER "of"
-        const isQuantifier = /^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)$/.test(before);
+        const isQuantifier = quantifiers.test(before);
         const source = isQuantifier ? after : before;
-        const words = source.split(/\s+/);
-        return words[words.length - 1];
+        const words = source.split(/\s+/).filter(w => !quantifiers.test(w));
+        return words[words.length - 1] || source.split(/\s+/).pop() || source;
     }
 
-    // No "of" pattern: the last word is the primary keyword
-    const words = name.split(/\s+/).filter(Boolean);
-    return words[words.length - 1] || name;
+    // No "of" pattern: filter out quantifiers and the last word is the primary keyword
+    const words = name.split(/\s+/).filter(w => !quantifiers.test(w));
+    return words[words.length - 1] || name.split(/\s+/).pop() || name;
 };
 
 /**
@@ -42,34 +48,10 @@ export const extractNoun = (text: string): string => {
     let clean = text.replace(/\x1b\[[0-9;]*m/g, '');
     // Remove tags and brackets
     clean = clean.replace(/<[^>]*>/g, '').replace(/\([^)]*\)/g, '').replace(/\[[^\]]*\]/g, '').trim();
-    clean = clean.replace(/[.,:;!]+$/, '');
+    clean = clean.replace(/[.,:;!]+$/, '').trim();
     
-    // Filter out articles, quantity words, and common descriptive adjectives
-    const filterRegex = /^(a|an|the|of|in|on|at|to|some|several|many|numerous|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|pair|pairs)$/i;
-    const adjs = ["huge", "awesome", "ugly", "strong", "pack", "tall", "short", "large", "small", "tiny", "fierce", "old", "young", "mean", "scary", "dirty", "clean", "bright", "dark", "heavy", "light", "metallic", "runic", "steel", "iron", "wooden", "leather", "black", "white", "red", "green", "blue", "yellow", "gray", "grey", "golden", "silver"];
-    
-    const words = clean.split(/[\s,.-]+/).filter(w => 
-        w.length > 1 && 
-        !filterRegex.test(w) &&
-        !adjs.includes(w.toLowerCase())
-    );
-    
-    if (words.length === 0) return '';
-    
-    // Join all remaining words with hyphens (e.g. "mother eagle" -> "mother-eagle")
-    let noun = words.join('-').toLowerCase().replace(/[.,:;!?"'()[\]{}<>*#~]/g, '');
-
-    // For items/objects, prefer the last word if it's a common core noun (like skin, bag, etc.)
-    // but keep multi-word for others (like mother-eagle)
-    if (words.length > 1) {
-        const lastWord = words[words.length - 1].toLowerCase();
-        const preferredKeywords = ['skin', 'backpack', 'pouch', 'sack', 'bag', 'flask', 'bottle', 'vial', 'quiver', 'belt', 'rations'];
-        if (preferredKeywords.includes(lastWord)) {
-            noun = lastWord;
-        } else if (noun === 'water-skin') {
-            noun = 'skin';
-        }
-    }
+    // Logic: Use the smart MUME keyword extractor
+    let noun = extractMumeKeyword(clean);
     
     // Words or suffixes that should NOT be singularized (plural-only in MUME)
     const exclusions = [
@@ -109,6 +91,7 @@ export const simplifyDescription = (text: string): string => {
 
     // Common descriptive prefixes to strip
     const adjs = ["huge", "awesome", "ugly", "strong", "pack", "tall", "short", "large", "small", "tiny", "fierce", "old", "young", "mean", "scary", "dirty", "clean", "bright", "dark", "heavy", "light", "metallic", "runic", "steel", "iron", "wooden", "leather", "black", "white", "red", "green", "blue", "yellow", "gray", "grey", "golden", "silver"];
+    const quantifiers = ["a", "an", "the", "some", "pair", "pairs", "set", "piece", "bundle", "pile", "handful", "bit", "slice", "loaf", "lump", "chunk", "portion", "of"];
     
     // Split into words, but look for the "core"
     // Usually, the first non-adjective or the thing before "in", "of", "with"
@@ -121,8 +104,8 @@ export const simplifyDescription = (text: string): string => {
         if (["in", "of", "with", "from", "at", "for", "on", "wearing", "carrying", "holding", "offering"].includes(word)) {
             break;
         }
-        // If it's not a common adjective, maybe it's the noun?
-        if (!adjs.includes(word) && !["and", "&"].includes(word)) {
+        // If it's not a common adjective or quantifier, maybe it's the noun?
+        if (!adjs.includes(word) && !quantifiers.includes(word) && !["and", "&"].includes(word)) {
             coreNoun = words[i];
             break;
         }
@@ -328,7 +311,9 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
     clean = clean.replace(/^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/i, '');
     clean = clean.replace(/^(a|an|the|some)\s+/i, '');
 
-    // Replace internal spaces with hyphens for multi-word targets (e.g. "mother eagle" -> "mother-eagle")
-    return clean.replace(/\s+/g, '-');
+    // Normalize internal spaces to a single space (e.g. "mother   eagle" -> "mother eagle")
+    // MUME handles multi-word targets with spaces fine if they are terminal, 
+    // but we use extractMumeKeyword/extractNoun to ensure single-word keywords for complex commands.
+    return clean.replace(/\s+/g, ' ');
 };
 

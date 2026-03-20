@@ -23,6 +23,7 @@ import { GameProvider, useGame, useUI, useVitals, useLog } from './context/GameC
 import { MapperProvider } from './context/MapperContext';
 import { SpatButtons } from './components/SpatButtons';
 import { useSpatButtons } from './hooks/useSpatButtons';
+import SwipeFeedbackOverlay from './components/SwipeFeedbackOverlay';
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
 
@@ -270,6 +271,7 @@ const MudClient = () => {
                     {heldButton.label || heldButton.baseCommand}
                 </div>
             )}
+            <SwipeFeedbackOverlay />
         </div>
     );
 };

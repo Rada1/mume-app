@@ -12,7 +12,7 @@ import { getCategoryForName, getGlowColorForCategory } from '../../utils/categor
 
 export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, teleportTargets, setTeleportTargets, roomPlayers, setSettings, inlineCategories, setInlineCategories, favorites, setFavorites, parley, setParley, whoList,
-    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights, practice, shop
+    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights, practice, shop, openKeywordEdit
 }) => {
 
     useLayoutEffect(() => {
@@ -271,6 +271,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     setMendingTarget={setMendingTarget}
                     refreshLogHighlights={refreshLogHighlights}
                     triggerHaptic={triggerHaptic}
+                    openKeywordEdit={openKeywordEdit}
                 />
             )}
         </div>

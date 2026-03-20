@@ -29,11 +29,12 @@ interface StandardMenuProps {
     setIsItemsDrawerOpen?: (open: boolean) => void;
     refreshLogHighlights?: () => void;
     triggerHaptic?: (ms: number) => void;
+    openKeywordEdit?: (context: string, displayText: string) => void;
 }
 
 export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
     popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, themeColor, favorites, setFavorites, parley, setParley, whoList, executeCommand, inlineCategories, setInlineCategories,
-    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights, triggerHaptic
+    isMendingMode, setIsMendingMode, setMendingTarget, setIsItemsDrawerOpen, refreshLogHighlights, triggerHaptic, openKeywordEdit
 }) => {
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(false);
     const [selectedCatId, setSelectedCatId] = React.useState<string | null>(null);
@@ -323,6 +324,22 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                         return null;
                     })()}
                     {buttons.filter(b => fullSetChain.includes(b.setId)).length === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'inline-shopkeeper' && <div className="popover-empty">No buttons in '{popoverState.setId}'</div>}
+
+                    {openKeywordEdit && isInlineMenu && popoverState.context && (
+                        <div
+                            className="popover-item"
+                            data-menu-item="true"
+                            onPointerDown={(e) => { e.stopPropagation(); }}
+                            style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }}
+                            onClick={() => {
+                                triggerHaptic?.(20);
+                                openKeywordEdit(popoverState.context!, popoverState.context!);
+                                setPopoverState(null);
+                            }}
+                        >
+                            ✏ Edit keyword "{popoverState.context}"
+                        </div>
+                    )}
                 </>
             )}
 
@@ -364,20 +381,34 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
 
 
             {popoverState.type === 'select-parley-target' && (() => {
-                const favTargets = whoList.filter(n => favorites.includes(`parley-tgt-${n}`));
-                const otherTargets = whoList.filter(n => !favorites.includes(`parley-tgt-${n}`));
-                const renderTarget = (name: string | null) => {
-                    const favKey = name ? `parley-tgt-${name}` : null;
+                const favTargets = whoList.filter(n => {
+                    const baseName = n.includes('|') ? n.split('|')[1] : n;
+                    return favorites.includes(`parley-tgt-${baseName}`);
+                });
+                const otherTargets = whoList.filter(n => {
+                    const baseName = n.includes('|') ? n.split('|')[1] : n;
+                    return !favorites.includes(`parley-tgt-${baseName}`);
+                });
+                
+                const renderTarget = (entry: string | null) => {
+                    const [htmlDisplay, baseName] = entry && entry.includes('|') ? entry.split('|') : [entry, entry];
+                    const favKey = baseName ? `parley-tgt-${baseName}` : null;
                     const isFav = favKey ? favorites.includes(favKey) : false;
-                    const isActive = parley.target === name;
-                    const label = name ?? '(No Target)';
+                    const isActive = parley.target === baseName;
+                    const label = baseName ?? '(No Target)';
+                    
                     return (
                         <div key={label} className="popover-item" data-menu-item="true"
-                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: name === null ? 0.6 : 1 }}
-                            onClick={() => { triggerHaptic?.(20); setParley({ ...parley, target: name }); setPopoverState(null); }}>
-                            <span style={{ pointerEvents: 'none' }}>
+                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: entry === null ? 0.6 : 1 }}
+                            onClick={() => { triggerHaptic?.(20); setParley({ ...parley, target: baseName }); setPopoverState(null); }}>
+                            <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
                                 {isActive && <span style={{ marginRight: 6, color: 'var(--accent)', fontSize: '0.9rem' }}>✓ </span>}
-                                {label}
+                                {entry === null ? label : (
+                                    <span 
+                                        style={{ fontFamily: 'monospace', whiteSpace: 'pre', fontSize: '0.85rem' }} 
+                                        dangerouslySetInnerHTML={{ __html: htmlDisplay! }} 
+                                    />
+                                )}
                             </span>
                             {favKey && (
                                 <div className={`favorite-star ${isFav ? 'active' : ''}`}

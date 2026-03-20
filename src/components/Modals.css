@@ -184,6 +184,12 @@ select.setting-input {
     z-index: 11000;
 }
 
+.swipe-feedback {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1;
+}
+
 .swipe-glow {
     position: absolute;
     width: 60px;
@@ -197,10 +203,54 @@ select.setting-input {
 
 .swipe-trail {
     position: absolute;
-    width: 100px;
-    height: 20px;
+    width: 60px;
+    height: 12px;
     background: linear-gradient(to right, var(--accent), transparent);
     transform-origin: left center;
     opacity: 0.6;
-    animation: swipe-trail-fade 0.4s ease-out forwards;
+    animation: swipe-trail-fade 0.5s ease-out forwards;
+}
+
+/* Shower of Light Particles */
+.swipe-particles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform: translate(-50%, -50%) rotate(calc(var(--angle) + 90deg));
+    pointer-events: none;
+}
+
+.swipe-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #fff, 0 0 12px var(--accent);
+    opacity: 0;
+    transform: translate(0, 0) scale(var(--p-scale));
+    animation: particle-shoot 0.6s cubic-bezier(0.2, 0.8, 0.4, 1.0) var(--p-delay) forwards;
+}
+
+@keyframes particle-shoot {
+    0% {
+        transform: rotate(var(--p-angle)) translateY(0) scale(var(--p-scale));
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(var(--p-angle)) translateY(calc(var(--p-dist) * -1)) scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes swipe-glow-expand {
+    0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0.9; }
+    100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+@keyframes swipe-trail-fade {
+    0% { transform: translate(0, -50%) rotate(var(--angle)) scaleX(0.5); opacity: 0.8; }
+    100% { transform: translate(30px, -50%) rotate(var(--angle)) scaleX(1.8); opacity: 0; }
 }

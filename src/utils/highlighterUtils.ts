@@ -135,13 +135,14 @@ export const buildHighlighterCandidates = (
                     const category = getCategoryForName(originalName, inlineCategories);
                     const glowColor = getGlowColorForCategory(category || 'inlinenpc', inlineCategories);
                     const command = 'inlinenpc';
+                    const context = extractMumeKeyword(originalName);
 
                     candidates.push({
                         pattern: p,
                         priority: 5,
                         replacer: (m, _match) => {
                             const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
-                            return `<span class="inline-btn auto-npc npc-highlighter${classExtra}" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(originalName)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
+                            return `<span class="inline-btn auto-npc npc-highlighter${classExtra}" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(context)}" data-category="${esc(category || '')}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
                         },
                         length: p.length
                     });

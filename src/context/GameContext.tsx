@@ -23,6 +23,7 @@ import { GameContextType, VitalsContextType, LogContextType, UIContextType } fro
 import { useGmcpHandlers } from '../hooks/useGmcpHandlers';
 import { useShopHandler } from '../hooks/useShopHandler';
 import { useGameProviderState } from './GameContext/state';
+import { useKeywordOverrides } from '../hooks/useKeywordOverrides';
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);
 export const VitalsContext = createContext<VitalsContextType | undefined>(undefined);
@@ -85,6 +86,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [settingsTab, setSettingsTab] = useState<'general' | 'sound' | 'actions' | 'help'>('general');
+
+    // --- Keyword Override System ---
+    const { overrides: keywordOverrides, setOverride: setKeywordOverride, removeOverride: removeKeywordOverride } = useKeywordOverrides();
+    const [keywordEditState, setKeywordEditState] = useState<{ context: string; displayText: string } | null>(null);
+    const [keywordFailureBanner, setKeywordFailureBanner] = useState<{ context: string; displayText: string } | null>(null);
+    const lastCommandContextRef = useRef<{ context: string; displayText: string } | null>(null);
+    const openKeywordEdit = useCallback((context: string, displayText: string) => {
+        setKeywordEditState({ context, displayText });
+    }, []);
     const [accentColor, setAccentColor] = usePersistentState('mud-accent-color', '#4a90e2');
     const [teleportTargets, setTeleportTargets] = usePersistentState<TeleportTarget[]>('mud-teleport-targets', []);
     const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
@@ -134,6 +144,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         roomContext
     );
     const addSystemMessage = useCallback((text: string) => addMessage('system', text, undefined, undefined, undefined, { textOnly: text, lower: text.toLowerCase() }, undefined, undefined, undefined, true), [addMessage]);
+
+    // Keyword failure detection: watch last message for MUME "not found" patterns
+    const FAILURE_RE = /\bi see no such thing\b|\byou don't see that\b|\bno such thing here\b|\bthat's not here\b/i;
+    useEffect(() => {
+        if (!messages.length) return;
+        const last = messages[messages.length - 1];
+        if (FAILURE_RE.test(last.textRaw || '') && lastCommandContextRef.current) {
+            const snapshot = lastCommandContextRef.current;
+            setKeywordFailureBanner(snapshot);
+            setTimeout(() => setKeywordFailureBanner(null), 5000);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [messages]);
 
     const playSoundRef = useRef<(buffer: AudioBuffer) => void>(() => { });
     const setPlaySound = useCallback((fn: (buffer: AudioBuffer) => void) => { playSoundRef.current = fn; }, []);
@@ -364,13 +387,17 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         actions: s.actions,
         setActions: s.setActions,
         setActiveDragData: s.setActiveDragData,
+        activeDragData: s.activeDragData,
         practice,
         shop,
         heldButton: v.heldButton,
         setHeldButton: v.setHeldButton,
         parley: s.parley,
         setParley: s.setParley,
-        isTrackpadModifierActive: s.isTrackpadModifierActive
+        isTrackpadModifierActive: s.isTrackpadModifierActive,
+        keywordOverrides,
+        openKeywordEdit,
+        lastCommandContextRef,
     });
 
     const { handleSend, handleInputSwipe, executeCommand, handleButtonClick, handleLogClick, handleLogDoubleClick, handleLogPointerDown, handleLogPointerUp, handleDragStart, handleDragEnd } = controller;
@@ -554,6 +581,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         isMendingMode: v.isMendingMode, setIsMendingMode: v.setIsMendingMode,
         mendingTarget: v.mendingTarget, setMendingTarget: v.setMendingTarget,
         heldButton: v.heldButton, setHeldButton: v.setHeldButton,
+        keywordOverrides, openKeywordEdit,
+        keywordEditState, setKeywordEditState,
+        setKeywordOverride, removeKeywordOverride,
+        keywordFailureBanner, setKeywordFailureBanner,
         detectLighting: env.detectLighting,
         setDetectLighting: (fn: (text: string) => void) => { /* internal use */ }
     }), [

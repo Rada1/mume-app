@@ -32,11 +32,13 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
     const handlePlayerClick = (e: React.MouseEvent, name: string) => {
         e.stopPropagation();
         triggerHaptic(15);
+        // Extract base name for command context (remove <C>, [A] etc)
+        const baseName = name.replace(/^[<\[]\w+[>\]]\s*/, '').split(/\s+/)[0];
         setPopoverState({
             x: e.clientX,
             y: e.clientY,
             setId: 'inlineplayer',
-            context: name,
+            context: baseName,
             type: undefined,
             menuDisplay: 'list'
         });
@@ -45,35 +47,49 @@ export const PlayersDrawer: React.FC<PlayersDrawerProps> = ({ isOpen, onClose, e
     const toggleFavorite = (e: React.MouseEvent, name: string) => {
         e.stopPropagation();
         triggerHaptic(25);
-        const lowerName = name.toLowerCase();
+        // Favorites should probably be based on the base name
+        const baseName = name.replace(/^[<\[]\w+[>\]]\s*/, '').split(/\s+/)[0].toLowerCase();
         setFavorites(prev => {
-            if (prev.includes(lowerName)) {
-                return prev.filter(f => f !== lowerName);
+            if (prev.includes(baseName)) {
+                return prev.filter(f => f !== baseName);
             }
-            return [...prev, lowerName];
+            return [...prev, baseName];
         });
     };
 
-    const isFav = (name: string) => favorites.includes(name.toLowerCase());
+    const isFav = (name: string) => {
+        const baseName = name.replace(/^[<\[]\w+[>\]]\s*/, '').split(/\s+/)[0].toLowerCase();
+        return favorites.includes(baseName);
+    };
 
-    const PlayerRow = ({ name, isFavorite }: { name: string, isFavorite: boolean }) => (
-        <div className="player-row" data-player-name={name}>
-            <button 
-                className="player-name-btn"
-                onClick={(e) => handlePlayerClick(e, name)}
-                style={{ color: 'rgba(37, 99, 235, 0.9)', fontWeight: 'bold' }}
-            >
-                {name}
-            </button>
-            <button 
-                className={`star-btn ${isFavorite ? 'active' : ''}`}
-                onClick={(e) => toggleFavorite(e, name)}
-                title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-            >
-                <Star size={14} fill={isFavorite ? "currentColor" : "none"} />
-            </button>
-        </div>
-    );
+    const PlayerRow = ({ name, isFavorite }: { name: string, isFavorite: boolean }) => {
+        const [htmlDisplay, baseName] = name.includes('|') ? name.split('|') : [name, name];
+        // Strip ansiConvert inline color styles so the button's own color applies uniformly.
+        const neutralHtml = htmlDisplay.replace(/ style="[^"]*"/g, '');
+
+        return (
+            <div className="player-row" data-player-name={baseName}>
+                <button
+                    className="player-name-btn"
+                    onClick={(e) => handlePlayerClick(e, baseName)}
+                    style={{
+                        fontFamily: 'monospace',
+                        whiteSpace: 'pre',
+                        fontSize: '0.85rem',
+                        color: 'rgba(125, 211, 252, 1)'
+                    }}
+                    dangerouslySetInnerHTML={{ __html: neutralHtml }}
+                />
+                <button 
+                    className={`star-btn ${isFavorite ? 'active' : ''}`}
+                    onClick={(e) => toggleFavorite(e, baseName)}
+                    title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+                >
+                    <Star size={14} fill={isFavorite ? "currentColor" : "none"} />
+                </button>
+            </div>
+        );
+    };
 
     const swipePos = useRef<{ x: number, y: number } | null>(null);
 
