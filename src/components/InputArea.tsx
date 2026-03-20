@@ -430,10 +430,13 @@ const InputArea: React.FC<InputAreaProps> = ({
                     <button
                         type="button"
                         className="mobile-parley-toggle"
-                        onClick={(e) => {
+                        onPointerDown={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setParley(prev => ({ ...prev, active: true }));
+                            // Re-focus the textarea so the keyboard stays open.
+                            // Use rAF to let the button unmount first, then focus.
+                            requestAnimationFrame(() => inputRef.current?.focus());
                         }}
                     >
                         <MessageCircle size={18} />

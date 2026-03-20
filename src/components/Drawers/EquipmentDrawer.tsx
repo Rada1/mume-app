@@ -492,8 +492,9 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             const itemNoun = extractNoun(line.text);
             const categories = (inlineCategories && inlineCategories.length > 0) ? inlineCategories : undefined;
             const category = getCategoryForName(line.text, categories) || 'inline-default';
-            const glowColor = getGlowColorForCategory(category, categories);
-            const textColor = glowColor || (line.isContainer ? '#89b4fa' : 'rgba(180, 100, 50, 0.9)');
+            const itemBrown = 'rgba(180, 100, 50, 0.9)';
+            const glowColor = itemBrown; 
+            const textColor = itemBrown;
             // Stronger visual cues: background, border, and subtle glow
             const baseBackground = 'rgba(255, 255, 255, 0.03)';
             const primedBackground = 'rgba(255, 255, 255, 0.1)';

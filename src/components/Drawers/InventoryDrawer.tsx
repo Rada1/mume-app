@@ -382,8 +382,11 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                                  // Category-based colors
                                  const categories = (inlineCategories && inlineCategories.length > 0) ? inlineCategories : undefined;
                                  const category = getCategoryForName(line.text, categories) || 'inline-default';
-                                 const glowColor = getGlowColorForCategory(category, categories);
-                                  const textColor = glowColor || 'rgba(180, 100, 50, 0.9)';
+                                 
+                                 // Force all items in this drawer to be brown as requested by user
+                                 const itemBrown = 'rgba(180, 100, 50, 0.9)';
+                                 const glowColor = line.isItem ? itemBrown : getGlowColorForCategory(category, categories);
+                                 const textColor = line.isItem ? itemBrown : (glowColor || itemBrown);
                                  const baseBackground = 'rgba(255, 255, 255, 0.03)';
                                  const primedBackground = 'rgba(255, 255, 255, 0.1)';
                                  const borderLeftStyle = '4px solid transparent';

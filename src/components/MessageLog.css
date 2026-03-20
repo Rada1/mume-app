@@ -155,16 +155,16 @@
 /* Pin inline player buttons to the blue used in the who-list
    and the players drawer, bypassing the brightness filter. */
 .message-content .inline-btn.pc-highlighter {
-    color: rgb(37, 99, 235) !important;
+    color: var(--glow-color, rgb(125, 211, 252)) !important;
     filter: none !important;
 }
 
 .pc-highlighter {
-    color: var(--glow-color, #2563eb); /* Blue */
+    color: var(--glow-color, #7dd3fc); /* Sky Blue 300 */
 }
 
 .npc-highlighter {
-    color: var(--glow-color, #ff87df); /* NPCs now use the specified pink */
+    color: var(--glow-color, #f0abfc); /* Neon Purple / Fuchsia 300 */
 }
 
 .keyword-highlight.combat-verb {
@@ -397,6 +397,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    pointer-events: auto;
 }
 
 .mobile-parley-toggle:hover {

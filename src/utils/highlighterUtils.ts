@@ -90,7 +90,7 @@ export const buildHighlighterCandidates = (
             candidates.push({
                 pattern: p,
                 priority: 5,
-                replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(37, 99, 235, 0.9); color: var(--glow-color); font-weight: bold">${m}</span>`,
+                replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(125, 211, 252, 1); color: var(--glow-color); font-weight: 800">${m}</span>`,
                 length: p.length
             });
         });

@@ -102,8 +102,10 @@ export function useViewport(
                     scrollAnimationRef.current = requestAnimationFrame(animate);
                 } else {
                     container.scrollTop = dynamicTarget;
-                    isAutoScrollingRef.current = false;
                     scrollAnimationRef.current = null;
+                    // Don't clear isAutoScrollingRef immediately — let the 500ms timeout
+                    // handle it so handleScroll doesn't falsely detect user scroll-away
+                    // before the virtualizer finishes re-measuring items.
                 }
             };
 
@@ -124,7 +126,7 @@ export function useViewport(
             if (!scrollAnimationRef.current) {
                 isAutoScrollingRef.current = false;
             }
-        }, 500);
+        }, 150);
     }, [disableSmoothScroll, isImmersionMode]);
 
     useEffect(() => {

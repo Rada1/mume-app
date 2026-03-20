@@ -6,7 +6,8 @@
 import { InlineCategoryConfig } from '../types';
 
 // palette definitions for consistency
-const COLOR_NPC = 'rgba(124, 58, 237, 0.9)';   // NPC Lighter Purple
+const COLOR_NPC = 'rgba(240, 171, 252, 1)';   // Brighter Neon Purple (#f0abfc)
+const COLOR_PLAYER = 'rgba(125, 211, 252, 1)'; // Brighter Sky Blue (#7dd3fc)
 const COLOR_OBJ = 'rgba(180, 100, 50, 0.9)';   // Object Brown
 
 export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
@@ -20,6 +21,7 @@ export const DEFAULT_INLINE_CATEGORIES: InlineCategoryConfig[] = [
     { id: 'food', keywords: ['meat', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer'], color: COLOR_OBJ },
     { id: 'water', keywords: ['water', 'fountain', 'pond', 'stream', 'cup', 'skin', 'flagon', 'flask', 'bottle', 'jug', 'vial'], color: COLOR_OBJ },
     { id: 'corpses', keywords: ['corpse'], color: COLOR_OBJ },
+    { id: 'misc', keywords: ['map', 'scroll', 'parchment', 'key', 'relic'], color: COLOR_OBJ },
     { id: 'object-room', keywords: [], color: COLOR_OBJ },
 
     // --- NPCS & SERVICES (Parent: NPC) ---
@@ -72,11 +74,11 @@ export function getGlowColorForCategory(category: string | null, customCategorie
 
     // Hierarchy Definitions
     const NPC_FAMILY = ['innkeeper', 'shopkeeper', 'mounts', 'guildmaster', 'huor', 'inlinenpc', 'inline-npc'];
-    const OBJ_FAMILY = ['lightsource', 'lantern', 'weapon', 'armour', 'shield', 'containers', 'food', 'water', 'corpses', 'object', 'object-room', 'quiver', 'obj-room', 'obj-char', 'obj-worn', 'obj-shop'];
+    const OBJ_FAMILY = ['lightsource', 'lantern', 'weapon', 'armour', 'shield', 'containers', 'food', 'water', 'corpses', 'object', 'object-room', 'quiver', 'obj-room', 'obj-char', 'obj-worn', 'obj-shop', 'misc'];
 
     if (NPC_FAMILY.includes(baseId)) return npcParentColor;
     if (OBJ_FAMILY.includes(baseId)) return objParentColor;
-    if (baseId === 'inline-player' || baseId === 'inlineplayer') return 'rgba(37, 99, 235, 0.9)';
+    if (baseId === 'inline-player' || baseId === 'inlineplayer') return COLOR_PLAYER;
 
     const config = categories.find(c => c.id === baseId) || categories.find(c => c.id === 'default');
     return config?.color || COLOR_OBJ;

@@ -157,7 +157,7 @@ export const useMessageHighlighter = (
                 newHtml = safeHighlight(newHtml, htmlNameCandidate, false, (m) => {
                     if (highlighted) return m;
                     highlighted = true;
-                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(37, 99, 235, 0.9); color: var(--glow-color); font-weight: bold">${m}</span>`;
+                    return `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(nameCandidate)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(nameCandidate)}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(125, 211, 252, 1); color: var(--glow-color); font-weight: 800">${m}</span>`;
                 });
             }
         }

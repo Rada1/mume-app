@@ -177,6 +177,16 @@ const MessageLog: React.FC<MessageLogProps> = ({
         return () => observer.disconnect();
     }, [viewport, scrollContainerRef]);
 
+    // Re-scroll when virtualizer re-measures items and totalSize changes.
+    // This catches the race where scrollToBottom fired based on estimated sizes,
+    // then the virtualizer measured actual sizes (different), shifting us off-bottom.
+    const totalSize = virtualizer.getTotalSize();
+    React.useEffect(() => {
+        if (viewport.isLockedToBottomRef.current) {
+            viewport.scrollToBottom(true, true, 'VirtualizerResize');
+        }
+    }, [totalSize, viewport]);
+
     const virtualItems = virtualizer.getVirtualItems();
 
     const activePromptContent = useMemo(() => {
