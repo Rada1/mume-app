@@ -23,6 +23,7 @@ export const INLINE_HIERARCHY: Record<string, string[]> = {
     // NPC Hierarchy
     'inline-mounts': ['inlinenpc'],
     'inline-shopkeeper': ['inlinenpc'],
+    'inline-shopkeeper-drop': ['inlinenpc'],
     'inline-innkeeper': ['inlinenpc'],
     'inline-guildmaster': ['inlinenpc']
 };

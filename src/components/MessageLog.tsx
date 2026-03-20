@@ -27,6 +27,7 @@ const MessageItem = React.memo(({
     scrollToBottom,
     executeCommand,
     setParley,
+    triggerHaptic,
 }: {
     msg: Message,
     processMessageHtml: (html: string, mid?: string, isRoomName?: boolean, type?: MessageType) => string,
@@ -34,10 +35,33 @@ const MessageItem = React.memo(({
     scrollToBottom: (force?: boolean, instant?: boolean, source?: string) => void;
     executeCommand: (cmd: string) => void;
     setParley: (p: import('../types').ParleyState) => void;
+    triggerHaptic: (ms: number) => void;
 }) => {
     const content = useMemo(() => processMessageHtml(msg.html, msg.id, msg.isRoomName, msg.type), [msg.html, msg.id, msg.isRoomName, msg.type, processMessageHtml]);
     const isRecent = Date.now() - msg.timestamp < 2000;
     const isDimmed = inCombat && !msg.isCombat && !msg.isUrgent;
+
+    const triggerParley = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        const directed = msg.replyCommand === 'tell' || msg.replyCommand === 'whisper';
+        setParley({ active: true, command: msg.replyCommand!, target: directed ? (msg.replyTarget ?? null) : null });
+        triggerHaptic(20);
+
+        // Trigger keyboard on mobile
+        setTimeout(() => {
+            const inputEl = document.querySelector('.input-field') as HTMLTextAreaElement;
+            if (inputEl) {
+                inputEl.focus();
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                if (isMobile) {
+                    const wasReadOnly = inputEl.readOnly;
+                    inputEl.readOnly = false;
+                    inputEl.focus();
+                    setTimeout(() => { inputEl.readOnly = wasReadOnly; }, 100);
+                }
+            }
+        }, 50);
+    }, [msg.replyCommand, msg.replyTarget, setParley]);
 
     return (
         <div
@@ -50,7 +74,7 @@ const MessageItem = React.memo(({
             ) : msg.type === 'shop-item' && msg.shopItem ? (
                 <div className="content-row">
                     <ShopItemCard item={msg.shopItem} executeCommand={executeCommand} />
-                    <ReplyButton msg={msg} setParley={setParley} />
+                    <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
                 </div>
             ) : msg.type === 'practice-skill' && msg.practiceSkill ? (
                 <PracticeSkillCard skill={msg.practiceSkill} />
@@ -67,32 +91,34 @@ const MessageItem = React.memo(({
                         <span className="comm-action"> {msg.commAction}:</span>
                     </div>
                     <div className="comm-content-row">
-                        <div className="comm-bubble" style={{ color: msg.commColor }}>
+                        <div 
+                            className="comm-bubble" 
+                            style={{ color: msg.commColor, cursor: 'pointer' }}
+                            onClick={triggerParley}
+                        >
                             <TypingText text={msg.commText || ''} />
                         </div>
-                        <ReplyButton msg={msg} setParley={setParley} />
+                        <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
                     </div>
                 </div>
             ) : (
                 <div className="content-row">
                     <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
-                    <ReplyButton msg={msg} setParley={setParley} />
+                    <ReplyButton msg={msg} setParley={setParley} onReply={triggerParley} />
                 </div>
             )}
         </div>
     );
 });
 
-const ReplyButton = ({ msg, setParley }: { msg: Message, setParley: (p: any) => void }) => {
+const ReplyButton = ({ msg, setParley, onReply }: { msg: Message, setParley: (p: any) => void, onReply: (e: React.MouseEvent) => void }) => {
     if (!msg.replyCommand) return null;
+
     return (
         <button
             className="reply-btn"
             title={msg.replyTarget ? `Reply to ${msg.replyTarget}` : `Reply on ${msg.replyCommand}`}
-            onClick={() => {
-                const directed = msg.replyCommand === 'tell' || msg.replyCommand === 'whisper';
-                setParley({ active: true, command: msg.replyCommand!, target: directed ? (msg.replyTarget ?? null) : null });
-            }}
+            onClick={onReply}
         >
             <div className="reply-btn-icon">↩</div>
         </button>
@@ -107,7 +133,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
     onDragStart,
     onDragEnd
 }) => {
-    const { inCombat, viewport, executeCommand, setParley } = useBaseGame();
+    const { inCombat, viewport, executeCommand, setParley, triggerHaptic } = useBaseGame();
     const { messages, processMessageHtml } = useLog();
     const { activePrompt, setTarget } = useVitals();
     const { scrollContainerRef, messagesEndRef, scrollToBottom } = viewport;
@@ -266,6 +292,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                 scrollToBottom={scrollToBottom}
                                 executeCommand={executeCommand}
                                 setParley={setParley}
+                                triggerHaptic={triggerHaptic}
                             />
                         </div>
                     );

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { useGame, useVitals } from '../../context/GameContext';
+import { useGame, useVitals, useUI } from '../../context/GameContext';
 import { DrawerLine } from '../../types';
 import { extractNoun, isItemContainer, isFluidContainer, sanitizeGameTarget } from '../../utils/gameUtils';
 import { getCategoryForName, getGlowColorForCategory } from '../../utils/categorizationUtils';
@@ -27,6 +27,7 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
     inlineCategories = []
 }) => {
     const { lighting, applyOptimisticChange } = useGame() as any;
+    const { setPopoverState, popoverState } = useUI();
     const [draggedItem, setDraggedItem] = React.useState<{ line: DrawerLine; x: number; y: number; commandLabel?: string; itemNoun?: string } | null>(null);
     const [primedItemId, setPrimedItemId] = React.useState<string | null>(null);
     const [activeDropTarget, setActiveDropTarget] = React.useState<{ type: 'section' | 'container' | 'log'; id: string } | null>(null);
@@ -110,9 +111,28 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
             if (logRecipient) {
                 const ctx = logRecipient.getAttribute('data-context');
                 if (ctx) {
-                    logRecipient.classList.add('drop-hover-active');
-                    setActiveDropTarget({ type: 'log', id: ctx });
-                    label = `Give ${itemNounForLabel} to ${ctx}`;
+                    const recipientName = sanitizeGameTarget(ctx) || ctx;
+                    const category = logRecipient.getAttribute('data-category');
+                    if (category === 'inline-shopkeeper') {
+                        if (popoverState?.setId !== 'inline-shopkeeper-drop') {
+                            const rect = logRecipient.getBoundingClientRect();
+                            triggerHaptic(40);
+                            setPopoverState({
+                                x: Math.min(window.innerWidth - 180, rect.right + 10),
+                                y: Math.max(80, rect.top - 20),
+                                setId: 'inline-shopkeeper-drop',
+                                context: itemNounForLabel,
+                                parentNoun: recipientName,
+                                menuDisplay: 'list'
+                            });
+                        }
+                        setActiveDropTarget({ type: 'log', id: recipientName });
+                        label = `Mend / Sell / Give ${itemNounForLabel}`;
+                    } else {
+                        logRecipient.classList.add('drop-hover-active');
+                        setActiveDropTarget({ type: 'log', id: recipientName });
+                        label = `Give ${itemNounForLabel} to ${recipientName}`;
+                    }
                 }
             } else if (targetItem) {
                 const targetCmd = targetItem.getAttribute('data-cmd');
@@ -163,11 +183,59 @@ export const InventoryDrawer: React.FC<InventoryDrawerProps> = ({
                 parentPath,
                 target: target?.className
             });
+            
+            const isPopoverTarget = target?.closest('.popover-menu') || target?.closest('.popover-item');
+            if (isPopoverTarget) {
+                console.log('[InventoryDrawer] Drop on popover detected, ignoring default actions');
+                cleanupDrag();
+                return;
+            }
 
+            const dropBtn = target?.closest('[data-drop-cmd]') as HTMLElement | null;
             const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
-            if (logRecipient) {
-                 const recipientName = logRecipient.getAttribute('data-context');
+            if (dropBtn || logRecipient) {
+                 if (dropBtn) {
+                    const dropCmd = dropBtn.getAttribute('data-drop-cmd');
+                    const dropCtx = dropBtn.getAttribute('data-drop-context');
+                    const dropParent = dropBtn.getAttribute('data-drop-parent');
+                    
+                    if (dropCmd && dropCtx) {
+                        triggerHaptic(80);
+                        let finalCmd = dropCmd.replace(/%n/g, itemNoun);
+                        if (dropParent) finalCmd = finalCmd.replace(/%p/g, dropParent);
+
+                        if (dropCmd === 'shop-mend') {
+                            // Already in items drawer
+                        } else {
+                            if (parentNoun) {
+                                executeCommand(`get ${itemNoun} ${parentNoun}`, true, true);
+                                setTimeout(() => executeCommand(finalCmd, false, false), 120);
+                            } else {
+                                executeCommand(finalCmd, false, false);
+                            }
+                        }
+                        cleanupDrag();
+                        return;
+                    }
+                 }
+
+                 const rawRecipientName = logRecipient?.getAttribute('data-context');
+                 const recipientName = sanitizeGameTarget(rawRecipientName) || rawRecipientName;
+                 const category = logRecipient?.getAttribute('data-category');
                  if (recipientName) {
+                     if (category === 'inline-shopkeeper' && popoverState?.setId !== 'inline-shopkeeper-drop') {
+                         triggerHaptic(60);
+                         setPopoverState({
+                             x: e.clientX,
+                             y: e.clientY,
+                             setId: 'inline-shopkeeper-drop',
+                             context: itemNoun,
+                             parentNoun: recipientName,
+                             menuDisplay: 'list'
+                         });
+                         cleanupDrag();
+                         return;
+                     }
                      triggerHaptic(60);
                      applyOptimisticChange({ type: 'give', item: itemLine, from: 'inv' });
                      if (parentNoun) {

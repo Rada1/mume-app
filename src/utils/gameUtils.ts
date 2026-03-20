@@ -22,7 +22,7 @@ export const extractMumeKeyword = (label: string): string => {
         const before = ofMatch[1].trim();
         const after  = ofMatch[2].trim();
         // Compound quantifiers → keyword is what comes AFTER "of"
-        const isQuantifier = /^(pair|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)$/.test(before);
+        const isQuantifier = /^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)$/.test(before);
         const source = isQuantifier ? after : before;
         const words = source.split(/\s+/);
         return words[words.length - 1];
@@ -45,7 +45,7 @@ export const extractNoun = (text: string): string => {
     clean = clean.replace(/[.,:;!]+$/, '');
     
     // Filter out articles, quantity words, and common descriptive adjectives
-    const filterRegex = /^(a|an|the|of|in|on|at|to|some|several|many|numerous|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)$/i;
+    const filterRegex = /^(a|an|the|of|in|on|at|to|some|several|many|numerous|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|pair|pairs)$/i;
     const adjs = ["huge", "awesome", "ugly", "strong", "pack", "tall", "short", "large", "small", "tiny", "fierce", "old", "young", "mean", "scary", "dirty", "clean", "bright", "dark", "heavy", "light", "metallic", "runic", "steel", "iron", "wooden", "leather", "black", "white", "red", "green", "blue", "yellow", "gray", "grey", "golden", "silver"];
     
     const words = clean.split(/[\s,.-]+/).filter(w => 
@@ -58,16 +58,33 @@ export const extractNoun = (text: string): string => {
     
     // Join all remaining words with hyphens (e.g. "mother eagle" -> "mother-eagle")
     let noun = words.join('-').toLowerCase().replace(/[.,:;!?"'()[\]{}<>*#~]/g, '');
-    
-    // Basic singularization for MUME interaction (flagons -> flagon, etc.)
-    if (noun.endsWith('ies')) return noun.slice(0, -3) + 'y';
-    if (noun.endsWith('ves')) return noun.slice(0, -3) + 'f'; // wolves -> wolf
-    
-    // Words ending in 's' that should NOT be singularized
-    const exclusions = ['glass', 'dress', 'grass', 'moss', 'bias', 'trousers', 'status', 'compass', 'chaos', 'lens', 'atlas'];
-    if (noun.endsWith('s') && !noun.endsWith('ss') && !exclusions.includes(noun)) {
-        return noun.slice(0, -1);
+
+    // For items/objects, prefer the last word if it's a common core noun (like skin, bag, etc.)
+    // but keep multi-word for others (like mother-eagle)
+    if (words.length > 1) {
+        const lastWord = words[words.length - 1].toLowerCase();
+        const preferredKeywords = ['skin', 'backpack', 'pouch', 'sack', 'bag', 'flask', 'bottle', 'vial', 'quiver', 'belt', 'rations'];
+        if (preferredKeywords.includes(lastWord)) {
+            noun = lastWord;
+        } else if (noun === 'water-skin') {
+            noun = 'skin';
+        }
     }
+    
+    // Words or suffixes that should NOT be singularized (plural-only in MUME)
+    const exclusions = [
+        'glass', 'dress', 'grass', 'moss', 'bias', 'status', 'compass', 'chaos', 'lens', 'atlas',
+        'trousers', 'pants', 'breeches', 'leggings', 'hose', 'gloves', 'boots', 'shoes',
+        'gauntlets', 'greaves', 'vambraces', 'pauldrons', 'bracers', 'sleeves'
+    ];
+    if (exclusions.some(ex => noun.endsWith(ex))) {
+        return noun;
+    }
+
+    // Basic singularization for MUME interaction (flagons -> flagon, wolves -> wolf, etc.)
+    if (noun.endsWith('ies')) return noun.slice(0, -3) + 'y';
+    if (noun.endsWith('ves')) return noun.slice(0, -3) + 'f';
+    if (noun.endsWith('s') && !noun.endsWith('ss')) return noun.slice(0, -1);
     
     return noun;
 };
@@ -294,16 +311,21 @@ export const sanitizeGameTarget = (target: string | null | undefined): string | 
     }
 
     // Rule: specific container simplifications for easier interaction (e.g. leather-backpack -> backpack)
-    const containerTypes = ['backpack', 'bag', 'sack', 'pouch', 'satchel', 'quiver', 'chest', 'box', 'barrel', 'crate', 'keg', 'vial', 'flask', 'bottle', 'waterskin'];
+    const containerTypes = ['backpack', 'bag', 'sack', 'pouch', 'satchel', 'quiver', 'chest', 'box', 'barrel', 'crate', 'keg', 'vial', 'flask', 'bottle', 'waterskin', 'skin', 'water-skin'];
     const parts = clean.toLowerCase().split('-');
     if (parts.length > 1 && containerTypes.includes(parts[parts.length - 1])) {
-        return parts[parts.length - 1];
+        const lastPart = parts[parts.length - 1];
+        if (lastPart === 'waterskin' || lastPart === 'water-skin') return 'skin';
+        return lastPart;
     }
+    if (clean.toLowerCase() === 'waterskin' || clean.toLowerCase() === 'water-skin') return 'skin';
 
     // Aggressively strip punctuation from entities (e.g. "Maelton, the village elder" -> "Maelton the village elder")
     clean = clean.replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ').trim();
     
-    // Strip leading articles
+    // Strip leading articles and quantifiers
+    clean = clean.replace(/^(a|an|the|some)\s+(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/i, '');
+    clean = clean.replace(/^(pair|pairs|set|piece|bundle|pile|handful|bit|slice|loaf|lump|chunk|portion)\s+of\s+/i, '');
     clean = clean.replace(/^(a|an|the|some)\s+/i, '');
 
     // Replace internal spaces with hyphens for multi-word targets (e.g. "mother eagle" -> "mother-eagle")

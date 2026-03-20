@@ -351,13 +351,24 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
     },
     {
         id: 'cat-shopitem-show',
-        label: 'Show',
-        command: 'show %n',
+        label: 'Show Item',
+        command: 'show item %n',
         setId: 'inline-shopitem',
         actionType: 'command',
         display: 'floating',
         isVisible: true,
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#3b82f6', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-shopkeeper-shop',
+        label: 'Shop',
+        command: 'list',
+        setId: 'inline-shopkeeper',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
     {
@@ -369,6 +380,39 @@ export const INLINE_CATEGORY_BUTTONS: CustomButton[] = [
         display: 'floating',
         isVisible: true,
         style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-shopkeeper-sell-drag',
+        label: 'Sell %n',
+        command: 'sell %n',
+        setId: 'inline-shopkeeper-drop',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-shopkeeper-mend-drag',
+        label: 'Mend %n',
+        command: 'mend %n',
+        setId: 'inline-shopkeeper-drop',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 90, h: 40, backgroundColor: '#8b5cf6', shape: 'pill' },
+        trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
+    },
+    {
+        id: 'cat-npc-give',
+        label: 'Give %n to %p',
+        command: 'give %n %p',
+        setId: 'inlinenpc',
+        actionType: 'command',
+        display: 'floating',
+        isVisible: true,
+        style: { x: 0, y: 0, w: 100, h: 40, backgroundColor: '#4ade80', shape: 'pill' },
         trigger: { enabled: false, pattern: '', isRegex: false, autoHide: false, duration: 0 }
     },
 
@@ -513,8 +557,10 @@ export const CATEGORY_BUTTON_MAP: Record<string, string[]> = {
     'inline-water': ['cat-water-drink'],
     'inline-corpses': ['cat-corpse-butcher', 'cat-corpse-drag', 'cat-corpse-scalp'],
     'inline-containers': ['cat-container-look-in', 'cat-container-open', 'cat-container-close'],
-    'inline-shopkeeper': ['cat-shopkeeper-mend', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-shopkeeper': ['cat-shopkeeper-shop', 'cat-shopkeeper-mend', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inline-shopkeeper-drop': ['cat-shopkeeper-sell-drag', 'cat-shopkeeper-mend-drag'],
     'inline-innkeeper': ['cat-innkeeper-offer', 'cat-innkeeper-rent', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
+    'inlinenpc': ['cat-npc-give', 'innpc-consider', 'innpc-kill', 'innpc-ex'],
     'inline-mounts': ['cat-mount-ride', 'cat-mount-lead', 'cat-mount-saddle', 'cat-mount-unsaddle', 'cat-mount-unsaddle-all', 'innpc-consider', 'innpc-kill', 'innpc-ex', 'cat-mount-abandon'],
     'inline-shopitem': ['cat-shopitem-buy', 'cat-shopitem-show'],
     'inline-guildmaster': ['cat-guildmaster-practice', 'innpc-consider', 'innpc-kill', 'innpc-ex'],

@@ -42,7 +42,7 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
     const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
     const { activeDragData, applyOptimisticChange } = useGame() as any;
-    const { setUI, ui } = useUI();
+    const { setUI, ui, setPopoverState, popoverState } = useUI();
     const { isMendingMode, setIsMendingMode, mendingTarget, setMendingTarget } = useVitals();
 
     // Enable pointer events on this drawer for ANY native HTML5 drag on the page, not just
@@ -213,8 +213,27 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
             if (logRecipient) {
                 const ctx = logRecipient.getAttribute('data-context');
                 if (ctx) {
-                    setActiveDropTarget({ type: 'log', id: ctx });
-                    commandLabel = `give ${dragLabel} ${ctx}`;
+                    const recipientName = sanitizeGameTarget(ctx) || ctx;
+                    const category = logRecipient.getAttribute('data-category');
+                    if (category === 'inline-shopkeeper' && !isMultiDrag) {
+                        if (popoverState?.setId !== 'inline-shopkeeper-drop') {
+                            const rect = logRecipient.getBoundingClientRect();
+                            triggerHaptic(40);
+                            setPopoverState({
+                                x: Math.min(window.innerWidth - 180, rect.right + 10),
+                                y: Math.max(80, rect.top - 20),
+                                setId: 'inline-shopkeeper-drop',
+                                context: itemNoun,
+                                parentNoun: recipientName,
+                                menuDisplay: 'list'
+                            });
+                        }
+                        setActiveDropTarget({ type: 'log', id: recipientName });
+                        commandLabel = `Mend / Sell / Give ${dragLabel}`;
+                    } else {
+                        setActiveDropTarget({ type: 'log', id: recipientName });
+                        commandLabel = `give ${dragLabel} ${recipientName}`;
+                    }
                 }
             } else if (targetItem) {
                 const targetCmd = targetItem.getAttribute('data-cmd');
@@ -269,14 +288,15 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                 return { line, source };
             }).filter(Boolean) : [{ line: currentItem, source: currentSource }];
 
-            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter');
-            const targetBtn = target?.closest('.inline-btn.auto-item');
-            const mainLog = target?.closest('.message-log-container');
-            const sectionWrapper = target?.closest('[data-drawer-section]');
+            const logRecipient = target?.closest('.pc-highlighter, .npc-highlighter') as HTMLElement | null;
+            const targetBtn = target?.closest('.inline-btn.auto-item') as HTMLElement | null;
+            const mainLog = target?.closest('.message-log-container') as HTMLElement | null;
+            const sectionWrapper = target?.closest('[data-drawer-section]') as HTMLElement | null;
+            const dropBtn = target?.closest('[data-drop-cmd]') as HTMLElement | null;
 
-            const isLogDrop = !!(logRecipient || (mainLog && !target?.closest('.right-drawer')));
+            const isLogDrop = !!(logRecipient || dropBtn || (mainLog && !target?.closest('.right-drawer')));
 
-            if (logRecipient || targetBtn || (mainLog && !target?.closest('.right-drawer')) || sectionWrapper) {
+            if (logRecipient || dropBtn || targetBtn || (mainLog && !target?.closest('.right-drawer')) || sectionWrapper) {
                 triggerHaptic(60);
 
                 // Apply all optimistic UI changes immediately before sending commands
@@ -327,10 +347,62 @@ export const EquipmentDrawer: React.FC<EquipmentDrawerProps> = ({
                         target: target?.className
                     });
 
+                    const isPopoverTarget = target?.closest('.popover-menu') || target?.closest('.popover-item');
+                    if (isPopoverTarget) {
+                        console.log('[EquipmentDrawer] Drop on popover detected, ignoring default actions');
+                        cleanupDrag();
+                        return;
+                    }
+
                     setTimeout(() => {
+                        if (dropBtn) {
+                            const dropCmd = dropBtn.getAttribute('data-drop-cmd');
+                            const dropCtx = dropBtn.getAttribute('data-drop-context');
+                            const dropParent = dropBtn.getAttribute('data-drop-parent');
+                            
+                            if (dropCmd && dropCtx) {
+                                triggerHaptic(80);
+                                let finalCmd = dropCmd.replace(/%n/g, noun);
+                                if (dropParent) finalCmd = finalCmd.replace(/%p/g, dropParent);
+
+                                if (dropCmd === 'shop-mend') {
+                                    // Already in items drawer, maybe focus eq section?
+                                } else {
+                                    if (src === 'equipment') {
+                                        executeCommand(`remove ${noun}`, true, true);
+                                        setTimeout(() => executeCommand(finalCmd, false, false), 120);
+                                    } else if (parentNoun) {
+                                        executeCommand(`get ${noun} ${parentNoun}`, true, true);
+                                        setTimeout(() => executeCommand(finalCmd, false, false), 120);
+                                    } else {
+                                        executeCommand(finalCmd, false, false);
+                                    }
+                                }
+                                cleanupDrag();
+                                return;
+                            }
+                        }
+
                         if (logRecipient) {
-                            const recipientName = logRecipient.getAttribute('data-context');
+                            const rawRecipientName = logRecipient.getAttribute('data-context');
+                            const recipientName = sanitizeGameTarget(rawRecipientName) || rawRecipientName;
+                            const category = logRecipient.getAttribute('data-category');
+                            
                             if (recipientName) {
+                                if (category === 'inline-shopkeeper' && !isMultiDrag && popoverState?.setId !== 'inline-shopkeeper-drop') {
+                                    triggerHaptic(60);
+                                    setPopoverState({
+                                        x: e.clientX,
+                                        y: e.clientY,
+                                        setId: 'inline-shopkeeper-drop',
+                                        context: noun,
+                                        parentNoun: recipientName,
+                                        menuDisplay: 'list'
+                                    });
+                                    cleanupDrag();
+                                    return;
+                                }
+
                                 if (src === 'equipment') {
                                     executeCommand(`remove ${noun}`, true, true);
                                     setTimeout(() => executeCommand(`give ${noun} ${recipientName}`, false, false), 120);

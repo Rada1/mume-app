@@ -7,8 +7,8 @@ export const useLogTaps = (deps: InteractionDeps) => {
     const {
         executeCommand, input, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
         popoverState, setPopoverState, setCommandPreview, wasDraggingRef, viewport,
-        ui, setUI, setActiveDragData, heldButton, setHeldButton, parley, setParley,
-        isTrackpadModifierActive
+        ui, setUI, setActiveDragData, activeDragData, heldButton, setHeldButton, parley, setParley,
+        isTrackpadModifierActive, setIsItemsDrawerOpen
     } = deps;
 
     const lastLogClickRef = useRef<number>(0);
@@ -25,6 +25,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
     // Stable refs for modifier states so callbacks don't go stale between renders.
     const isTrackpadModifierActiveRef = useRef(isTrackpadModifierActive);
     const isJoystickTargetActiveRef = useRef(joystick.isTargetModifierActive);
+
     useEffect(() => { isTrackpadModifierActiveRef.current = isTrackpadModifierActive; }, [isTrackpadModifierActive]);
     useEffect(() => { isJoystickTargetActiveRef.current = joystick.isTargetModifierActive; }, [joystick.isTargetModifierActive]);
 
@@ -199,6 +200,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 menuDisplay
             });
             targetEl.classList.add('menu-active');
+            triggerHaptic(20);
         } else if ((action === 'command' || action === 'preload') && cmd) {
             let finalCmd = cmd;
             if (context) {
@@ -492,8 +494,28 @@ export const useLogTaps = (deps: InteractionDeps) => {
                                 return { ...prev, label: newLabel };
                             });
                         } else if (recipient && !recipient.classList.contains('dragging')) {
-                            recipient.classList.add('drop-hover-active');
-                            const recipientName = recipient.getAttribute('data-context');
+                            const rawRecipientName = recipient.getAttribute('data-context');
+                            const recipientName = sanitizeGameTarget(rawRecipientName) || rawRecipientName;
+                            const category = recipient.getAttribute('data-category');
+
+                            if (category === 'inline-shopkeeper' && recipientName && popoverState?.setId !== 'inline-shopkeeper-drop') {
+                                // Auto-open shopkeeper menu on hover!
+                                const rect = recipient.getBoundingClientRect();
+                                triggerHaptic(40);
+                                setPopoverState({
+                                    x: Math.min(window.innerWidth - 180, rect.right + 10),
+                                    y: Math.max(80, rect.top - 20),
+                                    setId: 'inline-shopkeeper-drop',
+                                    context: activeDragData?.context || heldButton?.context || heldButton?.originalLabel || heldButton?.label,
+                                    parentNoun: recipientName,
+                                    menuDisplay: 'list'
+                                });
+                            }
+
+                            if (category !== 'inline-shopkeeper') {
+                                recipient.classList.add('drop-hover-active');
+                            }
+                            
                             if (recipientName) {
                                 setHeldButton((prev: any) => {
                                     if (!prev) return null;
@@ -551,6 +573,44 @@ export const useLogTaps = (deps: InteractionDeps) => {
             }
         };
 
+        const cleanupDrag = () => {
+            // RESTORE SELECTION & SCROLL
+            const logEl = document.querySelector('.message-log') as HTMLElement;
+            if (logEl) {
+                logEl.style.userSelect = 'auto';
+                logEl.style.webkitUserSelect = 'auto';
+                if (isMobile) {
+                    logEl.style.overflow = 'auto';
+                    logEl.style.touchAction = 'pan-y';
+                }
+            }
+
+            // RESTORE PEEK
+            setUI((prev: any) => ({ ...prev, isDrawerPeeking: false }));
+
+            // Global Cleanup
+            document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
+            logDragStartPosRef.current = null;
+            isLogDraggingRef.current = false;
+            setHeldButton(null);
+            setActiveDragData(null);
+            setCommandPreview('');
+
+            document.querySelectorAll('.inline-btn.dragging').forEach(el => el.classList.remove('dragging'));
+            // Clean up any stray pressed elements
+            document.querySelectorAll('.inline-btn.pressed').forEach(el => el.classList.remove('pressed'));
+            if (targetEl) targetEl.classList.remove('pressed');
+
+            window.removeEventListener('pointermove', handleGlobalMove);
+            window.removeEventListener('pointerup', handleGlobalUp as any);
+            window.removeEventListener('pointercancel', handleGlobalUp as any);
+            
+            // Auto-close shopkeeper drop popover if it's still open
+            if (popoverState?.setId === 'inline-shopkeeper-drop') {
+                setPopoverState(null);
+            }
+        };
+
         const handleGlobalUp = (upEvent: PointerEvent) => {
             if (logLongPressTimerRef.current) {
                 clearTimeout(logLongPressTimerRef.current);
@@ -559,18 +619,53 @@ export const useLogTaps = (deps: InteractionDeps) => {
 
             if (isLogDraggingRef.current) {
                 const targetUnderPointer = document.elementFromPoint(upEvent.clientX, upEvent.clientY);
+                const dropBtn = targetUnderPointer?.closest('[data-drop-cmd]') as HTMLElement | null;
+
+                if (dropBtn) {
+                    const dropCmd = dropBtn.getAttribute('data-drop-cmd');
+                    const dropCtx = dropBtn.getAttribute('data-drop-context');
+                    const dropParent = dropBtn.getAttribute('data-drop-parent');
+                    const rawDraggedContext = targetEl?.getAttribute('data-context');
+                    const noun = sanitizeGameTarget(rawDraggedContext) || rawDraggedContext;
+
+                    if (dropCmd && dropCtx && noun) {
+                        triggerHaptic(80);
+                        let finalCmd = dropCmd.replace(/%n/g, noun);
+                        if (dropParent) finalCmd = finalCmd.replace(/%p/g, dropParent);
+
+                        if (dropCmd === 'shop-mend') {
+                            setIsItemsDrawerOpen?.(true);
+                        } else {
+                            executeCommand(finalCmd, false, false);
+                        }
+                        cleanupDrag();
+                        return;
+                    }
+                }
+
                 const recipient = targetUnderPointer?.closest('.pc-highlighter, .npc-highlighter, [data-player-name]');
 
                 if (recipient && !recipient.classList.contains('dragging')) {
-                    const recipientName = recipient.getAttribute('data-context') || recipient.getAttribute('data-player-name');
+                    const rawRecipientName = recipient.getAttribute('data-context') || recipient.getAttribute('data-player-name');
+                    const recipientName = sanitizeGameTarget(rawRecipientName) || rawRecipientName;
                     const rawDraggedContext = targetEl?.getAttribute('data-context');
                     const draggedContext = sanitizeGameTarget(rawDraggedContext) || rawDraggedContext;
                     if (draggedContext && recipientName) {
-                        triggerHaptic(60);
-                        if (isShopItem) {
-                            executeCommand(`buy ${draggedContext}`);
-                            setTimeout(() => executeCommand(`give ${draggedContext} ${recipientName}`), 125);
+                        const category = recipient.getAttribute('data-category');
+                        if (category === 'inline-shopkeeper' && popoverState?.setId !== 'inline-shopkeeper-drop') {
+                            // This part shouldn't really be hit anymore because move opens it,
+                            // but as a fallback for high-speed drag:
+                            triggerHaptic(60);
+                            setPopoverState({
+                                x: upEvent.clientX,
+                                y: upEvent.clientY,
+                                setId: 'inline-shopkeeper-drop',
+                                context: draggedContext,
+                                parentNoun: recipientName,
+                                menuDisplay: 'list'
+                            });
                         } else {
+                            triggerHaptic(60);
                             executeCommand(`give ${draggedContext} ${recipientName}`);
                         }
                     }

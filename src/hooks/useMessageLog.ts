@@ -218,6 +218,30 @@ export function useMessageLog(
         }
 
         const lastMsg = lastMessageRef.current;
+        if (type === 'comm-continue' && lastMsg && lastMsg.type === 'comm') {
+            const currentMsgText = lastMsg.commText || '';
+            const needsSpace = currentMsgText.length > 0 && 
+                               !currentMsgText.endsWith('-') && 
+                               !currentMsgText.endsWith(' ') && 
+                               !/^[.,!?;'"]/.test(commText || '');
+            
+            const updatedMsg: Message = { 
+                ...lastMsg, 
+                commText: currentMsgText + (needsSpace ? ' ' : '') + (commText || ''),
+                timestamp: Date.now() 
+            };
+            const mid = lastMsg.id;
+            lastMessageRef.current = updatedMsg;
+            if (messageBufferRef.current.length > 0) {
+                const idx = messageBufferRef.current.findIndex(m => m.id === mid);
+                if (idx !== -1) messageBufferRef.current[idx] = updatedMsg;
+                else messageBufferRef.current.push(updatedMsg);
+            } else {
+                setMessages(prev => prev.map(m => m.id === mid ? updatedMsg : m));
+            }
+            return;
+        }
+
         if (stackId && lastMsg && lastMsg.stackId === stackId && lastMsg.type === type && !isActuallyRoomName) {
             let newCount = (lastMsg.stackCount || 1) + 1;
             const pluralSubject = pluralizeMumeSubject(subject);

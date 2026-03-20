@@ -12,13 +12,14 @@ const COL_KNOW  = '110px';
 const GRID_TEMPLATE = `1fr ${COL_SESS} ${COL_BTN} ${COL_KNOW}`;
 
 const PracticeSkillCard: React.FC<PracticeSkillCardProps> = ({ skill: initialSkill }) => {
-    const { practice, executeCommand } = useBaseGame();
+    const { practice, executeCommand, triggerHaptic } = useBaseGame();
     const { practiceData, setLastPracticedSkill } = practice;
 
     const currentSkill = practiceData?.skills.find(s => s.name === initialSkill.name) || initialSkill;
 
     const handlePractice = (e: React.MouseEvent) => {
         e.stopPropagation();
+        triggerHaptic(20);
         setLastPracticedSkill(currentSkill.name);
         executeCommand(`practice ${currentSkill.name}`, false, true);
     };

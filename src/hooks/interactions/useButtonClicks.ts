@@ -11,6 +11,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
 
     const handleButtonClick = useCallback((button: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string) => {
         e.stopPropagation();
+        triggerHaptic(20);
 
         if (btn.isEditMode) {
             if (button.setId !== 'Xbox' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
@@ -54,6 +55,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         else if (cmd.includes('%n') && target) {
             cmd = cmd.replace(/%n/g, target);
         }
+        if (parentNoun) { cmd = cmd.includes('%p') ? cmd.replace(/%p/g, parentNoun) : cmd; }
 
         let finalCmd = cmd;
         if (deps.isTrackpadModifierActive && !(button as any)._skipJoystick) {

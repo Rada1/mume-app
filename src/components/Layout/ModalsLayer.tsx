@@ -84,7 +84,8 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         setParley,
         whoList,
         refreshLogHighlights,
-        practice
+        practice,
+        shop
     } = useGame() as any;
 
     const { setTarget } = useVitals();
@@ -277,6 +278,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 whoList={whoList}
                 refreshLogHighlights={refreshLogHighlights}
                 practice={practice}
+                shop={shop}
             />
 
             <DrawerManager

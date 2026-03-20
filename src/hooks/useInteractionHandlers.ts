@@ -14,7 +14,6 @@ export interface InteractionDeps {
         buttons: CustomButton[];
         setButtons: (fn: (prev: CustomButton[]) => CustomButton[]) => void;
     };
-
     joystick: {
         currentDir: string | null;
         isTargetModifierActive: boolean;
@@ -49,6 +48,7 @@ export interface InteractionDeps {
     };
     setUI: React.Dispatch<React.SetStateAction<any>>;
     setActiveDragData: (val: any) => void;
+    activeDragData: any;
     heldButton: any;
     setHeldButton: (val: any) => void;
     parley: import('../types').ParleyState;

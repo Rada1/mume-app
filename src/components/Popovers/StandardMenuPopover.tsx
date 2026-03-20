@@ -67,6 +67,9 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                 className={`popover-item ${isSubButton ? 'is-sub-item' : ''}`}
                 data-menu-item="true"
                 data-is-menu={button.actionType === 'nav' || button.actionType === 'menu' || button.label === 'Look In' ? "true" : "false"}
+                data-drop-cmd={button.command}
+                data-drop-context={popoverState.context}
+                data-drop-parent={popoverState.parentNoun}
                 onPointerDown={(e) => { e.stopPropagation(); }}
                 onClick={(e) => {
                     // Prevent button action if clicking the star
@@ -87,11 +90,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     } else if (button.label === 'Browse Shop...') {
                         setPopoverState({ ...popoverState, type: 'shop-search' });
                     } else if (button.command === 'shop-mend') {
-                        setIsMendingMode?.(true);
-                        setMendingTarget?.(sanitizeGameTarget(popoverState.context || ''));
                         setIsItemsDrawerOpen?.(true);
                         setPopoverState(null);
-                        addMessage('system', 'Selection Mode: Select items to mend, then tap Mend Selected.');
                     } else {
                         handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun);
                     }
@@ -105,7 +105,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
             >
                 <span style={{ pointerEvents: 'none', display: 'flex', alignItems: 'center' }}>
                     {depth > 0 && <span style={{ opacity: 0.3, marginRight: '8px', fontSize: '0.8rem' }}>﹂</span>}
-                    {button.label}
+                    {button.label.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')}
                 </span>
                 <div 
                     className={`favorite-star ${isFav ? 'active' : ''}`}
@@ -155,7 +155,10 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     color: 'var(--accent)',
                     fontWeight: 'bold'
                 }}
-                onClick={() => { if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); }}>
+                onClick={() => { 
+                    triggerHaptic?.(20);
+                    if (!isSetManager) setPopoverState({ ...popoverState, setId: 'setmanager' }); 
+                }}>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {isSetManager ? 'Main Menu' : (popoverState.context ? popoverState.context : popoverState.setId.replace(/^inline-?/, '').toUpperCase())}
                 </span>
@@ -235,6 +238,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
 
             {isTargetable && (
                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => {
+                    triggerHaptic?.(20);
                     setTarget(popoverState.context || null); setPopoverState(null);
                 }}>Set as Target</div>
             )}
@@ -333,7 +337,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     return (
                         <div key={cmd} className="popover-item" data-menu-item="true"
                             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                            onClick={() => { setParley({ ...parley, command: cmd as any }); setPopoverState(null); }}>
+                            onClick={() => { triggerHaptic?.(20); setParley({ ...parley, command: cmd as any }); setPopoverState(null); }}>
                             <span style={{ pointerEvents: 'none' }}>
                                 {isActive && <span style={{ marginRight: 6, color: 'var(--accent)', fontSize: '0.9rem' }}>✓ </span>}
                                 {cmd.toUpperCase()}
@@ -370,7 +374,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = ({
                     return (
                         <div key={label} className="popover-item" data-menu-item="true"
                             style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', opacity: name === null ? 0.6 : 1 }}
-                            onClick={() => { setParley({ ...parley, target: name }); setPopoverState(null); }}>
+                            onClick={() => { triggerHaptic?.(20); setParley({ ...parley, target: name }); setPopoverState(null); }}>
                             <span style={{ pointerEvents: 'none' }}>
                                 {isActive && <span style={{ marginRight: 6, color: 'var(--accent)', fontSize: '0.9rem' }}>✓ </span>}
                                 {label}

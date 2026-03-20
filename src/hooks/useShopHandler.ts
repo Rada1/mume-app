@@ -13,6 +13,9 @@ export function useShopHandler() {
     const logBuffer = useRef<string[]>([]);
     const currentItems = useRef<ShopItem[]>([]);
 
+    const pendingDetailItemIdRef = useRef<string | null>(null);
+    const detailBuffer = useRef<string[]>([]);
+
     const parseShopLine = (text: string): ShopItem | null => {
         const lower = text.toLowerCase();
         
@@ -86,6 +89,32 @@ export function useShopHandler() {
         return null;
     };
 
+    const parseShopDetailLine = (text: string) => {
+        detailBuffer.current.push(text);
+    };
+
+    const finalizeShopDetail = (setPopoverState?: (state: any) => void) => {
+        const itemId = pendingDetailItemIdRef.current;
+        const details = detailBuffer.current.join('\n');
+        
+        console.log('[ShopHandler] Finalizing Detail Capture:', { itemId, detailLength: details.length });
+
+        if (itemId && setPopoverState) {
+            setPopoverState((prev: any) => {
+                if (!prev || prev.type !== 'shop-card' || !prev.shopItems) return prev;
+                return {
+                    ...prev,
+                    shopItems: prev.shopItems.map((item: any) => 
+                        item.id === itemId ? { ...item, details } : item
+                    )
+                };
+            });
+        }
+        
+        pendingDetailItemIdRef.current = null;
+        detailBuffer.current = [];
+    };
+
     const finalizeShop = (
         addMessage?: (type: any, text: string, combatOverride?: boolean, mid?: string, isRoomName?: boolean, precalculated?: { textOnly: string, lower: string }, shopItem?: any) => void,
         setPopoverState?: (state: any) => void
@@ -136,6 +165,9 @@ export function useShopHandler() {
         shopItems,
         setShopItems,
         parseShopLine,
-        finalizeShop
+        finalizeShop,
+        pendingDetailItemIdRef,
+        parseShopDetailLine,
+        finalizeShopDetail
     };
 }

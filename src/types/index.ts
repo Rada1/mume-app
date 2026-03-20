@@ -1,6 +1,6 @@
 import { LucideIcon } from 'lucide-react';
 
-export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits';
+export type MessageType = 'user' | 'system' | 'error' | 'game' | 'prompt' | 'comm' | 'comm-continue' | 'shop-item' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'equipment-list' | 'inventory-list' | 'room-exits';
 export type LightingType = 'sun' | 'artificial' | 'moon' | 'dark' | 'none';
 export type WeatherType = 'clear' | 'cloud' | 'rain' | 'heavy-rain' | 'snow' | 'none';
 export type Direction = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw' | 'u' | 'd';
@@ -8,7 +8,7 @@ export type SwipeDirection = 'up' | 'down' | 'left' | 'right' | 'ne' | 'nw' | 's
 export type DeathStage = 'none' | 'fade_to_black' | 'flash' | 'black_hold' | 'fade_in' | 'blood_vignette';
 export type TriggerAction = 'show' | 'switch_set';
 export type UiMode = 'auto' | 'desktop' | 'portrait' | 'landscape';
-export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'practice' | 'whois' | 'description' | 'info' | 'quest';
+export type CaptureStage = 'none' | 'who' | 'where' | 'inv' | 'eq' | 'stat' | 'container' | 'shop' | 'shop-detail' | 'practice' | 'whois' | 'description' | 'info' | 'quest';
 export type CombatHealthStatus = 'Healthy' | 'Fine' | 'Hurt' | 'Wounded' | 'Badly Wounded' | 'Awful' | 'Dying' | 'Stunned' | 'None';
 
 export interface InlineCategoryConfig {
@@ -51,6 +51,7 @@ export interface ShopItem {
     condition?: string;
     age?: string;
     count?: string;
+    details?: string;
 }
 
 export interface PracticeSkill {
@@ -247,6 +248,7 @@ export interface PopoverManagerProps {
     setIsItemsDrawerOpen?: (open: boolean) => void;
     refreshLogHighlights?: () => void;
     practice?: any;
+    shop?: any;
 }
 
 

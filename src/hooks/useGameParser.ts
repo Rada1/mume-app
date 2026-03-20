@@ -87,7 +87,8 @@ export function useGameParser(deps: UseGameParserDeps) {
     const tempInvRef = useRef<DrawerLine[]>([]);
     const shopPagerSeenRef = useRef(false);
     const ignoredCommBufferRef = useRef<string | null>(null);
-    const lastCommSenderRef = useRef<string | null>(null);
+    const lastCommMsgIdRef = useRef<string | null>(null);
+    const lastCommTimeRef = useRef<number>(0);
 
     const finalizeCapture = useCallback((targetStage?: CaptureStage) => {
         const currentStage = captureStage.current as CaptureStage;
@@ -96,8 +97,8 @@ export function useGameParser(deps: UseGameParserDeps) {
         // If targetStage is provided, only finalize if we match
         if (targetStage && currentStage !== targetStage) return false;
 
-        const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'practice', 'description', 'whois', 'info', 'quest'];
-        if (stagesToTerminate.includes(currentStage as any)) {
+        const stagesToTerminate: CaptureStage[] = ['who', 'where', 'inv', 'eq', 'stat', 'container', 'shop', 'shop-detail', 'practice', 'description', 'whois', 'info', 'quest'];
+        if (stagesToTerminate.includes(currentStage)) {
             const eqLen = tempEqRef.current.length;
             const invLen = tempInvRef.current.length;
             
@@ -117,6 +118,8 @@ export function useGameParser(deps: UseGameParserDeps) {
                 deps.practice.setIsUiRequested(false);
             } else if (currentStage === 'shop') {
                 deps.shop.finalizeShop(addMessage, setPopoverState);
+            } else if (currentStage === 'shop-detail') {
+                deps.shop.finalizeShopDetail(setPopoverState);
             } else if (currentStage === 'quest') {
                 finalizeQuests();
             } else if (currentStage === 'eq') {
@@ -214,9 +217,11 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log('[Parser] Entering Stage: shop'); addDiagnosticLog?.('Entering Stage: shop');
             (captureStage as any).current = 'shop'; deps.shop.setIsShopListingActive(true);
         }
-        else if (captureStage.current === 'none' && /^\s*(?:\*\*\*.*?\*\*\*\s*)?\d+\.\s+\S/.test(textOnly) && /\b(?:up to|for)\b/i.test(textOnly) && /\b(?:copper|silver|gold)\b/i.test(textOnly)) {
-            // Auto-detect shop item format for paginated 'list' output (handles all pages without needing header)
-            (captureStage as any).current = 'shop'; deps.shop.setIsShopListingActive(true);
+        else if (isSilentCapture.current > 0 && deps.shop.pendingDetailItemIdRef.current && captureStage.current === 'none' && textOnly.trim().length > 0) {
+            // Heuristic for the start of 'show item <id>' response (it's the first non-empty line after the command)
+            (captureStage as any).current = 'shop-detail';
+            deps.shop.parseShopDetailLine(textOnly);
+            return;
         }
         else if ((textOnly.startsWith('Player') && textOnly.includes('Room')) || (textOnly.startsWith('Who') && textOnly.includes('Location'))) {
             if (captureStage.current === 'where') return;
@@ -698,7 +703,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             console.log('[Parser] End-prompt detected:', { textOnly, stage: captureStage.current });
         }
 
-        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container' || captureStage.current === 'practice' || captureStage.current === 'shop') {
+        if (captureStage.current === 'inv' || captureStage.current === 'eq' || captureStage.current === 'stat' || captureStage.current === 'container' || captureStage.current === 'practice' || captureStage.current === 'shop' || captureStage.current === 'shop-detail') {
             const createLine = (l: string, tOnly: string, lLower: string, cmd: string): DrawerLine => {
                 const leadingSpaces = l.replace(/\x1b\[[0-9;]*m/g, '').match(/^ */)?.[0].length || 0;
                 const depth = Math.floor(leadingSpaces / 3);
@@ -780,6 +785,10 @@ export function useGameParser(deps: UseGameParserDeps) {
                         shopPagerSeenRef.current = true;
                     }
                     parseShopLine(textOnly);
+                }
+            } else if (captureStage.current === 'shop-detail') {
+                if (textOnly.trim().length > 0) {
+                    deps.shop.parseShopDetailLine(textOnly);
                 }
             } else if (captureStage.current === 'container') {
                 if (textOnly.length > 0 && !lower.includes('contains:')) {
@@ -975,10 +984,12 @@ export function useGameParser(deps: UseGameParserDeps) {
             // Stage already reset or prompt detected - hide any trailing matches or command echoes
             if (/you are carrying|your inventory contains/i.test(lower) && deps.isItemsOpen) isDrawerHiding = true;
             if ((/you are (using|equipped with)/i.test(lower) || /ob:|armor:|mood:|str:|exp:|level:/i.test(lower) || /practice sessions left/i.test(lower)) && deps.isCharacterOpen) isDrawerHiding = true;
+            if (/ob:|armor:|mood:|str:|exp:|level:/i.test(lower) && deps.isStatsOpen) isDrawerHiding = true;
             if ((lower === 'who' || lower === 'where') && isPlayersOpen) isDrawerHiding = true;
             if (isEndPrompt) {
                  if (deps.isItemsOpen && (isWaitingForInv.current || isWaitingForEq.current)) isDrawerHiding = true;
                  if (deps.isCharacterOpen && (isWaitingForStats.current || isWaitingForEq.current || captureStage.current === 'practice' || captureStage.current === 'info' || captureStage.current === 'quest' || captureStage.current === 'shop')) isDrawerHiding = true;
+                 if (deps.isStatsOpen && isWaitingForStats.current) isDrawerHiding = true;
                  if (isPlayersOpen && captureStage.current === 'none') {
                      // Heuristic: If we just finished a who/where and the drawer is open, hide the final prompt
                      isDrawerHiding = true;
@@ -1117,7 +1128,7 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (gmcpComm.msg) {
                 commText = gmcpComm.msg;
                 // Store the remaining text to suppress future wrapped lines
-                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?),\s*/i);
+                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?)[,\s:]+\s*/i);
                 const lineContentText = prefixMatch ? textOnly.substring(prefixMatch[0].length) : textOnly;
                 
                 if (commText.length > lineContentText.length) {
@@ -1125,7 +1136,7 @@ export function useGameParser(deps: UseGameParserDeps) {
                 }
             } else {
                 // Heuristic fallback to extract the message body from the full text line
-                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?),\s*/i);
+                const prefixMatch = textOnly.match(/^(.*?)\s+(?:says|tells|narrates|yells|shouts|exclaims|sings|whispers|prays|asks)(?:.*?)[,\s:]+\s*/i);
                 if (prefixMatch) {
                     commText = textOnly.substring(prefixMatch[0].length);
                 } else {
@@ -1135,16 +1146,7 @@ export function useGameParser(deps: UseGameParserDeps) {
         } else {
             // Text fallback (no GMCP): detect common comm patterns and split into parts
             const commPatterns: [RegExp, string, boolean][] = [
-                [/^(.+?)\s+(tells? you)\s+(.*)$/i, 'tell', true],
-                [/^(.+?)\s+(says?)(?:,)?\s+(.*)$/i, 'say', true],
-                [/^(.+?)\s+(narrates?)(?:,)?\s+(.*)$/i, 'narrate', true],
-                [/^(.+?)\s+(yells?)(?:,)?\s+(.*)$/i, 'yell', true],
-                [/^(.+?)\s+(shouts?)(?:,)?\s+(.*)$/i, 'shout', true],
-                [/^(.+?)\s+(exclaims?)(?:,)?\s+(.*)$/i, 'exclaim', true],
-                [/^(.+?)\s+(sings?)(?:,)?\s+(.*)$/i, 'sing', true],
-                [/^(.+?)\s+(whispers?)(?:,)?\s+(.*)$/i, 'whisper', true],
-                [/^(.+?)\s+(prays?)(?:,)?\s+(.*)$/i, 'pray', true],
-                [/^(.+?)\s+(asks?)(?:\s+you)?(?:,)?\s+(.*)$/i, 'ask', true],
+                [/^(.+?)\s+(tells? you|says?|narrates?|yell?s|shouts?|exclaims?|sings?|whispers?|prays?|asks?(?:\s+you)?)(?:[:,\s]+)(.*)$/i, 'tell', true],
             ];
             for (const [re, cmd, hasSender] of commPatterns) {
                 const m = textOnly.match(re);
@@ -1159,13 +1161,44 @@ export function useGameParser(deps: UseGameParserDeps) {
                     break; 
                 }
             }
+
+            // JOIN CONTINUATION LINES:
+            // If this line doesn't match a comm pattern but follows a very recent comm from the same sender,
+            // or if it's a raw line ending/starting with quotes that suggests continuation.
+            if (!replyCommand && lastCommMsgIdRef.current && (Date.now() - lastCommTimeRef.current < 500)) {
+                // Heuristic: if the line doesn't look like a new game action (starts with lowercase or punctuation)
+                // or if it completes a quoted block.
+                const isLikelyContinuation = textOnly.length > 0 && (
+                    /^[a-z0-9'"]/.test(textOnly) || 
+                    textOnly.endsWith("'") || 
+                    textOnly.endsWith('"') ||
+                    textOnly.endsWith("'!") ||
+                    textOnly.endsWith('"!') ||
+                    textOnly.endsWith("'.") ||
+                    textOnly.endsWith('".')
+                );
+
+                if (isLikelyContinuation) {
+                    msgType = 'comm-continue';
+                    commText = textOnly;
+                    // We don't set replyCommand here, but we'll use 'comm-continue' type to signal useMessageLog
+                }
+            }
         }
         if (replyCommand) msgType = 'comm';
 
         if (shouldShow) {
             let finalRawText = cleanLine;
             if (isRoomName && !finalRawText.endsWith('\x1b[0m')) finalRawText += '\x1b[0m';
-            addMessage(msgType, finalRawText, undefined, `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, replyTarget, replyCommand, commSender, commAction, commText, commColor);
+            
+            const mid = msgType === 'comm-continue' ? lastCommMsgIdRef.current! : `msg-${textOnly.length}-${Date.now()}-${counterRef.current++}`;
+            
+            if (msgType === 'comm' || replyCommand) {
+                lastCommMsgIdRef.current = mid;
+                lastCommTimeRef.current = Date.now();
+            }
+
+            addMessage(msgType, finalRawText, undefined, mid, isRoomName, { textOnly, lower }, undefined, undefined, undefined, false, replyTarget, replyCommand, commSender, commAction, commText, commColor);
         }
 
         if (isEndPrompt) finalizeCapture();

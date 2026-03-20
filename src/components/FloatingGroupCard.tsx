@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
 import { ShopItem, PracticeData } from '../types';
 import ShopItemCard from './ShopItemCard';
-import { X, Search, Plus } from 'lucide-react';
+import { X, Search, Plus, ShoppingCart, Eye, Check } from 'lucide-react';
 
 interface FloatingGroupCardProps {
     type: 'shop' | 'practice';
     shopItems?: ShopItem[];
     practiceData?: PracticeData;
     onClose: () => void;
-    executeCommand: (cmd: string, silent?: boolean) => void;
+    executeCommand: (cmd: string, silent?: boolean, isSystem?: boolean) => void;
     practice?: any;
+    shop?: any;
     setPopoverState?: (state: any) => void;
     popoverRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({ 
-    type, shopItems, practiceData, onClose, executeCommand, practice, setPopoverState, popoverRef 
+    type, shopItems, practiceData, onClose, executeCommand, practice, shop, setPopoverState, popoverRef 
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedItemIds, setSelectedItemIds] = useState<string[]>([]);
 
     const filteredShopItems = shopItems?.filter(item => 
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -29,18 +31,28 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
         skill.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const handleShopItemClick = (e: React.MouseEvent, item: ShopItem) => {
-        if (setPopoverState) {
-            setPopoverState({
-                x: e.clientX,
-                y: e.clientY,
-                setId: 'inline-shopitem',
-                context: item.id,
-                menuDisplay: 'list'
-            });
-        } else {
-            executeCommand(`buy ${item.id}`);
-        }
+    const toggleItemSelection = (itemId: string) => {
+        setSelectedItemIds(prev => 
+            prev.includes(itemId) 
+                ? prev.filter(id => id !== itemId) 
+                : [...prev, itemId]
+        );
+    };
+
+    const handleBatchBuy = () => {
+        if (selectedItemIds.length === 0) return;
+        selectedItemIds.forEach(id => {
+            executeCommand(`buy ${id}`);
+        });
+        setSelectedItemIds([]);
+    };
+
+    const handleBatchShow = () => {
+        if (selectedItemIds.length === 0) return;
+        selectedItemIds.forEach(id => {
+            executeCommand(`show ${id}`);
+        });
+        setSelectedItemIds([]);
     };
 
     return (
@@ -72,22 +84,61 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                 backdropFilter: 'blur(20px)'
             }}>
                 <div className="card-header" style={{
-                    padding: '16px 20px',
+                    padding: '12px 20px',
                     borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    background: 'rgba(255, 255, 255, 0.02)'
+                    background: 'rgba(255, 255, 255, 0.02)',
+                    minHeight: '64px'
                 }}>
-                    <h3 style={{ margin: 0, color: 'var(--accent)', fontSize: '1.1rem', letterSpacing: '1px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                        {type === 'shop' ? 'Shop' : 'Practice'}
-                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <h3 style={{ margin: 0, color: 'var(--accent)', fontSize: '1.1rem', letterSpacing: '1px', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                            {type === 'shop' ? 'Shop' : 'Practice'}
+                        </h3>
+                        {type === 'shop' && selectedItemIds.length > 0 && (
+                            <div style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '8px',
+                                marginLeft: '8px',
+                                padding: '4px 12px',
+                                background: 'rgba(var(--accent-rgb), 0.1)',
+                                borderRadius: '20px',
+                                border: '1px solid rgba(var(--accent-rgb), 0.2)'
+                            }}>
+                                <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--accent)' }}>
+                                    {selectedItemIds.length} selected
+                                </span>
+                                <div style={{ width: '1px', height: '14px', background: 'rgba(255, 255, 255, 0.1)', margin: '0 4px' }} />
+                                <button 
+                                    onClick={handleBatchShow}
+                                    style={{ 
+                                        background: 'none', border: 'none', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '4px'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'none'}
+                                >
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--accent)' }}>SHOW</span>
+                                </button>
+                                <button 
+                                    onClick={handleBatchBuy}
+                                    style={{ 
+                                        background: 'var(--accent)', border: 'none', color: '#000', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 12px', borderRadius: '12px'
+                                    }}
+                                >
+                                    <span style={{ fontSize: '0.75rem', fontWeight: 'bold' }}>BUY ALL</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="search-filter-wrapper" style={{
                         flex: 1,
                         margin: '0 15px',
                         position: 'relative',
-                        maxWidth: '220px'
+                        maxWidth: selectedItemIds.length > 0 ? '140px' : '220px',
+                        transition: 'max-width 0.3s ease'
                     }}>
                         <Search size={14} style={{
                             position: 'absolute',
@@ -98,7 +149,7 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                         }} />
                         <input
                             type="text"
-                            placeholder={type === 'shop' ? "Filter items..." : "Filter skills..."}
+                            placeholder={type === 'shop' ? "Filter..." : "Filter skills..."}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             style={{
@@ -111,14 +162,6 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                                 fontSize: '0.85rem',
                                 outline: 'none',
                                 transition: 'all 0.2s ease'
-                            }}
-                            onFocus={(e) => {
-                                e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-                                e.target.style.borderColor = 'var(--accent)';
-                            }}
-                            onBlur={(e) => {
-                                e.target.style.background = 'rgba(255, 255, 255, 0.05)';
-                                e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)';
                             }}
                         />
                     </div>
@@ -160,11 +203,47 @@ export const FloatingGroupCard: React.FC<FloatingGroupCardProps> = ({
                         </div>
                     )}
                     
-                    {type === 'shop' && filteredShopItems?.map(item => (
-                        <div key={item.id} className="floating-card-item" onClick={(e) => handleShopItemClick(e, item)} style={{ cursor: 'pointer' }}>
-                            <ShopItemCard item={item} executeCommand={executeCommand} />
-                        </div>
-                    ))}
+                    {type === 'shop' && filteredShopItems?.map(item => {
+                        const isSelected = selectedItemIds.includes(item.id);
+                        return (
+                            <div 
+                                key={item.id} 
+                                className={`floating-card-item shop-item-entry ${isSelected ? 'selected' : ''}`} 
+                                onClick={() => toggleItemSelection(item.id)} 
+                                style={{ 
+                                    padding: '12px 16px',
+                                    background: isSelected ? 'rgba(var(--accent-rgb), 0.12)' : 'rgba(255, 255, 255, 0.03)',
+                                    border: `1px solid ${isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.08)'}`,
+                                    borderRadius: '16px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '15px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    position: 'relative'
+                                }}
+                            >
+                                <div style={{ 
+                                    width: '20px', 
+                                    height: '20px', 
+                                    borderRadius: '6px', 
+                                    border: `2px solid ${isSelected ? 'var(--accent)' : 'rgba(255, 255, 255, 0.2)'}`,
+                                    background: isSelected ? 'var(--accent)' : 'transparent',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    transition: 'all 0.2s ease',
+                                    flexShrink: 0
+                                }}>
+                                    {isSelected && <Check size={14} color="#000" strokeWidth={3} />}
+                                </div>
+
+                                <div style={{ flex: 1 }}>
+                                    <ShopItemCard item={item} executeCommand={executeCommand} />
+                                </div>
+                            </div>
+                        );
+                    })}
                     
                     {type === 'practice' && filteredSkills?.length === 0 && (
                         <div style={{ textAlign: 'center', padding: '40px 20px', opacity: 0.4 }}>
