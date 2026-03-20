@@ -28,10 +28,15 @@ export function usePracticeHandler(
         const lower = text.toLowerCase();
 
         // 1. Detect sessions left (Reset marker)
-        const sessionMatch = text.match(/You have (\d+) practice sessions? left/i);
-        if (sessionMatch) {
+        // MUME examples: 
+        // "You have 33 practice sessions left to spend."
+        // "You have 33 sessions left to spend."
+        // "You have 5 practice sessions available."
+        const sessionMatch = text.match(/You have (\d+)/i) || text.match(/(\d+) (?:practice )?sessions?/i);
+        
+        if (sessionMatch && lower.includes('session')) {
             const count = parseInt(sessionMatch[1]);
-            console.log('[PracticeHandler] Detected sessions left:', count);
+            console.log(`[PracticeHandler] DETECTED SESSIONS: ${count} from line: "${text}"`);
             setIsPracticeActive(true);
             parsedSkillsRef.current = []; // Fresh start for this capture
             setPracticeData(prev => ({
@@ -49,16 +54,23 @@ export function usePracticeHandler(
         }
 
         if (isPracticeActiveRef.current) {
-            // MUME output columns: [Skill Name]  [Knowledge]  [Difficulty]  [Class]
+            // MUME output columns: [Skill Name]  [Sessions]  [Knowledge]  [Difficulty]  [Class]
             const parts = text.trim().split(/\s{2,}/).filter(p => p.length > 0);
-            
+
             if (parts.length >= 2) {
                 const name = parts[0].trim();
-                const knowledgeStr = parts[1].trim();
-                const difficulty = parts[2]?.trim() || '';
-                let skillClass = parts[3]?.trim() || 'General';
-                if (skillClass.toLowerCase() === 'none') skillClass = 'General';
-                
+
+                // Detect sessions column: matches "N/N" or "N/ N" pattern (e.g. "2/10", "0/ 9")
+                const sessionPattern = /^\d+\/\s*\d+$/;
+                const hasSessionsCol = parts.length >= 3 && sessionPattern.test(parts[1].trim());
+
+                const sessionsStr = hasSessionsCol ? parts[1].trim().replace(/\s+/g, '') : '';
+                const knowledgeStr = (hasSessionsCol ? parts[2] : parts[1])?.trim() || '';
+                const difficulty    = (hasSessionsCol ? parts[3] : parts[2])?.trim() || '';
+                let skillClass      = (hasSessionsCol ? parts[4] : parts[3])?.trim() || 'General';
+                // Multi-word values (e.g. "Easy to improve") are advice, not a class name
+                if (!skillClass || skillClass.toLowerCase() === 'none' || skillClass.includes(' ')) skillClass = 'General';
+
                 const knowledgeMap: Record<string, string> = {
                     'awful': '15%', 'bad': '30%', 'poor': '45%', 'average': '60%', 'fair': '70%', 'good': '80%', 'very good': '90%', 'excellent': '98%', 'superb': '100%',
                 };
@@ -66,17 +78,27 @@ export function usePracticeHandler(
                 const knowledge = knowledgeMap[knowledgeStr.toLowerCase()] || (knowledgeStr.includes('%') ? knowledgeStr : knowledgeStr + '%');
                 const proficiency = parseInt(knowledge) || 0;
 
-                // Only add if it looks like a real skill (has a valid knowledge level)
-                if (proficiency > 0 || knowledgeStr.includes('%')) {
+                // Heuristic for skills if the class column is missing or ambiguous
+                const skillNameLower = name.toLowerCase();
+                const warriorSkills = ['bash', 'kick', 'rescue', 'slashing weapons', 'stabbing weapons', 'two-handed weapons', 'cleaving weapons', 'concussion weapons', 'parry', 'endurance', 'shield parry'];
+                const rangerSkills = ['tracking', 'scout', 'herblore', 'skin', 'wilderness'];
+                
+                if (skillClass === 'General') {
+                    if (warriorSkills.some(s => skillNameLower.includes(s))) skillClass = 'Warrior';
+                    else if (rangerSkills.some(s => skillNameLower.includes(s))) skillClass = 'Ranger';
+                }
+
+                // Accept any line that has a sessions column OR a recognisable knowledge value
+                if (hasSessionsCol || proficiency > 0 || knowledgeStr.includes('%')) {
                     const skill: PracticeSkill = {
-                        name, sessions: '0/0', knowledge: knowledge.replace('%',''), proficiency, difficulty, advice: '', skillClass
+                        name, sessions: sessionsStr, knowledge: knowledge.replace('%', ''), proficiency, difficulty, advice: '', skillClass
                     };
 
-                    console.log(`[PracticeHandler] Parsed skill: "${skill.name}" | Knowledge: ${skill.knowledge}% | Class: ${skill.skillClass}`);
+                    console.log(`[PracticeHandler] Parsed skill: "${skill.name}" | Sessions: ${skill.sessions} | Knowledge: ${skill.knowledge}% | Difficulty: ${skill.difficulty} | Class: ${skill.skillClass}`);
                     parsedSkillsRef.current.push(skill);
                     return skill;
                 } else {
-                    console.log(`[PracticeHandler] Skipping line (no proficiency): "${text}"`);
+                    console.log(`[PracticeHandler] Skipping line (unrecognised): "${text}"`);
                 }
             }
         }
@@ -143,12 +165,40 @@ export function usePracticeHandler(
 
             if (addMessage && logBuffer.length > 0) {
                 setTimeout(() => {
-                    logBuffer.forEach((msg, idx) => {
-                        if (msg.type === 'header') {
-                            addMessage('practice-header', msg.text, undefined, `prac-hdr-${Date.now()}`, false, undefined, undefined, undefined, msg.data, true);
-                        } else {
-                            addMessage('practice-skill', msg.text, undefined, `prac-${msg.data.name}-${Date.now()}-${idx}`, false, undefined, undefined, msg.data);
+                    const now = Date.now();
+
+                    // Column header (includes session count extracted from the log buffer)
+                    const headerMsg = logBuffer.find(m => m.type === 'header' && m.data && typeof m.data === 'object' && 'sessionsLeft' in m.data);
+                    const sessionsLeft = headerMsg ? (headerMsg.data as any).sessionsLeft : 0;
+                    
+                    console.log(`[PracticeHandler] Finalizing UI. Sessions from buffer: ${sessionsLeft}`, { hasHeader: !!headerMsg });
+                    
+                    addMessage('practice-column-header' as any, '', undefined, `prac-col-hdr-${now}`, false, undefined, undefined, undefined, { sessionsLeft }, true);
+
+                    // Group skill entries by class, preserving encounter order
+                    const classOrder: string[] = [];
+                    const byClass: Record<string, typeof logBuffer> = {};
+                    logBuffer
+                        .filter(m => m.type === 'skill')
+                        .forEach(msg => {
+                            const cls: string = (msg.data as { skillClass?: string }).skillClass || 'General';
+                            if (!byClass[cls]) {
+                                classOrder.push(cls);
+                                byClass[cls] = [];
+                            }
+                            byClass[cls].push(msg);
+                        });
+
+                    // Only show class dividers when skills actually span multiple real classes
+                    const showClassHeaders = classOrder.length > 1 || (classOrder.length === 1 && classOrder[0] !== 'General');
+
+                    classOrder.forEach(cls => {
+                        if (showClassHeaders) {
+                            addMessage('practice-class-header' as any, cls, undefined, `prac-cls-${cls}-${now}`, false, undefined, undefined, undefined, undefined, true);
                         }
+                        byClass[cls].forEach((msg, idx) => {
+                            addMessage('practice-skill', msg.text, undefined, `prac-${msg.data.name}-${now}-${idx}`, false, undefined, undefined, msg.data);
+                        });
                     });
                 }, 10);
             }

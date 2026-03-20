@@ -5,6 +5,8 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import ShopItemCard from './ShopItemCard';
 import PracticeSkillCard from './PracticeSkillCard';
 import PracticeHeaderCard from './PracticeHeaderCard';
+import PracticeClassHeaderCard from './PracticeClassHeaderCard';
+import PracticeColumnHeaderCard from './PracticeColumnHeaderCard';
 
 import { useBaseGame, useVitals, useLog } from '../context/GameContext';
 
@@ -49,6 +51,10 @@ const MessageItem = React.memo(({
                 <PracticeSkillCard skill={msg.practiceSkill} />
             ) : msg.type === 'practice-header' && msg.practiceHeader ? (
                 <PracticeHeaderCard sessionsLeft={msg.practiceHeader.sessionsLeft} />
+            ) : msg.type === 'practice-column-header' ? (
+                <PracticeColumnHeaderCard sessionsLeft={msg.practiceHeader?.sessionsLeft} />
+            ) : msg.type === 'practice-class-header' ? (
+                <PracticeClassHeaderCard label={msg.textRaw} />
             ) : (
                 <div className="message-content" dangerouslySetInnerHTML={{ __html: content }} />
             )}
@@ -114,8 +120,10 @@ const MessageLog: React.FC<MessageLogProps> = ({
             const msg = messagesRef.current[index];
             if (!msg) return 24;
             if (msg.type === 'shop-item') return 120;
-            if (msg.type === 'practice-skill') return 80;
-            if (msg.type === 'practice-header') return 100;
+            if (msg.type === 'practice-skill') return 36;
+            if (msg.type === 'practice-header') return 52;
+            if (msg.type === 'practice-class-header') return 32;
+            if (msg.type === 'practice-column-header') return 56;
             if (msg.textRaw.length > 200) return 60;
             if (msg.textRaw.length > 100) return 40;
             return 24;

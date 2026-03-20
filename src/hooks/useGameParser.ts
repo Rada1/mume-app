@@ -934,7 +934,8 @@ export function useGameParser(deps: UseGameParserDeps) {
             if (currentStage === 'inv' && deps.isItemsOpen) isDrawerHiding = true;
             else if (currentStage === 'eq' && (deps.isItemsOpen || deps.isCharacterOpen)) isDrawerHiding = true;
             else if (currentStage === 'stat' && (deps.isStatsOpen || deps.isCharacterOpen)) isDrawerHiding = true;
-            else if (['practice', 'info', 'quest', 'description', 'whois'].includes(currentStage) && deps.isCharacterOpen) isDrawerHiding = true;
+            else if (currentStage === 'practice') isDrawerHiding = true;
+            else if (['info', 'quest', 'description', 'whois'].includes(currentStage) && deps.isCharacterOpen) isDrawerHiding = true;
             else if (currentStage === 'container' && (isDrawerCapture.current > 0 || isSilentCapture.current > 0)) isDrawerHiding = true;
             else if (['who', 'where'].includes(currentStage) && isPlayersOpen) isDrawerHiding = true;
             else if (currentStage === 'shop') isDrawerHiding = true;
