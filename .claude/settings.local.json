@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git diff HEAD~3 HEAD -- manifest.json public/manifest.json src/index.html index.html *.webmanifest)"
+    ]
+  }
+}
