@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
           short_name: 'MUME',
           description: 'A premium web client for MUME (Multi-Users in Middle-earth) — the classic MUD.',
           start_url: '/',
-          display: 'fullscreen',
+          display: 'standalone',
           background_color: '#000000',
           theme_color: '#4ade80',
           orientation: 'any',
