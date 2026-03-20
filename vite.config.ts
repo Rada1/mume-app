@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
           start_url: '/',
           display: 'standalone',
           background_color: '#000000',
-          theme_color: '#4ade80',
+          theme_color: '#000000',
           orientation: 'any',
           scope: '/',
           icons: [
