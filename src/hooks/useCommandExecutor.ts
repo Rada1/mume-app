@@ -292,6 +292,13 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (status === 'connected') telnet.sendCommand(finalCmd);
         else if (!silent) addMessage('error', 'Not connected.');
 
+        // Auto-refresh combat stats panel when player changes mood.
+        // Use silent+isSystem but NOT fromDrawer — keeps isDrawerCapture at 0 so
+        // the stat response is parsed cleanly (same path as a manual stat command).
+        if (!silent && status === 'connected' && /^ch\w*\s+mood\b/i.test(lowerCmd)) {
+            setTimeout(() => executeCommand('stat', true, true, false, false), 3000);
+        }
+
         // Re-centering is handled automatically by the mapper's internal animation loop
         // when autoCenter is active. Explicitly calling handleCenterOnPlayer here
         // can cause imprecise 'snaps' on mobile that conflict with smooth animations.

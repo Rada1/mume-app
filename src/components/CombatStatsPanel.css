@@ -1,0 +1,122 @@
+.combat-stats-panel {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    z-index: 10;
+    pointer-events: none;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 4px;
+
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.combat-stats-panel.active {
+    opacity: 1;
+}
+
+.csp-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+}
+
+.csp-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.csp-value {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #4ade80;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.csp-divider {
+    height: 1px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 2px 0;
+}
+
+/* Mood row — tappable */
+.csp-mood-trigger {
+    cursor: pointer;
+    pointer-events: auto;
+    border-radius: 4px;
+    padding: 2px 4px;
+    transition: background 0.15s;
+}
+
+.csp-mood-trigger:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Mood hotswitch popup */
+.csp-mood-menu {
+    position: absolute;
+    right: calc(100% + 6px);
+    bottom: 8px;
+    background: rgba(12, 12, 18, 0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    z-index: 100;
+    pointer-events: auto;
+}
+
+.csp-mood-btn {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 5px 10px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background 0.1s, color 0.1s;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.csp-mood-btn:active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.csp-mood-btn.active {
+    background: rgba(74, 222, 128, 0.15);
+    border-color: rgba(74, 222, 128, 0.4);
+    color: #4ade80;
+}
+
+.csp-mood-btn.drag-hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+}

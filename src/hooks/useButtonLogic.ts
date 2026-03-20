@@ -8,6 +8,7 @@ export const useButtonLogic = (
     activeSet: string,
     abilities: Record<string, number>,
     characterClass: string,
+    characterName: string | null,
     isEditMode: boolean,
     isSmartPopulateEnabled: boolean = true,
     target: string | null = null,
@@ -20,11 +21,32 @@ export const useButtonLogic = (
         // 1. Static filtering & Modification
         const filtered = rawButtons.filter(b => {
             if (isEditMode) return true;
-            if (b.id.startsWith('xbox-')) return true;
+
+            // Xbox cluster special handling
+            if (b.id.startsWith('xbox-')) {
+                // Warrior (z), Ranger (y), and Door (xbox-door) are always available per request.
+                // Cleric (x), Mage (b), and Thief (a) are hidden if no class skills are known.
+                const buttonToClass: Record<string, string> = {
+                    'xbox-x': 'cleric', 'xbox-b': 'mage', 'xbox-a': 'thief'
+                };
+                const classKey = buttonToClass[b.id];
+                if (classKey && b.hideIfUnknown) {
+                    // Force hidden on connect screen (no characterName)
+                    if (!characterName) return false;
+                    
+                    const skills = CLASS_MAPPINGS[classKey] || [];
+                    const knownCount = skills.filter(s => (abilities[s.toLowerCase()] || 0) > 0).length;
+                    if (knownCount === 0) return false;
+                }
+                return true;
+            }
 
             if (isSmartPopulateEnabled && b.hideIfUnknown && b.setId !== 'Xbox') {
-                const cmdLower = b.command.toLowerCase();
-                const labelLower = b.label.toLowerCase();
+                // If on connect screen, hide all spell/skill buttons that depend on being known
+                if (!characterName) return false;
+
+                const cmdLower = (b.command || '').toLowerCase();
+                const labelLower = (b.label || '').toLowerCase();
                 let name = labelLower;
                 let isSpellOrSkill = false;
 
@@ -59,22 +81,6 @@ export const useButtonLogic = (
             return true;
         }).map(b => {
             let modified = { ...b };
-
-            // Class-based dimming for Xbox cluster
-            if (b.setId === 'Xbox' && b.hideIfUnknown && !isEditMode) {
-                const buttonToClass: Record<string, string> = {
-                    'xbox-y': 'ranger', 'xbox-x': 'cleric', 'xbox-b': 'mage', 'xbox-a': 'thief', 'xbox-z': 'warrior'
-                };
-                const classKey = buttonToClass[b.id];
-                if (classKey) {
-                    const skills = CLASS_MAPPINGS[classKey] || [];
-                    const knownCount = skills.filter(s => (abilities[s.toLowerCase()] || 0) > 0).length;
-
-                    if (knownCount === 0) {
-                        modified.isDimmed = true;
-                    }
-                }
-            }
 
             // Dim buttons that are unknown but visible because smart populate is off
             if (!isSmartPopulateEnabled && b.hideIfUnknown && !isEditMode) {
@@ -150,5 +156,5 @@ export const useButtonLogic = (
         // We just return what we have.
 
         return [...filtered, ...allGenerated];
-    }, [rawButtons, activeSet, abilities, characterClass, isEditMode, isSmartPopulateEnabled, target]);
+    }, [rawButtons, activeSet, abilities, characterClass, characterName, isEditMode, isSmartPopulateEnabled, target]);
 };

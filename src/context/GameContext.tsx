@@ -199,7 +199,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const { spatButtons, setSpatButtons, triggerSpit, triggerSpitManual } = useSpatButtons(messages, containerRef, triggerHaptic);
 
-    const btn = useButtons(abilities, characterClass, v.target, s.inlineCategories);
+    const btn = useButtons(abilities, characterClass, s.characterName, v.target, s.inlineCategories);
     const joystick = useJoystick(triggerHaptic, s.roomExits);
     const editor = useButtonEditor(btn, containerRef);
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.disable3dScroll, s.isImmersionMode);

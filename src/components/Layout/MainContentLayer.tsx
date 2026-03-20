@@ -5,6 +5,7 @@ import InputArea from '../InputArea';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import CombatOverlay from '../CombatOverlay';
+import CombatStatsPanel from '../CombatStatsPanel';
 
 interface MainContentLayerProps {
     handleMouseUp: (e: React.MouseEvent) => void;
@@ -52,8 +53,18 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
         isImmersionMode,
         parley,
         setParley,
-        whoList
+        whoList,
+        inCombat,
     } = useGame();
+
+    const prevInCombatRef = React.useRef(false);
+    React.useEffect(() => {
+        if (inCombat && !prevInCombatRef.current) {
+            // Combat just started — populate OB/DB/PB/Armour
+            setTimeout(() => executeCommand('stat', true, true, false, false), 400);
+        }
+        prevInCombatRef.current = inCombat;
+    }, [inCombat, executeCommand]);
 
     const { target } = useVitals();
     const { setPopoverState } = useUI();
@@ -112,6 +123,7 @@ export const MainContentLayer: React.FC<MainContentLayerProps> = ({
             )}
 
             <div className="message-log-container" ref={logContainerRef}>
+                <CombatStatsPanel />
                 <MessageLog
                     onLogClick={handleLogClick}
                     onMouseUp={handleMouseUp}

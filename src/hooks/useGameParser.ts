@@ -412,20 +412,22 @@ export function useGameParser(deps: UseGameParserDeps) {
 
             // Global Status Parser for MUME (updates OB/DB/PB/Armour in real-time)
             // Ensure this runs BEFORE prompt stripping so we don't lose the context.
-            if (contentLower.startsWith('your ob ') || contentLower.startsWith('your mood ') || contentLower.startsWith('your armor ') || contentLower.startsWith('your armour ') || contentLower.includes('ob:') || contentLower.includes('db:') || contentLower.includes('pb:')) {
+            if (contentLower.startsWith('your ob ') || contentLower.startsWith('your mood ') || contentLower.startsWith('your armor ') || contentLower.startsWith('your armour ') || contentLower.includes('ob:') || contentLower.includes('db:') || contentLower.includes('pb:') || contentLower.includes('mood:')) {
                 const obMatch = content.match(/Ob\s*(?::|is)?\s*(\d+)%/i);
                 const dbMatch = content.match(/Db\s*(?::|is)?\s*(\d+)%/i);
                 const pbMatch = content.match(/Pb\s*(?::|is)?\s*(\d+)%/i);
                 const armorMatch = content.match(/(?:Armo?ur|Armor)\s*(?::|is)?\s*(\d+)%/i);
                 const moodMatch = content.match(/your mood is (?:now )?(\w+)/i);
+                const moodCompactMatch = content.match(/\bMood\s*:\s*(\w+)/i);
                 const wimpyMatch = content.match(/Wimpy(?:\s*set\s*to|:)?\s*(\d+)/i);
 
-                if (obMatch || dbMatch || pbMatch || armorMatch || moodMatch || wimpyMatch) {
-                    if (moodMatch) {
-                        const newMood = moodMatch[1].toLowerCase();
-                        deps.setMood(newMood);
-                        // If we are in combat, refresh stats to get updated OB/DB/PB
-                        if (deps.inCombatRef.current && deps.executeCommandRef.current) {
+                if (obMatch || dbMatch || pbMatch || armorMatch || moodMatch || moodCompactMatch || wimpyMatch) {
+                    const moodValue = moodMatch ? moodMatch[1] : (moodCompactMatch ? moodCompactMatch[1] : null);
+                    if (moodValue) {
+                        deps.setMood(moodValue.toLowerCase());
+                        // Only fire stat on explicit mood change ("now") to avoid stat → mood → stat loop
+                        const isMoodChange = /your mood is now/i.test(content);
+                        if (isMoodChange && deps.inCombatRef.current && deps.executeCommandRef.current) {
                             setTimeout(() => deps.executeCommandRef.current?.('stat', true, true, true, true), 100);
                         }
                     }
