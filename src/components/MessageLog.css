@@ -489,6 +489,34 @@
     transform: translateY(-1px);
 }
 
+.inline-btn:active {
+    transform: scale(0.9) translateY(1px);
+    filter: brightness(1.5) contrast(1.1);
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 0 20px var(--glow-color, var(--accent)),
+                inset 0 0 5px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 12px var(--glow-color, var(--accent));
+    transition: transform 0.04s cubic-bezier(0.2, 0, 0.2, 1),
+                filter 0.04s ease-out,
+                box-shadow 0.04s ease-out;
+    z-index: 100;
+}
+
+/* JS-managed press state — instant feedback, no transition delay.
+   No transform here: moving the element between pointerdown and click
+   confuses mobile hit-testing and causes the click to miss the button. */
+.inline-btn.pressed,
+.inline-btn.menu-active {
+    filter: brightness(2.0) contrast(1.15);
+    background-color: rgba(255, 255, 255, 0.35) !important;
+    box-shadow: 0 0 20px var(--glow-color, var(--accent)),
+                inset 0 0 5px rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 14px var(--glow-color, var(--accent));
+    transition: none !important;
+    z-index: 100;
+}
+
+
 .inline-btn.drop-hover-active {
     animation: drop-pulse-strong 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1) !important;
     outline: 2px solid var(--glow-color, #4ade80) !important;

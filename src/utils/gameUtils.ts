@@ -246,10 +246,16 @@ export const formatMumePrice = (priceStr: string): string => {
  */
 export const sanitizeGameTarget = (target: string | null | undefined): string | null => {
     if (target === null || target === undefined) return null;
-    const clean = target.trim();
+    let clean = target.trim();
+    
+    // Rule: any corpse object should eliminate all the -s and just use corpse as the target.
     if (clean.toLowerCase().startsWith('corpse-')) {
         return 'corpse';
     }
+
+    // Aggressively strip punctuation from entities (e.g. "Maelton, the village elder" -> "Maelton the village elder")
+    clean = clean.replace(/[.,:;!?"'()[\]{}<>*#~]/g, ' ').replace(/\s+/g, ' ').trim();
+    
     return clean;
 };
 

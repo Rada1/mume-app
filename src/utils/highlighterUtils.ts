@@ -25,6 +25,24 @@ export interface Candidate {
 // Escape a value for safe use inside an HTML attribute delimited by double-quotes
 const esc = (v: string) => v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+const getTargetAwareStyles = (text: string, context: string, baseGlow: string, target: string | null) => {
+    if (!target) return { glow: baseGlow, classExtra: '' };
+    const lowerText = text.toLowerCase();
+    const lowerContext = context.toLowerCase();
+    const lowerTarget = target.toLowerCase();
+    
+    const isTarget = lowerText === lowerTarget || 
+                     lowerContext === lowerTarget ||
+                     lowerText.startsWith(`${lowerTarget} `) || 
+                     lowerText.endsWith(` ${lowerTarget}`) || 
+                     lowerText.includes(` ${lowerTarget} `);
+                     
+    if (isTarget) {
+        return { glow: '#facc15', classExtra: ' active-target' };
+    }
+    return { glow: baseGlow, classExtra: '' };
+};
+
 export const buildHighlighterCandidates = (
     mid: string,
     target: string | null,
@@ -47,13 +65,14 @@ export const buildHighlighterCandidates = (
         if (pcNamesSet.has(target)) category = 'inlineplayer';
         else if (npcNamesSet.has(target)) category = 'inlinenpc';
 
-        const glowColor = getGlowColorForCategory(category, inlineCategories);
+        // Target highlights are always yellow to distinguish from static npc/pc/item groups
+        const glowColor = '#facc15'; 
         const command = category;
 
         candidates.push({
             pattern: target,
-            priority: 90,
-            replacer: (m, _match) => `<span class="inline-btn auto-target active-target" draggable="true" data-id="auto-target-${esc(target)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m}</span>`,
+            priority: 1, // Lowest priority: only highlights if no other button matches this text
+            replacer: (m, _match) => `<span class="inline-btn auto-target active-target" draggable="true" data-id="auto-target-${esc(target)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}">${m.replace(/,/g, '')}</span>`,
             length: target.length
         });
     }
@@ -77,7 +96,8 @@ export const buildHighlighterCandidates = (
                         finalCommand = finalCommand.replace(new RegExp(`\\$${i}`, 'g'), val);
                     }
                 }
-                return `<span class="inline-btn" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${esc(finalCommand)}" data-context="${esc(m)}" data-icon="${esc(b.icon || '')}" data-label="${esc(finalLabel)}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" data-duration="${b.trigger?.duration || ''}" data-swipes='${b.swipeCommands ? JSON.stringify(b.swipeCommands).replace(/'/g, "&apos;") : ""}' data-swipe-actions='${b.swipeActionTypes ? JSON.stringify(b.swipeActionTypes).replace(/'/g, "&apos;") : ""}' style="--glow-color: ${b.style.backgroundColor.replace('0.3', '0.6').replace('0.2', '0.5')}">${m}</span>`;
+                const { glow, classExtra } = getTargetAwareStyles(m, finalCommand, b.style.backgroundColor.replace('0.3', '0.6').replace('0.2', '0.5'), target);
+                return `<span class="inline-btn${classExtra}" draggable="true" data-id="${b.id}" data-mid="${mid}" data-cmd="${esc(finalCommand)}" data-context="${esc(m)}" data-icon="${esc(b.icon || '')}" data-label="${esc(finalLabel)}" data-color="${b.style.backgroundColor}" data-action="${b.actionType || 'command'}" data-menu-display="${b.menuDisplay || 'list'}" data-spit="${b.trigger?.spit ? 'true' : 'false'}" data-duration="${b.trigger?.duration || ''}" data-swipes='${b.swipeCommands ? JSON.stringify(b.swipeCommands).replace(/'/g, "&apos;") : ""}' data-swipe-actions='${b.swipeActionTypes ? JSON.stringify(b.swipeActionTypes).replace(/'/g, "&apos;") : ""}' style="--glow-color: ${glow}">${m}</span>`;
             },
             length: pattern.length
         });
@@ -90,7 +110,10 @@ export const buildHighlighterCandidates = (
             candidates.push({
                 pattern: p,
                 priority: 5,
-                replacer: (m, _match) => `<span class="inline-btn auto-occupant pc-highlighter" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: rgba(125, 211, 252, 1); color: var(--glow-color); font-weight: 800">${m}</span>`,
+                replacer: (m, _match) => {
+                    const { glow, classExtra } = getTargetAwareStyles(m, name, 'rgba(125, 211, 252, 1)', target);
+                    return `<span class="inline-btn auto-occupant pc-highlighter${classExtra}" draggable="true" data-id="auto-${esc(name)}" data-mid="${mid}" data-cmd="inlineplayer" data-context="${esc(name)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}; font-weight: 800">${m.replace(/,/g, '')}</span>`;
+                },
                 length: p.length
             });
         });
@@ -116,7 +139,10 @@ export const buildHighlighterCandidates = (
             candidates.push({
                 pattern: p,
                 priority: 5,
-                replacer: (m, _match) => `<span class="inline-btn auto-npc npc-highlighter" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(originalName)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${m}</span>`,
+                replacer: (m, _match) => {
+                    const { glow, classExtra } = getTargetAwareStyles(m, originalName, glowColor, target);
+                    return `<span class="inline-btn auto-npc npc-highlighter${classExtra}" draggable="true" data-id="auto-npc-${esc(originalName)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(originalName)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
+                },
                 length: p.length
             });
         });
@@ -143,7 +169,10 @@ export const buildHighlighterCandidates = (
         candidates.push({
             pattern: name,
             priority: 5,
-            replacer: (m, _match) => `<span class="inline-btn auto-item" draggable="true" data-id="auto-item-${esc(name)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${m}</span>`,
+            replacer: (m, _match) => {
+                const { glow, classExtra } = getTargetAwareStyles(m, name, glowColor, target);
+                return `<span class="inline-btn auto-item${classExtra}" draggable="true" data-id="auto-item-${esc(name)}" data-mid="${mid}" data-cmd="${command}" data-context="${esc(m)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${m.replace(/,/g, '')}</span>`;
+            },
             length: name.length
         });
     });
@@ -202,7 +231,7 @@ export const buildHighlighterCandidates = (
                 const closeBracket = suffix ? 
                     `<span class="inline-btn exit-bracket" data-mid="${mid}" data-action="command" data-cmd="${esc(bracketCmd)}" data-context="${esc(suffix)}" style="${bracketStyle}">${suffix}</span>` : '';
                 const glowColor = 'rgba(255, 255, 255, 0.9)';
-                const dirBtn = `<span class="inline-btn exit-word" data-mid="${mid}" data-action="menu" data-cmd="inline-exit" data-context="${esc(dir)}" style="--glow-color: ${glowColor}; color: ${glowColor}">${dir}</span>`;
+                const dirBtn = `<span class="inline-btn exit-word" data-mid="${mid}" data-action="command" data-cmd="${esc(dir)}" data-context="${esc(dir)}" style="--glow-color: ${glowColor}; color: ${glowColor}">${dir}</span>`;
 
                 return `${openBracket}${dirBtn}${closeBracket}`;
             },
@@ -248,7 +277,7 @@ const decodeHtmlEntities = (s: string) =>
  * rewraps them as inline-btn elements with context-appropriate commands.
  * Must run before safeHighlight so highlightDepth protects these spans.
  */
-export const applyColorTaggedObjects = (html: string, mid: string, inlineCategories: InlineCategoryConfig[], type?: MessageType): string => {
+export const applyColorTaggedObjects = (html: string, mid: string, inlineCategories: InlineCategoryConfig[], target: string | null, type?: MessageType): string => {
     if (!html.includes(OBJECT_SIGNAL_COLOR)) return html;
 
     let cmd: string;
@@ -265,11 +294,11 @@ export const applyColorTaggedObjects = (html: string, mid: string, inlineCategor
         const keyword = keywordBase.replace(/\s+/g, '-');
         const finalContext = keyword;
 
-        // Maintain the physical context as the primary command set
         const category = getCategoryForName(displayName, inlineCategories);
         const finalCmd = cmd;
-        const glowColor = getGlowColorForCategory(category || finalCmd, inlineCategories);
+        const baseGlow = getGlowColorForCategory(category || finalCmd, inlineCategories);
+        const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, baseGlow, target);
 
-        return `<span class="inline-btn auto-obj color-tagged-obj" draggable="true" data-id="auto-obj-${esc(keyword)}" data-mid="${mid}" data-cmd="${finalCmd}" data-context="${esc(finalContext)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glowColor}; color: ${glowColor}">${innerHtml}</span>`;
+        return `<span class="inline-btn auto-obj color-tagged-obj${classExtra}" draggable="true" data-id="auto-obj-${esc(keyword)}" data-mid="${mid}" data-cmd="${finalCmd}" data-context="${esc(finalContext)}" data-action="menu" data-menu-display="list" style="--glow-color: ${glow}; color: ${glow}">${innerHtml.replace(/,/g, '')}</span>`;
     });
 };

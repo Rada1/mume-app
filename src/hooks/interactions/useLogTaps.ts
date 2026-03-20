@@ -12,6 +12,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
     } = deps;
 
     const lastLogClickRef = useRef<number>(0);
+    const lastBtnClickRef = useRef<number>(0);
     const logLongPressTimerRef = useRef<NodeJS.Timeout | null>(null);
     const logDragStartPosRef = useRef<{ x: number; y: number } | null>(null);
     const isLogDraggingRef = useRef(false);
@@ -104,29 +105,34 @@ export const useLogTaps = (deps: InteractionDeps) => {
         const now = Date.now();
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
 
-        // --- Double-tap detection FIRST (before any targetEl guard) ---
-        // This allows double-tapping on plain text to set target, not just inline buttons.
         const doubleTapThreshold = viewport.isMobile ? 400 : 300;
 
-        if (now - lastLogClickRef.current < doubleTapThreshold) {
-            lastLogClickRef.current = 0;
-            // If an inline btn was double-tapped, pass its context as the selection
-            if (targetEl) {
+        if (targetEl) {
+            // --- Button double-tap detection ---
+            // Uses a separate ref so backdrop/popover-close clicks on the log
+            // don't pollute the timer and falsely block the next button tap.
+            if (now - lastBtnClickRef.current < doubleTapThreshold) {
+                lastBtnClickRef.current = 0;
                 const context = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
                 if (context) {
                     setTarget(context);
                     triggerHaptic(30);
                     e.stopPropagation();
                 }
-            } else {
-                handleLogDoubleClick(e);
+                return;
             }
+            lastBtnClickRef.current = now;
+        } else {
+            // --- Plain-text double-tap detection ---
+            if (now - lastLogClickRef.current < doubleTapThreshold) {
+                lastLogClickRef.current = 0;
+                handleLogDoubleClick(e);
+                return;
+            }
+            lastLogClickRef.current = now;
+            // Single-tap on non-button: nothing to do
             return;
         }
-        lastLogClickRef.current = now;
-
-        // After double-tap check, single-tap only works on inline buttons
-        if (!targetEl) return;
 
         // Stop propagation to prevent message log selection or container clicks
         e.stopPropagation();
@@ -192,6 +198,7 @@ export const useLogTaps = (deps: InteractionDeps) => {
                 context: context || undefined,
                 menuDisplay
             });
+            targetEl.classList.add('menu-active');
         } else if ((action === 'command' || action === 'preload') && cmd) {
             let finalCmd = cmd;
             if (context) {
@@ -280,6 +287,18 @@ export const useLogTaps = (deps: InteractionDeps) => {
         }
 
         // --- Pointer-based drag system (desktop + mobile) ---
+        // Add pressed class for immediate feedback (especially mobile where :active is flaky)
+        if (targetEl) targetEl.classList.add('pressed');
+        // Capture rect and color NOW while the element is definitely in the DOM.
+        // A React re-render triggered by setHeldButton (below) may replace the DOM node
+        // before pointerup fires, making getBoundingClientRect() return zeros.
+        const pressedRect = targetEl ? targetEl.getBoundingClientRect() : null;
+        const pressedColor = targetEl
+            ? (getComputedStyle(targetEl).getPropertyValue('--glow-color').trim() ||
+               getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() ||
+               '#4b6eef')
+            : '#4b6eef';
+
         // Cleanup any existing timer
         if (logLongPressTimerRef.current) clearTimeout(logLongPressTimerRef.current);
         logDragStartPosRef.current = { x: e.clientX, y: e.clientY };
@@ -617,12 +636,46 @@ export const useLogTaps = (deps: InteractionDeps) => {
             // Global Cleanup
             document.querySelectorAll('.drop-hover-active').forEach(el => el.classList.remove('drop-hover-active'));
             logDragStartPosRef.current = null;
+            const wasDragging = isLogDraggingRef.current;
             isLogDraggingRef.current = false;
             setHeldButton(null);
             setActiveDragData(null);
             setCommandPreview('');
 
             document.querySelectorAll('.inline-btn.dragging').forEach(el => el.classList.remove('dragging'));
+            // Clean up any stray pressed elements
+            document.querySelectorAll('.inline-btn.pressed').forEach(el => el.classList.remove('pressed'));
+            if (targetEl) targetEl.classList.remove('pressed');
+
+            if (!wasDragging && pressedRect && pressedRect.width > 0) {
+                // Use the rect captured at pointerdown — the element may have been replaced
+                // by a React re-render (e.g. setPopoverState) before pointerup fires.
+                const cx = pressedRect.left + pressedRect.width / 2;
+                const cy = pressedRect.top + pressedRect.height / 2;
+                const sz = 28;
+                const ring = document.createElement('div');
+                ring.style.cssText = `
+                    position:fixed;
+                    left:${cx - sz / 2}px;top:${cy - sz / 2}px;
+                    width:${sz}px;height:${sz}px;
+                    border-radius:50%;
+                    border:2px solid ${pressedColor};
+                    pointer-events:none;z-index:9999;
+                `;
+                document.body.appendChild(ring);
+                const anim = ring.animate(
+                    [{ transform: 'scale(1)', opacity: 0.9 }, { transform: 'scale(3.5)', opacity: 0 }],
+                    { duration: 250, easing: 'ease-out', fill: 'forwards' }
+                );
+                anim.addEventListener('finish', () => ring.remove());
+                // Brightness flash — only if the element is still in the DOM
+                if (targetEl && targetEl.isConnected) {
+                    targetEl.animate(
+                        [{ filter: 'brightness(2.5) contrast(1.2)' }, { filter: 'brightness(1) contrast(1)' }],
+                        { duration: 280, easing: 'ease-out' }
+                    );
+                }
+            }
             window.removeEventListener('pointermove', handleGlobalMove);
             window.removeEventListener('pointerup', handleGlobalUp as any);
             window.removeEventListener('pointercancel', handleGlobalUp as any);

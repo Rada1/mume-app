@@ -161,6 +161,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             window.removeEventListener('pointermove', handlePointerMove, { capture: true });
             window.removeEventListener('pointerup', handlePointerUp, { capture: true });
             if (scrollIntervalRef.current) cancelAnimationFrame(scrollIntervalRef.current);
+            
+            // Clean up any persistent highlights from log items
+            document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         };
     }, [popoverState, triggerHaptic, setPopoverState]);
 
