@@ -163,7 +163,9 @@ export function useGameParser(deps: UseGameParserDeps) {
         
 
         // Optimized Prompt and End Determination (Avoid nested quantifiers to prevent backtracking)
-        const promptRegex = /^([^\r\n>]{0,120}>)\s*/;
+        // Exclude '<' from prompt chars so MUME equipment slot tags like '<worn as belt>'
+        // are not misidentified as prompts (which would strip the slot prefix from cleanLine).
+        const promptRegex = /^([^\r\n<>]{0,120}>)\s*/;
         const textPMatch = textOnly.match(promptRegex);
         let attachedText = '';
         if (textPMatch) {
